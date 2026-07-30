@@ -1,5 +1,5 @@
 import 'dotenv/config';
-import express from 'express';
+import express, { Request, Response } from 'express';
 import cors from 'cors';
 import compileRouter from './routes/compile';
 
@@ -13,7 +13,9 @@ app.use(cors({ origin: FRONTEND_ORIGIN, methods: ['POST', 'GET'] }));
 
 app.use('/', compileRouter);
 
-app.get('/health', (_req, res) => res.send('ok'));
+app.get('/health', (_req: Request, res: Response) => {
+  res.send('ok');
+});
 
 app.listen(PORT, () => {
   console.log(`LastMind compile backend listening on :${PORT}`);

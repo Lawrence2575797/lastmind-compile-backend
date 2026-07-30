@@ -1,7 +1,7 @@
 import 'dotenv/config';
 import express, { Request, Response } from 'express';
 import cors from 'cors';
-import compileRouter from './routes/compile';
+import compileRouter from './routes/compile.js';
 
 const PORT = process.env.PORT || 4100;
 const FRONTEND_ORIGIN = process.env.FRONTEND_ORIGIN || 'https://your-domain.example';

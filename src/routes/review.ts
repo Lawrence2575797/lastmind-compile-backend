@@ -1,6 +1,6 @@
 import { Router, Request, Response } from 'express';
 import { supabaseAdmin, verifyUser } from '../services/supabaseAdmin';
-import { newCard, gradeReview, rowToCard, cardToRowFields, Rating, ConceptReviewRow } from '../services/fsrsService';
+import { newCard, gradeReview, rowToCard, cardToRowFields, Rating, Grade, ConceptReviewRow } from '../services/fsrsService';
 
 const router = Router();
 
@@ -9,7 +9,7 @@ function extractBearerToken(req: Request): string | null {
   return header.startsWith('Bearer ') ? header.slice(7) : null;
 }
 
-const RATING_MAP: Record<string, Rating> = {
+const RATING_MAP: Record<string, Grade> = {
   again: Rating.Again,
   hard: Rating.Hard,
   good: Rating.Good,

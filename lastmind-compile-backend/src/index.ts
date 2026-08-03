@@ -12,15 +12,6 @@ const FRONTEND_ORIGIN = process.env.FRONTEND_ORIGIN || 'https://your-domain.exam
 
 const app = express();
 
-// Render sits behind its own proxy, so every request arrives with an
-// X-Forwarded-For header. Without this, express-rate-limit's validation
-// rejects every single request outright — this isn't optional tuning,
-// it's required for the rate limiter to work at all in this environment.
-// '1' means "trust exactly one hop" (Render's own proxy) — deliberately
-// not `true`, which would trust the whole header including anything a
-// malicious client could forge onto it.
-app.set('trust proxy', 1);
-
 app.use(express.json({ limit: '200kb' }));
 app.use(cors({ origin: FRONTEND_ORIGIN, methods: ['POST', 'GET'] }));
 app.use(globalRateLimiter);

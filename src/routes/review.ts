@@ -43,4 +43,25 @@ router.get('/due', requireAuth, async (req: Request, res: Response) => {
   }
 });
 
+// GET /schedule — every tracked concept for this user with its next due
+// date, sorted soonest-first, regardless of whether it's overdue yet.
+// This is the sidebar calendar's data source — /due alone only returns
+// what's ALREADY due, not the full upcoming picture.
+router.get('/schedule', requireAuth, async (req: Request, res: Response) => {
+  try {
+    const { data, error } = await supabaseAdmin
+      .from('concept_reviews')
+      .select('concept_id, due')
+      .eq('user_id', req.userId as string)
+      .order('due', { ascending: true });
+
+    if (error) throw error;
+
+    res.json({ schedule: data || [] });
+  } catch (err) {
+    console.error('Fetching schedule failed:', err);
+    res.status(500).json({ error: 'could not fetch schedule' });
+  }
+});
+
 export default router;

@@ -65,4 +65,6 @@ Output ONLY valid JSON in this exact format, nothing else:
     { "description": string, "severity": "must_fix" | "minor" }
   ],
   "corrected_graph": <the full corrected graph — include this field ONLY if verified is false; omit it entirely if verified is true>
-}`;
+}
+
+If ANY issue has severity "must_fix", you MUST include a corrected_graph that resolves it — a must_fix issue with no corrected_graph is not an acceptable response. Only "minor" issues may be reported without a corrected_graph.`;

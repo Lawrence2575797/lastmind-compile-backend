@@ -59,8 +59,26 @@ router.post('/chains/generate', async (req: Request, res: Response) => {
 
     const factCheckResult = JSON.parse(stripCodeFences(rawFactCheck));
 
-    if (!factCheckResult.verified && factCheckResult.corrected_graph) {
-      chain = factCheckResult.corrected_graph;
+    if (!factCheckResult.verified) {
+      if (factCheckResult.corrected_graph) {
+        chain = factCheckResult.corrected_graph;
+      } else {
+        const mustFix = (factCheckResult.issues || []).filter((i: any) => i.severity === 'must_fix');
+        if (mustFix.length > 0) {
+          // The fact-check flagged a real problem but didn't provide a fix
+          // to apply. Never silently cache/serve a chain known to have an
+          // unresolved must-fix issue — same principle as the diagnostic
+          // tree's own catch-all: an unresolved case gets surfaced, not
+          // quietly let through.
+          console.error(`Chain fact-check found unresolved must_fix issues for "${conceptKey}":`, mustFix);
+          return res.status(500).json({
+            error: 'Generated chain failed verification and could not be auto-corrected. Not cached.',
+            issues: factCheckResult.issues,
+          });
+        }
+        // Only minor issues with no corrected_graph — acceptable to
+        // proceed with the original chain as-is.
+      }
     }
 
     // Cache the final (possibly corrected) chain for every future student.
@@ -74,7 +92,11 @@ router.post('/chains/generate', async (req: Request, res: Response) => {
       conceptKey,
       chain,
       source: 'generated',
-      factCheck: { verified: factCheckResult.verified, issues: factCheckResult.issues || [] },
+      factCheck: {
+        verified: factCheckResult.verified,
+        issues: factCheckResult.issues || [],
+        correctionApplied: !factCheckResult.verified && !!factCheckResult.corrected_graph,
+      },
     });
   } catch (err) {
     console.error(`Chain generation failed for "${conceptKey}":`, err);

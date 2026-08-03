@@ -16,17 +16,20 @@ Output schema:
   ]
 }`;
 
-export const CHECK_ANSWER_AND_SLIP_PROMPT = `You are marking a student's free-text answer to a diagnostic question, and — only if it's wrong — judging whether the error looks like a careless slip.
+export const CHECK_ANSWER_AND_SLIP_PROMPT = `You are marking a student's free-text answer to a diagnostic question. If it's wrong, judge whether the error looks like a careless slip, AND describe — in your own open-ended judgment — what the wrong answer specifically reveals about the student's thinking.
 
 A careless slip means: the underlying understanding is clearly intact, but there's an isolated, mechanical error (a small arithmetic mistake, a sign error, a clear one-off lapse) — NOT a genuine gap in understanding the concept itself.
+
+The misconception description matters — this is what a later correction will be built from, so be specific about the actual content of the error, not just "they got it wrong." For example: not "student doesn't understand deficits," but "student believes government spending is financed by creating money directly, rather than by issuing bonds — this looks like confusion with Modern Monetary Theory rather than the standard bond-financing model being taught."
 
 Rules:
 1. Output ONLY valid JSON, nothing else.
 2. Be reasonably generous with phrasing, but genuinely strict about whether real understanding is present.
-3. Only set "looksLikeSlip" to true if you'd be genuinely surprised if the student got it wrong again on a re-attempt — this should be a real, considered judgment, not a default guess.
+3. Only set "looksLikeSlip" to true if you'd be genuinely surprised if the student got it wrong again on a re-attempt.
+4. Set "misconceptionNote" to null if the answer is correct. If wrong, describe the SPECIFIC misunderstanding as concretely as you can — including naming what alternative framework or confusion it resembles, if one is apparent, not just restating that it's incorrect.
 
 Output schema:
-{ "correct": boolean, "looksLikeSlip": boolean, "reasoning": string }`;
+{ "correct": boolean, "looksLikeSlip": boolean, "misconceptionNote": string | null }`;
 
 export const RECOGNITION_QUESTION_PROMPT = `You are writing a multiple-choice RECOGNITION question testing whether a student can identify the correct answer when shown options — used specifically to distinguish "the knowledge isn't there at all" (fails this too) from "it's there but not freely retrievable" (passes this).
 
@@ -64,15 +67,18 @@ Output ONLY valid JSON, nothing else:
 
 export const CORRECTION_PROMPT = `You are writing a short correction for a UK GCSE/A-Level student, based on a specific diagnosed cause of their error. Write directly to the student, second person, encouraging but honest.
 
-You will be given the concept and the diagnosis, which is exactly one of:
+You will be given the concept, the diagnosis category, and — where available — the SPECIFIC misconception content observed in their actual answers. Always use the specific content when it's provided, rather than writing a generic explanation of the category alone — a real correction addresses what THIS student actually got confused, not a template.
+
+Diagnosis categories:
 - "encoding": never properly understood at all. Write a clear, fresh explanation of the concept.
-- "wm_overload": understood in pieces, but holding it all at once (or the full chain, for multi-step concepts) overwhelmed them. Do NOT re-explain the concept — write guidance on breaking it into smaller steps and practicing the combination gradually.
-- "decay": genuinely known (confirmed via a hint bringing it back), it's just gone a bit rusty from time. Write brief encouragement that this is normal and just needs a bit more retrieval practice — do not re-explain the concept.
-- "interference": known but getting mixed up with a specific similar concept. Write a short, explicit contrast between the two — do not just re-explain the target concept alone.
-- "schedule_miscalibrated": reviewed exactly on schedule and still failed — the system's own timing was wrong for this student, not their fault. Briefly and honestly acknowledge this, and note this concept will now be reviewed somewhat sooner.
-- "transfer": knows the individual prerequisites, and succeeded once told which to combine — the gap is applying them together in a new context, not knowing them. Write guidance on practicing the same combination in varied framings.
-- "integration": knows the individual prerequisites but still couldn't combine them even when told which to use. Write guidance on practicing the combination itself, scaffolded, building up gradually.
-- "global_chain_failure": every individual step is genuinely solid, but the full chain is too long to hold at once. Write guidance on practicing shorter sub-chains until fluent, then gradually extending.
+- "wm_overload": understood in pieces, but holding it all at once (or the full chain, for multi-step concepts) overwhelmed them. Do NOT re-explain the concept — write guidance on breaking it into smaller steps.
+- "decay": genuinely known, just gone a bit rusty. Brief encouragement, no re-explanation needed.
+- "interference": known but getting mixed up with a specific similar concept — if the specific confused concept is given, name it explicitly and write a direct contrast between the two, addressing exactly that confusion, not a generic "you're mixing things up."
+- "schedule_miscalibrated": reviewed on schedule and still failed — the system's own timing was wrong, not their fault.
+- "transfer": knows the prerequisites, succeeded once told which to combine — guidance on practicing the same combination in varied framings.
+- "integration": knows the prerequisites but couldn't combine them even when told which to use — guidance on practicing the combination, scaffolded.
+- "global_chain_failure": every step is solid individually, the full chain is just too long to hold at once — guidance on practicing shorter sub-chains first.
+- "misconception": a lightweight, immediate correction during a teaching walk (not a full formal diagnosis) — directly address the specific misconception content given, correcting it plainly, without needing to categorize its deeper cause.
 
 Output ONLY valid JSON, nothing else:
 { "correction": string }`;
@@ -94,3 +100,17 @@ Rules:
 
 Output ONLY valid JSON, nothing else:
 { "cuedQuestion": string }`;
+
+export const PREDICTION_ERROR_QUESTION_PROMPT = `You are writing ONE deliberately hard opening question for a UK GCSE/A-Level student — the first thing they see in a spaced-repetition lesson on a multi-step mechanism, before any scaffolding. It should require applying the FULL mechanism/chain, cold, with no support — the point is to surface a genuine prediction error (a wrong intuitive guess), which is a stronger learning trigger than starting with an easy question.
+
+You will be given the target concept and its subject.
+
+Output ONLY valid JSON, nothing else:
+{ "question": string }`;
+
+export const FORWARD_CHUNK_QUESTION_PROMPT = `You are writing ONE question that walks a student FORWARD through part of a causal mechanism, in TEACHING order (cause toward effect) — reconstructing a chunk of the chain themselves, rather than being told it. This is different from testing an isolated fact: it should require the student to reason through this specific step or steps.
+
+You will be given the concept(s) in this chunk, in order, and the subject. If more than one concept is given, the question should require connecting them, not just each one in isolation.
+
+Output ONLY valid JSON, nothing else:
+{ "question": string }`;

@@ -1,7 +1,7 @@
-import { supabaseAdmin } from './supabaseAdmin';
 import { callClaudeJSON, MODELS } from './claudeClient';
 import { gradeAndRecordReview, getMasteryStatus } from './reviewService';
 import { runSharedEncodingCheck } from './sharedDiagnosticSteps';
+import { getOrGenerateChain } from './chainService';
 import {
   WM_RELAXATION_PROMPT,
   LOCALIZATION_CHECK_PROMPT,
@@ -20,23 +20,27 @@ async function callJSON<T>(systemPrompt: string, userContent: string, model: str
   return JSON.parse(stripCodeFences(raw)) as T;
 }
 
+interface AnswerCheck { correct: boolean; misconceptionNote: string | null; }
+
+async function checkAnswer(conceptLabel: string, questionDescription: string, answer: string): Promise<AnswerCheck> {
+  return callJSON<AnswerCheck>(
+    CHECK_ANSWER_AND_SLIP_PROMPT,
+    `Concept: ${conceptLabel}\nQuestion: ${questionDescription}\nStudent's answer: ${answer}`,
+    MODELS.simpleQuestion
+  );
+}
+
 interface ChainEdge { node_id: string; relationship: 'definitional' | 'reasoning'; }
 interface ChainNode { id: string; label: string; depends_on: ChainEdge[]; }
 interface Chain { concept_id: string; subject: string; nodes: ChainNode[]; }
 
-export async function loadChainIfMechanistic(conceptKey: string): Promise<Chain | null> {
-  const { data, error } = await supabaseAdmin
-    .from('dependency_chains')
-    .select('chain')
-    .eq('concept_key', conceptKey)
-    .maybeSingle();
+export async function loadChainIfMechanistic(conceptKey: string, subject: string, topic: string, concept: string): Promise<Chain | null> {
+  const result = await getOrGenerateChain(conceptKey, subject, topic, concept);
+  if (!result.chain) return null;
 
-  if (error) throw error;
-  if (!data) return null;
-
-  const chain = data.chain as Chain;
+  const chain = result.chain as Chain;
   const target = chain.nodes[chain.nodes.length - 1];
-  if (!target || target.depends_on.length === 0) return null; // effectively atomic
+  if (!target || target.depends_on.length === 0) return null;
   return chain;
 }
 
@@ -52,6 +56,10 @@ export interface MechanisticState {
   currentNodeId: string;
   recognitionCorrectAnswer?: string;
   subDiagnosticState?: DiagnosticState;
+  // Same purpose as in DiagnosticState — accumulated so the eventual
+  // correction addresses the actual specific error, not a generic template.
+  misconceptionNotes: string[];
+  confusedWith?: string;
 }
 
 export interface MechanisticResult {
@@ -75,13 +83,20 @@ function chainDepth(chain: Chain, nodeId: string, seen = new Set<string>()): num
   return 1 + Math.max(...node.depends_on.map((e) => chainDepth(chain, e.node_id, seen)));
 }
 
-async function generateCorrection(conceptLabel: string, diagnosis: string): Promise<string> {
-  const result = await callJSON<{ correction: string }>(
-    CORRECTION_PROMPT,
-    `Concept: ${conceptLabel}\nDiagnosis: ${diagnosis}`,
-    MODELS.diagnosticTree,
-    0.3
-  );
+function appendNote(state: MechanisticState, note: string | null | undefined): MechanisticState {
+  if (!note) return state;
+  return { ...state, misconceptionNotes: [...state.misconceptionNotes, note] };
+}
+
+async function generateCorrection(conceptLabel: string, diagnosis: string, state: MechanisticState): Promise<string> {
+  const contextLines = [`Concept: ${conceptLabel}`, `Diagnosis: ${diagnosis}`];
+  if (state.misconceptionNotes.length) {
+    contextLines.push(`Specific misconception observed: ${state.misconceptionNotes[state.misconceptionNotes.length - 1]}`);
+  }
+  if (state.confusedWith) {
+    contextLines.push(`Specifically confused with: ${state.confusedWith}`);
+  }
+  const result = await callJSON<{ correction: string }>(CORRECTION_PROMPT, contextLines.join('\n'), MODELS.diagnosticTree, 0.3);
   return result.correction;
 }
 
@@ -129,14 +144,6 @@ async function runCombinationCheck(state: MechanisticState): Promise<Mechanistic
   };
 }
 
-/**
- * Entry point for a mechanistic (chain-backed) diagnostic session — called
- * once the target question has already failed the ordinary slip-check at
- * the single-concept layer. Runs the SAME shared encoding check as the
- * atomic path first (matching the agreed tree order — section 2 applies
- * before any atomic/mechanistic branching), and only proceeds to the
- * chain-specific tests once retrieval failure is actually confirmed.
- */
 export async function startMechanisticDiagnosis(
   userId: string,
   conceptKey: string,
@@ -153,6 +160,7 @@ export async function startMechanisticDiagnosis(
     chain,
     stage: 'encoding_check',
     currentNodeId: chain.nodes[chain.nodes.length - 1].id,
+    misconceptionNotes: [],
   };
 
   const outcome = await runSharedEncodingCheck(userId, conceptKey, targetConceptLabel);
@@ -160,10 +168,10 @@ export async function startMechanisticDiagnosis(
   switch (outcome.result) {
     case 'schedule_miscalibrated':
       await gradeAndRecordReview(userId, conceptKey, 'again');
-      return { done: true, diagnosis: 'schedule_miscalibrated', correction: await generateCorrection(targetConceptLabel, 'schedule_miscalibrated'), state: baseState };
+      return { done: true, diagnosis: 'schedule_miscalibrated', correction: await generateCorrection(targetConceptLabel, 'schedule_miscalibrated', baseState), state: baseState };
     case 'decay_schedule_skipped':
       await gradeAndRecordReview(userId, conceptKey, 'hard');
-      return { done: true, diagnosis: 'decay', correction: await generateCorrection(targetConceptLabel, 'decay'), state: baseState };
+      return { done: true, diagnosis: 'decay', correction: await generateCorrection(targetConceptLabel, 'decay', baseState), state: baseState };
     case 'needs_recognition_test':
       return {
         done: false,
@@ -201,57 +209,56 @@ export async function processMechanisticAnswer(
       const isCorrect = answer.trim() === (state.recognitionCorrectAnswer || '').trim();
       if (!isCorrect) {
         await gradeAndRecordReview(userId, state.conceptKey, 'again');
-        return { done: true, diagnosis: 'encoding', correction: await generateCorrection(state.targetConceptLabel, 'encoding'), state };
+        return { done: true, diagnosis: 'encoding', correction: await generateCorrection(state.targetConceptLabel, 'encoding', state), state };
       }
-      // Retrieval failure confirmed — now, and only now, proceed to the
-      // mechanistic-specific tests, starting with 3B.1 (WM-relaxation).
       return beginWmRelax(state);
     }
 
     case 'wm_relax': {
-      const check = await callJSON<{ correct: boolean }>(
-        CHECK_ANSWER_AND_SLIP_PROMPT,
-        `Concept: ${state.targetConceptLabel}\nQuestion: (simplified)\nStudent's answer: ${answer}`,
-        MODELS.simpleQuestion
-      );
+      const check = await checkAnswer(state.targetConceptLabel, '(simplified)', answer);
+      const notedState = appendNote(state, check.misconceptionNote);
       if (check.correct) {
         await gradeAndRecordReview(userId, state.conceptKey, 'hard');
-        return { done: true, diagnosis: 'wm_overload', correction: await generateCorrection(state.targetConceptLabel, 'wm_overload'), state };
+        return { done: true, diagnosis: 'wm_overload', correction: await generateCorrection(state.targetConceptLabel, 'wm_overload', notedState), state: notedState };
       }
 
       const broken = await findBrokenPrerequisite(userId, state.chain, state.currentNodeId);
       if (!broken) {
-        return runCombinationCheck(state);
+        return runCombinationCheck(notedState);
       }
       return {
         done: false,
         nextQuestion: broken.question,
-        state: { ...state, stage: 'localizing', currentNodeId: broken.node.id },
+        state: { ...notedState, stage: 'localizing', currentNodeId: broken.node.id },
       };
     }
 
     case 'localizing': {
-      const check = await callJSON<{ correct: boolean }>(
-        CHECK_ANSWER_AND_SLIP_PROMPT,
-        `Concept: ${findNode(state.chain, state.currentNodeId)?.label}\nQuestion: (localization check)\nStudent's answer: ${answer}`,
-        MODELS.simpleQuestion
-      );
+      const nodeLabel = findNode(state.chain, state.currentNodeId)?.label || state.currentNodeId;
+      const check = await checkAnswer(nodeLabel, '(localization check)', answer);
+      const notedState = appendNote(state, check.misconceptionNote);
 
       if (check.correct) {
-        const broken = await findBrokenPrerequisite(userId, state.chain, state.currentNodeId);
-        if (!broken) return runCombinationCheck(state);
+        const broken = await findBrokenPrerequisite(userId, notedState.chain, notedState.currentNodeId);
+        if (!broken) return runCombinationCheck(notedState);
         return {
           done: false,
           nextQuestion: broken.question,
-          state: { ...state, currentNodeId: broken.node.id },
+          state: { ...notedState, currentNodeId: broken.node.id },
         };
       }
 
+      // Found the actual break — hand off to the FULL single-concept
+      // engine on this specific node, recursively. That engine tracks and
+      // uses its own misconceptionNotes internally, so its returned
+      // correction is already grounded in the specific content — nothing
+      // extra needed here beyond passing its result straight through.
       const subState: DiagnosticState = {
         conceptLabel: state.currentNodeId,
         subject: state.subject,
         stage: 'initial',
-        originalQuestion: `(localization check on ${findNode(state.chain, state.currentNodeId)?.label})`,
+        originalQuestion: `(localization check on ${nodeLabel})`,
+        misconceptionNotes: [],
       };
       const subResult = await processDiagnosticAnswer(userId, subState, answer, dontKnow);
 
@@ -260,12 +267,12 @@ export async function processMechanisticAnswer(
           done: false,
           nextQuestion: subResult.nextQuestion,
           nextOptions: subResult.nextOptions,
-          state: { ...state, stage: 'sub_diagnostic', subDiagnosticState: subResult.state },
+          state: { ...notedState, stage: 'sub_diagnostic', subDiagnosticState: subResult.state },
         };
       }
 
-      await gradeAndRecordReview(userId, state.conceptKey, 'again');
-      return { done: true, diagnosis: subResult.diagnosis, correction: subResult.correction, state };
+      await gradeAndRecordReview(userId, notedState.conceptKey, 'again');
+      return { done: true, diagnosis: subResult.diagnosis, correction: subResult.correction, state: notedState };
     }
 
     case 'sub_diagnostic': {
@@ -286,30 +293,27 @@ export async function processMechanisticAnswer(
     }
 
     case 'combination_check': {
-      const check = await callJSON<{ correct: boolean }>(
-        CHECK_ANSWER_AND_SLIP_PROMPT,
-        `Concept: ${state.targetConceptLabel}\nQuestion: (cued combination)\nStudent's answer: ${answer}`,
-        MODELS.simpleQuestion
-      );
+      const check = await checkAnswer(state.targetConceptLabel, '(cued combination)', answer);
+      const notedState = appendNote(state, check.misconceptionNote);
 
       if (check.correct) {
-        await gradeAndRecordReview(userId, state.conceptKey, 'hard');
-        return { done: true, diagnosis: 'transfer', correction: await generateCorrection(state.targetConceptLabel, 'transfer'), state };
+        await gradeAndRecordReview(userId, notedState.conceptKey, 'hard');
+        return { done: true, diagnosis: 'transfer', correction: await generateCorrection(notedState.targetConceptLabel, 'transfer', notedState), state: notedState };
       }
 
-      const depth = chainDepth(state.chain, state.chain.nodes[state.chain.nodes.length - 1].id);
+      const depth = chainDepth(notedState.chain, notedState.chain.nodes[notedState.chain.nodes.length - 1].id);
       if (depth >= 4) {
-        const mastery = await getMasteryStatus(userId, state.conceptKey);
+        const mastery = await getMasteryStatus(userId, notedState.conceptKey);
         if (mastery.scheduleWasFollowed === false) {
-          await gradeAndRecordReview(userId, state.conceptKey, 'hard');
-          return { done: true, diagnosis: 'decay', correction: await generateCorrection(state.targetConceptLabel, 'decay'), state };
+          await gradeAndRecordReview(userId, notedState.conceptKey, 'hard');
+          return { done: true, diagnosis: 'decay', correction: await generateCorrection(notedState.targetConceptLabel, 'decay', notedState), state: notedState };
         }
-        await gradeAndRecordReview(userId, state.conceptKey, 'again');
-        return { done: true, diagnosis: 'global_chain_failure', correction: await generateCorrection(state.targetConceptLabel, 'global_chain_failure'), state };
+        await gradeAndRecordReview(userId, notedState.conceptKey, 'again');
+        return { done: true, diagnosis: 'global_chain_failure', correction: await generateCorrection(notedState.targetConceptLabel, 'global_chain_failure', notedState), state: notedState };
       }
 
-      await gradeAndRecordReview(userId, state.conceptKey, 'again');
-      return { done: true, diagnosis: 'integration', correction: await generateCorrection(state.targetConceptLabel, 'integration'), state };
+      await gradeAndRecordReview(userId, notedState.conceptKey, 'again');
+      return { done: true, diagnosis: 'integration', correction: await generateCorrection(notedState.targetConceptLabel, 'integration', notedState), state: notedState };
     }
 
     default:

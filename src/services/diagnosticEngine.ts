@@ -18,6 +18,16 @@ async function callJSON<T>(systemPrompt: string, userContent: string, model: str
   return JSON.parse(stripCodeFences(raw)) as T;
 }
 
+interface AnswerCheck { correct: boolean; looksLikeSlip?: boolean; misconceptionNote: string | null; }
+
+async function checkAnswer(conceptLabel: string, questionDescription: string, answer: string): Promise<AnswerCheck> {
+  return callJSON<AnswerCheck>(
+    CHECK_ANSWER_AND_SLIP_PROMPT,
+    `Concept: ${conceptLabel}\nQuestion: ${questionDescription}\nStudent's answer: ${answer}`,
+    MODELS.simpleQuestion
+  );
+}
+
 export type DiagnosticStage =
   | 'initial'
   | 'slip_recheck'
@@ -42,6 +52,11 @@ export interface DiagnosticState {
   stage: DiagnosticStage;
   originalQuestion: string;
   recognitionCorrectAnswer?: string;
+  // Accumulated across every wrong attempt in this session — this is what
+  // makes the eventual correction address the STUDENT'S actual specific
+  // error, not just a generic template for the diagnosis category.
+  misconceptionNotes: string[];
+  confusedWith?: string; // captured specifically during the contrastive-cue stage
 }
 
 export interface DiagnosticResult {
@@ -51,6 +66,11 @@ export interface DiagnosticResult {
   nextQuestion?: string;
   nextOptions?: string[];
   state: DiagnosticState;
+}
+
+function appendNote(state: DiagnosticState, note: string | null | undefined): DiagnosticState {
+  if (!note) return state;
+  return { ...state, misconceptionNotes: [...state.misconceptionNotes, note] };
 }
 
 async function finish(
@@ -65,9 +85,20 @@ async function finish(
   let correction: string | undefined;
   if (diagnosis !== 'pass' && diagnosis !== 'slip') {
     const correctionDiagnosisKey = diagnosis === 'unresolved' ? 'encoding' : diagnosis;
+    const contextLines = [
+      `Concept: ${conceptLabel}`,
+      `Diagnosis: ${correctionDiagnosisKey}`,
+    ];
+    if (state.misconceptionNotes.length) {
+      contextLines.push(`Specific misconception observed: ${state.misconceptionNotes[state.misconceptionNotes.length - 1]}`);
+    }
+    if (state.confusedWith) {
+      contextLines.push(`Specifically confused with: ${state.confusedWith}`);
+    }
+
     const result = await callJSON<{ correction: string }>(
       CORRECTION_PROMPT,
-      `Concept: ${conceptLabel}\nDiagnosis: ${correctionDiagnosisKey}`,
+      contextLines.join('\n'),
       MODELS.diagnosticTree,
       0.3
     );
@@ -117,35 +148,29 @@ export async function processDiagnosticAnswer(
         return runEncodingCheckOrSkip(userId, state);
       }
 
-      const check = await callJSON<{ correct: boolean; looksLikeSlip: boolean }>(
-        CHECK_ANSWER_AND_SLIP_PROMPT,
-        `Concept: ${state.conceptLabel}\nQuestion: ${state.originalQuestion}\nStudent's answer: ${answer}`,
-        MODELS.simpleQuestion
-      );
+      const check = await checkAnswer(state.conceptLabel, state.originalQuestion, answer);
+      const notedState = appendNote(state, check.misconceptionNote);
 
       if (check.correct) {
-        return finish(userId, state.conceptLabel, 'good', 'pass', state);
+        return finish(userId, state.conceptLabel, 'good', 'pass', notedState);
       }
       if (check.looksLikeSlip) {
         return {
           done: false,
           nextQuestion: state.originalQuestion,
-          state: { ...state, stage: 'slip_recheck' },
+          state: { ...notedState, stage: 'slip_recheck' },
         };
       }
-      return runEncodingCheckOrSkip(userId, state);
+      return runEncodingCheckOrSkip(userId, notedState);
     }
 
     case 'slip_recheck': {
-      const check = await callJSON<{ correct: boolean }>(
-        CHECK_ANSWER_AND_SLIP_PROMPT,
-        `Concept: ${state.conceptLabel}\nQuestion: ${state.originalQuestion}\nStudent's answer: ${answer}`,
-        MODELS.simpleQuestion
-      );
+      const check = await checkAnswer(state.conceptLabel, state.originalQuestion, answer);
+      const notedState = appendNote(state, check.misconceptionNote);
       if (check.correct) {
-        return finish(userId, state.conceptLabel, 'hard', 'slip', state);
+        return finish(userId, state.conceptLabel, 'hard', 'slip', notedState);
       }
-      return runEncodingCheckOrSkip(userId, state);
+      return runEncodingCheckOrSkip(userId, notedState);
     }
 
     case 'encoding_check': {
@@ -167,13 +192,10 @@ export async function processDiagnosticAnswer(
     }
 
     case 'wm_relax': {
-      const check = await callJSON<{ correct: boolean }>(
-        CHECK_ANSWER_AND_SLIP_PROMPT,
-        `Concept: ${state.conceptLabel}\nQuestion: (simplified)\nStudent's answer: ${answer}`,
-        MODELS.simpleQuestion
-      );
+      const check = await checkAnswer(state.conceptLabel, '(simplified)', answer);
+      const notedState = appendNote(state, check.misconceptionNote);
       if (check.correct) {
-        return finish(userId, state.conceptLabel, 'hard', 'wm_overload', state);
+        return finish(userId, state.conceptLabel, 'hard', 'wm_overload', notedState);
       }
       const hintResult = await callJSON<{ hint: string }>(
         HINT_CUE_PROMPT,
@@ -184,18 +206,15 @@ export async function processDiagnosticAnswer(
       return {
         done: false,
         nextQuestion: `${state.originalQuestion}\n\nHint: ${hintResult.hint}`,
-        state: { ...state, stage: 'hint_cue' },
+        state: { ...notedState, stage: 'hint_cue' },
       };
     }
 
     case 'hint_cue': {
-      const check = await callJSON<{ correct: boolean }>(
-        CHECK_ANSWER_AND_SLIP_PROMPT,
-        `Concept: ${state.conceptLabel}\nQuestion: ${state.originalQuestion}\nStudent's answer: ${answer}`,
-        MODELS.simpleQuestion
-      );
+      const check = await checkAnswer(state.conceptLabel, state.originalQuestion, answer);
+      const notedState = appendNote(state, check.misconceptionNote);
       if (check.correct) {
-        return finish(userId, state.conceptLabel, 'hard', 'decay', state);
+        return finish(userId, state.conceptLabel, 'hard', 'decay', notedState);
       }
       const contrastive = await callJSON<{ confusedWith: string; question: string }>(
         CONTRASTIVE_CUE_PROMPT,
@@ -206,20 +225,17 @@ export async function processDiagnosticAnswer(
       return {
         done: false,
         nextQuestion: contrastive.question,
-        state: { ...state, stage: 'contrastive_cue' },
+        state: { ...notedState, stage: 'contrastive_cue', confusedWith: contrastive.confusedWith },
       };
     }
 
     case 'contrastive_cue': {
-      const check = await callJSON<{ correct: boolean }>(
-        CHECK_ANSWER_AND_SLIP_PROMPT,
-        `Concept: ${state.conceptLabel}\nQuestion: (contrastive)\nStudent's answer: ${answer}`,
-        MODELS.simpleQuestion
-      );
+      const check = await checkAnswer(state.conceptLabel, '(contrastive)', answer);
+      const notedState = appendNote(state, check.misconceptionNote);
       if (check.correct) {
-        return finish(userId, state.conceptLabel, 'hard', 'interference', state);
+        return finish(userId, state.conceptLabel, 'hard', 'interference', notedState);
       }
-      return finish(userId, state.conceptLabel, 'again', 'unresolved', state);
+      return finish(userId, state.conceptLabel, 'again', 'unresolved', notedState);
     }
 
     default:

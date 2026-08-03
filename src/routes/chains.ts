@@ -45,6 +45,7 @@ router.post('/chains/generate', async (req: Request, res: Response) => {
       model: MODELS.chainGeneration,
       systemPrompt: CHAIN_GENERATION_PROMPT,
       userContent: generationInput,
+      temperature: 0,
     });
 
     let chain = JSON.parse(stripCodeFences(rawChain));
@@ -55,6 +56,7 @@ router.post('/chains/generate', async (req: Request, res: Response) => {
       model: MODELS.factCheck,
       systemPrompt: FACT_CHECK_PROMPT,
       userContent: JSON.stringify(chain),
+      temperature: 0,
     });
 
     const factCheckResult = JSON.parse(stripCodeFences(rawFactCheck));

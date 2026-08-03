@@ -5,6 +5,7 @@ import compileRouter from './routes/compile';
 import reviewRouter from './routes/review';
 import chainsRouter from './routes/chains';
 import diagnosticsRouter from './routes/diagnostics';
+import chainLessonRouter from './routes/chainLesson';
 import { globalRateLimiter } from './services/rateLimiters';
 
 const PORT = process.env.PORT || 4100;
@@ -29,6 +30,7 @@ app.use('/', compileRouter);
 app.use('/', reviewRouter);
 app.use('/', chainsRouter);
 app.use('/', diagnosticsRouter);
+app.use('/', chainLessonRouter);
 
 app.get('/health', (_req, res) => res.send('ok'));
 

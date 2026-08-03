@@ -13,7 +13,7 @@ function stripCodeFences(text: string): string {
 // that decision (slip-checking) is identical regardless, so it's handled
 // once, here, rather than duplicated in either engine.
 export type OrchestratorState =
-  | { engine: 'pending'; conceptKey: string; conceptLabel: string; subject: string; originalQuestion: string; slipStage: 'initial' | 'slip_recheck' }
+  | { engine: 'pending'; conceptKey: string; conceptLabel: string; subject: string; topic: string; originalQuestion: string; slipStage: 'initial' | 'slip_recheck' }
   | { engine: 'atomic'; inner: DiagnosticState }
   | { engine: 'mechanistic'; inner: MechanisticState };
 
@@ -31,9 +31,10 @@ async function dispatchToBranch(
   conceptKey: string,
   conceptLabel: string,
   subject: string,
+  topic: string,
   originalQuestion: string
 ): Promise<OrchestratorResult> {
-  const chain = await loadChainIfMechanistic(conceptKey);
+  const chain = await loadChainIfMechanistic(conceptKey, subject, topic, conceptLabel);
 
   if (chain) {
     const result = await startMechanisticDiagnosis(userId, conceptKey, conceptLabel, subject, originalQuestion, chain);
@@ -50,7 +51,7 @@ async function dispatchToBranch(
   // No mechanistic chain — fall through to the atomic engine, entering it
   // at its own 'initial' stage so it runs its own (identical) shared
   // encoding check itself.
-  const atomicState: DiagnosticState = { conceptLabel: conceptKey, subject, stage: 'initial', originalQuestion };
+  const atomicState: DiagnosticState = { conceptLabel: conceptKey, subject, stage: 'initial', originalQuestion, misconceptionNotes: [] };
   const result = await processDiagnosticAnswer(userId, atomicState, '', true); // dontKnow-equivalent path straight to the encoding check, since slip-checking already happened here in the orchestrator
   return {
     done: result.done,
@@ -99,7 +100,7 @@ export async function runDiagnosticStep(
   // engine === 'pending' — this is the shared slip-check phase, identical
   // regardless of what comes after it.
   if (dontKnow) {
-    return dispatchToBranch(userId, state.conceptKey, state.conceptLabel, state.subject, state.originalQuestion);
+    return dispatchToBranch(userId, state.conceptKey, state.conceptLabel, state.subject, state.topic, state.originalQuestion);
   }
 
   const raw = await callClaudeJSON({
@@ -128,5 +129,5 @@ export async function runDiagnosticStep(
     await gradeAndRecordReview(userId, state.conceptKey, 'again');
   }
 
-  return dispatchToBranch(userId, state.conceptKey, state.conceptLabel, state.subject, state.originalQuestion);
+  return dispatchToBranch(userId, state.conceptKey, state.conceptLabel, state.subject, state.topic, state.originalQuestion);
 }

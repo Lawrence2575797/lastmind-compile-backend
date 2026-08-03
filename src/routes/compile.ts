@@ -3,6 +3,8 @@ import { applyStructuredPIIFilter } from '../safety/piiFilterStructured';
 import { applyContextualPIIFilter } from '../safety/piiFilterContextual';
 import { applyHarmfulContentFilter } from '../safety/harmfulContentFilter';
 import { processNotes } from '../services/claudeClient';
+import { requireAuth } from '../services/authMiddleware';
+import { costlyEndpointLimiter } from '../services/rateLimiters';
 
 const router = Router();
 
@@ -10,7 +12,7 @@ interface CompileRequestBody {
   notes?: unknown;
 }
 
-router.post('/compile', async (req: Request<{}, {}, CompileRequestBody>, res: Response) => {
+router.post('/compile', requireAuth, costlyEndpointLimiter, async (req: Request<{}, {}, CompileRequestBody>, res: Response) => {
   const { notes } = req.body;
 
   if (typeof notes !== 'string' || notes.trim().length === 0) {

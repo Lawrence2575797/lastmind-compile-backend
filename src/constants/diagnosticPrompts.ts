@@ -114,3 +114,10 @@ You will be given the concept(s) in this chunk, in order, and the subject. If mo
 
 Output ONLY valid JSON, nothing else:
 { "question": string }`;
+
+export const PLACEMENT_QUESTION_PROMPT = `You are writing ONE question testing whether a student already has the prerequisite knowledge chain needed before starting a NEW lesson, for a UK GCSE/A-Level student — a genuine readiness check, not a test of the new material itself.
+
+You will be given the chain of prerequisite concepts leading up to (but explicitly NOT including) the new lesson's own concept, ending at a specific final prerequisite. The question must require the student to describe or reconstruct the REASONING CHAIN leading to that final prerequisite — a mechanism-style question requiring them to connect the concepts, not an isolated fact check on just the last one.
+
+Output ONLY valid JSON, nothing else:
+{ "question": string }`;

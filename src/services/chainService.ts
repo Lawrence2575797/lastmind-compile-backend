@@ -38,11 +38,16 @@ export async function getOrGenerateChain(
   }
 
   const generationInput = `Subject: ${subject}\nTopic: ${topic}\nConcept: ${concept}`;
+  // NOTE: no `temperature` here — Anthropic deprecated this parameter
+  // entirely for Claude Opus 4.7 and later (including 4.8, used here via
+  // MODELS.chainGeneration): any explicit value, even 0, now returns a
+  // 400 error. Omitting it is the only supported option for this model;
+  // determinism has to come from the prompt itself rather than this
+  // parameter for Opus calls specifically.
   const rawChain = await callClaudeJSON({
     model: MODELS.chainGeneration,
     systemPrompt: CHAIN_GENERATION_PROMPT,
     userContent: generationInput,
-    temperature: 0,
   });
 
   let chain = JSON.parse(stripCodeFences(rawChain));
@@ -51,7 +56,6 @@ export async function getOrGenerateChain(
     model: MODELS.factCheck,
     systemPrompt: FACT_CHECK_PROMPT,
     userContent: JSON.stringify(chain),
-    temperature: 0,
   });
 
   const factCheckResult = JSON.parse(stripCodeFences(rawFactCheck));

@@ -34,12 +34,11 @@ async function checkAnswer(conceptLabel: string, questionDescription: string, an
 
 /**
  * Splits a chain's nodes (already topologically ordered — leaf-first,
- * target last, since that's how chain generation produces them, and a
- * topological order IS a valid teaching order for any dependency graph,
- * branching or not) into progressively larger chunks as review_count
- * grows. Deliberately gradual: jumping straight from "every step
- * separate" to "the whole chain in one go" would risk exactly the
- * working-memory overload this progression exists to avoid.
+ * target last) into progressively larger chunks as review_count grows,
+ * for the SCAFFOLD walk specifically. Deliberately gradual: jumping
+ * straight from "every step separate" to "the whole chain in one go"
+ * would risk exactly the working-memory overload this progression exists
+ * to avoid.
  *
  * reviewCount 0        -> one node per chunk (fully scaffolded)
  * reviewCount n         -> roughly (totalLinks - n) chunks
@@ -67,6 +66,34 @@ export function computeChunks(chain: Chain, reviewCount: number): ChainNode[][] 
   return chunks;
 }
 
+/**
+ * A SEPARATE, later phase from the scaffold walk — after every node has
+ * been tested individually, this checks whether the student can now hold
+ * a FEW of them together at once. Splits the chain into a couple (two)
+ * roughly-equal contiguous groups, distinct from (and coarser than) the
+ * scaffold's own chunking, which was still testing pieces individually by
+ * the time reviewCount is low. A chain with fewer than 2 nodes has
+ * nothing meaningful to combine, so this phase is skipped for it.
+ */
+export function computeCompressionGroups(chain: Chain): ChainNode[][] {
+  const orderedNodes = chain.nodes;
+  const totalLinks = orderedNodes.length;
+  if (totalLinks < 2) return [];
+
+  const groupCount = 2;
+  const groups: ChainNode[][] = [];
+  const baseSize = Math.floor(totalLinks / groupCount);
+  let remainder = totalLinks % groupCount;
+  let idx = 0;
+  for (let i = 0; i < groupCount; i++) {
+    const size = baseSize + (remainder > 0 ? 1 : 0);
+    if (remainder > 0) remainder--;
+    groups.push(orderedNodes.slice(idx, idx + size));
+    idx += size;
+  }
+  return groups;
+}
+
 async function getReviewCount(userId: string, conceptKey: string): Promise<number> {
   const { data, error } = await supabaseAdmin
     .from('chain_lesson_progress')
@@ -90,12 +117,16 @@ async function incrementReviewCount(userId: string, conceptKey: string, currentC
 
 export interface ChunkResult { chunkLabel: string; correct: boolean; correction?: string; }
 
+export type ChainLessonStage = 'scaffold' | 'compression';
+
 export interface ChainLessonState {
   conceptKey: string;
   subject: string;
   chain: Chain;
   chunks: ChainNode[][];
-  currentChunkIndex: number; // -1 = showing the opening prediction-error question
+  compressionGroups: ChainNode[][];
+  stage: ChainLessonStage;
+  currentChunkIndex: number; // -1 = showing the opening prediction-error question (scaffold stage only)
   results: ChunkResult[];
   anyMisconceptionSoFar: boolean;
 }
@@ -103,22 +134,15 @@ export interface ChainLessonState {
 export interface ChainLessonResult {
   done: boolean;
   nextQuestion?: string;
-  inlineCorrection?: string; // shown alongside the NEXT question, addressing the PREVIOUS chunk's error
+  inlineCorrection?: string; // addresses the answer just given, shown alongside the NEXT question
   summary?: ChunkResult[];
   state: ChainLessonState;
 }
 
-function chunkLabel(chunk: ChainNode[]): string {
-  return chunk.map((n) => n.label).join(' + ');
+function groupLabel(group: ChainNode[]): string {
+  return group.map((n) => n.label).join(' + ');
 }
 
-/**
- * Starts a chain-lesson session — the multi-day-arc counterpart to the
- * reactive diagnostic engine. Opens with a hard, whole-concept prediction
- * question, then the first chunk of a forward (teaching-order) walk
- * through the chain, at whatever granularity the student's accumulated
- * review history on this chain warrants.
- */
 export async function startChainLesson(
   userId: string,
   conceptKey: string,
@@ -134,6 +158,7 @@ export async function startChainLesson(
 
   const reviewCount = await getReviewCount(userId, conceptKey);
   const chunks = computeChunks(chain, reviewCount);
+  const compressionGroups = computeCompressionGroups(chain);
 
   const target = chain.nodes[chain.nodes.length - 1];
   const opening = await callJSON<{ question: string }>(
@@ -148,6 +173,8 @@ export async function startChainLesson(
     subject,
     chain,
     chunks,
+    compressionGroups,
+    stage: 'scaffold',
     currentChunkIndex: -1,
     results: [],
     anyMisconceptionSoFar: false,
@@ -156,8 +183,8 @@ export async function startChainLesson(
   return { done: false, nextQuestion: opening.question, state };
 }
 
-async function generateChunkQuestion(subject: string, chunk: ChainNode[]): Promise<string> {
-  const conceptList = chunk.map((n) => n.label).join(', then ');
+async function generateGroupQuestion(subject: string, group: ChainNode[]): Promise<string> {
+  const conceptList = group.map((n) => n.label).join(', then ');
   const result = await callJSON<{ question: string }>(
     FORWARD_CHUNK_QUESTION_PROMPT,
     `Subject: ${subject}\nConcept(s) in this chunk, in order: ${conceptList}`,
@@ -167,13 +194,30 @@ async function generateChunkQuestion(subject: string, chunk: ChainNode[]): Promi
   return result.question;
 }
 
+async function generateInlineCorrection(label: string, misconceptionNote: string | null): Promise<string> {
+  const contextLines = [`Concept: ${label}`, `Diagnosis: misconception`];
+  if (misconceptionNote) contextLines.push(`Specific misconception observed: ${misconceptionNote}`);
+  const result = await callJSON<{ correction: string }>(CORRECTION_PROMPT, contextLines.join('\n'), MODELS.diagnosticTree, 0.3);
+  return result.correction;
+}
+
+async function finishLesson(userId: string, state: ChainLessonState, results: ChunkResult[], anyMisconceptionSoFar: boolean): Promise<ChainLessonResult> {
+  const reviewCount = await getReviewCount(userId, state.conceptKey);
+  await incrementReviewCount(userId, state.conceptKey, reviewCount);
+  await gradeAndRecordReview(userId, state.conceptKey, anyMisconceptionSoFar ? 'hard' : 'easy');
+
+  return { done: true, summary: results, state: { ...state, results, anyMisconceptionSoFar } };
+}
+
 /**
  * Advances the session by one answer. The opening prediction-error
- * question is never corrected inline — its purpose is just to surface
- * whether a real gap exists before the scaffold walk begins; the scaffold
- * itself is the remediation. Every chunk after that gets an immediate,
- * lightweight correction if it reveals a misconception, before moving on
- * to the next chunk — never deferred to the end.
+ * question is never corrected inline — the scaffold itself is the
+ * remediation for whatever it reveals. Every question after that gets an
+ * immediate, lightweight correction if it reveals a misconception, before
+ * moving on — never deferred to the end. After the full scaffold walk
+ * (every node tested individually), a SEPARATE compression phase follows:
+ * a couple of coarser questions, each requiring the student to hold
+ * several nodes together at once, before the session actually finishes.
  */
 export async function processChainLessonAnswer(
   userId: string,
@@ -182,60 +226,72 @@ export async function processChainLessonAnswer(
 ): Promise<ChainLessonResult> {
   const target = state.chain.nodes[state.chain.nodes.length - 1];
 
-  if (state.currentChunkIndex === -1) {
-    // Just answered the opening prediction question — record it, but no
-    // inline correction here; move straight into the scaffold.
+  if (state.stage === 'scaffold' && state.currentChunkIndex === -1) {
+    // Just answered the opening prediction question — no inline
+    // correction here; move straight into the scaffold.
     const check = await checkAnswer(target.label, '(opening prediction question)', answer);
     const nextState: ChainLessonState = {
       ...state,
       currentChunkIndex: 0,
       anyMisconceptionSoFar: state.anyMisconceptionSoFar || !check.correct,
     };
-    const firstChunkQuestion = await generateChunkQuestion(state.subject, state.chunks[0]);
+    const firstChunkQuestion = await generateGroupQuestion(state.subject, state.chunks[0]);
     return { done: false, nextQuestion: firstChunkQuestion, state: nextState };
   }
 
-  // Answering a chunk within the scaffold walk.
-  const chunk = state.chunks[state.currentChunkIndex];
-  const label = chunkLabel(chunk);
-  const check = await checkAnswer(label, '(forward reconstruction question)', answer);
+  if (state.stage === 'scaffold') {
+    const chunk = state.chunks[state.currentChunkIndex];
+    const label = groupLabel(chunk);
+    const check = await checkAnswer(label, '(forward reconstruction question)', answer);
 
-  let inlineCorrection: string | undefined;
-  if (!check.correct) {
-    const contextLines = [`Concept: ${label}`, `Diagnosis: misconception`];
-    if (check.misconceptionNote) contextLines.push(`Specific misconception observed: ${check.misconceptionNote}`);
-    const correctionResult = await callJSON<{ correction: string }>(
-      CORRECTION_PROMPT,
-      contextLines.join('\n'),
-      MODELS.diagnosticTree,
-      0.3
-    );
-    inlineCorrection = correctionResult.correction;
-  }
+    const inlineCorrection = check.correct ? undefined : await generateInlineCorrection(label, check.misconceptionNote);
+    const results = [...state.results, { chunkLabel: label, correct: check.correct, correction: inlineCorrection }];
+    const nextIndex = state.currentChunkIndex + 1;
+    const anyMisconceptionSoFar = state.anyMisconceptionSoFar || !check.correct;
 
-  const results = [...state.results, { chunkLabel: label, correct: check.correct, correction: inlineCorrection }];
-  const nextIndex = state.currentChunkIndex + 1;
-  const anyMisconceptionSoFar = state.anyMisconceptionSoFar || !check.correct;
+    if (nextIndex >= state.chunks.length) {
+      // Scaffold walk complete — move into the compression phase, if this
+      // chain has enough nodes to make one meaningful (skip straight to
+      // finishing otherwise).
+      if (state.compressionGroups.length === 0) {
+        return finishLesson(userId, { ...state, currentChunkIndex: nextIndex }, results, anyMisconceptionSoFar);
+      }
+      const firstGroupQuestion = await generateGroupQuestion(state.subject, state.compressionGroups[0]);
+      return {
+        done: false,
+        nextQuestion: firstGroupQuestion,
+        inlineCorrection,
+        state: { ...state, stage: 'compression', currentChunkIndex: 0, results, anyMisconceptionSoFar },
+      };
+    }
 
-  if (nextIndex >= state.chunks.length) {
-    // Whole chain walk complete — grade the target concept and advance
-    // this chain's own lesson progress, so the NEXT time it's due, the
-    // chunking is coarser than this time.
-    const reviewCount = await getReviewCount(userId, state.conceptKey);
-    await incrementReviewCount(userId, state.conceptKey, reviewCount);
-    await gradeAndRecordReview(userId, state.conceptKey, anyMisconceptionSoFar ? 'hard' : 'easy');
-
+    const nextChunkQuestion = await generateGroupQuestion(state.subject, state.chunks[nextIndex]);
     return {
-      done: true,
-      summary: results,
+      done: false,
+      nextQuestion: nextChunkQuestion,
+      inlineCorrection,
       state: { ...state, currentChunkIndex: nextIndex, results, anyMisconceptionSoFar },
     };
   }
 
-  const nextChunkQuestion = await generateChunkQuestion(state.subject, state.chunks[nextIndex]);
+  // stage === 'compression'
+  const group = state.compressionGroups[state.currentChunkIndex];
+  const label = groupLabel(group);
+  const check = await checkAnswer(label, '(compression question — holding several steps together)', answer);
+
+  const inlineCorrection = check.correct ? undefined : await generateInlineCorrection(label, check.misconceptionNote);
+  const results = [...state.results, { chunkLabel: label, correct: check.correct, correction: inlineCorrection }];
+  const nextIndex = state.currentChunkIndex + 1;
+  const anyMisconceptionSoFar = state.anyMisconceptionSoFar || !check.correct;
+
+  if (nextIndex >= state.compressionGroups.length) {
+    return finishLesson(userId, { ...state, currentChunkIndex: nextIndex }, results, anyMisconceptionSoFar);
+  }
+
+  const nextGroupQuestion = await generateGroupQuestion(state.subject, state.compressionGroups[nextIndex]);
   return {
     done: false,
-    nextQuestion: nextChunkQuestion,
+    nextQuestion: nextGroupQuestion,
     inlineCorrection,
     state: { ...state, currentChunkIndex: nextIndex, results, anyMisconceptionSoFar },
   };

@@ -36,6 +36,18 @@ export const MODELS = {
   simpleQuestion: 'claude-haiku-4-5-20251001',
 } as const;
 
+// Anthropic deprecated the `temperature` (and top_p/top_k) parameter
+// entirely for Claude Opus 4.7 and all later models, including the
+// claude-opus-4-8 used above — any explicit value, even 0, now returns a
+// 400 error. Checked centrally here, once, rather than relying on every
+// call site to remember not to pass it — that approach already caused two
+// separate outages today (chainService.ts, then spacedLessonEngine.ts's
+// own call using MODELS.diagnosticTree, which resolves to an Opus model
+// whenever CLAUDE_MODEL happens to be set to one).
+function modelSupportsTemperature(model: string): boolean {
+  return !/opus-4-[7-9]/.test(model) && !/opus-4-\d{2,}/.test(model);
+}
+
 const TUTOR_SYSTEM_PROMPT =
   "You are an AI tutor. The following text is a student's notes. Improve them into clear, structured revision notes.";
 
@@ -90,7 +102,7 @@ export async function callClaudeJSON(params: {
   const response = await anthropic.messages.create({
     model: params.model,
     max_tokens: params.maxTokens ?? 2048,
-    temperature: params.temperature,
+    ...(modelSupportsTemperature(params.model) ? { temperature: params.temperature } : {}),
     system: params.systemPrompt,
     messages: [{ role: 'user', content: params.userContent }],
   });

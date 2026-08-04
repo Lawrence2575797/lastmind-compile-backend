@@ -36,18 +36,6 @@ export const MODELS = {
   simpleQuestion: 'claude-haiku-4-5-20251001',
 } as const;
 
-// Anthropic deprecated the `temperature` (and top_p/top_k) parameter
-// entirely for Claude Opus 4.7 and all later models, including the
-// claude-opus-4-8 used above — any explicit value, even 0, now returns a
-// 400 error. Checked centrally here, once, rather than relying on every
-// call site to remember not to pass it — that approach already caused two
-// separate outages today (chainService.ts, then spacedLessonEngine.ts's
-// own call using MODELS.diagnosticTree, which resolves to an Opus model
-// whenever CLAUDE_MODEL happens to be set to one).
-function modelSupportsTemperature(model: string): boolean {
-  return !/opus-4-[7-9]/.test(model) && !/opus-4-\d{2,}/.test(model);
-}
-
 const TUTOR_SYSTEM_PROMPT =
   "You are an AI tutor. The following text is a student's notes. Improve them into clear, structured revision notes.";
 
@@ -85,12 +73,27 @@ export async function processNotes(safeText: string): Promise<string> {
   }
 }
 
+function isTemperatureDeprecatedError(err: unknown): boolean {
+  const message = err && typeof err === 'object' && 'message' in err ? String((err as { message: unknown }).message) : '';
+  return message.includes('temperature') && message.includes('deprecated');
+}
+
 /**
  * Generic call for anything expecting a strict JSON response (chain
  * generation, fact-checking, diagnostic tree steps). Unlike processNotes,
  * this does NOT swallow errors into a fallback string — a caller building
  * a dependency chain needs to know a real failure happened, not silently
  * receive fallback text formatted as if it were valid JSON.
+ *
+ * On a "temperature is deprecated for this model" error, automatically
+ * retries once WITHOUT temperature, rather than trying to predict ahead of
+ * time which models will reject it. Predicting via model-name pattern
+ * matching turned out fragile in practice — it depends on correctly
+ * guessing every current and future naming variant Anthropic might use,
+ * including whatever a deployment's CLAUDE_MODEL env var happens to be
+ * set to, which this code has no visibility into. Reacting to the actual
+ * error Anthropic returns works regardless of the model or naming scheme
+ * involved, now or in the future.
  */
 export async function callClaudeJSON(params: {
   model: string;
@@ -99,13 +102,24 @@ export async function callClaudeJSON(params: {
   maxTokens?: number;
   temperature?: number;
 }): Promise<string> {
-  const response = await anthropic.messages.create({
-    model: params.model,
-    max_tokens: params.maxTokens ?? 2048,
-    ...(modelSupportsTemperature(params.model) ? { temperature: params.temperature } : {}),
-    system: params.systemPrompt,
-    messages: [{ role: 'user', content: params.userContent }],
-  });
+  async function makeRequest(includeTemperature: boolean) {
+    return anthropic.messages.create({
+      model: params.model,
+      max_tokens: params.maxTokens ?? 2048,
+      ...(includeTemperature ? { temperature: params.temperature } : {}),
+      system: params.systemPrompt,
+      messages: [{ role: 'user', content: params.userContent }],
+    });
+  }
+
+  let response;
+  try {
+    response = await makeRequest(true);
+  } catch (err) {
+    if (!isTemperatureDeprecatedError(err)) throw err;
+    console.warn(`callClaudeJSON: "${params.model}" rejected temperature — retrying without it.`);
+    response = await makeRequest(false);
+  }
 
   const textBlock = response.content.find((block) => block.type === 'text');
   if (!textBlock || textBlock.type !== 'text') {

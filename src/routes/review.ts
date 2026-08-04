@@ -1,6 +1,7 @@
 import { Router, Request, Response } from 'express';
 import { supabaseAdmin } from '../services/supabaseAdmin';
 import { requireAuth } from '../services/authMiddleware';
+import { costlyEndpointLimiter } from '../services/rateLimiters';
 import { gradeAndRecordReview } from '../services/reviewService';
 
 const router = Router();
@@ -9,7 +10,9 @@ const router = Router();
 // Grades one concept through the real FSRS algorithm and persists the
 // updated state. This is meant to be called with a rating already decided
 // by the diagnostic tree's own verdict — not a raw student self-rating.
-router.post('/review', requireAuth, async (req: Request, res: Response) => {
+// Rate-limited specifically because nothing else stops a logged-in user
+// from spamming this to artificially inflate their own FSRS stability.
+router.post('/review', requireAuth, costlyEndpointLimiter, async (req: Request, res: Response) => {
   const { conceptId, rating } = req.body ?? {};
   if (typeof conceptId !== 'string' || !conceptId.trim() || typeof rating !== 'string') {
     return res.status(400).json({ error: "conceptId and rating ('again'|'hard'|'good'|'easy') are both required" });
@@ -25,7 +28,7 @@ router.post('/review', requireAuth, async (req: Request, res: Response) => {
 });
 
 // GET /due  — concept IDs currently due for review for the verified user.
-router.get('/due', requireAuth, async (req: Request, res: Response) => {
+router.get('/due', requireAuth, costlyEndpointLimiter, async (req: Request, res: Response) => {
   try {
     const { data, error } = await supabaseAdmin
       .from('concept_reviews')
@@ -47,7 +50,7 @@ router.get('/due', requireAuth, async (req: Request, res: Response) => {
 // date, sorted soonest-first, regardless of whether it's overdue yet.
 // This is the sidebar calendar's data source — /due alone only returns
 // what's ALREADY due, not the full upcoming picture.
-router.get('/schedule', requireAuth, async (req: Request, res: Response) => {
+router.get('/schedule', requireAuth, costlyEndpointLimiter, async (req: Request, res: Response) => {
   try {
     const { data, error } = await supabaseAdmin
       .from('concept_reviews')

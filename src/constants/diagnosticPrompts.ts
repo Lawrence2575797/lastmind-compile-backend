@@ -121,3 +121,17 @@ You will be given the chain of prerequisite concepts leading up to (but explicit
 
 Output ONLY valid JSON, nothing else:
 { "question": string }`;
+
+export const PREREQUISITE_BRANCH_QUESTIONS_PROMPT = `You are writing prerequisite-readiness questions for a UK GCSE/A-Level student who is about to start a NEW lesson, checking whether they already have the underlying knowledge the lesson depends on — NOT testing the new lesson's own content.
+
+You will be given the new lesson's concept, and a list of its DIRECT prerequisite branches — each an independent line of prior knowledge the lesson depends on, together with the chain of reasoning that leads up to (and includes) that branch's own concept. Treat each branch as entirely separate from the others; do not combine them into one question, even if they turn out to be related.
+
+For EACH branch listed, write exactly ONE question requiring the student to describe or reconstruct the REASONING CHAIN leading to that branch's own concept — a mechanism-style question requiring them to connect the concepts in that specific branch, not an isolated fact check on just the last one, and not a question about the new lesson's own concept.
+
+Rules:
+1. Output ONLY valid JSON, nothing else.
+2. Exactly one question per branch listed, same order, matched by "branchId".
+3. Each question must stand alone, understandable without seeing the others.
+
+Output schema:
+{ "questions": [ { "branchId": string, "question": string } ] }`;

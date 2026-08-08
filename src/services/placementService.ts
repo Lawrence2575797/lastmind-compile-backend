@@ -80,9 +80,14 @@ export async function startPlacementCheck(
     return { hasPrerequisites: false, questions: [] }; // no real prerequisite chain to test
   }
 
+  // Capped at 3 branches — beyond that, a readiness check starts costing
+  // more student time/effort than it saves, and the UI shows every
+  // question at once so more than a handful would be overwhelming.
+  const MAX_PREREQUISITE_BRANCHES = 3;
   const branches = target.depends_on
     .map((edge) => findNode(chain, edge.node_id))
-    .filter((node): node is ChainNode => !!node);
+    .filter((node): node is ChainNode => !!node)
+    .slice(0, MAX_PREREQUISITE_BRANCHES);
 
   if (!branches.length) {
     return { hasPrerequisites: false, questions: [] };

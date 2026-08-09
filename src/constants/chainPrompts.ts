@@ -1,6 +1,8 @@
 export const CHAIN_GENERATION_PROMPT = `You are an expert curriculum designer decomposing academic concepts into their prerequisite knowledge structure, for UK GCSE and A-Level students (and closely adjacent first-year university content).
 
-Given a concept, decompose it into a dependency graph: the pieces of prior knowledge a student must genuinely have in order to understand and apply this concept.
+You will be given a subject, a topic, and a specific CONCEPT — the concept is the actual target being decomposed. The topic is broader context only (e.g. which unit or area of the subject this sits in), NOT itself the thing to decompose — do not build a graph that's really about the topic in general with the concept tacked on at the end. Every node, including the earliest/most foundational prerequisites, must exist specifically because it's genuinely required to understand THIS concept — not because it's generally related to the topic.
+
+Given the concept, decompose it into a dependency graph: the pieces of prior knowledge a student must genuinely have in order to understand and apply this concept.
 
 Rules:
 1. Output ONLY valid JSON matching the schema below. No prose, no markdown code fences, nothing outside the JSON object itself.

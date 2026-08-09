@@ -35,6 +35,7 @@ export interface EncodingStep {
   label: string;
   type: EncodingStepType;
   text: string;
+  checkQuestion?: string;
 }
 
 export interface EncodingLessonState {
@@ -103,7 +104,7 @@ export async function startEncodingLesson(
   }));
 
   const target = chain.nodes[chain.nodes.length - 1];
-  const batch = await callJSON<{ hookFact: string; steps: { nodeId: string; type: EncodingStepType; text: string }[] }>(
+  const batch = await callJSON<{ hookFact: string; steps: { nodeId: string; type: EncodingStepType; text: string; checkQuestion?: string }[] }>(
     ENCODING_LESSON_BATCH_PROMPT,
     [
       `Subject: ${subject}`,
@@ -122,6 +123,7 @@ export async function startEncodingLesson(
     label: nodesById.get(s.nodeId)?.label || s.nodeId,
     type: s.type,
     text: s.text,
+    checkQuestion: s.checkQuestion,
   }));
 
   if (!steps.length) {
@@ -136,14 +138,17 @@ export async function startEncodingLesson(
  * Advances the lesson by one step. ALWAYS advances, regardless of the
  * answer's quality — this is a first-exposure lesson, not a gate, and a
  * student who gets stuck re-litigating one step with an AI grader can't
- * actually finish the lesson. "explain" steps are direct teaching, not a
- * question — acknowledging one costs no Claude call at all. "scene" and
- * "derive" steps still get graded (one combined call for verdict +
- * feedback), but the verdict only affects: (a) the feedback shown
- * alongside that step, and (b) the FSRS grade recorded for the whole
- * concept once the lesson finishes — any weak step drops the whole
- * lesson to a lower grade, which is exactly what surfaces it sooner in
- * future spaced-repetition sessions, rather than blocking progress now.
+ * actually finish the lesson. Every step type is graded (one combined
+ * call for verdict + feedback) — "scene"/"derive" against the prompt
+ * text itself, "explain" against its checkQuestion (this is brand-new
+ * content with nothing for FSRS to have already confirmed, so this is
+ * the only check that a thin/misunderstood explanation doesn't silently
+ * become the shaky foundation for later derive steps). The verdict only
+ * affects: (a) the feedback shown alongside that step, and (b) the FSRS
+ * grade recorded for the whole concept once the lesson finishes — any
+ * weak step drops the whole lesson to a lower grade, which is exactly
+ * what surfaces it sooner in future spaced-repetition sessions, rather
+ * than blocking progress now.
  */
 export async function submitEncodingAnswer(userId: string, state: EncodingLessonState, answer: string): Promise<EncodingSubmitResult> {
   const currentStep = state.steps[state.currentIndex];
@@ -151,19 +156,15 @@ export async function submitEncodingAnswer(userId: string, state: EncodingLesson
     return { done: true, state };
   }
 
-  let correct = true;
-  let feedback: string | null = null;
-
-  if (currentStep.type !== 'explain') {
-    const check = await callJSON<{ correct: boolean; feedback: string | null }>(
-      ENCODING_ANSWER_CHECK_PROMPT,
-      `Concept/step: ${currentStep.label}\nPrompt: ${currentStep.text}\nStudent's answer: ${answer}`,
-      MODELS.diagnosticTree,
-      0.2
-    );
-    correct = check.correct;
-    feedback = check.feedback;
-  }
+  const gradingPrompt = currentStep.type === 'explain' ? (currentStep.checkQuestion || currentStep.text) : currentStep.text;
+  const check = await callJSON<{ correct: boolean; feedback: string | null }>(
+    ENCODING_ANSWER_CHECK_PROMPT,
+    `Concept/step: ${currentStep.label}\nPrompt: ${gradingPrompt}\nStudent's answer: ${answer}`,
+    MODELS.diagnosticTree,
+    0.2
+  );
+  const correct = check.correct;
+  const feedback = check.feedback;
 
   const nextIndex = state.currentIndex + 1;
   const anyWeakSoFar = state.anyWeakSoFar || !correct;

@@ -5,12 +5,12 @@
 // building toward the new target concept last), asking the student to
 // derive each derivable step themselves rather than being told it.
 
-export const ENCODING_LESSON_BATCH_PROMPT = `You are designing a first-time "encoding" lesson for a UK GCSE/A-Level student who has never been taught this concept before. You will be given the subject and the concept's full prerequisite chain, already ordered FORWARD — the most foundational prerequisite first, building step by step toward the new target concept, which is always the LAST node. Each node is marked "derivable": true or false.
+export const ENCODING_LESSON_BATCH_PROMPT = `You are designing a first-time "encoding" lesson for a UK GCSE/A-Level student who has never been taught this concept before. You will be given the subject, the exact topic and target concept name (the specific lesson this is — every step you write must build toward THIS exact concept, not a related or more general one), and the concept's full prerequisite chain, already ordered FORWARD — the most foundational prerequisite first, building step by step toward the new target concept, which is always the LAST node in the chain. Each node is marked "derivable": true or false.
 
 Your job is to write the actual lesson content, as a single JSON response covering the whole chain — every step below is presented to the student in this same forward order, one at a time, each building on the ones before it.
 
 Structure:
-1. A "hookFact" — one genuinely interesting, novel fact related to the target concept, written to spark curiosity before the lesson begins. Not a question, not part of the chain itself — just an engaging opener.
+1. A "hookFact" — one genuinely interesting, novel fact related to the target concept specifically (not a generic fact about the wider subject), written to spark curiosity before the lesson begins. Not a question, not part of the chain itself — just an engaging opener.
 2. One "step" per node in the chain, in the SAME forward order they're given to you:
    - The FIRST node in the chain always gets "type": "scene" — a relatable, fairly concrete example or scenario that sets the scene for this node's content, something the student can picture or connect to their own experience. This is an invitation to engage, not a rigorous test, and it's what begins the chain.
    - Every LATER node marked "derivable": true gets "type": "derive" — a prompt that asks the student to reason out or derive THIS node's content themselves, building on everything established in the steps before it. It must NOT give the answer away or state the content directly — it should give the student enough to work it out using what they already know from earlier in the chain (and general prior knowledge), not hand it to them.
@@ -22,6 +22,7 @@ Rules:
 3. Every "derive" and "scene" step must be phrased as something the student actively responds to — never give away the content itself.
 4. Every "explain" step must actually explain the content clearly and completely — the student has no way to derive it, so don't be vague or make them guess.
 5. Keep each step focused on its own node — don't bundle multiple nodes into one step.
+6. Keep every "hookFact" and every step's "text" tight — 1 to 3 sentences each, not a paragraph. This is a JSON response covering an entire lesson at once, so length discipline on every field matters.
 
 Output schema:
 {

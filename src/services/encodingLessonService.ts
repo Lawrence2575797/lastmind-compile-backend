@@ -10,9 +10,17 @@ function stripCodeFences(text: string): string {
   return text.trim().replace(/^```(?:json)?\s*/i, '').replace(/```\s*$/, '').trim();
 }
 
-async function callJSON<T>(systemPrompt: string, userContent: string, model: string, temperature = 0): Promise<T> {
-  const raw = await callClaudeJSON({ model, systemPrompt, userContent, temperature });
-  return JSON.parse(stripCodeFences(raw)) as T;
+async function callJSON<T>(systemPrompt: string, userContent: string, model: string, temperature = 0, maxTokens?: number): Promise<T> {
+  const raw = await callClaudeJSON({ model, systemPrompt, userContent, temperature, maxTokens });
+  try {
+    return JSON.parse(stripCodeFences(raw)) as T;
+  } catch (err) {
+    // Logged raw so a truncated/malformed response (the most likely cause
+    // of a parse failure here) is actually diagnosable after the fact,
+    // instead of just surfacing as an opaque 500 to the client.
+    console.error('LastMind: encoding lesson call returned invalid JSON.', { raw });
+    throw err;
+  }
 }
 
 interface ChainEdge { node_id: string; relationship: 'definitional' | 'reasoning'; }
@@ -93,11 +101,18 @@ export async function startEncodingLesson(
     derivable: i === 0 ? false : resolveDerivable(n),
   }));
 
+  const target = chain.nodes[chain.nodes.length - 1];
   const batch = await callJSON<{ hookFact: string; steps: { nodeId: string; type: EncodingStepType; text: string }[] }>(
     ENCODING_LESSON_BATCH_PROMPT,
-    `Subject: ${subject}\nChain (forward order, leaf-first, target last):\n${JSON.stringify(chainDescription)}`,
+    [
+      `Subject: ${subject}`,
+      `Topic: ${topic || 'unspecified'}`,
+      `Target concept (this exact lesson — every step must build toward THIS, not a related or more general concept): ${target?.label || concept}`,
+      `Chain (forward order, leaf-first, target last):\n${JSON.stringify(chainDescription)}`,
+    ].join('\n'),
     MODELS.diagnosticTree,
-    0.4
+    0.4,
+    4096
   );
 
   const nodesById = new Map(chain.nodes.map((n) => [n.id, n]));

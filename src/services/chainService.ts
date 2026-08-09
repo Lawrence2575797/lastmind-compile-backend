@@ -44,21 +44,42 @@ export async function getOrGenerateChain(
   // 400 error. Omitting it is the only supported option for this model;
   // determinism has to come from the prompt itself rather than this
   // parameter for Opus calls specifically.
+  // maxTokens raised well above the 2048 default — the default was
+  // silently truncating mid-JSON for larger graphs (more nodes = more
+  // edges + labels to emit), which then failed JSON.parse and surfaced as
+  // an opaque "could not..." error with no indication this was the cause.
   const rawChain = await callClaudeJSON({
     model: MODELS.chainGeneration,
     systemPrompt: CHAIN_GENERATION_PROMPT,
     userContent: generationInput,
+    maxTokens: 4096,
   });
 
-  let chain = JSON.parse(stripCodeFences(rawChain));
+  let chain: any;
+  try {
+    chain = JSON.parse(stripCodeFences(rawChain));
+  } catch (err) {
+    console.error('LastMind: chain generation returned invalid JSON (likely truncated).', { rawChain });
+    throw err;
+  }
 
+  // Fact-check has to emit a full corrected_graph (the whole chain again)
+  // on top of its issues list when it finds a problem — the same
+  // truncation risk as above, same fix.
   const rawFactCheck = await callClaudeJSON({
     model: MODELS.factCheck,
     systemPrompt: FACT_CHECK_PROMPT,
     userContent: JSON.stringify(chain),
+    maxTokens: 4096,
   });
 
-  const factCheckResult = JSON.parse(stripCodeFences(rawFactCheck));
+  let factCheckResult: any;
+  try {
+    factCheckResult = JSON.parse(stripCodeFences(rawFactCheck));
+  } catch (err) {
+    console.error('LastMind: chain fact-check returned invalid JSON (likely truncated).', { rawFactCheck });
+    throw err;
+  }
 
   if (!factCheckResult.verified) {
     if (factCheckResult.corrected_graph) {

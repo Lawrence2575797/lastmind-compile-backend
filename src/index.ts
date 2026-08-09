@@ -7,6 +7,7 @@ import chainsRouter from './routes/chains';
 import diagnosticsRouter from './routes/diagnostics';
 import chainLessonRouter from './routes/chainLesson';
 import cortexRouter from './routes/cortex';
+import encodingLessonRouter from './routes/encodingLesson';
 import { globalRateLimiter } from './services/rateLimiters';
 
 const PORT = process.env.PORT || 4100;
@@ -33,6 +34,7 @@ app.use('/', chainsRouter);
 app.use('/', diagnosticsRouter);
 app.use('/', chainLessonRouter);
 app.use('/', cortexRouter);
+app.use('/', encodingLessonRouter);
 
 app.get('/health', (_req, res) => res.send('ok'));
 

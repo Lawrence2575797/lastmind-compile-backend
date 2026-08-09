@@ -36,7 +36,7 @@ router.post('/encoding-lesson/submit', async (req: Request, res: Response) => {
   }
 
   try {
-    const result = await submitEncodingAnswer(state as EncodingLessonState, typeof answer === 'string' ? answer : '');
+    const result = await submitEncodingAnswer(req.userId as string, state as EncodingLessonState, typeof answer === 'string' ? answer : '');
     res.json(result);
   } catch (err) {
     console.error('Encoding lesson answer processing failed:', err);

@@ -1,5 +1,6 @@
 import { callClaudeJSON, MODELS } from './claudeClient';
 import { getOrGenerateChain } from './chainService';
+import { gradeAndRecordReview } from './reviewService';
 import {
   ENCODING_LESSON_BATCH_PROMPT,
   ENCODING_ANSWER_CHECK_PROMPT,
@@ -41,6 +42,7 @@ export interface EncodingLessonState {
   subject: string;
   steps: EncodingStep[];
   currentIndex: number;
+  anyWeakSoFar: boolean;
 }
 
 export interface EncodingStartResult {
@@ -52,7 +54,6 @@ export interface EncodingStartResult {
 
 export interface EncodingSubmitResult {
   done: boolean;
-  advanced?: boolean;
   correct?: boolean;
   feedback?: string | null;
   step?: EncodingStep;
@@ -127,24 +128,31 @@ export async function startEncodingLesson(
     throw new Error('Could not generate lesson content for this concept.');
   }
 
-  const state: EncodingLessonState = { conceptKey, subject, steps, currentIndex: 0 };
+  const state: EncodingLessonState = { conceptKey, subject, steps, currentIndex: 0, anyWeakSoFar: false };
   return { done: false, hookFact: batch.hookFact, step: steps[0], state };
 }
 
 /**
- * Advances the lesson by one step. "explain" steps are direct teaching,
- * not a question — acknowledging one costs no Claude call at all. "scene"
- * and "derive" steps need one grading call, which returns both the
- * correct/incorrect verdict and (if wrong) non-revealing feedback in the
- * same response — a wrong answer keeps the student on the SAME step
- * (advanced: false) rather than costing a second call to regenerate
- * anything, since the step's text was already generated up front.
+ * Advances the lesson by one step. ALWAYS advances, regardless of the
+ * answer's quality — this is a first-exposure lesson, not a gate, and a
+ * student who gets stuck re-litigating one step with an AI grader can't
+ * actually finish the lesson. "explain" steps are direct teaching, not a
+ * question — acknowledging one costs no Claude call at all. "scene" and
+ * "derive" steps still get graded (one combined call for verdict +
+ * feedback), but the verdict only affects: (a) the feedback shown
+ * alongside that step, and (b) the FSRS grade recorded for the whole
+ * concept once the lesson finishes — any weak step drops the whole
+ * lesson to a lower grade, which is exactly what surfaces it sooner in
+ * future spaced-repetition sessions, rather than blocking progress now.
  */
-export async function submitEncodingAnswer(state: EncodingLessonState, answer: string): Promise<EncodingSubmitResult> {
+export async function submitEncodingAnswer(userId: string, state: EncodingLessonState, answer: string): Promise<EncodingSubmitResult> {
   const currentStep = state.steps[state.currentIndex];
   if (!currentStep) {
     return { done: true, state };
   }
+
+  let correct = true;
+  let feedback: string | null = null;
 
   if (currentStep.type !== 'explain') {
     const check = await callJSON<{ correct: boolean; feedback: string | null }>(
@@ -153,20 +161,23 @@ export async function submitEncodingAnswer(state: EncodingLessonState, answer: s
       MODELS.diagnosticTree,
       0.2
     );
-
-    if (!check.correct) {
-      return { done: false, advanced: false, correct: false, feedback: check.feedback, state };
-    }
+    correct = check.correct;
+    feedback = check.feedback;
   }
 
   const nextIndex = state.currentIndex + 1;
-  const nextState: EncodingLessonState = { ...state, currentIndex: nextIndex };
+  const anyWeakSoFar = state.anyWeakSoFar || !correct;
+  const nextState: EncodingLessonState = { ...state, currentIndex: nextIndex, anyWeakSoFar };
 
   if (nextIndex >= state.steps.length) {
-    return { done: true, advanced: true, correct: true, state: nextState };
+    // Same rating scale/table the retrieval engine uses (gradeAndRecordReview
+    // -> RATING_MAP), so this concept slots into the exact same FSRS
+    // schedule — a rocky first encoding lesson brings it back around sooner.
+    await gradeAndRecordReview(userId, state.conceptKey, anyWeakSoFar ? 'hard' : 'easy');
+    return { done: true, correct, feedback, state: nextState };
   }
 
-  return { done: false, advanced: true, correct: true, step: state.steps[nextIndex], state: nextState };
+  return { done: false, correct, feedback, step: state.steps[nextIndex], state: nextState };
 }
 
 /**

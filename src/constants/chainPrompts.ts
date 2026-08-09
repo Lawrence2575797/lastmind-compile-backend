@@ -13,6 +13,7 @@ Rules:
 6. Node labels should be short and precise, matching how the concept would actually be named on a real UK exam specification — not a vague paraphrase.
 7. Do not include prerequisites too basic to be worth testing (e.g. do not include "numbers exist" as a prerequisite for a maths concept, or "words have meanings" for anything).
 8. The final entry in the "nodes" array must always be the target concept itself.
+9. For every node, set "derivable": true if a student who already has this node's direct prerequisites could reasonably reason or derive this node's content themselves when prompted the right way — it follows logically or causally from those prerequisites. Set it to false if this node is a fact, definition, naming convention, or arbitrary rule that must simply be taught directly, even if it has prerequisites that provide useful context for it.
 
 Output schema:
 {
@@ -22,6 +23,7 @@ Output schema:
     {
       "id": string,             // snake_case identifier, unique within this graph
       "label": string,          // human-readable name
+      "derivable": boolean,
       "depends_on": [
         { "node_id": string, "relationship": "definitional" | "reasoning" }
       ]
@@ -35,11 +37,12 @@ Example — the concept "opportunity cost" in A-Level Economics:
   "concept_id": "econ_opportunity_cost",
   "subject": "Economics",
   "nodes": [
-    { "id": "scarcity", "label": "Scarcity", "depends_on": [] },
-    { "id": "tradeoffs", "label": "Trade-offs", "depends_on": [] },
+    { "id": "scarcity", "label": "Scarcity", "derivable": false, "depends_on": [] },
+    { "id": "tradeoffs", "label": "Trade-offs", "derivable": false, "depends_on": [] },
     {
       "id": "opportunity_cost",
       "label": "Opportunity cost",
+      "derivable": true,
       "depends_on": [
         { "node_id": "scarcity", "relationship": "definitional" },
         { "node_id": "tradeoffs", "relationship": "reasoning" }
@@ -57,6 +60,7 @@ You will be given a JSON dependency graph. Check it against every one of these c
 3. MERGED concepts — does any single node actually represent two or more genuinely distinct pieces of knowledge that should be split into separate nodes?
 4. RELATIONSHIP TYPE accuracy — for every edge, is "definitional" vs "reasoning" the correct classification? A prerequisite wrongly labeled "definitional" when it's really just reasoning-support (or vice versa) is a real error, not a style preference.
 5. STRUCTURAL validity — no circular dependencies, no node depending on itself, no orphaned node that should actually connect to something.
+6. DERIVABLE accuracy — for every node, is "derivable" correct? true means a student who already has that node's direct prerequisites could reasonably reason/derive it themselves; false means it's a fact, definition, convention, or arbitrary rule that must simply be taught.
 
 Output ONLY valid JSON in this exact format, nothing else:
 {
@@ -67,4 +71,4 @@ Output ONLY valid JSON in this exact format, nothing else:
   "corrected_graph": <the full corrected graph — include this field ONLY if verified is false; omit it entirely if verified is true>
 }
 
-If ANY issue has severity "must_fix", you MUST include a corrected_graph that resolves it — a must_fix issue with no corrected_graph is not an acceptable response. Only "minor" issues may be reported without a corrected_graph.`;
+If ANY issue has severity "must_fix", you MUST include a corrected_graph that resolves it — a must_fix issue with no corrected_graph is not an acceptable response. Only "minor" issues may be reported without a corrected_graph. If you return a corrected_graph, every node in it must still include its "derivable" field.`;

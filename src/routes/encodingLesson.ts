@@ -1,18 +1,18 @@
 import { Router, Request, Response } from 'express';
 import { requireAuth } from '../services/authMiddleware';
-import { costlyEndpointLimiter } from '../services/rateLimiters';
+import { costlyEndpointLimiter, draftCheckLimiter } from '../services/rateLimiters';
 import { normalizeConceptKey } from '../services/chainService';
 import { startEncodingLesson, submitEncodingAnswer, checkEncodingDraft, EncodingLessonState } from '../services/encodingLessonService';
 
 const router = Router();
 
-router.use('/encoding-lesson', requireAuth, costlyEndpointLimiter);
+router.use('/encoding-lesson', requireAuth);
 
 // POST /encoding-lesson/start  { subject, topic, concept }
 // The first-time lesson for a concept — a novelty hook fact, then a
 // Socratic walk forward through its dependency chain. See
 // encodingLessonService.ts for the full design.
-router.post('/encoding-lesson/start', async (req: Request, res: Response) => {
+router.post('/encoding-lesson/start', costlyEndpointLimiter, async (req: Request, res: Response) => {
   const { subject, topic, concept } = req.body ?? {};
   if (typeof subject !== 'string' || typeof topic !== 'string' || typeof concept !== 'string') {
     return res.status(400).json({ error: 'subject, topic, and concept are all required' });
@@ -29,7 +29,7 @@ router.post('/encoding-lesson/start', async (req: Request, res: Response) => {
 });
 
 // POST /encoding-lesson/submit  { state, answer }
-router.post('/encoding-lesson/submit', async (req: Request, res: Response) => {
+router.post('/encoding-lesson/submit', costlyEndpointLimiter, async (req: Request, res: Response) => {
   const { state, answer } = req.body ?? {};
   if (!state) {
     return res.status(400).json({ error: 'state is required (from the previous /encoding-lesson/start or /encoding-lesson/submit response)' });
@@ -47,7 +47,7 @@ router.post('/encoding-lesson/submit', async (req: Request, res: Response) => {
 // POST /encoding-lesson/check-draft  { nodeLabel, promptText, draft }
 // Cheap, frequent — the frontend debounces calls to this while the
 // student is still typing, well before they submit.
-router.post('/encoding-lesson/check-draft', async (req: Request, res: Response) => {
+router.post('/encoding-lesson/check-draft', draftCheckLimiter, async (req: Request, res: Response) => {
   const { nodeLabel, promptText, draft } = req.body ?? {};
   if (typeof nodeLabel !== 'string' || typeof promptText !== 'string' || typeof draft !== 'string') {
     return res.status(400).json({ error: 'nodeLabel, promptText, and draft are all required' });

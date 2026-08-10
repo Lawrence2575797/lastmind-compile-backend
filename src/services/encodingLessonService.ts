@@ -426,7 +426,16 @@ async function generateEncodingLessonContent(
       DIAGRAM_LOOKUP_TIMEOUT_MS
     );
     if (diagram) {
-      const targetStep = steps.find((s) => s.nodeId === target.id && (s.type === 'derive' || s.type === 'explain'));
+      // The LAST target-derivation beat, not the first — a multi-beat
+      // target (see ENCODING_LESSON_BATCH_PROMPT point 4, "break it into
+      // as many sequential beats as the concept genuinely requires") often
+      // has earlier beats establishing a piece of reasoning before the
+      // full picture (the thing the diagram actually shows) comes together
+      // at the end. Attaching it to whichever beat happened to be first
+      // showed the diagram at a point in the lesson that hadn't earned it
+      // yet — visually unrelated to what was being asked right then.
+      const targetSteps = steps.filter((s) => s.nodeId === target.id && (s.type === 'derive' || s.type === 'explain'));
+      const targetStep = targetSteps[targetSteps.length - 1];
       if (targetStep) targetStep.diagram = diagram;
     }
   }

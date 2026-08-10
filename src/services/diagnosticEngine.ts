@@ -1,6 +1,7 @@
 import { callClaudeJSON, MODELS } from './claudeClient';
 import { gradeAndRecordReview } from './reviewService';
 import { runSharedEncodingCheck } from './sharedDiagnosticSteps';
+import { parseModelJson } from './jsonParsing';
 import {
   CHECK_ANSWER_AND_SLIP_PROMPT,
   WM_RELAXATION_PROMPT,
@@ -12,13 +13,9 @@ import {
 
 const WORDING_CHECK_PROMPT_TEXT = 'Did you understand what this question was asking?';
 
-function stripCodeFences(text: string): string {
-  return text.trim().replace(/^```(?:json)?\s*/i, '').replace(/```\s*$/, '').trim();
-}
-
 async function callJSON<T>(systemPrompt: string, userContent: string, model: string, temperature = 0): Promise<T> {
   const raw = await callClaudeJSON({ model, systemPrompt, userContent, temperature });
-  return JSON.parse(stripCodeFences(raw)) as T;
+  return parseModelJson<T>(raw);
 }
 
 interface AnswerCheck { correct: boolean; looksLikeSlip?: boolean; misconceptionNote: string | null; }
@@ -266,8 +263,15 @@ async function handleWordingGateResponse(
 // Wraps a "this free-text answer was wrong" result with the wording gate
 // instead of escalating immediately — every free-text stage's wrong branch
 // routes through this. Skipped for encoding_check (a 4-option MCQ, where
-// wording ambiguity is a much smaller risk).
-function gateOnWrongAnswer(state: DiagnosticState, failedQuestion: string): DiagnosticResult {
+// wording ambiguity is a much smaller risk). Exported so the orchestrator
+// can gate on a REAL, already-known-wrong originalQuestion (e.g. from the
+// encoding lesson) before ever dispatching into this engine at all — see
+// diagnosticOrchestrator.ts. NOT used for the 'initial'-stage dontKnow
+// shortcut below, which also serves mechanisticEngine.ts's internal
+// localization hand-off, where "originalQuestion" is just a placeholder
+// label for a node the student was never actually shown a real question
+// for yet — gating on that would ask about wording of text they never saw.
+export function gateOnWrongAnswer(state: DiagnosticState, failedQuestion: string): DiagnosticResult {
   return {
     done: false,
     nextQuestion: WORDING_CHECK_PROMPT_TEXT,

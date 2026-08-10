@@ -38,7 +38,15 @@ export type CortexAction =
   | { type: 'create_subfolder'; folderName: string; subfolderName: string }
   | { type: 'generate_notes'; subject: string; topic: string; lesson: string; noteContent?: string }
   | { type: 'list_due_reviews' }
-  | { type: 'start_review'; conceptId: string };
+  | { type: 'start_review'; conceptId: string }
+  // A single new page covering several concepts back-to-back (e.g. from an
+  // order Cortex just suggested) rather than one page per concept —
+  // `concepts` is the ordered list to teach on it; the frontend creates
+  // the page with per-concept progress tracking (see learn/index.html's
+  // pageIsMultiLesson). Never invented — only concepts the student
+  // actually named or that came from an order already discussed this
+  // conversation.
+  | { type: 'create_multi_lesson_page'; folderName: string; subfolderName: string | null; pageTitle: string; concepts: string[] };
 
 export interface CortexResult {
   reply: string;

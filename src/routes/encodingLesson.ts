@@ -60,25 +60,35 @@ router.post('/encoding-lesson/submit', costlyEndpointLimiter, async (req: Reques
   }
 });
 
-// POST /encoding-lesson/generate-notes  { subject, concept, hookFact, steps }
-// Opt-in, triggered by a checkbox at the end of a just-completed encoding
-// lesson — compiles what the lesson actually taught into standalone
-// revision notes for that page. `steps` is the same array the lesson's
-// own /start response returned (label/type/text/checkQuestion per step).
+// POST /encoding-lesson/generate-notes  { subject, pageTitle, lessons: [{ concept, hookFact, steps }] }
+// Opt-in, triggered by a checkbox once a page's encoding lesson(s) are
+// complete — compiles what was actually taught into standalone revision
+// notes for that page. `lessons` is one entry per concept the page covers
+// (a single-lesson page sends an array of one); each entry's `steps` is
+// the same array that concept's own /start response returned
+// (label/type/text/checkQuestion per step).
 router.post('/encoding-lesson/generate-notes', costlyEndpointLimiter, async (req: Request, res: Response) => {
-  const { subject, concept, hookFact, steps } = req.body ?? {};
-  if (typeof subject !== 'string' || typeof concept !== 'string' || typeof hookFact !== 'string' || !Array.isArray(steps) || !steps.length) {
-    return res.status(400).json({ error: 'subject, concept, hookFact, and a non-empty steps array are all required' });
+  const { subject, pageTitle, lessons } = req.body ?? {};
+  if (typeof subject !== 'string' || typeof pageTitle !== 'string' || !Array.isArray(lessons) || !lessons.length) {
+    return res.status(400).json({ error: 'subject, pageTitle, and a non-empty lessons array are all required' });
   }
-  const validSteps = steps.every(
-    (s) => s && typeof s.label === 'string' && typeof s.type === 'string' && typeof s.text === 'string' && (s.checkQuestion === undefined || typeof s.checkQuestion === 'string')
+  const validLessons = lessons.every(
+    (l) =>
+      l &&
+      typeof l.concept === 'string' &&
+      typeof l.hookFact === 'string' &&
+      Array.isArray(l.steps) &&
+      l.steps.length &&
+      l.steps.every(
+        (s: any) => s && typeof s.label === 'string' && typeof s.type === 'string' && typeof s.text === 'string' && (s.checkQuestion === undefined || typeof s.checkQuestion === 'string')
+      )
   );
-  if (!validSteps) {
-    return res.status(400).json({ error: 'each step requires label, type, text (checkQuestion optional)' });
+  if (!validLessons) {
+    return res.status(400).json({ error: 'each lesson requires concept, hookFact, and a non-empty steps array (each step needs label, type, text, optional checkQuestion)' });
   }
 
   try {
-    const notes = await generateNotesFromLesson(subject, concept, hookFact, steps);
+    const notes = await generateNotesFromLesson(subject, pageTitle, lessons);
     res.json({ notes });
   } catch (err) {
     console.error('Encoding lesson notes generation failed:', err);

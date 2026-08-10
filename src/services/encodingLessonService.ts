@@ -569,23 +569,36 @@ export async function submitEncodingAnswer(userId: string, state: EncodingLesson
  * point is accurate notes to revise from, not a transcript of whatever
  * they happened to type.
  */
+export interface NotesLessonInput {
+  concept: string;
+  hookFact: string;
+  steps: Pick<EncodingStep, 'label' | 'type' | 'text' | 'checkQuestion'>[];
+}
+
 export async function generateNotesFromLesson(
   subject: string,
-  concept: string,
-  hookFact: string,
-  steps: Pick<EncodingStep, 'label' | 'type' | 'text' | 'checkQuestion'>[]
+  pageTitle: string,
+  lessons: NotesLessonInput[]
 ): Promise<string> {
   const raw = await callClaudeJSON({
     model: MODELS.diagnosticTree,
     systemPrompt: NOTES_FROM_LESSON_PROMPT,
     userContent: [
       `Subject: ${subject}`,
-      `Concept/page title: ${concept}`,
-      `Hook fact: ${hookFact}`,
-      `Steps, in order: ${JSON.stringify(steps.map((s) => ({ label: s.label, type: s.type, text: s.text, checkQuestion: s.checkQuestion })))}`,
+      `Page title: ${pageTitle}`,
+      `Lessons on this page, in order: ${JSON.stringify(
+        lessons.map((l) => ({
+          concept: l.concept,
+          hookFact: l.hookFact,
+          steps: l.steps.map((s) => ({ label: s.label, type: s.type, text: s.text, checkQuestion: s.checkQuestion })),
+        }))
+      )}`,
     ].join('\n'),
     temperature: 0.3,
-    maxTokens: 1024,
+    // Scales with how many lessons this page covers — a single-lesson
+    // page keeps the same headroom as before; a multi-lesson page needs
+    // more room to cover every concept without truncating.
+    maxTokens: Math.min(1024 * Math.max(1, lessons.length), 8192),
   });
   return raw.trim();
 }

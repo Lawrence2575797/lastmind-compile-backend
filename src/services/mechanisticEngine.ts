@@ -2,6 +2,7 @@ import { callClaudeJSON, MODELS } from './claudeClient';
 import { gradeAndRecordReview, getMasteryStatus } from './reviewService';
 import { runSharedEncodingCheck } from './sharedDiagnosticSteps';
 import { getOrGenerateChain } from './chainService';
+import { parseModelJson } from './jsonParsing';
 import {
   WM_RELAXATION_PROMPT,
   LOCALIZATION_CHECK_PROMPT,
@@ -14,13 +15,9 @@ import { processDiagnosticAnswer, DiagnosticState, DiagnosticResult, Diagnosis }
 
 const WORDING_CHECK_PROMPT_TEXT = 'Did you understand what this question was asking?';
 
-function stripCodeFences(text: string): string {
-  return text.trim().replace(/^```(?:json)?\s*/i, '').replace(/```\s*$/, '').trim();
-}
-
 async function callJSON<T>(systemPrompt: string, userContent: string, model: string, temperature = 0): Promise<T> {
   const raw = await callClaudeJSON({ model, systemPrompt, userContent, temperature });
-  return JSON.parse(stripCodeFences(raw)) as T;
+  return parseModelJson<T>(raw);
 }
 
 interface AnswerCheck { correct: boolean; misconceptionNote: string | null; }
@@ -155,6 +152,35 @@ async function runCombinationCheck(state: MechanisticState): Promise<Mechanistic
   };
 }
 
+// Runs the shared encoding check and routes into the mechanistic tree's
+// first real stage. Factored out of startMechanisticDiagnosis specifically
+// so the entry-level wording gate (see startMechanisticDiagnosis) can defer
+// it by one round-trip without re-running anything, mirroring
+// diagnosticEngine.ts's runEncodingCheckOrSkip / resumeWrongAnswerContinuation
+// split for the exact same reason.
+async function runEncodingCheckOrSkip(userId: string, state: MechanisticState): Promise<MechanisticResult> {
+  const outcome = await runSharedEncodingCheck(userId, state.conceptKey, state.targetConceptLabel);
+
+  switch (outcome.result) {
+    case 'schedule_miscalibrated':
+      await gradeAndRecordReview(userId, state.conceptKey, 'again');
+      return { done: true, diagnosis: 'schedule_miscalibrated', correction: await generateCorrection(state.targetConceptLabel, 'schedule_miscalibrated', state), state, answerCorrect: false };
+    case 'decay_schedule_skipped':
+      await gradeAndRecordReview(userId, state.conceptKey, 'hard');
+      return { done: true, diagnosis: 'decay', correction: await generateCorrection(state.targetConceptLabel, 'decay', state), state, answerCorrect: false };
+    case 'needs_recognition_test':
+      return {
+        done: false,
+        nextQuestion: outcome.question,
+        nextOptions: outcome.options,
+        state: { ...state, recognitionCorrectAnswer: outcome.correctAnswer },
+        answerCorrect: false,
+      };
+    default:
+      throw new Error(`Unexpected encoding-check outcome: ${outcome.result}`);
+  }
+}
+
 export async function startMechanisticDiagnosis(
   userId: string,
   conceptKey: string,
@@ -174,30 +200,15 @@ export async function startMechanisticDiagnosis(
     misconceptionNotes: [],
   };
 
-  const outcome = await runSharedEncodingCheck(userId, conceptKey, targetConceptLabel);
-
   // Every path into this function follows a wrong (or "don't know") answer
-  // to whatever question the student was just asked — this is the mechanistic
-  // path's entry point, same principle as the atomic engine's
-  // runEncodingCheckOrSkip.
-  switch (outcome.result) {
-    case 'schedule_miscalibrated':
-      await gradeAndRecordReview(userId, conceptKey, 'again');
-      return { done: true, diagnosis: 'schedule_miscalibrated', correction: await generateCorrection(targetConceptLabel, 'schedule_miscalibrated', baseState), state: baseState, answerCorrect: false };
-    case 'decay_schedule_skipped':
-      await gradeAndRecordReview(userId, conceptKey, 'hard');
-      return { done: true, diagnosis: 'decay', correction: await generateCorrection(targetConceptLabel, 'decay', baseState), state: baseState, answerCorrect: false };
-    case 'needs_recognition_test':
-      return {
-        done: false,
-        nextQuestion: outcome.question,
-        nextOptions: outcome.options,
-        state: { ...baseState, recognitionCorrectAnswer: outcome.correctAnswer },
-        answerCorrect: false,
-      };
-    default:
-      throw new Error(`Unexpected encoding-check outcome: ${outcome.result}`);
-  }
+  // to a REAL question the student was just shown (this function's only
+  // caller, dispatchToBranch, always carries a genuine originalQuestion —
+  // never a placeholder) — gate on wording before diagnosing anything, same
+  // as every other free-text wrong answer in this tree. Was previously
+  // skipped entirely at entry, so a misread question went straight into
+  // full diagnosis instead of the "did you understand what was asked?"
+  // check every later stage already gets.
+  return gateOnWrongAnswer(baseState, originalQuestion);
 }
 
 async function beginWmRelax(state: MechanisticState): Promise<MechanisticResult> {
@@ -222,6 +233,15 @@ async function beginWmRelax(state: MechanisticState): Promise<MechanisticResult>
 // name/purpose.
 async function resumeWrongAnswerContinuation(userId: string, state: MechanisticState): Promise<MechanisticResult> {
   switch (state.stage) {
+    // Resuming the entry-level gate set by startMechanisticDiagnosis —
+    // runs exactly what would have run immediately had the gate not
+    // existed. Distinct from processMechanisticAnswer's own
+    // case 'encoding_check', which grades a real in-progress MCQ answer
+    // and never gates (see gateOnWrongAnswer's comment) — this case only
+    // ever fires via the entry-level gate, before any MCQ has been shown.
+    case 'encoding_check':
+      return runEncodingCheckOrSkip(userId, state);
+
     case 'wm_relax': {
       const broken = await findBrokenPrerequisite(userId, state.chain, state.currentNodeId);
       if (!broken) {

@@ -1,12 +1,9 @@
 import { callClaudeJSON, MODELS } from './claudeClient';
 import { gradeAndRecordReview } from './reviewService';
+import { parseModelJson } from './jsonParsing';
 import { CHECK_ANSWER_AND_SLIP_PROMPT } from '../constants/diagnosticPrompts';
 import { loadChainIfMechanistic, startMechanisticDiagnosis, processMechanisticAnswer, MechanisticState } from './mechanisticEngine';
-import { processDiagnosticAnswer, DiagnosticState } from './diagnosticEngine';
-
-function stripCodeFences(text: string): string {
-  return text.trim().replace(/^```(?:json)?\s*/i, '').replace(/```\s*$/, '').trim();
-}
+import { processDiagnosticAnswer, gateOnWrongAnswer, DiagnosticState } from './diagnosticEngine';
 
 // Tags which underlying engine a mid-flow session belongs to, once the
 // atomic/mechanistic decision has actually been made — everything before
@@ -56,10 +53,13 @@ async function dispatchToBranch(
   }
 
   // No mechanistic chain — fall through to the atomic engine, entering it
-  // at its own 'initial' stage so it runs its own (identical) shared
-  // encoding check itself.
+  // at its own 'initial' stage. Gates on wording first (this originalQuestion
+  // is a REAL question the student was just shown, not a placeholder — see
+  // gateOnWrongAnswer's export comment) rather than dispatching straight
+  // into processDiagnosticAnswer's dontKnow shortcut, which skips both the
+  // slip-check AND the wording gate entirely.
   const atomicState: DiagnosticState = { conceptLabel: conceptKey, subject, stage: 'initial', originalQuestion, misconceptionNotes: [] };
-  const result = await processDiagnosticAnswer(userId, atomicState, '', true); // dontKnow-equivalent path straight to the encoding check, since slip-checking already happened here in the orchestrator
+  const result = gateOnWrongAnswer(atomicState, originalQuestion);
   return {
     done: result.done,
     diagnosis: result.diagnosis,
@@ -105,7 +105,11 @@ export async function startDiagnosisFromKnownAnswer(
       originalQuestion,
       misconceptionNotes: [],
     };
-    const result = await processDiagnosticAnswer(userId, atomicState, '', true);
+    // Gates on wording first — this originalQuestion is the real question
+    // the caller already graded as wrong (e.g. the encoding lesson's own
+    // step), not a placeholder — same reasoning as dispatchToBranch's
+    // no-chain fallback above.
+    const result = gateOnWrongAnswer(atomicState, originalQuestion);
     return {
       done: result.done,
       diagnosis: result.diagnosis,
@@ -166,7 +170,7 @@ export async function runDiagnosticStep(
     systemPrompt: CHECK_ANSWER_AND_SLIP_PROMPT,
     userContent: `Concept: ${state.conceptLabel}\nQuestion: ${state.originalQuestion}\nStudent's answer: ${answer}`,
   });
-  const check = JSON.parse(stripCodeFences(raw)) as { correct: boolean; looksLikeSlip: boolean };
+  const check = parseModelJson<{ correct: boolean; looksLikeSlip: boolean }>(raw);
 
   if (check.correct) {
     // A clean pass doesn't need either engine at all.

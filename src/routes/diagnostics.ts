@@ -3,7 +3,7 @@ import { callClaudeJSON, MODELS } from '../services/claudeClient';
 import { requireAuth } from '../services/authMiddleware';
 import { costlyEndpointLimiter } from '../services/rateLimiters';
 import { MULTI_QUESTION_GENERATION_PROMPT } from '../constants/diagnosticPrompts';
-import { runDiagnosticStep, OrchestratorState } from '../services/diagnosticOrchestrator';
+import { runDiagnosticStep, startDiagnosisFromKnownAnswer, OrchestratorState } from '../services/diagnosticOrchestrator';
 import { normalizeConceptKey } from '../services/chainService';
 
 const router = Router();
@@ -82,6 +82,38 @@ router.post('/diagnostics/submit-answer', async (req: Request, res: Response) =>
   } catch (err) {
     console.error('Diagnostic answer processing failed:', err);
     res.status(500).json({ error: 'could not process this answer' });
+  }
+});
+
+// POST /diagnostics/start-from-answer
+// { conceptKey, conceptLabel, subject, topic, question, forceAtomic } -> OrchestratorResult
+// For a caller that already knows an answer is wrong and has already
+// graded it — skips the shared slip-check re-grading (see
+// startDiagnosisFromKnownAnswer for why). Unlike /submit-answer, conceptKey
+// is used EXACTLY as given, never re-derived via normalizeConceptKey —
+// callers may be diagnosing an individual chain node (e.g. a prerequisite),
+// not just a top-level lesson concept, and chain nodes are tracked by
+// their own raw id elsewhere in this codebase (see mechanisticEngine.ts).
+router.post('/diagnostics/start-from-answer', async (req: Request, res: Response) => {
+  const { conceptKey, conceptLabel, subject, topic, question, forceAtomic } = req.body ?? {};
+  if (typeof conceptKey !== 'string' || typeof conceptLabel !== 'string' || typeof question !== 'string') {
+    return res.status(400).json({ error: 'conceptKey, conceptLabel, and question are all required' });
+  }
+
+  try {
+    const result = await startDiagnosisFromKnownAnswer(
+      req.userId as string,
+      conceptKey,
+      conceptLabel,
+      subject || '',
+      topic || '',
+      question,
+      !!forceAtomic
+    );
+    res.json(result);
+  } catch (err) {
+    console.error('Diagnostic start-from-answer failed:', err);
+    res.status(500).json({ error: 'could not start diagnosis' });
   }
 });
 

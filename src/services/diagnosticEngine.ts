@@ -57,6 +57,18 @@ export interface DiagnosticState {
   // error, not just a generic template for the diagnosis category.
   misconceptionNotes: string[];
   confusedWith?: string; // captured specifically during the contrastive-cue stage
+  // Optional real FSRS id, separate from conceptLabel (which doubles as
+  // display text in prompts/corrections) — existing callers that don't set
+  // this keep grading under conceptLabel exactly as before; new callers
+  // that have both a real id and a friendly label (e.g. a prerequisite
+  // chain node) can supply both correctly instead of conflating them.
+  conceptKey?: string;
+  // Set when entering wm_relax, from the SAME call that wrote the
+  // simplified question — false means that call itself flagged the
+  // simplification as too trivial/telegraphing to trust as evidence of a
+  // working-memory-specific issue, regardless of whether the student then
+  // answers it correctly.
+  wmRelaxTrustworthy?: boolean;
 }
 
 export interface DiagnosticResult {
@@ -80,7 +92,7 @@ async function finish(
   diagnosis: Diagnosis,
   state: DiagnosticState
 ): Promise<DiagnosticResult> {
-  await gradeAndRecordReview(userId, conceptLabel, ratingKey);
+  await gradeAndRecordReview(userId, state.conceptKey ?? conceptLabel, ratingKey);
 
   let correction: string | undefined;
   if (diagnosis !== 'pass' && diagnosis !== 'slip') {
@@ -178,7 +190,7 @@ export async function processDiagnosticAnswer(
       if (!isCorrect) {
         return finish(userId, state.conceptLabel, 'again', 'encoding', state);
       }
-      const simplified = await callJSON<{ simplifiedQuestion: string }>(
+      const simplified = await callJSON<{ simplifiedQuestion: string; staysGenuineRetrieval: boolean }>(
         WM_RELAXATION_PROMPT,
         `Concept: ${state.conceptLabel}\nOriginal question: ${state.originalQuestion}`,
         MODELS.diagnosticTree,
@@ -187,14 +199,14 @@ export async function processDiagnosticAnswer(
       return {
         done: false,
         nextQuestion: simplified.simplifiedQuestion,
-        state: { ...state, stage: 'wm_relax' },
+        state: { ...state, stage: 'wm_relax', wmRelaxTrustworthy: simplified.staysGenuineRetrieval },
       };
     }
 
     case 'wm_relax': {
       const check = await checkAnswer(state.conceptLabel, '(simplified)', answer);
       const notedState = appendNote(state, check.misconceptionNote);
-      if (check.correct) {
+      if (check.correct && state.wmRelaxTrustworthy !== false) {
         return finish(userId, state.conceptLabel, 'hard', 'wm_overload', notedState);
       }
       const hintResult = await callJSON<{ hint: string }>(

@@ -53,6 +53,11 @@ export interface EncodingLessonState {
   steps: EncodingStep[];
   currentIndex: number;
   anyWeakSoFar: boolean;
+  // Set by the frontend once a scene/derive/explain diagnostic drill-down
+  // has already graded this exact conceptKey mid-lesson (via the
+  // diagnostic tree's own terminal branch) — the lesson-completion grade
+  // below must not repeat that FSRS update for the same concept.
+  targetGradedViaDrillDown?: boolean;
 }
 
 export interface EncodingStartResult {
@@ -318,7 +323,13 @@ export async function submitEncodingAnswer(userId: string, state: EncodingLesson
     // Same rating scale/table the retrieval engine uses (gradeAndRecordReview
     // -> RATING_MAP), so this concept slots into the exact same FSRS
     // schedule — a rocky first encoding lesson brings it back around sooner.
-    await gradeAndRecordReview(userId, state.conceptKey, anyWeakSoFar ? 'hard' : 'easy');
+    // Skipped if a scene/derive/explain diagnostic drill-down already
+    // graded this exact conceptKey mid-lesson (see
+    // targetGradedViaDrillDown) — otherwise the concept gets FSRS-graded
+    // twice in one session, artificially inflating its stability.
+    if (!state.targetGradedViaDrillDown) {
+      await gradeAndRecordReview(userId, state.conceptKey, anyWeakSoFar ? 'hard' : 'easy');
+    }
     return { done: true, correct, feedback, state: nextState };
   }
 

@@ -5,12 +5,21 @@ function stripCodeFences(text: string): string {
   return text.trim().replace(/^```(?:json)?\s*/i, '').replace(/```\s*$/, '').trim();
 }
 
+export interface CortexPageSummary {
+  title: string;
+  // Whether this page's first-exposure encoding lesson has been
+  // completed — lets Cortex reason about prerequisite order using what
+  // the student has actually done, without needing to be told separately
+  // (see CORTEX_INTENT_PROMPT's ordering capability).
+  done: boolean;
+}
+
 export interface CortexFolderSummary {
   name: string;
   qualification: string;
   examBoard: string;
-  subfolders: { name: string; pages: string[] }[];
-  pages: string[];
+  subfolders: { name: string; pages: CortexPageSummary[] }[];
+  pages: CortexPageSummary[];
 }
 
 export interface CortexDueReview {

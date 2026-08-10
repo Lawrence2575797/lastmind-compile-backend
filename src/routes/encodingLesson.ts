@@ -8,17 +8,23 @@ const router = Router();
 
 router.use('/encoding-lesson', requireAuth);
 
-// POST /encoding-lesson/start  { subject, topic, concept, qualification?, examBoard? }
+// POST /encoding-lesson/start  { subject, topic, concept, qualification?, examBoard?, siblingConcepts? }
 // The first-time lesson for a concept — a novelty hook fact, a
 // knowledge-check of its close prerequisites, then deriving the concept
 // itself and its implications. See encodingLessonService.ts for the full
 // design. qualification/examBoard are optional and only used to bias
-// terminology and (rarely) verify a retrieved diagram.
+// terminology and (rarely) verify a retrieved diagram. siblingConcepts is
+// the other page titles (+ completion status) in the same folder/subfolder
+// — lets a close prerequisite matching one of the student's own
+// not-yet-done pages get taught inline instead of assumed already known.
 router.post('/encoding-lesson/start', costlyEndpointLimiter, async (req: Request, res: Response) => {
-  const { subject, topic, concept, qualification, examBoard } = req.body ?? {};
+  const { subject, topic, concept, qualification, examBoard, siblingConcepts } = req.body ?? {};
   if (typeof subject !== 'string' || typeof topic !== 'string' || typeof concept !== 'string') {
     return res.status(400).json({ error: 'subject, topic, and concept are all required' });
   }
+  const cleanSiblings = Array.isArray(siblingConcepts)
+    ? siblingConcepts.filter((s) => s && typeof s.label === 'string').map((s) => ({ label: s.label, done: !!s.done }))
+    : [];
 
   try {
     const conceptKey = normalizeConceptKey(subject, topic, concept);
@@ -28,7 +34,8 @@ router.post('/encoding-lesson/start', costlyEndpointLimiter, async (req: Request
       topic,
       concept,
       typeof qualification === 'string' ? qualification : '',
-      typeof examBoard === 'string' ? examBoard : ''
+      typeof examBoard === 'string' ? examBoard : '',
+      cleanSiblings
     );
     res.json(result);
   } catch (err) {

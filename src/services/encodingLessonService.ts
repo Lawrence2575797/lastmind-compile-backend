@@ -1,10 +1,12 @@
-import { callClaudeJSON, MODELS } from './claudeClient';
+import { callClaudeJSON, callClaudeJSONWithImages, MODELS } from './claudeClient';
 import { getOrGenerateChain } from './chainService';
 import { gradeAndRecordReview } from './reviewService';
+import { searchWikimediaImages, fetchImageAsBase64 } from './wikimediaService';
+import { supabaseAdmin } from './supabaseAdmin';
 import {
   ENCODING_LESSON_BATCH_PROMPT,
   ENCODING_ANSWER_CHECK_PROMPT,
-  ENCODING_DRAFT_CHECK_PROMPT,
+  DIAGRAM_VERIFICATION_PROMPT,
 } from '../constants/encodingLessonPrompts';
 
 function stripCodeFences(text: string): string {
@@ -28,7 +30,13 @@ interface ChainEdge { node_id: string; relationship: 'definitional' | 'reasoning
 interface ChainNode { id: string; label: string; derivable?: boolean; depends_on: ChainEdge[]; }
 interface Chain { concept_id: string; subject: string; nodes: ChainNode[]; }
 
-export type EncodingStepType = 'scene' | 'derive' | 'explain';
+export type EncodingStepType = 'check' | 'scene' | 'derive' | 'explain' | 'implication';
+
+export interface EncodingDiagram {
+  diagramUrl: string;
+  diagramCaption: string;
+  diagramAttribution: string;
+}
 
 export interface EncodingStep {
   nodeId: string;
@@ -36,6 +44,7 @@ export interface EncodingStep {
   type: EncodingStepType;
   text: string;
   checkQuestion?: string;
+  diagram?: EncodingDiagram;
 }
 
 export interface EncodingLessonState {
@@ -71,22 +80,137 @@ function resolveDerivable(node: ChainNode): boolean {
   return (node.depends_on || []).length > 0;
 }
 
+function clean(s: string): string {
+  return (s || '').trim().toLowerCase().replace(/[^a-z0-9]+/g, '_');
+}
+
+const DIAGRAM_LOOKUP_TIMEOUT_MS = 8000;
+
+async function withTimeout<T>(promise: Promise<T>, ms: number): Promise<T | null> {
+  let timer: ReturnType<typeof setTimeout>;
+  const timeout = new Promise<null>((resolve) => {
+    timer = setTimeout(() => resolve(null), ms);
+  });
+  try {
+    return await Promise.race([promise, timeout]);
+  } finally {
+    clearTimeout(timer!);
+  }
+}
+
+function buildAttribution(artist: string | null, licenseShortName: string | null): string {
+  if (artist && licenseShortName) return `${artist} — ${licenseShortName}, via Wikimedia Commons`;
+  if (artist) return `${artist}, via Wikimedia Commons`;
+  return 'Via Wikimedia Commons';
+}
+
 /**
- * Starts a first-time "encoding" lesson — a genuinely different shape from
- * the retrieval chain-lesson engine in spacedLessonEngine.ts. Walks the
- * concept's dependency chain FORWARD (leaf prerequisites first, building
- * toward the new target concept, which is always the chain's last node),
- * asking the student to derive each derivable step themselves rather than
- * being told it, with direct explanations only for the genuinely
- * non-derivable steps. Everything presentable is generated in ONE call
- * up front (the hook fact plus every step's text) — grading each answer
- * is the only thing that has to wait for the student's actual response.
+ * Looks up (or fetches + verifies + caches) a diagram for one concept, keyed
+ * by concept + qualification + exam board so only the first student per
+ * combination pays the search+vision cost — everyone after gets an instant
+ * cache hit, including a cached "nothing suitable" negative. Never throws:
+ * any failure just means no diagram, since a missing diagram is harmless
+ * but a wrong one would actively mislead a student.
+ */
+async function getOrFetchDiagram(
+  conceptKey: string,
+  qualification: string,
+  examBoard: string,
+  subject: string,
+  targetLabel: string,
+  searchQuery: string
+): Promise<EncodingDiagram | null> {
+  const diagramKey = `${conceptKey}::${clean(qualification)}::${clean(examBoard)}`;
+
+  const { data: cached, error: cacheError } = await supabaseAdmin
+    .from('encoding_diagrams')
+    .select('diagram')
+    .eq('diagram_key', diagramKey)
+    .maybeSingle();
+  if (!cacheError && cached) {
+    return (cached.diagram as EncodingDiagram | null) ?? null;
+  }
+
+  const candidates = await searchWikimediaImages(searchQuery, 5);
+  if (!candidates.length) {
+    await supabaseAdmin.from('encoding_diagrams').insert({ diagram_key: diagramKey, diagram: null });
+    return null;
+  }
+
+  const fetched = await Promise.allSettled(candidates.map((c) => fetchImageAsBase64(c.thumbUrl)));
+  const usable = candidates
+    .map((c, i) => ({ candidate: c, image: fetched[i].status === 'fulfilled' ? (fetched[i] as PromiseFulfilledResult<any>).value : null }))
+    .filter((x) => x.image);
+
+  if (!usable.length) {
+    // Transient (network/size) failure across every candidate, not a
+    // definitive "no suitable diagram exists" verdict — don't cache this,
+    // let the next student's request try again fresh.
+    return null;
+  }
+
+  const raw = await callClaudeJSONWithImages({
+    model: MODELS.diagnosticTree,
+    systemPrompt: DIAGRAM_VERIFICATION_PROMPT,
+    userText: [
+      `Subject: ${subject}`,
+      `Qualification: ${qualification || 'unspecified'}`,
+      `Exam board: ${examBoard || 'unspecified'}`,
+      `Target concept this diagram is meant to illustrate: ${targetLabel}`,
+    ].join('\n'),
+    images: usable.map((u, i) => ({
+      mediaType: u.image.mediaType,
+      base64Data: u.image.base64Data,
+      label: `Candidate ${i}: ${u.candidate.title}`,
+    })),
+    temperature: 0.2,
+    maxTokens: 512,
+  });
+
+  let parsedVerdict: { chosenIndex: number | null; caption: string | null };
+  try {
+    parsedVerdict = JSON.parse(stripCodeFences(raw));
+  } catch (err) {
+    console.error('LastMind: diagram verification call returned invalid JSON.', { raw });
+    return null;
+  }
+
+  if (parsedVerdict.chosenIndex === null || parsedVerdict.chosenIndex === undefined || !usable[parsedVerdict.chosenIndex]) {
+    await supabaseAdmin.from('encoding_diagrams').insert({ diagram_key: diagramKey, diagram: null });
+    return null;
+  }
+
+  const chosen = usable[parsedVerdict.chosenIndex].candidate;
+  const diagram: EncodingDiagram = {
+    diagramUrl: chosen.thumbUrl,
+    diagramCaption: parsedVerdict.caption || '',
+    diagramAttribution: buildAttribution(chosen.artist, chosen.licenseShortName),
+  };
+
+  await supabaseAdmin.from('encoding_diagrams').insert({ diagram_key: diagramKey, diagram });
+  return diagram;
+}
+
+/**
+ * Starts a first-time "encoding" lesson. Shape: a novelty hook fact, a
+ * short knowledge-check of the target concept's DIRECT prerequisites only
+ * (assumed prior knowledge — verified, not re-taught), a scene + derivation
+ * of the target concept itself, then 1-3 steps exploring its real
+ * implications/trade-offs. Distant/foundational chain nodes are neither
+ * tested nor individually walked — they're passed to the generation call
+ * as background context only, so the lesson doesn't re-teach material
+ * covered in earlier lessons or drift into testing prerequisites far from
+ * the actual new content. Everything presentable is generated in ONE call
+ * up front — grading each answer, and (rarely) a diagram lookup, are the
+ * only things that happen afterward.
  */
 export async function startEncodingLesson(
   conceptKey: string,
   subject: string,
   topic: string,
-  concept: string
+  concept: string,
+  qualification = '',
+  examBoard = ''
 ): Promise<EncodingStartResult> {
   const chainResult = await getOrGenerateChain(conceptKey, subject, topic, concept);
   if (!chainResult.chain) {
@@ -94,23 +218,29 @@ export async function startEncodingLesson(
   }
   const chain = chainResult.chain as Chain;
 
-  const chainDescription = chain.nodes.map((n, i) => ({
-    nodeId: n.id,
-    label: n.label,
-    // The first node always becomes a "scene" step regardless of its own
-    // derivable flag, so what we tell the model here doesn't matter for
-    // it — kept accurate anyway for the rest of the chain.
-    derivable: i === 0 ? false : resolveDerivable(n),
-  }));
-
   const target = chain.nodes[chain.nodes.length - 1];
-  const batch = await callJSON<{ hookFact: string; steps: { nodeId: string; type: EncodingStepType; text: string; checkQuestion?: string }[] }>(
+  const targetDerivable = resolveDerivable(target);
+
+  const closeIds = new Set((target.depends_on || []).map((d) => d.node_id));
+  const closeNodes = chain.nodes.filter((n) => closeIds.has(n.id)).slice(0, 3);
+  const coveredIds = new Set([...closeNodes.map((n) => n.id), target.id]);
+  const backgroundNodes = chain.nodes.filter((n) => !coveredIds.has(n.id));
+
+  const batch = await callJSON<{
+    hookFact: string;
+    steps: { nodeId: string; type: EncodingStepType; text: string; checkQuestion?: string }[];
+    diagram?: { needed: boolean; searchQuery: string | null };
+  }>(
     ENCODING_LESSON_BATCH_PROMPT,
     [
       `Subject: ${subject}`,
       `Topic: ${topic || 'unspecified'}`,
+      `Qualification: ${qualification || 'unspecified'}`,
+      `Exam board: ${examBoard || 'unspecified'}`,
       `Target concept (this exact lesson — every step must build toward THIS, not a related or more general concept): ${target?.label || concept}`,
-      `Chain (forward order, leaf-first, target last):\n${JSON.stringify(chainDescription)}`,
+      `Target concept is derivable from its close prerequisites: ${targetDerivable}`,
+      `closePrerequisites (write one "check" step per node, in this order): ${JSON.stringify(closeNodes.map((n) => ({ nodeId: n.id, label: n.label })))}`,
+      `backgroundContext (already covered earlier — reference only, do not test, do not write a step): ${JSON.stringify(backgroundNodes.map((n) => ({ nodeId: n.id, label: n.label })))}`,
     ].join('\n'),
     MODELS.diagnosticTree,
     0.4,
@@ -120,7 +250,7 @@ export async function startEncodingLesson(
   const nodesById = new Map(chain.nodes.map((n) => [n.id, n]));
   const steps: EncodingStep[] = (batch.steps || []).map((s) => ({
     nodeId: s.nodeId,
-    label: nodesById.get(s.nodeId)?.label || s.nodeId,
+    label: nodesById.get(s.nodeId)?.label || (s.type === 'implication' ? `${target.label} — implications` : s.nodeId),
     type: s.type,
     text: s.text,
     checkQuestion: s.checkQuestion,
@@ -128,6 +258,20 @@ export async function startEncodingLesson(
 
   if (!steps.length) {
     throw new Error('Could not generate lesson content for this concept.');
+  }
+
+  if (batch.diagram?.needed && batch.diagram.searchQuery) {
+    const diagram = await withTimeout(
+      getOrFetchDiagram(conceptKey, qualification, examBoard, subject, target.label, batch.diagram.searchQuery).catch((err) => {
+        console.error('LastMind: diagram lookup failed, proceeding without one.', err);
+        return null;
+      }),
+      DIAGRAM_LOOKUP_TIMEOUT_MS
+    );
+    if (diagram) {
+      const targetStep = steps.find((s) => s.nodeId === target.id && (s.type === 'derive' || s.type === 'explain'));
+      if (targetStep) targetStep.diagram = diagram;
+    }
   }
 
   const state: EncodingLessonState = { conceptKey, subject, steps, currentIndex: 0, anyWeakSoFar: false };
@@ -139,16 +283,16 @@ export async function startEncodingLesson(
  * answer's quality — this is a first-exposure lesson, not a gate, and a
  * student who gets stuck re-litigating one step with an AI grader can't
  * actually finish the lesson. Every step type is graded (one combined
- * call for verdict + feedback) — "scene"/"derive" against the prompt
- * text itself, "explain" against its checkQuestion (this is brand-new
- * content with nothing for FSRS to have already confirmed, so this is
- * the only check that a thin/misunderstood explanation doesn't silently
- * become the shaky foundation for later derive steps). The verdict only
- * affects: (a) the feedback shown alongside that step, and (b) the FSRS
- * grade recorded for the whole concept once the lesson finishes — any
- * weak step drops the whole lesson to a lower grade, which is exactly
- * what surfaces it sooner in future spaced-repetition sessions, rather
- * than blocking progress now.
+ * call for verdict + feedback) — "check"/"scene"/"derive"/"implication"
+ * against the prompt text itself, "explain" against its checkQuestion
+ * (this is brand-new content with nothing for FSRS to have already
+ * confirmed, so this is the only check that a thin/misunderstood
+ * explanation doesn't silently become the shaky foundation for later
+ * steps). The verdict only affects: (a) the feedback shown alongside that
+ * step, and (b) the FSRS grade recorded for the whole concept once the
+ * lesson finishes — any weak step drops the whole lesson to a lower grade,
+ * which is exactly what surfaces it sooner in future spaced-repetition
+ * sessions, rather than blocking progress now.
  */
 export async function submitEncodingAnswer(userId: string, state: EncodingLessonState, answer: string): Promise<EncodingSubmitResult> {
   const currentStep = state.steps[state.currentIndex];
@@ -179,29 +323,4 @@ export async function submitEncodingAnswer(userId: string, state: EncodingLesson
   }
 
   return { done: false, correct, feedback, step: state.steps[nextIndex], state: nextState };
-}
-
-/**
- * The live, while-typing check — deliberately cheap (small model, short
- * input) since the frontend debounces this to fire repeatedly during a
- * single answer draft. Snippets are filtered to only ones that actually
- * appear verbatim in the draft, since the frontend locates them by exact
- * string search.
- */
-export async function checkEncodingDraft(
-  nodeLabel: string,
-  promptText: string,
-  draft: string
-): Promise<{ flags: { snippet: string; hint: string }[] }> {
-  if (!draft || draft.trim().length < 15) return { flags: [] };
-
-  const result = await callJSON<{ flags: { snippet: string; hint: string }[] }>(
-    ENCODING_DRAFT_CHECK_PROMPT,
-    `Concept/step: ${nodeLabel}\nPrompt: ${promptText}\nCurrent draft: ${draft}`,
-    MODELS.simpleQuestion,
-    0.2
-  );
-
-  const flags = (result.flags || []).filter((f) => f.snippet && draft.includes(f.snippet)).slice(0, 3);
-  return { flags };
 }

@@ -95,30 +95,37 @@ function isTemperatureDeprecatedError(err: unknown): boolean {
  * error Anthropic returns works regardless of the model or naming scheme
  * involved, now or in the future.
  */
-export async function callClaudeJSON(params: {
-  model: string;
-  systemPrompt: string;
-  userContent: string;
-  maxTokens?: number;
-  temperature?: number;
-}): Promise<string> {
-  async function makeRequest(includeTemperature: boolean) {
-    return anthropic.messages.create({
-      model: params.model,
-      max_tokens: params.maxTokens ?? 2048,
-      ...(includeTemperature ? { temperature: params.temperature } : {}),
-      system: params.systemPrompt,
-      messages: [{ role: 'user', content: params.userContent }],
-    });
-  }
+async function makeMessageRequest(
+  model: string,
+  systemPrompt: string,
+  content: string | Array<Anthropic.Messages.TextBlockParam | Anthropic.Messages.ImageBlockParam>,
+  maxTokens: number | undefined,
+  temperature: number | undefined,
+  includeTemperature: boolean
+) {
+  return anthropic.messages.create({
+    model,
+    max_tokens: maxTokens ?? 2048,
+    ...(includeTemperature ? { temperature } : {}),
+    system: systemPrompt,
+    messages: [{ role: 'user', content }],
+  });
+}
 
+async function sendWithTemperatureRetry(
+  model: string,
+  systemPrompt: string,
+  content: string | Array<Anthropic.Messages.TextBlockParam | Anthropic.Messages.ImageBlockParam>,
+  maxTokens: number | undefined,
+  temperature: number | undefined
+): Promise<string> {
   let response;
   try {
-    response = await makeRequest(true);
+    response = await makeMessageRequest(model, systemPrompt, content, maxTokens, temperature, true);
   } catch (err) {
     if (!isTemperatureDeprecatedError(err)) throw err;
-    console.warn(`callClaudeJSON: "${params.model}" rejected temperature — retrying without it.`);
-    response = await makeRequest(false);
+    console.warn(`Claude call to "${model}" rejected temperature — retrying without it.`);
+    response = await makeMessageRequest(model, systemPrompt, content, maxTokens, temperature, false);
   }
 
   const textBlock = response.content.find((block) => block.type === 'text');
@@ -126,4 +133,45 @@ export async function callClaudeJSON(params: {
     throw new Error('Claude response contained no text content');
   }
   return textBlock.text;
+}
+
+export async function callClaudeJSON(params: {
+  model: string;
+  systemPrompt: string;
+  userContent: string;
+  maxTokens?: number;
+  temperature?: number;
+}): Promise<string> {
+  return sendWithTemperatureRetry(params.model, params.systemPrompt, params.userContent, params.maxTokens, params.temperature);
+}
+
+export interface ClaudeImageInput {
+  mediaType: 'image/png' | 'image/jpeg' | 'image/gif' | 'image/webp';
+  base64Data: string;
+  label: string; // e.g. "Candidate 1: <title>" — precedes the image so Claude can refer back to it by index reliably
+}
+
+/**
+ * Same as callClaudeJSON, but for calls that need to show Claude one or
+ * more images alongside the text (e.g. picking the best diagram candidate).
+ * Kept as a separate function rather than an optional param on
+ * callClaudeJSON so the common text-only path stays simple.
+ */
+export async function callClaudeJSONWithImages(params: {
+  model: string;
+  systemPrompt: string;
+  userText: string;
+  images: ClaudeImageInput[];
+  maxTokens?: number;
+  temperature?: number;
+}): Promise<string> {
+  const content: Array<Anthropic.Messages.TextBlockParam | Anthropic.Messages.ImageBlockParam> = [{ type: 'text', text: params.userText }];
+  for (const image of params.images) {
+    content.push({ type: 'text', text: image.label });
+    content.push({
+      type: 'image',
+      source: { type: 'base64', media_type: image.mediaType, data: image.base64Data },
+    });
+  }
+  return sendWithTemperatureRetry(params.model, params.systemPrompt, content, params.maxTokens, params.temperature);
 }

@@ -1,26 +1,35 @@
 import { Router, Request, Response } from 'express';
 import { requireAuth } from '../services/authMiddleware';
-import { costlyEndpointLimiter, draftCheckLimiter } from '../services/rateLimiters';
+import { costlyEndpointLimiter } from '../services/rateLimiters';
 import { normalizeConceptKey } from '../services/chainService';
-import { startEncodingLesson, submitEncodingAnswer, checkEncodingDraft, EncodingLessonState } from '../services/encodingLessonService';
+import { startEncodingLesson, submitEncodingAnswer, EncodingLessonState } from '../services/encodingLessonService';
 
 const router = Router();
 
 router.use('/encoding-lesson', requireAuth);
 
-// POST /encoding-lesson/start  { subject, topic, concept }
-// The first-time lesson for a concept — a novelty hook fact, then a
-// Socratic walk forward through its dependency chain. See
-// encodingLessonService.ts for the full design.
+// POST /encoding-lesson/start  { subject, topic, concept, qualification?, examBoard? }
+// The first-time lesson for a concept — a novelty hook fact, a
+// knowledge-check of its close prerequisites, then deriving the concept
+// itself and its implications. See encodingLessonService.ts for the full
+// design. qualification/examBoard are optional and only used to bias
+// terminology and (rarely) verify a retrieved diagram.
 router.post('/encoding-lesson/start', costlyEndpointLimiter, async (req: Request, res: Response) => {
-  const { subject, topic, concept } = req.body ?? {};
+  const { subject, topic, concept, qualification, examBoard } = req.body ?? {};
   if (typeof subject !== 'string' || typeof topic !== 'string' || typeof concept !== 'string') {
     return res.status(400).json({ error: 'subject, topic, and concept are all required' });
   }
 
   try {
     const conceptKey = normalizeConceptKey(subject, topic, concept);
-    const result = await startEncodingLesson(conceptKey, subject, topic, concept);
+    const result = await startEncodingLesson(
+      conceptKey,
+      subject,
+      topic,
+      concept,
+      typeof qualification === 'string' ? qualification : '',
+      typeof examBoard === 'string' ? examBoard : ''
+    );
     res.json(result);
   } catch (err) {
     console.error('Encoding lesson start failed:', err);
@@ -41,24 +50,6 @@ router.post('/encoding-lesson/submit', costlyEndpointLimiter, async (req: Reques
   } catch (err) {
     console.error('Encoding lesson answer processing failed:', err);
     res.status(500).json({ error: 'could not process this answer' });
-  }
-});
-
-// POST /encoding-lesson/check-draft  { nodeLabel, promptText, draft }
-// Cheap, frequent — the frontend debounces calls to this while the
-// student is still typing, well before they submit.
-router.post('/encoding-lesson/check-draft', draftCheckLimiter, async (req: Request, res: Response) => {
-  const { nodeLabel, promptText, draft } = req.body ?? {};
-  if (typeof nodeLabel !== 'string' || typeof promptText !== 'string' || typeof draft !== 'string') {
-    return res.status(400).json({ error: 'nodeLabel, promptText, and draft are all required' });
-  }
-
-  try {
-    const result = await checkEncodingDraft(nodeLabel, promptText, draft);
-    res.json(result);
-  } catch (err) {
-    console.error('Encoding draft check failed:', err);
-    res.status(500).json({ error: 'could not check this draft' });
   }
 });
 

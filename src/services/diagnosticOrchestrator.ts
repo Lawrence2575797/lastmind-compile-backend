@@ -64,6 +64,53 @@ async function dispatchToBranch(
 }
 
 /**
+ * Entry point for a caller that ALREADY knows an answer is wrong (it ran
+ * its own grading) and wants the diagnostic tree without the shared
+ * slip-check re-grading the same answer a second time — e.g. the encoding
+ * lesson, whose own grading is already deliberately generous, so a "wrong"
+ * from it is a stronger signal than the slip-check's first pass, and
+ * re-asking the identical question on a "looks like a slip" verdict would
+ * feel broken given that flow offers no retry UI of its own.
+ *
+ * forceAtomic MUST be true for anything that isn't a real top-level lesson
+ * concept with its own cached dependency chain (e.g. a prerequisite chain
+ * node) — dispatchToBranch's mechanistic check unconditionally calls
+ * getOrGenerateChain, which on a cache miss runs two full Opus calls
+ * before it even checks whether the result has any dependencies. Skipping
+ * straight to the atomic engine avoids that entirely.
+ */
+export async function startDiagnosisFromKnownAnswer(
+  userId: string,
+  conceptKey: string,
+  conceptLabel: string,
+  subject: string,
+  topic: string,
+  originalQuestion: string,
+  forceAtomic: boolean
+): Promise<OrchestratorResult> {
+  if (forceAtomic) {
+    const atomicState: DiagnosticState = {
+      conceptLabel,
+      conceptKey,
+      subject,
+      stage: 'initial',
+      originalQuestion,
+      misconceptionNotes: [],
+    };
+    const result = await processDiagnosticAnswer(userId, atomicState, '', true);
+    return {
+      done: result.done,
+      diagnosis: result.diagnosis,
+      correction: result.correction,
+      nextQuestion: result.nextQuestion,
+      nextOptions: result.nextOptions,
+      state: { engine: 'atomic', inner: result.state },
+    };
+  }
+  return dispatchToBranch(userId, conceptKey, conceptLabel, subject, topic, originalQuestion);
+}
+
+/**
  * The single entry point the route calls for every diagnostic step,
  * regardless of stage or which engine ends up handling it.
  */

@@ -46,10 +46,12 @@ export const WM_RELAXATION_PROMPT = `You are simplifying a diagnostic question t
 
 Simplify by doing ONE OR MORE of: reducing how many things must be held in mind at once, simplifying the wording, breaking a multi-part question into a smaller single part.
 
-Do NOT simplify away the actual concept being tested — the simplified version must still genuinely test the same concept, just with less simultaneous load.
+Do NOT simplify away the actual concept being tested — the simplified version must still genuinely test the same concept, just with less simultaneous load. A correct answer to your simplified version is about to be treated as real evidence the student's problem was working-memory load, not a knowledge gap — so it only counts if the simplified question still requires genuinely retrieving/applying the concept.
+
+You must self-audit your own simplification before returning it. Set "staysGenuineRetrieval" to true only if getting the simplified version right would still be real evidence of that. Set it to false if, on reflection, the simplification became so trivial, or so telegraphs the answer (e.g. the answer is now embedded in the question's own wording, or only one step of reasoning-free recall remains), that a correct answer wouldn't actually prove anything about working memory specifically.
 
 Output ONLY valid JSON, nothing else:
-{ "simplifiedQuestion": string }`;
+{ "simplifiedQuestion": string, "staysGenuineRetrieval": boolean }`;
 
 export const HINT_CUE_PROMPT = `You are writing a single, gentle hint for a student who has already shown (via a recognition test) that they know this concept, but couldn't recall it unprompted. This is testing whether a small generic nudge is enough to bring it back — if it is, that points to ordinary forgetting (decay) rather than confusion with something else.
 

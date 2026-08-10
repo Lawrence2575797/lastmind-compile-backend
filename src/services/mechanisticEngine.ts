@@ -60,6 +60,8 @@ export interface MechanisticState {
   // correction addresses the actual specific error, not a generic template.
   misconceptionNotes: string[];
   confusedWith?: string;
+  // Same self-audit gate as DiagnosticState.wmRelaxTrustworthy — see there.
+  wmRelaxTrustworthy?: boolean;
 }
 
 export interface MechanisticResult {
@@ -185,7 +187,7 @@ export async function startMechanisticDiagnosis(
 }
 
 async function beginWmRelax(state: MechanisticState): Promise<MechanisticResult> {
-  const simplified = await callJSON<{ simplifiedQuestion: string }>(
+  const simplified = await callJSON<{ simplifiedQuestion: string; staysGenuineRetrieval: boolean }>(
     WM_RELAXATION_PROMPT,
     `Concept: ${state.targetConceptLabel}\nOriginal question: ${state.originalQuestion}`,
     MODELS.diagnosticTree,
@@ -194,7 +196,7 @@ async function beginWmRelax(state: MechanisticState): Promise<MechanisticResult>
   return {
     done: false,
     nextQuestion: simplified.simplifiedQuestion,
-    state: { ...state, stage: 'wm_relax' },
+    state: { ...state, stage: 'wm_relax', wmRelaxTrustworthy: simplified.staysGenuineRetrieval },
   };
 }
 
@@ -217,7 +219,7 @@ export async function processMechanisticAnswer(
     case 'wm_relax': {
       const check = await checkAnswer(state.targetConceptLabel, '(simplified)', answer);
       const notedState = appendNote(state, check.misconceptionNote);
-      if (check.correct) {
+      if (check.correct && state.wmRelaxTrustworthy !== false) {
         await gradeAndRecordReview(userId, state.conceptKey, 'hard');
         return { done: true, diagnosis: 'wm_overload', correction: await generateCorrection(state.targetConceptLabel, 'wm_overload', notedState), state: notedState };
       }

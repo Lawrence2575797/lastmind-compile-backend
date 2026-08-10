@@ -17,7 +17,16 @@ export interface CortexPageSummary {
 export interface CortexFolderSummary {
   name: string;
   qualification: string;
-  examBoard: string;
+  // Exactly one of these two identifies the folder beyond subject+level,
+  // matching learn/index.html's own school-vs-university split
+  // (isUniversityLevel) — examBoard for GCSE/A-Level/etc., institution +
+  // moduleCode for Undergraduate Year 1-4/Masters/PhD. A university
+  // folder's moduleCode (e.g. "EC104") is very often the ONLY thing that
+  // disambiguates it from an unrelated folder sharing the same subject
+  // name — never assume examBoard is present.
+  examBoard?: string;
+  institution?: string;
+  moduleCode?: string;
   subfolders: { name: string; pages: CortexPageSummary[]; plannedConcepts?: string[] }[];
   pages: CortexPageSummary[];
   // The full concept order previously saved for this folder (no subfolder
@@ -39,7 +48,15 @@ export interface CortexHistoryTurn {
 
 export type CortexAction =
   | { type: 'move_page'; pageTitle: string; targetFolderName: string; targetSubfolderName: string | null }
-  | { type: 'create_folder'; subject: string; qualification: string; examBoard: string }
+  // Moves a whole subfolder — every page and its saved plan, if any — into
+  // a different folder, keeping its own name and contents intact.
+  // `subfolderName` is looked up across ALL folders (not scoped to one),
+  // same as move_page's own pageTitle lookup — the student names the
+  // subfolder they mean, not where it currently lives.
+  | { type: 'move_subfolder'; subfolderName: string; targetFolderName: string }
+  // Exactly one of examBoard or institution+moduleCode, matching
+  // CortexFolderSummary's own split — never both, never neither.
+  | { type: 'create_folder'; subject: string; qualification: string; examBoard?: string; institution?: string; moduleCode?: string }
   | { type: 'create_subfolder'; folderName: string; subfolderName: string }
   | { type: 'generate_notes'; subject: string; topic: string; lesson: string; noteContent?: string }
   | { type: 'list_due_reviews' }

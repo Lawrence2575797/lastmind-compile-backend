@@ -78,6 +78,12 @@ export interface DiagnosticResult {
   nextQuestion?: string;
   nextOptions?: string[];
   state: DiagnosticState;
+  // Whether the answer just submitted (in THIS call) was judged correct —
+  // undefined only when this call didn't grade a fresh answer at all (a
+  // dontKnow entry, or a mastery-status shortcut that isn't based on the
+  // just-given answer). Lets the frontend give real per-turn feedback
+  // instead of going silent until the whole diagnosis concludes.
+  answerCorrect?: boolean;
 }
 
 function appendNote(state: DiagnosticState, note: string | null | undefined): DiagnosticState {
@@ -90,7 +96,8 @@ async function finish(
   conceptLabel: string,
   ratingKey: 'again' | 'hard' | 'good' | 'easy',
   diagnosis: Diagnosis,
-  state: DiagnosticState
+  state: DiagnosticState,
+  answerCorrect?: boolean
 ): Promise<DiagnosticResult> {
   await gradeAndRecordReview(userId, state.conceptKey ?? conceptLabel, ratingKey);
 
@@ -117,7 +124,7 @@ async function finish(
     correction = result.correction;
   }
 
-  return { done: true, diagnosis, correction, state };
+  return { done: true, diagnosis, correction, state, answerCorrect };
 }
 
 // Runs the SHARED encoding check (section 2 of the tree — applies before
@@ -126,11 +133,17 @@ async function finish(
 async function runEncodingCheckOrSkip(userId: string, state: DiagnosticState): Promise<DiagnosticResult> {
   const outcome = await runSharedEncodingCheck(userId, state.conceptLabel, state.conceptLabel);
 
+  // Every path into this function follows a wrong (or "don't know") answer
+  // to whatever question was just asked — even though none of these three
+  // branches grade a NEW answer themselves, the caller's own answer was
+  // the reason we're here, so answerCorrect: false is accurate for all of
+  // them (finish() calls set it directly; the fresh-question branch is
+  // tagged by the caller, which knows this).
   switch (outcome.result) {
     case 'schedule_miscalibrated':
-      return finish(userId, state.conceptLabel, 'again', 'schedule_miscalibrated', state);
+      return finish(userId, state.conceptLabel, 'again', 'schedule_miscalibrated', state, false);
     case 'decay_schedule_skipped':
-      return finish(userId, state.conceptLabel, 'hard', 'decay', state);
+      return finish(userId, state.conceptLabel, 'hard', 'decay', state, false);
     case 'needs_recognition_test':
       return {
         done: false,
@@ -157,38 +170,39 @@ export async function processDiagnosticAnswer(
   switch (state.stage) {
     case 'initial': {
       if (dontKnow) {
-        return runEncodingCheckOrSkip(userId, state);
+        return { ...(await runEncodingCheckOrSkip(userId, state)), answerCorrect: false };
       }
 
       const check = await checkAnswer(state.conceptLabel, state.originalQuestion, answer);
       const notedState = appendNote(state, check.misconceptionNote);
 
       if (check.correct) {
-        return finish(userId, state.conceptLabel, 'good', 'pass', notedState);
+        return finish(userId, state.conceptLabel, 'good', 'pass', notedState, true);
       }
       if (check.looksLikeSlip) {
         return {
           done: false,
           nextQuestion: state.originalQuestion,
           state: { ...notedState, stage: 'slip_recheck' },
+          answerCorrect: false,
         };
       }
-      return runEncodingCheckOrSkip(userId, notedState);
+      return { ...(await runEncodingCheckOrSkip(userId, notedState)), answerCorrect: false };
     }
 
     case 'slip_recheck': {
       const check = await checkAnswer(state.conceptLabel, state.originalQuestion, answer);
       const notedState = appendNote(state, check.misconceptionNote);
       if (check.correct) {
-        return finish(userId, state.conceptLabel, 'hard', 'slip', notedState);
+        return finish(userId, state.conceptLabel, 'hard', 'slip', notedState, true);
       }
-      return runEncodingCheckOrSkip(userId, notedState);
+      return { ...(await runEncodingCheckOrSkip(userId, notedState)), answerCorrect: false };
     }
 
     case 'encoding_check': {
       const isCorrect = answer.trim() === (state.recognitionCorrectAnswer || '').trim();
       if (!isCorrect) {
-        return finish(userId, state.conceptLabel, 'again', 'encoding', state);
+        return finish(userId, state.conceptLabel, 'again', 'encoding', state, false);
       }
       const simplified = await callJSON<{ simplifiedQuestion: string; staysGenuineRetrieval: boolean }>(
         WM_RELAXATION_PROMPT,
@@ -200,6 +214,7 @@ export async function processDiagnosticAnswer(
         done: false,
         nextQuestion: simplified.simplifiedQuestion,
         state: { ...state, stage: 'wm_relax', wmRelaxTrustworthy: simplified.staysGenuineRetrieval },
+        answerCorrect: true,
       };
     }
 
@@ -207,7 +222,7 @@ export async function processDiagnosticAnswer(
       const check = await checkAnswer(state.conceptLabel, '(simplified)', answer);
       const notedState = appendNote(state, check.misconceptionNote);
       if (check.correct && state.wmRelaxTrustworthy !== false) {
-        return finish(userId, state.conceptLabel, 'hard', 'wm_overload', notedState);
+        return finish(userId, state.conceptLabel, 'hard', 'wm_overload', notedState, true);
       }
       const hintResult = await callJSON<{ hint: string }>(
         HINT_CUE_PROMPT,
@@ -219,6 +234,7 @@ export async function processDiagnosticAnswer(
         done: false,
         nextQuestion: `${state.originalQuestion}\n\nHint: ${hintResult.hint}`,
         state: { ...notedState, stage: 'hint_cue' },
+        answerCorrect: false,
       };
     }
 
@@ -226,7 +242,7 @@ export async function processDiagnosticAnswer(
       const check = await checkAnswer(state.conceptLabel, state.originalQuestion, answer);
       const notedState = appendNote(state, check.misconceptionNote);
       if (check.correct) {
-        return finish(userId, state.conceptLabel, 'hard', 'decay', notedState);
+        return finish(userId, state.conceptLabel, 'hard', 'decay', notedState, true);
       }
       const contrastive = await callJSON<{ confusedWith: string; question: string }>(
         CONTRASTIVE_CUE_PROMPT,
@@ -238,6 +254,7 @@ export async function processDiagnosticAnswer(
         done: false,
         nextQuestion: contrastive.question,
         state: { ...notedState, stage: 'contrastive_cue', confusedWith: contrastive.confusedWith },
+        answerCorrect: false,
       };
     }
 
@@ -245,9 +262,9 @@ export async function processDiagnosticAnswer(
       const check = await checkAnswer(state.conceptLabel, '(contrastive)', answer);
       const notedState = appendNote(state, check.misconceptionNote);
       if (check.correct) {
-        return finish(userId, state.conceptLabel, 'hard', 'interference', notedState);
+        return finish(userId, state.conceptLabel, 'hard', 'interference', notedState, true);
       }
-      return finish(userId, state.conceptLabel, 'again', 'unresolved', notedState);
+      return finish(userId, state.conceptLabel, 'again', 'unresolved', notedState, false);
     }
 
     default:

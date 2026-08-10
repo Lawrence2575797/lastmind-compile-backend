@@ -71,6 +71,8 @@ export interface MechanisticResult {
   nextQuestion?: string;
   nextOptions?: string[];
   state: MechanisticState;
+  // Same meaning as DiagnosticResult.answerCorrect — see there.
+  answerCorrect?: boolean;
 }
 
 function findNode(chain: Chain, id: string): ChainNode | undefined {
@@ -167,19 +169,24 @@ export async function startMechanisticDiagnosis(
 
   const outcome = await runSharedEncodingCheck(userId, conceptKey, targetConceptLabel);
 
+  // Every path into this function follows a wrong (or "don't know") answer
+  // to whatever question the student was just asked — this is the mechanistic
+  // path's entry point, same principle as the atomic engine's
+  // runEncodingCheckOrSkip.
   switch (outcome.result) {
     case 'schedule_miscalibrated':
       await gradeAndRecordReview(userId, conceptKey, 'again');
-      return { done: true, diagnosis: 'schedule_miscalibrated', correction: await generateCorrection(targetConceptLabel, 'schedule_miscalibrated', baseState), state: baseState };
+      return { done: true, diagnosis: 'schedule_miscalibrated', correction: await generateCorrection(targetConceptLabel, 'schedule_miscalibrated', baseState), state: baseState, answerCorrect: false };
     case 'decay_schedule_skipped':
       await gradeAndRecordReview(userId, conceptKey, 'hard');
-      return { done: true, diagnosis: 'decay', correction: await generateCorrection(targetConceptLabel, 'decay', baseState), state: baseState };
+      return { done: true, diagnosis: 'decay', correction: await generateCorrection(targetConceptLabel, 'decay', baseState), state: baseState, answerCorrect: false };
     case 'needs_recognition_test':
       return {
         done: false,
         nextQuestion: outcome.question,
         nextOptions: outcome.options,
         state: { ...baseState, recognitionCorrectAnswer: outcome.correctAnswer },
+        answerCorrect: false,
       };
     default:
       throw new Error(`Unexpected encoding-check outcome: ${outcome.result}`);
@@ -197,6 +204,7 @@ async function beginWmRelax(state: MechanisticState): Promise<MechanisticResult>
     done: false,
     nextQuestion: simplified.simplifiedQuestion,
     state: { ...state, stage: 'wm_relax', wmRelaxTrustworthy: simplified.staysGenuineRetrieval },
+    answerCorrect: true, // the recognition check that led here just passed
   };
 }
 
@@ -211,7 +219,7 @@ export async function processMechanisticAnswer(
       const isCorrect = answer.trim() === (state.recognitionCorrectAnswer || '').trim();
       if (!isCorrect) {
         await gradeAndRecordReview(userId, state.conceptKey, 'again');
-        return { done: true, diagnosis: 'encoding', correction: await generateCorrection(state.targetConceptLabel, 'encoding', state), state };
+        return { done: true, diagnosis: 'encoding', correction: await generateCorrection(state.targetConceptLabel, 'encoding', state), state, answerCorrect: false };
       }
       return beginWmRelax(state);
     }
@@ -221,17 +229,18 @@ export async function processMechanisticAnswer(
       const notedState = appendNote(state, check.misconceptionNote);
       if (check.correct && state.wmRelaxTrustworthy !== false) {
         await gradeAndRecordReview(userId, state.conceptKey, 'hard');
-        return { done: true, diagnosis: 'wm_overload', correction: await generateCorrection(state.targetConceptLabel, 'wm_overload', notedState), state: notedState };
+        return { done: true, diagnosis: 'wm_overload', correction: await generateCorrection(state.targetConceptLabel, 'wm_overload', notedState), state: notedState, answerCorrect: true };
       }
 
       const broken = await findBrokenPrerequisite(userId, state.chain, state.currentNodeId);
       if (!broken) {
-        return runCombinationCheck(notedState);
+        return { ...(await runCombinationCheck(notedState)), answerCorrect: false };
       }
       return {
         done: false,
         nextQuestion: broken.question,
         state: { ...notedState, stage: 'localizing', currentNodeId: broken.node.id },
+        answerCorrect: false,
       };
     }
 
@@ -242,11 +251,12 @@ export async function processMechanisticAnswer(
 
       if (check.correct) {
         const broken = await findBrokenPrerequisite(userId, notedState.chain, notedState.currentNodeId);
-        if (!broken) return runCombinationCheck(notedState);
+        if (!broken) return { ...(await runCombinationCheck(notedState)), answerCorrect: true };
         return {
           done: false,
           nextQuestion: broken.question,
           state: { ...notedState, currentNodeId: broken.node.id },
+          answerCorrect: true,
         };
       }
 
@@ -254,7 +264,10 @@ export async function processMechanisticAnswer(
       // engine on this specific node, recursively. That engine tracks and
       // uses its own misconceptionNotes internally, so its returned
       // correction is already grounded in the specific content — nothing
-      // extra needed here beyond passing its result straight through.
+      // extra needed here beyond passing its result straight through. This
+      // turn's own answerCorrect reflects the localization check itself
+      // (false — that's why we're here), not the sub-engine's re-grade of
+      // the same answer against its own differently-worded question.
       const subState: DiagnosticState = {
         conceptLabel: state.currentNodeId,
         subject: state.subject,
@@ -270,11 +283,12 @@ export async function processMechanisticAnswer(
           nextQuestion: subResult.nextQuestion,
           nextOptions: subResult.nextOptions,
           state: { ...notedState, stage: 'sub_diagnostic', subDiagnosticState: subResult.state },
+          answerCorrect: false,
         };
       }
 
       await gradeAndRecordReview(userId, notedState.conceptKey, 'again');
-      return { done: true, diagnosis: subResult.diagnosis, correction: subResult.correction, state: notedState };
+      return { done: true, diagnosis: subResult.diagnosis, correction: subResult.correction, state: notedState, answerCorrect: false };
     }
 
     case 'sub_diagnostic': {
@@ -287,11 +301,12 @@ export async function processMechanisticAnswer(
           nextQuestion: subResult.nextQuestion,
           nextOptions: subResult.nextOptions,
           state: { ...state, subDiagnosticState: subResult.state },
+          answerCorrect: subResult.answerCorrect,
         };
       }
 
       await gradeAndRecordReview(userId, state.conceptKey, 'again');
-      return { done: true, diagnosis: subResult.diagnosis, correction: subResult.correction, state };
+      return { done: true, diagnosis: subResult.diagnosis, correction: subResult.correction, state, answerCorrect: subResult.answerCorrect };
     }
 
     case 'combination_check': {
@@ -300,7 +315,7 @@ export async function processMechanisticAnswer(
 
       if (check.correct) {
         await gradeAndRecordReview(userId, notedState.conceptKey, 'hard');
-        return { done: true, diagnosis: 'transfer', correction: await generateCorrection(notedState.targetConceptLabel, 'transfer', notedState), state: notedState };
+        return { done: true, diagnosis: 'transfer', correction: await generateCorrection(notedState.targetConceptLabel, 'transfer', notedState), state: notedState, answerCorrect: true };
       }
 
       const depth = chainDepth(notedState.chain, notedState.chain.nodes[notedState.chain.nodes.length - 1].id);
@@ -308,14 +323,14 @@ export async function processMechanisticAnswer(
         const mastery = await getMasteryStatus(userId, notedState.conceptKey);
         if (mastery.scheduleWasFollowed === false) {
           await gradeAndRecordReview(userId, notedState.conceptKey, 'hard');
-          return { done: true, diagnosis: 'decay', correction: await generateCorrection(notedState.targetConceptLabel, 'decay', notedState), state: notedState };
+          return { done: true, diagnosis: 'decay', correction: await generateCorrection(notedState.targetConceptLabel, 'decay', notedState), state: notedState, answerCorrect: false };
         }
         await gradeAndRecordReview(userId, notedState.conceptKey, 'again');
-        return { done: true, diagnosis: 'global_chain_failure', correction: await generateCorrection(notedState.targetConceptLabel, 'global_chain_failure', notedState), state: notedState };
+        return { done: true, diagnosis: 'global_chain_failure', correction: await generateCorrection(notedState.targetConceptLabel, 'global_chain_failure', notedState), state: notedState, answerCorrect: false };
       }
 
       await gradeAndRecordReview(userId, notedState.conceptKey, 'again');
-      return { done: true, diagnosis: 'integration', correction: await generateCorrection(notedState.targetConceptLabel, 'integration', notedState), state: notedState };
+      return { done: true, diagnosis: 'integration', correction: await generateCorrection(notedState.targetConceptLabel, 'integration', notedState), state: notedState, answerCorrect: false };
     }
 
     default:

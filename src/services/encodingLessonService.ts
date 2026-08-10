@@ -312,21 +312,31 @@ export async function startEncodingLesson(
  * which is exactly what surfaces it sooner in future spaced-repetition
  * sessions, rather than blocking progress now.
  */
-export async function submitEncodingAnswer(userId: string, state: EncodingLessonState, answer: string): Promise<EncodingSubmitResult> {
+export async function submitEncodingAnswer(userId: string, state: EncodingLessonState, answer: string, dontKnow = false): Promise<EncodingSubmitResult> {
   const currentStep = state.steps[state.currentIndex];
   if (!currentStep) {
     return { done: true, state };
   }
 
-  const gradingPrompt = currentStep.type === 'explain' ? (currentStep.checkQuestion || currentStep.text) : currentStep.text;
-  const check = await callJSON<{ correct: boolean; feedback: string | null }>(
-    ENCODING_ANSWER_CHECK_PROMPT,
-    `Concept/step: ${currentStep.label}\nPrompt: ${gradingPrompt}\nStudent's answer: ${answer}`,
-    MODELS.diagnosticTree,
-    0.2
-  );
-  const correct = check.correct;
-  const feedback = check.feedback;
+  // "I don't know" is an unambiguous verdict — skip the grading call
+  // entirely (real cost saved every time this is used) rather than asking
+  // Claude to grade an empty/absent answer.
+  let correct: boolean;
+  let feedback: string | null;
+  if (dontKnow) {
+    correct = false;
+    feedback = null;
+  } else {
+    const gradingPrompt = currentStep.type === 'explain' ? (currentStep.checkQuestion || currentStep.text) : currentStep.text;
+    const check = await callJSON<{ correct: boolean; feedback: string | null }>(
+      ENCODING_ANSWER_CHECK_PROMPT,
+      `Concept/step: ${currentStep.label}\nPrompt: ${gradingPrompt}\nStudent's answer: ${answer}`,
+      MODELS.diagnosticTree,
+      0.2
+    );
+    correct = check.correct;
+    feedback = check.feedback;
+  }
 
   const nextIndex = state.currentIndex + 1;
   const anyWeakSoFar = state.anyWeakSoFar || !correct;

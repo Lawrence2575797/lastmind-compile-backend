@@ -24,6 +24,12 @@ export interface OrchestratorResult {
   nextQuestion?: string;
   nextOptions?: string[];
   state: OrchestratorState;
+  // Whether the answer just submitted was judged correct — undefined only
+  // when this call didn't grade a fresh answer (see DiagnosticResult in
+  // diagnosticEngine.ts for the full explanation). Lets the frontend show
+  // real per-turn feedback through the whole diagnostic drill-down instead
+  // of going silent until it concludes.
+  answerCorrect?: boolean;
 }
 
 async function dispatchToBranch(
@@ -45,6 +51,7 @@ async function dispatchToBranch(
       nextQuestion: result.nextQuestion,
       nextOptions: result.nextOptions,
       state: { engine: 'mechanistic', inner: result.state },
+      answerCorrect: result.answerCorrect,
     };
   }
 
@@ -60,6 +67,7 @@ async function dispatchToBranch(
     nextQuestion: result.nextQuestion,
     nextOptions: result.nextOptions,
     state: { engine: 'atomic', inner: result.state },
+    answerCorrect: result.answerCorrect,
   };
 }
 
@@ -105,6 +113,7 @@ export async function startDiagnosisFromKnownAnswer(
       nextQuestion: result.nextQuestion,
       nextOptions: result.nextOptions,
       state: { engine: 'atomic', inner: result.state },
+      answerCorrect: result.answerCorrect,
     };
   }
   return dispatchToBranch(userId, conceptKey, conceptLabel, subject, topic, originalQuestion);
@@ -129,6 +138,7 @@ export async function runDiagnosticStep(
       nextQuestion: result.nextQuestion,
       nextOptions: result.nextOptions,
       state: { engine: 'atomic', inner: result.state },
+      answerCorrect: result.answerCorrect,
     };
   }
 
@@ -141,13 +151,14 @@ export async function runDiagnosticStep(
       nextQuestion: result.nextQuestion,
       nextOptions: result.nextOptions,
       state: { engine: 'mechanistic', inner: result.state },
+      answerCorrect: result.answerCorrect,
     };
   }
 
   // engine === 'pending' — this is the shared slip-check phase, identical
   // regardless of what comes after it.
   if (dontKnow) {
-    return dispatchToBranch(userId, state.conceptKey, state.conceptLabel, state.subject, state.topic, state.originalQuestion);
+    return { ...(await dispatchToBranch(userId, state.conceptKey, state.conceptLabel, state.subject, state.topic, state.originalQuestion)), answerCorrect: false };
   }
 
   const raw = await callClaudeJSON({
@@ -160,7 +171,7 @@ export async function runDiagnosticStep(
   if (check.correct) {
     // A clean pass doesn't need either engine at all.
     await gradeAndRecordReview(userId, state.conceptKey, 'good');
-    return { done: true, diagnosis: 'pass', state };
+    return { done: true, diagnosis: 'pass', state, answerCorrect: true };
   }
 
   if (check.looksLikeSlip && state.slipStage === 'initial') {
@@ -168,6 +179,7 @@ export async function runDiagnosticStep(
       done: false,
       nextQuestion: state.originalQuestion,
       state: { ...state, slipStage: 'slip_recheck' },
+      answerCorrect: false,
     };
   }
 
@@ -176,5 +188,5 @@ export async function runDiagnosticStep(
     await gradeAndRecordReview(userId, state.conceptKey, 'again');
   }
 
-  return dispatchToBranch(userId, state.conceptKey, state.conceptLabel, state.subject, state.topic, state.originalQuestion);
+  return { ...(await dispatchToBranch(userId, state.conceptKey, state.conceptLabel, state.subject, state.topic, state.originalQuestion)), answerCorrect: false };
 }

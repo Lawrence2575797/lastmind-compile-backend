@@ -44,6 +44,17 @@ export interface EncodingStep {
   type: EncodingStepType;
   text: string;
   checkQuestion?: string;
+  // Which FSRS concept a wrong answer on this step should be diagnosed
+  // (and graded) against. Equals the lesson's own conceptKey for
+  // scene/derive/explain beats that are actually about the TARGET; equals
+  // the step's own nodeId for anything about a prerequisite node instead
+  // (a "check" step, or a prerequisite promoted to a taught beat because
+  // it was explicitly named in the lesson's own title — see
+  // ENCODING_LESSON_BATCH_PROMPT). The frontend uses this — not the step
+  // type — to decide both which concept to diagnose and whether the
+  // diagnostic tree's cheaper atomic-only path is required (nodeId !==
+  // conceptKey means there's no independently-cached chain for it).
+  diagnosisConceptKey: string;
   diagram?: EncodingDiagram;
 }
 
@@ -243,8 +254,9 @@ export async function startEncodingLesson(
       `Qualification: ${qualification || 'unspecified'}`,
       `Exam board: ${examBoard || 'unspecified'}`,
       `Target concept (this exact lesson — every step must build toward THIS, not a related or more general concept): ${target?.label || concept}`,
+      `Original lesson title, exactly as the student named it (may explicitly name more than one idea together, e.g. "X and Y" — use this to judge whether a close prerequisite below is actually one of THIS lesson's own named topics, not just background from an earlier lesson): ${concept}`,
       `Target concept is derivable from its close prerequisites: ${targetDerivable}`,
-      `closePrerequisites (write one "check" step per node, in this order): ${JSON.stringify(closeNodes.map((n) => ({ nodeId: n.id, label: n.label })))}`,
+      `closePrerequisites, in order (for each: write a "check" step UNLESS it's explicitly one of the ideas named in the original lesson title above, in which case teach it properly instead — see instructions): ${JSON.stringify(closeNodes.map((n) => ({ nodeId: n.id, label: n.label })))}`,
       `backgroundContext (already covered earlier — reference only, do not test, do not write a step): ${JSON.stringify(backgroundNodes.map((n) => ({ nodeId: n.id, label: n.label })))}`,
     ].join('\n'),
     MODELS.diagnosticTree,
@@ -259,6 +271,7 @@ export async function startEncodingLesson(
     type: s.type,
     text: s.text,
     checkQuestion: s.checkQuestion,
+    diagnosisConceptKey: s.nodeId === target.id ? conceptKey : s.nodeId,
   }));
 
   if (!steps.length) {

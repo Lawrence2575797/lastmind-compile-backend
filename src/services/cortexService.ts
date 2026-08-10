@@ -18,8 +18,13 @@ export interface CortexFolderSummary {
   name: string;
   qualification: string;
   examBoard: string;
-  subfolders: { name: string; pages: CortexPageSummary[] }[];
+  subfolders: { name: string; pages: CortexPageSummary[]; plannedConcepts?: string[] }[];
   pages: CortexPageSummary[];
+  // The full concept order previously saved for this folder (no subfolder
+  // — see set_subfolder_plan), if any. Lets Cortex say "you've already
+  // saved a plan with N concepts" instead of re-deriving from scratch
+  // every time, and reuse the exact same order rather than drifting.
+  plannedConcepts?: string[];
 }
 
 export interface CortexDueReview {
@@ -46,7 +51,14 @@ export type CortexAction =
   // pageIsMultiLesson). Never invented — only concepts the student
   // actually named or that came from an order already discussed this
   // conversation.
-  | { type: 'create_multi_lesson_page'; folderName: string; subfolderName: string | null; pageTitle: string; concepts: string[] };
+  | { type: 'create_multi_lesson_page'; folderName: string; subfolderName: string | null; pageTitle: string; concepts: string[] }
+  // Saves a topic's FULL concept order (not just existing pages) as the
+  // student's tracked plan for a folder/subfolder, so the app can show
+  // progress against the whole topic instead of only what has pages
+  // already — see learn/index.html's subfolder progress bar. Distinct
+  // from create_multi_lesson_page: this doesn't create anything, it just
+  // remembers the intended scope.
+  | { type: 'set_subfolder_plan'; folderName: string; subfolderName: string | null; concepts: string[] };
 
 export interface CortexResult {
   reply: string;

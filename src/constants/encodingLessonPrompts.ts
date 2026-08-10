@@ -27,6 +27,7 @@ Your job is to write the actual lesson content as a single JSON response, in thi
 
 Rules:
 1. Output ONLY valid JSON, nothing else.
+1b. CRITICAL — SELF-CHECK EVERY STEP BEFORE FINALIZING IT. For each check/scene/derive/explain/implication step, before you write it into your final answer: picture a plausible student who has genuinely reached the given qualification level in this subject through ordinary prior study, but has NEVER encountered this specific concept chain before, and knows nothing about it beyond exactly what this lesson has established up to that point (the close prerequisites already checked/taught earlier in this same sequence, the scene, and any earlier target beats — nothing else, no outside help). Imagine that student actually attempting this step as drafted, using only that. If they plausibly could NOT succeed — the leap is too big, something needed was never established, the wording is ambiguous — revise the step (don't just make it easier; fix the actual gap: smaller leap, missing grounding restated, clearer wording) before moving on to the next step. After finalizing each step this way, set "confident" to true if you're satisfied the simulated student would succeed with the final version, or false if you revised it and are still not fully sure. Do this for every step — it is the difference between a lesson that actually works stand-alone and one that only makes sense to someone who already knows the answer.
 2. CRITICAL — every "check", "scene", "derive", and "implication" step's "text" MUST end with an explicit, direct question or instruction the student is being asked to answer right now (e.g. "What might X be?", "Work out...", "Predict...", "Explain why..."). Scene-setting, narrative, or background description is only ever a LEAD-IN to that question within the same "text" — never the whole of it. A "text" that describes a situation and then just trails off without actually asking anything is broken and unusable, even if it ends in a full stop instead of a question mark; if you've set up a scenario, the very next sentence must ask the student to do something with it. Never give away the content itself in the question.
 3. Every "explain" step's "text" must actually explain that specific beat's content clearly and completely on its own — don't be vague, don't compress it into one thin sentence, and don't make the student guess. Its "checkQuestion" must test real understanding of that text, not just recall of a single word.
 4. CRITICAL — every "check", "scene", "derive", "implication", and "checkQuestion" must ask for exactly ONE clear thing, answerable in a single short response. If the content naturally has several distinct parts, features, or examples, do NOT ask for a complete list of all of them — pick ONE or TWO representative ones instead. A question that requires enumerating many items in one answer is a bad question here; never write one.
@@ -35,17 +36,17 @@ Rules:
 7. "checkQuestion" is required for "explain" steps only, and must be omitted for every other step type.
 8. "nodeId" for a "check" step, or for a promoted prerequisite's derive/explain beat(s), must be the exact id given for that node in "closePrerequisites" (a promoted prerequisite's beats all share ITS id, not the target's). "nodeId" for "scene" and for EVERY target-derivation beat (there may be several — they all share the same id) must be the target concept's own id. "nodeId" for "implication" steps can be any short descriptive slug of your choosing — they don't correspond to a chain node.
 
-Output schema:
+Output schema (every step object includes "confident", per rule 1b):
 {
   "hookFact": string,
   "steps": [
-    { "nodeId": string, "type": "check", "text": string }
-      OR one-or-more { "nodeId": string, "type": "derive", "text": string } / { "nodeId": string, "type": "explain", "text": string, "checkQuestion": string } beats, per closePrerequisite node (see point 2),
-    { "nodeId": string, "type": "scene", "text": string },
-    { "nodeId": string, "type": "derive", "text": string }
-      OR { "nodeId": string, "type": "explain", "text": string, "checkQuestion": string },
+    { "nodeId": string, "type": "check", "text": string, "confident": boolean }
+      OR one-or-more { "nodeId": string, "type": "derive", "text": string, "confident": boolean } / { "nodeId": string, "type": "explain", "text": string, "checkQuestion": string, "confident": boolean } beats, per closePrerequisite node (see point 2),
+    { "nodeId": string, "type": "scene", "text": string, "confident": boolean },
+    { "nodeId": string, "type": "derive", "text": string, "confident": boolean }
+      OR { "nodeId": string, "type": "explain", "text": string, "checkQuestion": string, "confident": boolean },
     ... (repeat this derive/explain shape for every target beat, in teaching order — one or more),
-    { "nodeId": string, "type": "implication", "text": string }
+    { "nodeId": string, "type": "implication", "text": string, "confident": boolean }
   ],
   "diagram": { "needed": boolean, "searchQuery": string | null }
 }`;
@@ -64,6 +65,21 @@ Rules:
 
 Output schema:
 { "correct": boolean, "feedback": string | null }`;
+
+export const STEP_DERIVABILITY_CHECK_PROMPT = `You are independently re-checking ONE step of a first-time "encoding" lesson that its own author wasn't fully confident about. You have NOT seen why it was flagged, and you have no memory of drafting it — judge it completely fresh, the way an actual student would encounter it.
+
+You will be given the subject, qualification, and exam board (where known); everything already established earlier in this same lesson, in order (as label + text pairs); and the flagged step itself (its type, text, and checkQuestion if it's an "explain" step).
+
+Picture a plausible student who has genuinely reached the given qualification level in this subject through ordinary prior study, but has never encountered this specific concept chain before, and knows nothing about it beyond exactly what's in the "established so far" context you were given — nothing else. Judge whether that student, using only that, would actually succeed at the flagged step as written.
+
+Rules:
+1. Output ONLY valid JSON, nothing else.
+2. If the step would genuinely work as-is, set "needsRevision" to false and leave the revised fields null — do not rewrite something that isn't broken.
+3. If it wouldn't work, set "needsRevision" to true and provide a fixed version: smaller reasoning leap, missing grounding restated, or clearer wording — whatever the actual problem is. Never change WHAT the step is teaching or testing, only HOW it's expressed, and never give the answer away in the process of clarifying the question.
+4. "revisedCheckQuestion" only applies to "explain"-type steps — leave it null for every other type, even when revising the text.
+
+Output schema:
+{ "needsRevision": boolean, "revisedText": string | null, "revisedCheckQuestion": string | null }`;
 
 export const DIAGRAM_VERIFICATION_PROMPT = `You are choosing the single best diagram image for a UK GCSE/A-Level lesson, from a small set of candidate images retrieved from Wikimedia Commons (a general free-media repository, not an exam-board resource). You will be given the subject, qualification, and exam board (where known), the target concept the diagram is meant to illustrate, and the candidate images themselves, each preceded by a text label identifying its index and title.
 

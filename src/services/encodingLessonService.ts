@@ -7,6 +7,7 @@ import {
   ENCODING_LESSON_BATCH_PROMPT,
   ENCODING_ANSWER_CHECK_PROMPT,
   DIAGRAM_VERIFICATION_PROMPT,
+  STEP_DERIVABILITY_CHECK_PROMPT,
 } from '../constants/encodingLessonPrompts';
 
 function stripCodeFences(text: string): string {
@@ -207,6 +208,64 @@ async function getOrFetchDiagram(
   return diagram;
 }
 
+interface DraftStep {
+  nodeId: string;
+  label: string;
+  type: EncodingStepType;
+  text: string;
+  checkQuestion?: string;
+  diagnosisConceptKey: string;
+  confident?: boolean;
+}
+
+/**
+ * Walks the drafted steps in order, sending a genuinely independent
+ * verification/repair call — fresh eyes, no memory of why the first pass
+ * was unsure — for any step the batch generation itself flagged as
+ * "confident: false" after its own inline self-check. Only ever runs on a
+ * cache miss (see startEncodingLesson), and only for the (hopefully rare)
+ * steps actually flagged — most concepts trigger zero extra calls here.
+ * Mutates the flagged steps' text/checkQuestion in place when a genuine
+ * revision comes back.
+ */
+async function repairUncertainSteps(
+  steps: DraftStep[],
+  subject: string,
+  qualification: string,
+  examBoard: string
+): Promise<void> {
+  const establishedSoFar: { label: string; text: string }[] = [];
+
+  for (const step of steps) {
+    if (step.confident === false) {
+      try {
+        const result = await callJSON<{ needsRevision: boolean; revisedText: string | null; revisedCheckQuestion: string | null }>(
+          STEP_DERIVABILITY_CHECK_PROMPT,
+          [
+            `Subject: ${subject}`,
+            `Qualification: ${qualification || 'unspecified'}`,
+            `Exam board: ${examBoard || 'unspecified'}`,
+            `Established so far, in order: ${JSON.stringify(establishedSoFar)}`,
+            `Flagged step — type: ${step.type}, text: ${step.text}${step.checkQuestion ? `, checkQuestion: ${step.checkQuestion}` : ''}`,
+          ].join('\n'),
+          MODELS.diagnosticTree,
+          0.2
+        );
+        if (result.needsRevision) {
+          if (result.revisedText) step.text = result.revisedText;
+          if (step.type === 'explain' && result.revisedCheckQuestion) step.checkQuestion = result.revisedCheckQuestion;
+        }
+      } catch (err) {
+        // A failed repair attempt just means the original (self-flagged-
+        // uncertain) draft ships as-is — never block the whole lesson on
+        // this being a best-effort quality pass, not a hard requirement.
+        console.error('LastMind: step derivability repair failed, keeping original draft.', err);
+      }
+    }
+    establishedSoFar.push({ label: step.label, text: step.text });
+  }
+}
+
 /**
  * Starts a first-time "encoding" lesson. Shape: a novelty hook fact, a
  * short knowledge-check of the target concept's DIRECT prerequisites only
@@ -216,9 +275,16 @@ async function getOrFetchDiagram(
  * tested nor individually walked — they're passed to the generation call
  * as background context only, so the lesson doesn't re-teach material
  * covered in earlier lessons or drift into testing prerequisites far from
- * the actual new content. Everything presentable is generated in ONE call
- * up front — grading each answer, and (rarely) a diagram lookup, are the
- * only things that happen afterward.
+ * the actual new content.
+ *
+ * The generated content (hook fact + steps, including any resolved
+ * diagram) is cached per concept+qualification+exam board, same pattern
+ * as dependency_chains/encoding_diagrams — only the first student to ever
+ * hit a given lesson pays for generation (which now also includes an
+ * inline self-check per step, and a rare targeted repair call for
+ * anything it wasn't confident about even after revising itself); every
+ * student after that gets an instant cache hit with no chain fetch and no
+ * Claude calls at all.
  */
 export async function startEncodingLesson(
   conceptKey: string,
@@ -228,6 +294,45 @@ export async function startEncodingLesson(
   qualification = '',
   examBoard = ''
 ): Promise<EncodingStartResult> {
+  const contentKey = `${conceptKey}::${clean(qualification)}::${clean(examBoard)}`;
+
+  const { data: cachedContent, error: cacheError } = await supabaseAdmin
+    .from('encoding_lesson_content')
+    .select('hook_fact, steps')
+    .eq('content_key', contentKey)
+    .maybeSingle();
+
+  let hookFact: string;
+  let steps: EncodingStep[];
+
+  if (!cacheError && cachedContent) {
+    hookFact = cachedContent.hook_fact;
+    steps = cachedContent.steps as EncodingStep[];
+  } else {
+    const generated = await generateEncodingLessonContent(conceptKey, subject, topic, concept, qualification, examBoard);
+    hookFact = generated.hookFact;
+    steps = generated.steps;
+    await supabaseAdmin.from('encoding_lesson_content').insert({ content_key: contentKey, hook_fact: hookFact, steps });
+  }
+
+  if (!steps.length) {
+    throw new Error('Could not generate lesson content for this concept.');
+  }
+
+  const state: EncodingLessonState = { conceptKey, subject, steps, currentIndex: 0, anyWeakSoFar: false };
+  return { done: false, hookFact, step: steps[0], state };
+}
+
+// The actual generation path — only ever runs on a cache miss, see
+// startEncodingLesson above.
+async function generateEncodingLessonContent(
+  conceptKey: string,
+  subject: string,
+  topic: string,
+  concept: string,
+  qualification: string,
+  examBoard: string
+): Promise<{ hookFact: string; steps: EncodingStep[] }> {
   const chainResult = await getOrGenerateChain(conceptKey, subject, topic, concept);
   if (!chainResult.chain) {
     throw new Error('Could not generate a dependency chain for this concept.');
@@ -244,7 +349,7 @@ export async function startEncodingLesson(
 
   const batch = await callJSON<{
     hookFact: string;
-    steps: { nodeId: string; type: EncodingStepType; text: string; checkQuestion?: string }[];
+    steps: { nodeId: string; type: EncodingStepType; text: string; checkQuestion?: string; confident?: boolean }[];
     diagram?: { needed: boolean; searchQuery: string | null };
   }>(
     ENCODING_LESSON_BATCH_PROMPT,
@@ -265,20 +370,21 @@ export async function startEncodingLesson(
   );
 
   const nodesById = new Map(chain.nodes.map((n) => [n.id, n]));
-  const steps: EncodingStep[] = (batch.steps || []).map((s) => ({
+  const draftSteps: DraftStep[] = (batch.steps || []).map((s) => ({
     nodeId: s.nodeId,
     label: nodesById.get(s.nodeId)?.label || (s.type === 'implication' ? `${target.label} — implications` : s.nodeId),
     type: s.type,
     text: s.text,
     checkQuestion: s.checkQuestion,
     diagnosisConceptKey: s.nodeId === target.id ? conceptKey : s.nodeId,
+    confident: s.confident,
   }));
 
-  if (!steps.length) {
-    throw new Error('Could not generate lesson content for this concept.');
-  }
+  await repairUncertainSteps(draftSteps, subject, qualification, examBoard);
 
-  if (batch.diagram?.needed && batch.diagram.searchQuery) {
+  const steps: EncodingStep[] = draftSteps.map(({ confident, ...step }) => step);
+
+  if (steps.length && batch.diagram?.needed && batch.diagram.searchQuery) {
     const diagram = await withTimeout(
       getOrFetchDiagram(conceptKey, qualification, examBoard, subject, target.label, batch.diagram.searchQuery).catch((err) => {
         console.error('LastMind: diagram lookup failed, proceeding without one.', err);
@@ -292,8 +398,7 @@ export async function startEncodingLesson(
     }
   }
 
-  const state: EncodingLessonState = { conceptKey, subject, steps, currentIndex: 0, anyWeakSoFar: false };
-  return { done: false, hookFact: batch.hookFact, step: steps[0], state };
+  return { hookFact: batch.hookFact, steps };
 }
 
 /**

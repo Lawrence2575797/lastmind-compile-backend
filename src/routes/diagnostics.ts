@@ -3,7 +3,7 @@ import { callClaudeJSON, MODELS } from '../services/claudeClient';
 import { requireAuth } from '../services/authMiddleware';
 import { costlyEndpointLimiter } from '../services/rateLimiters';
 import { MULTI_QUESTION_GENERATION_PROMPT } from '../constants/diagnosticPrompts';
-import { runDiagnosticStep, startDiagnosisFromKnownAnswer, OrchestratorState } from '../services/diagnosticOrchestrator';
+import { runDiagnosticStep, startDiagnosisFromKnownAnswer, startMathDiagnosis, OrchestratorState } from '../services/diagnosticOrchestrator';
 import { normalizeConceptKey } from '../services/chainService';
 
 const router = Router();
@@ -113,6 +113,47 @@ router.post('/diagnostics/start-from-answer', async (req: Request, res: Response
     res.json(result);
   } catch (err) {
     console.error('Diagnostic start-from-answer failed:', err);
+    res.status(500).json({ error: 'could not start diagnosis' });
+  }
+});
+
+// POST /diagnostics/start-math-from-answer
+// { conceptKey, conceptLabel, subject, topic, question, contentKey, stepIndex, studentWorking, forceAtomic } -> OrchestratorResult
+// The calculation-question counterpart to /diagnostics/start-from-answer
+// (see startMathDiagnosis) — starts by locating exactly where the
+// student's OWN shown working went wrong, rather than jumping straight
+// into the theory-question diagnostic tree. contentKey/stepIndex let the
+// backend re-fetch the verified expectedSolution itself from the
+// encoding_lesson_content cache — never trusted from the client, same
+// security reasoning as submitEncodingAnswer's own grading.
+router.post('/diagnostics/start-math-from-answer', async (req: Request, res: Response) => {
+  const { conceptKey, conceptLabel, subject, topic, question, contentKey, stepIndex, studentWorking, forceAtomic } = req.body ?? {};
+  if (
+    typeof conceptKey !== 'string' ||
+    typeof conceptLabel !== 'string' ||
+    typeof question !== 'string' ||
+    typeof contentKey !== 'string' ||
+    typeof stepIndex !== 'number'
+  ) {
+    return res.status(400).json({ error: 'conceptKey, conceptLabel, question, contentKey, and stepIndex are all required' });
+  }
+
+  try {
+    const result = await startMathDiagnosis(
+      req.userId as string,
+      conceptKey,
+      conceptLabel,
+      subject || '',
+      topic || '',
+      question,
+      contentKey,
+      stepIndex,
+      typeof studentWorking === 'string' ? studentWorking : '',
+      !!forceAtomic
+    );
+    res.json(result);
+  } catch (err) {
+    console.error('Diagnostic start-math-from-answer failed:', err);
     res.status(500).json({ error: 'could not start diagnosis' });
   }
 });

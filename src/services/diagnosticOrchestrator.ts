@@ -1,9 +1,10 @@
 import { callClaudeJSON, MODELS } from './claudeClient';
 import { gradeAndRecordReview } from './reviewService';
 import { parseModelJson } from './jsonParsing';
-import { CHECK_ANSWER_AND_SLIP_PROMPT } from '../constants/diagnosticPrompts';
+import { CHECK_ANSWER_AND_SLIP_PROMPT, MATH_ERROR_LOCALIZATION_PROMPT } from '../constants/diagnosticPrompts';
 import { loadChainIfMechanistic, startMechanisticDiagnosis, processMechanisticAnswer, MechanisticState } from './mechanisticEngine';
 import { processDiagnosticAnswer, gateOnWrongAnswer, DiagnosticState } from './diagnosticEngine';
+import { fetchExpectedSolution } from './encodingLessonService';
 
 // Tags which underlying engine a mid-flow session belongs to, once the
 // atomic/mechanistic decision has actually been made — everything before
@@ -121,6 +122,85 @@ export async function startDiagnosisFromKnownAnswer(
     };
   }
   return dispatchToBranch(userId, conceptKey, conceptLabel, subject, topic, originalQuestion);
+}
+
+/**
+ * Entry point for a WRONG answer to a calculation step specifically (see
+ * ENCODING_LESSON_BATCH_PROMPT's requiresCalculation) — genuinely
+ * different from startDiagnosisFromKnownAnswer's theory path: there's
+ * actual shown working to inspect, so this looks for exactly where it
+ * went wrong before doing anything else, the way a human tutor would scan
+ * your working rather than re-teach the topic from scratch.
+ *
+ * `contentKey`/`stepIndex` — never trust a client-supplied answer/solution
+ * pair; the verified expectedSolution is re-fetched server-side from the
+ * same encoding_lesson_content cache row grading itself reads from (see
+ * fetchExpectedSolution), exactly like submitEncodingAnswer already does.
+ *
+ * Routes on MATH_ERROR_LOCALIZATION_PROMPT's verdict:
+ * - "slip" (method was right, an isolated mechanical error) resolves
+ *   immediately with a targeted correction — same 'hard' FSRS severity as
+ *   the atomic engine's own theory-question "slip" outcome, since the
+ *   underlying understanding is intact either way.
+ * - "conceptual" hands off into the EXISTING diagnostic tree (atomic or
+ *   mechanistic, same as a theory question would use) — reusing all of
+ *   its scaffolding rather than building a separate one — seeded with the
+ *   specific error this localization pass already found, so the eventual
+ *   correction addresses what actually went wrong instead of guessing
+ *   from scratch.
+ * - "no_attempt" (blank/abandoned working), or a cache miss on the
+ *   verified solution, falls through to that same standard entry
+ *   ungated by any localization verdict — there's nothing to localize an
+ *   error within, so this is exactly the theory-question flow.
+ */
+export async function startMathDiagnosis(
+  userId: string,
+  conceptKey: string,
+  conceptLabel: string,
+  subject: string,
+  topic: string,
+  question: string,
+  contentKey: string,
+  stepIndex: number,
+  studentWorking: string,
+  forceAtomic: boolean
+): Promise<OrchestratorResult> {
+  const hasWorking = !!(studentWorking && studentWorking.trim());
+  const expectedSolution = hasWorking ? await fetchExpectedSolution(contentKey, stepIndex) : null;
+
+  if (expectedSolution) {
+    const raw = await callClaudeJSON({
+      model: MODELS.diagnosticTree,
+      systemPrompt: MATH_ERROR_LOCALIZATION_PROMPT,
+      userContent: `Question: ${question}\nVerified correct solution (reference only, never shown to the student): ${expectedSolution}\nStudent's working: ${studentWorking}`,
+      temperature: 0.1,
+    });
+    const localization = parseModelJson<{ errorType: 'slip' | 'conceptual' | 'no_attempt'; explanation: string | null; correction: string | null }>(raw);
+
+    if (localization.errorType === 'slip') {
+      await gradeAndRecordReview(userId, conceptKey, 'hard');
+      const terminalState: DiagnosticState = { conceptLabel, subject, stage: 'initial', originalQuestion: question, misconceptionNotes: [] };
+      return {
+        done: true,
+        diagnosis: 'slip',
+        correction: localization.correction || undefined,
+        state: { engine: 'atomic', inner: terminalState },
+        answerCorrect: false,
+      };
+    }
+
+    if (localization.errorType === 'conceptual') {
+      const result = await startDiagnosisFromKnownAnswer(userId, conceptKey, conceptLabel, subject, topic, question, forceAtomic);
+      if (localization.explanation) {
+        if (result.state.engine === 'atomic') result.state.inner.misconceptionNotes.push(localization.explanation);
+        else if (result.state.engine === 'mechanistic') result.state.inner.misconceptionNotes.push(localization.explanation);
+      }
+      return result;
+    }
+    // errorType === 'no_attempt' falls through below, same as no working at all.
+  }
+
+  return startDiagnosisFromKnownAnswer(userId, conceptKey, conceptLabel, subject, topic, question, forceAtomic);
 }
 
 /**

@@ -553,11 +553,14 @@ async function generateEncodingLessonContent(
 }
 
 // Re-fetches a calculation step's verified solution from the content
-// cache at grading time — never round-tripped through the client (see
-// CachedEncodingStep). null on any miss (cache row gone/changed since the
-// lesson started, or the step somehow has none) — the caller falls back
-// to grading without ground truth rather than failing the submission.
-async function fetchExpectedSolution(contentKey: string, stepIndex: number): Promise<string | null> {
+// cache — never round-tripped through the client (see CachedEncodingStep).
+// Used both at grading time (below) and by the math error-localization
+// diagnostic entry (diagnosticOrchestrator.ts's startMathDiagnosis), which
+// needs the same ground truth to find where a student's working actually
+// went wrong. null on any miss (cache row gone/changed since the lesson
+// started, or the step somehow has none) — callers fall back rather than
+// failing outright.
+export async function fetchExpectedSolution(contentKey: string, stepIndex: number): Promise<string | null> {
   const { data, error } = await supabaseAdmin
     .from('encoding_lesson_content')
     .select('steps')

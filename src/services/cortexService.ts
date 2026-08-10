@@ -104,21 +104,35 @@ export async function decideCortexAction(
     `Student's latest message: ${message}`,
   ].join('\n\n');
 
+  // maxTokens raised well above the 2048 default — same fix as
+  // chainService.ts's own comment describes: rule 6's full-topic-layout
+  // reply (a numbered list covering every concept a topic should have,
+  // named/statused one by one) can run long on its own, and this call
+  // ALSO carries the full folder tree + due reviews + history in its
+  // input, on top of a nine-rule system prompt — plenty of room to run
+  // out of output budget before a single text block is even started,
+  // which callClaudeJSON's caller sees as "no text content", not a
+  // helpful truncation message.
   const raw = await callClaudeJSON({
     model: MODELS.diagnosticTree,
     systemPrompt: CORTEX_INTENT_PROMPT,
     userContent,
     temperature: 0.3,
+    maxTokens: 4096,
   });
 
   const parsed = JSON.parse(stripCodeFences(raw)) as CortexResult;
 
   if (parsed.action && parsed.action.type === 'generate_notes') {
+    // Same truncation risk as the intent call above — a genuine first-draft
+    // set of revision notes for a whole lesson is easily long enough to
+    // outrun the 2048 default.
     const notesRaw = await callClaudeJSON({
       model: MODELS.diagnosticTree,
       systemPrompt: CORTEX_NOTE_GENERATION_PROMPT,
       userContent: `Subject: ${parsed.action.subject}\nTopic: ${parsed.action.topic}\nLesson: ${parsed.action.lesson}`,
       temperature: 0.4,
+      maxTokens: 4096,
     });
     const notesParsed = JSON.parse(stripCodeFences(notesRaw)) as { notes: string };
     parsed.action.noteContent = notesParsed.notes;

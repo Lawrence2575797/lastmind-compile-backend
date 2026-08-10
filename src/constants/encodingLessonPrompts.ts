@@ -1,43 +1,53 @@
 // Prompts for the first-time "encoding" lesson (see encodingLessonService.ts)
 // — a genuinely different pedagogical shape from the retrieval chain-lesson
-// engine in spacedLessonEngine.ts: a novelty hook, then a Socratic walk
-// FORWARD through the concept's dependency chain (leaf prerequisites first,
-// building toward the new target concept last), asking the student to
-// derive each derivable step themselves rather than being told it.
+// engine in spacedLessonEngine.ts: a novelty hook, a short knowledge-check
+// of the target concept's DIRECT prerequisites only (assumed prior
+// knowledge, just verified — not re-taught), then deriving the target
+// concept itself, then exploring its real implications/trade-offs.
 
-export const ENCODING_LESSON_BATCH_PROMPT = `You are designing a first-time "encoding" lesson for a UK GCSE/A-Level student who has never been taught this concept before. You will be given the subject, the exact topic and target concept name (the specific lesson this is — every step you write must build toward THIS exact concept, not a related or more general one), and the concept's full prerequisite chain, already ordered FORWARD — the most foundational prerequisite first, building step by step toward the new target concept, which is always the LAST node in the chain. Each node is marked "derivable": true or false.
+export const ENCODING_LESSON_BATCH_PROMPT = `You are designing a first-time "encoding" lesson for a UK GCSE/A-Level student who has never been taught this concept before. You will be given the subject, topic, qualification and exam board (where known), and the specific target concept this lesson is about — every step you write must build toward THIS exact concept, not a related or more general one.
 
-CRITICAL — this lesson is about the target concept specifically, not the wider topic. The topic is only there to tell you which area of the subject this sits in; every single step, including the earliest prerequisite ones, exists purely to build toward the target concept. Do not let the lesson drift into being a general tour of the topic. The LAST step (the target concept's own node) must explicitly name the target concept and clearly draw together everything from the earlier steps into it — the student should finish the lesson in no doubt that what they just derived/learned IS the target concept, not just related background.
+You will also be given two node lists from the concept's dependency chain:
+- "closePrerequisites" — the target concept's DIRECT prerequisites only (the specific foundation this exact lesson sits on). These are assumed prior knowledge from earlier lessons — NOT being taught here, only verified.
+- "backgroundContext" — further-back prerequisites, already covered in earlier lessons. Reference these briefly for continuity if genuinely useful, but do NOT write a step for them and do NOT test them — they exist only so you don't contradict or clumsily re-derive something the student already learned elsewhere.
 
-Your job is to write the actual lesson content, as a single JSON response covering the whole chain — every step below is presented to the student in this same forward order, one at a time, each building on the ones before it.
+Your job is to write the actual lesson content as a single JSON response, in this fixed order:
 
-Structure:
-1. A "hookFact" — one genuinely interesting, novel fact related to the target concept specifically (not a generic fact about the wider subject), written to spark curiosity before the lesson begins. Not a question, not part of the chain itself — just an engaging opener.
-2. One "step" per node in the chain, in the SAME forward order they're given to you:
-   - The FIRST node in the chain always gets "type": "scene" — a relatable, fairly concrete example or scenario that sets the scene for this node's content, something the student can picture or connect to their own experience, and that clearly leads toward the target concept (not just a generic example in isolation — the student should be able to see why this scene matters for what they're about to learn). This is an invitation to engage, not a rigorous test, and it's what begins the chain.
-   - Every LATER node marked "derivable": true gets "type": "derive" — a prompt that asks the student to reason out or derive THIS node's content themselves, building on everything established in the steps before it. It must NOT give the answer away or state the content directly — it should give the student enough to work it out using what they already know from earlier in the chain (and general prior knowledge), not hand it to them.
-   - Every LATER node marked "derivable": false gets "type": "explain" — direct, clear explanatory text that actually teaches this specific piece of content plainly, PLUS a "checkQuestion": a short question that tests whether the student actually understood the explanation just given. This node can't be verified later by spaced repetition (it's brand new — there's nothing to test yet), so the check question is the only way to catch a shaky explanation before later "derive" steps rely on it as a foundation. The check question must be answerable directly from the explanation text itself — it is confirming comprehension of what was just taught, not asking the student to derive something new.
+1. A "hookFact" — one genuinely interesting, novel fact related to the target concept specifically (not a generic fact about the wider subject), written to spark curiosity before the lesson begins. Not a question, not part of the steps — just an engaging opener.
+
+2. One "check" step per node in "closePrerequisites", in the given order (0 if the list is empty — some concepts genuinely have no direct prerequisites). Each is a direct recall/application question confirming the student ALREADY understands that specific point — there is nothing earlier in THIS lesson to derive it from, so this is a check, not a derivation prompt. Phrase it concretely and use the terminology appropriate to the given qualification/exam board where that affects wording.
+
+3. Exactly one "scene" step — a relatable, fairly concrete example or scenario that sets up the TARGET concept specifically, building on the close prerequisites just confirmed above (not a generic example in isolation — the student should see why this scene matters for what they're about to learn). An invitation to engage, not a rigorous test.
+
+4. Exactly one step for the target concept itself: "derive" if the target is marked derivable (a prompt that asks the student to reason it out from the close prerequisites and the scene, building on everything established so far — must NOT give the answer away or state the content directly), or "explain" if not derivable (direct, clear, complete explanatory text that actually teaches the concept plainly, PLUS a "checkQuestion" testing whether the student understood the explanation just given — this can't be verified later by spaced repetition since it's brand new, so the check question is the only safeguard against a shaky explanation).
+
+5. 1 to 3 "implication" steps — always derive-style questions (never explanatory), each asking the student to reason about a genuine advantage, disadvantage, consequence, or critique of the concept they just derived (for example, for a tariff: what the exporting country might do in response, and why that undermines the policy's own goal). Use fewer than 3 if the concept doesn't genuinely support that many distinct, substantive angles — never pad with a weak or repetitive one.
+
+6. A "diagram" decision: set "needed" to true ONLY when there's a genuine, standard visual convention for the target concept specifically — a labeled diagram or graph that's materially clearer than text (e.g. a tariff diagram, a supply/demand shift, a PPF, a labeled biological process) — not a decorative illustration. Most concepts do NOT need one; default to false for anything purely definitional, procedural, or narrative. If true, "searchQuery" should be a concise search string likely to find that specific standard diagram on a general image repository (e.g. "tariff diagram economics"), not a generic illustration search.
 
 Rules:
 1. Output ONLY valid JSON, nothing else.
-2. Exactly one step per node, in the exact same order as the chain you were given.
-3. Every "derive" and "scene" step must be phrased as something the student actively responds to — never give away the content itself.
-4. Every "explain" step's "text" must actually explain the content clearly and completely on its own — the student has no way to derive it, so don't be vague, don't compress a whole topic into one thin sentence, and don't make them guess. If the content genuinely has more than one part worth understanding, write enough text to cover it properly (still tight — see rule 7 — but complete, not a fragment). Its "checkQuestion" must test real understanding of that text, not just recall of a single word.
-5. Keep each step focused on its own node — don't bundle multiple nodes into one step.
-6. CRITICAL — every "scene", "derive", and "checkQuestion" must ask for exactly ONE clear thing, answerable in a single short response. If a node's own content naturally has several distinct parts, features, categories, or examples (e.g. "the functions of money", "the stages of X"), do NOT ask the student to give a complete list of all of them — pick ONE or TWO representative ones for the question to focus on instead. A question that requires enumerating many items in one answer is a bad question here; never write one.
-7. Keep every "hookFact" and every step's "text" tight and focused — a few sentences at most where needed for genuine clarity (rule 4 above), never a padded paragraph. This is a JSON response covering an entire lesson at once, so length discipline on every field matters.
-8. "checkQuestion" is required for every "explain" step, and must be omitted (or left out) for "scene" and "derive" steps — those already are the question.
+2. Every "check", "scene", "derive", and "implication" step must be phrased as something the student actively responds to — never give away the content itself.
+3. The "explain" step's "text" must actually explain the content clearly and completely on its own — don't be vague, don't compress it into one thin sentence, and don't make the student guess. Its "checkQuestion" must test real understanding of that text, not just recall of a single word.
+4. CRITICAL — every "check", "scene", "derive", "implication", and "checkQuestion" must ask for exactly ONE clear thing, answerable in a single short response. If the content naturally has several distinct parts, features, or examples, do NOT ask for a complete list of all of them — pick ONE or TWO representative ones instead. A question that requires enumerating many items in one answer is a bad question here; never write one.
+5. Keep every "hookFact" and every step's "text" tight and focused — a few sentences at most where needed for genuine clarity, never a padded paragraph.
+6. "checkQuestion" is required for "explain" steps only, and must be omitted for every other step type.
+7. "nodeId" for "check" steps must be the exact id given in "closePrerequisites". "nodeId" for "scene" and the target's own step must be the target concept's own id. "nodeId" for "implication" steps can be any short descriptive slug of your choosing — they don't correspond to a chain node.
 
 Output schema:
 {
   "hookFact": string,
   "steps": [
-    { "nodeId": string, "type": "scene" | "derive", "text": string },
-    { "nodeId": string, "type": "explain", "text": string, "checkQuestion": string }
-  ]
+    { "nodeId": string, "type": "check", "text": string },
+    { "nodeId": string, "type": "scene", "text": string },
+    { "nodeId": string, "type": "derive", "text": string }
+      OR { "nodeId": string, "type": "explain", "text": string, "checkQuestion": string },
+    { "nodeId": string, "type": "implication", "text": string }
+  ],
+  "diagram": { "needed": boolean, "searchQuery": string | null }
 }`;
 
-export const ENCODING_ANSWER_CHECK_PROMPT = `You are checking a UK GCSE/A-Level student's free-text answer during a first-time "encoding" lesson, where they were asked either to derive/engage with one focused step of a concept's reasoning chain, or to answer a comprehension-check question about an explanation they were just directly given. This is a formative check, not a final exam — the student moves on to the next step regardless of this verdict, so your job is to judge quality honestly for tracking purposes, not to gatekeep progress. For a comprehension-check question, judge whether they understood and can restate the specific point the explanation made — not whether they can derive anything new.
+export const ENCODING_ANSWER_CHECK_PROMPT = `You are checking a UK GCSE/A-Level student's free-text answer during a first-time "encoding" lesson, where they were asked to confirm existing knowledge, derive/engage with a step of a concept's reasoning chain, reason about an implication of a concept, or answer a comprehension-check question about an explanation they were just directly given. This is a formative check, not a final exam — the student moves on to the next step regardless of this verdict, so your job is to judge quality honestly for tracking purposes, not to gatekeep progress. For a comprehension-check question, judge whether they understood and can restate the specific point the explanation made — not whether they can derive anything new.
 
 Be GENEROUS. Mark "correct" true if the student shows genuine understanding of the core idea being asked about, with reasoning that isn't left as an unexplained leap — you do NOT need every conceivable related detail, example, or feature mentioned, only the specific thing the prompt actually asked about. A student who explains the core mechanism clearly, even briefly or informally, should pass. Only mark "correct" false if the core reasoning is actually missing, wrong, or so vague/jargon-only that no real understanding is shown.
 
@@ -52,17 +62,15 @@ Rules:
 Output schema:
 { "correct": boolean, "feedback": string | null }`;
 
-export const ENCODING_DRAFT_CHECK_PROMPT = `You are watching a UK GCSE/A-Level student type their answer, in real time, to a question asking them to derive or explain ONE focused step of a concept's reasoning chain. Your job is to spot phrases in their CURRENT, still-in-progress draft that use genuinely unexplained jargon or skip a real step in the reasoning — applied early, gently, so the student can tighten it up before submitting if they want to. Be sparing: this is a light nudge, not a strict check, and the student can submit and move on regardless of what you flag.
+export const DIAGRAM_VERIFICATION_PROMPT = `You are choosing the single best diagram image for a UK GCSE/A-Level lesson, from a small set of candidate images retrieved from Wikimedia Commons (a general free-media repository, not an exam-board resource). You will be given the subject, qualification, and exam board (where known), the target concept the diagram is meant to illustrate, and the candidate images themselves, each preceded by a text label identifying its index and title.
 
-You will be given the concept/step, the prompt they're responding to, and their current draft text.
+Be strict. Only choose a candidate if it is a genuinely accurate, correctly-labeled depiction of this exact concept, consistent with how it would standardly be taught for the given subject/qualification (and exam board, where its conventions actually matter — e.g. axis labels, shading, terminology). Exam-board-specific diagrams are UNLIKELY to exist on a general repository like Commons — if no candidate is a clearly correct, unambiguous match, say so. Showing no diagram is always better than showing an inaccurate or mismatched one.
 
 Rules:
 1. Output ONLY valid JSON, nothing else.
-2. Only flag phrases that are GENUINELY a skipped step or unexplained term — don't flag stylistic or minor issues, and don't flag anything if the draft is too short to judge yet.
-3. Each "snippet" MUST be copied verbatim, character-for-character, from the draft you were given — it will be located by exact text match, so it must exist exactly as given.
-4. Each "hint" must point at what's missing WITHOUT stating the missing content or the correct answer.
-5. Return at most 3 flags, prioritizing the most important gaps if there are more than 3.
-6. If there's nothing worth flagging yet, return an empty array.
+2. "chosenIndex" is the 0-based index of the best candidate, or null if none genuinely qualify.
+3. If you choose one, "caption" is a short, factual one-sentence caption describing what the diagram shows in relation to the target concept — do not mention Wikimedia, licensing, or attribution in it (that's handled separately).
+4. If "chosenIndex" is null, set "caption" to null.
 
 Output schema:
-{ "flags": [ { "snippet": string, "hint": string } ] }`;
+{ "chosenIndex": number | null, "caption": string | null }`;

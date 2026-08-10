@@ -6,6 +6,7 @@ import { supabaseAdmin } from './supabaseAdmin';
 import {
   ENCODING_LESSON_BATCH_PROMPT,
   ENCODING_ANSWER_CHECK_PROMPT,
+  ENCODING_MATH_ANSWER_CHECK_PROMPT,
   DIAGRAM_VERIFICATION_PROMPT,
   STEP_DERIVABILITY_CHECK_PROMPT,
   NOTES_FROM_LESSON_PROMPT,
@@ -77,6 +78,25 @@ export interface EncodingStep {
   // chain for it).
   diagnosisConceptKey: string;
   diagram?: EncodingDiagram;
+  // True when this step is a genuine calculation (numeric/algebraic, with
+  // a definite computable answer) rather than a purely verbal one — see
+  // ENCODING_LESSON_BATCH_PROMPT rule 10. Drives the frontend's math
+  // keyboard input and the math-aware grading path (submitEncodingAnswer).
+  // Never carries the actual solution — see CachedEncodingStep below for
+  // why that has to stay entirely server-side.
+  requiresCalculation?: boolean;
+}
+
+// The shape actually stored in encoding_lesson_content — a calculation
+// step's verified correct solution (see ENCODING_LESSON_BATCH_PROMPT rule
+// 1c) lives ONLY here, never in EncodingStep/EncodingLessonState, which
+// the client holds and round-trips on every /encoding-lesson/submit call.
+// If expectedSolution were embedded there, the answer would be sitting in
+// plain sight in the network response before the student even attempts
+// the question. Grading re-fetches this cache row by contentKey instead —
+// see submitEncodingAnswer.
+interface CachedEncodingStep extends EncodingStep {
+  expectedSolution?: string;
 }
 
 export interface EncodingLessonState {
@@ -90,6 +110,11 @@ export interface EncodingLessonState {
   // diagnostic tree's own terminal branch) — the lesson-completion grade
   // below must not repeat that FSRS update for the same concept.
   targetGradedViaDrillDown?: boolean;
+  // The exact encoding_lesson_content cache key this lesson's content came
+  // from — purely a cache-routing string, not itself sensitive. Lets
+  // submitEncodingAnswer re-fetch a calculation step's expectedSolution
+  // for math-aware grading without ever having sent it to the client.
+  contentKey: string;
 }
 
 export interface EncodingStartResult {
@@ -262,6 +287,8 @@ interface DraftStep {
   checkQuestion?: string;
   diagnosisConceptKey: string;
   confident?: boolean;
+  requiresCalculation?: boolean;
+  expectedSolution?: string;
 }
 
 /**
@@ -285,14 +312,21 @@ async function repairUncertainSteps(
   for (const step of steps) {
     if (step.confident === false) {
       try {
-        const result = await callJSON<{ needsRevision: boolean; revisedText: string | null; revisedCheckQuestion: string | null }>(
+        const result = await callJSON<{
+          needsRevision: boolean;
+          revisedText: string | null;
+          revisedCheckQuestion: string | null;
+          revisedExpectedSolution: string | null;
+        }>(
           STEP_DERIVABILITY_CHECK_PROMPT,
           [
             `Subject: ${subject}`,
             `Qualification: ${qualification || 'unspecified'}`,
             `Exam board: ${examBoard || 'unspecified'}`,
             `Established so far, in order: ${JSON.stringify(establishedSoFar)}`,
-            `Flagged step — type: ${step.type}, text: ${step.text}${step.checkQuestion ? `, checkQuestion: ${step.checkQuestion}` : ''}`,
+            `Flagged step — type: ${step.type}, text: ${step.text}${step.checkQuestion ? `, checkQuestion: ${step.checkQuestion}` : ''}${
+              step.requiresCalculation ? `, requiresCalculation: true, expectedSolution: ${step.expectedSolution || ''}` : ''
+            }`,
           ].join('\n'),
           MODELS.diagnosticTree,
           0.2
@@ -300,6 +334,7 @@ async function repairUncertainSteps(
         if (result.needsRevision) {
           if (result.revisedText) step.text = result.revisedText;
           if (step.type === 'explain' && result.revisedCheckQuestion) step.checkQuestion = result.revisedCheckQuestion;
+          if (step.requiresCalculation && result.revisedExpectedSolution) step.expectedSolution = result.revisedExpectedSolution;
         }
       } catch (err) {
         // A failed repair attempt just means the original (self-flagged-
@@ -379,25 +414,31 @@ export async function startEncodingLesson(
     .maybeSingle();
 
   let hookFact: string;
-  let steps: EncodingStep[];
+  let cachedSteps: CachedEncodingStep[];
 
   if (!cacheError && cachedContent) {
     hookFact = cachedContent.hook_fact;
-    steps = cachedContent.steps as EncodingStep[];
+    cachedSteps = cachedContent.steps as CachedEncodingStep[];
   } else {
     const generated = await generateEncodingLessonContent(
       conceptKey, subject, topic, concept, qualification, examBoard, chain, target, closeNodes, backgroundNodes, forcedNodeIds
     );
     hookFact = generated.hookFact;
-    steps = generated.steps;
-    await supabaseAdmin.from('encoding_lesson_content').insert({ content_key: contentKey, hook_fact: hookFact, steps });
+    cachedSteps = generated.steps;
+    await supabaseAdmin.from('encoding_lesson_content').insert({ content_key: contentKey, hook_fact: hookFact, steps: cachedSteps });
   }
 
-  if (!steps.length) {
+  if (!cachedSteps.length) {
     throw new Error('Could not generate lesson content for this concept.');
   }
 
-  const state: EncodingLessonState = { conceptKey, subject, steps, currentIndex: 0, anyWeakSoFar: false };
+  // Strip expectedSolution — the client holds and round-trips `state`
+  // wholesale on every submit, so anything in here is visible in the
+  // network response. Grading re-fetches the cache row by contentKey
+  // instead (see submitEncodingAnswer).
+  const steps: EncodingStep[] = cachedSteps.map(({ expectedSolution, ...step }) => step);
+
+  const state: EncodingLessonState = { conceptKey, subject, steps, currentIndex: 0, anyWeakSoFar: false, contentKey };
   return { done: false, hookFact, step: steps[0], state };
 }
 
@@ -416,13 +457,21 @@ async function generateEncodingLessonContent(
   closeNodes: ChainNode[],
   backgroundNodes: ChainNode[],
   forcedNodeIds: string[]
-): Promise<{ hookFact: string; steps: EncodingStep[] }> {
+): Promise<{ hookFact: string; steps: CachedEncodingStep[] }> {
   const targetDerivable = resolveDerivable(target);
   const forcedIds = new Set(forcedNodeIds);
 
   const batch = await callJSON<{
     hookFact: string;
-    steps: { nodeId: string; type: EncodingStepType; text: string; checkQuestion?: string; confident?: boolean }[];
+    steps: {
+      nodeId: string;
+      type: EncodingStepType;
+      text: string;
+      checkQuestion?: string;
+      confident?: boolean;
+      requiresCalculation?: boolean;
+      expectedSolution?: string;
+    }[];
     diagram?: { needed: boolean; searchQuery: string | null };
   }>(
     ENCODING_LESSON_BATCH_PROMPT,
@@ -464,11 +513,18 @@ async function generateEncodingLessonContent(
     // resolved a cached chain for anyway).
     diagnosisConceptKey: s.nodeId === target.id || s.type === 'implication' ? conceptKey : s.nodeId,
     confident: s.confident,
+    requiresCalculation: !!s.requiresCalculation,
+    expectedSolution: s.requiresCalculation ? s.expectedSolution : undefined,
   }));
 
   await repairUncertainSteps(draftSteps, subject, qualification, examBoard);
 
-  const steps: EncodingStep[] = draftSteps.map(({ confident, ...step }) => step);
+  // expectedSolution is kept here — this is the CACHED shape (see
+  // CachedEncodingStep) — and stripped later, once, right before anything
+  // reaches the client (startEncodingLesson). Only "confident" (a
+  // generation-time self-check artifact, meaningless afterward) is
+  // dropped at this point.
+  const steps: CachedEncodingStep[] = draftSteps.map(({ confident, ...step }) => step);
 
   if (steps.length && batch.diagram?.needed && batch.diagram.searchQuery) {
     const diagram = await withTimeout(
@@ -494,6 +550,22 @@ async function generateEncodingLessonContent(
   }
 
   return { hookFact: batch.hookFact, steps };
+}
+
+// Re-fetches a calculation step's verified solution from the content
+// cache at grading time — never round-tripped through the client (see
+// CachedEncodingStep). null on any miss (cache row gone/changed since the
+// lesson started, or the step somehow has none) — the caller falls back
+// to grading without ground truth rather than failing the submission.
+async function fetchExpectedSolution(contentKey: string, stepIndex: number): Promise<string | null> {
+  const { data, error } = await supabaseAdmin
+    .from('encoding_lesson_content')
+    .select('steps')
+    .eq('content_key', contentKey)
+    .maybeSingle();
+  if (error || !data) return null;
+  const cachedSteps = data.steps as CachedEncodingStep[];
+  return cachedSteps[stepIndex]?.expectedSolution || null;
 }
 
 /**
@@ -523,11 +595,41 @@ export async function submitEncodingAnswer(userId: string, state: EncodingLesson
   // Claude to grade an empty/absent answer.
   let correct: boolean;
   let feedback: string | null;
+  const gradingPrompt = currentStep.type === 'explain' ? (currentStep.checkQuestion || currentStep.text) : currentStep.text;
+
   if (dontKnow) {
     correct = false;
     feedback = null;
+  } else if (currentStep.requiresCalculation) {
+    // Ground-truth-backed grading — the generation step already verified
+    // this has a clean, correct solution (see ENCODING_LESSON_BATCH_PROMPT
+    // rule 1c); check the student's own working against it rather than
+    // judging plausibility alone. Sonnet, not Haiku, here specifically —
+    // reliably judging numeric/algebraic equivalence is worth the step up.
+    const expectedSolution = await fetchExpectedSolution(state.contentKey, state.currentIndex);
+    if (expectedSolution) {
+      const check = await callJSON<{ correct: boolean; feedback: string | null }>(
+        ENCODING_MATH_ANSWER_CHECK_PROMPT,
+        `Concept/step: ${currentStep.label}\nQuestion: ${gradingPrompt}\nVerified correct solution (reference only, never shown to the student): ${expectedSolution}\nStudent's working: ${answer}`,
+        MODELS.diagnosticTree,
+        0.1
+      );
+      correct = check.correct;
+      feedback = check.feedback;
+    } else {
+      // Cache row gone/changed since this lesson started — fall back to
+      // grading without ground truth rather than failing the submission.
+      console.error('LastMind: expectedSolution missing for a calculation step, falling back to ungrounded grading.', { contentKey: state.contentKey, stepIndex: state.currentIndex });
+      const check = await callJSON<{ correct: boolean; feedback: string | null }>(
+        ENCODING_ANSWER_CHECK_PROMPT,
+        `Concept/step: ${currentStep.label}\nPrompt: ${gradingPrompt}\nStudent's answer: ${answer}`,
+        MODELS.simpleQuestion,
+        0.2
+      );
+      correct = check.correct;
+      feedback = check.feedback;
+    }
   } else {
-    const gradingPrompt = currentStep.type === 'explain' ? (currentStep.checkQuestion || currentStep.text) : currentStep.text;
     const check = await callJSON<{ correct: boolean; feedback: string | null }>(
       ENCODING_ANSWER_CHECK_PROMPT,
       `Concept/step: ${currentStep.label}\nPrompt: ${gradingPrompt}\nStudent's answer: ${answer}`,

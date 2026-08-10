@@ -130,7 +130,15 @@ async function sendWithTemperatureRetry(
 
   const textBlock = response.content.find((block) => block.type === 'text');
   if (!textBlock || textBlock.type !== 'text') {
-    throw new Error('Claude response contained no text content');
+    // Bare "no text content" alone isn't enough to diagnose which of several
+    // very different causes this was (ran out of max_tokens before any text
+    // block started, a refusal, an empty content array) — stop_reason and
+    // the actual block types are the only things that tell them apart, and
+    // there's no way to get them again after the fact, so log them now.
+    throw new Error(
+      `Claude response contained no text content (model=${model}, stop_reason=${response.stop_reason}, ` +
+        `blocks=[${response.content.map((b) => b.type).join(', ')}], output_tokens=${response.usage?.output_tokens})`
+    );
   }
   return textBlock.text;
 }

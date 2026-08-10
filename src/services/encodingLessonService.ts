@@ -121,6 +121,32 @@ function clean(s: string): string {
   return (s || '').trim().toLowerCase().replace(/[^a-z0-9]+/g, '_');
 }
 
+export interface SiblingConcept {
+  label: string;
+  done: boolean;
+}
+
+// Loose (not exact) match — chain node labels and the student's own page
+// titles for the "same" concept are independently generated free text
+// (e.g. "Budget line" vs "The budget constraint"), so exact equality would
+// miss most real matches. False negatives here just fall back to the
+// existing title-only heuristic (unchanged behavior); false positives are
+// harmless too — force-teaching a prerequisite that genuinely was already
+// known just makes that beat mildly redundant, never wrong.
+function normalizeForMatch(s: string): string {
+  return s.trim().toLowerCase().replace(/[^a-z0-9]+/g, ' ').trim();
+}
+
+function matchesUnfinishedSibling(nodeLabel: string, siblingConcepts: SiblingConcept[]): boolean {
+  const normNode = normalizeForMatch(nodeLabel);
+  if (!normNode) return false;
+  return siblingConcepts.some((s) => {
+    if (s.done) return false;
+    const normSib = normalizeForMatch(s.label);
+    return !!normSib && (normSib === normNode || normSib.includes(normNode) || normNode.includes(normSib));
+  });
+}
+
 const DIAGRAM_LOOKUP_TIMEOUT_MS = 8000;
 
 async function withTimeout<T>(promise: Promise<T>, ms: number): Promise<T | null> {
@@ -297,14 +323,27 @@ async function repairUncertainSteps(
  * covered in earlier lessons or drift into testing prerequisites far from
  * the actual new content.
  *
+ * `siblingConcepts` — the OTHER page titles (+ completion status) in the
+ * same folder/subfolder as this lesson's own page — exists specifically so
+ * a close prerequisite that happens to be one of the student's OWN
+ * not-yet-completed pages gets taught inline rather than silently assumed
+ * known just because it wasn't named in THIS page's own title (e.g. an
+ * "Optimal choice" lesson assuming "Budget line" was already covered, when
+ * the student's own Budget line page hadn't been done yet). See
+ * matchesUnfinishedSibling. Always safe to omit/pass empty — falls back to
+ * the original title-only heuristic.
+ *
  * The generated content (hook fact + steps, including any resolved
- * diagram) is cached per concept+qualification+exam board, same pattern
- * as dependency_chains/encoding_diagrams — only the first student to ever
- * hit a given lesson pays for generation (which now also includes an
- * inline self-check per step, and a rare targeted repair call for
- * anything it wasn't confident about even after revising itself); every
- * student after that gets an instant cache hit with no chain fetch and no
- * Claude calls at all.
+ * diagram) is cached per concept+qualification+exam board (extended with a
+ * forced-prerequisite fingerprint only when siblingConcepts actually forced
+ * something — the common, well-ordered case keeps the exact same cache key
+ * as before), same pattern as dependency_chains/encoding_diagrams — only
+ * the first student to hit a given lesson IN A GIVEN teaching situation
+ * pays for generation; everyone else gets an instant cache hit. The chain
+ * fetch itself now always runs (even on a cache hit) since the close
+ * prerequisites it reveals are needed to compute the cache key in the
+ * first place — it's a fast, independently-cached read, not an LLM call,
+ * so this costs one extra DB round trip per lesson start, not a Claude call.
  */
 export async function startEncodingLesson(
   conceptKey: string,
@@ -312,9 +351,26 @@ export async function startEncodingLesson(
   topic: string,
   concept: string,
   qualification = '',
-  examBoard = ''
+  examBoard = '',
+  siblingConcepts: SiblingConcept[] = []
 ): Promise<EncodingStartResult> {
-  const contentKey = `${conceptKey}::${clean(qualification)}::${clean(examBoard)}`;
+  const chainResult = await getOrGenerateChain(conceptKey, subject, topic, concept);
+  if (!chainResult.chain) {
+    throw new Error('Could not generate a dependency chain for this concept.');
+  }
+  const chain = chainResult.chain as Chain;
+
+  const target = chain.nodes[chain.nodes.length - 1];
+  const closeIds = new Set((target.depends_on || []).map((d) => d.node_id));
+  const closeNodes = chain.nodes.filter((n) => closeIds.has(n.id)).slice(0, 3);
+  const coveredIds = new Set([...closeNodes.map((n) => n.id), target.id]);
+  const backgroundNodes = chain.nodes.filter((n) => !coveredIds.has(n.id));
+
+  const forcedNodeIds = closeNodes.filter((n) => matchesUnfinishedSibling(n.label, siblingConcepts)).map((n) => n.id).sort();
+
+  const contentKey = forcedNodeIds.length
+    ? `${conceptKey}::${clean(qualification)}::${clean(examBoard)}::forced_${forcedNodeIds.join('_')}`
+    : `${conceptKey}::${clean(qualification)}::${clean(examBoard)}`;
 
   const { data: cachedContent, error: cacheError } = await supabaseAdmin
     .from('encoding_lesson_content')
@@ -329,7 +385,9 @@ export async function startEncodingLesson(
     hookFact = cachedContent.hook_fact;
     steps = cachedContent.steps as EncodingStep[];
   } else {
-    const generated = await generateEncodingLessonContent(conceptKey, subject, topic, concept, qualification, examBoard);
+    const generated = await generateEncodingLessonContent(
+      conceptKey, subject, topic, concept, qualification, examBoard, chain, target, closeNodes, backgroundNodes, forcedNodeIds
+    );
     hookFact = generated.hookFact;
     steps = generated.steps;
     await supabaseAdmin.from('encoding_lesson_content').insert({ content_key: contentKey, hook_fact: hookFact, steps });
@@ -344,28 +402,23 @@ export async function startEncodingLesson(
 }
 
 // The actual generation path — only ever runs on a cache miss, see
-// startEncodingLesson above.
+// startEncodingLesson above (which already fetched the chain and computed
+// closeNodes/backgroundNodes/forcedNodeIds to build the cache key).
 async function generateEncodingLessonContent(
   conceptKey: string,
   subject: string,
   topic: string,
   concept: string,
   qualification: string,
-  examBoard: string
+  examBoard: string,
+  chain: Chain,
+  target: ChainNode,
+  closeNodes: ChainNode[],
+  backgroundNodes: ChainNode[],
+  forcedNodeIds: string[]
 ): Promise<{ hookFact: string; steps: EncodingStep[] }> {
-  const chainResult = await getOrGenerateChain(conceptKey, subject, topic, concept);
-  if (!chainResult.chain) {
-    throw new Error('Could not generate a dependency chain for this concept.');
-  }
-  const chain = chainResult.chain as Chain;
-
-  const target = chain.nodes[chain.nodes.length - 1];
   const targetDerivable = resolveDerivable(target);
-
-  const closeIds = new Set((target.depends_on || []).map((d) => d.node_id));
-  const closeNodes = chain.nodes.filter((n) => closeIds.has(n.id)).slice(0, 3);
-  const coveredIds = new Set([...closeNodes.map((n) => n.id), target.id]);
-  const backgroundNodes = chain.nodes.filter((n) => !coveredIds.has(n.id));
+  const forcedIds = new Set(forcedNodeIds);
 
   const batch = await callJSON<{
     hookFact: string;
@@ -381,7 +434,7 @@ async function generateEncodingLessonContent(
       `Target concept (this exact lesson — every step must build toward THIS, not a related or more general concept): ${target?.label || concept}`,
       `Original lesson title, exactly as the student named it (may explicitly name more than one idea together, e.g. "X and Y" — use this to judge whether a close prerequisite below is actually one of THIS lesson's own named topics, not just background from an earlier lesson): ${concept}`,
       `Target concept is derivable from its close prerequisites: ${targetDerivable}`,
-      `closePrerequisites, in order (for each: write a "check" step UNLESS it's explicitly one of the ideas named in the original lesson title above, in which case teach it properly instead — see instructions): ${JSON.stringify(closeNodes.map((n) => ({ nodeId: n.id, label: n.label })))}`,
+      `closePrerequisites, in order (for each: write a "check" step UNLESS it's named in the original lesson title above OR forceTeach is true, in which case teach it properly instead — see instructions): ${JSON.stringify(closeNodes.map((n) => ({ nodeId: n.id, label: n.label, forceTeach: forcedIds.has(n.id) })))}`,
       `backgroundContext (already covered earlier — reference only, do not test, do not write a step): ${JSON.stringify(backgroundNodes.map((n) => ({ nodeId: n.id, label: n.label })))}`,
     ].join('\n'),
     MODELS.diagnosticTree,

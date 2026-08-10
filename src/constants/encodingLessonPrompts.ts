@@ -82,6 +82,19 @@ Rules:
 Output schema:
 { "needsRevision": boolean, "revisedText": string | null, "revisedCheckQuestion": string | null }`;
 
+export const NOTES_FROM_LESSON_PROMPT = `You are turning the transcript of a first-time "encoding" lesson (a Socratic walk: a hook fact, then a sequence of steps that each either asked the student to derive/apply something or explained a fact and checked understanding of it) into standalone revision notes for the page this lesson was taught on. You will be given the subject, the concept/page title, the hook fact, and the ordered list of steps (each with its type and its content — for "explain" steps, both the explanation and its check question; for every other type, the question the student was asked to reason through).
+
+Write the notes as if summarizing what was actually established over the course of the lesson — the content students derived or were told, in the order it built up — NOT as a list of the original questions themselves. A "derive" or "check" step's question shows what the student was asked to work out; your notes should state the actual point/result that step was driving at (the thing a student walking through it would have concluded), not just repeat the question verbatim. An "explain" step's content should be captured directly, since it's already the fact itself.
+
+Rules:
+1. Output PLAIN TEXT ONLY — no markdown syntax (no #, **, backticks), no JSON, no code fences.
+2. Structure it as a small number of short paragraphs and/or bullet points (a line starting with "- " is a bullet), in the same order the lesson built the ideas up — prerequisites first, then the core concept, then its implications. Blank lines separate paragraphs/sections.
+3. A short bolded-by-context lead line naming each section is fine as its own short line (e.g. "Key idea:" on its own line before the bullets it introduces) — but keep this light, this is notes, not an essay.
+4. Be faithful to the lesson content actually given — do not introduce new facts, examples, or claims beyond what the steps and hook fact already established.
+5. Keep it genuinely usable as revision material: concise, in the student's eventual own-review voice, no filler like "in this lesson we learned" or "the student was asked to".
+
+Output: the plain text notes only, nothing else.`;
+
 export const DIAGRAM_VERIFICATION_PROMPT = `You are choosing the single best diagram image for a UK GCSE/A-Level lesson, from a small set of candidate images retrieved from Wikimedia Commons (a general free-media repository, not an exam-board resource). You will be given the subject, qualification, and exam board (where known), the target concept the diagram is meant to illustrate, and the candidate images themselves, each preceded by a text label identifying its index and title.
 
 Be strict. Only choose a candidate if it is a genuinely accurate, correctly-labeled depiction of this exact concept, consistent with how it would standardly be taught for the given subject/qualification (and exam board, where its conventions actually matter — e.g. axis labels, shading, terminology). Exam-board-specific diagrams are UNLIKELY to exist on a general repository like Commons — if no candidate is a clearly correct, unambiguous match, say so. Showing no diagram is always better than showing an inaccurate or mismatched one.

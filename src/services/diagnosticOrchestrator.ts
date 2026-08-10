@@ -28,6 +28,10 @@ export interface OrchestratorResult {
   // real per-turn feedback through the whole diagnostic drill-down instead
   // of going silent until it concludes.
   answerCorrect?: boolean;
+  // Same meaning as DiagnosticResult/MechanisticResult's field of the same
+  // name — tells the frontend whether nextQuestion needs the maths
+  // keyboard. Never set alongside nextOptions.
+  nextRequiresCalculation?: boolean;
 }
 
 async function dispatchToBranch(
@@ -36,12 +40,21 @@ async function dispatchToBranch(
   conceptLabel: string,
   subject: string,
   topic: string,
-  originalQuestion: string
+  originalQuestion: string,
+  // Set only when this originalQuestion is itself a calculation (see
+  // startMathDiagnosis's "conceptual" hand-off) — carried into whichever
+  // engine ends up handling it, so combination_check/hint_cue (which both
+  // re-ask this exact question) stay math-aware too.
+  originalQuestionRequiresCalculation = false,
+  originalQuestionExpectedSolution?: string
 ): Promise<OrchestratorResult> {
   const chain = await loadChainIfMechanistic(conceptKey, subject, topic, conceptLabel);
 
   if (chain) {
-    const result = await startMechanisticDiagnosis(userId, conceptKey, conceptLabel, subject, originalQuestion, chain);
+    const result = await startMechanisticDiagnosis(
+      userId, conceptKey, conceptLabel, subject, originalQuestion, chain,
+      originalQuestionRequiresCalculation, originalQuestionExpectedSolution
+    );
     return {
       done: result.done,
       diagnosis: result.diagnosis,
@@ -50,6 +63,7 @@ async function dispatchToBranch(
       nextOptions: result.nextOptions,
       state: { engine: 'mechanistic', inner: result.state },
       answerCorrect: result.answerCorrect,
+      nextRequiresCalculation: result.nextRequiresCalculation,
     };
   }
 
@@ -59,7 +73,15 @@ async function dispatchToBranch(
   // gateOnWrongAnswer's export comment) rather than dispatching straight
   // into processDiagnosticAnswer's dontKnow shortcut, which skips both the
   // slip-check AND the wording gate entirely.
-  const atomicState: DiagnosticState = { conceptLabel: conceptKey, subject, stage: 'initial', originalQuestion, misconceptionNotes: [] };
+  const atomicState: DiagnosticState = {
+    conceptLabel: conceptKey,
+    subject,
+    stage: 'initial',
+    originalQuestion,
+    misconceptionNotes: [],
+    originalQuestionRequiresCalculation,
+    originalQuestionExpectedSolution: originalQuestionRequiresCalculation ? originalQuestionExpectedSolution : undefined,
+  };
   const result = gateOnWrongAnswer(atomicState, originalQuestion);
   return {
     done: result.done,
@@ -69,6 +91,7 @@ async function dispatchToBranch(
     nextOptions: result.nextOptions,
     state: { engine: 'atomic', inner: result.state },
     answerCorrect: result.answerCorrect,
+    nextRequiresCalculation: result.nextRequiresCalculation,
   };
 }
 
@@ -95,7 +118,12 @@ export async function startDiagnosisFromKnownAnswer(
   subject: string,
   topic: string,
   originalQuestion: string,
-  forceAtomic: boolean
+  forceAtomic: boolean,
+  // Set when originalQuestion is itself a calculation (see startMathDiagnosis's
+  // "conceptual" hand-off) — same purpose as dispatchToBranch's params of the
+  // same name.
+  originalQuestionRequiresCalculation = false,
+  originalQuestionExpectedSolution?: string
 ): Promise<OrchestratorResult> {
   if (forceAtomic) {
     const atomicState: DiagnosticState = {
@@ -105,6 +133,8 @@ export async function startDiagnosisFromKnownAnswer(
       stage: 'initial',
       originalQuestion,
       misconceptionNotes: [],
+      originalQuestionRequiresCalculation,
+      originalQuestionExpectedSolution: originalQuestionRequiresCalculation ? originalQuestionExpectedSolution : undefined,
     };
     // Gates on wording first — this originalQuestion is the real question
     // the caller already graded as wrong (e.g. the encoding lesson's own
@@ -119,9 +149,10 @@ export async function startDiagnosisFromKnownAnswer(
       nextOptions: result.nextOptions,
       state: { engine: 'atomic', inner: result.state },
       answerCorrect: result.answerCorrect,
+      nextRequiresCalculation: result.nextRequiresCalculation,
     };
   }
-  return dispatchToBranch(userId, conceptKey, conceptLabel, subject, topic, originalQuestion);
+  return dispatchToBranch(userId, conceptKey, conceptLabel, subject, topic, originalQuestion, originalQuestionRequiresCalculation, originalQuestionExpectedSolution);
 }
 
 /**
@@ -190,7 +221,7 @@ export async function startMathDiagnosis(
     }
 
     if (localization.errorType === 'conceptual') {
-      const result = await startDiagnosisFromKnownAnswer(userId, conceptKey, conceptLabel, subject, topic, question, forceAtomic);
+      const result = await startDiagnosisFromKnownAnswer(userId, conceptKey, conceptLabel, subject, topic, question, forceAtomic, true, expectedSolution);
       if (localization.explanation) {
         if (result.state.engine === 'atomic') result.state.inner.misconceptionNotes.push(localization.explanation);
         else if (result.state.engine === 'mechanistic') result.state.inner.misconceptionNotes.push(localization.explanation);
@@ -223,6 +254,7 @@ export async function runDiagnosticStep(
       nextOptions: result.nextOptions,
       state: { engine: 'atomic', inner: result.state },
       answerCorrect: result.answerCorrect,
+      nextRequiresCalculation: result.nextRequiresCalculation,
     };
   }
 
@@ -236,6 +268,7 @@ export async function runDiagnosticStep(
       nextOptions: result.nextOptions,
       state: { engine: 'mechanistic', inner: result.state },
       answerCorrect: result.answerCorrect,
+      nextRequiresCalculation: result.nextRequiresCalculation,
     };
   }
 

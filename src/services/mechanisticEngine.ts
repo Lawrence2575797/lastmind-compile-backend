@@ -7,6 +7,7 @@ import {
   WM_RELAXATION_PROMPT,
   LOCALIZATION_CHECK_PROMPT,
   CHECK_ANSWER_AND_SLIP_PROMPT,
+  MATH_ANSWER_CHECK_AND_SLIP_PROMPT,
   CUED_COMBINATION_PROMPT,
   CORRECTION_PROMPT,
   REFRAME_QUESTION_PROMPT,
@@ -22,7 +23,18 @@ async function callJSON<T>(systemPrompt: string, userContent: string, model: str
 
 interface AnswerCheck { correct: boolean; misconceptionNote: string | null; }
 
-async function checkAnswer(conceptLabel: string, questionDescription: string, answer: string): Promise<AnswerCheck> {
+// Mirrors diagnosticEngine.ts's checkAnswer of the same name/purpose —
+// expectedSolution present means the question just answered was a
+// calculation, graded against verified ground truth via a stronger model.
+async function checkAnswer(conceptLabel: string, questionDescription: string, answer: string, expectedSolution?: string): Promise<AnswerCheck> {
+  if (expectedSolution) {
+    return callJSON<AnswerCheck>(
+      MATH_ANSWER_CHECK_AND_SLIP_PROMPT,
+      `Question: ${questionDescription}\nVerified correct solution (reference only, never shown to the student): ${expectedSolution}\nStudent's working: ${answer}`,
+      MODELS.diagnosticTree,
+      0.1
+    );
+  }
   return callJSON<AnswerCheck>(
     CHECK_ANSWER_AND_SLIP_PROMPT,
     `Concept: ${conceptLabel}\nQuestion: ${questionDescription}\nStudent's answer: ${answer}`,
@@ -66,6 +78,18 @@ export interface MechanisticState {
   // there for the full explanation.
   wordingGate?: { failedQuestion: string };
   lastShownQuestion?: string;
+  // Same purpose/split as DiagnosticState's fields of the same names —
+  // originalQuestion* is set at entry (see startMechanisticDiagnosis) when
+  // the question that triggered this diagnosis was itself a calculation,
+  // and is what combination_check's cued re-ask still tests. lastGenerated*
+  // covers whichever DIFFERENT question was most recently generated —
+  // wm_relax's simplification, or a localization check on a specific
+  // prerequisite (a genuinely different concept from the target, so it
+  // can never reuse originalQuestion*'s own calc info).
+  originalQuestionRequiresCalculation?: boolean;
+  originalQuestionExpectedSolution?: string;
+  lastGeneratedRequiresCalculation?: boolean;
+  lastGeneratedExpectedSolution?: string;
 }
 
 export interface MechanisticResult {
@@ -77,6 +101,21 @@ export interface MechanisticResult {
   state: MechanisticState;
   // Same meaning as DiagnosticResult.answerCorrect — see there.
   answerCorrect?: boolean;
+  // Same meaning as DiagnosticResult.nextRequiresCalculation — see there.
+  nextRequiresCalculation?: boolean;
+}
+
+// Mirrors diagnosticEngine.ts's currentQuestionCalcInfo of the same
+// purpose — which calc info describes whatever's CURRENTLY on screen,
+// given the stage. 'wm_relax' and 'localizing' are grading a question
+// this engine itself just generated (lastGenerated*); every other
+// free-text stage ('encoding_check' at entry, 'combination_check') is
+// testing originalQuestion itself, directly or cued.
+function currentQuestionCalcInfo(state: MechanisticState): { requiresCalculation: boolean; expectedSolution?: string } {
+  if (state.stage === 'wm_relax' || state.stage === 'localizing') {
+    return { requiresCalculation: !!state.lastGeneratedRequiresCalculation, expectedSolution: state.lastGeneratedExpectedSolution };
+  }
+  return { requiresCalculation: !!state.originalQuestionRequiresCalculation, expectedSolution: state.originalQuestionExpectedSolution };
 }
 
 function findNode(chain: Chain, id: string): ChainNode | undefined {
@@ -110,9 +149,10 @@ async function generateCorrection(conceptLabel: string, diagnosis: string, state
 
 async function findBrokenPrerequisite(
   userId: string,
+  subject: string,
   chain: Chain,
   nodeId: string
-): Promise<{ node: ChainNode; question: string } | null> {
+): Promise<{ node: ChainNode; question: string; requiresCalculation: boolean; expectedSolution?: string } | null> {
   const node = findNode(chain, nodeId);
   if (!node) return null;
 
@@ -123,13 +163,18 @@ async function findBrokenPrerequisite(
     const mastery = await getMasteryStatus(userId, prereq.id);
     if (mastery.isMastered) continue;
 
-    const q = await callJSON<{ question: string }>(
+    const q = await callJSON<{ question: string; requiresCalculation?: boolean; expectedSolution?: string }>(
       LOCALIZATION_CHECK_PROMPT,
-      `Concept: ${prereq.label}`,
+      `Subject: ${subject}\nConcept: ${prereq.label}`,
       MODELS.diagnosticTree,
       0.3
     );
-    return { node: prereq, question: q.question };
+    return {
+      node: prereq,
+      question: q.question,
+      requiresCalculation: !!q.requiresCalculation,
+      expectedSolution: q.requiresCalculation ? q.expectedSolution : undefined,
+    };
   }
   return null;
 }
@@ -149,6 +194,9 @@ async function runCombinationCheck(state: MechanisticState): Promise<Mechanistic
     done: false,
     nextQuestion: cued.cuedQuestion,
     state: { ...state, stage: 'combination_check', lastShownQuestion: cued.cuedQuestion },
+    // Re-asking originalQuestion (cued), not a fresh calculation of its
+    // own — its calc status is whatever originalQuestion* already holds.
+    nextRequiresCalculation: !!state.originalQuestionRequiresCalculation,
   };
 }
 
@@ -187,7 +235,13 @@ export async function startMechanisticDiagnosis(
   targetConceptLabel: string,
   subject: string,
   originalQuestion: string,
-  chain: Chain
+  chain: Chain,
+  // Set only by the maths diagnosis entry (startMathDiagnosis) when the
+  // original question was itself a calculation and the error was
+  // classified conceptual — carried through so combination_check's cued
+  // re-ask of this same question stays math-aware too.
+  originalQuestionRequiresCalculation = false,
+  originalQuestionExpectedSolution?: string
 ): Promise<MechanisticResult> {
   const baseState: MechanisticState = {
     conceptKey,
@@ -198,6 +252,8 @@ export async function startMechanisticDiagnosis(
     stage: 'encoding_check',
     currentNodeId: chain.nodes[chain.nodes.length - 1].id,
     misconceptionNotes: [],
+    originalQuestionRequiresCalculation,
+    originalQuestionExpectedSolution: originalQuestionRequiresCalculation ? originalQuestionExpectedSolution : undefined,
   };
 
   // Every path into this function follows a wrong (or "don't know") answer
@@ -212,17 +268,30 @@ export async function startMechanisticDiagnosis(
 }
 
 async function beginWmRelax(state: MechanisticState): Promise<MechanisticResult> {
-  const simplified = await callJSON<{ simplifiedQuestion: string; staysGenuineRetrieval: boolean }>(
+  const simplified = await callJSON<{
+    simplifiedQuestion: string;
+    staysGenuineRetrieval: boolean;
+    requiresCalculation?: boolean;
+    expectedSolution?: string;
+  }>(
     WM_RELAXATION_PROMPT,
-    `Concept: ${state.targetConceptLabel}\nOriginal question: ${state.originalQuestion}`,
+    `Subject: ${state.subject}\nConcept: ${state.targetConceptLabel}\nOriginal question: ${state.originalQuestion}`,
     MODELS.diagnosticTree,
     0.3
   );
   return {
     done: false,
     nextQuestion: simplified.simplifiedQuestion,
-    state: { ...state, stage: 'wm_relax', wmRelaxTrustworthy: simplified.staysGenuineRetrieval, lastShownQuestion: simplified.simplifiedQuestion },
+    state: {
+      ...state,
+      stage: 'wm_relax',
+      wmRelaxTrustworthy: simplified.staysGenuineRetrieval,
+      lastShownQuestion: simplified.simplifiedQuestion,
+      lastGeneratedRequiresCalculation: !!simplified.requiresCalculation,
+      lastGeneratedExpectedSolution: simplified.requiresCalculation ? simplified.expectedSolution : undefined,
+    },
     answerCorrect: true, // the recognition check that led here just passed
+    nextRequiresCalculation: !!simplified.requiresCalculation,
   };
 }
 
@@ -243,15 +312,23 @@ async function resumeWrongAnswerContinuation(userId: string, state: MechanisticS
       return runEncodingCheckOrSkip(userId, state);
 
     case 'wm_relax': {
-      const broken = await findBrokenPrerequisite(userId, state.chain, state.currentNodeId);
+      const broken = await findBrokenPrerequisite(userId, state.subject, state.chain, state.currentNodeId);
       if (!broken) {
         return { ...(await runCombinationCheck(state)), answerCorrect: false };
       }
       return {
         done: false,
         nextQuestion: broken.question,
-        state: { ...state, stage: 'localizing', currentNodeId: broken.node.id, lastShownQuestion: broken.question },
+        state: {
+          ...state,
+          stage: 'localizing',
+          currentNodeId: broken.node.id,
+          lastShownQuestion: broken.question,
+          lastGeneratedRequiresCalculation: broken.requiresCalculation,
+          lastGeneratedExpectedSolution: broken.expectedSolution,
+        },
         answerCorrect: false,
+        nextRequiresCalculation: broken.requiresCalculation,
       };
     }
 
@@ -263,7 +340,13 @@ async function resumeWrongAnswerContinuation(userId: string, state: MechanisticS
       // needs deeper diagnosis" hand-offs, rather than re-passing the
       // original answer text — by the time we're here (past the wording
       // gate), that text is gone anyway, since this turn's `answer` was the
-      // gate's own yes/no response, not a fresh answer to re-grade.
+      // gate's own yes/no response, not a fresh answer to re-grade. This
+      // sub-diagnostic starts genuinely fresh (its own originalQuestion is
+      // just a placeholder label, not the localization question itself —
+      // see diagnosticEngine.ts's export comment on gateOnWrongAnswer) —
+      // it decides calc-vs-theory for the PREREQUISITE from scratch via
+      // its own encoding_check -> wm_relax generation, so nothing from
+      // this localization stage needs seeding into it.
       const nodeLabel = findNode(state.chain, state.currentNodeId)?.label || state.currentNodeId;
       const subState: DiagnosticState = {
         conceptLabel: state.currentNodeId,
@@ -281,6 +364,7 @@ async function resumeWrongAnswerContinuation(userId: string, state: MechanisticS
           nextOptions: subResult.nextOptions,
           state: { ...state, stage: 'sub_diagnostic', subDiagnosticState: subResult.state },
           answerCorrect: false,
+          nextRequiresCalculation: subResult.nextRequiresCalculation,
         };
       }
 
@@ -322,10 +406,14 @@ async function handleWordingGateResponse(userId: string, state: MechanisticState
       MODELS.simpleQuestion,
       0.3
     );
+    // Only the wording changes — whatever's being tested (and its
+    // calculation status) doesn't, so currentQuestionCalcInfo still
+    // correctly describes the reworded question too.
     return {
       done: false,
       nextQuestion: reframed.question,
       state: { ...clearedState, lastShownQuestion: reframed.question },
+      nextRequiresCalculation: currentQuestionCalcInfo(clearedState).requiresCalculation,
     };
   }
 
@@ -368,7 +456,12 @@ export async function processMechanisticAnswer(
     }
 
     case 'wm_relax': {
-      const check = await checkAnswer(state.targetConceptLabel, '(simplified)', answer);
+      const check = await checkAnswer(
+        state.targetConceptLabel,
+        '(simplified)',
+        answer,
+        state.lastGeneratedRequiresCalculation ? state.lastGeneratedExpectedSolution : undefined
+      );
       const notedState = appendNote(state, check.misconceptionNote);
       if (check.correct && state.wmRelaxTrustworthy !== false) {
         await gradeAndRecordReview(userId, state.conceptKey, 'hard');
@@ -379,17 +472,29 @@ export async function processMechanisticAnswer(
 
     case 'localizing': {
       const nodeLabel = findNode(state.chain, state.currentNodeId)?.label || state.currentNodeId;
-      const check = await checkAnswer(nodeLabel, '(localization check)', answer);
+      const check = await checkAnswer(
+        nodeLabel,
+        '(localization check)',
+        answer,
+        state.lastGeneratedRequiresCalculation ? state.lastGeneratedExpectedSolution : undefined
+      );
       const notedState = appendNote(state, check.misconceptionNote);
 
       if (check.correct) {
-        const broken = await findBrokenPrerequisite(userId, notedState.chain, notedState.currentNodeId);
+        const broken = await findBrokenPrerequisite(userId, notedState.subject, notedState.chain, notedState.currentNodeId);
         if (!broken) return { ...(await runCombinationCheck(notedState)), answerCorrect: true };
         return {
           done: false,
           nextQuestion: broken.question,
-          state: { ...notedState, currentNodeId: broken.node.id, lastShownQuestion: broken.question },
+          state: {
+            ...notedState,
+            currentNodeId: broken.node.id,
+            lastShownQuestion: broken.question,
+            lastGeneratedRequiresCalculation: broken.requiresCalculation,
+            lastGeneratedExpectedSolution: broken.expectedSolution,
+          },
           answerCorrect: true,
+          nextRequiresCalculation: broken.requiresCalculation,
         };
       }
 
@@ -407,6 +512,7 @@ export async function processMechanisticAnswer(
           nextOptions: subResult.nextOptions,
           state: { ...state, subDiagnosticState: subResult.state },
           answerCorrect: subResult.answerCorrect,
+          nextRequiresCalculation: subResult.nextRequiresCalculation,
         };
       }
 
@@ -415,7 +521,12 @@ export async function processMechanisticAnswer(
     }
 
     case 'combination_check': {
-      const check = await checkAnswer(state.targetConceptLabel, '(cued combination)', answer);
+      const check = await checkAnswer(
+        state.targetConceptLabel,
+        '(cued combination)',
+        answer,
+        state.originalQuestionRequiresCalculation ? state.originalQuestionExpectedSolution : undefined
+      );
       const notedState = appendNote(state, check.misconceptionNote);
 
       if (check.correct) {

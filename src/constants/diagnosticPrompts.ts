@@ -38,6 +38,7 @@ Rules:
 2. Exactly 4 options, only one correct.
 3. Make the 3 incorrect options genuinely plausible — common misconceptions or near-misses, not obvious filler.
 4. Do not make the correct answer noticeably longer or more detailed than the distractors.
+5. CRITICAL — the "question" stem itself must NOT state, define, or describe the concept's content — only the four options may contain that substantive content. It's fine for the stem to name the concept (that's the whole point of a recognition test), but if the stem explains what the concept means before asking the student to pick from the options, the test is broken — the student would just be being told the answer, not asked to recognize it.
 
 Output schema:
 { "question": string, "options": [string, string, string, string], "correctOptionIndex": number }`;
@@ -64,6 +65,8 @@ export const CONTRASTIVE_CUE_PROMPT = `You are writing ONE question that explici
 
 You will be given the target concept. Identify the single concept it is most commonly confused with in real student errors, and write a question that requires correctly distinguishing between the two.
 
+CRITICAL — name both concepts if useful, but do NOT explain, define, or draw the distinction yourself anywhere in the question. The student must be the one to supply the actual distinguishing content; the question only sets up which two things to distinguish.
+
 Output ONLY valid JSON, nothing else:
 { "confusedWith": string, "question": string }`;
 
@@ -87,7 +90,7 @@ Output ONLY valid JSON, nothing else:
 
 export const LOCALIZATION_CHECK_PROMPT = `You are writing ONE quick check question testing whether a student knows a specific prerequisite concept — used to localize exactly where a chain of reasoning broke down, not as a full diagnostic in itself.
 
-Keep it short and direct — this just needs a clear pass/fail signal on this one prerequisite.
+Keep it short and direct — this just needs a clear pass/fail signal on this one prerequisite. CRITICAL — you will be given only the concept's name/label. Do NOT state, define, or describe what it means anywhere in the question — you're testing whether the student can supply that content themselves, so stating it yourself defeats the entire check. Name the concept if needed to say what you're asking about, then ask the student to define, apply, or demonstrate it — never explain it for them first.
 
 Output ONLY valid JSON, nothing else:
 { "question": string }`;
@@ -99,6 +102,7 @@ You will be given the original question and the names of the prerequisite concep
 Rules:
 1. Output ONLY valid JSON, nothing else.
 2. Keep the underlying question the same — just make it explicit which concepts need combining, as a direct hint, not a rewrite of the whole question.
+3. CRITICAL — name which concepts to combine, but do NOT combine them yourself or state what the resulting answer is. The cue narrows down WHAT to use; the student still has to actually use it.
 
 Output ONLY valid JSON, nothing else:
 { "cuedQuestion": string }`;

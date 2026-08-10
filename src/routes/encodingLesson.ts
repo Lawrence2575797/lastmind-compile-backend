@@ -37,15 +37,15 @@ router.post('/encoding-lesson/start', costlyEndpointLimiter, async (req: Request
   }
 });
 
-// POST /encoding-lesson/submit  { state, answer }
+// POST /encoding-lesson/submit  { state, answer, dontKnow? }
 router.post('/encoding-lesson/submit', costlyEndpointLimiter, async (req: Request, res: Response) => {
-  const { state, answer } = req.body ?? {};
+  const { state, answer, dontKnow } = req.body ?? {};
   if (!state) {
     return res.status(400).json({ error: 'state is required (from the previous /encoding-lesson/start or /encoding-lesson/submit response)' });
   }
 
   try {
-    const result = await submitEncodingAnswer(req.userId as string, state as EncodingLessonState, typeof answer === 'string' ? answer : '');
+    const result = await submitEncodingAnswer(req.userId as string, state as EncodingLessonState, typeof answer === 'string' ? answer : '', !!dontKnow);
     res.json(result);
   } catch (err) {
     console.error('Encoding lesson answer processing failed:', err);

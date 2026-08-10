@@ -95,6 +95,13 @@ Keep it short and direct — this just needs a clear pass/fail signal on this on
 Output ONLY valid JSON, nothing else:
 { "question": string }`;
 
+export const REFRAME_QUESTION_PROMPT = `You are rewording a question a student found confusing to read — they've told you directly they didn't understand the wording, not that they don't know the content. Rewrite it to be genuinely clearer and easier to parse: simpler sentence structure, plainer vocabulary, break up anything convoluted.
+
+Do NOT change what the question is actually testing, do NOT make it easier in substance, and do NOT give away or hint at the answer — this must still be a fair, equivalent test of the same thing, just easier to read.
+
+Output ONLY valid JSON, nothing else:
+{ "question": string }`;
+
 export const CUED_COMBINATION_PROMPT = `You are re-asking a question the student already got wrong, but this time explicitly telling them which underlying ideas to combine — used to test whether the failure was about COMBINING known ideas (rather than not knowing the ideas themselves, which has already been ruled out).
 
 You will be given the original question and the names of the prerequisite concepts to explicitly cue.

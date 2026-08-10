@@ -8,8 +8,11 @@ import {
   CHECK_ANSWER_AND_SLIP_PROMPT,
   CUED_COMBINATION_PROMPT,
   CORRECTION_PROMPT,
+  REFRAME_QUESTION_PROMPT,
 } from '../constants/diagnosticPrompts';
 import { processDiagnosticAnswer, DiagnosticState, DiagnosticResult, Diagnosis } from './diagnosticEngine';
+
+const WORDING_CHECK_PROMPT_TEXT = 'Did you understand what this question was asking?';
 
 function stripCodeFences(text: string): string {
   return text.trim().replace(/^```(?:json)?\s*/i, '').replace(/```\s*$/, '').trim();
@@ -62,6 +65,10 @@ export interface MechanisticState {
   confusedWith?: string;
   // Same self-audit gate as DiagnosticState.wmRelaxTrustworthy — see there.
   wmRelaxTrustworthy?: boolean;
+  // Same wording-understanding gate as DiagnosticState.wordingGate — see
+  // there for the full explanation.
+  wordingGate?: { failedQuestion: string };
+  lastShownQuestion?: string;
 }
 
 export interface MechanisticResult {
@@ -144,7 +151,7 @@ async function runCombinationCheck(state: MechanisticState): Promise<Mechanistic
   return {
     done: false,
     nextQuestion: cued.cuedQuestion,
-    state: { ...state, stage: 'combination_check' },
+    state: { ...state, stage: 'combination_check', lastShownQuestion: cued.cuedQuestion },
   };
 }
 
@@ -203,8 +210,120 @@ async function beginWmRelax(state: MechanisticState): Promise<MechanisticResult>
   return {
     done: false,
     nextQuestion: simplified.simplifiedQuestion,
-    state: { ...state, stage: 'wm_relax', wmRelaxTrustworthy: simplified.staysGenuineRetrieval },
+    state: { ...state, stage: 'wm_relax', wmRelaxTrustworthy: simplified.staysGenuineRetrieval, lastShownQuestion: simplified.simplifiedQuestion },
     answerCorrect: true, // the recognition check that led here just passed
+  };
+}
+
+// Runs once a free-text answer has already been confirmed wrong, resuming
+// exactly the escalation each stage would have run immediately — factored
+// out so the wording gate can defer it by one round-trip without
+// re-grading anything. Mirrors diagnosticEngine.ts's function of the same
+// name/purpose.
+async function resumeWrongAnswerContinuation(userId: string, state: MechanisticState): Promise<MechanisticResult> {
+  switch (state.stage) {
+    case 'wm_relax': {
+      const broken = await findBrokenPrerequisite(userId, state.chain, state.currentNodeId);
+      if (!broken) {
+        return { ...(await runCombinationCheck(state)), answerCorrect: false };
+      }
+      return {
+        done: false,
+        nextQuestion: broken.question,
+        state: { ...state, stage: 'localizing', currentNodeId: broken.node.id, lastShownQuestion: broken.question },
+        answerCorrect: false,
+      };
+    }
+
+    case 'localizing': {
+      // Found the actual break — hand off to the FULL single-concept
+      // engine on this specific node, recursively. Dispatched the same
+      // "don't know"-equivalent way dispatchToBranch/runEncodingCheckOrSkip
+      // already do elsewhere in this codebase for "we already know this
+      // needs deeper diagnosis" hand-offs, rather than re-passing the
+      // original answer text — by the time we're here (past the wording
+      // gate), that text is gone anyway, since this turn's `answer` was the
+      // gate's own yes/no response, not a fresh answer to re-grade.
+      const nodeLabel = findNode(state.chain, state.currentNodeId)?.label || state.currentNodeId;
+      const subState: DiagnosticState = {
+        conceptLabel: state.currentNodeId,
+        subject: state.subject,
+        stage: 'initial',
+        originalQuestion: `(localization check on ${nodeLabel})`,
+        misconceptionNotes: [],
+      };
+      const subResult = await processDiagnosticAnswer(userId, subState, '', true);
+
+      if (!subResult.done) {
+        return {
+          done: false,
+          nextQuestion: subResult.nextQuestion,
+          nextOptions: subResult.nextOptions,
+          state: { ...state, stage: 'sub_diagnostic', subDiagnosticState: subResult.state },
+          answerCorrect: false,
+        };
+      }
+
+      await gradeAndRecordReview(userId, state.conceptKey, 'again');
+      return { done: true, diagnosis: subResult.diagnosis, correction: subResult.correction, state, answerCorrect: false };
+    }
+
+    case 'combination_check': {
+      const depth = chainDepth(state.chain, state.chain.nodes[state.chain.nodes.length - 1].id);
+      if (depth >= 4) {
+        const mastery = await getMasteryStatus(userId, state.conceptKey);
+        if (mastery.scheduleWasFollowed === false) {
+          await gradeAndRecordReview(userId, state.conceptKey, 'hard');
+          return { done: true, diagnosis: 'decay', correction: await generateCorrection(state.targetConceptLabel, 'decay', state), state, answerCorrect: false };
+        }
+        await gradeAndRecordReview(userId, state.conceptKey, 'again');
+        return { done: true, diagnosis: 'global_chain_failure', correction: await generateCorrection(state.targetConceptLabel, 'global_chain_failure', state), state, answerCorrect: false };
+      }
+      await gradeAndRecordReview(userId, state.conceptKey, 'again');
+      return { done: true, diagnosis: 'integration', correction: await generateCorrection(state.targetConceptLabel, 'integration', state), state, answerCorrect: false };
+    }
+
+    default:
+      throw new Error(`Cannot resume a wrong-answer continuation from stage: ${state.stage}`);
+  }
+}
+
+// Handles the student's response to the "did you understand the wording?"
+// gate. Mirrors diagnosticEngine.ts's function of the same name/purpose.
+async function handleWordingGateResponse(userId: string, state: MechanisticState, answer: string): Promise<MechanisticResult> {
+  const gate = state.wordingGate!;
+  const understood = /^\s*yes/i.test(answer);
+  const clearedState: MechanisticState = { ...state, wordingGate: undefined };
+
+  if (!understood) {
+    const reframed = await callJSON<{ question: string }>(
+      REFRAME_QUESTION_PROMPT,
+      `Concept: ${state.targetConceptLabel}\nOriginal question: ${gate.failedQuestion}`,
+      MODELS.simpleQuestion,
+      0.3
+    );
+    return {
+      done: false,
+      nextQuestion: reframed.question,
+      state: { ...clearedState, lastShownQuestion: reframed.question },
+    };
+  }
+
+  return resumeWrongAnswerContinuation(userId, clearedState);
+}
+
+// Wraps a "this free-text answer was wrong" result with the wording gate
+// instead of escalating immediately. Mirrors diagnosticEngine.ts's function
+// of the same name/purpose. Skipped for encoding_check (a 4-option MCQ)
+// and sub_diagnostic (delegates entirely to the atomic engine, which
+// already has its own gate).
+function gateOnWrongAnswer(state: MechanisticState, failedQuestion: string): MechanisticResult {
+  return {
+    done: false,
+    nextQuestion: WORDING_CHECK_PROMPT_TEXT,
+    nextOptions: ['Yes', 'No'],
+    state: { ...state, wordingGate: { failedQuestion } },
+    answerCorrect: false,
   };
 }
 
@@ -214,6 +333,10 @@ export async function processMechanisticAnswer(
   answer: string,
   dontKnow: boolean
 ): Promise<MechanisticResult> {
+  if (state.wordingGate) {
+    return handleWordingGateResponse(userId, state, answer);
+  }
+
   switch (state.stage) {
     case 'encoding_check': {
       const isCorrect = answer.trim() === (state.recognitionCorrectAnswer || '').trim();
@@ -231,17 +354,7 @@ export async function processMechanisticAnswer(
         await gradeAndRecordReview(userId, state.conceptKey, 'hard');
         return { done: true, diagnosis: 'wm_overload', correction: await generateCorrection(state.targetConceptLabel, 'wm_overload', notedState), state: notedState, answerCorrect: true };
       }
-
-      const broken = await findBrokenPrerequisite(userId, state.chain, state.currentNodeId);
-      if (!broken) {
-        return { ...(await runCombinationCheck(notedState)), answerCorrect: false };
-      }
-      return {
-        done: false,
-        nextQuestion: broken.question,
-        state: { ...notedState, stage: 'localizing', currentNodeId: broken.node.id },
-        answerCorrect: false,
-      };
+      return gateOnWrongAnswer(notedState, state.lastShownQuestion || state.originalQuestion);
     }
 
     case 'localizing': {
@@ -255,40 +368,12 @@ export async function processMechanisticAnswer(
         return {
           done: false,
           nextQuestion: broken.question,
-          state: { ...notedState, currentNodeId: broken.node.id },
+          state: { ...notedState, currentNodeId: broken.node.id, lastShownQuestion: broken.question },
           answerCorrect: true,
         };
       }
 
-      // Found the actual break — hand off to the FULL single-concept
-      // engine on this specific node, recursively. That engine tracks and
-      // uses its own misconceptionNotes internally, so its returned
-      // correction is already grounded in the specific content — nothing
-      // extra needed here beyond passing its result straight through. This
-      // turn's own answerCorrect reflects the localization check itself
-      // (false — that's why we're here), not the sub-engine's re-grade of
-      // the same answer against its own differently-worded question.
-      const subState: DiagnosticState = {
-        conceptLabel: state.currentNodeId,
-        subject: state.subject,
-        stage: 'initial',
-        originalQuestion: `(localization check on ${nodeLabel})`,
-        misconceptionNotes: [],
-      };
-      const subResult = await processDiagnosticAnswer(userId, subState, answer, dontKnow);
-
-      if (!subResult.done) {
-        return {
-          done: false,
-          nextQuestion: subResult.nextQuestion,
-          nextOptions: subResult.nextOptions,
-          state: { ...notedState, stage: 'sub_diagnostic', subDiagnosticState: subResult.state },
-          answerCorrect: false,
-        };
-      }
-
-      await gradeAndRecordReview(userId, notedState.conceptKey, 'again');
-      return { done: true, diagnosis: subResult.diagnosis, correction: subResult.correction, state: notedState, answerCorrect: false };
+      return gateOnWrongAnswer(notedState, notedState.lastShownQuestion || `(localization check on ${nodeLabel})`);
     }
 
     case 'sub_diagnostic': {
@@ -318,19 +403,7 @@ export async function processMechanisticAnswer(
         return { done: true, diagnosis: 'transfer', correction: await generateCorrection(notedState.targetConceptLabel, 'transfer', notedState), state: notedState, answerCorrect: true };
       }
 
-      const depth = chainDepth(notedState.chain, notedState.chain.nodes[notedState.chain.nodes.length - 1].id);
-      if (depth >= 4) {
-        const mastery = await getMasteryStatus(userId, notedState.conceptKey);
-        if (mastery.scheduleWasFollowed === false) {
-          await gradeAndRecordReview(userId, notedState.conceptKey, 'hard');
-          return { done: true, diagnosis: 'decay', correction: await generateCorrection(notedState.targetConceptLabel, 'decay', notedState), state: notedState, answerCorrect: false };
-        }
-        await gradeAndRecordReview(userId, notedState.conceptKey, 'again');
-        return { done: true, diagnosis: 'global_chain_failure', correction: await generateCorrection(notedState.targetConceptLabel, 'global_chain_failure', notedState), state: notedState, answerCorrect: false };
-      }
-
-      await gradeAndRecordReview(userId, notedState.conceptKey, 'again');
-      return { done: true, diagnosis: 'integration', correction: await generateCorrection(notedState.targetConceptLabel, 'integration', notedState), state: notedState, answerCorrect: false };
+      return gateOnWrongAnswer(notedState, notedState.lastShownQuestion || notedState.originalQuestion);
     }
 
     default:

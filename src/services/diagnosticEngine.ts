@@ -4,6 +4,7 @@ import { runSharedEncodingCheck } from './sharedDiagnosticSteps';
 import { parseModelJson } from './jsonParsing';
 import {
   CHECK_ANSWER_AND_SLIP_PROMPT,
+  MATH_ANSWER_CHECK_AND_SLIP_PROMPT,
   WM_RELAXATION_PROMPT,
   HINT_CUE_PROMPT,
   CONTRASTIVE_CUE_PROMPT,
@@ -20,7 +21,20 @@ async function callJSON<T>(systemPrompt: string, userContent: string, model: str
 
 interface AnswerCheck { correct: boolean; looksLikeSlip?: boolean; misconceptionNote: string | null; }
 
-async function checkAnswer(conceptLabel: string, questionDescription: string, answer: string): Promise<AnswerCheck> {
+// expectedSolution present means the question just answered was a
+// calculation (see DiagnosticState's originalQuestion*/lastGenerated*
+// fields) — grades against that verified ground truth via a stronger
+// model instead of open judgment, same reasoning as
+// submitEncodingAnswer's own math-aware grading in Phase 1.
+async function checkAnswer(conceptLabel: string, questionDescription: string, answer: string, expectedSolution?: string): Promise<AnswerCheck> {
+  if (expectedSolution) {
+    return callJSON<AnswerCheck>(
+      MATH_ANSWER_CHECK_AND_SLIP_PROMPT,
+      `Question: ${questionDescription}\nVerified correct solution (reference only, never shown to the student): ${expectedSolution}\nStudent's working: ${answer}`,
+      MODELS.diagnosticTree,
+      0.1
+    );
+  }
   return callJSON<AnswerCheck>(
     CHECK_ANSWER_AND_SLIP_PROMPT,
     `Concept: ${conceptLabel}\nQuestion: ${questionDescription}\nStudent's answer: ${answer}`,
@@ -86,6 +100,23 @@ export interface DiagnosticState {
   // there's otherwise nothing in state holding the exact shown text.
   // originalQuestion already serves this role for 'initial'/'slip_recheck'.
   lastShownQuestion?: string;
+  // Calculation status of originalQuestion specifically — set at entry
+  // (see startMathDiagnosis) when the question that triggered this whole
+  // diagnosis was itself a calculation. Referenced by 'initial'/
+  // 'slip_recheck' (which grade originalQuestion directly) AND 'hint_cue'
+  // (which re-asks originalQuestion + a hint, jumping past whatever
+  // wm_relax generated — see lastGenerated* below for why these two pairs
+  // have to stay separate rather than one "current question" pair).
+  originalQuestionRequiresCalculation?: boolean;
+  originalQuestionExpectedSolution?: string;
+  // Calculation status of the most recently GENERATED sub-question
+  // (wm_relax's simplification, or contrastive_cue's distinguishing
+  // question) — distinct from originalQuestion* because hint_cue does NOT
+  // continue from wm_relax's simplified question, it jumps back to
+  // re-asking the original with a hint. Consumed by whichever stage grades
+  // that specific generated question ('wm_relax', 'contrastive_cue').
+  lastGeneratedRequiresCalculation?: boolean;
+  lastGeneratedExpectedSolution?: string;
 }
 
 export interface DiagnosticResult {
@@ -101,11 +132,30 @@ export interface DiagnosticResult {
   // just-given answer). Lets the frontend give real per-turn feedback
   // instead of going silent until the whole diagnosis concludes.
   answerCorrect?: boolean;
+  // True when nextQuestion is a calculation the student should answer with
+  // the maths keyboard rather than free text — never set alongside
+  // nextOptions (an MCQ never needs it). Undefined/false means plain text.
+  nextRequiresCalculation?: boolean;
 }
 
 function appendNote(state: DiagnosticState, note: string | null | undefined): DiagnosticState {
   if (!note) return state;
   return { ...state, misconceptionNotes: [...state.misconceptionNotes, note] };
+}
+
+// Which calculation info applies to whatever free-text question the
+// student is CURRENTLY looking at, given the stage they're in — 'wm_relax'
+// and 'contrastive_cue' are grading a question THIS engine itself just
+// generated (lastGenerated*); every other free-text stage ('initial',
+// 'slip_recheck', 'hint_cue') is grading originalQuestion itself, either
+// directly or re-asked with a hint. Shared by checkAnswer call sites and
+// the wording-gate reframe response, so the two can never disagree about
+// which question is actually on screen.
+function currentQuestionCalcInfo(state: DiagnosticState): { requiresCalculation: boolean; expectedSolution?: string } {
+  if (state.stage === 'wm_relax' || state.stage === 'contrastive_cue') {
+    return { requiresCalculation: !!state.lastGeneratedRequiresCalculation, expectedSolution: state.lastGeneratedExpectedSolution };
+  }
+  return { requiresCalculation: !!state.originalQuestionRequiresCalculation, expectedSolution: state.originalQuestionExpectedSolution };
 }
 
 async function finish(
@@ -194,26 +244,43 @@ async function resumeWrongAnswerContinuation(
         0.3
       );
       const nextQuestion = `${state.originalQuestion}\n\nHint: ${hintResult.hint}`;
+      // Re-asking originalQuestion itself (with a hint appended), NOT
+      // wm_relax's simplified question — its calc status is already
+      // whatever originalQuestion* holds, untouched here.
       return {
         done: false,
         nextQuestion,
         state: { ...state, stage: 'hint_cue', lastShownQuestion: nextQuestion },
         answerCorrect: false,
+        nextRequiresCalculation: !!state.originalQuestionRequiresCalculation,
       };
     }
 
     case 'hint_cue': {
-      const contrastive = await callJSON<{ confusedWith: string; question: string }>(
+      const contrastive = await callJSON<{
+        confusedWith: string;
+        question: string;
+        requiresCalculation?: boolean;
+        expectedSolution?: string;
+      }>(
         CONTRASTIVE_CUE_PROMPT,
-        `Concept: ${state.conceptLabel}`,
+        `Subject: ${state.subject}\nConcept: ${state.conceptLabel}`,
         MODELS.diagnosticTree,
         0.3
       );
       return {
         done: false,
         nextQuestion: contrastive.question,
-        state: { ...state, stage: 'contrastive_cue', confusedWith: contrastive.confusedWith, lastShownQuestion: contrastive.question },
+        state: {
+          ...state,
+          stage: 'contrastive_cue',
+          confusedWith: contrastive.confusedWith,
+          lastShownQuestion: contrastive.question,
+          lastGeneratedRequiresCalculation: !!contrastive.requiresCalculation,
+          lastGeneratedExpectedSolution: contrastive.requiresCalculation ? contrastive.expectedSolution : undefined,
+        },
         answerCorrect: false,
+        nextRequiresCalculation: !!contrastive.requiresCalculation,
       };
     }
 
@@ -246,6 +313,9 @@ async function handleWordingGateResponse(
       0.3
     );
     const isOriginalQuestionStage = clearedState.stage === 'initial' || clearedState.stage === 'slip_recheck';
+    // A reframe only reworks the WORDING — whatever's being tested (and
+    // its calculation status) is unchanged, so currentQuestionCalcInfo
+    // still correctly describes the reworded question too.
     return {
       done: false,
       nextQuestion: reframed.question,
@@ -254,6 +324,7 @@ async function handleWordingGateResponse(
         lastShownQuestion: reframed.question,
         ...(isOriginalQuestionStage ? { originalQuestion: reframed.question } : {}),
       },
+      nextRequiresCalculation: currentQuestionCalcInfo(clearedState).requiresCalculation,
     };
   }
 
@@ -302,7 +373,12 @@ export async function processDiagnosticAnswer(
         return { ...(await runEncodingCheckOrSkip(userId, state)), answerCorrect: false };
       }
 
-      const check = await checkAnswer(state.conceptLabel, state.originalQuestion, answer);
+      const check = await checkAnswer(
+        state.conceptLabel,
+        state.originalQuestion,
+        answer,
+        state.originalQuestionRequiresCalculation ? state.originalQuestionExpectedSolution : undefined
+      );
       const notedState = appendNote(state, check.misconceptionNote);
 
       if (check.correct) {
@@ -314,13 +390,19 @@ export async function processDiagnosticAnswer(
           nextQuestion: state.originalQuestion,
           state: { ...notedState, stage: 'slip_recheck' },
           answerCorrect: false,
+          nextRequiresCalculation: !!state.originalQuestionRequiresCalculation,
         };
       }
       return gateOnWrongAnswer(notedState, state.originalQuestion);
     }
 
     case 'slip_recheck': {
-      const check = await checkAnswer(state.conceptLabel, state.originalQuestion, answer);
+      const check = await checkAnswer(
+        state.conceptLabel,
+        state.originalQuestion,
+        answer,
+        state.originalQuestionRequiresCalculation ? state.originalQuestionExpectedSolution : undefined
+      );
       const notedState = appendNote(state, check.misconceptionNote);
       if (check.correct) {
         return finish(userId, state.conceptLabel, 'hard', 'slip', notedState, true);
@@ -333,22 +415,40 @@ export async function processDiagnosticAnswer(
       if (!isCorrect) {
         return finish(userId, state.conceptLabel, 'again', 'encoding', state, false);
       }
-      const simplified = await callJSON<{ simplifiedQuestion: string; staysGenuineRetrieval: boolean }>(
+      const simplified = await callJSON<{
+        simplifiedQuestion: string;
+        staysGenuineRetrieval: boolean;
+        requiresCalculation?: boolean;
+        expectedSolution?: string;
+      }>(
         WM_RELAXATION_PROMPT,
-        `Concept: ${state.conceptLabel}\nOriginal question: ${state.originalQuestion}`,
+        `Subject: ${state.subject}\nConcept: ${state.conceptLabel}\nOriginal question: ${state.originalQuestion}`,
         MODELS.diagnosticTree,
         0.3
       );
       return {
         done: false,
         nextQuestion: simplified.simplifiedQuestion,
-        state: { ...state, stage: 'wm_relax', wmRelaxTrustworthy: simplified.staysGenuineRetrieval, lastShownQuestion: simplified.simplifiedQuestion },
+        state: {
+          ...state,
+          stage: 'wm_relax',
+          wmRelaxTrustworthy: simplified.staysGenuineRetrieval,
+          lastShownQuestion: simplified.simplifiedQuestion,
+          lastGeneratedRequiresCalculation: !!simplified.requiresCalculation,
+          lastGeneratedExpectedSolution: simplified.requiresCalculation ? simplified.expectedSolution : undefined,
+        },
         answerCorrect: true,
+        nextRequiresCalculation: !!simplified.requiresCalculation,
       };
     }
 
     case 'wm_relax': {
-      const check = await checkAnswer(state.conceptLabel, '(simplified)', answer);
+      const check = await checkAnswer(
+        state.conceptLabel,
+        '(simplified)',
+        answer,
+        state.lastGeneratedRequiresCalculation ? state.lastGeneratedExpectedSolution : undefined
+      );
       const notedState = appendNote(state, check.misconceptionNote);
       if (check.correct && state.wmRelaxTrustworthy !== false) {
         return finish(userId, state.conceptLabel, 'hard', 'wm_overload', notedState, true);
@@ -357,7 +457,14 @@ export async function processDiagnosticAnswer(
     }
 
     case 'hint_cue': {
-      const check = await checkAnswer(state.conceptLabel, state.originalQuestion, answer);
+      // Grading the ORIGINAL question (re-asked with a hint), not
+      // whatever wm_relax generated — see originalQuestion*'s own comment.
+      const check = await checkAnswer(
+        state.conceptLabel,
+        state.originalQuestion,
+        answer,
+        state.originalQuestionRequiresCalculation ? state.originalQuestionExpectedSolution : undefined
+      );
       const notedState = appendNote(state, check.misconceptionNote);
       if (check.correct) {
         return finish(userId, state.conceptLabel, 'hard', 'decay', notedState, true);
@@ -366,7 +473,12 @@ export async function processDiagnosticAnswer(
     }
 
     case 'contrastive_cue': {
-      const check = await checkAnswer(state.conceptLabel, '(contrastive)', answer);
+      const check = await checkAnswer(
+        state.conceptLabel,
+        '(contrastive)',
+        answer,
+        state.lastGeneratedRequiresCalculation ? state.lastGeneratedExpectedSolution : undefined
+      );
       const notedState = appendNote(state, check.misconceptionNote);
       if (check.correct) {
         return finish(userId, state.conceptLabel, 'hard', 'interference', notedState, true);

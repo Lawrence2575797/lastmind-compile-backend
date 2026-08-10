@@ -58,7 +58,13 @@ export type CortexAction =
   // already — see learn/index.html's subfolder progress bar. Distinct
   // from create_multi_lesson_page: this doesn't create anything, it just
   // remembers the intended scope.
-  | { type: 'set_subfolder_plan'; folderName: string; subfolderName: string | null; concepts: string[] };
+  | { type: 'set_subfolder_plan'; folderName: string; subfolderName: string | null; concepts: string[] }
+  // One ordinary, separate page per concept from an order (not bundled
+  // onto one page — that's create_multi_lesson_page). `concepts` is the
+  // full order; the frontend is responsible for skipping any concept
+  // that already matches an existing page, so only the missing ones
+  // actually get created — Cortex doesn't need to pre-filter.
+  | { type: 'create_pages_from_order'; folderName: string; subfolderName: string | null; concepts: string[] };
 
 export interface CortexResult {
   reply: string;

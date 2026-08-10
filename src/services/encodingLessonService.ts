@@ -14,16 +14,32 @@ function stripCodeFences(text: string): string {
   return text.trim().replace(/^```(?:json)?\s*/i, '').replace(/```\s*$/, '').trim();
 }
 
+// Belt-and-suspenders against stray prose around the JSON body (e.g. a
+// model narrating its self-check reasoning before settling into the
+// output despite "Output ONLY valid JSON" instructions) — falls back to
+// the outermost {...} span if a direct parse fails.
+function extractJsonObject(text: string): string {
+  const start = text.indexOf('{');
+  const end = text.lastIndexOf('}');
+  if (start === -1 || end === -1 || end <= start) return text;
+  return text.slice(start, end + 1);
+}
+
 async function callJSON<T>(systemPrompt: string, userContent: string, model: string, temperature = 0, maxTokens?: number): Promise<T> {
   const raw = await callClaudeJSON({ model, systemPrompt, userContent, temperature, maxTokens });
+  const cleaned = stripCodeFences(raw);
   try {
-    return JSON.parse(stripCodeFences(raw)) as T;
-  } catch (err) {
-    // Logged raw so a truncated/malformed response (the most likely cause
-    // of a parse failure here) is actually diagnosable after the fact,
-    // instead of just surfacing as an opaque 500 to the client.
-    console.error('LastMind: encoding lesson call returned invalid JSON.', { raw });
-    throw err;
+    return JSON.parse(cleaned) as T;
+  } catch {
+    try {
+      return JSON.parse(extractJsonObject(cleaned)) as T;
+    } catch (err) {
+      // Logged raw so a truncated/malformed response (the most likely
+      // cause of a parse failure here) is actually diagnosable after the
+      // fact, instead of just surfacing as an opaque 500 to the client.
+      console.error('LastMind: encoding lesson call returned invalid JSON.', { raw });
+      throw err;
+    }
   }
 }
 
@@ -366,7 +382,15 @@ async function generateEncodingLessonContent(
     ].join('\n'),
     MODELS.diagnosticTree,
     0.4,
-    4096
+    // A concept whose close prerequisites are explicitly named in the
+    // lesson's own title (e.g. "Indifference curves and MRS") gets those
+    // promoted to full derive/explain beats rather than a single check
+    // step each — combined with the per-step self-check now baked into
+    // this prompt (longer, revised text on every beat), a content-heavy
+    // multi-beat lesson can comfortably exceed 4096 output tokens and get
+    // truncated mid-JSON. This only runs once per concept (cache miss),
+    // so the extra headroom costs nothing at scale.
+    8192
   );
 
   const nodesById = new Map(chain.nodes.map((n) => [n.id, n]));

@@ -331,7 +331,7 @@ export async function submitEncodingAnswer(userId: string, state: EncodingLesson
     const check = await callJSON<{ correct: boolean; feedback: string | null }>(
       ENCODING_ANSWER_CHECK_PROMPT,
       `Concept/step: ${currentStep.label}\nPrompt: ${gradingPrompt}\nStudent's answer: ${answer}`,
-      MODELS.diagnosticTree,
+      MODELS.simpleQuestion,
       0.2
     );
     correct = check.correct;

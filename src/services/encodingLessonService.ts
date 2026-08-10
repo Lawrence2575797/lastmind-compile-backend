@@ -63,14 +63,17 @@ export interface EncodingStep {
   checkQuestion?: string;
   // Which FSRS concept a wrong answer on this step should be diagnosed
   // (and graded) against. Equals the lesson's own conceptKey for
-  // scene/derive/explain beats that are actually about the TARGET; equals
-  // the step's own nodeId for anything about a prerequisite node instead
-  // (a "check" step, or a prerequisite promoted to a taught beat because
-  // it was explicitly named in the lesson's own title — see
-  // ENCODING_LESSON_BATCH_PROMPT). The frontend uses this — not the step
-  // type — to decide both which concept to diagnose and whether the
-  // diagnostic tree's cheaper atomic-only path is required (nodeId !==
-  // conceptKey means there's no independently-cached chain for it).
+  // scene/derive/explain beats actually about the TARGET, and for
+  // "implication" beats too (deeper questions about that same target,
+  // never a separate concept — their own nodeId is just a synthetic slug,
+  // not a real chain node); equals the step's own nodeId for anything
+  // about a prerequisite node instead (a "check" step, or a prerequisite
+  // promoted to a taught beat because it was explicitly named in the
+  // lesson's own title — see ENCODING_LESSON_BATCH_PROMPT). The frontend
+  // uses this — not the step type — to decide both which concept to
+  // diagnose and whether the diagnostic tree's cheaper atomic-only path is
+  // required (nodeId !== conceptKey means there's no independently-cached
+  // chain for it).
   diagnosisConceptKey: string;
   diagram?: EncodingDiagram;
 }
@@ -400,7 +403,12 @@ async function generateEncodingLessonContent(
     type: s.type,
     text: s.text,
     checkQuestion: s.checkQuestion,
-    diagnosisConceptKey: s.nodeId === target.id ? conceptKey : s.nodeId,
+    // Implication steps carry a synthetic, non-chain nodeId (see prompt
+    // rule 8) — they're still testing the SAME target concept at greater
+    // depth, so they must diagnose against the lesson's own conceptKey
+    // too, not that meaningless slug (which the drill-down couldn't have
+    // resolved a cached chain for anyway).
+    diagnosisConceptKey: s.nodeId === target.id || s.type === 'implication' ? conceptKey : s.nodeId,
     confident: s.confident,
   }));
 

@@ -128,3 +128,30 @@ You will be given the concept(s) in this chunk, in order, and the subject. If mo
 Output ONLY valid JSON, nothing else:
 { "question": string }`;
 
+// Entry point for a WRONG answer to a calculation question specifically
+// (see ENCODING_LESSON_BATCH_PROMPT's requiresCalculation steps) — unlike
+// a theory question, there's actual shown working to inspect, so
+// diagnosis starts by finding exactly where it went wrong, the way a
+// human tutor would look over your working — not by re-testing
+// understanding of the topic from scratch. Genuinely different tree entry
+// from CHECK_ANSWER_AND_SLIP_PROMPT's "slip" (which only has the final
+// answer to go on, no working) — this one can actually point at the
+// specific line, not just guess from the pattern of wrongness.
+export const MATH_ERROR_LOCALIZATION_PROMPT = `You are a maths tutor looking over a UK GCSE/A-Level student's own worked answer to a calculation question, to find exactly where it went wrong — the way a human tutor scans your working line by line rather than just re-teaching the topic from the start.
+
+You will be given the question, the VERIFIED correct solution (the question's own author already worked this through and confirmed it — treat it as ground truth, never shown to the student), and the student's own working (written with a maths input tool, so it may be LaTeX-flavoured — read it as the mathematical expressions it represents, line by line in the order given).
+
+Your job: locate the specific point where their working diverges from a correct approach, then classify what kind of error it is.
+
+Rules:
+1. Output ONLY valid JSON, nothing else.
+2. Classify "errorType" as exactly one of:
+   - "slip": the METHOD and formula/approach used are genuinely correct — the error is an isolated, mechanical one (an arithmetic mistake, a sign flip, a transcription slip, a rounding error) that doesn't reflect any actual misunderstanding. You'd expect this student to get it right on a re-attempt with no re-teaching needed, just more care.
+   - "conceptual": the wrong formula or method was used, a step was skipped that isn't actually valid to skip, or the working reveals an actual misunderstanding of what the question is asking or how this type of problem works — a re-attempt without addressing the underlying gap would likely go wrong the same way.
+   - "no_attempt": the working is blank, illegible as maths, or abandoned after only a trivial first line with no real attempt at the method — there's nothing substantive to localize an error within.
+3. "explanation" — for "slip" or "conceptual", a specific, concrete description of exactly what went wrong and where (e.g. "correctly set up %ΔQd/%ΔP but divided the wrong way round, inverting the ratio" for a slip; "used the formula for cross elasticity instead of price elasticity — divided by the wrong variable's percentage change entirely" for a conceptual error). This must be specific enough that a later correction can be built directly from it, not just "made an error". Null for "no_attempt".
+4. "correction" — ONLY for "errorType": "slip". A short, direct, encouraging correction naming exactly where the slip was and what the correct step should have been — for a genuine slip (not a real gap), it's fine to be this direct, since the method itself needs no re-teaching. Null for every other errorType.
+
+Output schema:
+{ "errorType": "slip" | "conceptual" | "no_attempt", "explanation": string | null, "correction": string | null }`;
+

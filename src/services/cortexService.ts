@@ -68,6 +68,12 @@ export type CortexAction =
 
 export interface CortexResult {
   reply: string;
+  // True only when the student's own message explicitly asked for the
+  // response to be read aloud — the frontend defaults to text-only and
+  // speaks automatically only when this is set (see
+  // CORTEX_INTENT_PROMPT's speakAloud rule). Every reply still gets its
+  // own manual "read aloud" button regardless of this flag.
+  speakAloud: boolean;
   action: CortexAction | null;
 }
 

@@ -8,6 +8,7 @@ import {
   ENCODING_ANSWER_CHECK_PROMPT,
   DIAGRAM_VERIFICATION_PROMPT,
   STEP_DERIVABILITY_CHECK_PROMPT,
+  NOTES_FROM_LESSON_PROMPT,
 } from '../constants/encodingLessonPrompts';
 
 function stripCodeFences(text: string): string {
@@ -494,4 +495,35 @@ export async function submitEncodingAnswer(userId: string, state: EncodingLesson
   }
 
   return { done: false, correct, feedback, step: state.steps[nextIndex], state: nextState };
+}
+
+/**
+ * Compiles a just-completed encoding lesson's transcript (hook fact +
+ * every step's taught content) into standalone plain-text revision notes
+ * for the page. Student-facing, opt-in (a checkbox at lesson completion)
+ * — not cached, since it runs once per student per page, not once per
+ * concept. Deliberately built from the LESSON CONTENT (what was actually
+ * taught/derived), not from the student's own submitted answers — the
+ * point is accurate notes to revise from, not a transcript of whatever
+ * they happened to type.
+ */
+export async function generateNotesFromLesson(
+  subject: string,
+  concept: string,
+  hookFact: string,
+  steps: Pick<EncodingStep, 'label' | 'type' | 'text' | 'checkQuestion'>[]
+): Promise<string> {
+  const raw = await callClaudeJSON({
+    model: MODELS.diagnosticTree,
+    systemPrompt: NOTES_FROM_LESSON_PROMPT,
+    userContent: [
+      `Subject: ${subject}`,
+      `Concept/page title: ${concept}`,
+      `Hook fact: ${hookFact}`,
+      `Steps, in order: ${JSON.stringify(steps.map((s) => ({ label: s.label, type: s.type, text: s.text, checkQuestion: s.checkQuestion })))}`,
+    ].join('\n'),
+    temperature: 0.3,
+    maxTokens: 1024,
+  });
+  return raw.trim();
 }

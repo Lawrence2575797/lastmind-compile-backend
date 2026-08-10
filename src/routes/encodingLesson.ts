@@ -2,7 +2,7 @@ import { Router, Request, Response } from 'express';
 import { requireAuth } from '../services/authMiddleware';
 import { costlyEndpointLimiter } from '../services/rateLimiters';
 import { normalizeConceptKey } from '../services/chainService';
-import { startEncodingLesson, submitEncodingAnswer, EncodingLessonState } from '../services/encodingLessonService';
+import { startEncodingLesson, submitEncodingAnswer, generateNotesFromLesson, EncodingLessonState } from '../services/encodingLessonService';
 
 const router = Router();
 
@@ -50,6 +50,32 @@ router.post('/encoding-lesson/submit', costlyEndpointLimiter, async (req: Reques
   } catch (err) {
     console.error('Encoding lesson answer processing failed:', err);
     res.status(500).json({ error: 'could not process this answer' });
+  }
+});
+
+// POST /encoding-lesson/generate-notes  { subject, concept, hookFact, steps }
+// Opt-in, triggered by a checkbox at the end of a just-completed encoding
+// lesson — compiles what the lesson actually taught into standalone
+// revision notes for that page. `steps` is the same array the lesson's
+// own /start response returned (label/type/text/checkQuestion per step).
+router.post('/encoding-lesson/generate-notes', costlyEndpointLimiter, async (req: Request, res: Response) => {
+  const { subject, concept, hookFact, steps } = req.body ?? {};
+  if (typeof subject !== 'string' || typeof concept !== 'string' || typeof hookFact !== 'string' || !Array.isArray(steps) || !steps.length) {
+    return res.status(400).json({ error: 'subject, concept, hookFact, and a non-empty steps array are all required' });
+  }
+  const validSteps = steps.every(
+    (s) => s && typeof s.label === 'string' && typeof s.type === 'string' && typeof s.text === 'string' && (s.checkQuestion === undefined || typeof s.checkQuestion === 'string')
+  );
+  if (!validSteps) {
+    return res.status(400).json({ error: 'each step requires label, type, text (checkQuestion optional)' });
+  }
+
+  try {
+    const notes = await generateNotesFromLesson(subject, concept, hookFact, steps);
+    res.json({ notes });
+  } catch (err) {
+    console.error('Encoding lesson notes generation failed:', err);
+    res.status(500).json({ error: 'could not generate notes for this lesson' });
   }
 });
 

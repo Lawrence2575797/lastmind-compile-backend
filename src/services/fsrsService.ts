@@ -9,6 +9,17 @@ import { createEmptyCard, fsrs, generatorParameters, Rating, Grade, Card, State 
 const params = generatorParameters({
   request_retention: 0.92,
   maximum_interval: 36500, // ~100 years — effectively "no cap", let the algorithm decide
+  // FSRS defaults to Anki-style short-term "(re)learning steps" — a new or
+  // lapsed card gets rescheduled minutes later, in the SAME session,
+  // before ever graduating to a real spaced interval. This app has no UI
+  // for that (no in-session cramming queue — every review is its own
+  // separate, spaced-out sitting), so with the default left on, a fresh
+  // card's first "Good" review scheduled the next retrieval session
+  // minutes later instead of days later — same calendar day, no sleep in
+  // between, defeating the entire point of spaced review. Disabling it
+  // makes every rating (even the worst, Again) schedule at least a full
+  // day out, always at least one sleep before the next attempt.
+  enable_short_term: false,
 });
 
 const scheduler = fsrs(params);

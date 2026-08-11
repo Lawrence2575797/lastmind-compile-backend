@@ -205,6 +205,9 @@ export async function startMathDiagnosis(
       systemPrompt: MATH_ERROR_LOCALIZATION_PROMPT,
       userContent: `Question: ${question}\nVerified correct solution (reference only, never shown to the student): ${expectedSolution}\nStudent's working: ${studentWorking}`,
       temperature: 0.1,
+      // Raised well above the 2048 default — same fix as
+      // diagnosticEngine.ts/mechanisticEngine.ts's own callJSON, see there.
+      maxTokens: 4096,
     });
     const localization = parseModelJson<{ errorType: 'slip' | 'conceptual' | 'no_attempt'; explanation: string | null; correction: string | null }>(raw);
 
@@ -282,6 +285,7 @@ export async function runDiagnosticStep(
     model: MODELS.simpleQuestion,
     systemPrompt: CHECK_ANSWER_AND_SLIP_PROMPT,
     userContent: `Concept: ${state.conceptLabel}\nQuestion: ${state.originalQuestion}\nStudent's answer: ${answer}`,
+    maxTokens: 4096,
   });
   const check = parseModelJson<{ correct: boolean; looksLikeSlip: boolean }>(raw);
 

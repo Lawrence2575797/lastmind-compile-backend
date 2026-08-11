@@ -14,8 +14,18 @@ import {
 
 const WORDING_CHECK_PROMPT_TEXT = 'Did you understand what this question was asking?';
 
-async function callJSON<T>(systemPrompt: string, userContent: string, model: string, temperature = 0): Promise<T> {
-  const raw = await callClaudeJSON({ model, systemPrompt, userContent, temperature });
+// maxTokens raised well above callClaudeJSON's own 2048 default — same
+// fix already applied in chainService.ts and cortexService.ts for the
+// exact same failure mode (silent truncation before any usable JSON, or
+// before any text at all, surfacing as an opaque "could not process this
+// answer"/"server failed to respond" with no indication this was the
+// cause). Every prompt this engine calls can end up producing a genuinely
+// substantial response — a correction quoting and explaining a specific
+// misconception, a freshly-constructed contrastive/simplified question —
+// so this raises the default for ALL of them rather than tuning each call
+// site individually.
+async function callJSON<T>(systemPrompt: string, userContent: string, model: string, temperature = 0, maxTokens = 4096): Promise<T> {
+  const raw = await callClaudeJSON({ model, systemPrompt, userContent, temperature, maxTokens });
   return parseModelJson<T>(raw);
 }
 

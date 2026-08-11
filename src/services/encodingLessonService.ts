@@ -615,7 +615,8 @@ export async function submitEncodingAnswer(userId: string, state: EncodingLesson
         ENCODING_MATH_ANSWER_CHECK_PROMPT,
         `Concept/step: ${currentStep.label}\nQuestion: ${gradingPrompt}\nVerified correct solution (reference only, never shown to the student): ${expectedSolution}\nStudent's working: ${answer}`,
         MODELS.diagnosticTree,
-        0.1
+        0.1,
+        4096
       );
       correct = check.correct;
       feedback = check.feedback;
@@ -627,7 +628,8 @@ export async function submitEncodingAnswer(userId: string, state: EncodingLesson
         ENCODING_ANSWER_CHECK_PROMPT,
         `Concept/step: ${currentStep.label}\nPrompt: ${gradingPrompt}\nStudent's answer: ${answer}`,
         MODELS.simpleQuestion,
-        0.2
+        0.2,
+        4096
       );
       correct = check.correct;
       feedback = check.feedback;

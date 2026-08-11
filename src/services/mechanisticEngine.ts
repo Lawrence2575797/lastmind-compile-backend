@@ -16,8 +16,12 @@ import { processDiagnosticAnswer, DiagnosticState, DiagnosticResult, Diagnosis }
 
 const WORDING_CHECK_PROMPT_TEXT = 'Did you understand what this question was asking?';
 
-async function callJSON<T>(systemPrompt: string, userContent: string, model: string, temperature = 0): Promise<T> {
-  const raw = await callClaudeJSON({ model, systemPrompt, userContent, temperature });
+// Same fix, same reasoning as diagnosticEngine.ts's own callJSON — see its
+// comment. This engine's LOCALIZATION_CHECK_PROMPT call in particular
+// carries a whole chain's worth of context, easily enough to run past the
+// 2048 default before producing any usable output.
+async function callJSON<T>(systemPrompt: string, userContent: string, model: string, temperature = 0, maxTokens = 4096): Promise<T> {
+  const raw = await callClaudeJSON({ model, systemPrompt, userContent, temperature, maxTokens });
   return parseModelJson<T>(raw);
 }
 

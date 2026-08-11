@@ -5,6 +5,7 @@ import { costlyEndpointLimiter } from '../services/rateLimiters';
 import { MULTI_QUESTION_GENERATION_PROMPT } from '../constants/diagnosticPrompts';
 import { runDiagnosticStep, startDiagnosisFromKnownAnswer, startMathDiagnosis, OrchestratorState } from '../services/diagnosticOrchestrator';
 import { normalizeConceptKey } from '../services/chainService';
+import { gradeAndRecordReview } from '../services/reviewService';
 
 const router = Router();
 
@@ -155,6 +156,39 @@ router.post('/diagnostics/start-math-from-answer', async (req: Request, res: Res
   } catch (err) {
     console.error('Diagnostic start-math-from-answer failed:', err);
     res.status(500).json({ error: 'could not start diagnosis' });
+  }
+});
+
+// POST /diagnostics/report-slip
+// { conceptKey } -> OrchestratorResult-shaped { done, diagnosis, correction, answerCorrect }
+// A self-reported alternative to the wording gate's Yes/No — for when the
+// student already knows the wording was fine and this was a genuine
+// mechanical slip, not a gap in understanding, and would rather say so
+// directly than walk the rest of the diagnostic tree to reach the same
+// conclusion automatic slip-detection would eventually land on anyway.
+// Graded exactly like an auto-detected slip ('hard' — the understanding is
+// intact, just a wobble), and immediately ends the diagnosis. Trusts the
+// student's own self-report at face value, same as "I don't know" already
+// does for the opposite case — there's no ground truth to verify this
+// against server-side, and second-guessing it would defeat the point of
+// offering a faster way out.
+router.post('/diagnostics/report-slip', async (req: Request, res: Response) => {
+  const { conceptKey } = req.body ?? {};
+  if (typeof conceptKey !== 'string' || !conceptKey) {
+    return res.status(400).json({ error: 'conceptKey is required' });
+  }
+
+  try {
+    await gradeAndRecordReview(req.userId as string, conceptKey, 'hard');
+    res.json({
+      done: true,
+      diagnosis: 'slip',
+      correction: 'No problem — marked down as a slip, not a gap in understanding.',
+      answerCorrect: false,
+    });
+  } catch (err) {
+    console.error('Diagnostic slip self-report failed:', err);
+    res.status(500).json({ error: 'could not record this' });
   }
 });
 

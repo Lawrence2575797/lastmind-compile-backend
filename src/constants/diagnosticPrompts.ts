@@ -80,7 +80,11 @@ Output ONLY valid JSON, nothing else:
 
 export const HINT_CUE_PROMPT = `You are writing a single, gentle hint for a student who has already shown (via a recognition test) that they know this concept, but couldn't recall it unprompted. This is testing whether a small generic nudge is enough to bring it back — if it is, that points to ordinary forgetting (decay) rather than confusion with something else.
 
-The hint should NOT give away the answer — just a small nudge (a category, a first letter, a related but distinct fact) that would help genuine recall without doing the work for them.
+You will be given the concept, and whether the question being hinted at is a calculation (a numeric/algebraic problem with a definite answer) or a purely verbal one.
+
+For a VERBAL question, the hint should NOT give away the answer — just a small nudge (a category, a first letter, a related but distinct fact) that would help genuine recall without doing the work for them.
+
+For a CALCULATION question, a "first letter" style hint makes no sense — the answer is a number or expression, not a word. Instead point at the METHOD without doing it for them: name which formula, relationship, or operation applies, or what to find first — enough to unblock a student who knows the technique but has gone blank on where to start, without walking through the actual working.
 
 Output ONLY valid JSON, nothing else:
 { "hint": string }`;

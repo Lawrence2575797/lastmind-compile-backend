@@ -226,7 +226,12 @@ async function getOrFetchDiagram(
     return (cached.diagram as EncodingDiagram | null) ?? null;
   }
 
-  const candidates = await searchWikimediaImages(searchQuery, 5);
+  // 3, not 5 — every candidate that survives fetchImageAsBase64 gets sent
+  // as an image in the SAME verification call (getOrFetchDiagram below),
+  // and each one is real input-token cost. 3 is still enough breadth for
+  // Claude to pick a genuinely suitable diagram or correctly decide none
+  // of them fit, at 40% less image cost per call.
+  const candidates = await searchWikimediaImages(searchQuery, 3);
   if (!candidates.length) {
     await supabaseAdmin.from('encoding_diagrams').insert({ diagram_key: diagramKey, diagram: null });
     return null;

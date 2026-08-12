@@ -21,11 +21,17 @@ export const MODELS = {
   // Compile — everyday note restructuring, high volume.
   compile: process.env.CLAUDE_MODEL || 'claude-sonnet-5',
   // Dependency chain generation + its fact-check pass — rare (generated
-  // once per concept, then cached and reused across every student who
-  // hits it), but high-leverage: a wrong chain silently corrupts every
-  // diagnosis built on top of it. Worth paying more per call here
-  // specifically because the cost doesn't scale with usage volume.
+  // once per concept+qualification+examBoard, then cached and reused
+  // across every student who hits that same tier), but high-leverage: a
+  // wrong chain silently corrupts every diagnosis built on top of it.
+  // factCheck stays on Opus unconditionally regardless of which
+  // generation model drafted the chain — it's the actual quality gate
+  // (it can rewrite the whole graph via corrected_graph), so cost savings
+  // on the draft never come at the expense of the final result. See
+  // chainService.ts's isUniversityLevel for how chainGeneration vs
+  // chainGenerationSimple is chosen.
   chainGeneration: 'claude-opus-4-8',
+  chainGenerationSimple: process.env.CLAUDE_MODEL || 'claude-sonnet-5',
   factCheck: 'claude-opus-4-8',
   // The diagnostic tree itself — corrections, contrastive cues, the
   // nuanced pedagogical judgment calls.

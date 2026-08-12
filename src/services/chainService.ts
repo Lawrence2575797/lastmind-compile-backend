@@ -14,6 +14,25 @@ export function normalizeConceptKey(subject: string, topic: string, concept: str
   return `${clean(subject)}:${clean(topic)}:${clean(concept)}`;
 }
 
+// Mirrors learn/index.html's UNIVERSITY_LEVELS exactly — keep in sync if
+// that list ever changes. GCSE/A-Level/AS-Level (and anything unset) are
+// treated as the "simple" school-level case; only genuine university
+// levels are held to the more expensive generation model. clean() is the
+// same normalizer used for cache keys elsewhere in this file, so this is
+// robust to casing/hyphenation drift ("A-Level" vs "a level").
+const UNIVERSITY_LEVELS = new Set([
+  'undergraduate_year_1',
+  'undergraduate_year_2',
+  'undergraduate_year_3',
+  'undergraduate_year_4',
+  'masters',
+  'phd',
+]);
+
+function isUniversityLevel(qualification: string): boolean {
+  return UNIVERSITY_LEVELS.has(clean(qualification));
+}
+
 /**
  * Fetches a chain from cache, or generates+fact-checks+caches a new one on
  * a miss. Extracted here (rather than left inline in the /chains/generate
@@ -61,22 +80,31 @@ export async function getOrGenerateChain(
     `Qualification level: ${qualification || 'unspecified'}`,
     `Exam board: ${examBoard || 'unspecified'}`,
   ].join('\n');
-  // NOTE: no `temperature` here — Anthropic deprecated this parameter
-  // entirely for Claude Opus 4.7 and later (including 4.8, used here via
-  // MODELS.chainGeneration): any explicit value, even 0, now returns a
-  // 400 error. Omitting it is the only supported option for this model;
-  // determinism has to come from the prompt itself rather than this
-  // parameter for Opus calls specifically.
+  // NOTE: no `temperature` here — both Opus 4.7+ and Sonnet 5 (the two
+  // models this call can use, see generationModel below) reject any
+  // explicit temperature value, even 0, with a 400. Omitting it is the
+  // only supported option on either; determinism has to come from the
+  // prompt itself rather than this parameter.
   // maxTokens raised well above the 2048 default — the default was
   // silently truncating mid-JSON for larger graphs (more nodes = more
   // edges + labels to emit), which then failed JSON.parse and surfaced as
   // an opaque "could not..." error with no indication this was the cause.
   // CHAIN_GENERATION_PROMPT is fixed, ~1.1K tokens, and byte-identical for
   // every concept/student that ever triggers a chain-cache miss — clears
-  // Opus's 1024-token cache minimum, so mark it cacheable rather than
-  // paying full price on every single one of those misses across the app.
+  // both models' 1024-token cache minimum, so mark it cacheable rather
+  // than paying full price on every single one of those misses across the
+  // app.
+  //
+  // Sonnet drafts GCSE/A-Level chains (the large majority of concepts in
+  // practice); Opus is reserved for university-level ones, where the
+  // material is more likely to need deeper/subtler decomposition. Either
+  // way, factCheck below is UNCONDITIONALLY Opus and can rewrite the
+  // whole graph — so a weaker Sonnet draft still ends up quality-gated by
+  // Opus before it's ever cached, this just makes the common case cheaper
+  // to produce that first draft.
+  const generationModel = isUniversityLevel(qualification) ? MODELS.chainGeneration : MODELS.chainGenerationSimple;
   const rawChain = await callClaudeJSON({
-    model: MODELS.chainGeneration,
+    model: generationModel,
     systemPrompt: CHAIN_GENERATION_PROMPT,
     userContent: generationInput,
     maxTokens: 4096,

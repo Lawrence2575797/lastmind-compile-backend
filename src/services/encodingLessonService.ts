@@ -517,7 +517,31 @@ async function generateEncodingLessonContent(
     expectedSolution: s.requiresCalculation ? s.expectedSolution : undefined,
   }));
 
-  await repairUncertainSteps(draftSteps, subject, qualification, examBoard);
+  // Started alongside repairUncertainSteps, not after it — this lesson
+  // start is already a stack of sequential AI calls on a cold cache
+  // (chain generation + fact-check, then this batch generation, then
+  // however many repair passes get flagged), and every one of them adds
+  // to how long the student stares at a loading screen. The diagram
+  // lookup only needs batch.diagram (already in hand) and never touches
+  // draftSteps until it's attached below, so nothing here actually
+  // depends on repair finishing first — running them concurrently instead
+  // of back-to-back saves the diagram lookup's own time outright, up to
+  // DIAGRAM_LOOKUP_TIMEOUT_MS worth.
+  const diagramPromise =
+    batch.diagram?.needed && batch.diagram.searchQuery
+      ? withTimeout(
+          getOrFetchDiagram(conceptKey, qualification, examBoard, subject, target.label, batch.diagram.searchQuery).catch((err) => {
+            console.error('LastMind: diagram lookup failed, proceeding without one.', err);
+            return null;
+          }),
+          DIAGRAM_LOOKUP_TIMEOUT_MS
+        )
+      : Promise.resolve(null);
+
+  const [, diagram] = await Promise.all([
+    repairUncertainSteps(draftSteps, subject, qualification, examBoard),
+    diagramPromise,
+  ]);
 
   // expectedSolution is kept here — this is the CACHED shape (see
   // CachedEncodingStep) — and stripped later, once, right before anything
@@ -526,27 +550,18 @@ async function generateEncodingLessonContent(
   // dropped at this point.
   const steps: CachedEncodingStep[] = draftSteps.map(({ confident, ...step }) => step);
 
-  if (steps.length && batch.diagram?.needed && batch.diagram.searchQuery) {
-    const diagram = await withTimeout(
-      getOrFetchDiagram(conceptKey, qualification, examBoard, subject, target.label, batch.diagram.searchQuery).catch((err) => {
-        console.error('LastMind: diagram lookup failed, proceeding without one.', err);
-        return null;
-      }),
-      DIAGRAM_LOOKUP_TIMEOUT_MS
-    );
-    if (diagram) {
-      // The LAST target-derivation beat, not the first — a multi-beat
-      // target (see ENCODING_LESSON_BATCH_PROMPT point 4, "break it into
-      // as many sequential beats as the concept genuinely requires") often
-      // has earlier beats establishing a piece of reasoning before the
-      // full picture (the thing the diagram actually shows) comes together
-      // at the end. Attaching it to whichever beat happened to be first
-      // showed the diagram at a point in the lesson that hadn't earned it
-      // yet — visually unrelated to what was being asked right then.
-      const targetSteps = steps.filter((s) => s.nodeId === target.id && (s.type === 'derive' || s.type === 'explain'));
-      const targetStep = targetSteps[targetSteps.length - 1];
-      if (targetStep) targetStep.diagram = diagram;
-    }
+  if (steps.length && diagram) {
+    // The LAST target-derivation beat, not the first — a multi-beat
+    // target (see ENCODING_LESSON_BATCH_PROMPT point 4, "break it into
+    // as many sequential beats as the concept genuinely requires") often
+    // has earlier beats establishing a piece of reasoning before the
+    // full picture (the thing the diagram actually shows) comes together
+    // at the end. Attaching it to whichever beat happened to be first
+    // showed the diagram at a point in the lesson that hadn't earned it
+    // yet — visually unrelated to what was being asked right then.
+    const targetSteps = steps.filter((s) => s.nodeId === target.id && (s.type === 'derive' || s.type === 'explain'));
+    const targetStep = targetSteps[targetSteps.length - 1];
+    if (targetStep) targetStep.diagram = diagram;
   }
 
   return { hookFact: batch.hookFact, steps };

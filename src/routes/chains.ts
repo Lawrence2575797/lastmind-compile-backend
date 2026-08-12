@@ -6,7 +6,7 @@ import { getOrGenerateChain, normalizeConceptKey } from '../services/chainServic
 const router = Router();
 
 router.post('/chains/generate', requireAuth, costlyEndpointLimiter, async (req: Request, res: Response) => {
-  const { subject, topic, concept } = req.body ?? {};
+  const { subject, topic, concept, qualification, examBoard } = req.body ?? {};
   if (typeof subject !== 'string' || typeof topic !== 'string' || typeof concept !== 'string') {
     return res.status(400).json({ error: 'subject, topic, and concept are all required' });
   }
@@ -14,7 +14,14 @@ router.post('/chains/generate', requireAuth, costlyEndpointLimiter, async (req: 
   const conceptKey = normalizeConceptKey(subject, topic, concept);
 
   try {
-    const result = await getOrGenerateChain(conceptKey, subject, topic, concept);
+    const result = await getOrGenerateChain(
+      conceptKey,
+      subject,
+      topic,
+      concept,
+      typeof qualification === 'string' ? qualification : '',
+      typeof examBoard === 'string' ? examBoard : ''
+    );
 
     if (result.error === 'unresolved_must_fix') {
       return res.status(500).json({ error: 'Generated chain failed verification and could not be auto-corrected. Not cached.' });

@@ -50,8 +50,15 @@ interface ChainEdge { node_id: string; relationship: 'definitional' | 'reasoning
 interface ChainNode { id: string; label: string; depends_on: ChainEdge[]; }
 interface Chain { concept_id: string; subject: string; nodes: ChainNode[]; }
 
-export async function loadChainIfMechanistic(conceptKey: string, subject: string, topic: string, concept: string): Promise<Chain | null> {
-  const result = await getOrGenerateChain(conceptKey, subject, topic, concept);
+export async function loadChainIfMechanistic(
+  conceptKey: string,
+  subject: string,
+  topic: string,
+  concept: string,
+  qualification = '',
+  examBoard = ''
+): Promise<Chain | null> {
+  const result = await getOrGenerateChain(conceptKey, subject, topic, concept, qualification, examBoard);
   if (!result.chain) return null;
 
   const chain = result.chain as Chain;

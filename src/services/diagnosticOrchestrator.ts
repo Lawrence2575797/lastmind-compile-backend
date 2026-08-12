@@ -1,9 +1,20 @@
 import { callClaudeJSON, MODELS } from './claudeClient';
 import { gradeAndRecordReview } from './reviewService';
 import { parseModelJson } from './jsonParsing';
-import { CHECK_ANSWER_AND_SLIP_PROMPT, MATH_ERROR_LOCALIZATION_PROMPT } from '../constants/diagnosticPrompts';
-import { loadChainIfMechanistic, startMechanisticDiagnosis, processMechanisticAnswer, MechanisticState } from './mechanisticEngine';
-import { processDiagnosticAnswer, gateOnWrongAnswer, DiagnosticState } from './diagnosticEngine';
+import { CHECK_ANSWER_AND_SLIP_PROMPT, MATH_ERROR_LOCALIZATION_PROMPT, REFRAME_QUESTION_PROMPT } from '../constants/diagnosticPrompts';
+import {
+  loadChainIfMechanistic,
+  startMechanisticDiagnosis,
+  processMechanisticAnswer,
+  reframeCurrentQuestion as reframeCurrentMechanisticQuestion,
+  MechanisticState,
+} from './mechanisticEngine';
+import {
+  processDiagnosticAnswer,
+  advanceAfterWrongAnswer,
+  reframeCurrentQuestion as reframeCurrentAtomicQuestion,
+  DiagnosticState,
+} from './diagnosticEngine';
 import { fetchExpectedSolution } from './encodingLessonService';
 
 // Tags which underlying engine a mid-flow session belongs to, once the
@@ -87,11 +98,11 @@ async function dispatchToBranch(
   }
 
   // No mechanistic chain — fall through to the atomic engine, entering it
-  // at its own 'initial' stage. Gates on wording first (this originalQuestion
-  // is a REAL question the student was just shown, not a placeholder — see
-  // gateOnWrongAnswer's export comment) rather than dispatching straight
-  // into processDiagnosticAnswer's dontKnow shortcut, which skips both the
-  // slip-check AND the wording gate entirely.
+  // at its own 'initial' stage and escalating straight into the encoding
+  // check (skips processDiagnosticAnswer's dontKnow shortcut, which also
+  // skips the slip-check — this originalQuestion is a REAL question the
+  // student was just shown, so the slip-check already ran upstream of
+  // dispatchToBranch, not here).
   const atomicState: DiagnosticState = {
     conceptLabel: conceptKey,
     subject,
@@ -101,7 +112,7 @@ async function dispatchToBranch(
     originalQuestionRequiresCalculation,
     originalQuestionExpectedSolution: originalQuestionRequiresCalculation ? originalQuestionExpectedSolution : undefined,
   };
-  const result = gateOnWrongAnswer(atomicState, originalQuestion);
+  const result = await advanceAfterWrongAnswer(userId, atomicState);
   return {
     done: result.done,
     diagnosis: result.diagnosis,
@@ -157,11 +168,7 @@ export async function startDiagnosisFromKnownAnswer(
       originalQuestionRequiresCalculation,
       originalQuestionExpectedSolution: originalQuestionRequiresCalculation ? originalQuestionExpectedSolution : undefined,
     };
-    // Gates on wording first — this originalQuestion is the real question
-    // the caller already graded as wrong (e.g. the encoding lesson's own
-    // step), not a placeholder — same reasoning as dispatchToBranch's
-    // no-chain fallback above.
-    const result = gateOnWrongAnswer(atomicState, originalQuestion);
+    const result = await advanceAfterWrongAnswer(userId, atomicState);
     return {
       done: result.done,
       diagnosis: result.diagnosis,
@@ -338,5 +345,56 @@ export async function runDiagnosticStep(
   return {
     ...(await dispatchToBranch(userId, state.conceptKey, state.conceptLabel, state.subject, state.topic, state.originalQuestion, undefined, undefined, state.qualification, state.examBoard)),
     answerCorrect: false,
+  };
+}
+
+/**
+ * Rewords whatever question is currently shown, at any point in the tree —
+ * the replacement for the old mandatory "did you understand the wording?"
+ * gate (see diagnosticEngine.ts's reframeCurrentQuestion for the full
+ * rationale). Dispatches by engine; the 'pending' case has no inner engine
+ * state yet, so it reframes state.originalQuestion directly — the shared
+ * slip-check (runDiagnosticStep) always grades against that field, so this
+ * keeps the two in sync exactly like the atomic engine's 'initial'/
+ * 'slip_recheck' stages do for their own originalQuestion.
+ */
+export async function reframeDiagnosticQuestion(state: OrchestratorState): Promise<OrchestratorResult> {
+  if (state.engine === 'pending') {
+    const raw = await callClaudeJSON({
+      model: MODELS.simpleQuestion,
+      systemPrompt: REFRAME_QUESTION_PROMPT,
+      userContent: `Concept: ${state.conceptLabel}\nOriginal question: ${state.originalQuestion}`,
+      temperature: 0.3,
+    });
+    const reframed = parseModelJson<{ question: string }>(raw);
+    return {
+      done: false,
+      nextQuestion: reframed.question,
+      state: { ...state, originalQuestion: reframed.question },
+    };
+  }
+
+  if (state.engine === 'atomic') {
+    const result = await reframeCurrentAtomicQuestion(state.inner);
+    return {
+      done: result.done,
+      diagnosis: result.diagnosis,
+      correction: result.correction,
+      nextQuestion: result.nextQuestion,
+      nextOptions: result.nextOptions,
+      state: { engine: 'atomic', inner: result.state },
+      nextRequiresCalculation: result.nextRequiresCalculation,
+    };
+  }
+
+  const result = await reframeCurrentMechanisticQuestion(state.inner);
+  return {
+    done: result.done,
+    diagnosis: result.diagnosis,
+    correction: result.correction,
+    nextQuestion: result.nextQuestion,
+    nextOptions: result.nextOptions,
+    state: { engine: 'mechanistic', inner: result.state },
+    nextRequiresCalculation: result.nextRequiresCalculation,
   };
 }

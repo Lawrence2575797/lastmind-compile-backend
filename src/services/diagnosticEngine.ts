@@ -12,8 +12,6 @@ import {
   REFRAME_QUESTION_PROMPT,
 } from '../constants/diagnosticPrompts';
 
-const WORDING_CHECK_PROMPT_TEXT = 'Did you understand what this question was asking?';
-
 // maxTokens raised well above callClaudeJSON's own 2048 default — same
 // fix already applied in chainService.ts and cortexService.ts for the
 // exact same failure mode (silent truncation before any usable JSON, or
@@ -75,6 +73,17 @@ export interface DiagnosticState {
   subject: string;
   stage: DiagnosticStage;
   originalQuestion: string;
+  // True when originalQuestion is NOT a real question ever shown to the
+  // student — mechanisticEngine.ts's localization hand-off seeds a fresh
+  // DiagnosticState with a bookkeeping placeholder like "(localization
+  // check on partial_derivatives)" rather than a real prompt (see its own
+  // construction comment). Anything that would otherwise re-display or
+  // build on originalQuestion verbatim (the encoding_check->wm_relax
+  // transition, hint_cue's re-ask) must check this first and fall back to
+  // lastShownQuestion / concept-only context instead — see those call
+  // sites. Left unset (falsy) for every top-level session, where
+  // originalQuestion is always the genuine question the student answered.
+  originalQuestionIsPlaceholder?: boolean;
   recognitionCorrectAnswer?: string;
   // Accumulated across every wrong attempt in this session — this is what
   // makes the eventual correction address the STUDENT'S actual specific
@@ -93,22 +102,14 @@ export interface DiagnosticState {
   // working-memory-specific issue, regardless of whether the student then
   // answers it correctly.
   wmRelaxTrustworthy?: boolean;
-  // Set whenever a free-text answer just came back wrong, BEFORE escalating
-  // to the next diagnostic technique — pauses on a direct "did you
-  // understand the wording?" check first, since confusing wording and a
-  // genuine gap produce the same "got it wrong" signal but need very
-  // different responses. `state.stage` itself is left unchanged while this
-  // is set (it's checked before the main switch), so resuming after "yes"
-  // or re-entering after a "no" reframe both land back in the same stage's
-  // own case block with no separate resume-target bookkeeping needed.
-  // See processDiagnosticAnswer's top-of-function routing and
-  // handleWordingGateResponse.
-  wordingGate?: { failedQuestion: string };
   // The literal text of whatever question is currently on screen — needed
-  // to reframe it if the wording gate fires, since wm_relax/hint_cue/
-  // contrastive_cue grade by concept label (not stored wording), so
-  // there's otherwise nothing in state holding the exact shown text.
-  // originalQuestion already serves this role for 'initial'/'slip_recheck'.
+  // for the optional "reframe this" action (see reframeCurrentQuestion),
+  // since wm_relax/hint_cue/contrastive_cue grade by concept label (not
+  // stored wording), so there's otherwise nothing in state holding the
+  // exact shown text. originalQuestion already serves this role for
+  // 'initial'/'slip_recheck', but this is kept in sync everywhere a new
+  // question is generated so reframeCurrentQuestion never needs to know
+  // which stage it's reframing.
   lastShownQuestion?: string;
   // Calculation status of originalQuestion specifically — set at entry
   // (see startMathDiagnosis) when the question that triggered this whole
@@ -159,9 +160,16 @@ function appendNote(state: DiagnosticState, note: string | null | undefined): Di
 // generated (lastGenerated*); every other free-text stage ('initial',
 // 'slip_recheck', 'hint_cue') is grading originalQuestion itself, either
 // directly or re-asked with a hint. Shared by checkAnswer call sites and
-// the wording-gate reframe response, so the two can never disagree about
-// which question is actually on screen.
+// reframeCurrentQuestion, so they can never disagree about which question
+// is actually on screen.
 function currentQuestionCalcInfo(state: DiagnosticState): { requiresCalculation: boolean; expectedSolution?: string } {
+  if (state.originalQuestionIsPlaceholder) {
+    // A placeholder-seeded (sub-diagnostic) session has no real
+    // originalQuestion* to ever fall back to — every stage, including
+    // hint_cue, grades/re-asks based on lastGenerated* instead. See
+    // originalQuestionIsPlaceholder's own comment.
+    return { requiresCalculation: !!state.lastGeneratedRequiresCalculation, expectedSolution: state.lastGeneratedExpectedSolution };
+  }
   if (state.stage === 'wm_relax' || state.stage === 'contrastive_cue') {
     return { requiresCalculation: !!state.lastGeneratedRequiresCalculation, expectedSolution: state.lastGeneratedExpectedSolution };
   }
@@ -226,7 +234,7 @@ async function runEncodingCheckOrSkip(userId: string, state: DiagnosticState): P
         done: false,
         nextQuestion: outcome.question,
         nextOptions: outcome.options,
-        state: { ...state, stage: 'encoding_check', recognitionCorrectAnswer: outcome.correctAnswer },
+        state: { ...state, stage: 'encoding_check', recognitionCorrectAnswer: outcome.correctAnswer, lastShownQuestion: outcome.question },
       };
     default:
       throw new Error(`Unexpected encoding-check outcome for atomic path: ${outcome.result}`);
@@ -247,22 +255,33 @@ async function resumeWrongAnswerContinuation(
       return { ...(await runEncodingCheckOrSkip(userId, state)), answerCorrect: false };
 
     case 'wm_relax': {
+      // Re-asking originalQuestion itself (with a hint appended) is only
+      // valid when originalQuestion is a REAL question the student was
+      // actually shown. For a mechanistic localization hand-off it's a
+      // bookkeeping placeholder — re-asking THAT verbatim is exactly the
+      // "(localization check on X)\n\nHint: ..." bug this fixes. Fall back
+      // to lastShownQuestion (the wm_relax question that was just
+      // generated and answered wrong) in that case instead, and hint
+      // about ITS calc status, not originalQuestion*'s.
+      const usingPlaceholder = !!state.originalQuestionIsPlaceholder;
+      const reAskBase = usingPlaceholder ? (state.lastShownQuestion || state.conceptLabel) : state.originalQuestion;
+      const hintTargetRequiresCalculation = usingPlaceholder
+        ? !!state.lastGeneratedRequiresCalculation
+        : !!state.originalQuestionRequiresCalculation;
+
       const hintResult = await callJSON<{ hint: string }>(
         HINT_CUE_PROMPT,
-        `Concept: ${state.conceptLabel}`,
+        `Concept: ${state.conceptLabel}\nQuestion type: ${hintTargetRequiresCalculation ? 'calculation' : 'verbal'}`,
         MODELS.diagnosticTree,
         0.3
       );
-      const nextQuestion = `${state.originalQuestion}\n\nHint: ${hintResult.hint}`;
-      // Re-asking originalQuestion itself (with a hint appended), NOT
-      // wm_relax's simplified question — its calc status is already
-      // whatever originalQuestion* holds, untouched here.
+      const nextQuestion = `${reAskBase}\n\nHint: ${hintResult.hint}`;
       return {
         done: false,
         nextQuestion,
         state: { ...state, stage: 'hint_cue', lastShownQuestion: nextQuestion },
         answerCorrect: false,
-        nextRequiresCalculation: !!state.originalQuestionRequiresCalculation,
+        nextRequiresCalculation: hintTargetRequiresCalculation,
       };
     }
 
@@ -302,64 +321,51 @@ async function resumeWrongAnswerContinuation(
   }
 }
 
-// Handles the student's response to the "did you understand the wording?"
-// gate — "no" reframes whatever question is currently shown and re-asks it
-// at the SAME stage (a genuine re-attempt, not an escalation); "yes" moves
-// on to exactly what would have happened had the gate not existed.
-async function handleWordingGateResponse(
-  userId: string,
-  state: DiagnosticState,
-  answer: string
-): Promise<DiagnosticResult> {
-  const gate = state.wordingGate!;
-  const understood = /^\s*yes/i.test(answer);
-  const clearedState: DiagnosticState = { ...state, wordingGate: undefined };
-
-  if (!understood) {
-    const reframed = await callJSON<{ question: string }>(
-      REFRAME_QUESTION_PROMPT,
-      `Concept: ${state.conceptLabel}\nOriginal question: ${gate.failedQuestion}`,
-      MODELS.simpleQuestion,
-      0.3
-    );
-    const isOriginalQuestionStage = clearedState.stage === 'initial' || clearedState.stage === 'slip_recheck';
-    // A reframe only reworks the WORDING — whatever's being tested (and
-    // its calculation status) is unchanged, so currentQuestionCalcInfo
-    // still correctly describes the reworded question too.
-    return {
-      done: false,
-      nextQuestion: reframed.question,
-      state: {
-        ...clearedState,
-        lastShownQuestion: reframed.question,
-        ...(isOriginalQuestionStage ? { originalQuestion: reframed.question } : {}),
-      },
-      nextRequiresCalculation: currentQuestionCalcInfo(clearedState).requiresCalculation,
-    };
-  }
-
-  return resumeWrongAnswerContinuation(userId, clearedState);
-}
-
-// Wraps a "this free-text answer was wrong" result with the wording gate
-// instead of escalating immediately — every free-text stage's wrong branch
-// routes through this. Skipped for encoding_check (a 4-option MCQ, where
-// wording ambiguity is a much smaller risk). Exported so the orchestrator
-// can gate on a REAL, already-known-wrong originalQuestion (e.g. from the
-// encoding lesson) before ever dispatching into this engine at all — see
-// diagnosticOrchestrator.ts. NOT used for the 'initial'-stage dontKnow
-// shortcut below, which also serves mechanisticEngine.ts's internal
-// localization hand-off, where "originalQuestion" is just a placeholder
-// label for a node the student was never actually shown a real question
-// for yet — gating on that would ask about wording of text they never saw.
-export function gateOnWrongAnswer(state: DiagnosticState, failedQuestion: string): DiagnosticResult {
+// On-demand reword of whatever question is currently on screen — the
+// replacement for the old mandatory "did you understand the wording?"
+// gate. Callable at ANY point in the tree via a frontend side-button
+// (rather than a forced question shown after every wrong answer); leaves
+// the diagnostic stage and every grading-relevant field untouched, it only
+// swaps the display text. Exported so the orchestrator can expose it
+// independent of processDiagnosticAnswer's normal answer-submission flow.
+export async function reframeCurrentQuestion(state: DiagnosticState): Promise<DiagnosticResult> {
+  const questionToReframe = state.lastShownQuestion || state.originalQuestion;
+  const reframed = await callJSON<{ question: string }>(
+    REFRAME_QUESTION_PROMPT,
+    `Concept: ${state.conceptLabel}\nOriginal question: ${questionToReframe}`,
+    MODELS.simpleQuestion,
+    0.3
+  );
+  // 'initial'/'slip_recheck' grade by passing originalQuestion's own TEXT
+  // to the answer checker (see checkAnswer call sites below) — those two
+  // stages must have originalQuestion itself updated to match what's now
+  // shown, or grading would describe a question the student was never
+  // actually asked. Every other stage grades via a fixed label instead
+  // (e.g. '(simplified)', '(cued combination)'), so only lastShownQuestion
+  // needs updating for them.
+  const isOriginalQuestionStage = !state.originalQuestionIsPlaceholder && (state.stage === 'initial' || state.stage === 'slip_recheck');
   return {
     done: false,
-    nextQuestion: WORDING_CHECK_PROMPT_TEXT,
-    nextOptions: ['Yes', 'No'],
-    state: { ...state, wordingGate: { failedQuestion } },
-    answerCorrect: false,
+    nextQuestion: reframed.question,
+    state: {
+      ...state,
+      lastShownQuestion: reframed.question,
+      ...(isOriginalQuestionStage ? { originalQuestion: reframed.question } : {}),
+    },
+    nextRequiresCalculation: currentQuestionCalcInfo(state).requiresCalculation,
   };
+}
+
+// Advances straight into the next diagnostic escalation after a wrong
+// answer — every free-text stage's wrong branch routes through this, as
+// does mechanisticEngine.ts's localization hand-off and
+// diagnosticOrchestrator.ts's atomic-path entry points. Used to gate on a
+// "did you understand the wording?" check before escalating; that's now
+// the optional reframeCurrentQuestion action above instead of a forced
+// step here, so this is a thin, uniformly-named entry point into
+// resumeWrongAnswerContinuation.
+export function advanceAfterWrongAnswer(userId: string, state: DiagnosticState): Promise<DiagnosticResult> {
+  return resumeWrongAnswerContinuation(userId, state);
 }
 
 /**
@@ -373,10 +379,6 @@ export async function processDiagnosticAnswer(
   answer: string,
   dontKnow: boolean
 ): Promise<DiagnosticResult> {
-  if (state.wordingGate) {
-    return handleWordingGateResponse(userId, state, answer);
-  }
-
   switch (state.stage) {
     case 'initial': {
       if (dontKnow) {
@@ -403,7 +405,7 @@ export async function processDiagnosticAnswer(
           nextRequiresCalculation: !!state.originalQuestionRequiresCalculation,
         };
       }
-      return gateOnWrongAnswer(notedState, state.originalQuestion);
+      return advanceAfterWrongAnswer(userId, notedState);
     }
 
     case 'slip_recheck': {
@@ -417,7 +419,7 @@ export async function processDiagnosticAnswer(
       if (check.correct) {
         return finish(userId, state.conceptLabel, 'hard', 'slip', notedState, true);
       }
-      return gateOnWrongAnswer(notedState, state.originalQuestion);
+      return advanceAfterWrongAnswer(userId, notedState);
     }
 
     case 'encoding_check': {
@@ -425,6 +427,12 @@ export async function processDiagnosticAnswer(
       if (!isCorrect) {
         return finish(userId, state.conceptLabel, 'again', 'encoding', state, false);
       }
+      // originalQuestion is a bookkeeping placeholder (never a real shown
+      // question) for a mechanistic localization hand-off — passing it as
+      // "Original question: (localization check on X)" would feed the
+      // model a misleading label instead of real context. Omit the line
+      // entirely in that case; Subject + Concept alone is enough for
+      // WM_RELAXATION_PROMPT to write a genuine first retrieval question.
       const simplified = await callJSON<{
         simplifiedQuestion: string;
         staysGenuineRetrieval: boolean;
@@ -432,7 +440,9 @@ export async function processDiagnosticAnswer(
         expectedSolution?: string;
       }>(
         WM_RELAXATION_PROMPT,
-        `Subject: ${state.subject}\nConcept: ${state.conceptLabel}\nOriginal question: ${state.originalQuestion}`,
+        state.originalQuestionIsPlaceholder
+          ? `Subject: ${state.subject}\nConcept: ${state.conceptLabel}`
+          : `Subject: ${state.subject}\nConcept: ${state.conceptLabel}\nOriginal question: ${state.originalQuestion}`,
         MODELS.diagnosticTree,
         0.3
       );
@@ -463,23 +473,28 @@ export async function processDiagnosticAnswer(
       if (check.correct && state.wmRelaxTrustworthy !== false) {
         return finish(userId, state.conceptLabel, 'hard', 'wm_overload', notedState, true);
       }
-      return gateOnWrongAnswer(notedState, state.lastShownQuestion || state.originalQuestion);
+      return advanceAfterWrongAnswer(userId, notedState);
     }
 
     case 'hint_cue': {
-      // Grading the ORIGINAL question (re-asked with a hint), not
-      // whatever wm_relax generated — see originalQuestion*'s own comment.
+      // Grading against whichever question was actually re-asked with the
+      // hint — the ORIGINAL question for a real top-level session (see
+      // originalQuestion*'s own comment), or wm_relax's lastGenerated*
+      // question for a placeholder-seeded sub-diagnostic, matching
+      // resumeWrongAnswerContinuation's 'wm_relax' case above exactly.
       const check = await checkAnswer(
         state.conceptLabel,
-        state.originalQuestion,
+        state.originalQuestionIsPlaceholder ? '(hinted)' : state.originalQuestion,
         answer,
-        state.originalQuestionRequiresCalculation ? state.originalQuestionExpectedSolution : undefined
+        state.originalQuestionIsPlaceholder
+          ? (state.lastGeneratedRequiresCalculation ? state.lastGeneratedExpectedSolution : undefined)
+          : (state.originalQuestionRequiresCalculation ? state.originalQuestionExpectedSolution : undefined)
       );
       const notedState = appendNote(state, check.misconceptionNote);
       if (check.correct) {
         return finish(userId, state.conceptLabel, 'hard', 'decay', notedState, true);
       }
-      return gateOnWrongAnswer(notedState, state.lastShownQuestion || state.originalQuestion);
+      return advanceAfterWrongAnswer(userId, notedState);
     }
 
     case 'contrastive_cue': {
@@ -493,7 +508,7 @@ export async function processDiagnosticAnswer(
       if (check.correct) {
         return finish(userId, state.conceptLabel, 'hard', 'interference', notedState, true);
       }
-      return gateOnWrongAnswer(notedState, state.lastShownQuestion || state.originalQuestion);
+      return advanceAfterWrongAnswer(userId, notedState);
     }
 
     default:

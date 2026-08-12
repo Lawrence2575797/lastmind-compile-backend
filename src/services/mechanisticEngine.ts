@@ -12,9 +12,7 @@ import {
   CORRECTION_PROMPT,
   REFRAME_QUESTION_PROMPT,
 } from '../constants/diagnosticPrompts';
-import { processDiagnosticAnswer, DiagnosticState, DiagnosticResult, Diagnosis } from './diagnosticEngine';
-
-const WORDING_CHECK_PROMPT_TEXT = 'Did you understand what this question was asking?';
+import { processDiagnosticAnswer, reframeCurrentQuestion as reframeCurrentAtomicQuestion, DiagnosticState, DiagnosticResult, Diagnosis } from './diagnosticEngine';
 
 // Same fix, same reasoning as diagnosticEngine.ts's own callJSON — see its
 // comment. This engine's LOCALIZATION_CHECK_PROMPT call in particular
@@ -85,9 +83,7 @@ export interface MechanisticState {
   confusedWith?: string;
   // Same self-audit gate as DiagnosticState.wmRelaxTrustworthy — see there.
   wmRelaxTrustworthy?: boolean;
-  // Same wording-understanding gate as DiagnosticState.wordingGate — see
-  // there for the full explanation.
-  wordingGate?: { failedQuestion: string };
+  // Same purpose as DiagnosticState.lastShownQuestion — see there.
   lastShownQuestion?: string;
   // Same purpose/split as DiagnosticState's fields of the same names —
   // originalQuestion* is set at entry (see startMechanisticDiagnosis) when
@@ -232,7 +228,7 @@ async function runEncodingCheckOrSkip(userId: string, state: MechanisticState): 
         done: false,
         nextQuestion: outcome.question,
         nextOptions: outcome.options,
-        state: { ...state, recognitionCorrectAnswer: outcome.correctAnswer },
+        state: { ...state, recognitionCorrectAnswer: outcome.correctAnswer, lastShownQuestion: outcome.question },
         answerCorrect: false,
       };
     default:
@@ -267,15 +263,7 @@ export async function startMechanisticDiagnosis(
     originalQuestionExpectedSolution: originalQuestionRequiresCalculation ? originalQuestionExpectedSolution : undefined,
   };
 
-  // Every path into this function follows a wrong (or "don't know") answer
-  // to a REAL question the student was just shown (this function's only
-  // caller, dispatchToBranch, always carries a genuine originalQuestion —
-  // never a placeholder) — gate on wording before diagnosing anything, same
-  // as every other free-text wrong answer in this tree. Was previously
-  // skipped entirely at entry, so a misread question went straight into
-  // full diagnosis instead of the "did you understand what was asked?"
-  // check every later stage already gets.
-  return gateOnWrongAnswer(baseState, originalQuestion);
+  return advanceAfterWrongAnswer(userId, baseState);
 }
 
 async function beginWmRelax(state: MechanisticState): Promise<MechanisticResult> {
@@ -313,12 +301,11 @@ async function beginWmRelax(state: MechanisticState): Promise<MechanisticResult>
 // name/purpose.
 async function resumeWrongAnswerContinuation(userId: string, state: MechanisticState): Promise<MechanisticResult> {
   switch (state.stage) {
-    // Resuming the entry-level gate set by startMechanisticDiagnosis —
-    // runs exactly what would have run immediately had the gate not
-    // existed. Distinct from processMechanisticAnswer's own
-    // case 'encoding_check', which grades a real in-progress MCQ answer
-    // and never gates (see gateOnWrongAnswer's comment) — this case only
-    // ever fires via the entry-level gate, before any MCQ has been shown.
+    // Resuming from startMechanisticDiagnosis's entry call — runs the
+    // shared encoding check immediately. Distinct from
+    // processMechanisticAnswer's own case 'encoding_check', which grades a
+    // real in-progress MCQ answer — this case only ever fires at entry,
+    // before any MCQ has been shown.
     case 'encoding_check':
       return runEncodingCheckOrSkip(userId, state);
 
@@ -349,21 +336,27 @@ async function resumeWrongAnswerContinuation(userId: string, state: MechanisticS
       // "don't know"-equivalent way dispatchToBranch/runEncodingCheckOrSkip
       // already do elsewhere in this codebase for "we already know this
       // needs deeper diagnosis" hand-offs, rather than re-passing the
-      // original answer text — by the time we're here (past the wording
-      // gate), that text is gone anyway, since this turn's `answer` was the
-      // gate's own yes/no response, not a fresh answer to re-grade. This
+      // original answer text — that text is gone by this point anyway,
+      // since this turn's `answer` is whatever was submitted for the
+      // localization check itself, not a fresh answer to re-grade. This
       // sub-diagnostic starts genuinely fresh (its own originalQuestion is
       // just a placeholder label, not the localization question itself —
-      // see diagnosticEngine.ts's export comment on gateOnWrongAnswer) —
-      // it decides calc-vs-theory for the PREREQUISITE from scratch via
-      // its own encoding_check -> wm_relax generation, so nothing from
-      // this localization stage needs seeding into it.
+      // see DiagnosticState.originalQuestionIsPlaceholder) — it decides
+      // calc-vs-theory for the PREREQUISITE from scratch via its own
+      // encoding_check -> wm_relax generation, so nothing from this
+      // localization stage needs seeding into it.
       const nodeLabel = findNode(state.chain, state.currentNodeId)?.label || state.currentNodeId;
       const subState: DiagnosticState = {
         conceptLabel: state.currentNodeId,
         subject: state.subject,
         stage: 'initial',
         originalQuestion: `(localization check on ${nodeLabel})`,
+        // Marks originalQuestion above as a bookkeeping label, never meant
+        // to be shown — see DiagnosticState.originalQuestionIsPlaceholder's
+        // own comment for what this protects against (diagnosticEngine.ts's
+        // encoding_check->wm_relax transition and hint_cue re-ask both
+        // check this before touching originalQuestion).
+        originalQuestionIsPlaceholder: true,
         misconceptionNotes: [],
       };
       const subResult = await processDiagnosticAnswer(userId, subState, '', true);
@@ -403,47 +396,52 @@ async function resumeWrongAnswerContinuation(userId: string, state: MechanisticS
   }
 }
 
-// Handles the student's response to the "did you understand the wording?"
-// gate. Mirrors diagnosticEngine.ts's function of the same name/purpose.
-async function handleWordingGateResponse(userId: string, state: MechanisticState, answer: string): Promise<MechanisticResult> {
-  const gate = state.wordingGate!;
-  const understood = /^\s*yes/i.test(answer);
-  const clearedState: MechanisticState = { ...state, wordingGate: undefined };
-
-  if (!understood) {
-    const reframed = await callJSON<{ question: string }>(
-      REFRAME_QUESTION_PROMPT,
-      `Concept: ${state.targetConceptLabel}\nOriginal question: ${gate.failedQuestion}`,
-      MODELS.simpleQuestion,
-      0.3
-    );
-    // Only the wording changes — whatever's being tested (and its
-    // calculation status) doesn't, so currentQuestionCalcInfo still
-    // correctly describes the reworded question too.
+// On-demand reword of whatever question is currently shown at the
+// mechanistic level — mirrors diagnosticEngine.ts's function of the same
+// name/purpose (see there for the full rationale). Delegates entirely to
+// the atomic engine's own version when a sub_diagnostic is in progress,
+// since that's a fully independent nested DiagnosticState with its own
+// lastShownQuestion/originalQuestion bookkeeping.
+export async function reframeCurrentQuestion(state: MechanisticState): Promise<MechanisticResult> {
+  if (state.stage === 'sub_diagnostic') {
+    if (!state.subDiagnosticState) throw new Error('Missing sub-diagnostic state');
+    const subResult = await reframeCurrentAtomicQuestion(state.subDiagnosticState);
     return {
-      done: false,
-      nextQuestion: reframed.question,
-      state: { ...clearedState, lastShownQuestion: reframed.question },
-      nextRequiresCalculation: currentQuestionCalcInfo(clearedState).requiresCalculation,
+      done: subResult.done,
+      diagnosis: subResult.diagnosis,
+      correction: subResult.correction,
+      nextQuestion: subResult.nextQuestion,
+      nextOptions: subResult.nextOptions,
+      state: { ...state, subDiagnosticState: subResult.state },
+      nextRequiresCalculation: subResult.nextRequiresCalculation,
     };
   }
 
-  return resumeWrongAnswerContinuation(userId, clearedState);
-}
-
-// Wraps a "this free-text answer was wrong" result with the wording gate
-// instead of escalating immediately. Mirrors diagnosticEngine.ts's function
-// of the same name/purpose. Skipped for encoding_check (a 4-option MCQ)
-// and sub_diagnostic (delegates entirely to the atomic engine, which
-// already has its own gate).
-function gateOnWrongAnswer(state: MechanisticState, failedQuestion: string): MechanisticResult {
+  const questionToReframe = state.lastShownQuestion || state.originalQuestion;
+  const reframed = await callJSON<{ question: string }>(
+    REFRAME_QUESTION_PROMPT,
+    `Concept: ${state.targetConceptLabel}\nOriginal question: ${questionToReframe}`,
+    MODELS.simpleQuestion,
+    0.3
+  );
+  // Unlike the atomic engine's 'initial'/'slip_recheck' stages, no
+  // mechanistic free-text stage passes originalQuestion's own TEXT to the
+  // answer checker (they all use fixed labels — '(simplified)', '(cued
+  // combination)', etc.) — so only lastShownQuestion needs updating here,
+  // never originalQuestion itself.
   return {
     done: false,
-    nextQuestion: WORDING_CHECK_PROMPT_TEXT,
-    nextOptions: ['Yes', 'No'],
-    state: { ...state, wordingGate: { failedQuestion } },
-    answerCorrect: false,
+    nextQuestion: reframed.question,
+    state: { ...state, lastShownQuestion: reframed.question },
+    nextRequiresCalculation: currentQuestionCalcInfo(state).requiresCalculation,
   };
+}
+
+// Advances straight into the next diagnostic escalation after a wrong
+// answer. Mirrors diagnosticEngine.ts's function of the same name/purpose
+// — see there for why this replaced the old mandatory wording gate.
+function advanceAfterWrongAnswer(userId: string, state: MechanisticState): Promise<MechanisticResult> {
+  return resumeWrongAnswerContinuation(userId, state);
 }
 
 export async function processMechanisticAnswer(
@@ -452,10 +450,6 @@ export async function processMechanisticAnswer(
   answer: string,
   dontKnow: boolean
 ): Promise<MechanisticResult> {
-  if (state.wordingGate) {
-    return handleWordingGateResponse(userId, state, answer);
-  }
-
   switch (state.stage) {
     case 'encoding_check': {
       const isCorrect = answer.trim() === (state.recognitionCorrectAnswer || '').trim();
@@ -478,7 +472,7 @@ export async function processMechanisticAnswer(
         await gradeAndRecordReview(userId, state.conceptKey, 'hard');
         return { done: true, diagnosis: 'wm_overload', correction: await generateCorrection(state.targetConceptLabel, 'wm_overload', notedState), state: notedState, answerCorrect: true };
       }
-      return gateOnWrongAnswer(notedState, state.lastShownQuestion || state.originalQuestion);
+      return advanceAfterWrongAnswer(userId, notedState);
     }
 
     case 'localizing': {
@@ -509,7 +503,7 @@ export async function processMechanisticAnswer(
         };
       }
 
-      return gateOnWrongAnswer(notedState, notedState.lastShownQuestion || `(localization check on ${nodeLabel})`);
+      return advanceAfterWrongAnswer(userId, notedState);
     }
 
     case 'sub_diagnostic': {
@@ -545,7 +539,7 @@ export async function processMechanisticAnswer(
         return { done: true, diagnosis: 'transfer', correction: await generateCorrection(notedState.targetConceptLabel, 'transfer', notedState), state: notedState, answerCorrect: true };
       }
 
-      return gateOnWrongAnswer(notedState, notedState.lastShownQuestion || notedState.originalQuestion);
+      return advanceAfterWrongAnswer(userId, notedState);
     }
 
     default:

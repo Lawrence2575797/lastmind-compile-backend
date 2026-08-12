@@ -3,7 +3,7 @@ import { callClaudeJSON, MODELS } from '../services/claudeClient';
 import { requireAuth } from '../services/authMiddleware';
 import { costlyEndpointLimiter } from '../services/rateLimiters';
 import { MULTI_QUESTION_GENERATION_PROMPT } from '../constants/diagnosticPrompts';
-import { runDiagnosticStep, startDiagnosisFromKnownAnswer, startMathDiagnosis, OrchestratorState } from '../services/diagnosticOrchestrator';
+import { runDiagnosticStep, startDiagnosisFromKnownAnswer, startMathDiagnosis, reframeDiagnosticQuestion, OrchestratorState } from '../services/diagnosticOrchestrator';
 import { normalizeConceptKey } from '../services/chainService';
 import { gradeAndRecordReview } from '../services/reviewService';
 
@@ -85,6 +85,28 @@ router.post('/diagnostics/submit-answer', async (req: Request, res: Response) =>
   } catch (err) {
     console.error('Diagnostic answer processing failed:', err);
     res.status(500).json({ error: 'could not process this answer' });
+  }
+});
+
+// POST /diagnostics/reframe-question  { state } -> OrchestratorResult-shaped
+// { done, nextQuestion, nextOptions, state, nextRequiresCalculation }
+// On-demand reword of whatever question is currently shown — the frontend
+// side-button replacement for the old mandatory "did you understand the
+// wording?" question. Does not advance the diagnostic stage or grade
+// anything; the returned `state` should just replace whatever the caller
+// was already holding.
+router.post('/diagnostics/reframe-question', async (req: Request, res: Response) => {
+  const { state } = req.body ?? {};
+  if (!state) {
+    return res.status(400).json({ error: 'state is required (whatever the previous diagnostic call returned)' });
+  }
+
+  try {
+    const result = await reframeDiagnosticQuestion(state as OrchestratorState);
+    res.json(result);
+  } catch (err) {
+    console.error('Diagnostic reframe failed:', err);
+    res.status(500).json({ error: 'could not reword this question' });
   }
 });
 

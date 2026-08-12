@@ -27,8 +27,8 @@ function extractJsonObject(text: string): string {
   return text.slice(start, end + 1);
 }
 
-async function callJSON<T>(systemPrompt: string, userContent: string, model: string, temperature = 0, maxTokens?: number): Promise<T> {
-  const raw = await callClaudeJSON({ model, systemPrompt, userContent, temperature, maxTokens });
+async function callJSON<T>(systemPrompt: string, userContent: string, model: string, temperature = 0, maxTokens?: number, cacheSystemPrompt = false): Promise<T> {
+  const raw = await callClaudeJSON({ model, systemPrompt, userContent, temperature, maxTokens, cacheSystemPrompt });
   const cleaned = stripCodeFences(raw);
   try {
     return JSON.parse(cleaned) as T;
@@ -503,7 +503,13 @@ async function generateEncodingLessonContent(
     // multi-beat lesson can comfortably exceed 4096 output tokens and get
     // truncated mid-JSON. This only runs once per concept (cache miss),
     // so the extra headroom costs nothing at scale.
-    8192
+    8192,
+    // ENCODING_LESSON_BATCH_PROMPT is fixed, ~4.4K tokens, and identical
+    // for every concept/qualification/examBoard combination that ever
+    // misses encoding_lesson_content — well clear of Sonnet's 1024-token
+    // cache minimum, so this is the single biggest win available without
+    // touching model choice or generation logic.
+    true
   );
 
   const nodesById = new Map(chain.nodes.map((n) => [n.id, n]));

@@ -71,11 +71,16 @@ export async function getOrGenerateChain(
   // silently truncating mid-JSON for larger graphs (more nodes = more
   // edges + labels to emit), which then failed JSON.parse and surfaced as
   // an opaque "could not..." error with no indication this was the cause.
+  // CHAIN_GENERATION_PROMPT is fixed, ~1.1K tokens, and byte-identical for
+  // every concept/student that ever triggers a chain-cache miss — clears
+  // Opus's 1024-token cache minimum, so mark it cacheable rather than
+  // paying full price on every single one of those misses across the app.
   const rawChain = await callClaudeJSON({
     model: MODELS.chainGeneration,
     systemPrompt: CHAIN_GENERATION_PROMPT,
     userContent: generationInput,
     maxTokens: 4096,
+    cacheSystemPrompt: true,
   });
 
   let chain: any;

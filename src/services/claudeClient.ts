@@ -95,21 +95,45 @@ function isTemperatureDeprecatedError(err: unknown): boolean {
  * error Anthropic returns works regardless of the model or naming scheme
  * involved, now or in the future.
  */
+// Prompt caching lives only under the beta.promptCaching namespace at this
+// SDK version (0.32.1) — cache_control isn't typed on the plain
+// anthropic.messages.create() here (that only happened in later SDK
+// releases, once caching went GA). Its cache_control shape is also older:
+// {type: 'ephemeral'} only, no ttl variant — every cache write here uses
+// the fixed ~5 minute default TTL, not the 1h option newer SDKs expose.
+// response.content/.stop_reason/.usage.{input,output}_tokens are the same
+// shape as the plain endpoint's Message, so callers below don't need to
+// know or care which path served a given call.
 async function makeMessageRequest(
   model: string,
   systemPrompt: string,
   content: string | Array<Anthropic.Messages.TextBlockParam | Anthropic.Messages.ImageBlockParam>,
   maxTokens: number | undefined,
   temperature: number | undefined,
-  includeTemperature: boolean
+  includeTemperature: boolean,
+  cacheSystemPrompt: boolean
 ) {
-  return anthropic.messages.create({
+  const params = {
     model,
     max_tokens: maxTokens ?? 2048,
     ...(includeTemperature ? { temperature } : {}),
-    system: systemPrompt,
-    messages: [{ role: 'user', content }],
-  });
+    messages: [{ role: 'user' as const, content }],
+  };
+  // Only worth marking cacheable for the handful of large, FIXED prompts
+  // (chain generation, encoding lesson batch generation) that are
+  // byte-identical across every concept and every student — the whole
+  // point of a prefix cache. Below Claude's per-model minimum (1024
+  // tokens on the Opus/Sonnet models this codebase uses) a cache_control
+  // marker silently does nothing, so opt-in per call rather than always-on
+  // to avoid spending the write premium on prompts too small to benefit
+  // (fact-check, step repair, diagram verification are all under it).
+  if (cacheSystemPrompt) {
+    return anthropic.beta.promptCaching.messages.create({
+      ...params,
+      system: [{ type: 'text', text: systemPrompt, cache_control: { type: 'ephemeral' } }],
+    });
+  }
+  return anthropic.messages.create({ ...params, system: systemPrompt });
 }
 
 async function sendWithTemperatureRetry(
@@ -117,15 +141,16 @@ async function sendWithTemperatureRetry(
   systemPrompt: string,
   content: string | Array<Anthropic.Messages.TextBlockParam | Anthropic.Messages.ImageBlockParam>,
   maxTokens: number | undefined,
-  temperature: number | undefined
+  temperature: number | undefined,
+  cacheSystemPrompt = false
 ): Promise<string> {
   let response;
   try {
-    response = await makeMessageRequest(model, systemPrompt, content, maxTokens, temperature, true);
+    response = await makeMessageRequest(model, systemPrompt, content, maxTokens, temperature, true, cacheSystemPrompt);
   } catch (err) {
     if (!isTemperatureDeprecatedError(err)) throw err;
     console.warn(`Claude call to "${model}" rejected temperature — retrying without it.`);
-    response = await makeMessageRequest(model, systemPrompt, content, maxTokens, temperature, false);
+    response = await makeMessageRequest(model, systemPrompt, content, maxTokens, temperature, false, cacheSystemPrompt);
   }
 
   const textBlock = response.content.find((block) => block.type === 'text');
@@ -149,8 +174,13 @@ export async function callClaudeJSON(params: {
   userContent: string;
   maxTokens?: number;
   temperature?: number;
+  // Opt-in ephemeral cache_control (1h TTL) on the system prompt — only
+  // worth setting for large, FIXED prompts reused verbatim across many
+  // calls (e.g. chain generation, encoding lesson batch generation). See
+  // makeMessageRequest's comment for why this isn't just always-on.
+  cacheSystemPrompt?: boolean;
 }): Promise<string> {
-  return sendWithTemperatureRetry(params.model, params.systemPrompt, params.userContent, params.maxTokens, params.temperature);
+  return sendWithTemperatureRetry(params.model, params.systemPrompt, params.userContent, params.maxTokens, params.temperature, params.cacheSystemPrompt);
 }
 
 export interface ClaudeImageInput {

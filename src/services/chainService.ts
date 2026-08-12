@@ -6,8 +6,11 @@ function stripCodeFences(text: string): string {
   return text.trim().replace(/^```(?:json)?\s*/i, '').replace(/```\s*$/, '').trim();
 }
 
+function clean(s: string): string {
+  return (s || '').trim().toLowerCase().replace(/[^a-z0-9]+/g, '_');
+}
+
 export function normalizeConceptKey(subject: string, topic: string, concept: string): string {
-  const clean = (s: string) => s.trim().toLowerCase().replace(/[^a-z0-9]+/g, '_');
   return `${clean(subject)}:${clean(topic)}:${clean(concept)}`;
 }
 
@@ -19,17 +22,31 @@ export function normalizeConceptKey(subject: string, topic: string, concept: str
  * diagnostic session silently fell through to the atomic (no chain
  * awareness) path unless a chain happened to already be cached from a
  * separate, earlier manual call.
+ *
+ * `qualification`/`examBoard` tier the cache the same way
+ * encoding_diagrams/encoding_lesson_content already do (see
+ * encodingLessonService.ts) — same target concept can genuinely need a
+ * different depth/rigor of decomposition depending on the level a student
+ * is studying it at (e.g. GCSE vs A-Level), so sharing one chain across
+ * every qualification silently gave everyone the depth whichever caller
+ * happened to generate it first asked for. Both are optional and default
+ * to '' — callers that don't have them yet (or genuinely don't care) just
+ * land in the untiered "" bucket, same as before this was added.
  */
 export async function getOrGenerateChain(
   conceptKey: string,
   subject: string,
   topic: string,
-  concept: string
+  concept: string,
+  qualification = '',
+  examBoard = ''
 ): Promise<{ chain: any; source: 'cache' | 'generated'; error?: string }> {
+  const chainCacheKey = `${conceptKey}::${clean(qualification)}::${clean(examBoard)}`;
+
   const { data: cached, error: cacheError } = await supabaseAdmin
     .from('dependency_chains')
     .select('chain')
-    .eq('concept_key', conceptKey)
+    .eq('concept_key', chainCacheKey)
     .maybeSingle();
 
   if (cacheError) throw cacheError;
@@ -37,7 +54,13 @@ export async function getOrGenerateChain(
     return { chain: cached.chain, source: 'cache' };
   }
 
-  const generationInput = `Subject: ${subject}\nTopic: ${topic}\nConcept: ${concept}`;
+  const generationInput = [
+    `Subject: ${subject}`,
+    `Topic: ${topic}`,
+    `Concept: ${concept}`,
+    `Qualification level: ${qualification || 'unspecified'}`,
+    `Exam board: ${examBoard || 'unspecified'}`,
+  ].join('\n');
   // NOTE: no `temperature` here — Anthropic deprecated this parameter
   // entirely for Claude Opus 4.7 and later (including 4.8, used here via
   // MODELS.chainGeneration): any explicit value, even 0, now returns a
@@ -98,7 +121,7 @@ export async function getOrGenerateChain(
 
   const { error: insertError } = await supabaseAdmin
     .from('dependency_chains')
-    .insert({ concept_key: conceptKey, chain });
+    .insert({ concept_key: chainCacheKey, chain });
 
   if (insertError) throw insertError;
 

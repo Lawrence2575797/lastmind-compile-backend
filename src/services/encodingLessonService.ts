@@ -115,6 +115,13 @@ export interface EncodingLessonState {
   // submitEncodingAnswer re-fetch a calculation step's expectedSolution
   // for math-aware grading without ever having sent it to the client.
   contentKey: string;
+  // Carried along so a wrong-answer drill-down (see diagnosticOrchestrator.ts)
+  // can generate/look up its own prerequisite-node chains at the SAME
+  // qualification+examBoard tier this lesson itself was generated at,
+  // instead of silently falling back to the untiered "" bucket — see
+  // getOrGenerateChain in chainService.ts.
+  qualification: string;
+  examBoard: string;
 }
 
 export interface EncodingStartResult {
@@ -389,7 +396,7 @@ export async function startEncodingLesson(
   examBoard = '',
   siblingConcepts: SiblingConcept[] = []
 ): Promise<EncodingStartResult> {
-  const chainResult = await getOrGenerateChain(conceptKey, subject, topic, concept);
+  const chainResult = await getOrGenerateChain(conceptKey, subject, topic, concept, qualification, examBoard);
   if (!chainResult.chain) {
     throw new Error('Could not generate a dependency chain for this concept.');
   }
@@ -438,7 +445,7 @@ export async function startEncodingLesson(
   // instead (see submitEncodingAnswer).
   const steps: EncodingStep[] = cachedSteps.map(({ expectedSolution, ...step }) => step);
 
-  const state: EncodingLessonState = { conceptKey, subject, steps, currentIndex: 0, anyWeakSoFar: false, contentKey };
+  const state: EncodingLessonState = { conceptKey, subject, steps, currentIndex: 0, anyWeakSoFar: false, contentKey, qualification, examBoard };
   return { done: false, hookFact, step: steps[0], state };
 }
 

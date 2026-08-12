@@ -16,6 +16,7 @@ Rules:
 7. Do not include prerequisites too basic to be worth testing (e.g. do not include "numbers exist" as a prerequisite for a maths concept, or "words have meanings" for anything).
 8. The final entry in the "nodes" array must always be the target concept itself.
 9. For every node, set "derivable": true if a student who already has this node's direct prerequisites could reasonably reason or derive this node's content themselves when prompted the right way — it follows logically or causally from those prerequisites. Set it to false if this node is a fact, definition, naming convention, or arbitrary rule that must simply be taught directly, even if it has prerequisites that provide useful context for it.
+10. You will also be given a Qualification level and an Exam board (either may be "unspecified"). Calibrate to the qualification: a higher level generally needs deeper/more rigorous prerequisite chains (more nodes, finer-grained atomic pieces, prerequisites a lower level would simply take as given) than a lower level studying a concept of the same name — do not generate the same graph for "GCSE" and "A-Level" versions of a concept that genuinely differ in expected depth. If a specific exam board is given, prefer that board's own terminology for node labels where it differs from a generic phrasing; if "unspecified", use standard terminology for the qualification level and subject.
 
 Output schema:
 {

@@ -148,9 +148,11 @@ export async function startChainLesson(
   conceptKey: string,
   subject: string,
   topic: string,
-  concept: string
+  concept: string,
+  qualification = '',
+  examBoard = ''
 ): Promise<ChainLessonResult> {
-  const chainResult = await getOrGenerateChain(conceptKey, subject, topic, concept);
+  const chainResult = await getOrGenerateChain(conceptKey, subject, topic, concept, qualification, examBoard);
   if (!chainResult.chain) {
     throw new Error('Could not generate a dependency chain for this concept.');
   }

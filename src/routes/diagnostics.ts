@@ -53,7 +53,7 @@ router.post('/diagnostics/generate-set', async (req: Request, res: Response) => 
 // AND mechanistic) — the frontend just passes back whatever `state` it
 // was last given; the orchestrator decides everything from there.
 router.post('/diagnostics/submit-answer', async (req: Request, res: Response) => {
-  const { subject, topic, conceptLabel, originalQuestion, state, answer, dontKnow } = req.body ?? {};
+  const { subject, topic, conceptLabel, originalQuestion, state, answer, dontKnow, qualification, examBoard } = req.body ?? {};
 
   // The concept key MUST use the same normalization chains.ts uses
   // (subject:topic:concept, cleaned) — using the raw label alone here was
@@ -70,6 +70,8 @@ router.post('/diagnostics/submit-answer', async (req: Request, res: Response) =>
     topic: topic || '',
     originalQuestion,
     slipStage: 'initial',
+    qualification: typeof qualification === 'string' ? qualification : '',
+    examBoard: typeof examBoard === 'string' ? examBoard : '',
   };
 
   try {
@@ -96,7 +98,7 @@ router.post('/diagnostics/submit-answer', async (req: Request, res: Response) =>
 // not just a top-level lesson concept, and chain nodes are tracked by
 // their own raw id elsewhere in this codebase (see mechanisticEngine.ts).
 router.post('/diagnostics/start-from-answer', async (req: Request, res: Response) => {
-  const { conceptKey, conceptLabel, subject, topic, question, forceAtomic } = req.body ?? {};
+  const { conceptKey, conceptLabel, subject, topic, question, forceAtomic, qualification, examBoard } = req.body ?? {};
   if (typeof conceptKey !== 'string' || typeof conceptLabel !== 'string' || typeof question !== 'string') {
     return res.status(400).json({ error: 'conceptKey, conceptLabel, and question are all required' });
   }
@@ -109,7 +111,11 @@ router.post('/diagnostics/start-from-answer', async (req: Request, res: Response
       subject || '',
       topic || '',
       question,
-      !!forceAtomic
+      !!forceAtomic,
+      undefined,
+      undefined,
+      typeof qualification === 'string' ? qualification : '',
+      typeof examBoard === 'string' ? examBoard : ''
     );
     res.json(result);
   } catch (err) {
@@ -128,7 +134,7 @@ router.post('/diagnostics/start-from-answer', async (req: Request, res: Response
 // encoding_lesson_content cache — never trusted from the client, same
 // security reasoning as submitEncodingAnswer's own grading.
 router.post('/diagnostics/start-math-from-answer', async (req: Request, res: Response) => {
-  const { conceptKey, conceptLabel, subject, topic, question, contentKey, stepIndex, studentWorking, forceAtomic } = req.body ?? {};
+  const { conceptKey, conceptLabel, subject, topic, question, contentKey, stepIndex, studentWorking, forceAtomic, qualification, examBoard } = req.body ?? {};
   if (
     typeof conceptKey !== 'string' ||
     typeof conceptLabel !== 'string' ||
@@ -150,7 +156,9 @@ router.post('/diagnostics/start-math-from-answer', async (req: Request, res: Res
       contentKey,
       stepIndex,
       typeof studentWorking === 'string' ? studentWorking : '',
-      !!forceAtomic
+      !!forceAtomic,
+      typeof qualification === 'string' ? qualification : '',
+      typeof examBoard === 'string' ? examBoard : ''
     );
     res.json(result);
   } catch (err) {

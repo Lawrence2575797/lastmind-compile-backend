@@ -11,7 +11,24 @@ import { fetchExpectedSolution } from './encodingLessonService';
 // that decision (slip-checking) is identical regardless, so it's handled
 // once, here, rather than duplicated in either engine.
 export type OrchestratorState =
-  | { engine: 'pending'; conceptKey: string; conceptLabel: string; subject: string; topic: string; originalQuestion: string; slipStage: 'initial' | 'slip_recheck' }
+  | {
+      engine: 'pending';
+      conceptKey: string;
+      conceptLabel: string;
+      subject: string;
+      topic: string;
+      originalQuestion: string;
+      slipStage: 'initial' | 'slip_recheck';
+      // Same qualification-tiering purpose as everywhere else this pair
+      // shows up (see chainService.ts's getOrGenerateChain) — carried
+      // through the pending stage so the eventual mechanistic dispatch, if
+      // any, generates/looks up its chain at the right tier rather than
+      // silently falling back to the untiered "" bucket. Optional so
+      // existing/older client-constructed pending states (which predate
+      // this field) still satisfy the type.
+      qualification?: string;
+      examBoard?: string;
+    }
   | { engine: 'atomic'; inner: DiagnosticState }
   | { engine: 'mechanistic'; inner: MechanisticState };
 
@@ -46,9 +63,11 @@ async function dispatchToBranch(
   // engine ends up handling it, so combination_check/hint_cue (which both
   // re-ask this exact question) stay math-aware too.
   originalQuestionRequiresCalculation = false,
-  originalQuestionExpectedSolution?: string
+  originalQuestionExpectedSolution?: string,
+  qualification = '',
+  examBoard = ''
 ): Promise<OrchestratorResult> {
-  const chain = await loadChainIfMechanistic(conceptKey, subject, topic, conceptLabel);
+  const chain = await loadChainIfMechanistic(conceptKey, subject, topic, conceptLabel, qualification, examBoard);
 
   if (chain) {
     const result = await startMechanisticDiagnosis(
@@ -123,7 +142,9 @@ export async function startDiagnosisFromKnownAnswer(
   // "conceptual" hand-off) — same purpose as dispatchToBranch's params of the
   // same name.
   originalQuestionRequiresCalculation = false,
-  originalQuestionExpectedSolution?: string
+  originalQuestionExpectedSolution?: string,
+  qualification = '',
+  examBoard = ''
 ): Promise<OrchestratorResult> {
   if (forceAtomic) {
     const atomicState: DiagnosticState = {
@@ -152,7 +173,7 @@ export async function startDiagnosisFromKnownAnswer(
       nextRequiresCalculation: result.nextRequiresCalculation,
     };
   }
-  return dispatchToBranch(userId, conceptKey, conceptLabel, subject, topic, originalQuestion, originalQuestionRequiresCalculation, originalQuestionExpectedSolution);
+  return dispatchToBranch(userId, conceptKey, conceptLabel, subject, topic, originalQuestion, originalQuestionRequiresCalculation, originalQuestionExpectedSolution, qualification, examBoard);
 }
 
 /**
@@ -194,7 +215,9 @@ export async function startMathDiagnosis(
   contentKey: string,
   stepIndex: number,
   studentWorking: string,
-  forceAtomic: boolean
+  forceAtomic: boolean,
+  qualification = '',
+  examBoard = ''
 ): Promise<OrchestratorResult> {
   const hasWorking = !!(studentWorking && studentWorking.trim());
   const expectedSolution = hasWorking ? await fetchExpectedSolution(contentKey, stepIndex) : null;
@@ -224,7 +247,7 @@ export async function startMathDiagnosis(
     }
 
     if (localization.errorType === 'conceptual') {
-      const result = await startDiagnosisFromKnownAnswer(userId, conceptKey, conceptLabel, subject, topic, question, forceAtomic, true, expectedSolution);
+      const result = await startDiagnosisFromKnownAnswer(userId, conceptKey, conceptLabel, subject, topic, question, forceAtomic, true, expectedSolution, qualification, examBoard);
       if (localization.explanation) {
         if (result.state.engine === 'atomic') result.state.inner.misconceptionNotes.push(localization.explanation);
         else if (result.state.engine === 'mechanistic') result.state.inner.misconceptionNotes.push(localization.explanation);
@@ -234,7 +257,7 @@ export async function startMathDiagnosis(
     // errorType === 'no_attempt' falls through below, same as no working at all.
   }
 
-  return startDiagnosisFromKnownAnswer(userId, conceptKey, conceptLabel, subject, topic, question, forceAtomic);
+  return startDiagnosisFromKnownAnswer(userId, conceptKey, conceptLabel, subject, topic, question, forceAtomic, undefined, undefined, qualification, examBoard);
 }
 
 /**
@@ -278,7 +301,10 @@ export async function runDiagnosticStep(
   // engine === 'pending' — this is the shared slip-check phase, identical
   // regardless of what comes after it.
   if (dontKnow) {
-    return { ...(await dispatchToBranch(userId, state.conceptKey, state.conceptLabel, state.subject, state.topic, state.originalQuestion)), answerCorrect: false };
+    return {
+      ...(await dispatchToBranch(userId, state.conceptKey, state.conceptLabel, state.subject, state.topic, state.originalQuestion, undefined, undefined, state.qualification, state.examBoard)),
+      answerCorrect: false,
+    };
   }
 
   const raw = await callClaudeJSON({
@@ -309,5 +335,8 @@ export async function runDiagnosticStep(
     await gradeAndRecordReview(userId, state.conceptKey, 'again');
   }
 
-  return { ...(await dispatchToBranch(userId, state.conceptKey, state.conceptLabel, state.subject, state.topic, state.originalQuestion)), answerCorrect: false };
+  return {
+    ...(await dispatchToBranch(userId, state.conceptKey, state.conceptLabel, state.subject, state.topic, state.originalQuestion, undefined, undefined, state.qualification, state.examBoard)),
+    answerCorrect: false,
+  };
 }

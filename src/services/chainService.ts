@@ -6,6 +6,10 @@ function stripCodeFences(text: string): string {
   return text.trim().replace(/^```(?:json)?\s*/i, '').replace(/```\s*$/, '').trim();
 }
 
+// Chains with fewer nodes than this skip the fact-check pass entirely —
+// see getOrGenerateChain's comment at the skip site for the reasoning.
+const FACT_CHECK_NODE_THRESHOLD = 4;
+
 function clean(s: string): string {
   return (s || '').trim().toLowerCase().replace(/[^a-z0-9]+/g, '_');
 }
@@ -119,35 +123,48 @@ export async function getOrGenerateChain(
     throw err;
   }
 
-  // Fact-check has to emit a full corrected_graph (the whole chain again)
-  // on top of its issues list when it finds a problem — the same
-  // truncation risk as above, same fix.
-  const rawFactCheck = await callClaudeJSON({
-    model: MODELS.factCheck,
-    systemPrompt: FACT_CHECK_PROMPT,
-    userContent: JSON.stringify(chain),
-    maxTokens: 4096,
-  });
+  // Skip fact-check for chains too small to have much surface area for
+  // error — a 1-3 node graph is just the target plus one or two direct
+  // prerequisites, with barely any structure a review pass could catch
+  // that generation itself would plausibly get wrong. This is the common
+  // case for narrowly-scoped concepts. Nothing here changes what fact-
+  // check DOES when it runs (still unconditionally Opus, still able to
+  // rewrite the whole graph) — it only skips a genuinely low-value review
+  // for chains where there's very little to review. FACT_CHECK_NODE_THRESHOLD
+  // is deliberately conservative; raise it if this turns out to skip
+  // chains that should have been checked.
+  const nodeCount = Array.isArray(chain?.nodes) ? chain.nodes.length : 0;
+  if (nodeCount >= FACT_CHECK_NODE_THRESHOLD) {
+    // Fact-check has to emit a full corrected_graph (the whole chain again)
+    // on top of its issues list when it finds a problem — the same
+    // truncation risk as above, same fix.
+    const rawFactCheck = await callClaudeJSON({
+      model: MODELS.factCheck,
+      systemPrompt: FACT_CHECK_PROMPT,
+      userContent: JSON.stringify(chain),
+      maxTokens: 4096,
+    });
 
-  let factCheckResult: any;
-  try {
-    factCheckResult = JSON.parse(stripCodeFences(rawFactCheck));
-  } catch (err) {
-    console.error('LastMind: chain fact-check returned invalid JSON (likely truncated).', { rawFactCheck });
-    throw err;
-  }
+    let factCheckResult: any;
+    try {
+      factCheckResult = JSON.parse(stripCodeFences(rawFactCheck));
+    } catch (err) {
+      console.error('LastMind: chain fact-check returned invalid JSON (likely truncated).', { rawFactCheck });
+      throw err;
+    }
 
-  if (!factCheckResult.verified) {
-    if (factCheckResult.corrected_graph) {
-      chain = factCheckResult.corrected_graph;
-    } else {
-      const mustFix = (factCheckResult.issues || []).filter((i: any) => i.severity === 'must_fix');
-      if (mustFix.length > 0) {
-        // Same principle as before: never silently use/cache a chain with
-        // an unresolved must-fix issue. In the diagnostic-engine context,
-        // this means falling back to the atomic (no-chain) path rather
-        // than erroring the whole session out.
-        return { chain: null, source: 'generated', error: 'unresolved_must_fix' };
+    if (!factCheckResult.verified) {
+      if (factCheckResult.corrected_graph) {
+        chain = factCheckResult.corrected_graph;
+      } else {
+        const mustFix = (factCheckResult.issues || []).filter((i: any) => i.severity === 'must_fix');
+        if (mustFix.length > 0) {
+          // Same principle as before: never silently use/cache a chain with
+          // an unresolved must-fix issue. In the diagnostic-engine context,
+          // this means falling back to the atomic (no-chain) path rather
+          // than erroring the whole session out.
+          return { chain: null, source: 'generated', error: 'unresolved_must_fix' };
+        }
       }
     }
   }

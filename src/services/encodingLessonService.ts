@@ -4,7 +4,8 @@ import { gradeAndRecordReview } from './reviewService';
 import { searchWikimediaImages, fetchImageAsBase64 } from './wikimediaService';
 import { supabaseAdmin } from './supabaseAdmin';
 import {
-  ENCODING_LESSON_BATCH_PROMPT,
+  ENCODING_LESSON_FIRST_STEP_PROMPT,
+  ENCODING_LESSON_CONTINUATION_PROMPT,
   ENCODING_ANSWER_CHECK_PROMPT,
   ENCODING_MATH_ANSWER_CHECK_PROMPT,
   DIAGRAM_VERIFICATION_PROMPT,
@@ -129,6 +130,14 @@ export interface EncodingStartResult {
   hookFact: string;
   step: EncodingStep;
   state: EncodingLessonState;
+  // false on a cold-cache miss — `state.steps` holds ONLY the first step at
+  // this point (fast to generate, so the student sees it immediately);
+  // the frontend must fire /encoding-lesson/continue in the background as
+  // soon as this first step is on screen, and await its result (merging
+  // the full step list into state) before ever calling
+  // /encoding-lesson/submit. true on a cache hit — state.steps already has
+  // the whole lesson and no continuation call is needed.
+  contentReady: boolean;
 }
 
 export interface EncodingSubmitResult {
@@ -427,17 +436,29 @@ export async function startEncodingLesson(
 
   let hookFact: string;
   let cachedSteps: CachedEncodingStep[];
+  let contentReady: boolean;
 
   if (!cacheError && cachedContent) {
     hookFact = cachedContent.hook_fact;
     cachedSteps = cachedContent.steps as CachedEncodingStep[];
+    contentReady = true;
   } else {
-    const generated = await generateEncodingLessonContent(
+    // Cold cache — generate ONLY the first step (fast) so the student sees
+    // a question immediately instead of waiting for the whole lesson.
+    // Stash the full draft (including expectedSolution, if any) server-side
+    // in encoding_lesson_pending, keyed by the same contentKey — the
+    // background /encoding-lesson/continue call reads it back to assemble
+    // and cache the complete lesson once phase 2 finishes. Never sent to
+    // the client in between (see CachedEncodingStep).
+    const generated = await generateFirstStep(
       conceptKey, subject, topic, concept, qualification, examBoard, chain, target, closeNodes, backgroundNodes, forcedNodeIds
     );
     hookFact = generated.hookFact;
-    cachedSteps = generated.steps;
-    await supabaseAdmin.from('encoding_lesson_content').insert({ content_key: contentKey, hook_fact: hookFact, steps: cachedSteps });
+    cachedSteps = [generated.step];
+    contentReady = false;
+    await supabaseAdmin
+      .from('encoding_lesson_pending')
+      .upsert({ content_key: contentKey, hook_fact: hookFact, first_step: generated.step });
   }
 
   if (!cachedSteps.length) {
@@ -451,13 +472,89 @@ export async function startEncodingLesson(
   const steps: EncodingStep[] = cachedSteps.map(({ expectedSolution, ...step }) => step);
 
   const state: EncodingLessonState = { conceptKey, subject, steps, currentIndex: 0, anyWeakSoFar: false, contentKey, qualification, examBoard };
-  return { done: false, hookFact, step: steps[0], state };
+  return { done: false, hookFact, step: steps[0], state, contentReady };
 }
 
-// The actual generation path — only ever runs on a cache miss, see
-// startEncodingLesson above (which already fetched the chain and computed
-// closeNodes/backgroundNodes/forcedNodeIds to build the cache key).
-async function generateEncodingLessonContent(
+/**
+ * Phase 2 of a cold-cache lesson start (see startEncodingLesson above) —
+ * fired by the frontend in the background as soon as the first step from
+ * /encoding-lesson/start has rendered. Generates every remaining step,
+ * given the already-generated first step as established context so it
+ * continues the lesson rather than repeating its opening, assembles the
+ * complete lesson, and caches it under the SAME contentKey so every later
+ * student for this exact concept gets an ordinary single-call cache hit
+ * from startEncodingLesson — this split only ever runs once per concept.
+ *
+ * Recomputes the chain/closeNodes/backgroundNodes/forcedNodeIds fresh
+ * (cheap — the chain itself is already cached from the /start call that
+ * preceded this one) rather than trusting anything client-supplied for
+ * them, same as startEncodingLesson itself does.
+ */
+export async function continueEncodingLesson(
+  state: EncodingLessonState,
+  topic: string,
+  concept: string,
+  siblingConcepts: SiblingConcept[] = []
+): Promise<EncodingLessonState> {
+  const { conceptKey, subject, qualification, examBoard, contentKey } = state;
+
+  // Another concurrent cold-cache request for this exact concept may have
+  // already finished and cached the full lesson — adopt it rather than
+  // generating a second, redundant copy. The tiny chance this student's own
+  // first step reads slightly differently from the one now cached (two
+  // independent generations racing) is a harmless cosmetic edge case, not a
+  // correctness issue — see contentKey's derivation for what "exact
+  // concept" means here.
+  const { data: existing, error: existingError } = await supabaseAdmin
+    .from('encoding_lesson_content')
+    .select('steps')
+    .eq('content_key', contentKey)
+    .maybeSingle();
+  if (!existingError && existing) {
+    const steps: EncodingStep[] = (existing.steps as CachedEncodingStep[]).map(({ expectedSolution, ...s }) => s);
+    return { ...state, steps };
+  }
+
+  const { data: pending, error: pendingError } = await supabaseAdmin
+    .from('encoding_lesson_pending')
+    .select('hook_fact, first_step')
+    .eq('content_key', contentKey)
+    .maybeSingle();
+  if (pendingError || !pending) {
+    throw new Error('No pending lesson generation found to continue — the lesson may need to be restarted.');
+  }
+  const firstStep = pending.first_step as CachedEncodingStep;
+
+  const chainResult = await getOrGenerateChain(conceptKey, subject, topic, concept, qualification, examBoard);
+  if (!chainResult.chain) {
+    throw new Error('Could not generate a dependency chain for this concept.');
+  }
+  const chain = chainResult.chain as Chain;
+  const target = chain.nodes[chain.nodes.length - 1];
+  const closeIds = new Set((target.depends_on || []).map((d) => d.node_id));
+  const closeNodes = chain.nodes.filter((n) => closeIds.has(n.id)).slice(0, 3);
+  const coveredIds = new Set([...closeNodes.map((n) => n.id), target.id]);
+  const backgroundNodes = chain.nodes.filter((n) => !coveredIds.has(n.id));
+  const forcedNodeIds = closeNodes.filter((n) => matchesUnfinishedSibling(n.label, siblingConcepts)).map((n) => n.id).sort();
+
+  const rest = await generateLessonContinuation(
+    conceptKey, subject, topic, concept, qualification, examBoard, chain, target, closeNodes, backgroundNodes, forcedNodeIds, firstStep
+  );
+
+  const allSteps: CachedEncodingStep[] = [firstStep, ...rest.steps];
+  await supabaseAdmin.from('encoding_lesson_content').insert({ content_key: contentKey, hook_fact: pending.hook_fact, steps: allSteps });
+  await supabaseAdmin.from('encoding_lesson_pending').delete().eq('content_key', contentKey);
+
+  const steps: EncodingStep[] = allSteps.map(({ expectedSolution, ...s }) => s);
+  return { ...state, steps };
+}
+
+// Phase 1 of the two-phase cold-cache path — see startEncodingLesson and
+// continueEncodingLesson above. Generates just the hook fact and the first
+// step, small and fast, so the student has something on screen well before
+// the rest of the lesson (generated by generateLessonContinuation) is
+// ready.
+async function generateFirstStep(
   conceptKey: string,
   subject: string,
   topic: string,
@@ -469,12 +566,84 @@ async function generateEncodingLessonContent(
   closeNodes: ChainNode[],
   backgroundNodes: ChainNode[],
   forcedNodeIds: string[]
-): Promise<{ hookFact: string; steps: CachedEncodingStep[] }> {
+): Promise<{ hookFact: string; step: CachedEncodingStep }> {
+  const forcedIds = new Set(forcedNodeIds);
+
+  const result = await callJSON<{
+    hookFact: string;
+    step: {
+      nodeId: string;
+      type: EncodingStepType;
+      text: string;
+      checkQuestion?: string;
+      confident?: boolean;
+      requiresCalculation?: boolean;
+      expectedSolution?: string;
+    };
+  }>(
+    ENCODING_LESSON_FIRST_STEP_PROMPT,
+    [
+      `Subject: ${subject}`,
+      `Topic: ${topic || 'unspecified'}`,
+      `Qualification: ${qualification || 'unspecified'}`,
+      `Exam board: ${examBoard || 'unspecified'}`,
+      `Original lesson title, exactly as the student named it: ${concept}`,
+      `closePrerequisites, in order: ${JSON.stringify(closeNodes.map((n) => ({ nodeId: n.id, label: n.label, forceTeach: forcedIds.has(n.id) })))}`,
+      `backgroundContext (already covered earlier — reference only, do not test, do not write a step): ${JSON.stringify(backgroundNodes.map((n) => ({ nodeId: n.id, label: n.label })))}`,
+    ].join('\n'),
+    MODELS.diagnosticTree,
+    0.4,
+    // Small on purpose — this is one step + a hook fact, not a whole
+    // lesson; keeping the call itself lightweight is most of the latency
+    // win here.
+    2048,
+    // ENCODING_LESSON_FIRST_STEP_PROMPT is fixed and identical for every
+    // concept that ever hits this path — same caching win as the full
+    // batch prompt.
+    true
+  );
+
+  const nodesById = new Map(chain.nodes.map((n) => [n.id, n]));
+  const s = result.step;
+  const draftStep: DraftStep = {
+    nodeId: s.nodeId,
+    label: nodesById.get(s.nodeId)?.label || s.nodeId,
+    type: s.type,
+    text: s.text,
+    checkQuestion: s.checkQuestion,
+    diagnosisConceptKey: s.nodeId === target.id ? conceptKey : s.nodeId,
+    confident: s.confident,
+    requiresCalculation: !!s.requiresCalculation,
+    expectedSolution: s.requiresCalculation ? s.expectedSolution : undefined,
+  };
+
+  await repairUncertainSteps([draftStep], subject, qualification, examBoard);
+
+  const { confident, ...step } = draftStep;
+  return { hookFact: result.hookFact, step };
+}
+
+// Phase 2 — generates every step after the one generateFirstStep already
+// produced, told exactly what that first step covered so it continues
+// rather than repeats it. Only ever called from continueEncodingLesson.
+async function generateLessonContinuation(
+  conceptKey: string,
+  subject: string,
+  topic: string,
+  concept: string,
+  qualification: string,
+  examBoard: string,
+  chain: Chain,
+  target: ChainNode,
+  closeNodes: ChainNode[],
+  backgroundNodes: ChainNode[],
+  forcedNodeIds: string[],
+  firstStep: CachedEncodingStep
+): Promise<{ steps: CachedEncodingStep[] }> {
   const targetDerivable = resolveDerivable(target);
   const forcedIds = new Set(forcedNodeIds);
 
   const batch = await callJSON<{
-    hookFact: string;
     steps: {
       nodeId: string;
       type: EncodingStepType;
@@ -486,34 +655,23 @@ async function generateEncodingLessonContent(
     }[];
     diagram?: { needed: boolean; searchQuery: string | null };
   }>(
-    ENCODING_LESSON_BATCH_PROMPT,
+    ENCODING_LESSON_CONTINUATION_PROMPT,
     [
       `Subject: ${subject}`,
       `Topic: ${topic || 'unspecified'}`,
       `Qualification: ${qualification || 'unspecified'}`,
       `Exam board: ${examBoard || 'unspecified'}`,
       `Target concept (this exact lesson — every step must build toward THIS, not a related or more general concept): ${target?.label || concept}`,
-      `Original lesson title, exactly as the student named it (may explicitly name more than one idea together, e.g. "X and Y" — use this to judge whether a close prerequisite below is actually one of THIS lesson's own named topics, not just background from an earlier lesson): ${concept}`,
+      `Original lesson title, exactly as the student named it: ${concept}`,
       `Target concept is derivable from its close prerequisites: ${targetDerivable}`,
-      `closePrerequisites, in order (for each: write a "check" step UNLESS it's named in the original lesson title above OR forceTeach is true, in which case teach it properly instead — see instructions): ${JSON.stringify(closeNodes.map((n) => ({ nodeId: n.id, label: n.label, forceTeach: forcedIds.has(n.id) })))}`,
+      `closePrerequisites, in order: ${JSON.stringify(closeNodes.map((n) => ({ nodeId: n.id, label: n.label, forceTeach: forcedIds.has(n.id) })))}`,
       `backgroundContext (already covered earlier — reference only, do not test, do not write a step): ${JSON.stringify(backgroundNodes.map((n) => ({ nodeId: n.id, label: n.label })))}`,
+      `First step already generated and shown to (and answered by) the student — do not repeat it: ${JSON.stringify({ nodeId: firstStep.nodeId, type: firstStep.type, text: firstStep.text, checkQuestion: firstStep.checkQuestion })}`,
     ].join('\n'),
     MODELS.diagnosticTree,
     0.4,
-    // A concept whose close prerequisites are explicitly named in the
-    // lesson's own title (e.g. "Indifference curves and MRS") gets those
-    // promoted to full derive/explain beats rather than a single check
-    // step each — combined with the per-step self-check now baked into
-    // this prompt (longer, revised text on every beat), a content-heavy
-    // multi-beat lesson can comfortably exceed 4096 output tokens and get
-    // truncated mid-JSON. This only runs once per concept (cache miss),
-    // so the extra headroom costs nothing at scale.
     8192,
-    // ENCODING_LESSON_BATCH_PROMPT is fixed, ~4.4K tokens, and identical
-    // for every concept/qualification/examBoard combination that ever
-    // misses encoding_lesson_content — well clear of Sonnet's 1024-token
-    // cache minimum, so this is the single biggest win available without
-    // touching model choice or generation logic.
+    // ENCODING_LESSON_CONTINUATION_PROMPT is fixed too — same caching win.
     true
   );
 
@@ -524,27 +682,12 @@ async function generateEncodingLessonContent(
     type: s.type,
     text: s.text,
     checkQuestion: s.checkQuestion,
-    // Implication steps carry a synthetic, non-chain nodeId (see prompt
-    // rule 8) — they're still testing the SAME target concept at greater
-    // depth, so they must diagnose against the lesson's own conceptKey
-    // too, not that meaningless slug (which the drill-down couldn't have
-    // resolved a cached chain for anyway).
     diagnosisConceptKey: s.nodeId === target.id || s.type === 'implication' ? conceptKey : s.nodeId,
     confident: s.confident,
     requiresCalculation: !!s.requiresCalculation,
     expectedSolution: s.requiresCalculation ? s.expectedSolution : undefined,
   }));
 
-  // Started alongside repairUncertainSteps, not after it — this lesson
-  // start is already a stack of sequential AI calls on a cold cache
-  // (chain generation + fact-check, then this batch generation, then
-  // however many repair passes get flagged), and every one of them adds
-  // to how long the student stares at a loading screen. The diagram
-  // lookup only needs batch.diagram (already in hand) and never touches
-  // draftSteps until it's attached below, so nothing here actually
-  // depends on repair finishing first — running them concurrently instead
-  // of back-to-back saves the diagram lookup's own time outright, up to
-  // DIAGRAM_LOOKUP_TIMEOUT_MS worth.
   const diagramPromise =
     batch.diagram?.needed && batch.diagram.searchQuery
       ? withTimeout(
@@ -561,28 +704,15 @@ async function generateEncodingLessonContent(
     diagramPromise,
   ]);
 
-  // expectedSolution is kept here — this is the CACHED shape (see
-  // CachedEncodingStep) — and stripped later, once, right before anything
-  // reaches the client (startEncodingLesson). Only "confident" (a
-  // generation-time self-check artifact, meaningless afterward) is
-  // dropped at this point.
   const steps: CachedEncodingStep[] = draftSteps.map(({ confident, ...step }) => step);
 
   if (steps.length && diagram) {
-    // The LAST target-derivation beat, not the first — a multi-beat
-    // target (see ENCODING_LESSON_BATCH_PROMPT point 4, "break it into
-    // as many sequential beats as the concept genuinely requires") often
-    // has earlier beats establishing a piece of reasoning before the
-    // full picture (the thing the diagram actually shows) comes together
-    // at the end. Attaching it to whichever beat happened to be first
-    // showed the diagram at a point in the lesson that hadn't earned it
-    // yet — visually unrelated to what was being asked right then.
     const targetSteps = steps.filter((s) => s.nodeId === target.id && (s.type === 'derive' || s.type === 'explain'));
     const targetStep = targetSteps[targetSteps.length - 1];
     if (targetStep) targetStep.diagram = diagram;
   }
 
-  return { hookFact: batch.hookFact, steps };
+  return { steps };
 }
 
 // Re-fetches a calculation step's verified solution from the content

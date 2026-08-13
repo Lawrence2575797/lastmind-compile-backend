@@ -456,9 +456,18 @@ export async function startEncodingLesson(
     hookFact = generated.hookFact;
     cachedSteps = [generated.step];
     contentReady = false;
-    await supabaseAdmin
+    // Must fail loudly here, not silently — if this write doesn't land,
+    // /encoding-lesson/continue has nothing to read later and fails with a
+    // confusing "no pending generation found" only once the student has
+    // already answered the first step, instead of right now while it's
+    // still obviously a /start problem.
+    const { error: pendingInsertError } = await supabaseAdmin
       .from('encoding_lesson_pending')
       .upsert({ content_key: contentKey, hook_fact: hookFact, first_step: generated.step });
+    if (pendingInsertError) {
+      console.error('LastMind: failed to stash pending lesson generation.', pendingInsertError);
+      throw pendingInsertError;
+    }
   }
 
   if (!cachedSteps.length) {

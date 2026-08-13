@@ -47,7 +47,14 @@ async function callJSON<T>(systemPrompt: string, userContent: string, model: str
 }
 
 interface ChainEdge { node_id: string; relationship: 'definitional' | 'reasoning'; }
-interface ChainNode { id: string; label: string; derivable?: boolean; depends_on: ChainEdge[]; }
+// technique — see CHAIN_GENERATION_PROMPT rule 11/12: true for a node that
+// exists specifically because computing/applying the target requires a
+// procedural/computational method (often from a different subject than the
+// lesson's own). A student is unlikely to have already covered a technique
+// like this just because they're studying THIS subject — see
+// forceTeachIds below, where this forces it to be actually taught rather
+// than merely checked as assumed prior knowledge.
+interface ChainNode { id: string; label: string; derivable?: boolean; technique?: boolean; depends_on: ChainEdge[]; }
 interface Chain { concept_id: string; subject: string; nodes: ChainNode[]; }
 
 export type EncodingStepType = 'check' | 'scene' | 'derive' | 'explain' | 'implication';
@@ -422,7 +429,22 @@ export async function startEncodingLesson(
   const coveredIds = new Set([...closeNodes.map((n) => n.id), target.id]);
   const backgroundNodes = chain.nodes.filter((n) => !coveredIds.has(n.id));
 
-  const forcedNodeIds = closeNodes.filter((n) => matchesUnfinishedSibling(n.label, siblingConcepts)).map((n) => n.id).sort();
+  // A close prerequisite gets force-taught (rather than merely checked as
+  // assumed prior knowledge) when EITHER it matches one of the student's
+  // own not-yet-done sibling pages, OR it's itself a technique node (see
+  // ChainNode.technique) — a procedural/computational method, often from a
+  // different subject than this lesson's own, that a typical student at
+  // this level is unlikely to have already covered just because they're
+  // studying THIS subject (e.g. partial derivatives for an Economics MRS
+  // lesson). Folding both into the SAME forcedNodeIds array (which also
+  // drives contentKey below) means a concept that turns out to have a
+  // technique prerequisite automatically gets a fresh, correctly-taught
+  // cache entry instead of forever serving whatever got cached before this
+  // was recognized.
+  const forcedNodeIds = closeNodes
+    .filter((n) => matchesUnfinishedSibling(n.label, siblingConcepts) || !!n.technique)
+    .map((n) => n.id)
+    .sort();
 
   const contentKey = forcedNodeIds.length
     ? `${conceptKey}::${clean(qualification)}::${clean(examBoard)}::forced_${forcedNodeIds.join('_')}`
@@ -544,7 +566,22 @@ export async function continueEncodingLesson(
   const closeNodes = chain.nodes.filter((n) => closeIds.has(n.id)).slice(0, 3);
   const coveredIds = new Set([...closeNodes.map((n) => n.id), target.id]);
   const backgroundNodes = chain.nodes.filter((n) => !coveredIds.has(n.id));
-  const forcedNodeIds = closeNodes.filter((n) => matchesUnfinishedSibling(n.label, siblingConcepts)).map((n) => n.id).sort();
+  // A close prerequisite gets force-taught (rather than merely checked as
+  // assumed prior knowledge) when EITHER it matches one of the student's
+  // own not-yet-done sibling pages, OR it's itself a technique node (see
+  // ChainNode.technique) — a procedural/computational method, often from a
+  // different subject than this lesson's own, that a typical student at
+  // this level is unlikely to have already covered just because they're
+  // studying THIS subject (e.g. partial derivatives for an Economics MRS
+  // lesson). Folding both into the SAME forcedNodeIds array (which also
+  // drives contentKey below) means a concept that turns out to have a
+  // technique prerequisite automatically gets a fresh, correctly-taught
+  // cache entry instead of forever serving whatever got cached before this
+  // was recognized.
+  const forcedNodeIds = closeNodes
+    .filter((n) => matchesUnfinishedSibling(n.label, siblingConcepts) || !!n.technique)
+    .map((n) => n.id)
+    .sort();
 
   const rest = await generateLessonContinuation(
     conceptKey, subject, topic, concept, qualification, examBoard, chain, target, closeNodes, backgroundNodes, forcedNodeIds, firstStep

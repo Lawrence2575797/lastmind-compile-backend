@@ -2,7 +2,7 @@ import { Router, Request, Response } from 'express';
 import { requireAuth } from '../services/authMiddleware';
 import { costlyEndpointLimiter } from '../services/rateLimiters';
 import { normalizeConceptKey } from '../services/chainService';
-import { startEncodingLesson, submitEncodingAnswer, generateNotesFromLesson, EncodingLessonState } from '../services/encodingLessonService';
+import { startEncodingLesson, continueEncodingLesson, submitEncodingAnswer, generateNotesFromLesson, EncodingLessonState } from '../services/encodingLessonService';
 
 const router = Router();
 
@@ -41,6 +41,36 @@ router.post('/encoding-lesson/start', costlyEndpointLimiter, async (req: Request
   } catch (err) {
     console.error('Encoding lesson start failed:', err);
     res.status(500).json({ error: 'could not start the lesson' });
+  }
+});
+
+// POST /encoding-lesson/continue  { state, topic, concept, siblingConcepts? }
+// Only ever called after a /start response came back with
+// `contentReady: false` — fired by the frontend the moment the first step
+// is on screen, generating and caching the rest of the lesson in the
+// background while the student answers that first step. `state` is the
+// exact state object /start returned (carries conceptKey/subject/
+// qualification/examBoard/contentKey); `topic`/`concept`/`siblingConcepts`
+// are the same values the original /start call used, needed again here to
+// regenerate the same close-prerequisite/background-context split. Returns
+// the SAME state shape with `steps` now holding the complete lesson — the
+// frontend should merge this into its local state before calling
+// /encoding-lesson/submit.
+router.post('/encoding-lesson/continue', costlyEndpointLimiter, async (req: Request, res: Response) => {
+  const { state, topic, concept, siblingConcepts } = req.body ?? {};
+  if (!state || typeof topic !== 'string' || typeof concept !== 'string') {
+    return res.status(400).json({ error: 'state, topic, and concept are all required (from the preceding /encoding-lesson/start call)' });
+  }
+  const cleanSiblings = Array.isArray(siblingConcepts)
+    ? siblingConcepts.filter((s) => s && typeof s.label === 'string').map((s) => ({ label: s.label, done: !!s.done }))
+    : [];
+
+  try {
+    const nextState = await continueEncodingLesson(state as EncodingLessonState, topic, concept, cleanSiblings);
+    res.json({ state: nextState });
+  } catch (err) {
+    console.error('Encoding lesson continuation failed:', err);
+    res.status(500).json({ error: 'could not continue generating this lesson' });
   }
 });
 

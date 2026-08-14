@@ -93,3 +93,55 @@ export async function getMasteryStatus(userId: string, conceptId: string): Promi
 
   return { row, isMastered, scheduleWasFollowed };
 }
+
+function clean(s: string): string {
+  return (s || '').trim().toLowerCase().replace(/[^a-z0-9]+/g, '_');
+}
+
+// Best-effort readable label from a concept_id — concept_id is a known mix
+// of raw labels (atomic-path testing) and normalized "subject:topic:concept"
+// keys (chain-level tracking), same gap noted throughout this codebase
+// (e.g. learn/index.html's own conceptKeyToLabel). Good enough as LLM
+// generation context; never shown to the student verbatim.
+function conceptIdToLabel(conceptId: string): string {
+  const lastSegment = conceptId.split(':').pop() || conceptId;
+  return lastSegment.replace(/_/g, ' ');
+}
+
+// A concept only "counts" as consolidated enough to interleave with a
+// DIFFERENT concept's retrieval practice once its own stability clears this
+// floor — otherwise you'd be leaning on something not yet solid to test
+// something else, confounding two separate failure signals into one
+// question. 14 days is a starting point, not a derived constant.
+const INTERLEAVE_STABILITY_FLOOR_DAYS = 14;
+
+/**
+ * Other concepts this same student has reviewed, in the same subject+topic
+ * scope, that have themselves reached enough stability to safely appear
+ * alongside a DIFFERENT concept's own retrieval question — see
+ * spacedLessonEngine.ts's tiered interleaving design. Scoped to
+ * subject+topic (not the whole subject) so "sibling" means genuinely
+ * nearby in the same schema, not just anything the student has ever
+ * studied. Only chain-tracked concept_ids (the normalized
+ * "subject:topic:concept" form) can be matched this way — an
+ * atomic-path-tracked raw-label concept_id has no subject/topic to prefix
+ * against, so it's silently excluded rather than mismatched.
+ */
+export async function listEligibleSiblingConcepts(
+  userId: string,
+  subject: string,
+  topic: string,
+  excludeConceptId: string
+): Promise<string[]> {
+  const prefix = `${clean(subject)}:${clean(topic)}:`;
+  const { data, error } = await supabaseAdmin
+    .from('concept_reviews')
+    .select('concept_id, stability')
+    .eq('user_id', userId)
+    .ilike('concept_id', `${prefix}%`)
+    .gte('stability', INTERLEAVE_STABILITY_FLOOR_DAYS);
+  if (error) throw error;
+  return (data || [])
+    .filter((row) => row.concept_id !== excludeConceptId)
+    .map((row) => conceptIdToLabel(row.concept_id));
+}

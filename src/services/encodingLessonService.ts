@@ -17,6 +17,21 @@ function stripCodeFences(text: string): string {
   return text.trim().replace(/^```(?:json)?\s*/i, '').replace(/```\s*$/, '').trim();
 }
 
+// A cached encoding_lesson_content row gets REUSED across students only
+// when this is explicitly turned on (Render env var
+// ENCODING_LESSON_CACHE_ENABLED=true) — off by default. While off, every
+// lesson start generates fresh, so a bad generation (wrong prompt, missed
+// contradiction, etc.) never gets served to a second student just because
+// the first student happened to hit it first. The lesson is still WRITTEN
+// to encoding_lesson_content either way (see continueEncodingLesson) —
+// grading a calculation step re-reads its expectedSolution from that same
+// row (fetchExpectedSolution), so the write can't be skipped without
+// breaking grading for the student who's already mid-lesson; only the
+// cross-student REUSE of an existing row is what this flag controls.
+// Flip the env var back on once lesson quality is trusted again — no code
+// change needed to resume caching.
+const LESSON_CACHE_REUSE_ENABLED = process.env.ENCODING_LESSON_CACHE_ENABLED === 'true';
+
 // Belt-and-suspenders against stray prose around the JSON body (e.g. a
 // model narrating its self-check reasoning before settling into the
 // output despite "Output ONLY valid JSON" instructions) — falls back to
@@ -450,11 +465,13 @@ export async function startEncodingLesson(
     ? `${conceptKey}::${clean(qualification)}::${clean(examBoard)}::forced_${forcedNodeIds.join('_')}`
     : `${conceptKey}::${clean(qualification)}::${clean(examBoard)}`;
 
-  const { data: cachedContent, error: cacheError } = await supabaseAdmin
-    .from('encoding_lesson_content')
-    .select('hook_fact, steps')
-    .eq('content_key', contentKey)
-    .maybeSingle();
+  const { data: cachedContent, error: cacheError } = LESSON_CACHE_REUSE_ENABLED
+    ? await supabaseAdmin
+        .from('encoding_lesson_content')
+        .select('hook_fact, steps')
+        .eq('content_key', contentKey)
+        .maybeSingle()
+    : { data: null, error: null };
 
   let hookFact: string;
   let cachedSteps: CachedEncodingStep[];
@@ -531,16 +548,21 @@ export async function continueEncodingLesson(
 
   // Another concurrent cold-cache request for this exact concept may have
   // already finished and cached the full lesson — adopt it rather than
-  // generating a second, redundant copy. The tiny chance this student's own
-  // first step reads slightly differently from the one now cached (two
-  // independent generations racing) is a harmless cosmetic edge case, not a
-  // correctness issue — see contentKey's derivation for what "exact
-  // concept" means here.
-  const { data: existing, error: existingError } = await supabaseAdmin
-    .from('encoding_lesson_content')
-    .select('steps')
-    .eq('content_key', contentKey)
-    .maybeSingle();
+  // generating a second, redundant copy. Gated behind LESSON_CACHE_REUSE_ENABLED
+  // for the same reason as startEncodingLesson's own read: while it's off,
+  // this must not become a back door for adopting an OLD row from some
+  // earlier, unrelated student's lesson (which is exactly the cross-student
+  // reuse the flag exists to prevent) — only a genuinely concurrent request
+  // would ever produce a same-key row in the first place, and while the
+  // flag is off it's fine to just pay for a rare duplicate generation
+  // instead of risking that.
+  const { data: existing, error: existingError } = LESSON_CACHE_REUSE_ENABLED
+    ? await supabaseAdmin
+        .from('encoding_lesson_content')
+        .select('steps')
+        .eq('content_key', contentKey)
+        .maybeSingle()
+    : { data: null, error: null };
   if (!existingError && existing) {
     const steps: EncodingStep[] = (existing.steps as CachedEncodingStep[]).map(({ expectedSolution, ...s }) => s);
     return { ...state, steps };
@@ -595,9 +617,16 @@ export async function continueEncodingLesson(
   // EVERY future student for this concept pays full generation cost again
   // too, forever, with nothing in the logs to explain why the cache never
   // seems to warm up — worth a loud error, not a swallowed one.
+  //
+  // upsert, not insert: this write must always succeed even when
+  // LESSON_CACHE_REUSE_ENABLED is off and an earlier (now-superseded)
+  // generation already occupies this exact content_key — fetchExpectedSolution
+  // needs THIS lesson's own freshly-generated steps sitting under this key
+  // for calculation-step grading to work, and a plain insert would throw a
+  // duplicate-key error in that situation instead of overwriting it.
   const { error: contentInsertError } = await supabaseAdmin
     .from('encoding_lesson_content')
-    .insert({ content_key: contentKey, hook_fact: pending.hook_fact, steps: allSteps });
+    .upsert({ content_key: contentKey, hook_fact: pending.hook_fact, steps: allSteps }, { onConflict: 'content_key' });
   if (contentInsertError) {
     console.error('LastMind: failed to cache completed lesson content — this concept will keep regenerating from scratch until this is fixed.', contentInsertError);
   }

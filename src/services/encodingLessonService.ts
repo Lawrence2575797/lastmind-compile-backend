@@ -170,12 +170,25 @@ export interface EncodingStartResult {
   contentReady: boolean;
 }
 
+// The before/after FSRS card state from grading this lesson's single,
+// aggregate rating (see submitEncodingAnswer) — purely for showing the
+// student how their answers fed into the algorithm; nothing here is used
+// for scheduling logic itself, that already happened inside
+// gradeAndRecordReview before this summary is even built. `previous` is
+// null the first time this concept is ever graded (no prior card to show).
+export interface FsrsUpdateSummary {
+  rating: 'hard' | 'easy';
+  previous: { stability: number; difficulty: number; due: string; reps: number; lapses: number; state: number } | null;
+  updated: { stability: number; difficulty: number; due: string; reps: number; lapses: number; state: number; scheduledDays: number; elapsedDays: number };
+}
+
 export interface EncodingSubmitResult {
   done: boolean;
   correct?: boolean;
   feedback?: string | null;
   step?: EncodingStep;
   state: EncodingLessonState;
+  fsrsUpdate?: FsrsUpdateSummary;
 }
 
 // Chains cached before the "derivable" field existed default to: a node
@@ -937,10 +950,28 @@ export async function submitEncodingAnswer(userId: string, state: EncodingLesson
     // graded this exact conceptKey mid-lesson (see
     // targetGradedViaDrillDown) — otherwise the concept gets FSRS-graded
     // twice in one session, artificially inflating its stability.
+    let fsrsUpdate: FsrsUpdateSummary | undefined;
     if (!state.targetGradedViaDrillDown) {
-      await gradeAndRecordReview(userId, state.conceptKey, anyWeakSoFar ? 'hard' : 'easy');
+      const rating: 'hard' | 'easy' = anyWeakSoFar ? 'hard' : 'easy';
+      const { previousRow, newState: fsrsRow } = await gradeAndRecordReview(userId, state.conceptKey, rating);
+      fsrsUpdate = {
+        rating,
+        previous: previousRow
+          ? { stability: previousRow.stability, difficulty: previousRow.difficulty, due: previousRow.due, reps: previousRow.reps, lapses: previousRow.lapses, state: previousRow.state }
+          : null,
+        updated: {
+          stability: fsrsRow.stability,
+          difficulty: fsrsRow.difficulty,
+          due: fsrsRow.due,
+          reps: fsrsRow.reps,
+          lapses: fsrsRow.lapses,
+          state: fsrsRow.state,
+          scheduledDays: fsrsRow.scheduled_days,
+          elapsedDays: fsrsRow.elapsed_days,
+        },
+      };
     }
-    return { done: true, correct, feedback, state: nextState };
+    return { done: true, correct, feedback, state: nextState, fsrsUpdate };
   }
 
   return { done: false, correct, feedback, step: state.steps[nextIndex], state: nextState };

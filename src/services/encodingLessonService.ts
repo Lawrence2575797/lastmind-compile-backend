@@ -7,6 +7,7 @@ import {
   ENCODING_LESSON_FIRST_STEP_PROMPT,
   ENCODING_LESSON_CONTINUATION_PROMPT,
   ENCODING_ANSWER_CHECK_PROMPT,
+  MECHANISTIC_CHECK_ANSWER_PROMPT,
   ENCODING_MATH_ANSWER_CHECK_PROMPT,
   DIAGRAM_VERIFICATION_PROMPT,
   STEP_DERIVABILITY_CHECK_PROMPT,
@@ -72,7 +73,12 @@ interface ChainEdge { node_id: string; relationship: 'definitional' | 'reasoning
 interface ChainNode { id: string; label: string; derivable?: boolean; technique?: boolean; depends_on: ChainEdge[]; }
 interface Chain { concept_id: string; subject: string; nodes: ChainNode[]; }
 
-export type EncodingStepType = 'check' | 'scene' | 'derive' | 'explain' | 'implication';
+// 'mechanistic_check' replaces a single-node 'check' when the prerequisite
+// being verified is the tip of a genuine multi-node chain (see
+// buildPrerequisiteChains) — one question spanning the whole chain's
+// reasoning in a single answer, graded more strictly (see
+// MECHANISTIC_CHECK_ANSWER_PROMPT) than an ordinary 'check'.
+export type EncodingStepType = 'check' | 'mechanistic_check' | 'scene' | 'derive' | 'explain' | 'implication';
 
 export interface EncodingDiagram {
   diagramUrl: string;
@@ -203,6 +209,42 @@ function resolveDerivable(node: ChainNode): boolean {
 
 function clean(s: string): string {
   return (s || '').trim().toLowerCase().replace(/[^a-z0-9]+/g, '_');
+}
+
+// Decomposes the dependency graph into separate LINEAR prerequisite
+// chains, one per direct prerequisite of the target — each chain is that
+// prerequisite's own full ancestor lineage (foundational-most node first,
+// ending at the direct prerequisite itself), via post-order DFS through
+// depends_on. Distinct direct prerequisites naturally give distinct
+// chains, matching the real shape of most dependency graphs: several
+// separate lines of prior knowledge that only actually converge at the
+// target itself, not at each other. A node that happens to be a shared
+// deep ancestor of two chains just appears in both — never deduplicated
+// across chains, since each chain's own mechanistic check needs its own
+// complete, self-contained lineage to question (see
+// ENCODING_LESSON_CONTINUATION_PROMPT). Capped at maxChains direct
+// prerequisites, same cost-control cap the old flat closePrerequisites
+// list used.
+function buildPrerequisiteChains(chain: Chain, target: ChainNode, maxChains = 3): ChainNode[][] {
+  const byId = new Map(chain.nodes.map((n) => [n.id, n]));
+  const directPrereqIds = (target.depends_on || []).map((d) => d.node_id).slice(0, maxChains);
+
+  return directPrereqIds
+    .map((tipId) => {
+      const visited = new Set<string>();
+      const ordered: ChainNode[] = [];
+      function visit(id: string) {
+        if (visited.has(id)) return;
+        visited.add(id);
+        const node = byId.get(id);
+        if (!node) return;
+        (node.depends_on || []).forEach((e) => visit(e.node_id));
+        ordered.push(node);
+      }
+      visit(tipId);
+      return ordered;
+    })
+    .filter((c) => c.length > 0);
 }
 
 export interface SiblingConcept {
@@ -462,24 +504,31 @@ export async function startEncodingLesson(
   const chain = chainResult.chain as Chain;
 
   const target = chain.nodes[chain.nodes.length - 1];
-  const closeIds = new Set((target.depends_on || []).map((d) => d.node_id));
-  const closeNodes = chain.nodes.filter((n) => closeIds.has(n.id)).slice(0, 3);
-  const coveredIds = new Set([...closeNodes.map((n) => n.id), target.id]);
+  // Separate linear chains, one per direct prerequisite — see
+  // buildPrerequisiteChains. Replaces the old flat "closeNodes" list: each
+  // chain gets its OWN combined mechanistic check spanning its whole
+  // lineage (see the generation prompts), rather than one isolated
+  // single-node check per direct prerequisite.
+  const prerequisiteChains = buildPrerequisiteChains(chain, target);
+  const chainNodes = prerequisiteChains.flat();
+  const coveredIds = new Set([...chainNodes.map((n) => n.id), target.id]);
   const backgroundNodes = chain.nodes.filter((n) => !coveredIds.has(n.id));
 
-  // A close prerequisite gets force-taught (rather than merely checked as
-  // assumed prior knowledge) when EITHER it matches one of the student's
-  // own not-yet-done sibling pages, OR it's itself a technique node (see
-  // ChainNode.technique) — a procedural/computational method, often from a
-  // different subject than this lesson's own, that a typical student at
-  // this level is unlikely to have already covered just because they're
-  // studying THIS subject (e.g. partial derivatives for an Economics MRS
-  // lesson). Folding both into the SAME forcedNodeIds array (which also
-  // drives contentKey below) means a concept that turns out to have a
-  // technique prerequisite automatically gets a fresh, correctly-taught
-  // cache entry instead of forever serving whatever got cached before this
-  // was recognized.
-  const forcedNodeIds = closeNodes
+  // A prerequisite node gets force-taught (rather than merely covered by
+  // its chain's mechanistic check as assumed prior knowledge) when EITHER
+  // it matches one of the student's own not-yet-done sibling pages, OR
+  // it's itself a technique node (see ChainNode.technique) — a
+  // procedural/computational method, often from a different subject than
+  // this lesson's own, that a typical student at this level is unlikely to
+  // have already covered just because they're studying THIS subject (e.g.
+  // partial derivatives for an Economics MRS lesson). Applied across every
+  // node in every chain now, not just the direct-prerequisite tips —
+  // folding into the SAME forcedNodeIds array (which also drives
+  // contentKey below) means a concept that turns out to have a technique
+  // prerequisite anywhere in its lineage automatically gets a fresh,
+  // correctly-taught cache entry instead of forever serving whatever got
+  // cached before this was recognized.
+  const forcedNodeIds = chainNodes
     .filter((n) => matchesUnfinishedSibling(n.label, siblingConcepts) || !!n.technique)
     .map((n) => n.id)
     .sort();
@@ -515,7 +564,7 @@ export async function startEncodingLesson(
     // and cache the complete lesson once phase 2 finishes. Never sent to
     // the client in between (see CachedEncodingStep).
     const generated = await generateFirstStep(
-      conceptKey, subject, topic, concept, qualification, examBoard, chain, target, closeNodes, backgroundNodes, forcedNodeIds, customTitle, customDescription
+      conceptKey, subject, topic, concept, qualification, examBoard, chain, target, prerequisiteChains, backgroundNodes, forcedNodeIds, customTitle, customDescription
     );
     hookFact = generated.hookFact;
     cachedSteps = [generated.step];
@@ -609,29 +658,20 @@ export async function continueEncodingLesson(
   }
   const chain = chainResult.chain as Chain;
   const target = chain.nodes[chain.nodes.length - 1];
-  const closeIds = new Set((target.depends_on || []).map((d) => d.node_id));
-  const closeNodes = chain.nodes.filter((n) => closeIds.has(n.id)).slice(0, 3);
-  const coveredIds = new Set([...closeNodes.map((n) => n.id), target.id]);
+  // Recomputed identically to startEncodingLesson's own call — same chain,
+  // same target, same deterministic traversal — so this lands on the exact
+  // same prerequisiteChains/forcedNodeIds/contentKey the /start call used.
+  const prerequisiteChains = buildPrerequisiteChains(chain, target);
+  const chainNodes = prerequisiteChains.flat();
+  const coveredIds = new Set([...chainNodes.map((n) => n.id), target.id]);
   const backgroundNodes = chain.nodes.filter((n) => !coveredIds.has(n.id));
-  // A close prerequisite gets force-taught (rather than merely checked as
-  // assumed prior knowledge) when EITHER it matches one of the student's
-  // own not-yet-done sibling pages, OR it's itself a technique node (see
-  // ChainNode.technique) — a procedural/computational method, often from a
-  // different subject than this lesson's own, that a typical student at
-  // this level is unlikely to have already covered just because they're
-  // studying THIS subject (e.g. partial derivatives for an Economics MRS
-  // lesson). Folding both into the SAME forcedNodeIds array (which also
-  // drives contentKey below) means a concept that turns out to have a
-  // technique prerequisite automatically gets a fresh, correctly-taught
-  // cache entry instead of forever serving whatever got cached before this
-  // was recognized.
-  const forcedNodeIds = closeNodes
+  const forcedNodeIds = chainNodes
     .filter((n) => matchesUnfinishedSibling(n.label, siblingConcepts) || !!n.technique)
     .map((n) => n.id)
     .sort();
 
   const rest = await generateLessonContinuation(
-    conceptKey, subject, topic, concept, qualification, examBoard, chain, target, closeNodes, backgroundNodes, forcedNodeIds, firstStep, customTitle, customDescription
+    conceptKey, subject, topic, concept, qualification, examBoard, chain, target, prerequisiteChains, backgroundNodes, forcedNodeIds, firstStep, customTitle, customDescription
   );
 
   const allSteps: CachedEncodingStep[] = [firstStep, ...rest.steps];
@@ -675,13 +715,14 @@ async function generateFirstStep(
   examBoard: string,
   chain: Chain,
   target: ChainNode,
-  closeNodes: ChainNode[],
+  prerequisiteChains: ChainNode[][],
   backgroundNodes: ChainNode[],
   forcedNodeIds: string[],
   customTitle = '',
   customDescription = ''
 ): Promise<{ hookFact: string; step: CachedEncodingStep }> {
   const forcedIds = new Set(forcedNodeIds);
+  const serializedChains = prerequisiteChains.map((c) => c.map((n) => ({ nodeId: n.id, label: n.label, forceTeach: forcedIds.has(n.id) })));
 
   const result = await callJSON<{
     hookFact: string;
@@ -702,7 +743,7 @@ async function generateFirstStep(
       `Qualification: ${qualification || 'unspecified'}`,
       `Exam board: ${examBoard || 'unspecified'}`,
       `Original lesson title, exactly as the student named it: ${concept}`,
-      `closePrerequisites, in order: ${JSON.stringify(closeNodes.map((n) => ({ nodeId: n.id, label: n.label, forceTeach: forcedIds.has(n.id) })))}`,
+      `prerequisiteChains — a list of SEPARATE linear chains, each ordered foundational-first ending at that chain's own direct prerequisite of the target: ${JSON.stringify(serializedChains)}`,
       `backgroundContext (already covered earlier — reference only, do not test, do not write a step): ${JSON.stringify(backgroundNodes.map((n) => ({ nodeId: n.id, label: n.label })))}`,
       ...(customDescription
         ? [
@@ -756,7 +797,7 @@ async function generateLessonContinuation(
   examBoard: string,
   chain: Chain,
   target: ChainNode,
-  closeNodes: ChainNode[],
+  prerequisiteChains: ChainNode[][],
   backgroundNodes: ChainNode[],
   forcedNodeIds: string[],
   firstStep: CachedEncodingStep,
@@ -765,6 +806,7 @@ async function generateLessonContinuation(
 ): Promise<{ steps: CachedEncodingStep[] }> {
   const targetDerivable = resolveDerivable(target);
   const forcedIds = new Set(forcedNodeIds);
+  const serializedChains = prerequisiteChains.map((c) => c.map((n) => ({ nodeId: n.id, label: n.label, forceTeach: forcedIds.has(n.id) })));
 
   const batch = await callJSON<{
     steps: {
@@ -787,7 +829,7 @@ async function generateLessonContinuation(
       `Target concept (this exact lesson — every step must build toward THIS, not a related or more general concept): ${target?.label || concept}`,
       `Original lesson title, exactly as the student named it: ${concept}`,
       `Target concept is derivable from its close prerequisites: ${targetDerivable}`,
-      `closePrerequisites, in order: ${JSON.stringify(closeNodes.map((n) => ({ nodeId: n.id, label: n.label, forceTeach: forcedIds.has(n.id) })))}`,
+      `prerequisiteChains — a list of SEPARATE linear chains, each ordered foundational-first ending at that chain's own direct prerequisite of the target: ${JSON.stringify(serializedChains)}`,
       `backgroundContext (already covered earlier — reference only, do not test, do not write a step): ${JSON.stringify(backgroundNodes.map((n) => ({ nodeId: n.id, label: n.label })))}`,
       `First step already generated and shown to (and answered by) the student — do not repeat it: ${JSON.stringify({ nodeId: firstStep.nodeId, type: firstStep.type, text: firstStep.text, checkQuestion: firstStep.checkQuestion })}`,
       ...(customDescription
@@ -927,6 +969,21 @@ export async function submitEncodingAnswer(userId: string, state: EncodingLesson
       correct = check.correct;
       feedback = check.feedback;
     }
+  } else if (currentStep.type === 'mechanistic_check') {
+    // Deliberately pedantic (see MECHANISTIC_CHECK_ANSWER_PROMPT) — this
+    // step exists specifically to catch pattern-matched/memorized answers
+    // an ordinary generous check would let through, and to require jargon
+    // be explained relative to the qualification level. diagnosticTree,
+    // not simpleQuestion, here — that calibration judgment call is worth
+    // the step up, same reasoning as the calculation-grading path above.
+    const check = await callJSON<{ correct: boolean; feedback: string | null }>(
+      MECHANISTIC_CHECK_ANSWER_PROMPT,
+      `Qualification: ${state.qualification || 'unspecified'}\nExam board: ${state.examBoard || 'unspecified'}\nConcept/step: ${currentStep.label}\nPrompt: ${gradingPrompt}\nStudent's answer: ${answer}`,
+      MODELS.diagnosticTree,
+      0.2
+    );
+    correct = check.correct;
+    feedback = check.feedback;
   } else {
     const check = await callJSON<{ correct: boolean; feedback: string | null }>(
       ENCODING_ANSWER_CHECK_PROMPT,

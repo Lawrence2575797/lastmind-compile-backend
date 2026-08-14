@@ -951,7 +951,13 @@ export async function submitEncodingAnswer(userId: string, state: EncodingLesson
         `Concept/step: ${currentStep.label}\nQuestion: ${gradingPrompt}\nVerified correct solution (reference only, never shown to the student): ${expectedSolution}\nStudent's working: ${answer}`,
         MODELS.diagnosticTree,
         0.1,
-        4096
+        4096,
+        // Now well over Sonnet 5's ~1024-token cache minimum after adding
+        // worked calibration examples (see the prompt's own comment) —
+        // this system prompt is byte-identical across every grading call
+        // app-wide, so it stays warm from ANY concurrent student's calls,
+        // not just repeats of the same concept.
+        true
       );
       correct = check.correct;
       feedback = check.feedback;
@@ -964,7 +970,8 @@ export async function submitEncodingAnswer(userId: string, state: EncodingLesson
         `Concept/step: ${currentStep.label}\nPrompt: ${gradingPrompt}\nStudent's answer: ${answer}`,
         MODELS.simpleQuestion,
         0.2,
-        4096
+        4096,
+        true
       );
       correct = check.correct;
       feedback = check.feedback;
@@ -980,7 +987,9 @@ export async function submitEncodingAnswer(userId: string, state: EncodingLesson
       MECHANISTIC_CHECK_ANSWER_PROMPT,
       `Qualification: ${state.qualification || 'unspecified'}\nExam board: ${state.examBoard || 'unspecified'}\nConcept/step: ${currentStep.label}\nPrompt: ${gradingPrompt}\nStudent's answer: ${answer}`,
       MODELS.diagnosticTree,
-      0.2
+      0.2,
+      undefined,
+      true
     );
     correct = check.correct;
     feedback = check.feedback;
@@ -989,7 +998,9 @@ export async function submitEncodingAnswer(userId: string, state: EncodingLesson
       ENCODING_ANSWER_CHECK_PROMPT,
       `Concept/step: ${currentStep.label}\nPrompt: ${gradingPrompt}\nStudent's answer: ${answer}`,
       MODELS.simpleQuestion,
-      0.2
+      0.2,
+      undefined,
+      true
     );
     correct = check.correct;
     feedback = check.feedback;

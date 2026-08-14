@@ -8,6 +8,12 @@ export const RATING_MAP: Record<string, Grade> = {
   easy: Rating.Easy,
 };
 
+// Shared across every caller that derives an FSRS rating algorithmically
+// from lesson/review performance (rather than a student self-rating) —
+// see encodingLessonService.ts and spacedLessonEngine.ts's own submit
+// handlers for how each maps step-level correctness onto this scale.
+export type FsrsRatingKey = 'again' | 'hard' | 'good' | 'easy';
+
 /**
  * Grades one concept through the real FSRS algorithm and persists the
  * updated state for a given user. Also returns the PREVIOUS row (before

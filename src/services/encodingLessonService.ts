@@ -588,7 +588,19 @@ export async function continueEncodingLesson(
   );
 
   const allSteps: CachedEncodingStep[] = [firstStep, ...rest.steps];
-  await supabaseAdmin.from('encoding_lesson_content').insert({ content_key: contentKey, hook_fact: pending.hook_fact, steps: allSteps });
+  // Logged loudly, not thrown — this student already has their complete
+  // step list in hand regardless of whether the cache write lands, so
+  // failing the request here would break an otherwise-successful lesson
+  // over what's purely a caching concern. But a silent failure here means
+  // EVERY future student for this concept pays full generation cost again
+  // too, forever, with nothing in the logs to explain why the cache never
+  // seems to warm up — worth a loud error, not a swallowed one.
+  const { error: contentInsertError } = await supabaseAdmin
+    .from('encoding_lesson_content')
+    .insert({ content_key: contentKey, hook_fact: pending.hook_fact, steps: allSteps });
+  if (contentInsertError) {
+    console.error('LastMind: failed to cache completed lesson content — this concept will keep regenerating from scratch until this is fixed.', contentInsertError);
+  }
   await supabaseAdmin.from('encoding_lesson_pending').delete().eq('content_key', contentKey);
 
   const steps: EncodingStep[] = allSteps.map(({ expectedSolution, ...s }) => s);

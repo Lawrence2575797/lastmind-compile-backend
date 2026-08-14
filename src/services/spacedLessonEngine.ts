@@ -1,20 +1,14 @@
-import { supabaseAdmin } from './supabaseAdmin';
 import { callClaudeJSON, MODELS } from './claudeClient';
-import { gradeAndRecordReview } from './reviewService';
+import { gradeAndRecordReview, getMasteryStatus, listEligibleSiblingConcepts } from './reviewService';
 import { getOrGenerateChain } from './chainService';
-import {
-  PREDICTION_ERROR_QUESTION_PROMPT,
-  FORWARD_CHUNK_QUESTION_PROMPT,
-  CHECK_ANSWER_AND_SLIP_PROMPT,
-  CORRECTION_PROMPT,
-} from '../constants/diagnosticPrompts';
+import { retrievalLessonPromptForTier, RETRIEVAL_ANSWER_CHECK_PROMPT, RETRIEVAL_MECHANISTIC_CHECK_PROMPT } from '../constants/retrievalLessonPrompts';
 
 function stripCodeFences(text: string): string {
   return text.trim().replace(/^```(?:json)?\s*/i, '').replace(/```\s*$/, '').trim();
 }
 
-async function callJSON<T>(systemPrompt: string, userContent: string, model: string, temperature = 0): Promise<T> {
-  const raw = await callClaudeJSON({ model, systemPrompt, userContent, temperature });
+async function callJSON<T>(systemPrompt: string, userContent: string, model: string, temperature = 0, maxTokens?: number, cacheSystemPrompt = false): Promise<T> {
+  const raw = await callClaudeJSON({ model, systemPrompt, userContent, temperature, maxTokens, cacheSystemPrompt });
   return JSON.parse(stripCodeFences(raw)) as T;
 }
 
@@ -22,128 +16,186 @@ interface ChainEdge { node_id: string; relationship: 'definitional' | 'reasoning
 interface ChainNode { id: string; label: string; depends_on: ChainEdge[]; }
 interface Chain { concept_id: string; subject: string; nodes: ChainNode[]; }
 
-interface AnswerCheck { correct: boolean; misconceptionNote: string | null; }
+export type RetrievalTier = 0 | 1 | 2 | 3;
 
-async function checkAnswer(conceptLabel: string, questionDescription: string, answer: string): Promise<AnswerCheck> {
-  return callJSON<AnswerCheck>(
-    CHECK_ANSWER_AND_SLIP_PROMPT,
-    `Concept: ${conceptLabel}\nQuestion: ${questionDescription}\nStudent's answer: ${answer}`,
-    MODELS.simpleQuestion
-  );
-}
+// How many steps a session gets at each tier — deliberately SHORTER as the
+// concept gets more consolidated: a well-known concept needs less review
+// time than a shaky one, and fewer steps at the harder tiers also means
+// fewer Claude calls exactly where each individual call is already doing
+// more (interleaving, mechanistic tracing), keeping cost roughly level
+// rather than compounding as difficulty rises.
+const STEPS_PER_TIER: Record<RetrievalTier, number> = { 0: 3, 1: 2, 2: 2, 3: 1 };
 
-/**
- * Splits a chain's nodes (already topologically ordered — leaf-first,
- * target last) into progressively larger chunks as review_count grows,
- * for the SCAFFOLD walk specifically. Deliberately gradual: jumping
- * straight from "every step separate" to "the whole chain in one go"
- * would risk exactly the working-memory overload this progression exists
- * to avoid.
- *
- * reviewCount 0        -> one node per chunk (fully scaffolded)
- * reviewCount n         -> roughly (totalLinks - n) chunks
- * reviewCount >= totalLinks - 1 -> the whole chain as a single chunk
- */
-export function computeChunks(chain: Chain, reviewCount: number): ChainNode[][] {
-  const orderedNodes = chain.nodes;
-  const totalLinks = orderedNodes.length;
-  const targetChunkCount = Math.max(1, totalLinks - reviewCount);
+// Stability ceiling (days) treated as "fully consolidated" for the purpose
+// of this ramp — not a real FSRS constant, a product tuning knob. Log
+// scale because FSRS stability itself grows roughly multiplicatively per
+// successful review, so a raw linear ramp would saturate almost
+// immediately; log keeps the tier progression feeling gradual in practice.
+const MECHANISTIC_READINESS_S_MAX_DAYS = 120;
 
-  if (targetChunkCount >= totalLinks) {
-    return orderedNodes.map((n) => [n]);
-  }
-
-  const chunks: ChainNode[][] = [];
-  const baseSize = Math.floor(totalLinks / targetChunkCount);
-  let remainder = totalLinks % targetChunkCount;
-  let idx = 0;
-  for (let i = 0; i < targetChunkCount; i++) {
-    const size = baseSize + (remainder > 0 ? 1 : 0);
-    if (remainder > 0) remainder--;
-    chunks.push(orderedNodes.slice(idx, idx + size));
-    idx += size;
-  }
-  return chunks;
-}
+// A single lucky "easy" grade can already earn a nontrivial stability
+// figure under FSRS — this floor requires genuinely repeated practice
+// (not just one good review) before the difficulty ramp is allowed to
+// reach its higher tiers, gating the stability-driven ramp above by reps.
+const MECHANISTIC_READINESS_REPS_FLOOR = 3;
 
 /**
- * A SEPARATE, later phase from the scaffold walk — after every node has
- * been tested individually, this checks whether the student can now hold
- * a FEW of them together at once. Splits the chain into a couple (two)
- * roughly-equal contiguous groups, distinct from (and coarser than) the
- * scaffold's own chunking, which was still testing pieces individually by
- * the time reviewCount is low. A chain with fewer than 2 nodes has
- * nothing meaningful to combine, so this phase is skipped for it.
+ * A single scalar in [0, 1] — how ready this concept is, for THIS student,
+ * to be tested mechanistically/interleaved rather than with heavy
+ * scaffolding. Deliberately built from FSRS's own stability (a
+ * difficulty-adjusted, already-computed consolidation signal) rather than
+ * a raw review count, which treats a run of "easy" grades identically to a
+ * run of narrowly-passed ones. See tierForM for how this gets discretized
+ * into the four prompt tiers actually used for generation — the tiers,
+ * not this continuous value, are what stay cacheable.
  */
-export function computeCompressionGroups(chain: Chain): ChainNode[][] {
-  const orderedNodes = chain.nodes;
-  const totalLinks = orderedNodes.length;
-  if (totalLinks < 2) return [];
-
-  const groupCount = 2;
-  const groups: ChainNode[][] = [];
-  const baseSize = Math.floor(totalLinks / groupCount);
-  let remainder = totalLinks % groupCount;
-  let idx = 0;
-  for (let i = 0; i < groupCount; i++) {
-    const size = baseSize + (remainder > 0 ? 1 : 0);
-    if (remainder > 0) remainder--;
-    groups.push(orderedNodes.slice(idx, idx + size));
-    idx += size;
-  }
-  return groups;
+export function computeMechanisticReadiness(stability: number, reps: number): number {
+  const stabilityRamp = Math.log(1 + Math.max(0, stability)) / Math.log(1 + MECHANISTIC_READINESS_S_MAX_DAYS);
+  const repsGate = Math.min(1, reps / MECHANISTIC_READINESS_REPS_FLOOR);
+  return Math.max(0, Math.min(1, stabilityRamp * repsGate));
 }
 
-async function getReviewCount(userId: string, conceptKey: string): Promise<number> {
-  const { data, error } = await supabaseAdmin
-    .from('chain_lesson_progress')
-    .select('review_count')
-    .eq('user_id', userId)
-    .eq('concept_key', conceptKey)
-    .maybeSingle();
-  if (error) throw error;
-  return data?.review_count ?? 0;
+export function tierForM(m: number): RetrievalTier {
+  if (m >= 0.75) return 3;
+  if (m >= 0.5) return 2;
+  if (m >= 0.25) return 1;
+  return 0;
 }
 
-async function incrementReviewCount(userId: string, conceptKey: string, currentCount: number): Promise<void> {
-  const { error } = await supabaseAdmin
-    .from('chain_lesson_progress')
-    .upsert(
-      { user_id: userId, concept_key: conceptKey, review_count: currentCount + 1, updated_at: new Date().toISOString() },
-      { onConflict: 'user_id,concept_key' }
-    );
-  if (error) throw error;
+export type RetrievalStepType = 'guided' | 'mechanistic_check';
+
+export interface RetrievalStep {
+  type: RetrievalStepType;
+  text: string;
+  requiresCalculation?: boolean;
+  interleavedConcepts?: string[];
 }
 
-export interface ChunkResult { chunkLabel: string; correct: boolean; correction?: string; }
-
-export type ChainLessonStage = 'scaffold' | 'compression';
-
-export interface ChainLessonState {
+export interface RetrievalLessonState {
   conceptKey: string;
   subject: string;
-  chain: Chain;
-  chunks: ChainNode[][];
-  compressionGroups: ChainNode[][];
-  stage: ChainLessonStage;
-  currentChunkIndex: number; // -1 = showing the opening prediction-error question (scaffold stage only)
-  results: ChunkResult[];
-  anyMisconceptionSoFar: boolean;
+  topic: string;
+  concept: string;
+  qualification: string;
+  examBoard: string;
+  tier: RetrievalTier;
+  totalSteps: number;
+  siblings: string[];
+  closePrerequisiteLabels: string[];
+  steps: RetrievalStep[];
+  currentIndex: number;
+  anyWeakSoFar: boolean;
 }
 
-export interface ChainLessonResult {
+export interface RetrievalStartResult {
+  done: false;
+  step: RetrievalStep;
+  state: RetrievalLessonState;
+  contentReady: boolean;
+}
+
+export interface FsrsUpdateSummary {
+  rating: 'hard' | 'easy';
+  previous: { stability: number; difficulty: number; due: string; reps: number; lapses: number; state: number } | null;
+  updated: { stability: number; difficulty: number; due: string; reps: number; lapses: number; state: number; scheduledDays: number; elapsedDays: number };
+}
+
+export interface RetrievalSubmitResult {
   done: boolean;
-  nextQuestion?: string;
-  inlineCorrection?: string; // addresses the answer just given, shown alongside the NEXT question
-  summary?: ChunkResult[];
-  state: ChainLessonState;
+  correct?: boolean;
+  feedback?: string | null;
+  step?: RetrievalStep;
+  state: RetrievalLessonState;
+  fsrsUpdate?: FsrsUpdateSummary;
 }
 
-function groupLabel(group: ChainNode[]): string {
-  return group.map((n) => n.label).join(' + ');
+interface RawGeneratedStep {
+  type: RetrievalStepType;
+  text: string;
+  confident?: boolean;
+  requiresCalculation?: boolean;
+  interleavedConcepts?: string[];
 }
 
-export async function startChainLesson(
+/**
+ * Generates `stepsNeeded` NEW steps for a session already holding
+ * `alreadyGenerated` — the same prompt (per tier) serves both the fast
+ * first-step call and the batched background continuation, distinguished
+ * only by which of these two args is non-empty. See
+ * retrievalLessonPrompts.ts's own comment on why this is one prompt per
+ * tier rather than a separate first-step/continuation pair like encoding.
+ */
+async function generateRetrievalSteps(
+  tier: RetrievalTier,
+  subject: string,
+  topic: string,
+  concept: string,
+  qualification: string,
+  examBoard: string,
+  closePrerequisiteLabels: string[],
+  siblings: string[],
+  alreadyGenerated: RetrievalStep[],
+  stepsNeeded: number
+): Promise<RetrievalStep[]> {
+  const result = await callJSON<{ steps: RawGeneratedStep[] }>(
+    retrievalLessonPromptForTier(tier),
+    [
+      `Subject: ${subject}`,
+      `Topic: ${topic || 'unspecified'}`,
+      `Qualification: ${qualification || 'unspecified'}`,
+      `Exam board: ${examBoard || 'unspecified'}`,
+      `Target concept being reviewed: ${concept}`,
+      `closePrerequisites (background only — see the system prompt's own rule, never write a step testing these): ${JSON.stringify(closePrerequisiteLabels)}`,
+      `eligibleSiblingConcepts: ${JSON.stringify(siblings)}`,
+      `alreadyGenerated (do not repeat): ${JSON.stringify(alreadyGenerated.map((s) => ({ type: s.type, text: s.text })))}`,
+      `stepsNeeded: ${stepsNeeded}`,
+    ].join('\n'),
+    MODELS.diagnosticTree,
+    0.4,
+    4096,
+    // Every tier's prompt is fixed and identical across every request that
+    // lands in that tier — same caching win as encoding's own generation
+    // prompts, see retrievalLessonPrompts.ts's own comment on why tiering
+    // (not the continuous m value) is what makes this possible at all.
+    true
+  );
+
+  return (result.steps || []).map((s) => ({
+    type: s.type,
+    text: s.text,
+    requiresCalculation: !!s.requiresCalculation,
+    interleavedConcepts: s.interleavedConcepts || [],
+  }));
+}
+
+async function fetchChainContext(
+  conceptKey: string,
+  subject: string,
+  topic: string,
+  concept: string,
+  qualification: string,
+  examBoard: string
+): Promise<string[]> {
+  // Best-effort — a chain-generation failure shouldn't block a review
+  // session from happening at all; fall back to no prerequisite context
+  // rather than throwing, since prerequisites are background material
+  // here, not something this session actually depends on to function.
+  try {
+    const chainResult = await getOrGenerateChain(conceptKey, subject, topic, concept, qualification, examBoard);
+    const chain = chainResult.chain as Chain | null;
+    if (!chain || !chain.nodes.length) return [];
+    const target = chain.nodes[chain.nodes.length - 1];
+    const byId = new Map(chain.nodes.map((n) => [n.id, n]));
+    return (target.depends_on || [])
+      .map((d) => byId.get(d.node_id)?.label)
+      .filter((label): label is string => !!label);
+  } catch (err) {
+    console.error('LastMind: chain fetch failed for retrieval-lesson context, continuing without it.', err);
+    return [];
+  }
+}
+
+export async function startRetrievalLesson(
   userId: string,
   conceptKey: string,
   subject: string,
@@ -151,150 +203,127 @@ export async function startChainLesson(
   concept: string,
   qualification = '',
   examBoard = ''
-): Promise<ChainLessonResult> {
-  const chainResult = await getOrGenerateChain(conceptKey, subject, topic, concept, qualification, examBoard);
-  if (!chainResult.chain) {
-    throw new Error('Could not generate a dependency chain for this concept.');
-  }
-  const chain = chainResult.chain as Chain;
+): Promise<RetrievalStartResult> {
+  const { row } = await getMasteryStatus(userId, conceptKey);
+  const stability = row?.stability ?? 0;
+  const reps = row?.reps ?? 0;
+  const m = computeMechanisticReadiness(stability, reps);
+  const tier = tierForM(m);
+  const totalSteps = STEPS_PER_TIER[tier];
 
-  const reviewCount = await getReviewCount(userId, conceptKey);
-  const chunks = computeChunks(chain, reviewCount);
-  const compressionGroups = computeCompressionGroups(chain);
+  const closePrerequisiteLabels = await fetchChainContext(conceptKey, subject, topic, concept, qualification, examBoard);
+  const siblings = tier >= 2 ? await listEligibleSiblingConcepts(userId, subject, topic, conceptKey) : [];
 
-  const target = chain.nodes[chain.nodes.length - 1];
-  const opening = await callJSON<{ question: string }>(
-    PREDICTION_ERROR_QUESTION_PROMPT,
-    `Subject: ${subject}\nConcept: ${target.label}`,
-    MODELS.diagnosticTree,
-    0.3
+  const [firstStep] = await generateRetrievalSteps(
+    tier, subject, topic, concept, qualification, examBoard, closePrerequisiteLabels, siblings, [], 1
   );
+  if (!firstStep) {
+    throw new Error('Could not generate retrieval practice for this concept.');
+  }
 
-  const state: ChainLessonState = {
-    conceptKey,
-    subject,
-    chain,
-    chunks,
-    compressionGroups,
-    stage: 'scaffold',
-    currentChunkIndex: -1,
-    results: [],
-    anyMisconceptionSoFar: false,
+  const state: RetrievalLessonState = {
+    conceptKey, subject, topic, concept, qualification, examBoard,
+    tier, totalSteps, siblings, closePrerequisiteLabels,
+    steps: [firstStep], currentIndex: 0, anyWeakSoFar: false,
   };
 
-  return { done: false, nextQuestion: opening.question, state };
-}
-
-async function generateGroupQuestion(subject: string, group: ChainNode[]): Promise<string> {
-  const conceptList = group.map((n) => n.label).join(', then ');
-  const result = await callJSON<{ question: string }>(
-    FORWARD_CHUNK_QUESTION_PROMPT,
-    `Subject: ${subject}\nConcept(s) in this chunk, in order: ${conceptList}`,
-    MODELS.diagnosticTree,
-    0.3
-  );
-  return result.question;
-}
-
-async function generateInlineCorrection(label: string, misconceptionNote: string | null): Promise<string> {
-  const contextLines = [`Concept: ${label}`, `Diagnosis: misconception`];
-  if (misconceptionNote) contextLines.push(`Specific misconception observed: ${misconceptionNote}`);
-  const result = await callJSON<{ correction: string }>(CORRECTION_PROMPT, contextLines.join('\n'), MODELS.diagnosticTree, 0.3);
-  return result.correction;
-}
-
-async function finishLesson(userId: string, state: ChainLessonState, results: ChunkResult[], anyMisconceptionSoFar: boolean): Promise<ChainLessonResult> {
-  const reviewCount = await getReviewCount(userId, state.conceptKey);
-  await incrementReviewCount(userId, state.conceptKey, reviewCount);
-  await gradeAndRecordReview(userId, state.conceptKey, anyMisconceptionSoFar ? 'hard' : 'easy');
-
-  return { done: true, summary: results, state: { ...state, results, anyMisconceptionSoFar } };
+  return { done: false, step: firstStep, state, contentReady: totalSteps <= 1 };
 }
 
 /**
- * Advances the session by one answer. The opening prediction-error
- * question is never corrected inline — the scaffold itself is the
- * remediation for whatever it reveals. Every question after that gets an
- * immediate, lightweight correction if it reveals a misconception, before
- * moving on — never deferred to the end. After the full scaffold walk
- * (every node tested individually), a SEPARATE compression phase follows:
- * a couple of coarser questions, each requiring the student to hold
- * several nodes together at once, before the session actually finishes.
+ * Phase 2 — fired by the frontend the moment the first step is on screen,
+ * exactly like encoding's own continueEncodingLesson. Generates the rest
+ * of the session (totalSteps - 1 steps) in one batched call. No-op if the
+ * session only ever had one step (tier 3), or if a duplicate call somehow
+ * arrives after the session is already fully generated.
  */
-export async function processChainLessonAnswer(
+export async function continueRetrievalLesson(state: RetrievalLessonState): Promise<RetrievalLessonState> {
+  const remaining = state.totalSteps - state.steps.length;
+  if (remaining <= 0) return state;
+
+  const newSteps = await generateRetrievalSteps(
+    state.tier, state.subject, state.topic, state.concept, state.qualification, state.examBoard,
+    state.closePrerequisiteLabels, state.siblings, state.steps, remaining
+  );
+
+  return { ...state, steps: [...state.steps, ...newSteps] };
+}
+
+export async function submitRetrievalAnswer(
   userId: string,
-  state: ChainLessonState,
-  answer: string
-): Promise<ChainLessonResult> {
-  const target = state.chain.nodes[state.chain.nodes.length - 1];
+  state: RetrievalLessonState,
+  answer: string,
+  dontKnow = false
+): Promise<RetrievalSubmitResult> {
+  const currentStep = state.steps[state.currentIndex];
+  if (!currentStep) {
+    return { done: true, state };
+  }
 
-  if (state.stage === 'scaffold' && state.currentChunkIndex === -1) {
-    // Just answered the opening prediction question — no inline
-    // correction here; move straight into the scaffold.
-    const check = await checkAnswer(target.label, '(opening prediction question)', answer);
-    const nextState: ChainLessonState = {
-      ...state,
-      currentChunkIndex: 0,
-      anyMisconceptionSoFar: state.anyMisconceptionSoFar || !check.correct,
+  let correct: boolean;
+  let feedback: string | null;
+
+  if (dontKnow) {
+    correct = false;
+    feedback = null;
+  } else if (currentStep.type === 'mechanistic_check') {
+    // Same pedantic bar as encoding's own mechanistic_check grading, and
+    // for the same reason — this step exists specifically to catch
+    // memorized/pattern-matched recall, so its grading has to actually
+    // look for that. diagnosticTree, not simpleQuestion, matching
+    // encoding's own tier-to-model mapping for this call type.
+    const check = await callJSON<{ correct: boolean; feedback: string | null }>(
+      RETRIEVAL_MECHANISTIC_CHECK_PROMPT,
+      `Qualification: ${state.qualification || 'unspecified'}\nExam board: ${state.examBoard || 'unspecified'}\nConcept: ${state.concept}\nPrompt: ${currentStep.text}\nStudent's answer: ${answer}`,
+      MODELS.diagnosticTree,
+      0.2,
+      undefined,
+      true
+    );
+    correct = check.correct;
+    feedback = check.feedback;
+  } else {
+    const check = await callJSON<{ correct: boolean; feedback: string | null }>(
+      RETRIEVAL_ANSWER_CHECK_PROMPT,
+      `Concept: ${state.concept}\nPrompt: ${currentStep.text}\nStudent's answer: ${answer}`,
+      MODELS.simpleQuestion,
+      0.2,
+      undefined,
+      true
+    );
+    correct = check.correct;
+    feedback = check.feedback;
+  }
+
+  const nextIndex = state.currentIndex + 1;
+  const anyWeakSoFar = state.anyWeakSoFar || !correct;
+  const nextState: RetrievalLessonState = { ...state, currentIndex: nextIndex, anyWeakSoFar };
+
+  if (nextIndex >= state.steps.length) {
+    // Same rating scale the encoding lesson's own completion grade uses —
+    // 'hard' if anything was wrong this session, 'easy' otherwise. See the
+    // FSRS-optimizer/4-grade-scale discussion for why this stays a 2-way
+    // scale for now rather than the full Again/Hard/Good/Easy one.
+    const rating: 'hard' | 'easy' = anyWeakSoFar ? 'hard' : 'easy';
+    const { previousRow, newState: fsrsRow } = await gradeAndRecordReview(userId, state.conceptKey, rating);
+    const fsrsUpdate: FsrsUpdateSummary = {
+      rating,
+      previous: previousRow
+        ? { stability: previousRow.stability, difficulty: previousRow.difficulty, due: previousRow.due, reps: previousRow.reps, lapses: previousRow.lapses, state: previousRow.state }
+        : null,
+      updated: {
+        stability: fsrsRow.stability,
+        difficulty: fsrsRow.difficulty,
+        due: fsrsRow.due,
+        reps: fsrsRow.reps,
+        lapses: fsrsRow.lapses,
+        state: fsrsRow.state,
+        scheduledDays: fsrsRow.scheduled_days,
+        elapsedDays: fsrsRow.elapsed_days,
+      },
     };
-    const firstChunkQuestion = await generateGroupQuestion(state.subject, state.chunks[0]);
-    return { done: false, nextQuestion: firstChunkQuestion, state: nextState };
+    return { done: true, correct, feedback, state: nextState, fsrsUpdate };
   }
 
-  if (state.stage === 'scaffold') {
-    const chunk = state.chunks[state.currentChunkIndex];
-    const label = groupLabel(chunk);
-    const check = await checkAnswer(label, '(forward reconstruction question)', answer);
-
-    const inlineCorrection = check.correct ? undefined : await generateInlineCorrection(label, check.misconceptionNote);
-    const results = [...state.results, { chunkLabel: label, correct: check.correct, correction: inlineCorrection }];
-    const nextIndex = state.currentChunkIndex + 1;
-    const anyMisconceptionSoFar = state.anyMisconceptionSoFar || !check.correct;
-
-    if (nextIndex >= state.chunks.length) {
-      // Scaffold walk complete — move into the compression phase, if this
-      // chain has enough nodes to make one meaningful (skip straight to
-      // finishing otherwise).
-      if (state.compressionGroups.length === 0) {
-        return finishLesson(userId, { ...state, currentChunkIndex: nextIndex }, results, anyMisconceptionSoFar);
-      }
-      const firstGroupQuestion = await generateGroupQuestion(state.subject, state.compressionGroups[0]);
-      return {
-        done: false,
-        nextQuestion: firstGroupQuestion,
-        inlineCorrection,
-        state: { ...state, stage: 'compression', currentChunkIndex: 0, results, anyMisconceptionSoFar },
-      };
-    }
-
-    const nextChunkQuestion = await generateGroupQuestion(state.subject, state.chunks[nextIndex]);
-    return {
-      done: false,
-      nextQuestion: nextChunkQuestion,
-      inlineCorrection,
-      state: { ...state, currentChunkIndex: nextIndex, results, anyMisconceptionSoFar },
-    };
-  }
-
-  // stage === 'compression'
-  const group = state.compressionGroups[state.currentChunkIndex];
-  const label = groupLabel(group);
-  const check = await checkAnswer(label, '(compression question — holding several steps together)', answer);
-
-  const inlineCorrection = check.correct ? undefined : await generateInlineCorrection(label, check.misconceptionNote);
-  const results = [...state.results, { chunkLabel: label, correct: check.correct, correction: inlineCorrection }];
-  const nextIndex = state.currentChunkIndex + 1;
-  const anyMisconceptionSoFar = state.anyMisconceptionSoFar || !check.correct;
-
-  if (nextIndex >= state.compressionGroups.length) {
-    return finishLesson(userId, { ...state, currentChunkIndex: nextIndex }, results, anyMisconceptionSoFar);
-  }
-
-  const nextGroupQuestion = await generateGroupQuestion(state.subject, state.compressionGroups[nextIndex]);
-  return {
-    done: false,
-    nextQuestion: nextGroupQuestion,
-    inlineCorrection,
-    state: { ...state, currentChunkIndex: nextIndex, results, anyMisconceptionSoFar },
-  };
+  return { done: false, correct, feedback, step: state.steps[nextIndex], state: nextState };
 }

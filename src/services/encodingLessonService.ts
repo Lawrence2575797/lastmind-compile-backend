@@ -1,5 +1,5 @@
 import { callClaudeJSON, callClaudeJSONWithImages, MODELS } from './claudeClient';
-import { getOrGenerateChain } from './chainService';
+import { getOrGenerateChain, customContextDigest } from './chainService';
 import { gradeAndRecordReview } from './reviewService';
 import { searchWikimediaImages, fetchImageAsBase64 } from './wikimediaService';
 import { supabaseAdmin } from './supabaseAdmin';
@@ -145,6 +145,14 @@ export interface EncodingLessonState {
   // getOrGenerateChain in chainService.ts.
   qualification: string;
   examBoard: string;
+  // A self-directed "Other" folder's own title+description, carried the
+  // same way qualification/examBoard are — so continueEncodingLesson's
+  // independent chain re-fetch and its own generation call stay pinned to
+  // the SAME custom scope this lesson started with, without the frontend
+  // needing to resend them on /continue. Empty strings for an ordinary
+  // qualification-based folder.
+  customTitle: string;
+  customDescription: string;
 }
 
 export interface EncodingStartResult {
@@ -430,9 +438,11 @@ export async function startEncodingLesson(
   concept: string,
   qualification = '',
   examBoard = '',
-  siblingConcepts: SiblingConcept[] = []
+  siblingConcepts: SiblingConcept[] = [],
+  customTitle = '',
+  customDescription = ''
 ): Promise<EncodingStartResult> {
-  const chainResult = await getOrGenerateChain(conceptKey, subject, topic, concept, qualification, examBoard);
+  const chainResult = await getOrGenerateChain(conceptKey, subject, topic, concept, qualification, examBoard, customTitle, customDescription);
   if (!chainResult.chain) {
     throw new Error('Could not generate a dependency chain for this concept.');
   }
@@ -461,9 +471,11 @@ export async function startEncodingLesson(
     .map((n) => n.id)
     .sort();
 
+  const customDigest = customContextDigest(customTitle, customDescription);
+  const customSuffix = customDigest ? `::custom_${customDigest}` : '';
   const contentKey = forcedNodeIds.length
-    ? `${conceptKey}::${clean(qualification)}::${clean(examBoard)}::forced_${forcedNodeIds.join('_')}`
-    : `${conceptKey}::${clean(qualification)}::${clean(examBoard)}`;
+    ? `${conceptKey}::${clean(qualification)}::${clean(examBoard)}${customSuffix}::forced_${forcedNodeIds.join('_')}`
+    : `${conceptKey}::${clean(qualification)}::${clean(examBoard)}${customSuffix}`;
 
   const { data: cachedContent, error: cacheError } = LESSON_CACHE_REUSE_ENABLED
     ? await supabaseAdmin
@@ -490,7 +502,7 @@ export async function startEncodingLesson(
     // and cache the complete lesson once phase 2 finishes. Never sent to
     // the client in between (see CachedEncodingStep).
     const generated = await generateFirstStep(
-      conceptKey, subject, topic, concept, qualification, examBoard, chain, target, closeNodes, backgroundNodes, forcedNodeIds
+      conceptKey, subject, topic, concept, qualification, examBoard, chain, target, closeNodes, backgroundNodes, forcedNodeIds, customTitle, customDescription
     );
     hookFact = generated.hookFact;
     cachedSteps = [generated.step];
@@ -519,7 +531,7 @@ export async function startEncodingLesson(
   // instead (see submitEncodingAnswer).
   const steps: EncodingStep[] = cachedSteps.map(({ expectedSolution, ...step }) => step);
 
-  const state: EncodingLessonState = { conceptKey, subject, steps, currentIndex: 0, anyWeakSoFar: false, contentKey, qualification, examBoard };
+  const state: EncodingLessonState = { conceptKey, subject, steps, currentIndex: 0, anyWeakSoFar: false, contentKey, qualification, examBoard, customTitle, customDescription };
   return { done: false, hookFact, step: steps[0], state, contentReady };
 }
 
@@ -544,7 +556,7 @@ export async function continueEncodingLesson(
   concept: string,
   siblingConcepts: SiblingConcept[] = []
 ): Promise<EncodingLessonState> {
-  const { conceptKey, subject, qualification, examBoard, contentKey } = state;
+  const { conceptKey, subject, qualification, examBoard, contentKey, customTitle = '', customDescription = '' } = state;
 
   // Another concurrent cold-cache request for this exact concept may have
   // already finished and cached the full lesson — adopt it rather than
@@ -578,7 +590,7 @@ export async function continueEncodingLesson(
   }
   const firstStep = pending.first_step as CachedEncodingStep;
 
-  const chainResult = await getOrGenerateChain(conceptKey, subject, topic, concept, qualification, examBoard);
+  const chainResult = await getOrGenerateChain(conceptKey, subject, topic, concept, qualification, examBoard, customTitle, customDescription);
   if (!chainResult.chain) {
     throw new Error('Could not generate a dependency chain for this concept.');
   }
@@ -606,7 +618,7 @@ export async function continueEncodingLesson(
     .sort();
 
   const rest = await generateLessonContinuation(
-    conceptKey, subject, topic, concept, qualification, examBoard, chain, target, closeNodes, backgroundNodes, forcedNodeIds, firstStep
+    conceptKey, subject, topic, concept, qualification, examBoard, chain, target, closeNodes, backgroundNodes, forcedNodeIds, firstStep, customTitle, customDescription
   );
 
   const allSteps: CachedEncodingStep[] = [firstStep, ...rest.steps];
@@ -652,7 +664,9 @@ async function generateFirstStep(
   target: ChainNode,
   closeNodes: ChainNode[],
   backgroundNodes: ChainNode[],
-  forcedNodeIds: string[]
+  forcedNodeIds: string[],
+  customTitle = '',
+  customDescription = ''
 ): Promise<{ hookFact: string; step: CachedEncodingStep }> {
   const forcedIds = new Set(forcedNodeIds);
 
@@ -677,6 +691,13 @@ async function generateFirstStep(
       `Original lesson title, exactly as the student named it: ${concept}`,
       `closePrerequisites, in order: ${JSON.stringify(closeNodes.map((n) => ({ nodeId: n.id, label: n.label, forceTeach: forcedIds.has(n.id) })))}`,
       `backgroundContext (already covered earlier — reference only, do not test, do not write a step): ${JSON.stringify(backgroundNodes.map((n) => ({ nodeId: n.id, label: n.label })))}`,
+      ...(customDescription
+        ? [
+            `Custom self-directed topic — not a formal qualification: "${customTitle}"`,
+            `Student's own description of what they want to learn: ${customDescription}`,
+            `THEORY ONLY — see the system prompt's custom-topic rule: teach the objective, established underlying theory only, never personal advice or a recommendation for the student's own situation.`,
+          ]
+        : []),
     ].join('\n'),
     MODELS.diagnosticTree,
     0.4,
@@ -725,7 +746,9 @@ async function generateLessonContinuation(
   closeNodes: ChainNode[],
   backgroundNodes: ChainNode[],
   forcedNodeIds: string[],
-  firstStep: CachedEncodingStep
+  firstStep: CachedEncodingStep,
+  customTitle = '',
+  customDescription = ''
 ): Promise<{ steps: CachedEncodingStep[] }> {
   const targetDerivable = resolveDerivable(target);
   const forcedIds = new Set(forcedNodeIds);
@@ -754,6 +777,13 @@ async function generateLessonContinuation(
       `closePrerequisites, in order: ${JSON.stringify(closeNodes.map((n) => ({ nodeId: n.id, label: n.label, forceTeach: forcedIds.has(n.id) })))}`,
       `backgroundContext (already covered earlier — reference only, do not test, do not write a step): ${JSON.stringify(backgroundNodes.map((n) => ({ nodeId: n.id, label: n.label })))}`,
       `First step already generated and shown to (and answered by) the student — do not repeat it: ${JSON.stringify({ nodeId: firstStep.nodeId, type: firstStep.type, text: firstStep.text, checkQuestion: firstStep.checkQuestion })}`,
+      ...(customDescription
+        ? [
+            `Custom self-directed topic — not a formal qualification: "${customTitle}"`,
+            `Student's own description of what they want to learn: ${customDescription}`,
+            `THEORY ONLY — see the system prompt's custom-topic rule: teach the objective, established underlying theory only, never personal advice or a recommendation for the student's own situation.`,
+          ]
+        : []),
     ].join('\n'),
     MODELS.diagnosticTree,
     0.4,

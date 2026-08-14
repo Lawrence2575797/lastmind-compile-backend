@@ -8,7 +8,7 @@ const router = Router();
 
 router.use('/encoding-lesson', requireAuth);
 
-// POST /encoding-lesson/start  { subject, topic, concept, qualification?, examBoard?, siblingConcepts? }
+// POST /encoding-lesson/start  { subject, topic, concept, qualification?, examBoard?, siblingConcepts?, customTitle?, customDescription? }
 // The first-time lesson for a concept — a novelty hook fact, a
 // knowledge-check of its close prerequisites, then deriving the concept
 // itself and its implications. See encodingLessonService.ts for the full
@@ -17,8 +17,13 @@ router.use('/encoding-lesson', requireAuth);
 // the other page titles (+ completion status) in the same folder/subfolder
 // — lets a close prerequisite matching one of the student's own
 // not-yet-done pages get taught inline instead of assumed already known.
+// customTitle/customDescription are set only for a self-directed "Other"
+// folder (no formal qualification) — see chainService.ts's
+// customContextDigest — and carried forward through the returned state's
+// own customTitle/customDescription fields, so /continue doesn't need them
+// resent.
 router.post('/encoding-lesson/start', costlyEndpointLimiter, async (req: Request, res: Response) => {
-  const { subject, topic, concept, qualification, examBoard, siblingConcepts } = req.body ?? {};
+  const { subject, topic, concept, qualification, examBoard, siblingConcepts, customTitle, customDescription } = req.body ?? {};
   if (typeof subject !== 'string' || typeof topic !== 'string' || typeof concept !== 'string') {
     return res.status(400).json({ error: 'subject, topic, and concept are all required' });
   }
@@ -35,7 +40,9 @@ router.post('/encoding-lesson/start', costlyEndpointLimiter, async (req: Request
       concept,
       typeof qualification === 'string' ? qualification : '',
       typeof examBoard === 'string' ? examBoard : '',
-      cleanSiblings
+      cleanSiblings,
+      typeof customTitle === 'string' ? customTitle : '',
+      typeof customDescription === 'string' ? customDescription : ''
     );
     res.json(result);
   } catch (err) {

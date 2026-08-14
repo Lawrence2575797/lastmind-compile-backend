@@ -110,6 +110,22 @@ function isTemperatureDeprecatedError(err: unknown): boolean {
 // response.content/.stop_reason/.usage.{input,output}_tokens are the same
 // shape as the plain endpoint's Message, so callers below don't need to
 // know or care which path served a given call.
+// claude-sonnet-5 and claude-opus-5 run ADAPTIVE THINKING BY DEFAULT when
+// the `thinking` param is simply omitted — a behavior change from every
+// prior model (Opus 4.8/4.7, Sonnet 4.6, ...), which ran with no thinking
+// unless explicitly requested. Every call in this codebase is a rule-driven
+// structured-JSON task (chain generation, lesson generation, answer
+// checking) that doesn't need extended reasoning — but with thinking on
+// and no explicit budget, the model can spend the ENTIRE max_tokens
+// allowance on internal thinking and return zero actual output
+// (stop_reason: max_tokens, content: [thinking], no text block at all).
+// Explicitly disabling it here is what actually fixes that, not a bigger
+// max_tokens — a bigger budget just gives it more room to think instead of
+// answering. Scoped to the specific model IDs that default to on, rather
+// than applied unconditionally: older/other models (Opus 4.8, Haiku) don't
+// document a "disabled" thinking type at all and may reject it.
+const THINKS_BY_DEFAULT_MODELS = new Set(['claude-sonnet-5', 'claude-opus-5']);
+
 async function makeMessageRequest(
   model: string,
   systemPrompt: string,
@@ -123,6 +139,7 @@ async function makeMessageRequest(
     model,
     max_tokens: maxTokens ?? 2048,
     ...(includeTemperature ? { temperature } : {}),
+    ...(THINKS_BY_DEFAULT_MODELS.has(model) ? { thinking: { type: 'disabled' as const } } : {}),
     messages: [{ role: 'user' as const, content }],
   };
   // Only worth marking cacheable for the handful of large, FIXED prompts

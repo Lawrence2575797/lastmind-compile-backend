@@ -1,5 +1,5 @@
 import { callClaudeJSON, MODELS } from './claudeClient';
-import { gradeAndRecordReview, getMasteryStatus, listEligibleSiblingConcepts } from './reviewService';
+import { gradeAndRecordReview, getMasteryStatus, listEligibleSiblingConcepts, FsrsRatingKey } from './reviewService';
 import { getOrGenerateChain } from './chainService';
 import { retrievalLessonPromptForTier, RETRIEVAL_ANSWER_CHECK_PROMPT, RETRIEVAL_MECHANISTIC_CHECK_PROMPT } from '../constants/retrievalLessonPrompts';
 
@@ -95,7 +95,7 @@ export interface RetrievalStartResult {
 }
 
 export interface FsrsUpdateSummary {
-  rating: 'hard' | 'easy';
+  rating: FsrsRatingKey;
   previous: { stability: number; difficulty: number; due: string; reps: number; lapses: number; state: number } | null;
   updated: { stability: number; difficulty: number; due: string; reps: number; lapses: number; state: number; scheduledDays: number; elapsedDays: number };
 }
@@ -300,11 +300,23 @@ export async function submitRetrievalAnswer(
   const nextState: RetrievalLessonState = { ...state, currentIndex: nextIndex, anyWeakSoFar };
 
   if (nextIndex >= state.steps.length) {
-    // Same rating scale the encoding lesson's own completion grade uses —
-    // 'hard' if anything was wrong this session, 'easy' otherwise. See the
-    // FSRS-optimizer/4-grade-scale discussion for why this stays a 2-way
-    // scale for now rather than the full Again/Hard/Good/Easy one.
-    const rating: 'hard' | 'easy' = anyWeakSoFar ? 'hard' : 'easy';
+    // Tier-driven, not step-type-driven — unlike encoding's core-vs-
+    // prerequisite split, every retrieval step is already about the
+    // target, so the tier itself (how heavily scaffolded the question
+    // was) is the honest signal here. A wrong answer at tier 0 — a
+    // heavily-scaffolded question that already hands over most of the
+    // reasoning — is strong evidence the memory is genuinely gone: FSRS's
+    // dedicated lapse formula, "again". A wrong answer at a harder tier
+    // could just as easily be the question's own deliberate difficulty
+    // (tier 3's unfamiliar-angle phrasing exists specifically to be hard
+    // even for someone who remembers) rather than true forgetting — "hard"
+    // instead. A clean pass at tier 0 is the one case where "genuinely
+    // comfortable" is a real, earned signal rather than a guess — "easy".
+    // A clean pass at any harder tier is still a success, just not
+    // specifically flagged as effortless — "good".
+    const rating: FsrsRatingKey = anyWeakSoFar
+      ? (state.tier === 0 ? 'again' : 'hard')
+      : (state.tier === 0 ? 'easy' : 'good');
     const { previousRow, newState: fsrsRow } = await gradeAndRecordReview(userId, state.conceptKey, rating);
     const fsrsUpdate: FsrsUpdateSummary = {
       rating,

@@ -1,6 +1,6 @@
 import { callClaudeJSON, callClaudeJSONWithImages, MODELS } from './claudeClient';
 import { getOrGenerateChain, customContextDigest } from './chainService';
-import { gradeAndRecordReview } from './reviewService';
+import { gradeAndRecordReview, FsrsRatingKey } from './reviewService';
 import { searchWikimediaImages, fetchImageAsBase64 } from './wikimediaService';
 import { supabaseAdmin } from './supabaseAdmin';
 import {
@@ -133,7 +133,15 @@ export interface EncodingLessonState {
   subject: string;
   steps: EncodingStep[];
   currentIndex: number;
-  anyWeakSoFar: boolean;
+  // Split from a single "anyWeakSoFar" boolean so the completion grade can
+  // tell a genuinely core failure apart from a lesser one — see
+  // submitEncodingAnswer's rating derivation. "Core" means a step whose
+  // diagnosisConceptKey equals this lesson's own conceptKey (the scene,
+  // target-derivation beats, and implications) — a wrong prerequisite
+  // check/teaching beat is real but lesser than getting the actual target
+  // wrong.
+  anyCoreStepWrong: boolean;
+  anyOtherStepWrong: boolean;
   // Set by the frontend once a scene/derive/explain diagnostic drill-down
   // has already graded this exact conceptKey mid-lesson (via the
   // diagnostic tree's own terminal branch) — the lesson-completion grade
@@ -183,7 +191,7 @@ export interface EncodingStartResult {
 // gradeAndRecordReview before this summary is even built. `previous` is
 // null the first time this concept is ever graded (no prior card to show).
 export interface FsrsUpdateSummary {
-  rating: 'hard' | 'easy';
+  rating: FsrsRatingKey;
   previous: { stability: number; difficulty: number; due: string; reps: number; lapses: number; state: number } | null;
   updated: { stability: number; difficulty: number; due: string; reps: number; lapses: number; state: number; scheduledDays: number; elapsedDays: number };
 }
@@ -593,7 +601,7 @@ export async function startEncodingLesson(
   // instead (see submitEncodingAnswer).
   const steps: EncodingStep[] = cachedSteps.map(({ expectedSolution, ...step }) => step);
 
-  const state: EncodingLessonState = { conceptKey, subject, steps, currentIndex: 0, anyWeakSoFar: false, contentKey, qualification, examBoard, customTitle, customDescription };
+  const state: EncodingLessonState = { conceptKey, subject, steps, currentIndex: 0, anyCoreStepWrong: false, anyOtherStepWrong: false, contentKey, qualification, examBoard, customTitle, customDescription };
   return { done: false, hookFact, step: steps[0], state, contentReady };
 }
 
@@ -1007,20 +1015,27 @@ export async function submitEncodingAnswer(userId: string, state: EncodingLesson
   }
 
   const nextIndex = state.currentIndex + 1;
-  const anyWeakSoFar = state.anyWeakSoFar || !correct;
-  const nextState: EncodingLessonState = { ...state, currentIndex: nextIndex, anyWeakSoFar };
+  const isCoreStep = currentStep.diagnosisConceptKey === state.conceptKey;
+  const anyCoreStepWrong = state.anyCoreStepWrong || (isCoreStep && !correct);
+  const anyOtherStepWrong = state.anyOtherStepWrong || (!isCoreStep && !correct);
+  const nextState: EncodingLessonState = { ...state, currentIndex: nextIndex, anyCoreStepWrong, anyOtherStepWrong };
 
   if (nextIndex >= state.steps.length) {
-    // Same rating scale/table the retrieval engine uses (gradeAndRecordReview
-    // -> RATING_MAP), so this concept slots into the exact same FSRS
-    // schedule — a rocky first encoding lesson brings it back around sooner.
     // Skipped if a scene/derive/explain diagnostic drill-down already
     // graded this exact conceptKey mid-lesson (see
     // targetGradedViaDrillDown) — otherwise the concept gets FSRS-graded
     // twice in one session, artificially inflating its stability.
     let fsrsUpdate: FsrsUpdateSummary | undefined;
     if (!state.targetGradedViaDrillDown) {
-      const rating: 'hard' | 'easy' = anyWeakSoFar ? 'hard' : 'easy';
+      // A wrong answer on the TARGET itself (the scene/derivation/
+      // implication beats, not a prerequisite check) is a genuine failure
+      // to encode the core concept — "again", FSRS's dedicated lapse
+      // formula, not just a worse "hard". A wrong prerequisite step with
+      // the target itself right is real but lesser — "hard". A clean pass
+      // is "good" — first-time encoding lessons never emit "easy"; that's
+      // reserved for the lightest retrieval tier, where a genuinely
+      // comfortable pass is a meaningful signal rather than a guess.
+      const rating: FsrsRatingKey = anyCoreStepWrong ? 'again' : anyOtherStepWrong ? 'hard' : 'good';
       const { previousRow, newState: fsrsRow } = await gradeAndRecordReview(userId, state.conceptKey, rating);
       fsrsUpdate = {
         rating,

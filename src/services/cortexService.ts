@@ -81,7 +81,17 @@ export type CortexAction =
   // full order; the frontend is responsible for skipping any concept
   // that already matches an existing page, so only the missing ones
   // actually get created — Cortex doesn't need to pre-filter.
-  | { type: 'create_pages_from_order'; folderName: string; subfolderName: string | null; concepts: string[] };
+  | { type: 'create_pages_from_order'; folderName: string; subfolderName: string | null; concepts: string[] }
+  // Deletes an entire folder and everything inside it. Only ever emitted
+  // for an explicit, unambiguous deletion request — see
+  // CORTEX_INTENT_PROMPT rule 12.
+  | { type: 'delete_folder'; folderName: string }
+  // Deletes a subfolder and everything inside it, searched across every
+  // folder the same way move_subfolder finds one.
+  | { type: 'delete_subfolder'; subfolderName: string }
+  // Deletes a single page, searched across every folder/subfolder the
+  // same way move_page finds one.
+  | { type: 'delete_page'; pageTitle: string };
 
 export interface CortexResult {
   reply: string;
@@ -91,7 +101,15 @@ export interface CortexResult {
   // CORTEX_INTENT_PROMPT's speakAloud rule). Every reply still gets its
   // own manual "read aloud" button regardless of this flag.
   speakAloud: boolean;
-  action: CortexAction | null;
+  // A LIST, not a single action (see CORTEX_INTENT_PROMPT rule 2b) — a
+  // request that genuinely implies several steps (e.g. "make me a folder
+  // with a subfolder in it") comes back as multiple entries, applied by
+  // the frontend strictly in order, so a later entry can safely refer to
+  // something an earlier entry in the SAME list is creating. Empty array
+  // (not null) when nothing should happen — kept as an array throughout,
+  // never coerced to/from null, so callers don't need two representations
+  // of "no action" to check.
+  actions: CortexAction[];
 }
 
 /**
@@ -122,38 +140,58 @@ export async function decideCortexAction(
   ].join('\n\n');
 
   // maxTokens raised well above the 2048 default — same fix as
-  // chainService.ts's own comment describes: rule 6's full-topic-layout
+  // chainService.ts's own comment describes: rule 8's full-topic-layout
   // reply (a numbered list covering every concept a topic should have,
   // named/statused one by one) can run long on its own, and this call
   // ALSO carries the full folder tree + due reviews + history in its
-  // input, on top of a nine-rule system prompt — plenty of room to run
+  // input, on top of a twelve-rule system prompt — plenty of room to run
   // out of output budget before a single text block is even started,
   // which callClaudeJSON's caller sees as "no text content", not a
   // helpful truncation message.
+  //
+  // CORTEX_INTENT_PROMPT is fixed and identical for every Cortex message —
+  // well clear of Sonnet 5's cache minimum, and re-sent in full on every
+  // single message (this call has no other caching in front of it), so
+  // this is the single biggest cost lever available for Cortex specifically.
   const raw = await callClaudeJSON({
     model: MODELS.diagnosticTree,
     systemPrompt: CORTEX_INTENT_PROMPT,
     userContent,
     temperature: 0.3,
     maxTokens: 4096,
+    cacheSystemPrompt: true,
   });
 
   const parsed = JSON.parse(stripCodeFences(raw)) as CortexResult;
+  if (!Array.isArray(parsed.actions)) parsed.actions = [];
 
-  if (parsed.action && parsed.action.type === 'generate_notes') {
-    // Same truncation risk as the intent call above — a genuine first-draft
-    // set of revision notes for a whole lesson is easily long enough to
-    // outrun the 2048 default.
-    const notesRaw = await callClaudeJSON({
-      model: MODELS.diagnosticTree,
-      systemPrompt: CORTEX_NOTE_GENERATION_PROMPT,
-      userContent: `Subject: ${parsed.action.subject}\nTopic: ${parsed.action.topic}\nLesson: ${parsed.action.lesson}`,
-      temperature: 0.4,
-      maxTokens: 4096,
-    });
-    const notesParsed = JSON.parse(stripCodeFences(notesRaw)) as { notes: string };
-    parsed.action.noteContent = notesParsed.notes;
-  }
+  // Every generate_notes action in the batch needs its own second call to
+  // actually write the note body (the intent call above only decides THAT
+  // notes should be generated, not their content) — run them concurrently
+  // rather than one after another, since they're independent of each
+  // other. Most Cortex turns have zero or one of these; a batch asking for
+  // notes on several lessons at once is the one case this fans out for,
+  // which is exactly the point of the array redesign — one Cortex message
+  // can now genuinely ask for several of these in one go instead of
+  // repeating the request per lesson.
+  await Promise.all(
+    parsed.actions
+      .filter((action): action is Extract<CortexAction, { type: 'generate_notes' }> => action.type === 'generate_notes')
+      .map(async (action) => {
+        // Same truncation risk as the intent call above — a genuine
+        // first-draft set of revision notes for a whole lesson is easily
+        // long enough to outrun the 2048 default.
+        const notesRaw = await callClaudeJSON({
+          model: MODELS.diagnosticTree,
+          systemPrompt: CORTEX_NOTE_GENERATION_PROMPT,
+          userContent: `Subject: ${action.subject}\nTopic: ${action.topic}\nLesson: ${action.lesson}`,
+          temperature: 0.4,
+          maxTokens: 4096,
+        });
+        const notesParsed = JSON.parse(stripCodeFences(notesRaw)) as { notes: string };
+        action.noteContent = notesParsed.notes;
+      })
+  );
 
   return parsed;
 }

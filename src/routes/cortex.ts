@@ -8,13 +8,15 @@ const router = Router();
 router.use('/cortex', requireAuth, costlyEndpointLimiter);
 
 // POST /cortex/message  { message, history, folders, dueReviews }
-// { reply, action }
+// { reply, speakAloud, actions }
 //
 // The single stateful-feeling entry point for Cortex, but actually
 // stateless server-side — the frontend holds and resends the chat
 // history each call, same pattern as the diagnostic engine's `state`.
-// If the decided action is "generate_notes", the note content itself is
-// already generated and attached by the time this responds.
+// "actions" is a list (see CortexResult), applied by the frontend strictly
+// in order — a single message can now genuinely ask for several steps at
+// once. Any "generate_notes" action already has its note content generated
+// and attached by the time this responds.
 router.post('/cortex/message', async (req: Request, res: Response) => {
   const { message, history, folders, dueReviews } = req.body ?? {};
   if (typeof message !== 'string' || !message.trim()) {

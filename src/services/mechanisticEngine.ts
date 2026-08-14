@@ -12,7 +12,7 @@ import {
   CORRECTION_PROMPT,
   REFRAME_QUESTION_PROMPT,
 } from '../constants/diagnosticPrompts';
-import { processDiagnosticAnswer, reframeCurrentQuestion as reframeCurrentAtomicQuestion, DiagnosticState, DiagnosticResult, Diagnosis } from './diagnosticEngine';
+import { processDiagnosticAnswer, reframeCurrentQuestion as reframeCurrentAtomicQuestion, retryCurrentQuestion as retryCurrentAtomicQuestion, DiagnosticState, DiagnosticResult, Diagnosis } from './diagnosticEngine';
 
 // Same fix, same reasoning as diagnosticEngine.ts's own callJSON — see its
 // comment. This engine's LOCALIZATION_CHECK_PROMPT call in particular
@@ -85,6 +85,8 @@ export interface MechanisticState {
   wmRelaxTrustworthy?: boolean;
   // Same purpose as DiagnosticState.lastShownQuestion — see there.
   lastShownQuestion?: string;
+  // Same purpose as DiagnosticState.lastShownOptions — see there.
+  lastShownOptions?: string[];
   // Same purpose/split as DiagnosticState's fields of the same names —
   // originalQuestion* is set at entry (see startMechanisticDiagnosis) when
   // the question that triggered this diagnosis was itself a calculation,
@@ -214,7 +216,7 @@ async function runCombinationCheck(state: MechanisticState): Promise<Mechanistic
 // diagnosticEngine.ts's runEncodingCheckOrSkip / resumeWrongAnswerContinuation
 // split for the exact same reason.
 async function runEncodingCheckOrSkip(userId: string, state: MechanisticState): Promise<MechanisticResult> {
-  const outcome = await runSharedEncodingCheck(userId, state.conceptKey, state.targetConceptLabel);
+  const outcome = await runSharedEncodingCheck(userId, state.conceptKey, state.targetConceptLabel, state.subject);
 
   switch (outcome.result) {
     case 'schedule_miscalibrated':
@@ -228,7 +230,7 @@ async function runEncodingCheckOrSkip(userId: string, state: MechanisticState): 
         done: false,
         nextQuestion: outcome.question,
         nextOptions: outcome.options,
-        state: { ...state, recognitionCorrectAnswer: outcome.correctAnswer, lastShownQuestion: outcome.question },
+        state: { ...state, recognitionCorrectAnswer: outcome.correctAnswer, lastShownQuestion: outcome.question, lastShownOptions: outcome.options },
         answerCorrect: false,
       };
     default:
@@ -433,6 +435,37 @@ export async function reframeCurrentQuestion(state: MechanisticState): Promise<M
     done: false,
     nextQuestion: reframed.question,
     state: { ...state, lastShownQuestion: reframed.question },
+    nextRequiresCalculation: currentQuestionCalcInfo(state).requiresCalculation,
+  };
+}
+
+// Re-serves the current question unchanged for a genuine retry — mirrors
+// diagnosticEngine.ts's function of the same name/purpose (see there for
+// why "report as a slip" now retries instead of trusting the self-report
+// outright). Delegates to the atomic engine's own version when a nested
+// sub-diagnostic is live, same delegation shape as reframeCurrentQuestion
+// above.
+export function retryCurrentQuestion(state: MechanisticState): MechanisticResult {
+  if (state.stage === 'sub_diagnostic') {
+    if (!state.subDiagnosticState) throw new Error('Missing sub-diagnostic state');
+    const subResult = retryCurrentAtomicQuestion(state.subDiagnosticState);
+    return {
+      done: subResult.done,
+      diagnosis: subResult.diagnosis,
+      correction: subResult.correction,
+      nextQuestion: subResult.nextQuestion,
+      nextOptions: subResult.nextOptions,
+      state: { ...state, subDiagnosticState: subResult.state },
+      nextRequiresCalculation: subResult.nextRequiresCalculation,
+    };
+  }
+
+  const questionToRetry = state.lastShownQuestion || state.originalQuestion;
+  return {
+    done: false,
+    nextQuestion: questionToRetry,
+    nextOptions: state.stage === 'encoding_check' ? state.lastShownOptions : undefined,
+    state,
     nextRequiresCalculation: currentQuestionCalcInfo(state).requiresCalculation,
   };
 }

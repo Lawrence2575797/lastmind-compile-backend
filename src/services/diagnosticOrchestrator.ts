@@ -7,12 +7,14 @@ import {
   startMechanisticDiagnosis,
   processMechanisticAnswer,
   reframeCurrentQuestion as reframeCurrentMechanisticQuestion,
+  retryCurrentQuestion as retryCurrentMechanisticQuestion,
   MechanisticState,
 } from './mechanisticEngine';
 import {
   processDiagnosticAnswer,
   advanceAfterWrongAnswer,
   reframeCurrentQuestion as reframeCurrentAtomicQuestion,
+  retryCurrentQuestion as retryCurrentAtomicQuestion,
   DiagnosticState,
 } from './diagnosticEngine';
 import { fetchExpectedSolution } from './encodingLessonService';
@@ -388,6 +390,42 @@ export async function reframeDiagnosticQuestion(state: OrchestratorState): Promi
   }
 
   const result = await reframeCurrentMechanisticQuestion(state.inner);
+  return {
+    done: result.done,
+    diagnosis: result.diagnosis,
+    correction: result.correction,
+    nextQuestion: result.nextQuestion,
+    nextOptions: result.nextOptions,
+    state: { engine: 'mechanistic', inner: result.state },
+    nextRequiresCalculation: result.nextRequiresCalculation,
+  };
+}
+
+// Re-serves the current question unchanged, for the "this was just a slip"
+// side button — see diagnosticEngine.ts's retryCurrentQuestion for why this
+// replaced blindly trusting that self-report and ending the diagnosis
+// outright. No LLM call at any engine stage, since nothing about the
+// question or state changes; only the frontend's next render differs (the
+// same card, re-armed for another attempt).
+export function retryDiagnosticQuestion(state: OrchestratorState): OrchestratorResult {
+  if (state.engine === 'pending') {
+    return { done: false, nextQuestion: state.originalQuestion, state };
+  }
+
+  if (state.engine === 'atomic') {
+    const result = retryCurrentAtomicQuestion(state.inner);
+    return {
+      done: result.done,
+      diagnosis: result.diagnosis,
+      correction: result.correction,
+      nextQuestion: result.nextQuestion,
+      nextOptions: result.nextOptions,
+      state: { engine: 'atomic', inner: result.state },
+      nextRequiresCalculation: result.nextRequiresCalculation,
+    };
+  }
+
+  const result = retryCurrentMechanisticQuestion(state.inner);
   return {
     done: result.done,
     diagnosis: result.diagnosis,

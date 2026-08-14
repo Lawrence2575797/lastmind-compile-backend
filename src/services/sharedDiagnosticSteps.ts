@@ -41,7 +41,7 @@ export type EncodingCheckOutcome =
  * than left inside either engine specifically so both the atomic and
  * mechanistic engines can call it without importing each other.
  */
-export async function runSharedEncodingCheck(userId: string, conceptId: string, conceptLabel: string): Promise<EncodingCheckOutcome> {
+export async function runSharedEncodingCheck(userId: string, conceptId: string, conceptLabel: string, subject: string): Promise<EncodingCheckOutcome> {
   const mastery = await getMasteryStatus(userId, conceptId);
 
   if (mastery.isMastered) {
@@ -51,10 +51,16 @@ export async function runSharedEncodingCheck(userId: string, conceptId: string, 
     return { result: 'decay_schedule_skipped' };
   }
 
+  // Subject is essential, not optional context — a bare abbreviation-style
+  // label (e.g. "MRS") is genuinely ambiguous without it: real-world
+  // testing produced a recognition question treating "MRS" as the
+  // honorific "Mrs" (offering "a married woman" as an option) because the
+  // prompt had nothing telling it this was an Economics term. See
+  // RECOGNITION_QUESTION_PROMPT's own disambiguation rule.
   const recognition = await callClaudeJSON({
     model: MODELS.diagnosticTree,
     systemPrompt: RECOGNITION_QUESTION_PROMPT,
-    userContent: `Concept: ${conceptLabel}`,
+    userContent: `Subject: ${subject || 'unspecified'}\nConcept: ${conceptLabel}`,
     temperature: 0.3,
   }).then((raw) => JSON.parse(stripCodeFences(raw)) as { question: string; options: string[]; correctOptionIndex: number });
 

@@ -25,3 +25,18 @@ export const costlyEndpointLimiter = rateLimit({
   keyGenerator: (req) => req.userId || req.ip || 'unknown',
   message: { error: 'Too many requests to this endpoint. Please slow down.' },
 });
+
+// Folder/page sync isn't Claude-cost-incurring (just a Supabase read/write),
+// so costlyEndpointLimiter's 10/min would break completely normal use — a
+// student editing notes fires a debounced save on every pause in typing,
+// and switching between a few pages/folders alone can exceed that. This is
+// still per-user bounded against a runaway client bug or genuine abuse,
+// just at a limit generous enough that ordinary editing never gets near it.
+export const syncEndpointLimiter = rateLimit({
+  windowMs: 60 * 1000,
+  limit: 120,
+  standardHeaders: true,
+  legacyHeaders: false,
+  keyGenerator: (req) => req.userId || req.ip || 'unknown',
+  message: { error: 'Too many sync requests. Please slow down.' },
+});

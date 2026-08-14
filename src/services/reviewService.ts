@@ -54,6 +54,27 @@ export async function gradeAndRecordReview(
 
   if (upsertError) throw upsertError;
 
+  // Pure audit trail for a future FSRS parameter-optimization pass —
+  // concept_reviews only ever holds the LATEST state (this upsert just
+  // overwrote it), so without this there is no history of individual
+  // review events to fit personalized weights against at all. Logged
+  // loudly, not thrown — losing one training-data row must never break a
+  // real grading event for the student in front of it; the optimizer this
+  // feeds doesn't exist yet, so nothing here is load-bearing today.
+  const { error: logError } = await supabaseAdmin
+    .from('review_log')
+    .insert({
+      user_id: userId,
+      concept_id: conceptId,
+      rating: ratingKey.toLowerCase(),
+      elapsed_days: rowFields.elapsed_days,
+      stability_before: existingRow?.stability ?? null,
+      difficulty_before: existingRow?.difficulty ?? null,
+    });
+  if (logError) {
+    console.error('LastMind: failed to write review_log row (non-fatal, grading itself still succeeded).', logError);
+  }
+
   return { previousRow: existingRow, newState: rowFields };
 }
 

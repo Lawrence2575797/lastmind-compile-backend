@@ -2,6 +2,7 @@ import { Router, Request, Response } from 'express';
 import { requireAuth } from '../services/authMiddleware';
 import { syncEndpointLimiter } from '../services/rateLimiters';
 import { listUserFolders, upsertUserFolder, deleteUserFolder } from '../services/folderSyncService';
+import { resetConceptProgress } from '../services/progressResetService';
 
 const router = Router();
 
@@ -55,6 +56,29 @@ router.post('/sync/folders/delete', async (req: Request, res: Response) => {
   } catch (err) {
     console.error('Folder sync delete failed:', err);
     res.status(500).json({ error: 'could not delete this synced folder' });
+  }
+});
+
+// POST /sync/reset-progress  { conceptKeys: string[] }
+// Called when a page/subfolder/folder is deleted, so this concept's FSRS
+// review schedule and lesson-repetition count are wiped along with it,
+// instead of silently surviving under the hood (see resetConceptProgress).
+// conceptKeys should include every candidate key format the client can
+// derive for the concept(s) being deleted (the normalized
+// subject:topic:concept key AND the raw lowercased label) — concept_id's
+// format is a known mix of both, so deleting only one format can silently
+// leave the other behind.
+router.post('/sync/reset-progress', async (req: Request, res: Response) => {
+  const { conceptKeys } = req.body ?? {};
+  if (!Array.isArray(conceptKeys) || !conceptKeys.length) {
+    return res.status(400).json({ error: 'conceptKeys is required' });
+  }
+  try {
+    await resetConceptProgress(req.userId as string, conceptKeys);
+    res.json({ ok: true });
+  } catch (err) {
+    console.error('Progress reset failed:', err);
+    res.status(500).json({ error: 'could not reset progress for these concepts' });
   }
 });
 

@@ -52,9 +52,13 @@ router.get('/due', requireAuth, costlyEndpointLimiter, async (req: Request, res:
 // what's ALREADY due, not the full upcoming picture.
 router.get('/schedule', requireAuth, costlyEndpointLimiter, async (req: Request, res: Response) => {
   try {
+    // stability/difficulty/reps/lapses beyond concept_id+due specifically
+    // for the "how does this work?" info panel next to a page's own due-in
+    // badge (learn/index.html) — the calendar itself only ever reads
+    // concept_id/due, so this is additive, not a behavior change for it.
     const { data, error } = await supabaseAdmin
       .from('concept_reviews')
-      .select('concept_id, due')
+      .select('concept_id, due, stability, difficulty, reps, lapses, state')
       .eq('user_id', req.userId as string)
       .order('due', { ascending: true });
 

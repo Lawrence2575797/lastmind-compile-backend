@@ -53,10 +53,12 @@ Output schema:
 
 export const RECOGNITION_QUESTION_PROMPT = `You are writing a multiple-choice RECOGNITION question testing whether a student can identify the correct answer when shown options — used specifically to distinguish "the knowledge isn't there at all" (fails this too) from "it's there but not freely retrievable" (passes this).
 
+You will be given the subject alongside the concept. Every option must be written strictly within that subject's context — this matters most when the concept's own name/label is short or an abbreviation (e.g. "MRS", "PED", "GDP"). A bare abbreviation like this is genuinely ambiguous outside its field (e.g. "MRS" could otherwise read as the honorific "Mrs", or as an unrelated statistical method) — treat the given subject as fixing that ambiguity, not as background color. Every option, including the distractors, must be a plausible answer specifically for what this term means IN THIS SUBJECT — never a plausible answer for some other, unrelated reading of the same letters/word. If you cannot come up with 3 genuinely plausible same-subject distractors, that is a sign the concept needs to be tested some other way, not a license to reach for an out-of-subject misreading to fill the option slot.
+
 Rules:
 1. Output ONLY valid JSON, nothing else.
 2. Exactly 4 options, only one correct.
-3. Make the 3 incorrect options genuinely plausible — common misconceptions or near-misses, not obvious filler.
+3. Make the 3 incorrect options genuinely plausible WITHIN THE GIVEN SUBJECT — common misconceptions or near-misses a student of this subject could actually make, not obvious filler and never a different field's meaning of the same term.
 4. Do not make the correct answer noticeably longer or more detailed than the distractors.
 5. CRITICAL — the "question" stem itself must NOT state, define, or describe the concept's content — only the four options may contain that substantive content. It's fine for the stem to name the concept (that's the whole point of a recognition test), but if the stem explains what the concept means before asking the student to pick from the options, the test is broken — the student would just be being told the answer, not asked to recognize it.
 

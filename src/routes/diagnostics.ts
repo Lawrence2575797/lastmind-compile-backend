@@ -3,9 +3,8 @@ import { callClaudeJSON, MODELS } from '../services/claudeClient';
 import { requireAuth } from '../services/authMiddleware';
 import { costlyEndpointLimiter } from '../services/rateLimiters';
 import { MULTI_QUESTION_GENERATION_PROMPT } from '../constants/diagnosticPrompts';
-import { runDiagnosticStep, startDiagnosisFromKnownAnswer, startMathDiagnosis, reframeDiagnosticQuestion, OrchestratorState } from '../services/diagnosticOrchestrator';
+import { runDiagnosticStep, startDiagnosisFromKnownAnswer, startMathDiagnosis, reframeDiagnosticQuestion, retryDiagnosticQuestion, OrchestratorState } from '../services/diagnosticOrchestrator';
 import { normalizeConceptKey } from '../services/chainService';
-import { gradeAndRecordReview } from '../services/reviewService';
 
 const router = Router();
 
@@ -190,35 +189,28 @@ router.post('/diagnostics/start-math-from-answer', async (req: Request, res: Res
 });
 
 // POST /diagnostics/report-slip
-// { conceptKey } -> OrchestratorResult-shaped { done, diagnosis, correction, answerCorrect }
-// A self-reported alternative to the wording gate's Yes/No — for when the
-// student already knows the wording was fine and this was a genuine
-// mechanical slip, not a gap in understanding, and would rather say so
-// directly than walk the rest of the diagnostic tree to reach the same
-// conclusion automatic slip-detection would eventually land on anyway.
-// Graded exactly like an auto-detected slip ('hard' — the understanding is
-// intact, just a wobble), and immediately ends the diagnosis. Trusts the
-// student's own self-report at face value, same as "I don't know" already
-// does for the opposite case — there's no ground truth to verify this
-// against server-side, and second-guessing it would defeat the point of
-// offering a faster way out.
+// { state } -> OrchestratorResult-shaped { done: false, nextQuestion, nextOptions?, state }
+// The "this was just a slip" side button — re-serves the exact same
+// question the student just got wrong, for a genuine second attempt.
+// Previously this trusted the self-report at face value with zero
+// verification (graded 'hard' and ended the diagnosis outright on nothing
+// but the claim) — a real mistake could be waved through that way. Retrying
+// means a real slip gets caught by the student actually getting it right
+// this time (graded normally through the usual answer-processing path,
+// same as any other correct answer), and a real gap still surfaces through
+// the usual wrong-answer escalation if they get it wrong again.
 router.post('/diagnostics/report-slip', async (req: Request, res: Response) => {
-  const { conceptKey } = req.body ?? {};
-  if (typeof conceptKey !== 'string' || !conceptKey) {
-    return res.status(400).json({ error: 'conceptKey is required' });
+  const { state } = req.body ?? {};
+  if (!state) {
+    return res.status(400).json({ error: 'state is required (from the diagnostic question this was reported on)' });
   }
 
   try {
-    await gradeAndRecordReview(req.userId as string, conceptKey, 'hard');
-    res.json({
-      done: true,
-      diagnosis: 'slip',
-      correction: 'No problem — marked down as a slip, not a gap in understanding.',
-      answerCorrect: false,
-    });
+    const result = retryDiagnosticQuestion(state as OrchestratorState);
+    res.json(result);
   } catch (err) {
-    console.error('Diagnostic slip self-report failed:', err);
-    res.status(500).json({ error: 'could not record this' });
+    console.error('Diagnostic slip retry failed:', err);
+    res.status(500).json({ error: 'could not retry this question' });
   }
 });
 

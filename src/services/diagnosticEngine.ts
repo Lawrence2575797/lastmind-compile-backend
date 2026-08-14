@@ -111,6 +111,12 @@ export interface DiagnosticState {
   // question is generated so reframeCurrentQuestion never needs to know
   // which stage it's reframing.
   lastShownQuestion?: string;
+  // The options that went with lastShownQuestion, when it was an MCQ (the
+  // 'encoding_check' recognition test — the only stage that's ever
+  // multiple-choice). Needed so retryCurrentQuestion can re-render the
+  // same 4 buttons instead of silently downgrading to a free-text box on
+  // retry — lastShownQuestion alone only carries the question text.
+  lastShownOptions?: string[];
   // Calculation status of originalQuestion specifically — set at entry
   // (see startMathDiagnosis) when the question that triggered this whole
   // diagnosis was itself a calculation. Referenced by 'initial'/
@@ -216,7 +222,7 @@ async function finish(
 // any atomic/mechanistic branching) and routes accordingly for the
 // single-concept (atomic) path specifically.
 async function runEncodingCheckOrSkip(userId: string, state: DiagnosticState): Promise<DiagnosticResult> {
-  const outcome = await runSharedEncodingCheck(userId, state.conceptLabel, state.conceptLabel);
+  const outcome = await runSharedEncodingCheck(userId, state.conceptLabel, state.conceptLabel, state.subject);
 
   // Every path into this function follows a wrong (or "don't know") answer
   // to whatever question was just asked — even though none of these three
@@ -234,7 +240,7 @@ async function runEncodingCheckOrSkip(userId: string, state: DiagnosticState): P
         done: false,
         nextQuestion: outcome.question,
         nextOptions: outcome.options,
-        state: { ...state, stage: 'encoding_check', recognitionCorrectAnswer: outcome.correctAnswer, lastShownQuestion: outcome.question },
+        state: { ...state, stage: 'encoding_check', recognitionCorrectAnswer: outcome.correctAnswer, lastShownQuestion: outcome.question, lastShownOptions: outcome.options },
       };
     default:
       throw new Error(`Unexpected encoding-check outcome for atomic path: ${outcome.result}`);
@@ -352,6 +358,26 @@ export async function reframeCurrentQuestion(state: DiagnosticState): Promise<Di
       lastShownQuestion: reframed.question,
       ...(isOriginalQuestionStage ? { originalQuestion: reframed.question } : {}),
     },
+    nextRequiresCalculation: currentQuestionCalcInfo(state).requiresCalculation,
+  };
+}
+
+// Re-serves the exact question the student just got wrong, unchanged, for
+// a genuine second attempt — the "this was just a slip" side button used
+// to trust that self-report at face value and end the diagnosis outright
+// with no verification at all, which let a genuinely wrong answer through
+// on a bare claim. Retrying instead means a real slip (fat-finger, misread)
+// gets caught by the student actually getting it right this time, and a
+// real gap still surfaces normally through the usual wrong-answer
+// escalation if they get it wrong again — no LLM call needed, since
+// nothing about the question or state actually changes.
+export function retryCurrentQuestion(state: DiagnosticState): DiagnosticResult {
+  const questionToRetry = state.lastShownQuestion || state.originalQuestion;
+  return {
+    done: false,
+    nextQuestion: questionToRetry,
+    nextOptions: state.stage === 'encoding_check' ? state.lastShownOptions : undefined,
+    state,
     nextRequiresCalculation: currentQuestionCalcInfo(state).requiresCalculation,
   };
 }

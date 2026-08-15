@@ -17,16 +17,24 @@ export interface CortexPageSummary {
 export interface CortexFolderSummary {
   name: string;
   qualification: string;
-  // Exactly one of these two identifies the folder beyond subject+level,
-  // matching learn/index.html's own school-vs-university split
-  // (isUniversityLevel) — examBoard for GCSE/A-Level/etc., institution +
-  // moduleCode for Undergraduate Year 1-4/Masters/PhD. A university
-  // folder's moduleCode (e.g. "EC104") is very often the ONLY thing that
-  // disambiguates it from an unrelated folder sharing the same subject
-  // name — never assume examBoard is present.
+  // Exactly one of these three identifies the folder beyond subject+level,
+  // matching learn/index.html's own school/university/custom split
+  // (isUniversityLevel/isCustomLevel) — examBoard for GCSE/A-Level/etc.,
+  // institution+moduleCode for Undergraduate Year 1-4/Masters/PhD, or
+  // customDescription for qualification "Other" (a self-directed goal
+  // outside any formal qualification, e.g. "running a small business" —
+  // `name` already holds its title). A university folder's moduleCode
+  // (e.g. "EC104") is very often the ONLY thing that disambiguates it from
+  // an unrelated folder sharing the same subject name — never assume
+  // examBoard is present.
   examBoard?: string;
   institution?: string;
   moduleCode?: string;
+  // The student's own free-text description of what they want to learn —
+  // only present for qualification "Other". The nearest thing this kind
+  // of folder has to a syllabus, since there's no exam board/course spec
+  // to draw on for it.
+  customDescription?: string;
   subfolders: { name: string; pages: CortexPageSummary[]; plannedConcepts?: string[] }[];
   pages: CortexPageSummary[];
   // The full concept order previously saved for this folder (no subfolder
@@ -54,9 +62,10 @@ export type CortexAction =
   // same as move_page's own pageTitle lookup — the student names the
   // subfolder they mean, not where it currently lives.
   | { type: 'move_subfolder'; subfolderName: string; targetFolderName: string }
-  // Exactly one of examBoard or institution+moduleCode, matching
-  // CortexFolderSummary's own split — never both, never neither.
-  | { type: 'create_folder'; subject: string; qualification: string; examBoard?: string; institution?: string; moduleCode?: string }
+  // Exactly one of examBoard, institution+moduleCode, or
+  // customTitle+customDescription (qualification "Other"), matching
+  // CortexFolderSummary's own three-way split — never more than one.
+  | { type: 'create_folder'; subject: string; qualification: string; examBoard?: string; institution?: string; moduleCode?: string; customTitle?: string; customDescription?: string }
   | { type: 'create_subfolder'; folderName: string; subfolderName: string }
   | { type: 'generate_notes'; subject: string; topic: string; lesson: string; noteContent?: string }
   | { type: 'list_due_reviews' }

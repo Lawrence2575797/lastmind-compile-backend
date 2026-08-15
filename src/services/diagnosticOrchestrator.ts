@@ -367,6 +367,9 @@ export async function reframeDiagnosticQuestion(state: OrchestratorState): Promi
       systemPrompt: REFRAME_QUESTION_PROMPT,
       userContent: `Concept: ${state.conceptLabel}\nOriginal question: ${state.originalQuestion}`,
       temperature: 0.3,
+      // Same 2048-token default truncation bug as this file's other direct
+      // callClaudeJSON calls — see runDiagnosticStep's own comment.
+      maxTokens: 4096,
     });
     const reframed = parseModelJson<{ question: string }>(raw);
     return {

@@ -36,6 +36,10 @@ router.post('/diagnostics/generate-set', async (req: Request, res: Response) => 
       systemPrompt: MULTI_QUESTION_GENERATION_PROMPT,
       userContent,
       temperature: 0.3,
+      // Same 2048-token default truncation bug fixed elsewhere across the
+      // diagnostic/encoding services (see sharedDiagnosticSteps.ts) — a
+      // whole question set is easily long enough to need the room.
+      maxTokens: 4096,
     });
 
     const parsed = JSON.parse(stripCodeFences(raw));

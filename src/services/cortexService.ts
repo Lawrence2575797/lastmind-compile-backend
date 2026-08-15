@@ -5,6 +5,21 @@ function stripCodeFences(text: string): string {
   return text.trim().replace(/^```(?:json)?\s*/i, '').replace(/```\s*$/, '').trim();
 }
 
+// Thrown specifically when the intent call's response couldn't be parsed as
+// JSON — almost always because it got cut off mid-output (stop_reason:
+// max_tokens) rather than a genuinely malformed reply, since
+// CORTEX_INTENT_PROMPT's rule 1 is "output ONLY valid JSON". Kept as its
+// own type so routes/cortex.ts can hand back an actionable message ("ask
+// for less at once") instead of the generic catch-all — a plain rethrow
+// here is indistinguishable from every other failure mode by the time it
+// reaches the route.
+export class CortexResponseTruncatedError extends Error {
+  constructor() {
+    super('That was a lot to take in at once, so the response got cut off. Try asking for fewer things in one message — e.g. set up the subfolders first, then ask for one topic\'s lessons at a time.');
+    this.name = 'CortexResponseTruncatedError';
+  }
+}
+
 export interface CortexPageSummary {
   title: string;
   // Whether this page's first-exposure encoding lesson has been
@@ -144,23 +159,38 @@ export async function decideCortexAction(
   // reply (a numbered list covering every concept a topic should have,
   // named/statused one by one) can run long on its own, and this call
   // ALSO carries the full folder tree + due reviews + history in its
-  // input, on top of a twelve-rule system prompt — plenty of room to run
+  // input, on top of a thirteen-rule system prompt — plenty of room to run
   // out of output budget before a single text block is even started,
   // which callClaudeJSON's caller sees as "no text content", not a
-  // helpful truncation message.
+  // helpful truncation message. 8192 (up from 4096) is sized for a request
+  // that names several new subfolders plus a full rule-8 layout for one or
+  // two of them at once — CORTEX_INTENT_PROMPT rule 13 is what actually
+  // keeps a request for MANY topics' full layouts from blowing past even
+  // this, by having the model defer most of them to follow-up turns rather
+  // than trying to cram everything into one response.
   //
   // CORTEX_INTENT_PROMPT is fixed and identical for every Cortex message —
   // well clear of Sonnet 5's cache minimum, and re-sent in full on every
   // single message (this call has no other caching in front of it), so
   // this is the single biggest cost lever available for Cortex specifically.
-  const raw = await callClaudeJSON({
-    model: MODELS.diagnosticTree,
-    systemPrompt: CORTEX_INTENT_PROMPT,
-    userContent,
-    temperature: 0.3,
-    maxTokens: 4096,
-    cacheSystemPrompt: true,
-  });
+  let raw: string;
+  try {
+    raw = await callClaudeJSON({
+      model: MODELS.diagnosticTree,
+      systemPrompt: CORTEX_INTENT_PROMPT,
+      userContent,
+      temperature: 0.3,
+      maxTokens: 8192,
+      cacheSystemPrompt: true,
+    });
+  } catch (err) {
+    // callClaudeJSON itself throws when there's no text block at all (every
+    // token spent on thinking/stopped before any output) — same root cause
+    // as the JSON.parse failure below (output too large for the budget),
+    // just caught one step earlier. Surfaced as the same actionable error.
+    console.error('LastMind: Cortex intent call produced no usable text (likely max_tokens with no output).', err);
+    throw new CortexResponseTruncatedError();
+  }
 
   let parsed: CortexResult;
   try {
@@ -173,7 +203,7 @@ export async function decideCortexAction(
     // WHY, which is exactly what makes this class of failure impossible
     // to diagnose from a user report alone.
     console.error('LastMind: Cortex intent call returned invalid JSON (likely truncated).', { raw });
-    throw err;
+    throw new CortexResponseTruncatedError();
   }
   if (!Array.isArray(parsed.actions)) parsed.actions = [];
 

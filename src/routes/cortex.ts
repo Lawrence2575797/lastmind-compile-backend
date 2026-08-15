@@ -1,7 +1,7 @@
 import { Router, Request, Response } from 'express';
 import { requireAuth } from '../services/authMiddleware';
 import { costlyEndpointLimiter } from '../services/rateLimiters';
-import { decideCortexAction } from '../services/cortexService';
+import { decideCortexAction, CortexResponseTruncatedError } from '../services/cortexService';
 
 const router = Router();
 
@@ -33,7 +33,11 @@ router.post('/cortex/message', async (req: Request, res: Response) => {
     res.json(result);
   } catch (err) {
     console.error('Cortex message handling failed:', err);
-    res.status(500).json({ error: 'could not process this message' });
+    if (err instanceof CortexResponseTruncatedError) {
+      res.status(500).json({ error: err.message });
+    } else {
+      res.status(500).json({ error: 'Something went wrong processing that message. Please try again.' });
+    }
   }
 });
 

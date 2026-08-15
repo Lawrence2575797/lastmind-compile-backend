@@ -162,12 +162,17 @@ export async function decideCortexAction(
   // input, on top of a thirteen-rule system prompt — plenty of room to run
   // out of output budget before a single text block is even started,
   // which callClaudeJSON's caller sees as "no text content", not a
-  // helpful truncation message. 8192 (up from 4096) is sized for a request
-  // that names several new subfolders plus a full rule-8 layout for one or
-  // two of them at once — CORTEX_INTENT_PROMPT rule 13 is what actually
-  // keeps a request for MANY topics' full layouts from blowing past even
-  // this, by having the model defer most of them to follow-up turns rather
-  // than trying to cram everything into one response.
+  // helpful truncation message. 32000 is sized to let a genuinely large
+  // ask — several new subfolders, each with a full rule-8 layout AND
+  // pages created, all in ONE response — actually complete instead of
+  // being deferred across turns (see CORTEX_INTENT_PROMPT rule 13, which
+  // keeps "reply" from wastefully re-narrating concept lists already
+  // sitting in an action's own array, rather than capping topic count).
+  // Safe to set this high specifically because claudeClient.ts's
+  // makeMessageRequest now streams the request rather than blocking on
+  // one long response — a large max_tokens on a non-streaming call risks
+  // a platform-level idle-connection timeout before Claude ever finishes;
+  // streaming sidesteps that entirely.
   //
   // CORTEX_INTENT_PROMPT is fixed and identical for every Cortex message —
   // well clear of Sonnet 5's cache minimum, and re-sent in full on every
@@ -180,7 +185,7 @@ export async function decideCortexAction(
       systemPrompt: CORTEX_INTENT_PROMPT,
       userContent,
       temperature: 0.3,
-      maxTokens: 8192,
+      maxTokens: 32000,
       cacheSystemPrompt: true,
     });
   } catch (err) {

@@ -150,13 +150,25 @@ async function makeMessageRequest(
   // marker silently does nothing, so opt-in per call rather than always-on
   // to avoid spending the write premium on prompts too small to benefit
   // (fact-check, step repair, diagram verification are all under it).
+  // Streamed rather than a single blocking request, even though nothing
+  // here consumes the incremental events — .stream().finalMessage() waits
+  // for the same complete Message this used to get from .create(), but
+  // over a connection that sends data continuously instead of one that
+  // sits silent until the entire (possibly tens-of-thousands-of-tokens)
+  // response is ready. A large max_tokens on a non-streaming call risks
+  // exactly that silent wait tripping either the SDK's own long-request
+  // guard or a platform-level idle-connection timeout (this runs on
+  // Render) — streaming sidesteps both, which is what actually makes a
+  // generous max_tokens (see callers like cortexService.ts) safe to use.
   if (cacheSystemPrompt) {
-    return anthropic.beta.promptCaching.messages.create({
-      ...params,
-      system: [{ type: 'text', text: systemPrompt, cache_control: { type: 'ephemeral' } }],
-    });
+    return anthropic.beta.promptCaching.messages
+      .stream({
+        ...params,
+        system: [{ type: 'text', text: systemPrompt, cache_control: { type: 'ephemeral' } }],
+      })
+      .finalMessage();
   }
-  return anthropic.messages.create({ ...params, system: systemPrompt });
+  return anthropic.messages.stream({ ...params, system: systemPrompt }).finalMessage();
 }
 
 async function sendWithTemperatureRetry(

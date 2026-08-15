@@ -460,6 +460,7 @@ export async function processDiagnosticAnswer(
       // entirely in that case; Subject + Concept alone is enough for
       // WM_RELAXATION_PROMPT to write a genuine first retrieval question.
       const simplified = await callJSON<{
+        cannotBeSimplified: boolean;
         simplifiedQuestion: string;
         staysGenuineRetrieval: boolean;
         requiresCalculation?: boolean;
@@ -472,6 +473,19 @@ export async function processDiagnosticAnswer(
         MODELS.diagnosticTree,
         0.3
       );
+
+      // A bare naming/terminology question — passing the recognition test
+      // (multiple choice) only proves the definition is recognizable, not
+      // that the term is freely retrievable, and there's no lower-load
+      // rephrasing that isn't just asking for the identical word again.
+      // Escalating through wm_relax/hint_cue/contrastive_cue here would
+      // force several more guaranteed-wrong attempts at a word the student
+      // has never encountered before finally teaching it — go straight to
+      // the encoding correction instead (see WM_RELAXATION_PROMPT).
+      if (simplified.cannotBeSimplified) {
+        return finish(userId, state.conceptLabel, 'again', 'encoding', state, false);
+      }
+
       return {
         done: false,
         nextQuestion: simplified.simplifiedQuestion,

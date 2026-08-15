@@ -62,6 +62,15 @@ export async function runSharedEncodingCheck(userId: string, conceptId: string, 
     systemPrompt: RECOGNITION_QUESTION_PROMPT,
     userContent: `Subject: ${subject || 'unspecified'}\nConcept: ${conceptLabel}`,
     temperature: 0.3,
+    // Same 2048-token default truncation bug already fixed in
+    // diagnosticEngine.ts/mechanisticEngine.ts's own callJSON wrappers (see
+    // their comments) — this call was missed because it goes through
+    // callClaudeJSON directly rather than either engine's wrapper. This is
+    // the encoding check EVERY "I don't know" answer and every genuinely
+    // wrong first answer routes through, so a truncated (invalid) JSON
+    // response here surfaced as the opaque "could not process this answer"
+    // 500 on very ordinary use, not just an edge case.
+    maxTokens: 4096,
   }).then((raw) => JSON.parse(stripCodeFences(raw)) as { question: string; options: string[]; correctOptionIndex: number });
 
   const shuffled = shuffleOptions(recognition.options, recognition.correctOptionIndex);

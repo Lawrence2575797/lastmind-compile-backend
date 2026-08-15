@@ -162,7 +162,19 @@ export async function decideCortexAction(
     cacheSystemPrompt: true,
   });
 
-  const parsed = JSON.parse(stripCodeFences(raw)) as CortexResult;
+  let parsed: CortexResult;
+  try {
+    parsed = JSON.parse(stripCodeFences(raw)) as CortexResult;
+  } catch (err) {
+    // Same pattern as chainService.ts/encodingLessonService.ts's own
+    // parse-failure logging — without this, a truncated or malformed
+    // response from the model surfaces to the student as a bare "could
+    // not process this message" with nothing in the server logs to show
+    // WHY, which is exactly what makes this class of failure impossible
+    // to diagnose from a user report alone.
+    console.error('LastMind: Cortex intent call returned invalid JSON (likely truncated).', { raw });
+    throw err;
+  }
   if (!Array.isArray(parsed.actions)) parsed.actions = [];
 
   // Every generate_notes action in the batch needs its own second call to

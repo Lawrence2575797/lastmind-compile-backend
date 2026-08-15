@@ -25,4 +25,18 @@ export async function resetConceptProgress(userId: string, conceptKeys: string[]
     .eq('user_id', userId)
     .in('concept_key', keys);
   if (progressError) throw progressError;
+
+  // Also drop any in-progress lesson checkpoint (see
+  // lessonCheckpointService.ts) for these concepts — otherwise a re-taught
+  // concept's next /start could resume a stale, now-irrelevant mid-lesson
+  // session instead of genuinely starting fresh. Not scoped to a single
+  // lesson_type: the concept is being wiped entirely, so both an unfinished
+  // encoding attempt and an unfinished chain/retrieval attempt (however
+  // unlikely to coexist) should go.
+  const { error: checkpointError } = await supabaseAdmin
+    .from('lesson_checkpoints')
+    .delete()
+    .eq('user_id', userId)
+    .in('concept_key', keys);
+  if (checkpointError) throw checkpointError;
 }

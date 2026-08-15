@@ -3,6 +3,7 @@ import { getOrGenerateChain, customContextDigest } from './chainService';
 import { gradeAndRecordReview, FsrsRatingKey } from './reviewService';
 import { searchWikimediaImages, fetchImageAsBase64 } from './wikimediaService';
 import { supabaseAdmin } from './supabaseAdmin';
+import { loadCheckpoint, saveCheckpoint, clearCheckpoint } from './lessonCheckpointService';
 import {
   ENCODING_LESSON_FIRST_STEP_PROMPT,
   ENCODING_LESSON_CONTINUATION_PROMPT,
@@ -16,6 +17,17 @@ import {
 
 function stripCodeFences(text: string): string {
   return text.trim().replace(/^```(?:json)?\s*/i, '').replace(/```\s*$/, '').trim();
+}
+
+// Same best-effort principle as spacedLessonEngine.ts's own
+// safeSaveCheckpoint — a checkpoint write/read failure must never break the
+// lesson itself.
+async function safeSaveCheckpoint(userId: string, conceptKey: string, state: EncodingLessonState): Promise<void> {
+  try {
+    await saveCheckpoint(userId, 'encoding', conceptKey, state);
+  } catch (err) {
+    console.error('LastMind: failed to save encoding-lesson checkpoint (non-fatal, session continues in-memory).', err);
+  }
 }
 
 // A cached encoding_lesson_content row gets REUSED across students only
@@ -167,6 +179,13 @@ export interface EncodingLessonState {
   // qualification-based folder.
   customTitle: string;
   customDescription: string;
+  // Carried on the state itself (rather than only in EncodingStartResult)
+  // purely so a saved checkpoint — which only ever stores `state` — has
+  // everything needed to reconstruct an EncodingStartResult on resume,
+  // without a separate wrapper type. Every other constructor of this type
+  // spreads from an existing state, so this is set in exactly one place
+  // (startEncodingLesson).
+  hookFact: string;
 }
 
 export interface EncodingStartResult {
@@ -182,6 +201,9 @@ export interface EncodingStartResult {
   // /encoding-lesson/submit. true on a cache hit — state.steps already has
   // the whole lesson and no continuation call is needed.
   contentReady: boolean;
+  // True when this came from a saved checkpoint (a previous attempt this
+  // student didn't finish) rather than a freshly generated session.
+  resumed?: boolean;
 }
 
 // The before/after FSRS card state from grading this lesson's single,
@@ -495,6 +517,7 @@ async function repairUncertainSteps(
  * so this costs one extra DB round trip per lesson start, not a Claude call.
  */
 export async function startEncodingLesson(
+  userId: string,
   conceptKey: string,
   subject: string,
   topic: string,
@@ -505,6 +528,19 @@ export async function startEncodingLesson(
   customTitle = '',
   customDescription = ''
 ): Promise<EncodingStartResult> {
+  try {
+    // Only ever saved once the full step list is ready (see the end of this
+    // function and continueEncodingLesson's own save) — a checkpoint's mere
+    // existence already means contentReady, no separate flag to persist.
+    const saved = await loadCheckpoint<EncodingLessonState>(userId, 'encoding', conceptKey);
+    const savedStep = saved?.steps?.[saved.currentIndex];
+    if (saved && savedStep) {
+      return { done: false, hookFact: saved.hookFact, step: savedStep, state: saved, contentReady: true, resumed: true };
+    }
+  } catch (err) {
+    console.error('LastMind: failed to load encoding-lesson checkpoint, starting fresh.', err);
+  }
+
   const chainResult = await getOrGenerateChain(conceptKey, subject, topic, concept, qualification, examBoard, customTitle, customDescription);
   if (!chainResult.chain) {
     throw new Error('Could not generate a dependency chain for this concept.');
@@ -601,7 +637,16 @@ export async function startEncodingLesson(
   // instead (see submitEncodingAnswer).
   const steps: EncodingStep[] = cachedSteps.map(({ expectedSolution, ...step }) => step);
 
-  const state: EncodingLessonState = { conceptKey, subject, steps, currentIndex: 0, anyCoreStepWrong: false, anyOtherStepWrong: false, contentKey, qualification, examBoard, customTitle, customDescription };
+  const state: EncodingLessonState = { conceptKey, subject, steps, currentIndex: 0, anyCoreStepWrong: false, anyOtherStepWrong: false, contentKey, qualification, examBoard, customTitle, customDescription, hookFact };
+
+  // Cold-cache (contentReady false) intentionally does NOT checkpoint yet —
+  // steps only holds the first step at this point; continueEncodingLesson
+  // saves the checkpoint itself once the full lesson is assembled, so a
+  // resume never has to guess whether generation had finished.
+  if (contentReady) {
+    await safeSaveCheckpoint(userId, conceptKey, state);
+  }
+
   return { done: false, hookFact, step: steps[0], state, contentReady };
 }
 
@@ -621,6 +666,7 @@ export async function startEncodingLesson(
  * them, same as startEncodingLesson itself does.
  */
 export async function continueEncodingLesson(
+  userId: string,
   state: EncodingLessonState,
   topic: string,
   concept: string,
@@ -647,7 +693,9 @@ export async function continueEncodingLesson(
     : { data: null, error: null };
   if (!existingError && existing) {
     const steps: EncodingStep[] = (existing.steps as CachedEncodingStep[]).map(({ expectedSolution, ...s }) => s);
-    return { ...state, steps };
+    const nextState = { ...state, steps };
+    await safeSaveCheckpoint(userId, conceptKey, nextState);
+    return nextState;
   }
 
   const { data: pending, error: pendingError } = await supabaseAdmin
@@ -706,7 +754,9 @@ export async function continueEncodingLesson(
   await supabaseAdmin.from('encoding_lesson_pending').delete().eq('content_key', contentKey);
 
   const steps: EncodingStep[] = allSteps.map(({ expectedSolution, ...s }) => s);
-  return { ...state, steps };
+  const nextState = { ...state, steps };
+  await safeSaveCheckpoint(userId, conceptKey, nextState);
+  return nextState;
 }
 
 // Phase 1 of the two-phase cold-cache path — see startEncodingLesson and
@@ -933,6 +983,11 @@ export async function fetchExpectedSolution(contentKey: string, stepIndex: numbe
 export async function submitEncodingAnswer(userId: string, state: EncodingLessonState, answer: string, dontKnow = false): Promise<EncodingSubmitResult> {
   const currentStep = state.steps[state.currentIndex];
   if (!currentStep) {
+    try {
+      await clearCheckpoint(userId, 'encoding', state.conceptKey);
+    } catch (err) {
+      console.error('LastMind: failed to clear encoding-lesson checkpoint on completion (non-fatal).', err);
+    }
     return { done: true, state };
   }
 
@@ -1054,9 +1109,15 @@ export async function submitEncodingAnswer(userId: string, state: EncodingLesson
         },
       };
     }
+    try {
+      await clearCheckpoint(userId, 'encoding', state.conceptKey);
+    } catch (err) {
+      console.error('LastMind: failed to clear encoding-lesson checkpoint on completion (non-fatal).', err);
+    }
     return { done: true, correct, feedback, state: nextState, fsrsUpdate };
   }
 
+  await safeSaveCheckpoint(userId, state.conceptKey, nextState);
   return { done: false, correct, feedback, step: state.steps[nextIndex], state: nextState };
 }
 

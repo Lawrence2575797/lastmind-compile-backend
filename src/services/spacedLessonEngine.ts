@@ -2,6 +2,19 @@ import { callClaudeJSON, MODELS } from './claudeClient';
 import { gradeAndRecordReview, getMasteryStatus, listEligibleSiblingConcepts, FsrsRatingKey } from './reviewService';
 import { getOrGenerateChain } from './chainService';
 import { retrievalLessonPromptForTier, RETRIEVAL_ANSWER_CHECK_PROMPT, RETRIEVAL_MECHANISTIC_CHECK_PROMPT } from '../constants/retrievalLessonPrompts';
+import { loadCheckpoint, saveCheckpoint, clearCheckpoint } from './lessonCheckpointService';
+
+// Checkpoint read/write is best-effort on purpose — a Supabase hiccup here
+// must never break the lesson itself (starting, continuing, or grading an
+// answer all still have to work with no resume capability that request)
+// the way a lost review_log row is already treated as non-fatal elsewhere.
+async function safeSaveCheckpoint(userId: string, conceptKey: string, state: RetrievalLessonState): Promise<void> {
+  try {
+    await saveCheckpoint(userId, 'chain', conceptKey, state);
+  } catch (err) {
+    console.error('LastMind: failed to save chain-lesson checkpoint (non-fatal, session continues in-memory).', err);
+  }
+}
 
 function stripCodeFences(text: string): string {
   return text.trim().replace(/^```(?:json)?\s*/i, '').replace(/```\s*$/, '').trim();
@@ -92,6 +105,11 @@ export interface RetrievalStartResult {
   step: RetrievalStep;
   state: RetrievalLessonState;
   contentReady: boolean;
+  // True when this came from a saved checkpoint (a previous attempt this
+  // student didn't finish) rather than a freshly generated session — lets
+  // the frontend show a "resuming where you left off" notice instead of
+  // presenting it as a brand-new session.
+  resumed?: boolean;
 }
 
 export interface FsrsUpdateSummary {
@@ -204,6 +222,16 @@ export async function startRetrievalLesson(
   qualification = '',
   examBoard = ''
 ): Promise<RetrievalStartResult> {
+  try {
+    const saved = await loadCheckpoint<RetrievalLessonState>(userId, 'chain', conceptKey);
+    const savedStep = saved?.steps?.[saved.currentIndex];
+    if (saved && savedStep) {
+      return { done: false, step: savedStep, state: saved, contentReady: saved.steps.length >= saved.totalSteps, resumed: true };
+    }
+  } catch (err) {
+    console.error('LastMind: failed to load chain-lesson checkpoint, starting fresh.', err);
+  }
+
   const { row } = await getMasteryStatus(userId, conceptKey);
   const stability = row?.stability ?? 0;
   const reps = row?.reps ?? 0;
@@ -227,6 +255,8 @@ export async function startRetrievalLesson(
     steps: [firstStep], currentIndex: 0, anyWeakSoFar: false,
   };
 
+  await safeSaveCheckpoint(userId, conceptKey, state);
+
   return { done: false, step: firstStep, state, contentReady: totalSteps <= 1 };
 }
 
@@ -237,7 +267,7 @@ export async function startRetrievalLesson(
  * session only ever had one step (tier 3), or if a duplicate call somehow
  * arrives after the session is already fully generated.
  */
-export async function continueRetrievalLesson(state: RetrievalLessonState): Promise<RetrievalLessonState> {
+export async function continueRetrievalLesson(userId: string, state: RetrievalLessonState): Promise<RetrievalLessonState> {
   const remaining = state.totalSteps - state.steps.length;
   if (remaining <= 0) return state;
 
@@ -246,7 +276,9 @@ export async function continueRetrievalLesson(state: RetrievalLessonState): Prom
     state.closePrerequisiteLabels, state.siblings, state.steps, remaining
   );
 
-  return { ...state, steps: [...state.steps, ...newSteps] };
+  const nextState = { ...state, steps: [...state.steps, ...newSteps] };
+  await safeSaveCheckpoint(userId, state.conceptKey, nextState);
+  return nextState;
 }
 
 export async function submitRetrievalAnswer(
@@ -334,8 +366,14 @@ export async function submitRetrievalAnswer(
         elapsedDays: fsrsRow.elapsed_days,
       },
     };
+    try {
+      await clearCheckpoint(userId, 'chain', state.conceptKey);
+    } catch (err) {
+      console.error('LastMind: failed to clear chain-lesson checkpoint on completion (non-fatal).', err);
+    }
     return { done: true, correct, feedback, state: nextState, fsrsUpdate };
   }
 
+  await safeSaveCheckpoint(userId, state.conceptKey, nextState);
   return { done: false, correct, feedback, step: state.steps[nextIndex], state: nextState };
 }

@@ -53,7 +53,7 @@ router.post('/chain-lesson/continue', async (req: Request, res: Response) => {
   }
 
   try {
-    const nextState = await continueRetrievalLesson(state as RetrievalLessonState);
+    const nextState = await continueRetrievalLesson(req.userId as string, state as RetrievalLessonState);
     res.json({ state: nextState });
   } catch (err) {
     console.error('Retrieval lesson continuation failed:', err);

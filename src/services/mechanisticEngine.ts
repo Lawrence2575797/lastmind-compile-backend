@@ -268,8 +268,9 @@ export async function startMechanisticDiagnosis(
   return advanceAfterWrongAnswer(userId, baseState);
 }
 
-async function beginWmRelax(state: MechanisticState): Promise<MechanisticResult> {
+async function beginWmRelax(userId: string, state: MechanisticState): Promise<MechanisticResult> {
   const simplified = await callJSON<{
+    cannotBeSimplified: boolean;
     simplifiedQuestion: string;
     staysGenuineRetrieval: boolean;
     requiresCalculation?: boolean;
@@ -280,6 +281,17 @@ async function beginWmRelax(state: MechanisticState): Promise<MechanisticResult>
     MODELS.diagnosticTree,
     0.3
   );
+
+  // Same reasoning as diagnosticEngine.ts's identical check — a bare
+  // naming/terminology question has no lower-load rephrasing that isn't
+  // just asking for the same word again, so passing the recognition test
+  // doesn't warrant more guaranteed-wrong retrieval attempts before
+  // teaching it.
+  if (simplified.cannotBeSimplified) {
+    await gradeAndRecordReview(userId, state.conceptKey, 'again');
+    return { done: true, diagnosis: 'encoding', correction: await generateCorrection(state.targetConceptLabel, 'encoding', state), state, answerCorrect: false };
+  }
+
   return {
     done: false,
     nextQuestion: simplified.simplifiedQuestion,
@@ -490,7 +502,7 @@ export async function processMechanisticAnswer(
         await gradeAndRecordReview(userId, state.conceptKey, 'again');
         return { done: true, diagnosis: 'encoding', correction: await generateCorrection(state.targetConceptLabel, 'encoding', state), state, answerCorrect: false };
       }
-      return beginWmRelax(state);
+      return beginWmRelax(userId, state);
     }
 
     case 'wm_relax': {

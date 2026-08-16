@@ -20,6 +20,7 @@ Rules:
 11. CRITICAL — if applying or computing the target concept genuinely requires a specific procedural or computational TECHNIQUE (a mathematical method, a formula-manipulation skill, a named calculation procedure) and not just conceptual/definitional knowledge, that technique MUST be its own node — even when it belongs to a different subject than the one given (e.g. a calculus technique underlying an economics or physics result, a statistical method underlying a biology one). Do not silently assume a student already has a computational technique just because the target concept is conventionally taught assuming it: if a student without that specific technique could not actually carry out the calculation the target concept requires, it is a genuine prerequisite and belongs in the graph exactly like any conceptual one. A concept that is "derivable" (rule 9) via a calculation is a strong signal to check this — ask specifically what technique the calculation itself depends on, not just what concept motivates it. Mark every such node's own "technique" field true (see schema) — this is what tells the lesson generator downstream that it must actually TEACH this prerequisite rather than just check the student already has it, since a technique like this (especially one from a different subject) is exactly the kind of thing a typical student at this level is unlikely to have already covered, unlike an ordinary same-subject conceptual prerequisite.
 12. Set "technique": true ONLY for a node that exists specifically because of rule 11 (a procedural/computational method, not the concept it's used to compute). Set it false for every other node, including ordinary conceptual/definitional prerequisites and the target concept itself, even when the target is itself computed via a technique already captured as its own separate prerequisite node.
 13. You may instead be given a "Custom self-directed topic" — a subject the student defined themselves (e.g. "running a small business"), outside any formal qualification. Treat it exactly like any other subject for decomposition purposes, but every node must represent OBJECTIVE, ESTABLISHED theory, concepts, frameworks, principles, or terminology — the kind of thing found in a textbook on the subject. Never include a node that amounts to personalized advice, a recommendation, or an instruction about what the student's own specific situation should do (e.g. "cash flow" and "break-even analysis" are valid nodes; "whether you should take out a loan" is not — that's advice, not theory). This is about the node's own content, not about avoiding worked examples elsewhere in the lesson downstream — a node like "break-even analysis" is expected to be TAUGHT with a concrete worked example later; the restriction is only on what counts as a legitimate node here.
+14. CRITICAL — classify every non-target node's "generalMechanism": true if it is a GENERAL, TRANSFERABLE mechanism, process, or principle the student is expected to already be able to apply fluently across MANY different topics in this subject, not something that exists specifically to ground THIS one target concept — e.g. in Biology: diffusion, osmosis, active transport, Fick's law, mitosis; in Physics: Newton's second law, conservation of energy; in Economics: the laws of supply and demand, diminishing marginal utility. Set it false for a CONCEPT-SPECIFIC fact, structure, location, or definition that exists to ground understanding of THIS particular target and wouldn't meaningfully recur as a reasoning tool in unrelated topics — e.g. "the structure of a sieve tube element", "the site of photosynthesis in a leaf", "the components of a specific named model". This is a genuinely different axis from "derivable" (rule 9): a node can be a taught FACT (derivable: false) that is still a general, widely-reusable mechanism (generalMechanism: true) — diffusion itself is simply taught once, not derived, but gets APPLIED constantly afterward across many different concepts, which is exactly what makes it general rather than concept-specific. This distinction matters because a general-mechanism prerequisite should be assumed as a fluently-usable TOOL the target concept's own reasoning recruits and exercises in context, not something that needs to be separately tested in isolation before getting to the real content — whereas concept-specific grounding genuinely does need to be established/verified first, since the rest of the reasoning is meaningless without it.
 
 Output schema:
 {
@@ -30,7 +31,8 @@ Output schema:
       "id": string,             // snake_case identifier, unique within this graph
       "label": string,          // human-readable name
       "derivable": boolean,
-      "technique": boolean,     // true only for a rule-11 procedural/technique prerequisite node
+      "technique": boolean,        // true only for a rule-11 procedural/technique prerequisite node
+      "generalMechanism": boolean, // true only for a rule-14 general/transferable mechanism node — false for the target concept itself
       "depends_on": [
         { "node_id": string, "relationship": "definitional" | "reasoning" }
       ]
@@ -44,20 +46,23 @@ Example — the concept "opportunity cost" in A-Level Economics:
   "concept_id": "econ_opportunity_cost",
   "subject": "Economics",
   "nodes": [
-    { "id": "scarcity", "label": "Scarcity", "derivable": false, "technique": false, "depends_on": [] },
-    { "id": "tradeoffs", "label": "Trade-offs", "derivable": false, "technique": false, "depends_on": [] },
+    { "id": "scarcity", "label": "Scarcity", "derivable": false, "technique": false, "generalMechanism": false, "depends_on": [] },
+    { "id": "tradeoffs", "label": "Trade-offs", "derivable": false, "technique": false, "generalMechanism": false, "depends_on": [] },
     {
       "id": "opportunity_cost",
       "label": "Opportunity cost",
       "derivable": true,
       "technique": false,
+      "generalMechanism": false,
       "depends_on": [
         { "node_id": "scarcity", "relationship": "definitional" },
         { "node_id": "tradeoffs", "relationship": "reasoning" }
       ]
     }
   ]
-}`;
+}
+
+Example of generalMechanism in practice — the concept "phloem loading" in A-Level Biology would have prerequisite nodes like "structure of a sieve tube element" (derivable: false, generalMechanism: false — concept-specific structural grounding) alongside "active transport" (derivable: false, generalMechanism: true — a general mechanism taught once and then applied across many different topics, not unique to phloem loading).`;
 
 export const FACT_CHECK_PROMPT = `You are reviewing a dependency graph generated for teaching purposes, checking it for correctness before it is used with real students. Treat this as a genuine review, not a formality — a wrong graph here silently corrupts every diagnosis built on top of it, for every student who ever encounters this concept.
 
@@ -70,6 +75,7 @@ You will be given a JSON dependency graph. Check it against every one of these c
 5. STRUCTURAL validity — no circular dependencies, no node depending on itself, no orphaned node that should actually connect to something.
 6. DERIVABLE accuracy — for every node, is "derivable" correct? true means a student who already has that node's direct prerequisites could reasonably reason/derive it themselves; false means it's a fact, definition, convention, or arbitrary rule that must simply be taught.
 7. TECHNIQUE accuracy — for every node, is "technique" correct? true means the node exists specifically because it's a procedural/computational method a calculation requires (per point 1); false for everything else, including ordinary conceptual prerequisites and the target itself. A downstream lesson generator uses this to decide whether to actually TEACH a prerequisite instead of merely checking the student already has it — a technique node wrongly left false will get silently assumed as prior knowledge the student may never actually have been taught, which is exactly the failure this field exists to prevent.
+8. GENERALMECHANISM accuracy — for every non-target node, is "generalMechanism" correct? true means the node is a general, transferable mechanism/process/principle the student is expected to already apply fluently across MANY different topics in this subject (e.g. diffusion, osmosis, active transport, Newton's second law, supply and demand) — false means it's concept-specific factual, structural, or definitional grounding that exists specifically to understand THIS target and wouldn't meaningfully recur as a reasoning tool elsewhere (e.g. the structure of a specific cell type, the site of a specific process, the components of one named model). A downstream lesson generator uses this to decide whether a prerequisite gets pre-tested before the target's own derivation (generalMechanism: false) or is instead assumed as a fluent tool the derivation actively recruits in context, without a separate upfront test (generalMechanism: true) — a node wrongly marked false here gets an unnecessary, decontextualized test the lesson doesn't need; wrongly marked true lets genuinely load-bearing, concept-specific grounding slip through untested.
 
 Output ONLY valid JSON in this exact format, nothing else:
 {
@@ -80,4 +86,4 @@ Output ONLY valid JSON in this exact format, nothing else:
   "corrected_graph": <the full corrected graph — include this field ONLY if verified is false; omit it entirely if verified is true>
 }
 
-If ANY issue has severity "must_fix", you MUST include a corrected_graph that resolves it — a must_fix issue with no corrected_graph is not an acceptable response. Only "minor" issues may be reported without a corrected_graph. If you return a corrected_graph, every node in it must still include its "derivable" and "technique" fields.`;
+If ANY issue has severity "must_fix", you MUST include a corrected_graph that resolves it — a must_fix issue with no corrected_graph is not an acceptable response. Only "minor" issues may be reported without a corrected_graph. If you return a corrected_graph, every node in it must still include its "derivable", "technique", and "generalMechanism" fields.`;

@@ -70,7 +70,16 @@ interface ChainEdge { node_id: string; relationship: 'definitional' | 'reasoning
 // like this just because they're studying THIS subject — see
 // forceTeachIds below, where this forces it to be actually taught rather
 // than merely checked as assumed prior knowledge.
-interface ChainNode { id: string; label: string; derivable?: boolean; technique?: boolean; depends_on: ChainEdge[]; }
+// generalMechanism — see CHAIN_GENERATION_PROMPT rule 14: true for a
+// general, transferable mechanism/process/principle (diffusion, active
+// transport, Newton's second law, supply and demand) the student is
+// expected to already apply fluently across many topics, as opposed to
+// concept-specific factual/structural grounding unique to this target. See
+// buildPrerequisiteChains below, where this decides whether a direct
+// prerequisite's whole chain gets pre-tested (check/mechanistic_check)
+// before the target derivation starts, or instead gets recruited as a
+// reasoning tool woven directly into the target derivation's own beats.
+interface ChainNode { id: string; label: string; derivable?: boolean; technique?: boolean; generalMechanism?: boolean; depends_on: ChainEdge[]; }
 interface Chain { concept_id: string; subject: string; nodes: ChainNode[]; }
 
 // 'mechanistic_check' replaces a single-node 'check' when the prerequisite
@@ -253,6 +262,30 @@ function buildPrerequisiteChains(chain: Chain, target: ChainNode, maxChains = 3)
       return ordered;
     })
     .filter((c) => c.length > 0);
+}
+
+// Splits the chains buildPrerequisiteChains produced into two genuinely
+// different treatments, based on whether each chain's TIP (its own direct
+// prerequisite of the target — always the last element, since ordered is
+// foundational-first) is a general, transferable mechanism (see
+// CHAIN_GENERATION_PROMPT rule 14) or concept-specific grounding:
+// - groundingChains: unchanged behavior — pre-tested via a check/
+//   mechanistic_check step before the target derivation begins, exactly as
+//   every chain used to be treated.
+// - recruitedMechanismChains: NOT pre-tested at all — passed to the
+//   generation prompts as reasoning tools the target derivation's own
+//   "derive" beats should actively require the student to APPLY in
+//   context (see ENCODING_LESSON_CONTINUATION_PROMPT's own handling),
+//   with any individually forceTeach-flagged node within one still taught,
+//   just inline and just-in-time rather than as a separate upfront step.
+function splitChainsByMechanism(chains: ChainNode[][]): { groundingChains: ChainNode[][]; recruitedMechanismChains: ChainNode[][] } {
+  const groundingChains: ChainNode[][] = [];
+  const recruitedMechanismChains: ChainNode[][] = [];
+  for (const c of chains) {
+    const tip = c[c.length - 1];
+    (tip?.generalMechanism ? recruitedMechanismChains : groundingChains).push(c);
+  }
+  return { groundingChains, recruitedMechanismChains };
 }
 
 export interface SiblingConcept {
@@ -570,9 +603,15 @@ export async function startEncodingLesson(
   // buildPrerequisiteChains. Replaces the old flat "closeNodes" list: each
   // chain gets its OWN combined mechanistic check spanning its whole
   // lineage (see the generation prompts), rather than one isolated
-  // single-node check per direct prerequisite.
-  const prerequisiteChains = buildPrerequisiteChains(chain, target);
-  const chainNodes = prerequisiteChains.flat();
+  // single-node check per direct prerequisite. Then split by whether each
+  // chain's tip is a general, transferable mechanism (see
+  // splitChainsByMechanism) — groundingChains get pre-tested exactly as
+  // every chain used to be; recruitedMechanismChains instead get woven
+  // into the target derivation's own beats as reasoning tools, never
+  // separately tested up front.
+  const allChains = buildPrerequisiteChains(chain, target);
+  const { groundingChains, recruitedMechanismChains } = splitChainsByMechanism(allChains);
+  const chainNodes = allChains.flat();
   const coveredIds = new Set([...chainNodes.map((n) => n.id), target.id]);
   const backgroundNodes = chain.nodes.filter((n) => !coveredIds.has(n.id));
 
@@ -589,7 +628,10 @@ export async function startEncodingLesson(
   // contentKey below) means a concept that turns out to have a technique
   // prerequisite anywhere in its lineage automatically gets a fresh,
   // correctly-taught cache entry instead of forever serving whatever got
-  // cached before this was recognized.
+  // cached before this was recognized. Applies identically whether a node
+  // sits in a groundingChain or a recruitedMechanismChain — forceTeach
+  // means "actually teach this", independent of whether it also gets a
+  // dedicated check step.
   const forcedNodeIds = chainNodes
     .filter((n) => matchesUnfinishedSibling(n.label, siblingConcepts) || !!n.technique)
     .map((n) => n.id)
@@ -626,7 +668,7 @@ export async function startEncodingLesson(
     // and cache the complete lesson once phase 2 finishes. Never sent to
     // the client in between (see CachedEncodingStep).
     const generated = await generateFirstStep(
-      conceptKey, subject, topic, concept, qualification, examBoard, chain, target, prerequisiteChains, backgroundNodes, forcedNodeIds, customTitle, customDescription
+      conceptKey, subject, topic, concept, qualification, examBoard, chain, target, groundingChains, recruitedMechanismChains, backgroundNodes, forcedNodeIds, customTitle, customDescription
     );
     hookFact = generated.hookFact;
     cachedSteps = [generated.step];
@@ -722,9 +764,11 @@ export async function continueEncodingLesson(
   const target = chain.nodes[chain.nodes.length - 1];
   // Recomputed identically to startEncodingLesson's own call — same chain,
   // same target, same deterministic traversal — so this lands on the exact
-  // same prerequisiteChains/forcedNodeIds/contentKey the /start call used.
-  const prerequisiteChains = buildPrerequisiteChains(chain, target);
-  const chainNodes = prerequisiteChains.flat();
+  // same groundingChains/recruitedMechanismChains/forcedNodeIds/contentKey
+  // the /start call used.
+  const allChains = buildPrerequisiteChains(chain, target);
+  const { groundingChains, recruitedMechanismChains } = splitChainsByMechanism(allChains);
+  const chainNodes = allChains.flat();
   const coveredIds = new Set([...chainNodes.map((n) => n.id), target.id]);
   const backgroundNodes = chain.nodes.filter((n) => !coveredIds.has(n.id));
   const forcedNodeIds = chainNodes
@@ -733,7 +777,7 @@ export async function continueEncodingLesson(
     .sort();
 
   const rest = await generateLessonContinuation(
-    conceptKey, subject, topic, concept, qualification, examBoard, chain, target, prerequisiteChains, backgroundNodes, forcedNodeIds, firstStep, customTitle, customDescription
+    conceptKey, subject, topic, concept, qualification, examBoard, chain, target, groundingChains, recruitedMechanismChains, backgroundNodes, forcedNodeIds, firstStep, customTitle, customDescription
   );
 
   const allSteps: CachedEncodingStep[] = [firstStep, ...rest.steps];
@@ -777,14 +821,17 @@ async function generateFirstStep(
   examBoard: string,
   chain: Chain,
   target: ChainNode,
-  prerequisiteChains: ChainNode[][],
+  groundingChains: ChainNode[][],
+  recruitedMechanismChains: ChainNode[][],
   backgroundNodes: ChainNode[],
   forcedNodeIds: string[],
   customTitle = '',
   customDescription = ''
 ): Promise<{ hookFact: string; step: CachedEncodingStep }> {
   const forcedIds = new Set(forcedNodeIds);
-  const serializedChains = prerequisiteChains.map((c) => c.map((n) => ({ nodeId: n.id, label: n.label, forceTeach: forcedIds.has(n.id) })));
+  const serializeChains = (chains: ChainNode[][]) => chains.map((c) => c.map((n) => ({ nodeId: n.id, label: n.label, forceTeach: forcedIds.has(n.id) })));
+  const serializedGroundingChains = serializeChains(groundingChains);
+  const serializedRecruitedMechanisms = serializeChains(recruitedMechanismChains);
 
   const result = await callJSON<{
     hookFact: string;
@@ -805,7 +852,8 @@ async function generateFirstStep(
       `Qualification: ${qualification || 'unspecified'}`,
       `Exam board: ${examBoard || 'unspecified'}`,
       `Original lesson title, exactly as the student named it: ${concept}`,
-      `prerequisiteChains — a list of SEPARATE linear chains, each ordered foundational-first ending at that chain's own direct prerequisite of the target: ${JSON.stringify(serializedChains)}`,
+      `groundingChains — concept-specific factual/structural prerequisites, a list of SEPARATE linear chains, each ordered foundational-first ending at that chain's own direct prerequisite of the target: ${JSON.stringify(serializedGroundingChains)}`,
+      `recruitedMechanisms — general, transferable mechanisms/principles the target concept's own derivation will recruit as reasoning tools (NOT pre-tested here), same chain shape: ${JSON.stringify(serializedRecruitedMechanisms)}`,
       `backgroundContext (already covered earlier — reference only, do not test, do not write a step): ${JSON.stringify(backgroundNodes.map((n) => ({ nodeId: n.id, label: n.label })))}`,
       ...(customDescription
         ? [
@@ -859,7 +907,8 @@ async function generateLessonContinuation(
   examBoard: string,
   chain: Chain,
   target: ChainNode,
-  prerequisiteChains: ChainNode[][],
+  groundingChains: ChainNode[][],
+  recruitedMechanismChains: ChainNode[][],
   backgroundNodes: ChainNode[],
   forcedNodeIds: string[],
   firstStep: CachedEncodingStep,
@@ -868,7 +917,9 @@ async function generateLessonContinuation(
 ): Promise<{ steps: CachedEncodingStep[] }> {
   const targetDerivable = resolveDerivable(target);
   const forcedIds = new Set(forcedNodeIds);
-  const serializedChains = prerequisiteChains.map((c) => c.map((n) => ({ nodeId: n.id, label: n.label, forceTeach: forcedIds.has(n.id) })));
+  const serializeChains = (chains: ChainNode[][]) => chains.map((c) => c.map((n) => ({ nodeId: n.id, label: n.label, forceTeach: forcedIds.has(n.id) })));
+  const serializedGroundingChains = serializeChains(groundingChains);
+  const serializedRecruitedMechanisms = serializeChains(recruitedMechanismChains);
 
   const batch = await callJSON<{
     steps: {
@@ -880,7 +931,7 @@ async function generateLessonContinuation(
       requiresCalculation?: boolean;
       expectedSolution?: string;
     }[];
-    diagram?: { needed: boolean; searchQuery: string | null };
+    diagram?: { needed: boolean; searchQuery: string | null; forNodeId?: string | null };
   }>(
     ENCODING_LESSON_CONTINUATION_PROMPT,
     [
@@ -891,7 +942,8 @@ async function generateLessonContinuation(
       `Target concept (this exact lesson — every step must build toward THIS, not a related or more general concept): ${target?.label || concept}`,
       `Original lesson title, exactly as the student named it: ${concept}`,
       `Target concept is derivable from its close prerequisites: ${targetDerivable}`,
-      `prerequisiteChains — a list of SEPARATE linear chains, each ordered foundational-first ending at that chain's own direct prerequisite of the target: ${JSON.stringify(serializedChains)}`,
+      `groundingChains — concept-specific factual/structural prerequisites, a list of SEPARATE linear chains, each ordered foundational-first ending at that chain's own direct prerequisite of the target: ${JSON.stringify(serializedGroundingChains)}`,
+      `recruitedMechanisms — general, transferable mechanisms/principles the target concept's own derivation should recruit as reasoning tools (NOT pre-tested — no check/mechanistic_check step for these), same chain shape: ${JSON.stringify(serializedRecruitedMechanisms)}`,
       `backgroundContext (already covered earlier — reference only, do not test, do not write a step): ${JSON.stringify(backgroundNodes.map((n) => ({ nodeId: n.id, label: n.label })))}`,
       `First step already generated and shown to (and answered by) the student — do not repeat it: ${JSON.stringify({ nodeId: firstStep.nodeId, type: firstStep.type, text: firstStep.text, checkQuestion: firstStep.checkQuestion })}`,
       ...(customDescription
@@ -922,10 +974,22 @@ async function generateLessonContinuation(
     expectedSolution: s.requiresCalculation ? s.expectedSolution : undefined,
   }));
 
+  // "forNodeId" lets the diagram ground a STRUCTURAL/GROUNDING prerequisite
+  // instead of always the target concept itself — see
+  // ENCODING_LESSON_CONTINUATION_PROMPT's subject-dependent grounding rule:
+  // for a subject where seeing what a structure actually looks like is what
+  // makes the reasoning click (biology, anatomy, circuit diagrams), the
+  // diagram is far more useful anchoring the grounding step that names and
+  // locates that structure than illustrating the fully-derived target at
+  // the very end. Falls back to the target itself when omitted/unmatched —
+  // exactly today's behavior for subjects where that's still the right call.
+  const diagramForNode = batch.diagram?.forNodeId ? nodesById.get(batch.diagram.forNodeId) : null;
+  const diagramLabel = diagramForNode?.label || target.label;
+
   const diagramPromise =
     batch.diagram?.needed && batch.diagram.searchQuery
       ? withTimeout(
-          getOrFetchDiagram(conceptKey, qualification, examBoard, subject, target.label, batch.diagram.searchQuery).catch((err) => {
+          getOrFetchDiagram(conceptKey, qualification, examBoard, subject, diagramLabel, batch.diagram.searchQuery).catch((err) => {
             console.error('LastMind: diagram lookup failed, proceeding without one.', err);
             return null;
           }),
@@ -941,9 +1005,18 @@ async function generateLessonContinuation(
   const steps: CachedEncodingStep[] = draftSteps.map(({ confident, ...step }) => step);
 
   if (steps.length && diagram) {
-    const targetSteps = steps.filter((s) => s.nodeId === target.id && (s.type === 'derive' || s.type === 'explain'));
-    const targetStep = targetSteps[targetSteps.length - 1];
-    if (targetStep) targetStep.diagram = diagram;
+    // Only ever looks within THIS call's own generated steps — a
+    // forNodeId whose only step was the FIRST step (already generated and
+    // shown to the student in phase 1, before this diagram decision even
+    // happened) simply doesn't get a diagram attached; same harmless
+    // fallback as any other diagram-resolution miss, not worth the
+    // complexity of retroactively patching an already-sent response.
+    const diagramNodeId = diagramForNode ? diagramForNode.id : target.id;
+    const candidateSteps = steps.filter((s) => s.nodeId === diagramNodeId);
+    const teachingBeats = candidateSteps.filter((s) => s.type === 'derive' || s.type === 'explain');
+    const preferred = teachingBeats.length ? teachingBeats : candidateSteps;
+    const chosenStep = preferred[preferred.length - 1];
+    if (chosenStep) chosenStep.diagram = diagram;
   }
 
   return { steps };

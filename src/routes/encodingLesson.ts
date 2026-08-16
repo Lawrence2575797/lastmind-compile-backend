@@ -2,13 +2,46 @@ import { Router, Request, Response } from 'express';
 import { requireAuth } from '../services/authMiddleware';
 import { costlyEndpointLimiter } from '../services/rateLimiters';
 import { normalizeConceptKey } from '../services/chainService';
-import { startEncodingLesson, continueEncodingLesson, submitEncodingAnswer, generateNotesFromLesson, EncodingLessonState } from '../services/encodingLessonService';
+import { startEncodingLesson, continueEncodingLesson, submitEncodingAnswer, generateNotesFromLesson, getEncodingLessonOutline, EncodingLessonState } from '../services/encodingLessonService';
 
 const router = Router();
 
 router.use('/encoding-lesson', requireAuth);
 
-// POST /encoding-lesson/start  { subject, topic, concept, qualification?, examBoard?, siblingConcepts?, customTitle?, customDescription? }
+// POST /encoding-lesson/outline  { subject, topic, concept, qualification?, examBoard?, customTitle?, customDescription? }
+// -> { targetLabel, groundingKnowledge: [{nodeId,label}], recruitedKnowledge: [{nodeId,label}] }
+// Shown before the lesson itself starts generating — lets the student see
+// what the lesson assumes/will check and flag anything they're not
+// actually confident about, before the lesson leans on it. Cheap: only
+// reads/generates the dependency graph (already independently cached),
+// never touches lesson content. The returned node ids are exactly what a
+// following /encoding-lesson/start call's own selfReportedUnsureNodeIds
+// should contain — same cached chain, same ids.
+router.post('/encoding-lesson/outline', costlyEndpointLimiter, async (req: Request, res: Response) => {
+  const { subject, topic, concept, qualification, examBoard, customTitle, customDescription } = req.body ?? {};
+  if (typeof subject !== 'string' || typeof topic !== 'string' || typeof concept !== 'string') {
+    return res.status(400).json({ error: 'subject, topic, and concept are all required' });
+  }
+  try {
+    const conceptKey = normalizeConceptKey(subject, topic, concept);
+    const outline = await getEncodingLessonOutline(
+      conceptKey,
+      subject,
+      topic,
+      concept,
+      typeof qualification === 'string' ? qualification : '',
+      typeof examBoard === 'string' ? examBoard : '',
+      typeof customTitle === 'string' ? customTitle : '',
+      typeof customDescription === 'string' ? customDescription : ''
+    );
+    res.json(outline);
+  } catch (err) {
+    console.error('Encoding lesson outline failed:', err);
+    res.status(500).json({ error: 'could not prepare this lesson\'s outline' });
+  }
+});
+
+// POST /encoding-lesson/start  { subject, topic, concept, qualification?, examBoard?, siblingConcepts?, customTitle?, customDescription?, selfReportedUnsureNodeIds? }
 // The first-time lesson for a concept — a novelty hook fact, a
 // knowledge-check of its close prerequisites, then deriving the concept
 // itself and its implications. See encodingLessonService.ts for the full
@@ -21,14 +54,22 @@ router.use('/encoding-lesson', requireAuth);
 // folder (no formal qualification) — see chainService.ts's
 // customContextDigest — and carried forward through the returned state's
 // own customTitle/customDescription fields, so /continue doesn't need them
-// resent.
+// resent. selfReportedUnsureNodeIds is the outline-step checklist result
+// (see /encoding-lesson/outline) — node ids the student flagged as not
+// actually confident about, folded into forceTeach alongside the existing
+// unfinished-sibling/technique signals. Optional — omitting it (the
+// outline step is skippable, e.g. when it returned nothing to assess)
+// behaves exactly as before this existed.
 router.post('/encoding-lesson/start', costlyEndpointLimiter, async (req: Request, res: Response) => {
-  const { subject, topic, concept, qualification, examBoard, siblingConcepts, customTitle, customDescription } = req.body ?? {};
+  const { subject, topic, concept, qualification, examBoard, siblingConcepts, customTitle, customDescription, selfReportedUnsureNodeIds } = req.body ?? {};
   if (typeof subject !== 'string' || typeof topic !== 'string' || typeof concept !== 'string') {
     return res.status(400).json({ error: 'subject, topic, and concept are all required' });
   }
   const cleanSiblings = Array.isArray(siblingConcepts)
     ? siblingConcepts.filter((s) => s && typeof s.label === 'string').map((s) => ({ label: s.label, done: !!s.done }))
+    : [];
+  const cleanUnsureIds = Array.isArray(selfReportedUnsureNodeIds)
+    ? selfReportedUnsureNodeIds.filter((id) => typeof id === 'string')
     : [];
 
   try {
@@ -42,7 +83,8 @@ router.post('/encoding-lesson/start', costlyEndpointLimiter, async (req: Request
       typeof examBoard === 'string' ? examBoard : '',
       cleanSiblings,
       typeof customTitle === 'string' ? customTitle : '',
-      typeof customDescription === 'string' ? customDescription : ''
+      typeof customDescription === 'string' ? customDescription : '',
+      cleanUnsureIds
     );
     res.json(result);
   } catch (err) {

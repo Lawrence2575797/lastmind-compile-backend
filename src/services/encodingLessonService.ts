@@ -435,6 +435,38 @@ async function repairUncertainSteps(
   const establishedSoFar: { label: string; text: string }[] = [];
 
   for (const step of steps) {
+    // A stacked-question step is mechanically detectable — a well-formed
+    // question should end in exactly one "?" and never contain another one
+    // earlier. Relying purely on the independent check to NOTICE this on
+    // its own kept letting it through often enough that it was still
+    // reaching students after that check became mandatory on every step —
+    // so hand it hard evidence instead of hoping it spots the pattern
+    // itself (see STEP_DERIVABILITY_CHECK_PROMPT's own handling of this
+    // flag, which makes revision non-optional once given).
+    //
+    // The OPERATIVE field is "checkQuestion" for an "explain" step (that's
+    // what the student actually answers — "text" is the explanation
+    // itself, which legitimately doesn't end in a question at all) and
+    // "text" for every other type — checking the wrong field here would
+    // silently miss exactly half of all step types.
+    const operativeField = step.type === 'explain' ? 'checkQuestion' : 'text';
+    const operativeText = step.type === 'explain' ? (step.checkQuestion || '') : step.text;
+    const questionMarkCount = (operativeText.match(/\?/g) || []).length;
+    const flags: string[] = [];
+    if (questionMarkCount >= 2) {
+      flags.push(`AUTOMATED FLAG: a mechanical scan counted ${questionMarkCount} question marks in this step's "${operativeField}" — dimension 2 (stacked questions) has already failed; revision is mandatory.`);
+    }
+    // A DIFFERENT failure shape, specific to "explain" steps: "text" is
+    // pure explanation and must contain ZERO question marks of its own
+    // (rule 2's own exemption for this type) — an explanation that ends
+    // with even one rhetorical "?" of its own, immediately followed by the
+    // separate, required "checkQuestion", is the same stacked-question
+    // problem spread across two adjacent rendered fields instead of one.
+    const explainTextQuestionMarkCount = step.type === 'explain' ? (step.text.match(/\?/g) || []).length : 0;
+    if (explainTextQuestionMarkCount >= 1) {
+      flags.push(`AUTOMATED FLAG: a mechanical scan counted ${explainTextQuestionMarkCount} question mark(s) in this "explain" step's "text" — it must contain none (see rule 2's exemption for this type); the student sees "text" immediately followed by "checkQuestion", so a question mark here creates the same stacked-question problem as dimension 2, just split across two fields. Revise "text" to remove it — rephrase as a statement, or move the point into "checkQuestion" if that's actually where it belongs.`);
+    }
+    const automatedFlag = flags.length ? `\n${flags.join('\n')}` : '';
     try {
       const result = await callJSON<{
         needsRevision: boolean;
@@ -450,7 +482,7 @@ async function repairUncertainSteps(
           `Established so far, in order: ${JSON.stringify(establishedSoFar)}`,
           `Step — type: ${step.type}, text: ${step.text}${step.checkQuestion ? `, checkQuestion: ${step.checkQuestion}` : ''}${
             step.requiresCalculation ? `, requiresCalculation: true, expectedSolution: ${step.expectedSolution || ''}` : ''
-          }`,
+          }${automatedFlag}`,
         ].join('\n'),
         MODELS.diagnosticTree,
         0.2
@@ -459,6 +491,19 @@ async function repairUncertainSteps(
         if (result.revisedText) step.text = result.revisedText;
         if (step.type === 'explain' && result.revisedCheckQuestion) step.checkQuestion = result.revisedCheckQuestion;
         if (step.requiresCalculation && result.revisedExpectedSolution) step.expectedSolution = result.revisedExpectedSolution;
+      }
+      // Each flag makes revision mandatory — if the model still didn't
+      // comply (ignored a flag, or complied but that field's revised
+      // counterpart never actually arrived), this step ships with the
+      // known stacked-question bug intact. Loud, not thrown — same
+      // best-effort posture as every other repair failure — but worth
+      // surfacing, since a repeat of this in the logs is a sign the prompt
+      // itself needs revisiting again, not just this one lesson.
+      const revisedOperativeField = step.type === 'explain' ? result.revisedCheckQuestion : result.revisedText;
+      const operativeFieldStillBroken = questionMarkCount >= 2 && (!result.needsRevision || !revisedOperativeField);
+      const explainTextStillBroken = explainTextQuestionMarkCount >= 1 && (!result.needsRevision || !result.revisedText);
+      if (operativeFieldStillBroken || explainTextStillBroken) {
+        console.error('LastMind: stacked-question step survived a mandatory-revision flag — shipping with the bug intact.', { label: step.label, operativeField, operativeText, explainTextQuestionMarkCount, text: step.text });
       }
     } catch (err) {
       // A failed verification call just means the original draft ships

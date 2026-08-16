@@ -177,6 +177,13 @@ export interface EncodingLessonState {
   // qualification-based folder.
   customTitle: string;
   customDescription: string;
+  // Node ids the student flagged "not confident about" on the pre-lesson
+  // outline (see getEncodingLessonOutline) — see startEncodingLesson's own
+  // comment on why this counts toward forceTeach. Always present (empty
+  // array when the outline step was skipped or nothing was flagged) so
+  // continueEncodingLesson can recompute the identical forcedNodeIds/
+  // contentKey without a second round-trip of this list from the client.
+  selfReportedUnsureNodeIds: string[];
   // Set to the step index that was just reworded after a "misread"
   // verdict (see submitEncodingAnswer) — checked on the NEXT submit for
   // that SAME index to cap this at exactly one reword attempt per step,
@@ -597,6 +604,84 @@ async function repairUncertainSteps(
  * first place — it's a fast, independently-cached read, not an LLM call,
  * so this costs one extra DB round trip per lesson start, not a Claude call.
  */
+export interface EncodingLessonOutlineItem {
+  nodeId: string;
+  label: string;
+}
+
+export interface EncodingLessonOutline {
+  targetLabel: string;
+  // Concept-specific factual/structural prerequisites — pre-tested by the
+  // lesson itself via a check/mechanistic_check step regardless of what
+  // the student says here; shown so the student can see WHAT will be
+  // checked, and flag one as shaky ahead of time so it gets actually
+  // taught (see the selfReportedUnsureNodeIds path) rather than just
+  // failed-then-remediated after the fact.
+  groundingKnowledge: EncodingLessonOutlineItem[];
+  // General, transferable mechanisms the lesson assumes fluent and
+  // recruits directly into the target derivation WITHOUT a separate test
+  // (see splitChainsByMechanism) — this is exactly the category where a
+  // real gap can otherwise go completely undetected until the lesson is
+  // already several steps deep into leaning on it (e.g. a Kc calculation
+  // silently assuming the student can already balance the equation it's
+  // built on) — flagging one here is the only way to catch that BEFORE
+  // the lesson starts leaning on it, since nothing else ever asks.
+  recruitedKnowledge: EncodingLessonOutlineItem[];
+}
+
+/**
+ * Cheap, chain-only lookup (no lesson-content generation) for the
+ * pre-lesson outline the frontend shows before a first-time encoding
+ * lesson starts — see learn/index.html's outline+self-assessment step.
+ * Reuses the SAME cached dependency graph startEncodingLesson itself will
+ * read moments later, so the node ids returned here are guaranteed to
+ * match whatever startEncodingLesson computes when the student's
+ * self-reported unsure ids are passed back to it.
+ */
+export async function getEncodingLessonOutline(
+  conceptKey: string,
+  subject: string,
+  topic: string,
+  concept: string,
+  qualification = '',
+  examBoard = '',
+  customTitle = '',
+  customDescription = ''
+): Promise<EncodingLessonOutline> {
+  const chainResult = await getOrGenerateChain(conceptKey, subject, topic, concept, qualification, examBoard, customTitle, customDescription);
+  if (!chainResult.chain) {
+    throw new Error('Could not generate a dependency chain for this concept.');
+  }
+  const chain = chainResult.chain as Chain;
+  const target = chain.nodes[chain.nodes.length - 1];
+  const allChains = buildPrerequisiteChains(chain, target);
+  const { groundingChains, recruitedMechanismChains } = splitChainsByMechanism(allChains);
+
+  // Same node can legitimately appear in more than one chain (a shared
+  // deep ancestor of two direct prerequisites — see buildPrerequisiteChains'
+  // own comment) — dedupe here since the student only needs to see and
+  // self-assess it once, unlike the lesson-writing prompts which need each
+  // chain's own complete, self-contained lineage.
+  function toItems(chains: ChainNode[][]): EncodingLessonOutlineItem[] {
+    const seen = new Set<string>();
+    const items: EncodingLessonOutlineItem[] = [];
+    for (const c of chains) {
+      for (const n of c) {
+        if (seen.has(n.id)) continue;
+        seen.add(n.id);
+        items.push({ nodeId: n.id, label: n.label });
+      }
+    }
+    return items;
+  }
+
+  return {
+    targetLabel: target.label,
+    groundingKnowledge: toItems(groundingChains),
+    recruitedKnowledge: toItems(recruitedMechanismChains),
+  };
+}
+
 export async function startEncodingLesson(
   conceptKey: string,
   subject: string,
@@ -606,7 +691,13 @@ export async function startEncodingLesson(
   examBoard = '',
   siblingConcepts: SiblingConcept[] = [],
   customTitle = '',
-  customDescription = ''
+  customDescription = '',
+  // Node ids the student themselves flagged as "not confident about" on
+  // the pre-lesson outline (see getEncodingLessonOutline) — folded into
+  // forceTeach exactly like matchesUnfinishedSibling/technique below.
+  // Round-tripped through `state` (not re-derived) so continueEncodingLesson
+  // computes the IDENTICAL forcedNodeIds/contentKey phase 1 already used.
+  selfReportedUnsureNodeIds: string[] = []
 ): Promise<EncodingStartResult> {
   const chainResult = await getOrGenerateChain(conceptKey, subject, topic, concept, qualification, examBoard, customTitle, customDescription);
   if (!chainResult.chain) {
@@ -647,9 +738,16 @@ export async function startEncodingLesson(
   // cached before this was recognized. Applies identically whether a node
   // sits in a groundingChain or a recruitedMechanismChain — forceTeach
   // means "actually teach this", independent of whether it also gets a
-  // dedicated check step.
+  // dedicated check step. A student's own "I'm not confident about this"
+  // flag from the pre-lesson outline counts exactly the same way — it's
+  // just as valid a signal that a node needs actual teaching as an
+  // unfinished sibling page or a technique flag, and the AI-generated
+  // dependency graph's own classification (grounding vs recruited
+  // mechanism) can always be wrong for THIS specific student regardless of
+  // what it's usually safe to assume.
+  const selfReportedUnsureIds = new Set(selfReportedUnsureNodeIds);
   const forcedNodeIds = chainNodes
-    .filter((n) => matchesUnfinishedSibling(n.label, siblingConcepts) || !!n.technique)
+    .filter((n) => matchesUnfinishedSibling(n.label, siblingConcepts) || !!n.technique || selfReportedUnsureIds.has(n.id))
     .map((n) => n.id)
     .sort();
 
@@ -713,7 +811,7 @@ export async function startEncodingLesson(
   // instead (see submitEncodingAnswer).
   const steps: EncodingStep[] = cachedSteps.map(({ expectedSolution, ...step }) => step);
 
-  const state: EncodingLessonState = { conceptKey, subject, steps, currentIndex: 0, anyCoreStepWrong: false, anyOtherStepWrong: false, contentKey, qualification, examBoard, customTitle, customDescription };
+  const state: EncodingLessonState = { conceptKey, subject, steps, currentIndex: 0, anyCoreStepWrong: false, anyOtherStepWrong: false, contentKey, qualification, examBoard, customTitle, customDescription, selfReportedUnsureNodeIds };
   return { done: false, hookFact, step: steps[0], state, contentReady };
 }
 
@@ -738,7 +836,7 @@ export async function continueEncodingLesson(
   concept: string,
   siblingConcepts: SiblingConcept[] = []
 ): Promise<EncodingLessonState> {
-  const { conceptKey, subject, qualification, examBoard, contentKey, customTitle = '', customDescription = '' } = state;
+  const { conceptKey, subject, qualification, examBoard, contentKey, customTitle = '', customDescription = '', selfReportedUnsureNodeIds = [] } = state;
 
   // Another concurrent cold-cache request for this exact concept may have
   // already finished and cached the full lesson — adopt it rather than
@@ -787,8 +885,9 @@ export async function continueEncodingLesson(
   const chainNodes = allChains.flat();
   const coveredIds = new Set([...chainNodes.map((n) => n.id), target.id]);
   const backgroundNodes = chain.nodes.filter((n) => !coveredIds.has(n.id));
+  const selfReportedUnsureIds = new Set(selfReportedUnsureNodeIds);
   const forcedNodeIds = chainNodes
-    .filter((n) => matchesUnfinishedSibling(n.label, siblingConcepts) || !!n.technique)
+    .filter((n) => matchesUnfinishedSibling(n.label, siblingConcepts) || !!n.technique || selfReportedUnsureIds.has(n.id))
     .map((n) => n.id)
     .sort();
 

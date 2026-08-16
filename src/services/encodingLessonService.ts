@@ -9,6 +9,7 @@ import {
   ENCODING_ANSWER_CHECK_PROMPT,
   MECHANISTIC_CHECK_ANSWER_PROMPT,
   ENCODING_MATH_ANSWER_CHECK_PROMPT,
+  EXPLICIT_QUESTION_PROMPT,
   DIAGRAM_VERIFICATION_PROMPT,
   STEP_DERIVABILITY_CHECK_PROMPT,
   NOTES_FROM_LESSON_PROMPT,
@@ -176,6 +177,13 @@ export interface EncodingLessonState {
   // qualification-based folder.
   customTitle: string;
   customDescription: string;
+  // Set to the step index that was just reworded after a "misread"
+  // verdict (see submitEncodingAnswer) — checked on the NEXT submit for
+  // that SAME index to cap this at exactly one reword attempt per step,
+  // rather than looping forever if the student keeps misreading. A
+  // genuinely wrong answer on the reworded retry falls through to normal
+  // grading (and the diagnostic drill-down on failure) like any other step.
+  reframedStepIndex?: number;
 }
 
 export interface EncodingStartResult {
@@ -212,6 +220,14 @@ export interface EncodingSubmitResult {
   step?: EncodingStep;
   state: EncodingLessonState;
   fsrsUpdate?: FsrsUpdateSummary;
+  // True when this result is a REWORDED re-ask of the SAME step (see
+  // "step"), not a graded outcome — the grading call decided the student's
+  // answer was responding to a different question than the one asked, not
+  // that they got the real question wrong. `state.currentIndex` is
+  // unchanged; nothing here counts toward anyCoreStepWrong/
+  // anyOtherStepWrong or FSRS. The frontend should just re-render `step`
+  // in place of the one just answered, with no "incorrect" framing.
+  misread?: boolean;
 }
 
 // Chains cached before the "derivable" field existed default to: a node
@@ -1068,6 +1084,13 @@ export async function submitEncodingAnswer(userId: string, state: EncodingLesson
   // Claude to grade an empty/absent answer.
   let correct: boolean;
   let feedback: string | null;
+  // Only ever set by the two free-text grading paths below (mechanistic_check
+  // and the ordinary path) — see ENCODING_ANSWER_CHECK_PROMPT/
+  // MECHANISTIC_CHECK_ANSWER_PROMPT's own "misread" rules. Not attempted
+  // for calculation steps (a precise numeric target is far less prone to
+  // this specific failure, and ENCODING_MATH_ANSWER_CHECK_PROMPT already
+  // grades against verified ground truth) or "I don't know" (unambiguous).
+  let misread = false;
   const gradingPrompt = currentStep.type === 'explain' ? (currentStep.checkQuestion || currentStep.text) : currentStep.text;
 
   if (dontKnow) {
@@ -1118,7 +1141,7 @@ export async function submitEncodingAnswer(userId: string, state: EncodingLesson
     // be explained relative to the qualification level. diagnosticTree,
     // not simpleQuestion, here — that calibration judgment call is worth
     // the step up, same reasoning as the calculation-grading path above.
-    const check = await callJSON<{ correct: boolean; feedback: string | null }>(
+    const check = await callJSON<{ correct: boolean; misread?: boolean; feedback: string | null }>(
       MECHANISTIC_CHECK_ANSWER_PROMPT,
       `Qualification: ${state.qualification || 'unspecified'}\nExam board: ${state.examBoard || 'unspecified'}\nConcept/step: ${currentStep.label}\nPrompt: ${gradingPrompt}\nStudent's answer: ${answer}`,
       MODELS.diagnosticTree,
@@ -1128,8 +1151,9 @@ export async function submitEncodingAnswer(userId: string, state: EncodingLesson
     );
     correct = check.correct;
     feedback = check.feedback;
+    misread = !!check.misread;
   } else {
-    const check = await callJSON<{ correct: boolean; feedback: string | null }>(
+    const check = await callJSON<{ correct: boolean; misread?: boolean; feedback: string | null }>(
       ENCODING_ANSWER_CHECK_PROMPT,
       `Concept/step: ${currentStep.label}\nPrompt: ${gradingPrompt}\nStudent's answer: ${answer}`,
       MODELS.simpleQuestion,
@@ -1139,6 +1163,28 @@ export async function submitEncodingAnswer(userId: string, state: EncodingLesson
     );
     correct = check.correct;
     feedback = check.feedback;
+    misread = !!check.misread;
+  }
+
+  // Cap at exactly one reword attempt per step — see EncodingLessonState's
+  // own comment on reframedStepIndex. A misread verdict on the RETRY of an
+  // already-reworded step falls straight through to normal wrong-answer
+  // handling below instead of rewording again.
+  if (misread && state.reframedStepIndex !== state.currentIndex) {
+    const isExplain = currentStep.type === 'explain';
+    const reword = await callJSON<{ question: string }>(
+      EXPLICIT_QUESTION_PROMPT,
+      `Original question (${isExplain ? '"checkQuestion" field — the explanatory "text" stays untouched' : '"text" field'}): ${gradingPrompt}\nStudent's answer (shows what they thought was being asked): ${answer}`,
+      MODELS.diagnosticTree,
+      0.3,
+      undefined,
+      true
+    );
+    const rewordedStep: EncodingStep = isExplain
+      ? { ...currentStep, checkQuestion: reword.question }
+      : { ...currentStep, text: reword.question };
+    const rewordedState: EncodingLessonState = { ...state, reframedStepIndex: state.currentIndex };
+    return { done: false, step: rewordedStep, state: rewordedState, misread: true };
   }
 
   const nextIndex = state.currentIndex + 1;

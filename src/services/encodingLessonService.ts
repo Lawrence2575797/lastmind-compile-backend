@@ -407,13 +407,24 @@ interface DraftStep {
 
 /**
  * Walks the drafted steps in order, sending a genuinely independent
- * verification/repair call — fresh eyes, no memory of why the first pass
- * was unsure — for any step the batch generation itself flagged as
- * "confident: false" after its own inline self-check. Only ever runs on a
- * cache miss (see startEncodingLesson), and only for the (hopefully rare)
- * steps actually flagged — most concepts trigger zero extra calls here.
- * Mutates the flagged steps' text/checkQuestion in place when a genuine
- * revision comes back.
+ * verification/repair call — fresh eyes, no memory of drafting it — for
+ * EVERY step, not just ones the batch generation itself flagged as
+ * "confident: false". Originally gated behind that self-reported flag, but
+ * the two specific failure modes this exists to catch (a stacked
+ * scene-question-then-general-question in one step, and a step whose own
+ * context hands the student the answer before asking) kept reaching
+ * students anyway — the author's inline self-check was missing them even
+ * though the generation prompt explicitly forbids both, most likely because
+ * a leaked-answer step trivially LOOKS like an easy pass under "would the
+ * student succeed", which is the only lens the self-check was applying.
+ * Running this unconditionally is the only way to actually guarantee
+ * coverage rather than hope improved wording changes what the model
+ * self-reports. Only ever runs on a cache miss (see startEncodingLesson) —
+ * once a concept's content is cached, every later student skips generation
+ * (and this verification) entirely, so the added cost is still strictly
+ * one-time-per-concept, not per-student.
+ * Mutates each step's text/checkQuestion in place when a genuine revision
+ * comes back.
  */
 async function repairUncertainSteps(
   steps: DraftStep[],
@@ -424,38 +435,36 @@ async function repairUncertainSteps(
   const establishedSoFar: { label: string; text: string }[] = [];
 
   for (const step of steps) {
-    if (step.confident === false) {
-      try {
-        const result = await callJSON<{
-          needsRevision: boolean;
-          revisedText: string | null;
-          revisedCheckQuestion: string | null;
-          revisedExpectedSolution: string | null;
-        }>(
-          STEP_DERIVABILITY_CHECK_PROMPT,
-          [
-            `Subject: ${subject}`,
-            `Qualification: ${qualification || 'unspecified'}`,
-            `Exam board: ${examBoard || 'unspecified'}`,
-            `Established so far, in order: ${JSON.stringify(establishedSoFar)}`,
-            `Flagged step — type: ${step.type}, text: ${step.text}${step.checkQuestion ? `, checkQuestion: ${step.checkQuestion}` : ''}${
-              step.requiresCalculation ? `, requiresCalculation: true, expectedSolution: ${step.expectedSolution || ''}` : ''
-            }`,
-          ].join('\n'),
-          MODELS.diagnosticTree,
-          0.2
-        );
-        if (result.needsRevision) {
-          if (result.revisedText) step.text = result.revisedText;
-          if (step.type === 'explain' && result.revisedCheckQuestion) step.checkQuestion = result.revisedCheckQuestion;
-          if (step.requiresCalculation && result.revisedExpectedSolution) step.expectedSolution = result.revisedExpectedSolution;
-        }
-      } catch (err) {
-        // A failed repair attempt just means the original (self-flagged-
-        // uncertain) draft ships as-is — never block the whole lesson on
-        // this being a best-effort quality pass, not a hard requirement.
-        console.error('LastMind: step derivability repair failed, keeping original draft.', err);
+    try {
+      const result = await callJSON<{
+        needsRevision: boolean;
+        revisedText: string | null;
+        revisedCheckQuestion: string | null;
+        revisedExpectedSolution: string | null;
+      }>(
+        STEP_DERIVABILITY_CHECK_PROMPT,
+        [
+          `Subject: ${subject}`,
+          `Qualification: ${qualification || 'unspecified'}`,
+          `Exam board: ${examBoard || 'unspecified'}`,
+          `Established so far, in order: ${JSON.stringify(establishedSoFar)}`,
+          `Step — type: ${step.type}, text: ${step.text}${step.checkQuestion ? `, checkQuestion: ${step.checkQuestion}` : ''}${
+            step.requiresCalculation ? `, requiresCalculation: true, expectedSolution: ${step.expectedSolution || ''}` : ''
+          }`,
+        ].join('\n'),
+        MODELS.diagnosticTree,
+        0.2
+      );
+      if (result.needsRevision) {
+        if (result.revisedText) step.text = result.revisedText;
+        if (step.type === 'explain' && result.revisedCheckQuestion) step.checkQuestion = result.revisedCheckQuestion;
+        if (step.requiresCalculation && result.revisedExpectedSolution) step.expectedSolution = result.revisedExpectedSolution;
       }
+    } catch (err) {
+      // A failed verification call just means the original draft ships
+      // as-is — never block the whole lesson on this being a best-effort
+      // quality pass, not a hard requirement.
+      console.error('LastMind: step derivability check failed, keeping original draft.', err);
     }
     establishedSoFar.push({ label: step.label, text: step.text });
   }

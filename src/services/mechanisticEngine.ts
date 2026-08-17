@@ -9,6 +9,7 @@ import {
   CHECK_ANSWER_AND_SLIP_PROMPT,
   MATH_ANSWER_CHECK_AND_SLIP_PROMPT,
   CUED_COMBINATION_PROMPT,
+  LOCALIZE_INTEGRATION_FAILURE_PROMPT,
   CORRECTION_PROMPT,
   REFRAME_QUESTION_PROMPT,
 } from '../constants/diagnosticPrompts';
@@ -65,7 +66,7 @@ export async function loadChainIfMechanistic(
   return chain;
 }
 
-export type MechanisticStage = 'encoding_check' | 'wm_relax' | 'localizing' | 'sub_diagnostic' | 'combination_check';
+export type MechanisticStage = 'encoding_check' | 'wm_relax' | 'localizing' | 'sub_diagnostic' | 'combination_check' | 'integration_check';
 
 export interface MechanisticState {
   conceptKey: string;
@@ -81,6 +82,15 @@ export interface MechanisticState {
   // correction addresses the actual specific error, not a generic template.
   misconceptionNotes: string[];
   confusedWith?: string;
+  // Set when combination_check's cued re-ask is STILL wrong and
+  // LOCALIZE_INTEGRATION_FAILURE_PROMPT finds real evidence pointing at
+  // one specific cued prerequisite — the node currently being tested in
+  // isolation during the 'integration_check' stage. Its label gets threaded
+  // into the eventual correction (see generateCorrection's extraLabel
+  // param) so a resolved integration diagnosis names the exact connection
+  // that was missing, instead of a generic "practice combining these"
+  // note — see CORRECTION_PROMPT's own "integration" bullet.
+  integrationLocalizedNodeId?: string;
   // Same self-audit gate as DiagnosticState.wmRelaxTrustworthy — see there.
   wmRelaxTrustworthy?: boolean;
   // Same purpose as DiagnosticState.lastShownQuestion — see there.
@@ -116,12 +126,13 @@ export interface MechanisticResult {
 
 // Mirrors diagnosticEngine.ts's currentQuestionCalcInfo of the same
 // purpose — which calc info describes whatever's CURRENTLY on screen,
-// given the stage. 'wm_relax' and 'localizing' are grading a question
-// this engine itself just generated (lastGenerated*); every other
-// free-text stage ('encoding_check' at entry, 'combination_check') is
-// testing originalQuestion itself, directly or cued.
+// given the stage. 'wm_relax', 'localizing', and 'integration_check' are
+// all grading a question this engine itself just generated
+// (lastGenerated*); every other free-text stage ('encoding_check' at
+// entry, 'combination_check') is testing originalQuestion itself,
+// directly or cued.
 function currentQuestionCalcInfo(state: MechanisticState): { requiresCalculation: boolean; expectedSolution?: string } {
-  if (state.stage === 'wm_relax' || state.stage === 'localizing') {
+  if (state.stage === 'wm_relax' || state.stage === 'localizing' || state.stage === 'integration_check') {
     return { requiresCalculation: !!state.lastGeneratedRequiresCalculation, expectedSolution: state.lastGeneratedExpectedSolution };
   }
   return { requiresCalculation: !!state.originalQuestionRequiresCalculation, expectedSolution: state.originalQuestionExpectedSolution };
@@ -144,13 +155,21 @@ function appendNote(state: MechanisticState, note: string | null | undefined): M
   return { ...state, misconceptionNotes: [...state.misconceptionNotes, note] };
 }
 
-async function generateCorrection(conceptLabel: string, diagnosis: string, state: MechanisticState): Promise<string> {
+// extraLabel — see integrationLocalizedNodeId's own comment: the specific
+// prerequisite the student demonstrably CAN do in isolation but still
+// isn't connecting to the target, when known. Only meaningful alongside
+// diagnosis 'integration' (see CORRECTION_PROMPT's own handling of it),
+// harmless to pass for anything else since it's just an extra context line.
+async function generateCorrection(conceptLabel: string, diagnosis: string, state: MechanisticState, extraLabel?: string): Promise<string> {
   const contextLines = [`Concept: ${conceptLabel}`, `Diagnosis: ${diagnosis}`];
   if (state.misconceptionNotes.length) {
     contextLines.push(`Specific misconception observed: ${state.misconceptionNotes[state.misconceptionNotes.length - 1]}`);
   }
   if (state.confusedWith) {
     contextLines.push(`Specifically confused with: ${state.confusedWith}`);
+  }
+  if (extraLabel) {
+    contextLines.push(`Demonstrably already knows this on its own, just isn't connecting it to the target: ${extraLabel}`);
   }
   const result = await callJSON<{ correction: string }>(CORRECTION_PROMPT, contextLines.join('\n'), MODELS.diagnosticTree, 0.3);
   return result.correction;
@@ -401,6 +420,64 @@ async function resumeWrongAnswerContinuation(userId: string, state: MechanisticS
         await gradeAndRecordReview(userId, state.conceptKey, 'again');
         return { done: true, diagnosis: 'global_chain_failure', correction: await generateCorrection(state.targetConceptLabel, 'global_chain_failure', state), state, answerCorrect: false };
       }
+
+      // Even naming which prerequisites to combine wasn't enough — before
+      // concluding a blanket "integration failure", check whether the
+      // wrong answer's own content (captured as the latest misconception
+      // note by checkAnswer, just before this) gives real evidence that
+      // ONE specific cued prerequisite is actually the culprit. This is
+      // worth checking even though findBrokenPrerequisite already tried
+      // earlier in this same flow — that pass only ever trusted stored
+      // FSRS mastery status, never the actual content of what the student
+      // just wrote (see LOCALIZE_INTEGRATION_FAILURE_PROMPT's own comment).
+      const target = findNode(state.chain, state.chain.nodes[state.chain.nodes.length - 1].id);
+      const prereqNodes = (target?.depends_on || [])
+        .map((e) => findNode(state.chain, e.node_id))
+        .filter((n): n is ChainNode => !!n);
+      const latestNote = state.misconceptionNotes[state.misconceptionNotes.length - 1];
+
+      if (prereqNodes.length && latestNote) {
+        const localized = await callJSON<{ localizedNodeId: string | null }>(
+          LOCALIZE_INTEGRATION_FAILURE_PROMPT,
+          [
+            `Target concept: ${state.targetConceptLabel}`,
+            `Cued prerequisites: ${JSON.stringify(prereqNodes.map((n) => ({ id: n.id, label: n.label })))}`,
+            `Question (with cue): ${state.lastShownQuestion || state.originalQuestion}`,
+            `What the wrong answer specifically revealed: ${latestNote}`,
+          ].join('\n'),
+          MODELS.diagnosticTree,
+          0.2
+        );
+        const localizedNode = localized.localizedNodeId ? prereqNodes.find((n) => n.id === localized.localizedNodeId) : undefined;
+
+        if (localizedNode) {
+          // Same "ask a fresh, standalone question about this exact node"
+          // tool findBrokenPrerequisite already uses — reused here for
+          // consistency, just triggered by content-based evidence instead
+          // of an FSRS mastery lookup.
+          const isolated = await callJSON<{ question: string; requiresCalculation?: boolean; expectedSolution?: string }>(
+            LOCALIZATION_CHECK_PROMPT,
+            `Subject: ${state.subject}\nConcept: ${localizedNode.label}`,
+            MODELS.diagnosticTree,
+            0.3
+          );
+          return {
+            done: false,
+            nextQuestion: isolated.question,
+            state: {
+              ...state,
+              stage: 'integration_check',
+              integrationLocalizedNodeId: localizedNode.id,
+              lastShownQuestion: isolated.question,
+              lastGeneratedRequiresCalculation: !!isolated.requiresCalculation,
+              lastGeneratedExpectedSolution: isolated.requiresCalculation ? isolated.expectedSolution : undefined,
+            },
+            answerCorrect: false,
+            nextRequiresCalculation: !!isolated.requiresCalculation,
+          };
+        }
+      }
+
       await gradeAndRecordReview(userId, state.conceptKey, 'again');
       return { done: true, diagnosis: 'integration', correction: await generateCorrection(state.targetConceptLabel, 'integration', state), state, answerCorrect: false };
     }
@@ -585,6 +662,59 @@ export async function processMechanisticAnswer(
       }
 
       return advanceAfterWrongAnswer(userId, notedState);
+    }
+
+    // Grades the isolated, no-context test of whichever single prerequisite
+    // LOCALIZE_INTEGRATION_FAILURE_PROMPT identified (see the
+    // 'combination_check' case above) — the answer here splits what would
+    // otherwise be a blanket "integration failure" into two genuinely
+    // different outcomes.
+    case 'integration_check': {
+      const localizedNode = findNode(state.chain, state.integrationLocalizedNodeId || '');
+      const check = await checkAnswer(
+        localizedNode?.label || state.targetConceptLabel,
+        '(isolated check)',
+        answer,
+        state.lastGeneratedRequiresCalculation ? state.lastGeneratedExpectedSolution : undefined
+      );
+      const notedState = appendNote(state, check.misconceptionNote);
+
+      // The combined derivation still failed overall regardless of which
+      // branch below this resolves to — the target's own FSRS record
+      // reflects that either way.
+      await gradeAndRecordReview(userId, state.conceptKey, 'again');
+
+      if (!check.correct) {
+        // Can't do it even on its own, with no surrounding context — a
+        // real encoding gap on this SPECIFIC prerequisite, not a
+        // combination problem. Grades that node's own FSRS record too,
+        // distinctly from the target's — same split
+        // sub_diagnostic/finish() already does for a nested atomic
+        // diagnosis, just without the full nested tree since one direct
+        // isolated question is enough to tell these two cases apart.
+        if (localizedNode) await gradeAndRecordReview(userId, localizedNode.id, 'again');
+        return {
+          done: true,
+          diagnosis: 'encoding',
+          correction: await generateCorrection(localizedNode?.label || state.targetConceptLabel, 'encoding', notedState),
+          state: notedState,
+          answerCorrect: false,
+        };
+      }
+
+      // Genuinely can do it standalone — this IS integration failure, but
+      // now a scoped one: the correction can name exactly which
+      // already-known piece isn't connecting, instead of a generic
+      // "practice combining these" note (see generateCorrection's
+      // extraLabel param and CORRECTION_PROMPT's own "integration" bullet).
+      if (localizedNode) await gradeAndRecordReview(userId, localizedNode.id, 'good');
+      return {
+        done: true,
+        diagnosis: 'integration',
+        correction: await generateCorrection(state.targetConceptLabel, 'integration', notedState, localizedNode?.label),
+        state: notedState,
+        answerCorrect: true,
+      };
     }
 
     default:

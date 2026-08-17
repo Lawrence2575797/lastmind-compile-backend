@@ -192,6 +192,15 @@ export interface EncodingLessonState {
   // genuinely wrong answer on the reworded retry falls through to normal
   // grading (and the diagnostic drill-down on failure) like any other step.
   reframedStepIndex?: number;
+  // Set to the step index that was just given ONE partial-understanding
+  // follow-up (see submitEncodingAnswer's "partiallyUnderstood" branch) —
+  // checked on the NEXT submit for that SAME index to cap this at exactly
+  // one re-explain attempt per step, mirroring reframedStepIndex's own
+  // cap. A student who still can't complete the explanation on THIS
+  // second attempt falls through to normal wrong-answer handling (and the
+  // diagnostic drill-down) — the tutee genuinely can't diagnose it,
+  // Cortex has to step in.
+  partialReattemptStepIndex?: number;
 }
 
 export interface EncodingStartResult {
@@ -236,6 +245,23 @@ export interface EncodingSubmitResult {
   // anyOtherStepWrong or FSRS. The frontend should just re-render `step`
   // in place of the one just answered, with no "incorrect" framing.
   misread?: boolean;
+  // The tutee's own in-character reaction to this answer — populated
+  // whenever the grading call itself produced one (every case except a
+  // misread, which gets a reworded question instead — see ENCODING_
+  // ANSWER_CHECK_PROMPT/MECHANISTIC_CHECK_ANSWER_PROMPT's own "tuteeSays"
+  // rules). Replaces a neutral "Correct"/"Corrected" label in the
+  // frontend with the tutee actually reacting to what was explained.
+  tuteeSays?: string | null;
+  // True when this result is the tutee's ONE partial-understanding
+  // follow-up (see partialReattemptStepIndex) — the student showed real
+  // but incomplete understanding, so `step` is the SAME step re-served
+  // for one more attempt at exactly the missing piece, not a graded
+  // pass/fail. `state.currentIndex` is unchanged; nothing here counts
+  // toward anyCoreStepWrong/anyOtherStepWrong or FSRS yet — only a SECOND
+  // failure (this flag absent next time) does. Distinct from `misread`:
+  // this is a genuine content gap the student is being given a fair shot
+  // to close themselves, not a question-clarity problem.
+  partialFollowUp?: boolean;
 }
 
 // Chains cached before the "derivable" field existed default to: a node
@@ -1268,6 +1294,14 @@ export async function submitEncodingAnswer(userId: string, state: EncodingLesson
   // this specific failure, and ENCODING_MATH_ANSWER_CHECK_PROMPT already
   // grades against verified ground truth) or "I don't know" (unambiguous).
   let misread = false;
+  // Same scope as `misread` above (the two free-text grading paths only) —
+  // see ENCODING_ANSWER_CHECK_PROMPT/MECHANISTIC_CHECK_ANSWER_PROMPT's own
+  // "partiallyUnderstood"/"tuteeSays" rules. Deliberately left at their
+  // defaults for calculation/bypass/"I don't know" answers — "explain
+  // what's missing" doesn't map onto a numeric answer, and there's no real
+  // explanation for the tutee to react to in the other two.
+  let partiallyUnderstood = false;
+  let tuteeSays: string | null = null;
   const gradingPrompt = currentStep.type === 'explain' ? (currentStep.checkQuestion || currentStep.text) : currentStep.text;
 
   // The student-facing "skip this — the question or grading itself seems
@@ -1328,7 +1362,7 @@ export async function submitEncodingAnswer(userId: string, state: EncodingLesson
     // be explained relative to the qualification level. diagnosticTree,
     // not simpleQuestion, here — that calibration judgment call is worth
     // the step up, same reasoning as the calculation-grading path above.
-    const check = await callJSON<{ correct: boolean; misread?: boolean; feedback: string | null }>(
+    const check = await callJSON<{ correct: boolean; misread?: boolean; partiallyUnderstood?: boolean; tuteeSays: string | null }>(
       MECHANISTIC_CHECK_ANSWER_PROMPT,
       `Qualification: ${state.qualification || 'unspecified'}\nExam board: ${state.examBoard || 'unspecified'}\nConcept/step: ${currentStep.label}\nPrompt: ${gradingPrompt}\nStudent's answer: ${answer}`,
       MODELS.diagnosticTree,
@@ -1337,10 +1371,14 @@ export async function submitEncodingAnswer(userId: string, state: EncodingLesson
       true
     );
     correct = check.correct;
-    feedback = check.feedback;
+    // These two prompts no longer emit "feedback" — tuteeSays fully
+    // replaces it as the per-answer response (see their own rule 5/7).
+    feedback = null;
     misread = !!check.misread;
+    partiallyUnderstood = !!check.partiallyUnderstood;
+    tuteeSays = check.tuteeSays ?? null;
   } else {
-    const check = await callJSON<{ correct: boolean; misread?: boolean; feedback: string | null }>(
+    const check = await callJSON<{ correct: boolean; misread?: boolean; partiallyUnderstood?: boolean; tuteeSays: string | null }>(
       ENCODING_ANSWER_CHECK_PROMPT,
       `Concept/step: ${currentStep.label}\nPrompt: ${gradingPrompt}\nStudent's answer: ${answer}`,
       MODELS.simpleQuestion,
@@ -1349,8 +1387,10 @@ export async function submitEncodingAnswer(userId: string, state: EncodingLesson
       true
     );
     correct = check.correct;
-    feedback = check.feedback;
+    feedback = null;
     misread = !!check.misread;
+    partiallyUnderstood = !!check.partiallyUnderstood;
+    tuteeSays = check.tuteeSays ?? null;
   }
 
   // Cap at exactly one reword attempt per step — see EncodingLessonState's
@@ -1372,6 +1412,20 @@ export async function submitEncodingAnswer(userId: string, state: EncodingLesson
       : { ...currentStep, text: reword.question };
     const rewordedState: EncodingLessonState = { ...state, reframedStepIndex: state.currentIndex };
     return { done: false, step: rewordedStep, state: rewordedState, misread: true };
+  }
+
+  // Cap at exactly one re-explain attempt per step — see
+  // EncodingLessonState's own comment on partialReattemptStepIndex. The
+  // student showed genuine partial understanding, so the tutee reflects
+  // back what landed and re-serves the SAME step once more for exactly the
+  // missing piece, rather than this counting as a full wrong answer yet. A
+  // student who still can't complete it on this retry falls through to
+  // normal wrong-answer handling below (tuteeSays still attached) — the
+  // tutee itself has no domain knowledge to diagnose any further than that,
+  // which is where Cortex/the diagnostic drill-down takes over.
+  if (!correct && !misread && partiallyUnderstood && state.partialReattemptStepIndex !== state.currentIndex) {
+    const reattemptState: EncodingLessonState = { ...state, partialReattemptStepIndex: state.currentIndex };
+    return { done: false, step: currentStep, state: reattemptState, tuteeSays, partialFollowUp: true };
   }
 
   const nextIndex = state.currentIndex + 1;
@@ -1414,10 +1468,10 @@ export async function submitEncodingAnswer(userId: string, state: EncodingLesson
         },
       };
     }
-    return { done: true, correct, feedback, state: nextState, fsrsUpdate };
+    return { done: true, correct, feedback, state: nextState, fsrsUpdate, tuteeSays };
   }
 
-  return { done: false, correct, feedback, step: state.steps[nextIndex], state: nextState };
+  return { done: false, correct, feedback, step: state.steps[nextIndex], state: nextState, tuteeSays };
 }
 
 /**

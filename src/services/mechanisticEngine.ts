@@ -4,7 +4,6 @@ import { runSharedEncodingCheck } from './sharedDiagnosticSteps';
 import { getOrGenerateChain } from './chainService';
 import { parseModelJson } from './jsonParsing';
 import {
-  WM_RELAXATION_PROMPT,
   LOCALIZATION_CHECK_PROMPT,
   CHECK_ANSWER_AND_SLIP_PROMPT,
   MATH_ANSWER_CHECK_AND_SLIP_PROMPT,
@@ -66,7 +65,7 @@ export async function loadChainIfMechanistic(
   return chain;
 }
 
-export type MechanisticStage = 'encoding_check' | 'wm_relax' | 'localizing' | 'sub_diagnostic' | 'combination_check' | 'integration_check';
+export type MechanisticStage = 'encoding_check' | 'localizing' | 'sub_diagnostic' | 'combination_check' | 'integration_check';
 
 export interface MechanisticState {
   conceptKey: string;
@@ -91,8 +90,6 @@ export interface MechanisticState {
   // that was missing, instead of a generic "practice combining these"
   // note — see CORRECTION_PROMPT's own "integration" bullet.
   integrationLocalizedNodeId?: string;
-  // Same self-audit gate as DiagnosticState.wmRelaxTrustworthy — see there.
-  wmRelaxTrustworthy?: boolean;
   // Same purpose as DiagnosticState.lastShownQuestion — see there.
   lastShownQuestion?: string;
   // Same purpose as DiagnosticState.lastShownOptions — see there.
@@ -101,10 +98,11 @@ export interface MechanisticState {
   // originalQuestion* is set at entry (see startMechanisticDiagnosis) when
   // the question that triggered this diagnosis was itself a calculation,
   // and is what combination_check's cued re-ask still tests. lastGenerated*
-  // covers whichever DIFFERENT question was most recently generated —
-  // wm_relax's simplification, or a localization check on a specific
-  // prerequisite (a genuinely different concept from the target, so it
-  // can never reuse originalQuestion*'s own calc info).
+  // covers whichever DIFFERENT question was most recently generated — a
+  // localization check on a specific prerequisite, or the isolated
+  // integration_check question (a genuinely different concept from the
+  // target either way, so it can never reuse originalQuestion*'s own calc
+  // info).
   originalQuestionRequiresCalculation?: boolean;
   originalQuestionExpectedSolution?: string;
   lastGeneratedRequiresCalculation?: boolean;
@@ -126,13 +124,12 @@ export interface MechanisticResult {
 
 // Mirrors diagnosticEngine.ts's currentQuestionCalcInfo of the same
 // purpose — which calc info describes whatever's CURRENTLY on screen,
-// given the stage. 'wm_relax', 'localizing', and 'integration_check' are
-// all grading a question this engine itself just generated
-// (lastGenerated*); every other free-text stage ('encoding_check' at
-// entry, 'combination_check') is testing originalQuestion itself,
-// directly or cued.
+// given the stage. 'localizing' and 'integration_check' are both grading
+// a question this engine itself just generated (lastGenerated*); every
+// other free-text stage ('encoding_check' at entry, 'combination_check')
+// is testing originalQuestion itself, directly or cued.
 function currentQuestionCalcInfo(state: MechanisticState): { requiresCalculation: boolean; expectedSolution?: string } {
-  if (state.stage === 'wm_relax' || state.stage === 'localizing' || state.stage === 'integration_check') {
+  if (state.stage === 'localizing' || state.stage === 'integration_check') {
     return { requiresCalculation: !!state.lastGeneratedRequiresCalculation, expectedSolution: state.lastGeneratedExpectedSolution };
   }
   return { requiresCalculation: !!state.originalQuestionRequiresCalculation, expectedSolution: state.originalQuestionExpectedSolution };
@@ -287,43 +284,38 @@ export async function startMechanisticDiagnosis(
   return advanceAfterWrongAnswer(userId, baseState);
 }
 
-async function beginWmRelax(userId: string, state: MechanisticState): Promise<MechanisticResult> {
-  const simplified = await callJSON<{
-    cannotBeSimplified: boolean;
-    simplifiedQuestion: string;
-    staysGenuineRetrieval: boolean;
-    requiresCalculation?: boolean;
-    expectedSolution?: string;
-  }>(
-    WM_RELAXATION_PROMPT,
-    `Subject: ${state.subject}\nConcept: ${state.targetConceptLabel}\nOriginal question: ${state.originalQuestion}`,
-    MODELS.diagnosticTree,
-    0.3
-  );
-
-  // Same reasoning as diagnosticEngine.ts's identical check — a bare
-  // naming/terminology question has no lower-load rephrasing that isn't
-  // just asking for the same word again, so passing the recognition test
-  // doesn't warrant more guaranteed-wrong retrieval attempts before
-  // teaching it.
-  if (simplified.cannotBeSimplified) {
-    await gradeAndRecordReview(userId, state.conceptKey, 'again');
-    return { done: true, diagnosis: 'encoding', correction: await generateCorrection(state.targetConceptLabel, 'encoding', state), state, answerCorrect: false };
+// Runs the moment encoding_check's recognition test passes on the TARGET
+// concept — walks straight into the prerequisite-localization machinery
+// (findBrokenPrerequisite -> localizing, or combination_check if every
+// prerequisite already reads as mastered). No intermediate "cold retry
+// on the target itself" stage (the old 'wm_relax'): a target with real
+// prerequisites is exactly the multi-chunk case this engine exists for,
+// and a simplified retry of the TARGET alone risked silently dropping
+// whichever prerequisite was actually the problem (WM_RELAXATION_PROMPT
+// had no awareness there even were separate pieces to preserve),
+// concluding "wm_overload" and stopping before ever reaching the
+// localization walk that would have found the real issue. That walk,
+// now sharper with the integration_check disambiguation below, already
+// IS the "reduce load, test genuinely separable pieces" strategy — done
+// properly, on real sub-questions, rather than a same-target reword.
+async function proceedToLocalization(userId: string, state: MechanisticState): Promise<MechanisticResult> {
+  const broken = await findBrokenPrerequisite(userId, state.subject, state.chain, state.currentNodeId);
+  if (!broken) {
+    return { ...(await runCombinationCheck(state)), answerCorrect: true };
   }
-
   return {
     done: false,
-    nextQuestion: simplified.simplifiedQuestion,
+    nextQuestion: broken.question,
     state: {
       ...state,
-      stage: 'wm_relax',
-      wmRelaxTrustworthy: simplified.staysGenuineRetrieval,
-      lastShownQuestion: simplified.simplifiedQuestion,
-      lastGeneratedRequiresCalculation: !!simplified.requiresCalculation,
-      lastGeneratedExpectedSolution: simplified.requiresCalculation ? simplified.expectedSolution : undefined,
+      stage: 'localizing',
+      currentNodeId: broken.node.id,
+      lastShownQuestion: broken.question,
+      lastGeneratedRequiresCalculation: broken.requiresCalculation,
+      lastGeneratedExpectedSolution: broken.expectedSolution,
     },
     answerCorrect: true, // the recognition check that led here just passed
-    nextRequiresCalculation: !!simplified.requiresCalculation,
+    nextRequiresCalculation: broken.requiresCalculation,
   };
 }
 
@@ -342,27 +334,6 @@ async function resumeWrongAnswerContinuation(userId: string, state: MechanisticS
     case 'encoding_check':
       return runEncodingCheckOrSkip(userId, state);
 
-    case 'wm_relax': {
-      const broken = await findBrokenPrerequisite(userId, state.subject, state.chain, state.currentNodeId);
-      if (!broken) {
-        return { ...(await runCombinationCheck(state)), answerCorrect: false };
-      }
-      return {
-        done: false,
-        nextQuestion: broken.question,
-        state: {
-          ...state,
-          stage: 'localizing',
-          currentNodeId: broken.node.id,
-          lastShownQuestion: broken.question,
-          lastGeneratedRequiresCalculation: broken.requiresCalculation,
-          lastGeneratedExpectedSolution: broken.expectedSolution,
-        },
-        answerCorrect: false,
-        nextRequiresCalculation: broken.requiresCalculation,
-      };
-    }
-
     case 'localizing': {
       // Found the actual break — hand off to the FULL single-concept
       // engine on this specific node, recursively. Dispatched the same
@@ -376,8 +347,8 @@ async function resumeWrongAnswerContinuation(userId: string, state: MechanisticS
       // just a placeholder label, not the localization question itself —
       // see DiagnosticState.originalQuestionIsPlaceholder) — it decides
       // calc-vs-theory for the PREREQUISITE from scratch via its own
-      // encoding_check -> wm_relax generation, so nothing from this
-      // localization stage needs seeding into it.
+      // encoding_check -> hint_cue question generation, so nothing from
+      // this localization stage needs seeding into it.
       const nodeLabel = findNode(state.chain, state.currentNodeId)?.label || state.currentNodeId;
       const subState: DiagnosticState = {
         conceptLabel: state.currentNodeId,
@@ -387,8 +358,8 @@ async function resumeWrongAnswerContinuation(userId: string, state: MechanisticS
         // Marks originalQuestion above as a bookkeeping label, never meant
         // to be shown — see DiagnosticState.originalQuestionIsPlaceholder's
         // own comment for what this protects against (diagnosticEngine.ts's
-        // encoding_check->wm_relax transition and hint_cue re-ask both
-        // check this before touching originalQuestion).
+        // encoding_check->hint_cue transition checks this before touching
+        // originalQuestion).
         originalQuestionIsPlaceholder: true,
         misconceptionNotes: [],
       };
@@ -579,22 +550,7 @@ export async function processMechanisticAnswer(
         await gradeAndRecordReview(userId, state.conceptKey, 'again');
         return { done: true, diagnosis: 'encoding', correction: await generateCorrection(state.targetConceptLabel, 'encoding', state), state, answerCorrect: false };
       }
-      return beginWmRelax(userId, state);
-    }
-
-    case 'wm_relax': {
-      const check = await checkAnswer(
-        state.targetConceptLabel,
-        '(simplified)',
-        answer,
-        state.lastGeneratedRequiresCalculation ? state.lastGeneratedExpectedSolution : undefined
-      );
-      const notedState = appendNote(state, check.misconceptionNote);
-      if (check.correct && state.wmRelaxTrustworthy !== false) {
-        await gradeAndRecordReview(userId, state.conceptKey, 'hard');
-        return { done: true, diagnosis: 'wm_overload', correction: await generateCorrection(state.targetConceptLabel, 'wm_overload', notedState), state: notedState, answerCorrect: true };
-      }
-      return advanceAfterWrongAnswer(userId, notedState);
+      return proceedToLocalization(userId, state);
     }
 
     case 'localizing': {

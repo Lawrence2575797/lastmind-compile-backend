@@ -5,7 +5,7 @@ import { parseModelJson } from './jsonParsing';
 import {
   CHECK_ANSWER_AND_SLIP_PROMPT,
   MATH_ANSWER_CHECK_AND_SLIP_PROMPT,
-  WM_RELAXATION_PROMPT,
+  LOCALIZATION_CHECK_PROMPT,
   HINT_CUE_PROMPT,
   CONTRASTIVE_CUE_PROMPT,
   CORRECTION_PROMPT,
@@ -54,15 +54,18 @@ export type DiagnosticStage =
   | 'initial'
   | 'slip_recheck'
   | 'encoding_check'
-  | 'wm_relax'
   | 'hint_cue'
   | 'contrastive_cue';
 
+// 'wm_overload' removed — working-memory overload requires several
+// simultaneously-held chunks to even be a coherent possibility; a single
+// atomic concept is one chunk, so it was never a meaningful diagnosis
+// here. The chain-level equivalent lives entirely in the mechanistic
+// engine as 'global_chain_failure' instead.
 export type Diagnosis =
   | 'pass'
   | 'slip'
   | 'encoding'
-  | 'wm_overload'
   | 'decay'
   | 'interference'
   | 'schedule_miscalibrated'
@@ -78,11 +81,11 @@ export interface DiagnosticState {
   // DiagnosticState with a bookkeeping placeholder like "(localization
   // check on partial_derivatives)" rather than a real prompt (see its own
   // construction comment). Anything that would otherwise re-display or
-  // build on originalQuestion verbatim (the encoding_check->wm_relax
-  // transition, hint_cue's re-ask) must check this first and fall back to
-  // lastShownQuestion / concept-only context instead — see those call
-  // sites. Left unset (falsy) for every top-level session, where
-  // originalQuestion is always the genuine question the student answered.
+  // build on originalQuestion verbatim (the encoding_check->hint_cue
+  // transition) must check this first and fall back to lastShownQuestion /
+  // concept-only context instead — see those call sites. Left unset
+  // (falsy) for every top-level session, where originalQuestion is always
+  // the genuine question the student answered.
   originalQuestionIsPlaceholder?: boolean;
   recognitionCorrectAnswer?: string;
   // Accumulated across every wrong attempt in this session — this is what
@@ -96,17 +99,11 @@ export interface DiagnosticState {
   // that have both a real id and a friendly label (e.g. a prerequisite
   // chain node) can supply both correctly instead of conflating them.
   conceptKey?: string;
-  // Set when entering wm_relax, from the SAME call that wrote the
-  // simplified question — false means that call itself flagged the
-  // simplification as too trivial/telegraphing to trust as evidence of a
-  // working-memory-specific issue, regardless of whether the student then
-  // answers it correctly.
-  wmRelaxTrustworthy?: boolean;
   // The literal text of whatever question is currently on screen — needed
   // for the optional "reframe this" action (see reframeCurrentQuestion),
-  // since wm_relax/hint_cue/contrastive_cue grade by concept label (not
-  // stored wording), so there's otherwise nothing in state holding the
-  // exact shown text. originalQuestion already serves this role for
+  // since hint_cue/contrastive_cue grade by concept label (not stored
+  // wording), so there's otherwise nothing in state holding the exact
+  // shown text. originalQuestion already serves this role for
   // 'initial'/'slip_recheck', but this is kept in sync everywhere a new
   // question is generated so reframeCurrentQuestion never needs to know
   // which stage it's reframing.
@@ -121,17 +118,17 @@ export interface DiagnosticState {
   // (see startMathDiagnosis) when the question that triggered this whole
   // diagnosis was itself a calculation. Referenced by 'initial'/
   // 'slip_recheck' (which grade originalQuestion directly) AND 'hint_cue'
-  // (which re-asks originalQuestion + a hint, jumping past whatever
-  // wm_relax generated — see lastGenerated* below for why these two pairs
-  // have to stay separate rather than one "current question" pair).
+  // for a REAL (non-placeholder) session, which re-asks originalQuestion +
+  // a hint — see lastGenerated* below for the placeholder case instead.
   originalQuestionRequiresCalculation?: boolean;
   originalQuestionExpectedSolution?: string;
-  // Calculation status of the most recently GENERATED sub-question
-  // (wm_relax's simplification, or contrastive_cue's distinguishing
-  // question) — distinct from originalQuestion* because hint_cue does NOT
-  // continue from wm_relax's simplified question, it jumps back to
-  // re-asking the original with a hint. Consumed by whichever stage grades
-  // that specific generated question ('wm_relax', 'contrastive_cue').
+  // Calculation status of the most recently GENERATED sub-question —
+  // contrastive_cue's distinguishing question, OR (for a placeholder-
+  // seeded sub-diagnosis only, which has no real originalQuestion to fall
+  // back to) the fresh first question generated the moment encoding_check
+  // passes, immediately re-asked with a hint as that session's own
+  // 'hint_cue' stage. Consumed by whichever stage grades that specific
+  // generated question.
   lastGeneratedRequiresCalculation?: boolean;
   lastGeneratedExpectedSolution?: string;
 }
@@ -161,8 +158,8 @@ function appendNote(state: DiagnosticState, note: string | null | undefined): Di
 }
 
 // Which calculation info applies to whatever free-text question the
-// student is CURRENTLY looking at, given the stage they're in — 'wm_relax'
-// and 'contrastive_cue' are grading a question THIS engine itself just
+// student is CURRENTLY looking at, given the stage they're in —
+// 'contrastive_cue' is grading a question THIS engine itself just
 // generated (lastGenerated*); every other free-text stage ('initial',
 // 'slip_recheck', 'hint_cue') is grading originalQuestion itself, either
 // directly or re-asked with a hint. Shared by checkAnswer call sites and
@@ -176,7 +173,7 @@ function currentQuestionCalcInfo(state: DiagnosticState): { requiresCalculation:
     // originalQuestionIsPlaceholder's own comment.
     return { requiresCalculation: !!state.lastGeneratedRequiresCalculation, expectedSolution: state.lastGeneratedExpectedSolution };
   }
-  if (state.stage === 'wm_relax' || state.stage === 'contrastive_cue') {
+  if (state.stage === 'contrastive_cue') {
     return { requiresCalculation: !!state.lastGeneratedRequiresCalculation, expectedSolution: state.lastGeneratedExpectedSolution };
   }
   return { requiresCalculation: !!state.originalQuestionRequiresCalculation, expectedSolution: state.originalQuestionExpectedSolution };
@@ -247,6 +244,67 @@ async function runEncodingCheckOrSkip(userId: string, state: DiagnosticState): P
   }
 }
 
+// Runs the moment encoding_check's recognition test passes — skips
+// straight to a hinted free-recall attempt. No intermediate "cold retry"
+// stage (the old 'wm_relax'): working-memory overload isn't a meaningful
+// diagnosis for a single atomic concept — it takes several
+// simultaneously-held chunks to even be possible, and one concept is one
+// chunk (see the Diagnosis type's own comment; the chain-level version of
+// this lives in the mechanistic engine as 'global_chain_failure', where
+// there genuinely are several chunks in play). So there was never
+// anything a cold, unhinted retry here would actually be testing for —
+// straight to hint_cue instead.
+async function proceedToHintCue(state: DiagnosticState): Promise<DiagnosticResult> {
+  const usingPlaceholder = !!state.originalQuestionIsPlaceholder;
+  let reAskBase: string;
+  let hintTargetRequiresCalculation: boolean;
+  let generatedRequiresCalculation = false;
+  let generatedExpectedSolution: string | undefined;
+
+  if (usingPlaceholder) {
+    // No real question exists yet for a mechanistic localization hand-off
+    // (see originalQuestionIsPlaceholder's own comment) — generate a
+    // genuine first retrieval question for this bare concept, the same
+    // tool mechanisticEngine.ts's own localization walk already uses for
+    // exactly this job.
+    const generated = await callJSON<{ question: string; requiresCalculation?: boolean; expectedSolution?: string }>(
+      LOCALIZATION_CHECK_PROMPT,
+      `Subject: ${state.subject}\nConcept: ${state.conceptLabel}`,
+      MODELS.diagnosticTree,
+      0.3
+    );
+    reAskBase = generated.question;
+    hintTargetRequiresCalculation = !!generated.requiresCalculation;
+    generatedRequiresCalculation = !!generated.requiresCalculation;
+    generatedExpectedSolution = generated.requiresCalculation ? generated.expectedSolution : undefined;
+  } else {
+    reAskBase = state.originalQuestion;
+    hintTargetRequiresCalculation = !!state.originalQuestionRequiresCalculation;
+  }
+
+  const hintResult = await callJSON<{ hint: string }>(
+    HINT_CUE_PROMPT,
+    `Concept: ${state.conceptLabel}\nQuestion type: ${hintTargetRequiresCalculation ? 'calculation' : 'verbal'}`,
+    MODELS.diagnosticTree,
+    0.3
+  );
+  const nextQuestion = `${reAskBase}\n\nHint: ${hintResult.hint}`;
+  return {
+    done: false,
+    nextQuestion,
+    state: {
+      ...state,
+      stage: 'hint_cue',
+      lastShownQuestion: nextQuestion,
+      ...(usingPlaceholder
+        ? { lastGeneratedRequiresCalculation: generatedRequiresCalculation, lastGeneratedExpectedSolution: generatedExpectedSolution }
+        : {}),
+    },
+    answerCorrect: true, // the recognition check that led here just passed
+    nextRequiresCalculation: hintTargetRequiresCalculation,
+  };
+}
+
 // Runs once a free-text answer has already been confirmed wrong, resuming
 // exactly the escalation each stage would have run immediately — factored
 // out so the wording gate can defer it by one round-trip without
@@ -259,37 +317,6 @@ async function resumeWrongAnswerContinuation(
     case 'initial':
     case 'slip_recheck':
       return { ...(await runEncodingCheckOrSkip(userId, state)), answerCorrect: false };
-
-    case 'wm_relax': {
-      // Re-asking originalQuestion itself (with a hint appended) is only
-      // valid when originalQuestion is a REAL question the student was
-      // actually shown. For a mechanistic localization hand-off it's a
-      // bookkeeping placeholder — re-asking THAT verbatim is exactly the
-      // "(localization check on X)\n\nHint: ..." bug this fixes. Fall back
-      // to lastShownQuestion (the wm_relax question that was just
-      // generated and answered wrong) in that case instead, and hint
-      // about ITS calc status, not originalQuestion*'s.
-      const usingPlaceholder = !!state.originalQuestionIsPlaceholder;
-      const reAskBase = usingPlaceholder ? (state.lastShownQuestion || state.conceptLabel) : state.originalQuestion;
-      const hintTargetRequiresCalculation = usingPlaceholder
-        ? !!state.lastGeneratedRequiresCalculation
-        : !!state.originalQuestionRequiresCalculation;
-
-      const hintResult = await callJSON<{ hint: string }>(
-        HINT_CUE_PROMPT,
-        `Concept: ${state.conceptLabel}\nQuestion type: ${hintTargetRequiresCalculation ? 'calculation' : 'verbal'}`,
-        MODELS.diagnosticTree,
-        0.3
-      );
-      const nextQuestion = `${reAskBase}\n\nHint: ${hintResult.hint}`;
-      return {
-        done: false,
-        nextQuestion,
-        state: { ...state, stage: 'hint_cue', lastShownQuestion: nextQuestion },
-        answerCorrect: false,
-        nextRequiresCalculation: hintTargetRequiresCalculation,
-      };
-    }
 
     case 'hint_cue': {
       const contrastive = await callJSON<{
@@ -453,75 +480,15 @@ export async function processDiagnosticAnswer(
       if (!isCorrect) {
         return finish(userId, state.conceptLabel, 'again', 'encoding', state, false);
       }
-      // originalQuestion is a bookkeeping placeholder (never a real shown
-      // question) for a mechanistic localization hand-off — passing it as
-      // "Original question: (localization check on X)" would feed the
-      // model a misleading label instead of real context. Omit the line
-      // entirely in that case; Subject + Concept alone is enough for
-      // WM_RELAXATION_PROMPT to write a genuine first retrieval question.
-      const simplified = await callJSON<{
-        cannotBeSimplified: boolean;
-        simplifiedQuestion: string;
-        staysGenuineRetrieval: boolean;
-        requiresCalculation?: boolean;
-        expectedSolution?: string;
-      }>(
-        WM_RELAXATION_PROMPT,
-        state.originalQuestionIsPlaceholder
-          ? `Subject: ${state.subject}\nConcept: ${state.conceptLabel}`
-          : `Subject: ${state.subject}\nConcept: ${state.conceptLabel}\nOriginal question: ${state.originalQuestion}`,
-        MODELS.diagnosticTree,
-        0.3
-      );
-
-      // A bare naming/terminology question — passing the recognition test
-      // (multiple choice) only proves the definition is recognizable, not
-      // that the term is freely retrievable, and there's no lower-load
-      // rephrasing that isn't just asking for the identical word again.
-      // Escalating through wm_relax/hint_cue/contrastive_cue here would
-      // force several more guaranteed-wrong attempts at a word the student
-      // has never encountered before finally teaching it — go straight to
-      // the encoding correction instead (see WM_RELAXATION_PROMPT).
-      if (simplified.cannotBeSimplified) {
-        return finish(userId, state.conceptLabel, 'again', 'encoding', state, false);
-      }
-
-      return {
-        done: false,
-        nextQuestion: simplified.simplifiedQuestion,
-        state: {
-          ...state,
-          stage: 'wm_relax',
-          wmRelaxTrustworthy: simplified.staysGenuineRetrieval,
-          lastShownQuestion: simplified.simplifiedQuestion,
-          lastGeneratedRequiresCalculation: !!simplified.requiresCalculation,
-          lastGeneratedExpectedSolution: simplified.requiresCalculation ? simplified.expectedSolution : undefined,
-        },
-        answerCorrect: true,
-        nextRequiresCalculation: !!simplified.requiresCalculation,
-      };
-    }
-
-    case 'wm_relax': {
-      const check = await checkAnswer(
-        state.conceptLabel,
-        '(simplified)',
-        answer,
-        state.lastGeneratedRequiresCalculation ? state.lastGeneratedExpectedSolution : undefined
-      );
-      const notedState = appendNote(state, check.misconceptionNote);
-      if (check.correct && state.wmRelaxTrustworthy !== false) {
-        return finish(userId, state.conceptLabel, 'hard', 'wm_overload', notedState, true);
-      }
-      return advanceAfterWrongAnswer(userId, notedState);
+      return proceedToHintCue(state);
     }
 
     case 'hint_cue': {
       // Grading against whichever question was actually re-asked with the
       // hint — the ORIGINAL question for a real top-level session (see
-      // originalQuestion*'s own comment), or wm_relax's lastGenerated*
-      // question for a placeholder-seeded sub-diagnostic, matching
-      // resumeWrongAnswerContinuation's 'wm_relax' case above exactly.
+      // originalQuestion*'s own comment), or the fresh question
+      // proceedToHintCue generated (lastGenerated*) for a placeholder-
+      // seeded sub-diagnostic, matching that function's own state update.
       const check = await checkAnswer(
         state.conceptLabel,
         state.originalQuestionIsPlaceholder ? '(hinted)' : state.originalQuestion,

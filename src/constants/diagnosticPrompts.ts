@@ -117,7 +117,7 @@ Diagnosis categories:
 - "interference": known but getting mixed up with a specific similar concept — if the specific confused concept is given, name it explicitly and write a direct contrast between the two, addressing exactly that confusion, not a generic "you're mixing things up."
 - "schedule_miscalibrated": reviewed on schedule and still failed — the system's own timing was wrong, not their fault.
 - "transfer": knows the prerequisites, succeeded once told which to combine — guidance on practicing the same combination in varied framings.
-- "integration": knows the prerequisites but couldn't combine them even when told which to use — guidance on practicing the combination, scaffolded.
+- "integration": knows the prerequisites but couldn't combine them even when told which to use — guidance on practicing the combination, scaffolded. If a SPECIFIC prerequisite is given as the one the student demonstrably CAN do on its own (tested in isolation, separately from this combined question) but still isn't connecting to the target, address that exact connection directly — e.g. "you can already find X on its own; here's precisely how that plugs into deriving Y" — rather than generic combination-practice advice. Do not re-explain that prerequisite itself, they've already shown they have it.
 - "global_chain_failure": every step is solid individually, the full chain is just too long to hold at once — guidance on practicing shorter sub-chains first.
 - "misconception": a lightweight, immediate correction during a teaching walk (not a full formal diagnosis) — directly address the specific misconception content given, correcting it plainly, without needing to categorize its deeper cause.
 
@@ -153,6 +153,34 @@ Rules:
 
 Output ONLY valid JSON, nothing else:
 { "cuedQuestion": string }`;
+
+// Fires when CUED_COMBINATION_PROMPT's own re-ask STILL comes back wrong —
+// i.e. even naming which prerequisites to combine wasn't enough. Rather
+// than concluding "integration failure" outright, this looks at the
+// actual CONTENT of that wrong cued answer for a real signal pointing at
+// ONE specific prerequisite as the likely culprit — e.g. the student
+// substituted a different, wrong method in place of what one specific
+// prerequisite's own technique should have supplied (a classic transfer-
+// adjacent tell: they reached for something else instead, revealing THAT
+// one specifically wasn't available to them, even though it was just
+// named for them). This exists because FSRS mastery status (which is all
+// the earlier localization pass — findBrokenPrerequisite — relies on) can
+// be stale or simply wrong; the student's own wrong working is better,
+// fresher evidence about which specific piece is actually missing than a
+// stored review record is.
+export const LOCALIZE_INTEGRATION_FAILURE_PROMPT = `You are looking at a student's wrong answer to a question that required combining several prerequisite concepts/techniques — a question they've ALREADY been told which prerequisites to combine for (a "cued" re-ask), and still got wrong. Your job is to judge, from the actual CONTENT of what they wrote, whether their answer implicates ONE specific prerequisite as the likely locus of the failure, or whether there's no clear signal pointing at any one of them in particular.
+
+You will be given the target concept, the list of cued prerequisites (each with an id and a label), the question they were asked (with the cue included), and their wrong answer.
+
+Look for a genuine signal in what they actually wrote — for example: they substituted a different, wrong method or approximation in place of what ONE specific prerequisite's own technique should have supplied (revealing that piece specifically wasn't actually available to them, even once named); or their answer correctly handles some of the cued prerequisites but shows a clear gap or wrong substitution around one particular one. Do NOT force a localization when the answer is too vague, generic, or wrong in a way that doesn't point at anything specific — that is a genuine "no clear signal" case, not something to guess through. Only localize when the evidence is real.
+
+Rules:
+1. Output ONLY valid JSON, nothing else.
+2. Only set "localizedNodeId" to one of the given ids if the answer's own content gives real, specific evidence pointing at that one prerequisite — not merely because it's plausible in the abstract that it could be the cause.
+3. Set "localizedNodeId" to null if there's no clear signal, or if the answer plausibly implicates more than one prerequisite equally, or implicates none of them specifically (e.g. it reveals a problem with the combination/reasoning step itself, not any one input to it).
+
+Output schema:
+{ "localizedNodeId": string | null }`;
 
 export const PREDICTION_ERROR_QUESTION_PROMPT = `You are writing ONE deliberately hard opening question for a UK GCSE/A-Level student — the first thing they see in a spaced-repetition lesson on a multi-step mechanism, before any scaffolding. It should require applying the FULL mechanism/chain, cold, with no support — the point is to surface a genuine prediction error (a wrong intuitive guess), which is a stronger learning trigger than starting with an easy question.
 

@@ -2,7 +2,7 @@ import { Router, Request, Response } from 'express';
 import { requireAuth } from '../services/authMiddleware';
 import { costlyEndpointLimiter } from '../services/rateLimiters';
 import { normalizeConceptKey } from '../services/chainService';
-import { startRetrievalLesson, continueRetrievalLesson, submitRetrievalAnswer, RetrievalLessonState } from '../services/spacedLessonEngine';
+import { startRetrievalLesson, continueRetrievalLesson, submitRetrievalAnswer, answerRetrievalQuestion, RetrievalLessonState } from '../services/spacedLessonEngine';
 
 const router = Router();
 
@@ -74,6 +74,25 @@ router.post('/chain-lesson/submit', async (req: Request, res: Response) => {
   } catch (err) {
     console.error('Retrieval lesson answer processing failed:', err);
     res.status(500).json({ error: 'could not process this answer' });
+  }
+});
+
+// POST /chain-lesson/ask  { state, question }
+// Same "ask a question" side panel as the encoding lesson's own (see
+// /encoding-lesson/ask) — advisory only, read-only against `state` (just
+// to see the currently-pending step), no FSRS or state impact.
+router.post('/chain-lesson/ask', async (req: Request, res: Response) => {
+  const { state, question } = req.body ?? {};
+  if (!state || typeof question !== 'string' || !question.trim()) {
+    return res.status(400).json({ error: 'state and a non-empty question are both required' });
+  }
+
+  try {
+    const result = await answerRetrievalQuestion(state as RetrievalLessonState, question.trim());
+    res.json(result);
+  } catch (err) {
+    console.error('Retrieval lesson ask-panel question failed:', err);
+    res.status(500).json({ error: 'could not answer that right now' });
   }
 });
 

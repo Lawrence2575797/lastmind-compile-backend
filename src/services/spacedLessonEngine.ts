@@ -2,6 +2,7 @@ import { callClaudeJSON, MODELS } from './claudeClient';
 import { gradeAndRecordReview, getMasteryStatus, listEligibleSiblingConcepts, FsrsRatingKey } from './reviewService';
 import { getOrGenerateChain } from './chainService';
 import { retrievalLessonPromptForTier, RETRIEVAL_ANSWER_CHECK_PROMPT, RETRIEVAL_MECHANISTIC_CHECK_PROMPT } from '../constants/retrievalLessonPrompts';
+import { ASK_PANEL_PROMPT } from '../constants/encodingLessonPrompts';
 
 function stripCodeFences(text: string): string {
   return text.trim().replace(/^```(?:json)?\s*/i, '').replace(/```\s*$/, '').trim();
@@ -338,4 +339,33 @@ export async function submitRetrievalAnswer(
   }
 
   return { done: false, correct, feedback, step: state.steps[nextIndex], state: nextState };
+}
+
+/**
+ * Same "ask a question" side panel as the first-time encoding lesson (see
+ * answerLessonQuestion in encodingLessonService.ts) — reuses the same
+ * ASK_PANEL_PROMPT, since the anti-fishing check and stateless/advisory
+ * framing are identical here: only the CURRENTLY pending retrieval step
+ * (state.steps[state.currentIndex]) is checked, and nothing about this
+ * call touches FSRS or the lesson's own state.
+ */
+export async function answerRetrievalQuestion(state: RetrievalLessonState, question: string): Promise<{ redirected: boolean; answer: string }> {
+  const currentStep = state.steps[state.currentIndex];
+
+  return callJSON<{ redirected: boolean; answer: string }>(
+    ASK_PANEL_PROMPT,
+    [
+      `Subject: ${state.subject}`,
+      `Qualification: ${state.qualification || 'unspecified'}`,
+      `Exam board: ${state.examBoard || 'unspecified'}`,
+      `Current step's own concept/label: ${state.concept}`,
+      `Current step's type: ${currentStep ? currentStep.type : 'n/a'}`,
+      `Current step's own question (not yet answered by the student): ${currentStep ? currentStep.text : '(lesson already complete — nothing currently pending)'}`,
+      `Student's question, asked from the side panel: ${question}`,
+    ].join('\n'),
+    MODELS.diagnosticTree,
+    0.4,
+    undefined,
+    true
+  );
 }

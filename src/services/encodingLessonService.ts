@@ -1178,19 +1178,38 @@ async function generateLessonContinuation(
 
   const steps: CachedEncodingStep[] = draftSteps.map(({ confident, ...step }) => step);
 
-  if (steps.length && diagram) {
-    // Only ever looks within THIS call's own generated steps — a
-    // forNodeId whose only step was the FIRST step (already generated and
-    // shown to the student in phase 1, before this diagram decision even
-    // happened) simply doesn't get a diagram attached; same harmless
-    // fallback as any other diagram-resolution miss, not worth the
-    // complexity of retroactively patching an already-sent response.
+  if (diagram) {
     const diagramNodeId = diagramForNode ? diagramForNode.id : target.id;
-    const candidateSteps = steps.filter((s) => s.nodeId === diagramNodeId);
+    // When the diagram illustrates the TARGET itself (the common,
+    // no-forNodeId case), any step actually ABOUT the target counts as a
+    // candidate — scene/derive/explain/implication beats all share the
+    // target's own diagnosisConceptKey (see the draftSteps mapping
+    // above), not just whichever one literally carries the target's raw
+    // nodeId. An implication step, for instance, has a synthetic nodeId
+    // of its own but is still squarely about the target — excluding it
+    // here was silently throwing away a genuine hookup point most
+    // lessons for a well-formed target actually still have.
+    const candidateSteps = diagramForNode
+      ? steps.filter((s) => s.nodeId === diagramNodeId)
+      : steps.filter((s) => s.diagnosisConceptKey === conceptKey);
     const teachingBeats = candidateSteps.filter((s) => s.type === 'derive' || s.type === 'explain');
     const preferred = teachingBeats.length ? teachingBeats : candidateSteps;
     const chosenStep = preferred[preferred.length - 1];
-    if (chosenStep) chosenStep.diagram = diagram;
+    if (chosenStep) {
+      chosenStep.diagram = diagram;
+    } else {
+      // Nothing in THIS call's own steps qualifies — the target's only
+      // teaching beat was the very FIRST step, generated in phase 1
+      // before this diagram decision even existed. Can't retroactively
+      // patch what's already been sent to and rendered for THIS
+      // student this run, but firstStep is the same object reference
+      // continueEncodingLesson prepends when assembling the full,
+      // CACHED step list — attaching here means every later student
+      // hitting this concept from cache sees the diagram correctly,
+      // instead of it being silently dropped every single time.
+      const firstStepMatches = diagramForNode ? firstStep.nodeId === diagramNodeId : firstStep.diagnosisConceptKey === conceptKey;
+      if (firstStepMatches) firstStep.diagram = diagram;
+    }
   }
 
   return { steps };

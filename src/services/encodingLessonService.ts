@@ -13,6 +13,7 @@ import {
   DIAGRAM_VERIFICATION_PROMPT,
   STEP_DERIVABILITY_CHECK_PROMPT,
   NOTES_FROM_LESSON_PROMPT,
+  ASK_PANEL_PROMPT,
 } from '../constants/encodingLessonPrompts';
 
 function stripCodeFences(text: string): string {
@@ -1442,4 +1443,41 @@ export async function generateNotesFromLesson(
     maxTokens: Math.min(1024 * Math.max(1, lessons.length), 8192),
   });
   return raw.trim();
+}
+
+/**
+ * Answers a student's own free-form question, asked from the "ask a
+ * question" panel alongside an in-progress first-time encoding lesson —
+ * see ASK_PANEL_PROMPT. Purely advisory and stateless: takes a read-only
+ * copy of the lesson state (never mutated, never returned), makes no FSRS
+ * or forceTeach update, and isn't itself graded — the student hasn't been
+ * tested by asking, so this never counts as an encoding failure. The only
+ * thing it needs from `state` is whatever step is CURRENTLY pending (the
+ * one on screen, not yet answered) — see ASK_PANEL_PROMPT's own handling
+ * of that as the sole thing this must avoid giving away.
+ */
+export async function answerLessonQuestion(state: EncodingLessonState, question: string): Promise<{ redirected: boolean; answer: string }> {
+  const currentStep = state.steps[state.currentIndex];
+  const currentQuestionText = currentStep
+    ? currentStep.type === 'explain'
+      ? `${currentStep.text}\n(checkQuestion, the part actually being answered: ${currentStep.checkQuestion || ''})`
+      : currentStep.text
+    : '(lesson already complete — nothing currently pending)';
+
+  return callJSON<{ redirected: boolean; answer: string }>(
+    ASK_PANEL_PROMPT,
+    [
+      `Subject: ${state.subject}`,
+      `Qualification: ${state.qualification || 'unspecified'}`,
+      `Exam board: ${state.examBoard || 'unspecified'}`,
+      `Current step's own concept/label: ${currentStep ? currentStep.label : 'n/a'}`,
+      `Current step's type: ${currentStep ? currentStep.type : 'n/a'}`,
+      `Current step's own question (not yet answered by the student): ${currentQuestionText}`,
+      `Student's question, asked from the side panel: ${question}`,
+    ].join('\n'),
+    MODELS.diagnosticTree,
+    0.4,
+    undefined,
+    true
+  );
 }

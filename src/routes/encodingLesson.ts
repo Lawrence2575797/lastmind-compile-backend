@@ -2,7 +2,7 @@ import { Router, Request, Response } from 'express';
 import { requireAuth } from '../services/authMiddleware';
 import { costlyEndpointLimiter } from '../services/rateLimiters';
 import { normalizeConceptKey } from '../services/chainService';
-import { startEncodingLesson, continueEncodingLesson, submitEncodingAnswer, generateNotesFromLesson, getEncodingLessonOutline, EncodingLessonState } from '../services/encodingLessonService';
+import { startEncodingLesson, continueEncodingLesson, submitEncodingAnswer, generateNotesFromLesson, getEncodingLessonOutline, answerLessonQuestion, EncodingLessonState } from '../services/encodingLessonService';
 
 const router = Router();
 
@@ -140,6 +140,29 @@ router.post('/encoding-lesson/submit', costlyEndpointLimiter, async (req: Reques
   } catch (err) {
     console.error('Encoding lesson answer processing failed:', err);
     res.status(500).json({ error: 'could not process this answer' });
+  }
+});
+
+// POST /encoding-lesson/ask  { state, question }
+// The "ask a question" side panel shown alongside an in-progress
+// first-time encoding lesson — a place for genuine curiosity without
+// derailing the lesson's own flow (see ASK_PANEL_PROMPT). Purely
+// advisory: `state` is read-only here (only used to see which step is
+// CURRENTLY pending, so the answer can avoid handing that one away) —
+// nothing is graded, nothing touches FSRS or forceTeach, and no state is
+// returned, since none of it changed.
+router.post('/encoding-lesson/ask', costlyEndpointLimiter, async (req: Request, res: Response) => {
+  const { state, question } = req.body ?? {};
+  if (!state || typeof question !== 'string' || !question.trim()) {
+    return res.status(400).json({ error: 'state and a non-empty question are both required' });
+  }
+
+  try {
+    const result = await answerLessonQuestion(state as EncodingLessonState, question.trim());
+    res.json(result);
+  } catch (err) {
+    console.error('Encoding lesson ask-panel question failed:', err);
+    res.status(500).json({ error: 'could not answer that right now' });
   }
 });
 

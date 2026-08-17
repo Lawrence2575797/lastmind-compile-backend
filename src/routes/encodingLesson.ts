@@ -123,15 +123,19 @@ router.post('/encoding-lesson/continue', costlyEndpointLimiter, async (req: Requ
   }
 });
 
-// POST /encoding-lesson/submit  { state, answer, dontKnow? }
+// POST /encoding-lesson/submit  { state, answer, dontKnow?, bypass? }
+// `bypass` is the student-facing "skip this — the question/grading seems
+// broken" escape hatch — skips grading entirely and advances exactly as a
+// clean pass would (no penalty, no FSRS drag), for the rare case where the
+// system itself, not the student's understanding, is what's actually stuck.
 router.post('/encoding-lesson/submit', costlyEndpointLimiter, async (req: Request, res: Response) => {
-  const { state, answer, dontKnow } = req.body ?? {};
+  const { state, answer, dontKnow, bypass } = req.body ?? {};
   if (!state) {
     return res.status(400).json({ error: 'state is required (from the previous /encoding-lesson/start or /encoding-lesson/submit response)' });
   }
 
   try {
-    const result = await submitEncodingAnswer(req.userId as string, state as EncodingLessonState, typeof answer === 'string' ? answer : '', !!dontKnow);
+    const result = await submitEncodingAnswer(req.userId as string, state as EncodingLessonState, typeof answer === 'string' ? answer : '', !!dontKnow, !!bypass);
     res.json(result);
   } catch (err) {
     console.error('Encoding lesson answer processing failed:', err);

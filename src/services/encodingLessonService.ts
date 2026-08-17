@@ -265,16 +265,47 @@ function clean(s: string): string {
 // ENCODING_LESSON_CONTINUATION_PROMPT). Capped at maxChains direct
 // prerequisites, same cost-control cap the old flat closePrerequisites
 // list used.
+//
+// Each individual chain is ALSO capped at MAX_CHAIN_NODES, closest-to-tip
+// first (breadth-first from the direct prerequisite, not depth-limited —
+// a real generated graph can nest several layers of genuinely
+// "definitional" prerequisites, e.g. indifference curves -> ordinal
+// utility -> utility -> goods and bundles, which a pure depth cap
+// wouldn't touch since every hop is short). Bundling an entire deep
+// lineage into ONE combined mechanistic_check (see
+// ENCODING_LESSON_CONTINUATION_PROMPT's chain-coverage rule) makes that
+// single check progressively more unwieldy the more nodes it spans, even
+// when every individual edge is legitimately necessary — this is what
+// actually made a lesson "too long" in practice, not depth per se.
+// Whatever gets cut here isn't lost, just demoted to ordinary
+// backgroundNodes treatment (assumed, mentioned briefly for continuity if
+// useful, never tested) — appropriate for the most foundational, furthest-
+// back nodes in a bushy lineage, which tend to be exactly the ones a
+// student at this qualification level can most safely be assumed to
+// already have.
+const MAX_CHAIN_NODES = 3;
+
 function buildPrerequisiteChains(chain: Chain, target: ChainNode, maxChains = 3): ChainNode[][] {
   const byId = new Map(chain.nodes.map((n) => [n.id, n]));
   const directPrereqIds = (target.depends_on || []).map((d) => d.node_id).slice(0, maxChains);
 
   return directPrereqIds
     .map((tipId) => {
+      const keep = new Set<string>();
+      const queue: string[] = [tipId];
+      while (queue.length && keep.size < MAX_CHAIN_NODES) {
+        const id = queue.shift()!;
+        if (keep.has(id)) continue;
+        keep.add(id);
+        (byId.get(id)?.depends_on || []).forEach((e) => {
+          if (!keep.has(e.node_id)) queue.push(e.node_id);
+        });
+      }
+
       const visited = new Set<string>();
       const ordered: ChainNode[] = [];
       function visit(id: string) {
-        if (visited.has(id)) return;
+        if (visited.has(id) || !keep.has(id)) return;
         visited.add(id);
         const node = byId.get(id);
         if (!node) return;
@@ -301,12 +332,29 @@ function buildPrerequisiteChains(chain: Chain, target: ChainNode, maxChains = 3)
 //   context (see ENCODING_LESSON_CONTINUATION_PROMPT's own handling),
 //   with any individually forceTeach-flagged node within one still taught,
 //   just inline and just-in-time rather than as a separate upfront step.
-function splitChainsByMechanism(chains: ChainNode[][]): { groundingChains: ChainNode[][]; recruitedMechanismChains: ChainNode[][] } {
+//
+// `promoteIds` (optional) overrides the generalMechanism-only split for a
+// specific student's lesson: any chain containing a node whose id is in
+// promoteIds is treated as a groundingChain regardless of what its tip's
+// generalMechanism classification says. This exists for the self-reported
+// "I'm not confident about this" signal (see selfReportedUnsureNodeIds) —
+// a deliberate, explicit "I don't know this" from the student is a
+// stronger, more specific signal than the qualification-baseline default
+// the AI-generated classification assumes, and just-in-time placement
+// buried inside the target derivation doesn't match what a student who
+// flagged a genuine gap actually needs: seeing it taught properly, up
+// front, before the derivation leans on it — the same treatment
+// concept-specific grounding already gets.
+function splitChainsByMechanism(
+  chains: ChainNode[][],
+  promoteIds: Set<string> = new Set()
+): { groundingChains: ChainNode[][]; recruitedMechanismChains: ChainNode[][] } {
   const groundingChains: ChainNode[][] = [];
   const recruitedMechanismChains: ChainNode[][] = [];
   for (const c of chains) {
     const tip = c[c.length - 1];
-    (tip?.generalMechanism ? recruitedMechanismChains : groundingChains).push(c);
+    const promoted = c.some((n) => promoteIds.has(n.id));
+    (tip?.generalMechanism && !promoted ? recruitedMechanismChains : groundingChains).push(c);
   }
   return { groundingChains, recruitedMechanismChains };
 }
@@ -715,9 +763,15 @@ export async function startEncodingLesson(
   // splitChainsByMechanism) — groundingChains get pre-tested exactly as
   // every chain used to be; recruitedMechanismChains instead get woven
   // into the target derivation's own beats as reasoning tools, never
-  // separately tested up front.
+  // separately tested up front. Computed before the split (not after,
+  // as forcedNodeIds below is) since a self-reported-unsure node needs to
+  // promote its WHOLE containing chain to groundingChains treatment, not
+  // just flag itself for just-in-time teaching within a recruited-
+  // mechanism chain it stays inside — see splitChainsByMechanism's
+  // promoteIds param.
+  const selfReportedUnsureIds = new Set(selfReportedUnsureNodeIds);
   const allChains = buildPrerequisiteChains(chain, target);
-  const { groundingChains, recruitedMechanismChains } = splitChainsByMechanism(allChains);
+  const { groundingChains, recruitedMechanismChains } = splitChainsByMechanism(allChains, selfReportedUnsureIds);
   const chainNodes = allChains.flat();
   const coveredIds = new Set([...chainNodes.map((n) => n.id), target.id]);
   const backgroundNodes = chain.nodes.filter((n) => !coveredIds.has(n.id));
@@ -744,8 +798,9 @@ export async function startEncodingLesson(
   // unfinished sibling page or a technique flag, and the AI-generated
   // dependency graph's own classification (grounding vs recruited
   // mechanism) can always be wrong for THIS specific student regardless of
-  // what it's usually safe to assume.
-  const selfReportedUnsureIds = new Set(selfReportedUnsureNodeIds);
+  // what it's usually safe to assume. (selfReportedUnsureIds itself was
+  // already computed above, before the split, so it can promote whole
+  // chains — reused here as-is.)
   const forcedNodeIds = chainNodes
     .filter((n) => matchesUnfinishedSibling(n.label, siblingConcepts) || !!n.technique || selfReportedUnsureIds.has(n.id))
     .map((n) => n.id)
@@ -879,13 +934,16 @@ export async function continueEncodingLesson(
   // Recomputed identically to startEncodingLesson's own call — same chain,
   // same target, same deterministic traversal — so this lands on the exact
   // same groundingChains/recruitedMechanismChains/forcedNodeIds/contentKey
-  // the /start call used.
+  // the /start call used. selfReportedUnsureIds is computed before the
+  // split (not after) so it can promote a self-reported-unsure node's WHOLE
+  // containing chain to groundingChains treatment — see
+  // splitChainsByMechanism's promoteIds param.
+  const selfReportedUnsureIds = new Set(selfReportedUnsureNodeIds);
   const allChains = buildPrerequisiteChains(chain, target);
-  const { groundingChains, recruitedMechanismChains } = splitChainsByMechanism(allChains);
+  const { groundingChains, recruitedMechanismChains } = splitChainsByMechanism(allChains, selfReportedUnsureIds);
   const chainNodes = allChains.flat();
   const coveredIds = new Set([...chainNodes.map((n) => n.id), target.id]);
   const backgroundNodes = chain.nodes.filter((n) => !coveredIds.has(n.id));
-  const selfReportedUnsureIds = new Set(selfReportedUnsureNodeIds);
   const forcedNodeIds = chainNodes
     .filter((n) => matchesUnfinishedSibling(n.label, siblingConcepts) || !!n.technique || selfReportedUnsureIds.has(n.id))
     .map((n) => n.id)
@@ -1172,7 +1230,7 @@ export async function fetchExpectedSolution(contentKey: string, stepIndex: numbe
  * which is exactly what surfaces it sooner in future spaced-repetition
  * sessions, rather than blocking progress now.
  */
-export async function submitEncodingAnswer(userId: string, state: EncodingLessonState, answer: string, dontKnow = false): Promise<EncodingSubmitResult> {
+export async function submitEncodingAnswer(userId: string, state: EncodingLessonState, answer: string, dontKnow = false, bypass = false): Promise<EncodingSubmitResult> {
   const currentStep = state.steps[state.currentIndex];
   if (!currentStep) {
     return { done: true, state };
@@ -1192,7 +1250,17 @@ export async function submitEncodingAnswer(userId: string, state: EncodingLesson
   let misread = false;
   const gradingPrompt = currentStep.type === 'explain' ? (currentStep.checkQuestion || currentStep.text) : currentStep.text;
 
-  if (dontKnow) {
+  // The student-facing "skip this — the question or grading itself seems
+  // broken" escape hatch (see routes/encodingLesson.ts). Deliberately
+  // treated as a clean pass, not a wrong answer or a no-op: this exists
+  // specifically for cases like a genuine false-negative grading verdict,
+  // where marking it wrong would be actively incorrect, and skipping the
+  // grading call entirely means a broken/stuck question can't loop the
+  // student forever waiting on a call that keeps getting it wrong.
+  if (bypass) {
+    correct = true;
+    feedback = null;
+  } else if (dontKnow) {
     correct = false;
     feedback = null;
   } else if (currentStep.requiresCalculation) {

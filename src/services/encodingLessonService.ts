@@ -1293,7 +1293,7 @@ export async function submitEncodingAnswer(userId: string, state: EncodingLesson
     if (expectedSolution) {
       const check = await callJSON<{ correct: boolean; feedback: string | null }>(
         ENCODING_MATH_ANSWER_CHECK_PROMPT,
-        `Concept/step: ${currentStep.label}\nQuestion: ${gradingPrompt}\nVerified correct solution (reference only, never shown to the student): ${expectedSolution}\nStudent's working: ${answer}`,
+        `Qualification: ${state.qualification || 'unspecified'}\nExam board: ${state.examBoard || 'unspecified'}\nConcept/step: ${currentStep.label}\nQuestion: ${gradingPrompt}\nVerified correct solution (reference only, never shown to the student): ${expectedSolution}\nStudent's working: ${answer}`,
         MODELS.diagnosticTree,
         0.1,
         4096,

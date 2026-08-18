@@ -144,15 +144,22 @@ export interface EncodingLessonState {
   subject: string;
   steps: EncodingStep[];
   currentIndex: number;
-  // Split from a single "anyWeakSoFar" boolean so the completion grade can
-  // tell a genuinely core failure apart from a lesser one — see
-  // submitEncodingAnswer's rating derivation. "Core" means a step whose
-  // diagnosisConceptKey equals this lesson's own conceptKey (the scene,
-  // target-derivation beats, and implications) — a wrong prerequisite
-  // check/teaching beat is real but lesser than getting the actual target
-  // wrong.
+  // "Core" means a step whose diagnosisConceptKey equals this lesson's own
+  // conceptKey (the scene, target-derivation beats, and implications).
+  // These two ONLY ever reflect the TARGET's own performance now — a wrong
+  // prerequisite/other-concept step no longer touches either of them,
+  // since that node gets its OWN independent FSRS grade at the point it's
+  // answered (see submitEncodingAnswer's per-node grading) rather than
+  // being smeared into the target's aggregate. See submitEncodingAnswer's
+  // rating derivation for how these two combine into the lesson's own
+  // completion grade.
   anyCoreStepWrong: boolean;
-  anyOtherStepWrong: boolean;
+  // A core step needed a misread reword or a partial-understanding
+  // follow-up before landing correct — real friction on the TARGET
+  // itself, distinct from an outright wrong answer, but still worth more
+  // than a flawless pass. Previously this kind of friction left no trace
+  // at all once a retry succeeded.
+  anyCoreStepNeededRetry: boolean;
   // Set by the frontend once a scene/derive/explain diagnostic drill-down
   // has already graded this exact conceptKey mid-lesson (via the
   // diagnostic tree's own terminal branch) — the lesson-completion grade
@@ -936,7 +943,7 @@ export async function startEncodingLesson(
   const rawSteps: EncodingStep[] = cachedSteps.map(({ expectedSolution, ...step }) => step);
   const steps = await stripFsrsVerifiedChecks(userId, rawSteps, forcedNodeIds);
 
-  const state: EncodingLessonState = { conceptKey, subject, steps, currentIndex: 0, anyCoreStepWrong: false, anyOtherStepWrong: false, contentKey, qualification, examBoard, customTitle, customDescription, selfReportedUnsureNodeIds };
+  const state: EncodingLessonState = { conceptKey, subject, steps, currentIndex: 0, anyCoreStepWrong: false, anyCoreStepNeededRetry: false, contentKey, qualification, examBoard, customTitle, customDescription, selfReportedUnsureNodeIds };
   return { done: false, hookFact, step: steps[0], state, contentReady };
 }
 
@@ -1354,6 +1361,11 @@ export async function submitEncodingAnswer(userId: string, state: EncodingLesson
   // give feedback on in the other two.
   let partiallyUnderstood = false;
   const gradingPrompt = currentStep.type === 'explain' ? (currentStep.checkQuestion || currentStep.text) : currentStep.text;
+  // Computed early (not just at final resolution) so the misread/partial-
+  // follow-up branches below can also latch anyCoreStepNeededRetry the
+  // moment retry-friction shows up on a CORE step, even before the retry
+  // itself has actually landed.
+  const isCoreStep = currentStep.diagnosisConceptKey === state.conceptKey;
 
   // The student-facing "skip this — the question or grading itself seems
   // broken" escape hatch (see routes/encodingLesson.ts). Deliberately
@@ -1457,7 +1469,11 @@ export async function submitEncodingAnswer(userId: string, state: EncodingLesson
     const rewordedStep: EncodingStep = isExplain
       ? { ...currentStep, checkQuestion: reword.question }
       : { ...currentStep, text: reword.question };
-    const rewordedState: EncodingLessonState = { ...state, reframedStepIndex: state.currentIndex };
+    const rewordedState: EncodingLessonState = {
+      ...state,
+      reframedStepIndex: state.currentIndex,
+      anyCoreStepNeededRetry: state.anyCoreStepNeededRetry || isCoreStep,
+    };
     return { done: false, step: rewordedStep, state: rewordedState, misread: true };
   }
 
@@ -1470,15 +1486,32 @@ export async function submitEncodingAnswer(userId: string, state: EncodingLesson
   // normal wrong-answer handling below — that's where the diagnostic
   // drill-down takes over.
   if (!correct && !misread && partiallyUnderstood && state.partialReattemptStepIndex !== state.currentIndex) {
-    const reattemptState: EncodingLessonState = { ...state, partialReattemptStepIndex: state.currentIndex };
+    const reattemptState: EncodingLessonState = {
+      ...state,
+      partialReattemptStepIndex: state.currentIndex,
+      anyCoreStepNeededRetry: state.anyCoreStepNeededRetry || isCoreStep,
+    };
     return { done: false, step: currentStep, state: reattemptState, feedback, partialFollowUp: true };
   }
 
+  // Prerequisite/other-concept steps get their OWN independent FSRS grade
+  // right here, at the exact point THEIR OWN correctness is finally known
+  // — see EncodingLessonState's own comment on why this replaced folding
+  // their wrongness into the target's aggregate (a single unrelated
+  // prerequisite slip no longer drags the TARGET's own rating down, and
+  // that prerequisite now gets a real concept_reviews history of its own
+  // instead of never being individually recorded at all). Never for the
+  // target itself (that's the single aggregate grade below, computed once
+  // per lesson) and never for a bypassed step — bypass means "the
+  // question/grading itself seemed broken", not genuine evidence about
+  // what the student actually knows of that concept.
+  if (!isCoreStep && !bypass) {
+    await gradeAndRecordReview(userId, currentStep.diagnosisConceptKey, correct ? 'good' : 'again');
+  }
+
   const nextIndex = state.currentIndex + 1;
-  const isCoreStep = currentStep.diagnosisConceptKey === state.conceptKey;
   const anyCoreStepWrong = state.anyCoreStepWrong || (isCoreStep && !correct);
-  const anyOtherStepWrong = state.anyOtherStepWrong || (!isCoreStep && !correct);
-  const nextState: EncodingLessonState = { ...state, currentIndex: nextIndex, anyCoreStepWrong, anyOtherStepWrong };
+  const nextState: EncodingLessonState = { ...state, currentIndex: nextIndex, anyCoreStepWrong };
 
   if (nextIndex >= state.steps.length) {
     // Skipped if a scene/derive/explain diagnostic drill-down already
@@ -1487,15 +1520,21 @@ export async function submitEncodingAnswer(userId: string, state: EncodingLesson
     // twice in one session, artificially inflating its stability.
     let fsrsUpdate: FsrsUpdateSummary | undefined;
     if (!state.targetGradedViaDrillDown) {
-      // A wrong answer on the TARGET itself (the scene/derivation/
-      // implication beats, not a prerequisite check) is a genuine failure
-      // to encode the core concept — "again", FSRS's dedicated lapse
-      // formula, not just a worse "hard". A wrong prerequisite step with
-      // the target itself right is real but lesser — "hard". A clean pass
-      // is "good" — first-time encoding lessons never emit "easy"; that's
-      // reserved for the lightest retrieval tier, where a genuinely
-      // comfortable pass is a meaningful signal rather than a guess.
-      const rating: FsrsRatingKey = anyCoreStepWrong ? 'again' : anyOtherStepWrong ? 'hard' : 'good';
+      // Scoped ENTIRELY to the target's own performance now — a wrong
+      // prerequisite check elsewhere in the lesson no longer factors in at
+      // all (it already got its own dedicated grade above, on its own
+      // concept_id). A wrong answer on the TARGET itself (the scene/
+      // derivation/implication beats) is a genuine failure to encode the
+      // core concept — "again", FSRS's dedicated lapse formula, not just a
+      // worse "hard". A core step that needed a misread reword or a
+      // partial-understanding follow-up before landing correct is real
+      // friction on the target itself, worth less than a clean pass but
+      // not an outright failure — "hard". A flawless run through every
+      // core step is "good" — first-time encoding lessons never emit
+      // "easy"; that's reserved for the lightest retrieval tier, where a
+      // genuinely comfortable pass is a meaningful signal rather than a
+      // guess.
+      const rating: FsrsRatingKey = anyCoreStepWrong ? 'again' : state.anyCoreStepNeededRetry ? 'hard' : 'good';
       const { previousRow, newState: fsrsRow } = await gradeAndRecordReview(userId, state.conceptKey, rating);
       fsrsUpdate = {
         rating,

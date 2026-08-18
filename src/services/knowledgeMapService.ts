@@ -1,6 +1,6 @@
 import { normalizeConceptKey, getOrGenerateChain } from './chainService';
 import { Chain } from './encodingLessonService';
-import { getMasteryStatesForConcepts } from './reviewService';
+import { getMasteryDetailsForConcepts, MasteryDetail } from './reviewService';
 
 // One concept the student has actually added to a folder (a single-lesson
 // page's own title, or one entry of a multi-lesson page's own lessons) —
@@ -40,6 +40,11 @@ export interface KnowledgeMapResult {
   nodes: KnowledgeMapNode[];
   edges: KnowledgeMapEdge[];
   mastery: Record<string, 0 | 1 | 2>;
+  // The real numbers behind each node's mastery bucket — see
+  // reviewService.ts's getMasteryDetailsForConcepts. A node with no
+  // review row at all (mastery[id] === 0) has no entry here; there's
+  // nothing real to show yet.
+  masteryDetail: Record<string, MasteryDetail>;
 }
 
 /**
@@ -65,7 +70,7 @@ export async function getKnowledgeMapForFolder(
   concepts: FolderConcept[]
 ): Promise<KnowledgeMapResult> {
   if (!concepts.length) {
-    return { nodes: [], edges: [], mastery: {} };
+    return { nodes: [], edges: [], mastery: {}, masteryDetail: {} };
   }
 
   // Each concept's chain is looked up (or generated, on a genuine
@@ -129,10 +134,13 @@ export async function getKnowledgeMapForFolder(
   });
 
   const nodeIds = Array.from(nodeById.keys());
-  const found = await getMasteryStatesForConcepts(userId, nodeIds);
+  const found = await getMasteryDetailsForConcepts(userId, nodeIds);
   const mastery: Record<string, 0 | 1 | 2> = {};
+  const masteryDetail: Record<string, MasteryDetail> = {};
   nodeIds.forEach((id) => {
-    mastery[id] = found.get(id) ?? 0;
+    const detail = found.get(id);
+    mastery[id] = detail?.state ?? 0;
+    if (detail) masteryDetail[id] = detail;
   });
 
   const nodes: KnowledgeMapNode[] = nodeIds.map((id) => {
@@ -140,5 +148,5 @@ export async function getKnowledgeMapForFolder(
     return { id: base.id, name: base.name, topics: Array.from(nodeTopics.get(id) || []) };
   });
 
-  return { nodes, edges, mastery };
+  return { nodes, edges, mastery, masteryDetail };
 }

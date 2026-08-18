@@ -270,6 +270,50 @@ export async function getMasteryStatesForConcepts(userId: string, conceptIds: st
   return states;
 }
 
+export interface MasteryDetail {
+  state: 0 | 1 | 2;
+  stability: number;
+  reps: number;
+  dueDate: string | null;
+  spacedSuccessCount: number;
+  isDurablyMastered: boolean;
+}
+
+/**
+ * Same batch shape and bar as getMasteryStatesForConcepts, but returns the
+ * real underlying numbers alongside the 0/1/2 bucket rather than just the
+ * bucket — built for showing a student what "mastery" actually means
+ * while they're looking at it (the knowledge map's detail panel), not
+ * just a dot colour. Two concepts can both read "Mastered" while one has
+ * stability=31 days (barely over the bar) and the other has stability=400
+ * (rock solid) — the bucket alone can't tell them apart, this can.
+ */
+export async function getMasteryDetailsForConcepts(userId: string, conceptIds: string[]): Promise<Map<string, MasteryDetail>> {
+  const details = new Map<string, MasteryDetail>();
+  if (!conceptIds.length) return details;
+
+  const { data, error } = await supabaseAdmin
+    .from('concept_reviews')
+    .select('concept_id, stability, reps, due, spaced_success_count')
+    .eq('user_id', userId)
+    .in('concept_id', conceptIds);
+  if (error) throw error;
+
+  (data || []).forEach((row) => {
+    const isMastered = row.stability >= MASTERY_STABILITY_THRESHOLD && row.reps >= MIN_REPS_FOR_TRUST;
+    const spacedSuccessCount = (row as any).spaced_success_count ?? 0;
+    details.set(row.concept_id as string, {
+      state: isMastered ? 2 : 1,
+      stability: row.stability,
+      reps: row.reps,
+      dueDate: row.due,
+      spacedSuccessCount,
+      isDurablyMastered: spacedSuccessCount >= DURABLE_RELEARNING_CRITERION,
+    });
+  });
+  return details;
+}
+
 /**
  * The inverse shape of getMasteryStatesForConcepts — ONE concept, MANY
  * candidate users, one query regardless of pool size. Built for peer-

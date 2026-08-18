@@ -79,6 +79,27 @@ export async function gradeAndRecordReview(
 }
 
 /**
+ * Batch existence-check — which of these concept ids has this user EVER
+ * reviewed on LastMind at all (any concept_reviews row, regardless of
+ * current stability/decay)? Used to tell a grounding-chain prerequisite
+ * that's genuinely been engaged with before (it was itself taught as its
+ * own page/lesson, or has otherwise been graded) apart from one that's
+ * never touched LastMind at all — see encodingLessonService.ts's
+ * stripFsrsVerifiedChecks and getEncodingLessonOutline. One query
+ * regardless of list size, not N round trips.
+ */
+export async function getReviewedConceptIds(userId: string, conceptIds: string[]): Promise<Set<string>> {
+  if (!conceptIds.length) return new Set();
+  const { data, error } = await supabaseAdmin
+    .from('concept_reviews')
+    .select('concept_id')
+    .eq('user_id', userId)
+    .in('concept_id', conceptIds);
+  if (error) throw error;
+  return new Set((data || []).map((row) => row.concept_id as string));
+}
+
+/**
  * Checks whether a concept already has enough real review history to skip
  * re-testing it (the MASTERED_THRESHOLD pre-filter from the diagnostic
  * spec). Deliberately requires BOTH a real stability figure AND at least

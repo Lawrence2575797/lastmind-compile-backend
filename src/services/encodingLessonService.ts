@@ -64,7 +64,7 @@ async function callJSON<T>(systemPrompt: string, userContent: string, model: str
   }
 }
 
-interface ChainEdge { node_id: string; relationship: 'definitional' | 'reasoning'; }
+export interface ChainEdge { node_id: string; relationship: 'definitional' | 'reasoning'; }
 // technique — see CHAIN_GENERATION_PROMPT rule 11/12: true for a node that
 // exists specifically because computing/applying the target requires a
 // procedural/computational method (often from a different subject than the
@@ -81,8 +81,8 @@ interface ChainEdge { node_id: string; relationship: 'definitional' | 'reasoning
 // prerequisite's whole chain gets pre-tested (check/mechanistic_check)
 // before the target derivation starts, or instead gets recruited as a
 // reasoning tool woven directly into the target derivation's own beats.
-interface ChainNode { id: string; label: string; derivable?: boolean; technique?: boolean; generalMechanism?: boolean; depends_on: ChainEdge[]; }
-interface Chain { concept_id: string; subject: string; nodes: ChainNode[]; }
+export interface ChainNode { id: string; label: string; derivable?: boolean; technique?: boolean; generalMechanism?: boolean; depends_on: ChainEdge[]; }
+export interface Chain { concept_id: string; subject: string; nodes: ChainNode[]; }
 
 // 'mechanistic_check' replaces a single-node 'check' when the prerequisite
 // being verified is the tip of a genuine multi-node chain (see

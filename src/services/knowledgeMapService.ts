@@ -17,6 +17,18 @@ export interface FolderConcept {
 export interface KnowledgeMapNode {
   id: string;
   name: string;
+  // Every subfolder ("topic") whose own concept-chain included this node.
+  // A page's own target concept belongs to exactly its containing
+  // subfolder; a shared prerequisite pulled in by concepts from two
+  // different subfolders legitimately lists both — that's not a bug to
+  // resolve, it's the honest answer for something genuinely cross-cutting.
+  // '' means a page sitting directly in the folder with no subfolder.
+  // Drives the frontend's soft per-subfolder clustering (see
+  // renderKnowledgeMapGraph) — a single-topic node clusters tightly with
+  // its subfolder's other nodes, a multi-topic one visually sits between
+  // whichever clusters share it, and cross-subfolder edges are never
+  // hidden either way.
+  topics: string[];
 }
 
 export interface KnowledgeMapEdge {
@@ -70,16 +82,23 @@ export async function getKnowledgeMapForFolder(
     })
   );
 
-  const chains: Chain[] = chainResults
-    .map((r) => r.chain as Chain | null)
-    .filter((chain): chain is Chain => !!chain && Array.isArray(chain.nodes));
-
-  const nodeById = new Map<string, KnowledgeMapNode>();
-  chains.forEach((chain) => {
+  // Kept index-aligned with `concepts` (not filtered down separately)
+  // specifically so each chain's own topic — the SUBFOLDER the concept
+  // that produced it lives in — is still known while attributing nodes
+  // below; a chain with no result (a genuine generation failure) just
+  // contributes nothing rather than breaking that alignment.
+  const nodeById = new Map<string, { id: string; name: string }>();
+  const nodeTopics = new Map<string, Set<string>>();
+  chainResults.forEach((result, i) => {
+    const chain = result.chain as Chain | null;
+    if (!chain || !Array.isArray(chain.nodes)) return;
+    const topic = concepts[i].topic || '';
     chain.nodes.forEach((node) => {
       if (!nodeById.has(node.id)) {
         nodeById.set(node.id, { id: node.id, name: node.label });
       }
+      if (!nodeTopics.has(node.id)) nodeTopics.set(node.id, new Set());
+      nodeTopics.get(node.id)!.add(topic);
     });
   });
 
@@ -89,10 +108,15 @@ export async function getKnowledgeMapForFolder(
   // depends_on can in principle reference an id outside what got returned
   // (e.g. a differently-generated chain that trimmed a shared ancestor
   // differently), and a dangling edge would just confuse the frontend's
-  // own force layout for nothing.
+  // own force layout for nothing. Cross-subfolder edges are never
+  // filtered out here — clustering is purely a frontend LAYOUT concern
+  // (see renderKnowledgeMapGraph), never a reason to hide a real
+  // prerequisite relationship.
   const edgeKeys = new Set<string>();
   const edges: KnowledgeMapEdge[] = [];
-  chains.forEach((chain) => {
+  chainResults.forEach((result) => {
+    const chain = result.chain as Chain | null;
+    if (!chain || !Array.isArray(chain.nodes)) return;
     chain.nodes.forEach((node) => {
       (node.depends_on || []).forEach((dep) => {
         if (!nodeById.has(dep.node_id) || !nodeById.has(node.id)) return;
@@ -111,5 +135,10 @@ export async function getKnowledgeMapForFolder(
     mastery[id] = found.get(id) ?? 0;
   });
 
-  return { nodes: Array.from(nodeById.values()), edges, mastery };
+  const nodes: KnowledgeMapNode[] = nodeIds.map((id) => {
+    const base = nodeById.get(id)!;
+    return { id: base.id, name: base.name, topics: Array.from(nodeTopics.get(id) || []) };
+  });
+
+  return { nodes, edges, mastery };
 }

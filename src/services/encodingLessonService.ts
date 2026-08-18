@@ -1,6 +1,6 @@
 import { callClaudeJSON, callClaudeJSONWithImages, MODELS } from './claudeClient';
 import { getOrGenerateChain, customContextDigest } from './chainService';
-import { gradeAndRecordReview, FsrsRatingKey } from './reviewService';
+import { gradeAndRecordReview, getReviewedConceptIds, FsrsRatingKey } from './reviewService';
 import { searchWikimediaImages, fetchImageAsBase64 } from './wikimediaService';
 import { supabaseAdmin } from './supabaseAdmin';
 import {
@@ -682,16 +682,28 @@ async function repairUncertainSteps(
 export interface EncodingLessonOutlineItem {
   nodeId: string;
   label: string;
+  // True when this user already has SOME real concept_reviews history for
+  // this exact node — it was itself taught/reviewed as its own page on
+  // LastMind before, not just self-reported. See stripFsrsVerifiedChecks —
+  // a single-node "check" step for a verified node is silently skipped in
+  // the actual lesson (trust real practice history over re-asking a
+  // question that's now redundant), so the frontend should skip showing it
+  // in the self-assessment checklist too — there's nothing left to confirm.
+  verifiedOnLastMind: boolean;
 }
 
 export interface EncodingLessonOutline {
   targetLabel: string;
-  // Concept-specific factual/structural prerequisites — pre-tested by the
-  // lesson itself via a check/mechanistic_check step regardless of what
-  // the student says here; shown so the student can see WHAT will be
-  // checked, and flag one as shaky ahead of time so it gets actually
-  // taught (see the selfReportedUnsureNodeIds path) rather than just
-  // failed-then-remediated after the fact.
+  // Concept-specific factual/structural prerequisites. A single-node one
+  // gets pre-tested via a "check" step UNLESS verifiedOnLastMind is true
+  // (see stripFsrsVerifiedChecks), in which case it's silently trusted and
+  // skipped; a multi-node chain always keeps its combined mechanistic_check
+  // regardless (tracing the CONNECTION between nodes is the point, not just
+  // individual recall, so real history on one node in the middle doesn't
+  // make the whole chain's check redundant). Shown so the student can see
+  // what's still actually being tested and flag one as shaky ahead of time
+  // so it gets actually taught (see the selfReportedUnsureNodeIds path)
+  // rather than just failed-then-remediated after the fact.
   groundingKnowledge: EncodingLessonOutlineItem[];
   // General, transferable mechanisms the lesson assumes fluent and
   // recruits directly into the target derivation WITHOUT a separate test
@@ -714,6 +726,7 @@ export interface EncodingLessonOutline {
  * self-reported unsure ids are passed back to it.
  */
 export async function getEncodingLessonOutline(
+  userId: string,
   conceptKey: string,
   subject: string,
   topic: string,
@@ -737,27 +750,63 @@ export async function getEncodingLessonOutline(
   // own comment) — dedupe here since the student only needs to see and
   // self-assess it once, unlike the lesson-writing prompts which need each
   // chain's own complete, self-contained lineage.
-  function toItems(chains: ChainNode[][]): EncodingLessonOutlineItem[] {
+  function toItems(chains: ChainNode[][], reviewedIds: Set<string>): EncodingLessonOutlineItem[] {
     const seen = new Set<string>();
     const items: EncodingLessonOutlineItem[] = [];
     for (const c of chains) {
       for (const n of c) {
         if (seen.has(n.id)) continue;
         seen.add(n.id);
-        items.push({ nodeId: n.id, label: n.label });
+        items.push({ nodeId: n.id, label: n.label, verifiedOnLastMind: reviewedIds.has(n.id) });
       }
     }
     return items;
   }
 
+  // Only groundingKnowledge items are ever individually check-tested (see
+  // stripFsrsVerifiedChecks) — recruitedMechanisms never get a separate
+  // check step regardless of history, so there's nothing to look up for
+  // them; pass an empty set through toItems for that side.
+  const groundingIds = new Set(groundingChains.flat().map((n) => n.id));
+  const reviewedIds = await getReviewedConceptIds(userId, Array.from(groundingIds));
+
   return {
     targetLabel: target.label,
-    groundingKnowledge: toItems(groundingChains),
-    recruitedKnowledge: toItems(recruitedMechanismChains),
+    groundingKnowledge: toItems(groundingChains, reviewedIds),
+    recruitedKnowledge: toItems(recruitedMechanismChains, new Set()),
   };
 }
 
+// Silently skips a single-node "check" step for a prerequisite this user
+// already has real concept_reviews history for (see getReviewedConceptIds)
+// — real practice evidence is trusted over re-asking a now-redundant
+// question, and any future decay gets picked up by that concept's OWN
+// spaced-repetition schedule elsewhere, not duplicated here. Deliberately
+// does NOT touch "mechanistic_check" steps — those test the CONNECTION
+// across an entire multi-node chain, not just recall of one node, so real
+// history on one node in the middle doesn't make the whole chain's check
+// redundant. Never strips down to zero steps — a cold-cache /start call
+// may have only its own single first step to work with at this point, and
+// leaving nothing to show would break the lesson rather than just skip one
+// trivial question. Lesson CONTENT itself stays untouched and shared
+// across every student (see encoding_lesson_content's whole caching
+// model) — this filters the per-student RESPONSE only, after the cached
+// content has already been read/generated, never what gets written back
+// to the cache.
+async function stripFsrsVerifiedChecks(userId: string, steps: EncodingStep[], forcedNodeIds: string[]): Promise<EncodingStep[]> {
+  const forced = new Set(forcedNodeIds);
+  const candidateIds = Array.from(new Set(
+    steps.filter((s) => s.type === 'check' && !forced.has(s.diagnosisConceptKey)).map((s) => s.diagnosisConceptKey)
+  ));
+  if (!candidateIds.length) return steps;
+  const reviewed = await getReviewedConceptIds(userId, candidateIds);
+  if (!reviewed.size) return steps;
+  const filtered = steps.filter((s) => !(s.type === 'check' && reviewed.has(s.diagnosisConceptKey) && !forced.has(s.diagnosisConceptKey)));
+  return filtered.length ? filtered : steps;
+}
+
 export async function startEncodingLesson(
+  userId: string,
   conceptKey: string,
   subject: string,
   topic: string,
@@ -891,7 +940,8 @@ export async function startEncodingLesson(
   // wholesale on every submit, so anything in here is visible in the
   // network response. Grading re-fetches the cache row by contentKey
   // instead (see submitEncodingAnswer).
-  const steps: EncodingStep[] = cachedSteps.map(({ expectedSolution, ...step }) => step);
+  const rawSteps: EncodingStep[] = cachedSteps.map(({ expectedSolution, ...step }) => step);
+  const steps = await stripFsrsVerifiedChecks(userId, rawSteps, forcedNodeIds);
 
   const state: EncodingLessonState = { conceptKey, subject, steps, currentIndex: 0, anyCoreStepWrong: false, anyOtherStepWrong: false, contentKey, qualification, examBoard, customTitle, customDescription, selfReportedUnsureNodeIds };
   return { done: false, hookFact, step: steps[0], state, contentReady };
@@ -913,6 +963,7 @@ export async function startEncodingLesson(
  * them, same as startEncodingLesson itself does.
  */
 export async function continueEncodingLesson(
+  userId: string,
   state: EncodingLessonState,
   topic: string,
   concept: string,
@@ -938,7 +989,14 @@ export async function continueEncodingLesson(
         .maybeSingle()
     : { data: null, error: null };
   if (!existingError && existing) {
-    const steps: EncodingStep[] = (existing.steps as CachedEncodingStep[]).map(({ expectedSolution, ...s }) => s);
+    // forcedNodeIds isn't recomputed on this early-return path, but that's
+    // fine here specifically: contentKey itself already encodes the exact
+    // forced-node set (see startEncodingLesson's own contentKey), so any
+    // forced node is already baked into `existing.steps` as a teach beat,
+    // never a "check" step for its own diagnosisConceptKey — there's
+    // nothing for an empty forced-set to wrongly strip.
+    const rawSteps: EncodingStep[] = (existing.steps as CachedEncodingStep[]).map(({ expectedSolution, ...s }) => s);
+    const steps = await stripFsrsVerifiedChecks(userId, rawSteps, []);
     return { ...state, steps };
   }
 
@@ -1003,7 +1061,8 @@ export async function continueEncodingLesson(
   }
   await supabaseAdmin.from('encoding_lesson_pending').delete().eq('content_key', contentKey);
 
-  const steps: EncodingStep[] = allSteps.map(({ expectedSolution, ...s }) => s);
+  const rawSteps: EncodingStep[] = allSteps.map(({ expectedSolution, ...s }) => s);
+  const steps = await stripFsrsVerifiedChecks(userId, rawSteps, forcedNodeIds);
   return { ...state, steps };
 }
 

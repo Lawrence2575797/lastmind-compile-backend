@@ -25,6 +25,7 @@ router.post('/encoding-lesson/outline', costlyEndpointLimiter, async (req: Reque
   try {
     const conceptKey = normalizeConceptKey(subject, topic, concept);
     const outline = await getEncodingLessonOutline(
+      req.userId as string,
       conceptKey,
       subject,
       topic,
@@ -75,6 +76,7 @@ router.post('/encoding-lesson/start', costlyEndpointLimiter, async (req: Request
   try {
     const conceptKey = normalizeConceptKey(subject, topic, concept);
     const result = await startEncodingLesson(
+      req.userId as string,
       conceptKey,
       subject,
       topic,
@@ -115,7 +117,7 @@ router.post('/encoding-lesson/continue', costlyEndpointLimiter, async (req: Requ
     : [];
 
   try {
-    const nextState = await continueEncodingLesson(state as EncodingLessonState, topic, concept, cleanSiblings);
+    const nextState = await continueEncodingLesson(req.userId as string, state as EncodingLessonState, topic, concept, cleanSiblings);
     res.json({ state: nextState });
   } catch (err) {
     console.error('Encoding lesson continuation failed:', err);

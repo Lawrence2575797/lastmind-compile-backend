@@ -37,3 +37,16 @@ export async function setTutoringProfile(userId: string, displayName: string | n
   if (error) throw error;
   return { displayName: trimmedName, tutoringOptIn };
 }
+
+// Bumps last_assigned_at so this helper sorts behind everyone else next
+// time findEligibleHelper picks a candidate — the whole fairness
+// mechanism (see peerTutoringMatchService.ts) is just "prefer whoever's
+// gone longest without being picked," which only works if picking someone
+// actually records that it happened.
+export async function markHelperAssigned(userId: string): Promise<void> {
+  const { error } = await supabaseAdmin
+    .from('tutoring_profiles')
+    .update({ last_assigned_at: new Date().toISOString() })
+    .eq('user_id', userId);
+  if (error) throw error;
+}

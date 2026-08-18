@@ -178,6 +178,36 @@ export async function getMasteryStatesForConcepts(userId: string, conceptIds: st
   return states;
 }
 
+/**
+ * The inverse shape of getMasteryStatesForConcepts — ONE concept, MANY
+ * candidate users, one query regardless of pool size. Built for peer-
+ * tutoring matching (see peerTutoringMatchService.ts's findEligibleHelper):
+ * "of these opted-in students, which ones currently have real, verified
+ * mastery of this exact concept" is the eligibility bar for who's allowed
+ * to be matched as a helper. Same MASTERY_STABILITY_THRESHOLD/MIN_REPS_FOR_TRUST
+ * bar as everywhere else — a helper's own "mastered" means the identical
+ * thing a student's own progress view already means, not a separate,
+ * looser standard invented for this feature.
+ */
+export async function getUsersWithMasteryForConcept(userIds: string[], conceptId: string): Promise<Set<string>> {
+  const mastered = new Set<string>();
+  if (!userIds.length) return mastered;
+
+  const { data, error } = await supabaseAdmin
+    .from('concept_reviews')
+    .select('user_id, stability, reps')
+    .eq('concept_id', conceptId)
+    .in('user_id', userIds);
+  if (error) throw error;
+
+  (data || []).forEach((row) => {
+    if (row.stability >= MASTERY_STABILITY_THRESHOLD && row.reps >= MIN_REPS_FOR_TRUST) {
+      mastered.add(row.user_id as string);
+    }
+  });
+  return mastered;
+}
+
 function clean(s: string): string {
   return (s || '').trim().toLowerCase().replace(/[^a-z0-9]+/g, '_');
 }

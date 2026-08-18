@@ -11,6 +11,24 @@ const MAX_BODY_LENGTH = 4000;
 // a schema migration, only flipping this env var (see the plan's Phase 3).
 const RETAIN_RAW_RESPONSES = process.env.RETAIN_RAW_RESPONSES === 'true';
 
+// Heuristic, not ML — same spirit as piiFilterContextual.ts's own regex
+// table, honestly documented as such rather than pretending this is a
+// real classifier. Two categories worth a human's attention that the PII/
+// harmful-content pipeline above isn't aimed at: self-harm language, and
+// solicitation to move the conversation off-platform (the actual on-ramp
+// to unsupervised minor-to-minor contact this whole feature is designed
+// to avoid — see the plan's legal discussion). Checked against the
+// ORIGINAL text, not the filtered body, since redaction shouldn't hide
+// intent from a reviewer.
+const FLAGGED_PATTERNS: RegExp[] = [
+  /\b(kill myself|suicid\w*|self[- ]harm|end my life|want(ed)? to die|hurt myself)\b/i,
+  /\b(add me on|my (snap(chat)?|insta(gram)?|whatsapp|discord|kik|tiktok) is|dm me on|follow me on|text me (at|on)|call me (at|on))\b/i,
+];
+
+function isHeuristicallyFlagged(text: string): boolean {
+  return FLAGGED_PATTERNS.some((pattern) => pattern.test(text));
+}
+
 export interface TutoringResponse {
   id: string;
   sessionId: string;
@@ -55,6 +73,7 @@ export async function submitResponse(userId: string, sessionId: string, body: st
   const cleaned1 = applyStructuredPIIFilter(trimmed);
   const cleaned2 = applyContextualPIIFilter(cleaned1);
   const safeBody = applyHarmfulContentFilter(cleaned2);
+  const flagged = isHeuristicallyFlagged(trimmed);
 
   const { data: inserted, error: insertError } = await supabaseAdmin
     .from('tutoring_responses')
@@ -63,6 +82,7 @@ export async function submitResponse(userId: string, sessionId: string, body: st
       helper_id: userId,
       body: safeBody,
       raw_body: RETAIN_RAW_RESPONSES ? trimmed : null,
+      flagged,
     })
     .select()
     .single();
@@ -77,6 +97,7 @@ export interface TutoringResponseView {
   available: boolean;
   body: string | null;
   releasedAt: string | null;
+  heldForReview: boolean;
 }
 
 // Requester-only — the helper's own copy of what they wrote isn't
@@ -95,15 +116,24 @@ export async function getResponse(userId: string, sessionId: string): Promise<Tu
 
   const session = await maybeReleaseSession(sessionId);
   if (!session || session.status !== 'released') {
-    return { available: false, body: null, releasedAt: null };
+    return { available: false, body: null, releasedAt: null, heldForReview: false };
   }
 
   const { data: responseRow, error: responseError } = await supabaseAdmin
     .from('tutoring_responses')
-    .select('body')
+    .select('body, flagged')
     .eq('session_id', sessionId)
     .maybeSingle();
   if (responseError) throw responseError;
 
-  return { available: true, body: responseRow?.body || null, releasedAt: session.releasedAt };
+  // A flagged response stays held even past its release time until a
+  // reviewer clears it (there's no admin UI in v1 — see the plan's Phase
+  // 4 — so clearing means flipping `flagged` back to false directly in
+  // the Supabase console once reviewed). Safer default given everything
+  // already discussed about this feature's legal exposure.
+  if (responseRow?.flagged) {
+    return { available: false, body: null, releasedAt: null, heldForReview: true };
+  }
+
+  return { available: true, body: responseRow?.body || null, releasedAt: session.releasedAt, heldForReview: false };
 }

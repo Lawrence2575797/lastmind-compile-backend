@@ -2,6 +2,7 @@ import { Router, Request, Response } from 'express';
 import { requireAuth } from '../services/authMiddleware';
 import { syncEndpointLimiter } from '../services/rateLimiters';
 import { submitResponse, getResponse } from '../services/tutoringResponseService';
+import { reportResponse } from '../services/tutoringResponseModerationService';
 
 const router = Router();
 
@@ -30,6 +31,21 @@ router.get('/tutoring-sessions/:id/response', async (req: Request, res: Response
   } catch (err: any) {
     console.error('Response fetch failed:', err);
     res.status(404).json({ error: err?.message || 'not found' });
+  }
+});
+
+// POST /tutoring-sessions/:id/report  { reason }
+router.post('/tutoring-sessions/:id/report', async (req: Request, res: Response) => {
+  const { reason } = req.body ?? {};
+  if (typeof reason !== 'string' || !reason.trim()) {
+    return res.status(400).json({ error: 'reason (string) is required' });
+  }
+  try {
+    await reportResponse(req.userId as string, req.params.id, reason);
+    res.json({ ok: true });
+  } catch (err: any) {
+    console.error('Report submission failed:', err);
+    res.status(400).json({ error: err?.message || 'could not submit your report' });
   }
 });
 

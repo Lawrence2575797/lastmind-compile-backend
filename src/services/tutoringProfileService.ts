@@ -1,7 +1,7 @@
 import { supabaseAdmin } from './supabaseAdmin';
 
 // A student's opt-in identity for peer tutoring — separate from any other
-// per-account table (tutees, folders) since this one specifically gates
+// per-account table (folders, calendar events) since this one specifically gates
 // whether a user can be matched to help others or ask for help. Off by
 // default: nobody is matchable just by having an account, only once they
 // explicitly opt in. School-restricted matching isn't part of this table

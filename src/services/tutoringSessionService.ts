@@ -106,7 +106,51 @@ export async function setReleaseTime(userId: string, sessionId: string, releaseT
     .select()
     .single();
   if (error) throw error;
-  return rowToSession(data);
+  // Covers "already submitted, booking a release time that's already in
+  // the past (e.g. picking 'now')" — without this the session would sit
+  // at 'submitted' until some unrelated later read happened to trigger it.
+  return (await maybeReleaseSession(sessionId)) || rowToSession(data);
+}
+
+// The two independent events that gate visibility — a submitted written
+// response (tutoringResponseService.submitResponse calls markSubmitted)
+// and a release time that's actually passed (setReleaseTime above) — can
+// happen in either order. This is the single place that checks both and
+// flips status to 'released' the moment they're both true; called after
+// either event so neither ordering leaves a session stuck.
+export async function maybeReleaseSession(sessionId: string): Promise<TutoringSession | null> {
+  const { data, error } = await supabaseAdmin.from('tutoring_sessions').select('*').eq('id', sessionId).maybeSingle();
+  if (error) throw error;
+  if (!data) return null;
+  const session = rowToSession(data);
+  if (session.status !== 'submitted' || !session.releaseTime) return session;
+  if (new Date(session.releaseTime).getTime() > Date.now()) return session;
+
+  const { data: released, error: updateError } = await supabaseAdmin
+    .from('tutoring_sessions')
+    .update({ status: 'released', released_at: new Date().toISOString(), updated_at: new Date().toISOString() })
+    .eq('id', sessionId)
+    .select()
+    .single();
+  if (updateError) throw updateError;
+  return rowToSession(released);
+}
+
+// Called by tutoringResponseService.submitResponse once the helper's
+// filtered response has been written. Only ever moves 'assigned' ->
+// 'submitted' — a session that's already missed its deadline (and been
+// reassigned) or been submitted once can't be submitted again.
+export async function markSubmitted(sessionId: string): Promise<TutoringSession> {
+  const { data, error } = await supabaseAdmin
+    .from('tutoring_sessions')
+    .update({ status: 'submitted', submitted_at: new Date().toISOString(), updated_at: new Date().toISOString() })
+    .eq('id', sessionId)
+    .eq('status', 'assigned')
+    .select()
+    .single();
+  if (error) throw error;
+  if (!data) throw new Error('session is not awaiting a submission');
+  return (await maybeReleaseSession(sessionId)) || rowToSession(data);
 }
 
 export interface TutoringSessionWithContext extends TutoringSession {

@@ -1,12 +1,18 @@
 import { supabaseAdmin } from './supabaseAdmin';
-import { getUsersWithMasteryForConcept } from './reviewService';
-import { markHelperAssigned } from './tutoringProfileService';
+import { getUsersWithMasteryForConcept, getMasteryStatesForConcepts } from './reviewService';
+import { getTutoringProfile, markHelperAssigned } from './tutoringProfileService';
+import { normalizeConceptKey } from './chainService';
+import { applyStructuredPIIFilter } from '../safety/piiFilterStructured';
+import { applyContextualPIIFilter } from '../safety/piiFilterContextual';
+import { applyHarmfulContentFilter } from '../safety/harmfulContentFilter';
 import {
   createAssignedSession,
   listSessionsPastDeadline,
   markMissedDeadline,
   TutoringSession,
 } from './tutoringSessionService';
+
+const MAX_FIELD_LENGTH = 60;
 
 export interface HelpRequest {
   id: string;
@@ -146,6 +152,41 @@ export async function createHelpRequest(
   return { helpRequest: rowToHelpRequest(updated), session };
 }
 
+function filterField(text: string): string {
+  const trimmed = (text || '').trim().slice(0, MAX_FIELD_LENGTH);
+  const cleaned1 = applyStructuredPIIFilter(trimmed);
+  const cleaned2 = applyContextualPIIFilter(cleaned1);
+  return applyHarmfulContentFilter(cleaned2);
+}
+
+/**
+ * The "add your own" path from the Peer Tutoring hub — still three
+ * short, structured fields (subject/topic/concept name), never an open
+ * "describe your problem" box, and each one runs through the exact same
+ * PII/harmful-content pipeline used everywhere else user-typed text
+ * becomes visible to another student (see tutoringResponseService.ts).
+ * conceptId is built with the SAME normalizeConceptKey used by the
+ * chain-generation system (chainService.ts) rather than the raw typed
+ * text, so a custom request for a concept a real chain/lesson already
+ * exists for has a genuine chance of matching a helper's real
+ * concept_reviews row — an ad-hoc unnormalized string never could,
+ * since nobody would ever have been FSRS-graded on that literal string.
+ */
+export async function createCustomHelpRequest(
+  userId: string,
+  subject: string,
+  topic: string,
+  concept: string
+): Promise<{ helpRequest: HelpRequest; session: TutoringSession | null }> {
+  const safeSubject = filterField(subject);
+  const safeTopic = filterField(topic);
+  const safeConcept = filterField(concept);
+  if (!safeSubject || !safeConcept) throw new Error('subject and concept are required');
+
+  const conceptId = normalizeConceptKey(safeSubject, safeTopic, safeConcept);
+  return createHelpRequest(userId, conceptId, safeSubject, safeTopic || null);
+}
+
 export async function getHelpRequest(userId: string, helpRequestId: string): Promise<HelpRequest | null> {
   const { data, error } = await supabaseAdmin
     .from('help_requests')
@@ -198,4 +239,75 @@ export async function checkAndReassignMissedDeadlines(): Promise<void> {
       await supabaseAdmin.from('help_requests').update({ status: 'open' }).eq('id', session.helpRequestId);
     }
   }
+}
+
+/**
+ * The low-liquidity fallback the auto-match alone doesn't cover: when the
+ * helper pool is small, `findEligibleHelper` still only ever picks ONE
+ * specific person per request — every other equally-eligible helper never
+ * sees it at all unless that one person misses their deadline. This lists
+ * every currently-open (never matched, or fell back to open after a
+ * missed deadline) request this viewer could personally help with —
+ * opted in AND verified mastery=2 for that exact concept, checked fresh
+ * here rather than trusted from any earlier state — so a capable helper
+ * can proactively pick one up instead of waiting on auto-assignment.
+ */
+export async function listClaimableHelpRequests(userId: string): Promise<HelpRequest[]> {
+  const profile = await getTutoringProfile(userId);
+  if (!profile.tutoringOptIn) return [];
+
+  const { data, error } = await supabaseAdmin
+    .from('help_requests')
+    .select('*')
+    .eq('status', 'open')
+    .neq('requester_id', userId)
+    .order('created_at', { ascending: true });
+  if (error) throw error;
+  const openRequests = (data || []).map(rowToHelpRequest);
+  if (!openRequests.length) return [];
+
+  const conceptIds = Array.from(new Set(openRequests.map((r) => r.conceptId)));
+  const states = await getMasteryStatesForConcepts(userId, conceptIds);
+  return openRequests.filter((r) => states.get(r.conceptId) === 2);
+}
+
+/**
+ * A helper proactively picking up an open request from listClaimableHelpRequests
+ * — the counterpart to the automatic path in createHelpRequest/
+ * checkAndReassignMissedDeadlines. Re-verifies everything server-side
+ * (opt-in, real mastery, still open) rather than trusting the list the
+ * client was showing, and uses a conditional update on status='open' to
+ * close the race where two helpers claim the same request at once — only
+ * the first update actually lands, the second gets back no row and fails
+ * cleanly instead of creating two competing sessions for one request.
+ */
+export async function claimHelpRequest(userId: string, helpRequestId: string): Promise<TutoringSession> {
+  const profile = await getTutoringProfile(userId);
+  if (!profile.tutoringOptIn) throw new Error('you need to opt in to peer tutoring first');
+
+  const { data: request, error: fetchError } = await supabaseAdmin
+    .from('help_requests')
+    .select('*')
+    .eq('id', helpRequestId)
+    .maybeSingle();
+  if (fetchError) throw fetchError;
+  if (!request) throw new Error('request not found');
+  if (request.requester_id === userId) throw new Error('you cannot help with your own request');
+
+  const states = await getMasteryStatesForConcepts(userId, [request.concept_id]);
+  if (states.get(request.concept_id) !== 2) throw new Error('you do not currently have verified mastery of this concept');
+
+  const { data: claimed, error: claimError } = await supabaseAdmin
+    .from('help_requests')
+    .update({ status: 'assigned' })
+    .eq('id', helpRequestId)
+    .eq('status', 'open')
+    .select()
+    .maybeSingle();
+  if (claimError) throw claimError;
+  if (!claimed) throw new Error('someone else just picked this one up');
+
+  const session = await createAssignedSession(helpRequestId, request.requester_id, userId, request.concept_id);
+  await markHelperAssigned(userId);
+  return session;
 }

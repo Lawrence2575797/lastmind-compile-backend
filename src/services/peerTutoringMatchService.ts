@@ -1,7 +1,12 @@
 import { supabaseAdmin } from './supabaseAdmin';
 import { getUsersWithMasteryForConcept } from './reviewService';
 import { markHelperAssigned } from './tutoringProfileService';
-import { createAssignedSession, TutoringSession } from './tutoringSessionService';
+import {
+  createAssignedSession,
+  listSessionsPastDeadline,
+  markMissedDeadline,
+  TutoringSession,
+} from './tutoringSessionService';
 
 export interface HelpRequest {
   id: string;
@@ -66,28 +71,36 @@ async function findPriorHelper(requesterId: string, subject: string, eligibleIds
  * don't get every request. Not school-scoped yet — see the plan's
  * "Deferred" section; this is the one query that gains a same-school
  * filter once that lands, nothing else about this function's shape needs
- * to change for it.
+ * to change for it. `excludeHelperIds` is used by the missed-deadline
+ * reassignment sweep below to also rule out whoever just missed their
+ * deadline (plain `excludeUserId` alone only ever ruled out the requester).
  */
-export async function findEligibleHelper(conceptId: string, subject: string, excludeUserId: string): Promise<string | null> {
+export async function findEligibleHelper(
+  conceptId: string,
+  subject: string,
+  excludeUserId: string,
+  excludeHelperIds: string[] = []
+): Promise<string | null> {
+  const excluded = new Set([excludeUserId, ...excludeHelperIds]);
   const { data: candidates, error } = await supabaseAdmin
     .from('tutoring_profiles')
     .select('user_id, last_assigned_at')
     .eq('tutoring_opt_in', true)
-    .neq('user_id', excludeUserId)
     .order('last_assigned_at', { ascending: true, nullsFirst: true });
   if (error) throw error;
-  if (!candidates || !candidates.length) return null;
+  const pool = (candidates || []).filter((c) => !excluded.has(c.user_id as string));
+  if (!pool.length) return null;
 
-  const candidateIds = candidates.map((c) => c.user_id as string);
+  const candidateIds = pool.map((c) => c.user_id as string);
   const mastered = await getUsersWithMasteryForConcept(candidateIds, conceptId);
-  const eligible = candidates.filter((c) => mastered.has(c.user_id as string));
+  const eligible = pool.filter((c) => mastered.has(c.user_id as string));
   if (!eligible.length) return null;
 
   const eligibleIds = eligible.map((c) => c.user_id as string);
   const priorHelperId = await findPriorHelper(excludeUserId, subject, eligibleIds);
   if (priorHelperId) return priorHelperId;
 
-  return eligibleIds[0]; // candidates was already ordered least-recently-assigned first
+  return eligibleIds[0]; // pool was already ordered least-recently-assigned first
 }
 
 /**
@@ -142,4 +155,47 @@ export async function getHelpRequest(userId: string, helpRequestId: string): Pro
     .maybeSingle();
   if (error) throw error;
   return data ? rowToHelpRequest(data) : null;
+}
+
+/**
+ * The actual reliability guarantee behind the "assigned task with a
+ * deadline" framing: every session whose helper missed their deadline
+ * gets marked missed_deadline and, if a different eligible helper exists
+ * (excluding both the requester and whoever just missed it), immediately
+ * reassigned via a fresh tutoring_sessions row on the SAME help_request —
+ * the student never has to notice or re-request. If nobody else is
+ * eligible right now, the help_request drops back to 'open' rather than
+ * silently staying 'assigned' to a helper who's no longer doing anything.
+ *
+ * Deliberately a lazy, read-triggered sweep rather than a cron job — this
+ * codebase has no scheduler infrastructure anywhere (see the plan's "What
+ * doesn't exist" section), and a routine sweep with no urgency doesn't
+ * justify adding one. It's called from routes/tutoringSessions.ts at the
+ * top of every "My Tutoring" read, so missed deadlines get caught the
+ * next time ANY user (not necessarily a party to that session) loads
+ * their own tutoring view — eventually consistent within however often
+ * this app's users are actually opening that page, which for a deadline
+ * measured in days is more than fast enough.
+ */
+export async function checkAndReassignMissedDeadlines(): Promise<void> {
+  const overdue = await listSessionsPastDeadline();
+  for (const session of overdue) {
+    await markMissedDeadline(session.id);
+
+    const { data: helpRequest, error } = await supabaseAdmin
+      .from('help_requests')
+      .select('subject')
+      .eq('id', session.helpRequestId)
+      .maybeSingle();
+    if (error) throw error;
+    const subject = helpRequest?.subject || '';
+
+    const newHelperId = await findEligibleHelper(session.conceptId, subject, session.requesterId, [session.helperId]);
+    if (newHelperId) {
+      await createAssignedSession(session.helpRequestId, session.requesterId, newHelperId, session.conceptId);
+      await markHelperAssigned(newHelperId);
+    } else {
+      await supabaseAdmin.from('help_requests').update({ status: 'open' }).eq('id', session.helpRequestId);
+    }
+  }
 }

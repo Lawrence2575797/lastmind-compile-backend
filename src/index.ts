@@ -14,6 +14,7 @@ import tuteeRouter from './routes/tutee';
 import knowledgeMapRouter from './routes/knowledgeMap';
 import tutoringProfileRouter from './routes/tutoringProfile';
 import peerTutoringRouter from './routes/peerTutoring';
+import tutoringSessionsRouter from './routes/tutoringSessions';
 import { globalRateLimiter } from './services/rateLimiters';
 
 const PORT = process.env.PORT || 4100;
@@ -47,6 +48,7 @@ app.use('/', tuteeRouter);
 app.use('/', knowledgeMapRouter);
 app.use('/', tutoringProfileRouter);
 app.use('/', peerTutoringRouter);
+app.use('/', tutoringSessionsRouter);
 
 app.get('/health', (_req, res) => res.send('ok'));
 

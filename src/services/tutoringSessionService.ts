@@ -215,3 +215,23 @@ export async function markMissedDeadline(sessionId: string): Promise<void> {
     .eq('id', sessionId);
   if (error) throw error;
 }
+
+export interface TutoringNotificationCounts {
+  needsResponseCount: number;
+  availableCount: number;
+  total: number;
+}
+
+// Live read-time aggregation, no notifications table — see the plan's
+// Phase 5. Recomputed fresh on every call rather than tracking read/unseen
+// state, so this counts CURRENT things needing attention (an obligation
+// still unwritten, a response currently sitting released) rather than an
+// inbox-style unread count; a released response the requester already
+// looked at still counts here until they resolve it some other way (there
+// is no "mark as seen" concept in this feature).
+export async function getNotificationCounts(userId: string): Promise<TutoringNotificationCounts> {
+  const { asHelper, asRequester } = await listMyTutoringSessions(userId);
+  const needsResponseCount = asHelper.filter((s) => s.status === 'assigned').length;
+  const availableCount = asRequester.filter((s) => s.status === 'released').length;
+  return { needsResponseCount, availableCount, total: needsResponseCount + availableCount };
+}

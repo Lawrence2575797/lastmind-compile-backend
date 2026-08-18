@@ -1,7 +1,8 @@
 import { Router, Request, Response } from 'express';
 import { requireAuth } from '../services/authMiddleware';
 import { syncEndpointLimiter } from '../services/rateLimiters';
-import { createHelpRequest, getHelpRequest } from '../services/peerTutoringMatchService';
+import { createHelpRequest, getHelpRequest, checkAndReassignMissedDeadlines } from '../services/peerTutoringMatchService';
+import { getNotificationCounts } from '../services/tutoringSessionService';
 
 const router = Router();
 
@@ -34,6 +35,21 @@ router.get('/peer-tutoring/help-requests/:id', async (req: Request, res: Respons
   } catch (err) {
     console.error('Help request fetch failed:', err);
     res.status(500).json({ error: 'could not load your help request' });
+  }
+});
+
+// GET /peer-tutoring/notifications -> { needsResponseCount, availableCount, total }
+// Sweeps missed deadlines first, same as GET /tutoring-sessions — the
+// topbar badge is checked on load/focus (see learn/index.html), so it's
+// as good a trigger for the lazy reassignment sweep as any other read.
+router.get('/peer-tutoring/notifications', async (req: Request, res: Response) => {
+  try {
+    await checkAndReassignMissedDeadlines();
+    const counts = await getNotificationCounts(req.userId as string);
+    res.json(counts);
+  } catch (err) {
+    console.error('Notification count fetch failed:', err);
+    res.status(500).json({ error: 'could not load your notifications' });
   }
 });
 

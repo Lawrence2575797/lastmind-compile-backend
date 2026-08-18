@@ -8,8 +8,10 @@
 // prerequisites were already verified when this concept was first encoded.
 //
 // Difficulty/scaffolding ramps by TIER (0-3), derived from the student's
-// own FSRS stability+reps for this concept (computeMechanisticReadiness /
-// tierForM in spacedLessonEngine.ts) — NOT a continuous per-request value,
+// own FSRS stability + spacedSuccessCount (correct answers on separate,
+// correctly-scheduled days — see reviewService.ts's successive-relearning
+// tracking) for this concept (computeMechanisticReadiness / tierForM in
+// spacedLessonEngine.ts) — NOT a continuous per-request value,
 // specifically so each tier's prompt text is byte-identical across every
 // request that lands in it and stays cacheable (see cacheSystemPrompt on
 // every call site). One shared generation shape covers both a session's

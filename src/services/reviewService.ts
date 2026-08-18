@@ -1,6 +1,16 @@
 import { supabaseAdmin } from './supabaseAdmin';
 import { newCard, gradeReview, rowToCard, cardToRowFields, Rating, Grade, ConceptReviewRow } from './fsrsService';
 
+// concept_reviews columns that exist alongside the FSRS Card fields but
+// aren't part of the Card model itself (see the "successive relearning"
+// section below) — kept as a separate extension rather than folded into
+// ConceptReviewRow/fsrsService.ts, since that interface deliberately
+// mirrors the FSRS Card 1:1.
+interface ConceptReviewRowExt extends ConceptReviewRow {
+  spaced_success_count: number;
+  last_spaced_success_date: string | null;
+}
+
 export const RATING_MAP: Record<string, Grade> = {
   again: Rating.Again,
   hard: Rating.Hard,
@@ -13,6 +23,72 @@ export const RATING_MAP: Record<string, Grade> = {
 // see encodingLessonService.ts and spacedLessonEngine.ts's own submit
 // handlers for how each maps step-level correctness onto this scale.
 export type FsrsRatingKey = 'again' | 'hard' | 'good' | 'easy';
+
+// Grace window (days, either direction) for treating a review as "on
+// schedule" — same magnitude as getMasteryStatus's own overdue check
+// below, applied symmetrically here (early OR late) since an off-schedule
+// success in EITHER direction is an uninformative test of durability, not
+// just a late one. Not derived from the successive-relearning literature
+// itself (there's no universal number there) — a product tuning knob,
+// deliberately reusing the one grace figure already established in this
+// file rather than inventing a second one.
+const SPACED_SUCCESS_GRACE_DAYS = 2;
+
+// How many genuinely spaced-and-on-schedule correct answers count as
+// "durably" relearned — the criterion successive-relearning studies
+// (Rawson & Dunlosky) commonly design around: practising to a criterion of
+// correct recalls across several SEPARATE sessions produces measurably
+// better long-term retention than the same total correct count crammed
+// into one sitting. This is a genuinely stricter, additional signal on
+// top of the existing MASTERY_STABILITY_THRESHOLD/MIN_REPS_FOR_TRUST bar
+// below — not a replacement for it, and not a replacement for FSRS's own
+// scheduling (see computeSpacedSuccessUpdate's own comment).
+export const DURABLE_RELEARNING_CRITERION = 3;
+
+/**
+ * Decides whether THIS grading event counts toward the successive-
+ * relearning criterion. FSRS still owns WHEN a concept is due — this only
+ * judges whether a correct answer actually happened at roughly its
+ * correctly-spaced time, on a day distinct from the last one already
+ * counted. Three-way outcome, not just increment/no-op:
+ * - A genuine miss (again/hard) resets the count to 0 — real evidence
+ *   the concept isn't durable yet, the same way a wrong answer is
+ *   informative everywhere else FSRS-adjacent state lives in this app.
+ * - A correct answer that's ON schedule (within the grace window of its
+ *   own due date) AND on a new calendar day increments the count.
+ * - A correct answer that's off-schedule (tested too early to be a real
+ *   test of spacing, or too late) or on the SAME day as an already-
+ *   counted success is neutral — not evidence of forgetting, so no
+ *   reset, but not a fresh spaced success either, so no increment.
+ * The very first review of a concept (no existingRow) has no due date to
+ * test against by definition, so it's neutral too.
+ */
+function computeSpacedSuccessUpdate(
+  existingRow: ConceptReviewRowExt | null,
+  fsrsRating: Grade,
+  now: Date
+): { spaced_success_count: number; last_spaced_success_date: string | null } {
+  const priorCount = existingRow?.spaced_success_count ?? 0;
+  const priorDate = existingRow?.last_spaced_success_date ?? null;
+
+  if (fsrsRating === Rating.Again || fsrsRating === Rating.Hard) {
+    return { spaced_success_count: 0, last_spaced_success_date: null };
+  }
+  if (!existingRow) {
+    return { spaced_success_count: priorCount, last_spaced_success_date: priorDate };
+  }
+
+  const dueDate = new Date(existingRow.due).getTime();
+  const overdueDays = (now.getTime() - dueDate) / (1000 * 60 * 60 * 24);
+  const onSchedule = Math.abs(overdueDays) <= SPACED_SUCCESS_GRACE_DAYS;
+  const today = now.toISOString().slice(0, 10); // YYYY-MM-DD
+  const isNewDay = priorDate !== today;
+
+  if (onSchedule && isNewDay) {
+    return { spaced_success_count: priorCount + 1, last_spaced_success_date: today };
+  }
+  return { spaced_success_count: priorCount, last_spaced_success_date: priorDate };
+}
 
 /**
  * Grades one concept through the real FSRS algorithm and persists the
@@ -37,18 +113,26 @@ export async function gradeAndRecordReview(
     .select('*')
     .eq('user_id', userId)
     .eq('concept_id', conceptId)
-    .maybeSingle<ConceptReviewRow>();
+    .maybeSingle<ConceptReviewRowExt>();
 
   if (fetchError) throw fetchError;
 
   const currentCard = existingRow ? rowToCard(existingRow) : newCard();
   const { card: updatedCard } = gradeReview(currentCard, fsrsRating);
   const rowFields = cardToRowFields(updatedCard);
+  const spacedSuccess = computeSpacedSuccessUpdate(existingRow, fsrsRating, new Date());
 
   const { error: upsertError } = await supabaseAdmin
     .from('concept_reviews')
     .upsert(
-      { user_id: userId, concept_id: conceptId, ...rowFields, updated_at: new Date().toISOString() },
+      {
+        user_id: userId,
+        concept_id: conceptId,
+        ...rowFields,
+        spaced_success_count: spacedSuccess.spaced_success_count,
+        last_spaced_success_date: spacedSuccess.last_spaced_success_date,
+        updated_at: new Date().toISOString(),
+      },
       { onConflict: 'user_id,concept_id' }
     );
 
@@ -116,6 +200,12 @@ const MIN_REPS_FOR_TRUST = 2; // guards against a single lucky first review
 export async function getMasteryStatus(userId: string, conceptId: string): Promise<{
   row: ConceptReviewRow | null;
   isMastered: boolean;
+  // Stricter, ADDITIONAL signal — see DURABLE_RELEARNING_CRITERION/
+  // computeSpacedSuccessUpdate above. isMastered above is untouched by
+  // this; a concept can be "mastered" (stability/reps bar) without yet
+  // being "durably" relearned across correctly-spaced separate sessions.
+  isDurablyMastered: boolean;
+  spacedSuccessCount: number;
   scheduleWasFollowed: boolean | null; // null if there's no prior review to check
 }> {
   const { data: row, error } = await supabaseAdmin
@@ -123,12 +213,14 @@ export async function getMasteryStatus(userId: string, conceptId: string): Promi
     .select('*')
     .eq('user_id', userId)
     .eq('concept_id', conceptId)
-    .maybeSingle<ConceptReviewRow>();
+    .maybeSingle<ConceptReviewRowExt>();
 
   if (error) throw error;
-  if (!row) return { row: null, isMastered: false, scheduleWasFollowed: null };
+  if (!row) return { row: null, isMastered: false, isDurablyMastered: false, spacedSuccessCount: 0, scheduleWasFollowed: null };
 
   const isMastered = row.stability >= MASTERY_STABILITY_THRESHOLD && row.reps >= MIN_REPS_FOR_TRUST;
+  const spacedSuccessCount = row.spaced_success_count ?? 0;
+  const isDurablyMastered = spacedSuccessCount >= DURABLE_RELEARNING_CRITERION;
 
   // Was this review actually done on schedule, or overdue? Compares the
   // gap between when it was due and roughly now (the review happening
@@ -143,7 +235,7 @@ export async function getMasteryStatus(userId: string, conceptId: string): Promi
     scheduleWasFollowed = overdueDays <= 2;
   }
 
-  return { row, isMastered, scheduleWasFollowed };
+  return { row, isMastered, isDurablyMastered, spacedSuccessCount, scheduleWasFollowed };
 }
 
 /**

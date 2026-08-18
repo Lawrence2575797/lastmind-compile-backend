@@ -11,6 +11,7 @@ import encodingLessonRouter from './routes/encodingLesson';
 import syncRouter from './routes/sync';
 import calendarEventsRouter from './routes/calendarEvents';
 import tuteeRouter from './routes/tutee';
+import knowledgeMapRouter from './routes/knowledgeMap';
 import { globalRateLimiter } from './services/rateLimiters';
 
 const PORT = process.env.PORT || 4100;
@@ -41,6 +42,7 @@ app.use('/', encodingLessonRouter);
 app.use('/', syncRouter);
 app.use('/', calendarEventsRouter);
 app.use('/', tuteeRouter);
+app.use('/', knowledgeMapRouter);
 
 app.get('/health', (_req, res) => res.send('ok'));
 

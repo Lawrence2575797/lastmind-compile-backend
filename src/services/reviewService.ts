@@ -99,13 +99,19 @@ export async function getReviewedConceptIds(userId: string, conceptIds: string[]
   return new Set((data || []).map((row) => row.concept_id as string));
 }
 
+// Shared between getMasteryStatus and getMasteryStatesForConcepts below —
+// hoisted to module scope so both apply the exact same bar rather than two
+// copies silently drifting apart. Deliberately requires BOTH a real
+// stability figure AND at least one prior rep — a single lucky first
+// review can get an artificially confident population-default stability
+// estimate, so stability alone isn't trusted on its own.
+const MASTERY_STABILITY_THRESHOLD = 30; // days — a real, deliberately conservative bar
+const MIN_REPS_FOR_TRUST = 2; // guards against a single lucky first review
+
 /**
  * Checks whether a concept already has enough real review history to skip
  * re-testing it (the MASTERED_THRESHOLD pre-filter from the diagnostic
- * spec). Deliberately requires BOTH a real stability figure AND at least
- * one prior rep — a single lucky first review can get an artificially
- * confident population-default stability estimate, so stability alone
- * isn't trusted on its own.
+ * spec).
  */
 export async function getMasteryStatus(userId: string, conceptId: string): Promise<{
   row: ConceptReviewRow | null;
@@ -122,8 +128,6 @@ export async function getMasteryStatus(userId: string, conceptId: string): Promi
   if (error) throw error;
   if (!row) return { row: null, isMastered: false, scheduleWasFollowed: null };
 
-  const MASTERY_STABILITY_THRESHOLD = 30; // days — a real, deliberately conservative bar
-  const MIN_REPS_FOR_TRUST = 2; // guards against a single lucky first review
   const isMastered = row.stability >= MASTERY_STABILITY_THRESHOLD && row.reps >= MIN_REPS_FOR_TRUST;
 
   // Was this review actually done on schedule, or overdue? Compares the
@@ -140,6 +144,38 @@ export async function getMasteryStatus(userId: string, conceptId: string): Promi
   }
 
   return { row, isMastered, scheduleWasFollowed };
+}
+
+/**
+ * Batch version of getMasteryStatus's own 0/1/2 classification, one query
+ * regardless of list size — built for the knowledge-map endpoint (see
+ * knowledgeMapService.ts), which needs this for potentially dozens of
+ * nodes across a whole folder's merged chain graph at once. Same bar as
+ * getMasteryStatus (MASTERY_STABILITY_THRESHOLD/MIN_REPS_FOR_TRUST) so
+ * "mastered" means the identical thing here as it does everywhere else
+ * FSRS stability already drives a decision in this app: 0 = no review
+ * row at all (never covered), 1 = a row exists but hasn't cleared the
+ * mastery bar yet (covered, still consolidating/due), 2 = cleared it.
+ */
+export async function getMasteryStatesForConcepts(userId: string, conceptIds: string[]): Promise<Map<string, 0 | 1 | 2>> {
+  const states = new Map<string, 0 | 1 | 2>();
+  if (!conceptIds.length) return states;
+
+  const { data, error } = await supabaseAdmin
+    .from('concept_reviews')
+    .select('concept_id, stability, reps')
+    .eq('user_id', userId)
+    .in('concept_id', conceptIds);
+  if (error) throw error;
+
+  (data || []).forEach((row) => {
+    const isMastered = row.stability >= MASTERY_STABILITY_THRESHOLD && row.reps >= MIN_REPS_FOR_TRUST;
+    states.set(row.concept_id as string, isMastered ? 2 : 1);
+  });
+  // Any id with no row at all is implicitly 0 — the caller (knowledgeMapService)
+  // fills that gap itself since it already knows the full node id list; this
+  // function only ever reports what it actually found rows for.
+  return states;
 }
 
 function clean(s: string): string {

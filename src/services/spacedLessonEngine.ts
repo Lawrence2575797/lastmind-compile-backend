@@ -1,5 +1,5 @@
 import { callClaudeJSON, MODELS } from './claudeClient';
-import { gradeAndRecordReview, getMasteryStatus, listEligibleSiblingConcepts, FsrsRatingKey } from './reviewService';
+import { gradeAndRecordReview, getMasteryStatus, listEligibleSiblingConcepts, FsrsRatingKey, DURABLE_RELEARNING_CRITERION } from './reviewService';
 import { getOrGenerateChain } from './chainService';
 import { retrievalLessonPromptForTier, RETRIEVAL_ANSWER_CHECK_PROMPT, RETRIEVAL_MECHANISTIC_CHECK_PROMPT } from '../constants/retrievalLessonPrompts';
 import { ASK_PANEL_PROMPT } from '../constants/encodingLessonPrompts';
@@ -35,10 +35,17 @@ const STEPS_PER_TIER: Record<RetrievalTier, number> = { 0: 3, 1: 2, 2: 2, 3: 1 }
 const MECHANISTIC_READINESS_S_MAX_DAYS = 120;
 
 // A single lucky "easy" grade can already earn a nontrivial stability
-// figure under FSRS — this floor requires genuinely repeated practice
-// (not just one good review) before the difficulty ramp is allowed to
-// reach its higher tiers, gating the stability-driven ramp above by reps.
-const MECHANISTIC_READINESS_REPS_FLOOR = 3;
+// figure under FSRS — this floor requires genuinely repeated, CORRECTLY
+// SPACED practice (see reviewService.ts's DURABLE_RELEARNING_CRITERION/
+// computeSpacedSuccessUpdate — the same criterion used for the "durably
+// mastered" flag, reused here rather than inventing a second number)
+// before the difficulty ramp is allowed to reach its higher tiers. This
+// used to gate on raw FSRS `reps` — reps counts any grading event ever,
+// including two correct answers in the same sitting, which is exactly
+// the distinction successive-relearning research says doesn't predict
+// durable retention; spacedSuccessCount only counts correct answers that
+// landed on separate, on-schedule days.
+const MECHANISTIC_READINESS_SPACED_SUCCESS_FLOOR = DURABLE_RELEARNING_CRITERION;
 
 /**
  * A single scalar in [0, 1] — how ready this concept is, for THIS student,
@@ -50,10 +57,10 @@ const MECHANISTIC_READINESS_REPS_FLOOR = 3;
  * into the four prompt tiers actually used for generation — the tiers,
  * not this continuous value, are what stay cacheable.
  */
-export function computeMechanisticReadiness(stability: number, reps: number): number {
+export function computeMechanisticReadiness(stability: number, spacedSuccessCount: number): number {
   const stabilityRamp = Math.log(1 + Math.max(0, stability)) / Math.log(1 + MECHANISTIC_READINESS_S_MAX_DAYS);
-  const repsGate = Math.min(1, reps / MECHANISTIC_READINESS_REPS_FLOOR);
-  return Math.max(0, Math.min(1, stabilityRamp * repsGate));
+  const spacedSuccessGate = Math.min(1, spacedSuccessCount / MECHANISTIC_READINESS_SPACED_SUCCESS_FLOOR);
+  return Math.max(0, Math.min(1, stabilityRamp * spacedSuccessGate));
 }
 
 export function tierForM(m: number): RetrievalTier {
@@ -205,10 +212,9 @@ export async function startRetrievalLesson(
   qualification = '',
   examBoard = ''
 ): Promise<RetrievalStartResult> {
-  const { row } = await getMasteryStatus(userId, conceptKey);
+  const { row, spacedSuccessCount } = await getMasteryStatus(userId, conceptKey);
   const stability = row?.stability ?? 0;
-  const reps = row?.reps ?? 0;
-  const m = computeMechanisticReadiness(stability, reps);
+  const m = computeMechanisticReadiness(stability, spacedSuccessCount);
   const tier = tierForM(m);
   const totalSteps = STEPS_PER_TIER[tier];
 

@@ -395,3 +395,32 @@ export async function listEligibleSiblingConcepts(
     .filter((row) => row.concept_id !== excludeConceptId)
     .map((row) => conceptIdToLabel(row.concept_id));
 }
+
+// The exact same closed-form FSRS retrievability formula already duplicated
+// client-side (learn/index.html's fsrsRetrievability). Kept identical and
+// cross-referenced deliberately — the revision-plan scheduler (this file's
+// caller) needs to project retrievability at a FUTURE date (the exam), not
+// just read a card's current state, and both copies must never drift apart.
+const FSRS_DECAY = -0.1542;
+const FSRS_FACTOR = 0.9803464944134799;
+
+/** Projected recall probability after `elapsedDays` since last review, given `stability`. */
+export function projectRetrievability(stability: number, elapsedDays: number): number {
+  if (stability <= 0) return 0;
+  const t = Math.max(0, elapsedDays);
+  return Math.pow(1 + (FSRS_FACTOR * t) / stability, FSRS_DECAY);
+}
+
+/**
+ * Simulates the stability a concept's card WOULD have after one more review
+ * graded Good, today — without persisting anything. This is how the
+ * revision-plan scheduler computes the marginal value of reviewing a
+ * concept on a given day: run the real FSRS algorithm on a hypothetical,
+ * rather than inventing a separate approximation of what FSRS would do.
+ * `row` is null for a concept never reviewed before (a fresh card).
+ */
+export function simulateGoodReview(row: ConceptReviewRow | null, now: Date = new Date()): number {
+  const card = row ? rowToCard(row) : newCard(now);
+  const { card: updatedCard } = gradeReview(card, Rating.Good, now);
+  return updatedCard.stability;
+}

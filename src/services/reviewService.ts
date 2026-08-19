@@ -174,6 +174,28 @@ export async function gradeAndRecordReview(
  * stripFsrsVerifiedChecks and getEncodingLessonOutline. One query
  * regardless of list size, not N round trips.
  */
+// Whether this student has ever completed ANY lesson in this subject
+// before — used to catch the very first lesson of a brand-new subject,
+// where "usually assumed prior knowledge, only verify it" (the default
+// prerequisite-testing assumption — see startEncodingLesson's
+// forcedNodeIds) is simply wrong: there's no earlier course this
+// student's prerequisites could plausibly have come from. Deliberately
+// scoped to TARGET-level reviews only (concept_id starting with the
+// subject's own normalized prefix, e.g. "chemistry:") — a prerequisite
+// node graded mid-lesson is keyed by its own raw chain-node id, not this
+// prefix, so it can never falsely count as "prior subject history" here.
+export async function hasAnySubjectHistory(userId: string, subject: string): Promise<boolean> {
+  const prefix = `${clean(subject)}:`;
+  const { data, error } = await supabaseAdmin
+    .from('concept_reviews')
+    .select('concept_id')
+    .eq('user_id', userId)
+    .ilike('concept_id', `${prefix}%`)
+    .limit(1);
+  if (error) throw error;
+  return !!(data && data.length);
+}
+
 export async function getReviewedConceptIds(userId: string, conceptIds: string[]): Promise<Set<string>> {
   if (!conceptIds.length) return new Set();
   const { data, error } = await supabaseAdmin

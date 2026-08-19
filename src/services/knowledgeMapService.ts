@@ -114,13 +114,31 @@ export async function getKnowledgeMapForFolder(
   // fresh review row exists. Genuine prerequisite nodes ARE graded under
   // their own raw chain node id (diagnosisConceptKey = s.nodeId for any
   // non-target step), so they need no such override.
-  const queryKeyForNode = new Map<string, string>();
+  // Collected in its OWN first pass, across every chain, before anything
+  // reads it — this used to be folded into the merge loop below with a
+  // "first writer wins" guard, which was order-dependent: if the SAME
+  // node id happened to appear as a plain prerequisite in an
+  // earlier-processed chain before its owning chain (elsewhere in this
+  // same loop) reached it as ITS OWN target, the raw prerequisite id won
+  // and the target's real mastery key got silently shadowed — explaining
+  // why some genuinely-completed pages showed as unmastered while others
+  // didn't, depending purely on array order. A node id can only ever be
+  // ONE concept's own target, so populating this map completely before
+  // the merge loop runs removes the ordering dependency entirely.
+  const targetQueryKeyByNodeId = new Map<string, string>();
   chainResults.forEach((result, i) => {
     const chain = result.chain as Chain | null;
     if (!chain || !Array.isArray(chain.nodes) || !chain.nodes.length) return;
     const topic = concepts[i].topic || '';
-    const targetNodeId = chain.nodes[chain.nodes.length - 1].id;
-    const targetQueryKey = normalizeConceptKey(subject, topic, concepts[i].concept);
+    const targetNode = chain.nodes[chain.nodes.length - 1];
+    targetQueryKeyByNodeId.set(targetNode.id, normalizeConceptKey(subject, topic, concepts[i].concept));
+  });
+
+  const queryKeyForNode = new Map<string, string>();
+  chainResults.forEach((result, i) => {
+    const chain = result.chain as Chain | null;
+    if (!chain || !Array.isArray(chain.nodes)) return;
+    const topic = concepts[i].topic || '';
     chain.nodes.forEach((node) => {
       if (!nodeById.has(node.id)) {
         nodeById.set(node.id, { id: node.id, name: node.label });
@@ -128,7 +146,7 @@ export async function getKnowledgeMapForFolder(
       if (!nodeTopics.has(node.id)) nodeTopics.set(node.id, new Set());
       nodeTopics.get(node.id)!.add(topic);
       if (!queryKeyForNode.has(node.id)) {
-        queryKeyForNode.set(node.id, node.id === targetNodeId ? targetQueryKey : node.id);
+        queryKeyForNode.set(node.id, targetQueryKeyByNodeId.get(node.id) || node.id);
       }
     });
   });

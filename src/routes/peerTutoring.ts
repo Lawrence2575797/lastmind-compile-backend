@@ -1,6 +1,6 @@
 import { Router, Request, Response } from 'express';
 import { requireAuth } from '../services/authMiddleware';
-import { syncEndpointLimiter } from '../services/rateLimiters';
+import { syncEndpointLimiter, actionEndpointLimiter } from '../services/rateLimiters';
 import {
   createHelpRequest,
   createCustomHelpRequest,
@@ -13,14 +13,14 @@ import { getNotificationCounts } from '../services/tutoringSessionService';
 
 const router = Router();
 
-router.use('/peer-tutoring', requireAuth, syncEndpointLimiter);
+router.use('/peer-tutoring', requireAuth);
 
 // POST /peer-tutoring/help-requests
 // Either { conceptId, subject, topic? } — the "recommended" path, conceptId
 // already a real chain node id from the knowledge map — or { subject,
 // topic?, concept } — the "add your own" path (structured fields, no free
 // text; see createCustomHelpRequest for the filtering/normalization).
-router.post('/peer-tutoring/help-requests', async (req: Request, res: Response) => {
+router.post('/peer-tutoring/help-requests', actionEndpointLimiter, async (req: Request, res: Response) => {
   const { conceptId, subject, topic, concept } = req.body ?? {};
   try {
     if (typeof conceptId === 'string' && conceptId.trim()) {
@@ -44,7 +44,7 @@ router.post('/peer-tutoring/help-requests', async (req: Request, res: Response) 
 // GET /peer-tutoring/claimable — open requests this opted-in helper has
 // verified mastery for (see listClaimableHelpRequests's own comment on
 // why this exists alongside the automatic single-assignment path).
-router.get('/peer-tutoring/claimable', async (req: Request, res: Response) => {
+router.get('/peer-tutoring/claimable', syncEndpointLimiter, async (req: Request, res: Response) => {
   try {
     const requests = await listClaimableHelpRequests(req.userId as string);
     res.json(requests);
@@ -55,7 +55,7 @@ router.get('/peer-tutoring/claimable', async (req: Request, res: Response) => {
 });
 
 // POST /peer-tutoring/help-requests/:id/claim
-router.post('/peer-tutoring/help-requests/:id/claim', async (req: Request, res: Response) => {
+router.post('/peer-tutoring/help-requests/:id/claim', actionEndpointLimiter, async (req: Request, res: Response) => {
   try {
     const session = await claimHelpRequest(req.userId as string, req.params.id);
     res.json(session);
@@ -66,7 +66,7 @@ router.post('/peer-tutoring/help-requests/:id/claim', async (req: Request, res: 
 });
 
 // GET /peer-tutoring/help-requests/:id
-router.get('/peer-tutoring/help-requests/:id', async (req: Request, res: Response) => {
+router.get('/peer-tutoring/help-requests/:id', syncEndpointLimiter, async (req: Request, res: Response) => {
   try {
     const helpRequest = await getHelpRequest(req.userId as string, req.params.id);
     if (!helpRequest) return res.status(404).json({ error: 'help request not found' });
@@ -81,7 +81,7 @@ router.get('/peer-tutoring/help-requests/:id', async (req: Request, res: Respons
 // Sweeps missed deadlines first, same as GET /tutoring-sessions — the
 // topbar badge is checked on load/focus (see learn/index.html), so it's
 // as good a trigger for the lazy reassignment sweep as any other read.
-router.get('/peer-tutoring/notifications', async (req: Request, res: Response) => {
+router.get('/peer-tutoring/notifications', syncEndpointLimiter, async (req: Request, res: Response) => {
   try {
     await checkAndReassignMissedDeadlines();
     const counts = await getNotificationCounts(req.userId as string);

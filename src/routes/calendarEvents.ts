@@ -1,17 +1,17 @@
 import { Router, Request, Response } from 'express';
 import { requireAuth } from '../services/authMiddleware';
-import { syncEndpointLimiter } from '../services/rateLimiters';
+import { syncEndpointLimiter, actionEndpointLimiter } from '../services/rateLimiters';
 import { listCalendarEvents, createCalendarEvent, deleteCalendarEvent } from '../services/calendarEventsService';
 
 const router = Router();
 
-router.use('/calendar-events', requireAuth, syncEndpointLimiter);
+router.use('/calendar-events', requireAuth);
 
 const DATE_PATTERN = /^\d{4}-\d{2}-\d{2}$/;
 const TIME_PATTERN = /^([01]\d|2[0-3]):[0-5]\d$/;
 
 // GET /calendar-events -> { events: CalendarEvent[] }
-router.get('/calendar-events', async (req: Request, res: Response) => {
+router.get('/calendar-events', syncEndpointLimiter, async (req: Request, res: Response) => {
   try {
     const events = await listCalendarEvents(req.userId as string);
     res.json({ events });
@@ -27,7 +27,7 @@ router.get('/calendar-events', async (req: Request, res: Response) => {
 // folderId (an existing folder the student picks, not typed). The
 // frontend's calendar UI never collects a text description for either
 // type — see learn/index.html's day-click modal.
-router.post('/calendar-events', async (req: Request, res: Response) => {
+router.post('/calendar-events', actionEndpointLimiter, async (req: Request, res: Response) => {
   const { date, type, startTime, endTime, folderId } = req.body ?? {};
   if (typeof date !== 'string' || !DATE_PATTERN.test(date)) {
     return res.status(400).json({ error: 'date (YYYY-MM-DD) is required' });
@@ -66,7 +66,7 @@ router.post('/calendar-events', async (req: Request, res: Response) => {
 // table (concept_reviews) that nothing in this router ever touches, so
 // there is no path from this endpoint to removing/moving a spaced-
 // repetition schedule entry.
-router.post('/calendar-events/delete', async (req: Request, res: Response) => {
+router.post('/calendar-events/delete', actionEndpointLimiter, async (req: Request, res: Response) => {
   const { id } = req.body ?? {};
   if (typeof id !== 'string' || !id) {
     return res.status(400).json({ error: 'id is required' });

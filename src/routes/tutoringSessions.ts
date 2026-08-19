@@ -1,18 +1,18 @@
 import { Router, Request, Response } from 'express';
 import { requireAuth } from '../services/authMiddleware';
-import { syncEndpointLimiter } from '../services/rateLimiters';
+import { syncEndpointLimiter, actionEndpointLimiter } from '../services/rateLimiters';
 import { getSession, listMyTutoringSessions, setReleaseTime } from '../services/tutoringSessionService';
 import { checkAndReassignMissedDeadlines } from '../services/peerTutoringMatchService';
 
 const router = Router();
 
-router.use('/tutoring-sessions', requireAuth, syncEndpointLimiter);
+router.use('/tutoring-sessions', requireAuth);
 
 // GET /tutoring-sessions -> { asRequester: [...], asHelper: [...] }
 // Sweeps missed deadlines first — see checkAndReassignMissedDeadlines's
 // own comment for why this lazy, read-triggered sweep is the mechanism
 // rather than a cron job.
-router.get('/tutoring-sessions', async (req: Request, res: Response) => {
+router.get('/tutoring-sessions', syncEndpointLimiter, async (req: Request, res: Response) => {
   try {
     await checkAndReassignMissedDeadlines();
     const sessions = await listMyTutoringSessions(req.userId as string);
@@ -24,7 +24,7 @@ router.get('/tutoring-sessions', async (req: Request, res: Response) => {
 });
 
 // GET /tutoring-sessions/:id
-router.get('/tutoring-sessions/:id', async (req: Request, res: Response) => {
+router.get('/tutoring-sessions/:id', syncEndpointLimiter, async (req: Request, res: Response) => {
   try {
     await checkAndReassignMissedDeadlines();
     const session = await getSession(req.userId as string, req.params.id);

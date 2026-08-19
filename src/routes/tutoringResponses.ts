@@ -1,15 +1,15 @@
 import { Router, Request, Response } from 'express';
 import { requireAuth } from '../services/authMiddleware';
-import { syncEndpointLimiter } from '../services/rateLimiters';
+import { syncEndpointLimiter, actionEndpointLimiter } from '../services/rateLimiters';
 import { submitResponse, getResponse } from '../services/tutoringResponseService';
 import { reportResponse } from '../services/tutoringResponseModerationService';
 
 const router = Router();
 
-router.use('/tutoring-sessions', requireAuth, syncEndpointLimiter);
+router.use('/tutoring-sessions', requireAuth);
 
 // POST /tutoring-sessions/:id/response  { body }
-router.post('/tutoring-sessions/:id/response', async (req: Request, res: Response) => {
+router.post('/tutoring-sessions/:id/response', actionEndpointLimiter, async (req: Request, res: Response) => {
   const { body } = req.body ?? {};
   if (typeof body !== 'string') {
     return res.status(400).json({ error: 'body (string) is required' });
@@ -24,7 +24,7 @@ router.post('/tutoring-sessions/:id/response', async (req: Request, res: Respons
 });
 
 // GET /tutoring-sessions/:id/response -> { available, body, releasedAt }
-router.get('/tutoring-sessions/:id/response', async (req: Request, res: Response) => {
+router.get('/tutoring-sessions/:id/response', syncEndpointLimiter, async (req: Request, res: Response) => {
   try {
     const view = await getResponse(req.userId as string, req.params.id);
     res.json(view);
@@ -35,7 +35,7 @@ router.get('/tutoring-sessions/:id/response', async (req: Request, res: Response
 });
 
 // POST /tutoring-sessions/:id/report  { reason }
-router.post('/tutoring-sessions/:id/report', async (req: Request, res: Response) => {
+router.post('/tutoring-sessions/:id/report', actionEndpointLimiter, async (req: Request, res: Response) => {
   const { reason } = req.body ?? {};
   if (typeof reason !== 'string' || !reason.trim()) {
     return res.status(400).json({ error: 'reason (string) is required' });

@@ -1,6 +1,6 @@
 import { Router, Request, Response } from 'express';
 import { requireAuth } from '../services/authMiddleware';
-import { costlyEndpointLimiter, syncEndpointLimiter } from '../services/rateLimiters';
+import { costlyEndpointLimiter, syncEndpointLimiter, actionEndpointLimiter } from '../services/rateLimiters';
 import { generateRevisionPlan, listRevisionPlan, setRevisionPlanItemStatus, RevisionPlanConcept } from '../services/revisionPlanService';
 
 const router = Router();
@@ -56,7 +56,7 @@ router.get('/revision-plan', requireAuth, syncEndpointLimiter, async (req: Reque
 });
 
 // POST /revision-plan/item-status  { itemId, status: 'pending'|'done'|'skipped' }
-router.post('/revision-plan/item-status', requireAuth, syncEndpointLimiter, async (req: Request, res: Response) => {
+router.post('/revision-plan/item-status', requireAuth, actionEndpointLimiter, async (req: Request, res: Response) => {
   const { itemId, status } = req.body ?? {};
   if (typeof itemId !== 'string' || !itemId) {
     return res.status(400).json({ error: 'itemId is required' });

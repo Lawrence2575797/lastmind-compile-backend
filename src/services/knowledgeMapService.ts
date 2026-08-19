@@ -94,16 +94,36 @@ export async function getKnowledgeMapForFolder(
   // contributes nothing rather than breaking that alignment.
   const nodeById = new Map<string, { id: string; name: string }>();
   const nodeTopics = new Map<string, Set<string>>();
+  // Every node's OWN id (as it appears in `nodeById`, used for the graph
+  // itself/edges/frontend interactions) is kept as-is — but the key used
+  // to actually LOOK UP mastery can differ for one specific node per
+  // chain: the TARGET (chain.nodes' last entry, guaranteed by
+  // CHAIN_GENERATION_PROMPT rule 8). Completing that concept's own lesson
+  // grades it via gradeAndRecordReview(userId, normalizeConceptKey(...))
+  // (see encodingLessonService.ts/spacedLessonEngine.ts), NOT via the
+  // chain's own LLM-invented node id for that same node — those two
+  // strings are structurally different (colon-delimited "subject:topic:
+  // concept" vs. a bare snake_case slug), so without this mapping the
+  // target node's mastery would never be found even though a real,
+  // fresh review row exists. Genuine prerequisite nodes ARE graded under
+  // their own raw chain node id (diagnosisConceptKey = s.nodeId for any
+  // non-target step), so they need no such override.
+  const queryKeyForNode = new Map<string, string>();
   chainResults.forEach((result, i) => {
     const chain = result.chain as Chain | null;
-    if (!chain || !Array.isArray(chain.nodes)) return;
+    if (!chain || !Array.isArray(chain.nodes) || !chain.nodes.length) return;
     const topic = concepts[i].topic || '';
+    const targetNodeId = chain.nodes[chain.nodes.length - 1].id;
+    const targetQueryKey = normalizeConceptKey(subject, topic, concepts[i].concept);
     chain.nodes.forEach((node) => {
       if (!nodeById.has(node.id)) {
         nodeById.set(node.id, { id: node.id, name: node.label });
       }
       if (!nodeTopics.has(node.id)) nodeTopics.set(node.id, new Set());
       nodeTopics.get(node.id)!.add(topic);
+      if (!queryKeyForNode.has(node.id)) {
+        queryKeyForNode.set(node.id, node.id === targetNodeId ? targetQueryKey : node.id);
+      }
     });
   });
 
@@ -134,11 +154,12 @@ export async function getKnowledgeMapForFolder(
   });
 
   const nodeIds = Array.from(nodeById.keys());
-  const found = await getMasteryDetailsForConcepts(userId, nodeIds);
+  const queryKeys = nodeIds.map((id) => queryKeyForNode.get(id) || id);
+  const found = await getMasteryDetailsForConcepts(userId, queryKeys);
   const mastery: Record<string, 0 | 1 | 2> = {};
   const masteryDetail: Record<string, MasteryDetail> = {};
   nodeIds.forEach((id) => {
-    const detail = found.get(id);
+    const detail = found.get(queryKeyForNode.get(id) || id);
     mastery[id] = detail?.state ?? 0;
     if (detail) masteryDetail[id] = detail;
   });

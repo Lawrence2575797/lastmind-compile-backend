@@ -78,6 +78,13 @@ export interface RetrievalStep {
   text: string;
   requiresCalculation?: boolean;
   interleavedConcepts?: string[];
+  // Resolved from interleavedConcepts' LABELS back to their real
+  // concept_reviews ids (see generateRetrievalSteps) — both siblings here
+  // and state.conceptKey are already canonical by construction (siblings
+  // come from listEligibleSiblingConcepts' exact subject:topic: prefix
+  // match), so unlike Phase A's mechanistic_check chain nodes, no fuzzy
+  // resolveSiblingConceptId step is needed for this pathway.
+  interleavedConceptIds?: string[];
 }
 
 export interface RetrievalLessonState {
@@ -89,7 +96,7 @@ export interface RetrievalLessonState {
   examBoard: string;
   tier: RetrievalTier;
   totalSteps: number;
-  siblings: string[];
+  siblings: { conceptId: string; label: string }[];
   closePrerequisiteLabels: string[];
   steps: RetrievalStep[];
   currentIndex: number;
@@ -143,7 +150,7 @@ async function generateRetrievalSteps(
   qualification: string,
   examBoard: string,
   closePrerequisiteLabels: string[],
-  siblings: string[],
+  siblings: { conceptId: string; label: string }[],
   alreadyGenerated: RetrievalStep[],
   stepsNeeded: number
 ): Promise<RetrievalStep[]> {
@@ -156,7 +163,7 @@ async function generateRetrievalSteps(
       `Exam board: ${examBoard || 'unspecified'}`,
       `Target concept being reviewed: ${concept}`,
       `closePrerequisites (background only — see the system prompt's own rule, never write a step testing these): ${JSON.stringify(closePrerequisiteLabels)}`,
-      `eligibleSiblingConcepts: ${JSON.stringify(siblings)}`,
+      `eligibleSiblingConcepts: ${JSON.stringify(siblings.map((s) => s.label))}`,
       `alreadyGenerated (do not repeat): ${JSON.stringify(alreadyGenerated.map((s) => ({ type: s.type, text: s.text })))}`,
       `stepsNeeded: ${stepsNeeded}`,
     ].join('\n'),
@@ -170,11 +177,21 @@ async function generateRetrievalSteps(
     true
   );
 
+  // The LLM only ever sees/returns sibling LABELS (eligibleSiblingConcepts
+  // above) — resolved back to their real concept_reviews ids here so
+  // submitRetrievalAnswer can grade the actual edge, not a throwaway
+  // display string. A returned label with no match (paraphrased, or a
+  // stale label from a since-changed sibling list) is silently dropped —
+  // best-effort, same as the rest of this best-effort context pipeline.
+  const conceptIdByLabel = new Map(siblings.map((s) => [s.label, s.conceptId]));
   return (result.steps || []).map((s) => ({
     type: s.type,
     text: s.text,
     requiresCalculation: !!s.requiresCalculation,
     interleavedConcepts: s.interleavedConcepts || [],
+    interleavedConceptIds: (s.interleavedConcepts || [])
+      .map((label) => conceptIdByLabel.get(label))
+      .filter((id): id is string => !!id),
   }));
 }
 
@@ -303,6 +320,24 @@ export async function submitRetrievalAnswer(
     );
     correct = check.correct;
     feedback = check.feedback;
+  }
+
+  // Interleaved steps genuinely test the target ALONGSIDE a sibling — so
+  // alongside the target's own once-per-lesson aggregate grade below, each
+  // sibling edge this step actually used gets its own simple grade right
+  // here, same "correct?good:again" rating Phase A uses for chain edges
+  // (deliberately not the tier-weighted aggregate rating, which only
+  // applies to the target concept itself). Both ends are already canonical
+  // (see RetrievalStep.interleavedConceptIds) — the SAME real link tested
+  // as a mechanistic_check prerequisite elsewhere lands in this exact
+  // concept_reviews row too.
+  if (currentStep.interleavedConceptIds && currentStep.interleavedConceptIds.length) {
+    const dedupedSiblingIds = Array.from(new Set(currentStep.interleavedConceptIds));
+    await Promise.all(
+      dedupedSiblingIds.map((siblingId) =>
+        gradeAndRecordReview(userId, `${siblingId}->${state.conceptKey}`, correct ? 'good' : 'again')
+      )
+    );
   }
 
   const nextIndex = state.currentIndex + 1;

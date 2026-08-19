@@ -1,4 +1,5 @@
 import { supabaseAdmin } from './supabaseAdmin';
+import { listCalendarEvents } from './calendarEventsService';
 
 // A matched-but-not-yet-delivered peer tutoring session — see the plan's
 // "assigned task with a deadline" framing (learn/index.html's own
@@ -110,6 +111,78 @@ export async function setReleaseTime(userId: string, sessionId: string, releaseT
   // the past (e.g. picking 'now')" — without this the session would sit
   // at 'submitted' until some unrelated later read happened to trigger it.
   return (await maybeReleaseSession(sessionId)) || rowToSession(data);
+}
+
+// Sensible waking hours for a suggested release time — never suggests
+// anything before 9am or after 9pm, whatever the deadline's own raw
+// timestamp happens to be (a 48h deadline landing at 3:14am is a real
+// timestamp but not a moment anyone should be asked to sit down and read
+// a tutoring response). A calibratable product choice, not derived.
+const SUGGESTION_START_HOUR = 9;
+const SUGGESTION_END_HOUR = 21;
+
+// How far forward the suggestion search is willing to look before giving
+// up and just offering the deadline itself — a request with weeks of
+// solid busy-blocks booked out shouldn't leave this hanging forever.
+const SUGGESTION_SEARCH_DAYS = 14;
+
+/**
+ * The earliest reasonable, calendar-aware moment to suggest for release —
+ * on/after the helper's own deadline (no point suggesting a time before
+ * the response could plausibly exist), during sensible hours, and not
+ * inside one of the requester's own busy blocks. A pure suggestion: the
+ * frontend pre-fills this into the booking input, but the student can
+ * always override it — see setReleaseTime, unchanged, still a free pick.
+ */
+export async function suggestReleaseTime(userId: string, sessionId: string): Promise<string> {
+  const session = await getSession(userId, sessionId);
+  if (!session) throw new Error('session not found');
+  if (session.requesterId !== userId) throw new Error('only the requester can get a suggested release time');
+
+  const events = await listCalendarEvents(userId);
+  const busyByDate = new Map<string, { startTime: string | null; endTime: string | null }[]>();
+  events
+    .filter((e) => e.type === 'busy')
+    .forEach((e) => {
+      if (!busyByDate.has(e.date)) busyByDate.set(e.date, []);
+      busyByDate.get(e.date)!.push({ startTime: e.startTime, endTime: e.endTime });
+    });
+
+  const earliest = new Date(Math.max(Date.now(), new Date(session.deadline).getTime()));
+
+  for (let dayOffset = 0; dayOffset <= SUGGESTION_SEARCH_DAYS; dayOffset++) {
+    const day = new Date(earliest);
+    day.setUTCDate(day.getUTCDate() + dayOffset);
+    const dateKey = day.toISOString().slice(0, 10);
+    const dayEvents = busyByDate.get(dateKey) || [];
+
+    // A busy block with no times given blocks the whole day — same
+    // convention as calendarEvents.ts/revisionPlanService.ts.
+    if (dayEvents.some((e) => !e.startTime || !e.endTime)) continue;
+
+    let startHour = SUGGESTION_START_HOUR;
+    if (dayOffset === 0) {
+      startHour = Math.max(SUGGESTION_START_HOUR, day.getUTCHours() + (day.getUTCMinutes() > 0 ? 1 : 0));
+    }
+    if (startHour >= SUGGESTION_END_HOUR) continue; // no reasonable room left today
+
+    for (let hour = startHour; hour < SUGGESTION_END_HOUR; hour++) {
+      const overlapsBusy = dayEvents.some((e) => {
+        const [sh] = e.startTime!.split(':').map(Number);
+        const [eh, em] = e.endTime!.split(':').map(Number);
+        const busyEndHour = eh + (em > 0 ? 1 : 0); // round up so a block ending 14:30 still blocks the 14:00 slot
+        return hour >= sh && hour < busyEndHour;
+      });
+      if (overlapsBusy) continue;
+      const candidate = new Date(day);
+      candidate.setUTCHours(hour, 0, 0, 0);
+      return candidate.toISOString();
+    }
+  }
+
+  // Nothing clean found in the search window — offer the deadline itself
+  // rather than failing outright; still fully overridable by the student.
+  return earliest.toISOString();
 }
 
 // The two independent events that gate visibility — a submitted written

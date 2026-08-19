@@ -1,5 +1,5 @@
 import { callClaudeJSON, callClaudeJSONWithImages, MODELS } from './claudeClient';
-import { getOrGenerateChain, customContextDigest } from './chainService';
+import { getOrGenerateChain, customContextDigest, normalizeConceptKey } from './chainService';
 import { gradeAndRecordReview, getReviewedConceptIds, hasAnySubjectHistory, FsrsRatingKey } from './reviewService';
 import { searchWikimediaImages, fetchImageAsBase64 } from './wikimediaService';
 import { supabaseAdmin } from './supabaseAdmin';
@@ -117,6 +117,12 @@ export interface EncodingStep {
   // required (nodeId !== conceptKey means there's no independently-cached
   // chain for it).
   diagnosisConceptKey: string;
+  // Only ever set on a mechanistic_check step — the FULL ordered chain
+  // (foundational-first, ending at this step's own nodeId/tip) it traces,
+  // not just the tip. Lets submitEncodingAnswer grade the CONSECUTIVE
+  // EDGES in that chain, not just the tip node itself, once this step
+  // resolves — see attachChainNodes.
+  chainNodes?: { id: string; label: string }[];
   diagram?: EncodingDiagram;
   // True when this step is a genuine calculation (numeric/algebraic, with
   // a definite computable answer) rather than a purely verbal one — see
@@ -142,6 +148,16 @@ interface CachedEncodingStep extends EncodingStep {
 export interface EncodingLessonState {
   conceptKey: string;
   subject: string;
+  // Carried alongside subject so submitEncodingAnswer can resolve a
+  // mechanistic_check chain's node labels to canonical concept ids for
+  // edge-level FSRS grading (see resolveSiblingConceptId) — the same
+  // topic every sibling in `siblingConcepts` below shares.
+  topic: string;
+  // Round-tripped from generation time so edge grading has the same
+  // student-page context resolveSiblingConceptId was built for — this is
+  // the FULL list (done and not-done), unlike the subset
+  // matchesUnfinishedSibling itself filters down to.
+  siblingConcepts: SiblingConcept[];
   steps: EncodingStep[];
   currentIndex: number;
   // "Core" means a step whose diagnosisConceptKey equals this lesson's own
@@ -278,6 +294,26 @@ function clean(s: string): string {
   return (s || '').trim().toLowerCase().replace(/[^a-z0-9]+/g, '_');
 }
 
+// Attaches each mechanistic_check step's own FULL traced chain (not just
+// its tip id) so submitEncodingAnswer can grade the chain's consecutive
+// EDGES once it resolves, not just the tip node — see DraftStep.chainNodes.
+// Built from groundingChains (only chains actually pre-tested — a
+// recruitedMechanismChain's tip never becomes a mechanistic_check step in
+// the first place) keyed by each chain's own tip id, which the
+// generation-prompt rules guarantee IS the mechanistic_check step's
+// nodeId (a chain's LAST entry, per buildPrerequisiteChains' ordering).
+function attachChainNodes(steps: DraftStep[], groundingChains: ChainNode[][]): void {
+  const chainByTipId = new Map<string, ChainNode[]>();
+  groundingChains
+    .filter((c) => c.length > 1)
+    .forEach((c) => chainByTipId.set(c[c.length - 1].id, c));
+  steps.forEach((s) => {
+    if (s.type !== 'mechanistic_check') return;
+    const chain = chainByTipId.get(s.nodeId);
+    if (chain) s.chainNodes = chain.map((n) => ({ id: n.id, label: n.label }));
+  });
+}
+
 // Decomposes the dependency graph into separate LINEAR prerequisite
 // chains, one per direct prerequisite of the target — each chain is that
 // prerequisite's own full ancestor lineage (foundational-most node first,
@@ -410,6 +446,29 @@ function matchesUnfinishedSibling(nodeLabel: string, siblingConcepts: SiblingCon
     const normSib = normalizeForMatch(s.label);
     return !!normSib && (normSib === normNode || normSib.includes(normNode) || normNode.includes(normSib));
   });
+}
+
+// Same fuzzy match as matchesUnfinishedSibling, but for a genuinely
+// different purpose — resolving a raw chain-node id (e.g. "the_nucleus")
+// to the student's OWN page for that same real concept, if one exists,
+// so edge-level FSRS grading (see submitEncodingAnswer's mechanistic_check
+// handling) lands on the SAME concept_reviews key that page's own
+// completed-lesson reviews use (normalizeConceptKey), not a disconnected
+// raw id. Deliberately matches against EVERY sibling regardless of `done`
+// — a FINISHED sibling is exactly the case with real FSRS history worth
+// joining to; matchesUnfinishedSibling excludes those on purpose for its
+// own (different) force-teach use, this function needs the opposite.
+// `topic` is the CURRENT lesson's own topic — safe to reuse for every
+// sibling here since siblingConceptsForCurrentPage (learn/index.html)
+// only ever draws siblings from the same subfolder as the current page.
+function resolveSiblingConceptId(nodeLabel: string, subject: string, topic: string, siblingConcepts: SiblingConcept[]): string | null {
+  const normNode = normalizeForMatch(nodeLabel);
+  if (!normNode) return null;
+  const match = siblingConcepts.find((s) => {
+    const normSib = normalizeForMatch(s.label);
+    return !!normSib && (normSib === normNode || normSib.includes(normNode) || normNode.includes(normSib));
+  });
+  return match ? normalizeConceptKey(subject, topic, match.label) : null;
 }
 
 const DIAGRAM_LOOKUP_TIMEOUT_MS = 8000;
@@ -549,6 +608,7 @@ interface DraftStep {
   confident?: boolean;
   requiresCalculation?: boolean;
   expectedSolution?: string;
+  chainNodes?: { id: string; label: string }[];
 }
 
 /**
@@ -976,7 +1036,7 @@ export async function startEncodingLesson(
   const rawSteps: EncodingStep[] = cachedSteps.map(({ expectedSolution, ...step }) => step);
   const steps = await stripFsrsVerifiedChecks(userId, rawSteps, forcedNodeIds);
 
-  const state: EncodingLessonState = { conceptKey, subject, steps, currentIndex: 0, anyCoreStepWrong: false, anyCoreStepNeededRetry: false, contentKey, qualification, examBoard, customTitle, customDescription, selfReportedUnsureNodeIds };
+  const state: EncodingLessonState = { conceptKey, subject, topic, siblingConcepts, steps, currentIndex: 0, anyCoreStepWrong: false, anyCoreStepNeededRetry: false, contentKey, qualification, examBoard, customTitle, customDescription, selfReportedUnsureNodeIds };
   return { done: false, hookFact, step: steps[0], state, contentReady };
 }
 
@@ -1198,6 +1258,7 @@ async function generateFirstStep(
     requiresCalculation: !!s.requiresCalculation,
     expectedSolution: s.requiresCalculation ? s.expectedSolution : undefined,
   };
+  attachChainNodes([draftStep], groundingChains);
 
   await repairUncertainSteps([draftStep], subject, qualification, examBoard);
 
@@ -1283,6 +1344,7 @@ async function generateLessonContinuation(
     requiresCalculation: !!s.requiresCalculation,
     expectedSolution: s.requiresCalculation ? s.expectedSolution : undefined,
   }));
+  attachChainNodes(draftSteps, groundingChains);
 
   // "forNodeId" lets the diagram ground a STRUCTURAL/GROUNDING prerequisite
   // instead of always the target concept itself — see
@@ -1558,6 +1620,26 @@ export async function submitEncodingAnswer(userId: string, state: EncodingLesson
   // what the student actually knows of that concept.
   if (!isCoreStep && !bypass) {
     await gradeAndRecordReview(userId, currentStep.diagnosisConceptKey, correct ? 'good' : 'again');
+  }
+
+  // A mechanistic_check step's whole point is tracing through a chain of
+  // 2-3 nodes, not just landing on the tip — so alongside the tip's own
+  // grade above, also grade each CONSECUTIVE EDGE in that traced chain.
+  // Each node resolves to the student's own page for that concept when one
+  // exists (Phase 0's resolveSiblingConceptId), same canonical id-space
+  // Phase B's interleaving edges resolve into — so the SAME real link
+  // tested either way accumulates in the SAME concept_reviews row. v1
+  // grades every edge the same way as the overall verdict — no attempt to
+  // localize which specific link broke on a wrong answer.
+  if (!bypass && currentStep.type === 'mechanistic_check' && currentStep.chainNodes && currentStep.chainNodes.length >= 2) {
+    const resolvedIds = currentStep.chainNodes.map(
+      (n) => resolveSiblingConceptId(n.label, state.subject, state.topic, state.siblingConcepts) || n.id
+    );
+    const edgeGrades: Promise<unknown>[] = [];
+    for (let i = 0; i < resolvedIds.length - 1; i++) {
+      edgeGrades.push(gradeAndRecordReview(userId, `${resolvedIds[i]}->${resolvedIds[i + 1]}`, correct ? 'good' : 'again'));
+    }
+    await Promise.all(edgeGrades);
   }
 
   const nextIndex = state.currentIndex + 1;

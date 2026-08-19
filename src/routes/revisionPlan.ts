@@ -13,7 +13,7 @@ const router = Router();
 // comment on why (folders live in the client's synced blob, not a
 // normalized server-side table).
 router.post('/revision-plan/generate', requireAuth, costlyEndpointLimiter, async (req: Request, res: Response) => {
-  const { examEventId, concepts } = req.body ?? {};
+  const { examEventId, concepts, qualification, examBoard, customTitle, customDescription, examinableLabels } = req.body ?? {};
   if (typeof examEventId !== 'string' || !examEventId) {
     return res.status(400).json({ error: 'examEventId is required' });
   }
@@ -29,9 +29,21 @@ router.post('/revision-plan/generate', requireAuth, costlyEndpointLimiter, async
   if (!cleanConcepts.length) {
     return res.status(400).json({ error: 'concepts (non-empty) is required' });
   }
+  const cleanExaminableLabels: string[] = Array.isArray(examinableLabels)
+    ? examinableLabels.filter((l) => typeof l === 'string' && l.trim())
+    : [];
 
   try {
-    const plan = await generateRevisionPlan(req.userId as string, examEventId, cleanConcepts);
+    const plan = await generateRevisionPlan(
+      req.userId as string,
+      examEventId,
+      cleanConcepts,
+      typeof qualification === 'string' ? qualification : '',
+      typeof examBoard === 'string' ? examBoard : '',
+      typeof customTitle === 'string' ? customTitle : '',
+      typeof customDescription === 'string' ? customDescription : '',
+      cleanExaminableLabels
+    );
     res.json(plan);
   } catch (err) {
     console.error('Revision plan generation failed:', err);

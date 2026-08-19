@@ -32,6 +32,8 @@ export const costlyEndpointLimiter = rateLimit({
 // and switching between a few pages/folders alone can exceed that. This is
 // still per-user bounded against a runaway client bug or genuine abuse,
 // just at a limit generous enough that ordinary editing never gets near it.
+// Also used for read/polling endpoints (notifications, session lists) —
+// generous is correct there too, since polling is expected to be frequent.
 export const syncEndpointLimiter = rateLimit({
   windowMs: 60 * 1000,
   limit: 120,
@@ -39,4 +41,21 @@ export const syncEndpointLimiter = rateLimit({
   legacyHeaders: false,
   keyGenerator: (req) => req.userId || req.ip || 'unknown',
   message: { error: 'Too many sync requests. Please slow down.' },
+});
+
+// For genuine, deliberate "click a button" actions — saving a profile
+// preference, adding/deleting a calendar event, booking a tutoring
+// release time, submitting a tutoring response/report, claiming a help
+// request — as opposed to the debounced-on-every-keystroke saves
+// syncEndpointLimiter is calibrated for. A real person clicking Save
+// never comes close to 120/min; this is tight enough to actually mean
+// something as a limit while still allowing normal repeated use (e.g.
+// adjusting a booking time a few times before settling on one).
+export const actionEndpointLimiter = rateLimit({
+  windowMs: 60 * 1000,
+  limit: 20,
+  standardHeaders: true,
+  legacyHeaders: false,
+  keyGenerator: (req) => req.userId || req.ip || 'unknown',
+  message: { error: 'Too many requests. Please slow down.' },
 });

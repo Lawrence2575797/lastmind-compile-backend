@@ -1,14 +1,14 @@
 import { Router, Request, Response } from 'express';
 import { requireAuth } from '../services/authMiddleware';
-import { syncEndpointLimiter } from '../services/rateLimiters';
+import { syncEndpointLimiter, actionEndpointLimiter } from '../services/rateLimiters';
 import { getTutoringProfile, setTutoringProfile } from '../services/tutoringProfileService';
 
 const router = Router();
 
-router.use('/tutoring-profile', requireAuth, syncEndpointLimiter);
+router.use('/tutoring-profile', requireAuth);
 
 // GET /tutoring-profile -> { displayName, tutoringOptIn }
-router.get('/tutoring-profile', async (req: Request, res: Response) => {
+router.get('/tutoring-profile', syncEndpointLimiter, async (req: Request, res: Response) => {
   try {
     const profile = await getTutoringProfile(req.userId as string);
     res.json(profile);
@@ -19,7 +19,7 @@ router.get('/tutoring-profile', async (req: Request, res: Response) => {
 });
 
 // POST /tutoring-profile  { displayName?, tutoringOptIn }
-router.post('/tutoring-profile', async (req: Request, res: Response) => {
+router.post('/tutoring-profile', actionEndpointLimiter, async (req: Request, res: Response) => {
   const { displayName, tutoringOptIn } = req.body ?? {};
   if (typeof tutoringOptIn !== 'boolean') {
     return res.status(400).json({ error: 'tutoringOptIn (boolean) is required' });

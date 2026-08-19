@@ -1,6 +1,8 @@
 import { supabaseAdmin } from './supabaseAdmin';
 import { newCard, gradeReview, rowToCard, cardToRowFields, Rating, Grade, ConceptReviewRow } from './fsrsService';
 
+export type { ConceptReviewRow };
+
 // concept_reviews columns that exist alongside the FSRS Card fields but
 // aren't part of the Card model itself (see the "successive relearning"
 // section below) — kept as a separate extension rather than folded into
@@ -423,4 +425,26 @@ export function simulateGoodReview(row: ConceptReviewRow | null, now: Date = new
   const card = row ? rowToCard(row) : newCard(now);
   const { card: updatedCard } = gradeReview(card, Rating.Good, now);
   return updatedCard.stability;
+}
+
+/**
+ * Batch-fetches the full FSRS row (everything simulateGoodReview needs,
+ * not just the state/stability summary getMasteryDetailsForConcepts
+ * returns) for a set of concepts — the revision-plan scheduler's own
+ * source of "what's this concept's card actually look like right now."
+ * A concept with no row at all (never reviewed) is simply absent from the
+ * returned map — the caller treats that as a fresh card, same convention
+ * as everywhere else in this file.
+ */
+export async function getReviewRowsForConcepts(userId: string, conceptIds: string[]): Promise<Map<string, ConceptReviewRow>> {
+  if (!conceptIds.length) return new Map();
+  const { data, error } = await supabaseAdmin
+    .from('concept_reviews')
+    .select('user_id, concept_id, due, stability, difficulty, elapsed_days, scheduled_days, reps, lapses, state, last_review')
+    .eq('user_id', userId)
+    .in('concept_id', conceptIds);
+  if (error) throw error;
+  const map = new Map<string, ConceptReviewRow>();
+  (data || []).forEach((row) => map.set(row.concept_id as string, row as unknown as ConceptReviewRow));
+  return map;
 }

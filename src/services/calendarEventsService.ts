@@ -52,6 +52,23 @@ export async function createCalendarEvent(
   return { id: data.id, date: data.event_date, type: data.type, startTime: data.start_time, endTime: data.end_time, folderId: data.folder_id };
 }
 
+/**
+ * A single calendar event by id — used by the revision-plan generator to
+ * look up the exam event it's planning around (date + folderId) without
+ * pulling the user's whole calendar.
+ */
+export async function getCalendarEvent(userId: string, eventId: string): Promise<CalendarEvent | null> {
+  const { data, error } = await supabaseAdmin
+    .from('calendar_events')
+    .select('id, event_date, type, start_time, end_time, folder_id')
+    .eq('user_id', userId)
+    .eq('id', eventId)
+    .maybeSingle();
+  if (error) throw error;
+  if (!data) return null;
+  return { id: data.id, date: data.event_date, type: data.type, startTime: data.start_time, endTime: data.end_time, folderId: data.folder_id };
+}
+
 // FSRS-derived due reviews aren't rows in this table at all (they come
 // from concept_reviews via GET /schedule) — this delete can only ever
 // touch a user-created busy/exam event, never a review schedule entry,

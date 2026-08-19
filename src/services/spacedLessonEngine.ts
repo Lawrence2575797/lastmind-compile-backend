@@ -25,7 +25,7 @@ export type RetrievalTier = 0 | 1 | 2 | 3;
 // fewer Claude calls exactly where each individual call is already doing
 // more (interleaving, mechanistic tracing), keeping cost roughly level
 // rather than compounding as difficulty rises.
-const STEPS_PER_TIER: Record<RetrievalTier, number> = { 0: 3, 1: 2, 2: 2, 3: 1 };
+export const STEPS_PER_TIER: Record<RetrievalTier, number> = { 0: 3, 1: 2, 2: 2, 3: 1 };
 
 // Stability ceiling (days) treated as "fully consolidated" for the purpose
 // of this ramp — not a real FSRS constant, a product tuning knob. Log

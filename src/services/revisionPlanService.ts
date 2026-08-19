@@ -1,5 +1,5 @@
 import { supabaseAdmin } from './supabaseAdmin';
-import { normalizeConceptKey } from './chainService';
+import { normalizeConceptKey, getOrGenerateChain } from './chainService';
 import {
   getMasteryDetailsForConcepts,
   getReviewRowsForConcepts,
@@ -59,6 +59,10 @@ const MINUTES_PER_STEP = 3;
 const EXAM_PRACTICE_FRACTION = 0.2;
 const EXAM_PRACTICE_MIN_DAYS = 1;
 
+function clean(s: string): string {
+  return (s || '').trim().toLowerCase().replace(/[^a-z0-9]+/g, ' ').trim();
+}
+
 function toDateOnly(d: Date): string {
   return d.toISOString().slice(0, 10);
 }
@@ -99,11 +103,28 @@ function estimatedMinutesFor(detail: MasteryDetail | undefined): number {
  * available study time — see the approved plan for the full objective.
  * Deletes and replaces any prior plan for this exam (same delete-then-
  * insert convention calendar_events editing already uses).
+ *
+ * `examinableLabels` is every concept title the student has anywhere in
+ * their account (every folder, not just this exam's) — used to widen the
+ * plan's own concept set beyond the exam folder's top-level pages to
+ * include PREREQUISITES that are ALSO independently examinable, using
+ * "the student made a real page for this elsewhere" as the signal (see
+ * chat discussion — a prerequisite that's never its own page anywhere is
+ * treated as pure teaching scaffolding, not something to schedule
+ * separately). A prerequisite that scores low on marginal retrievability
+ * gain naturally won't get scheduled ahead of genuinely at-risk
+ * concepts, so widening the candidate pool doesn't need any separate
+ * exclusion rule beyond this examinability filter.
  */
 export async function generateRevisionPlan(
   userId: string,
   examEventId: string,
-  concepts: RevisionPlanConcept[]
+  concepts: RevisionPlanConcept[],
+  qualification = '',
+  examBoard = '',
+  customTitle = '',
+  customDescription = '',
+  examinableLabels: string[] = []
 ): Promise<RevisionPlanResult> {
   const examEvent = await getCalendarEvent(userId, examEventId);
   if (!examEvent || examEvent.type !== 'exam') {
@@ -112,9 +133,35 @@ export async function generateRevisionPlan(
   const examDate = examEvent.date;
   const today = toDateOnly(new Date());
 
-  const withIds = concepts
+  const topLevel = concepts
     .filter((c) => c.concept && c.concept.trim())
     .map((c) => ({ ...c, conceptId: normalizeConceptKey(c.subject, c.topic, c.concept) }));
+
+  const examinableSet = new Set(examinableLabels.map(clean).filter(Boolean));
+  const topLevelIds = new Set(topLevel.map((c) => c.conceptId));
+  const extraPrereqs: typeof topLevel = [];
+
+  if (examinableSet.size) {
+    const chainResults = await Promise.all(
+      topLevel.map((c) =>
+        getOrGenerateChain(c.conceptId, c.subject, c.topic, c.concept, qualification, examBoard, customTitle, customDescription)
+      )
+    );
+    const seenPrereqIds = new Set<string>();
+    chainResults.forEach((result, i) => {
+      const chain = result.chain;
+      if (!chain || !Array.isArray(chain.nodes)) return;
+      const owner = topLevel[i];
+      chain.nodes.forEach((node: { id: string; label: string }) => {
+        if (topLevelIds.has(node.id) || seenPrereqIds.has(node.id)) return;
+        if (!examinableSet.has(clean(node.label))) return;
+        seenPrereqIds.add(node.id);
+        extraPrereqs.push({ subject: owner.subject, topic: '', concept: node.label, conceptId: node.id });
+      });
+    });
+  }
+
+  const withIds = [...topLevel, ...extraPrereqs];
   const conceptIds = withIds.map((c) => c.conceptId);
 
   const [masteryDetails, rows, allEvents, studySettings] = await Promise.all([

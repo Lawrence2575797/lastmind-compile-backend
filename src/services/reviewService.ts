@@ -406,7 +406,7 @@ export async function listEligibleSiblingConcepts(
   subject: string,
   topic: string,
   excludeConceptId: string
-): Promise<string[]> {
+): Promise<{ conceptId: string; label: string }[]> {
   const prefix = `${clean(subject)}:${clean(topic)}:`;
   const { data, error } = await supabaseAdmin
     .from('concept_reviews')
@@ -417,7 +417,7 @@ export async function listEligibleSiblingConcepts(
   if (error) throw error;
   return (data || [])
     .filter((row) => row.concept_id !== excludeConceptId)
-    .map((row) => conceptIdToLabel(row.concept_id));
+    .map((row) => ({ conceptId: row.concept_id, label: conceptIdToLabel(row.concept_id) }));
 }
 
 // The exact same closed-form FSRS retrievability formula already duplicated

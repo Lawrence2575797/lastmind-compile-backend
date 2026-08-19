@@ -461,7 +461,7 @@ function matchesUnfinishedSibling(nodeLabel: string, siblingConcepts: SiblingCon
 // `topic` is the CURRENT lesson's own topic — safe to reuse for every
 // sibling here since siblingConceptsForCurrentPage (learn/index.html)
 // only ever draws siblings from the same subfolder as the current page.
-function resolveSiblingConceptId(nodeLabel: string, subject: string, topic: string, siblingConcepts: SiblingConcept[]): string | null {
+export function resolveSiblingConceptId(nodeLabel: string, subject: string, topic: string, siblingConcepts: SiblingConcept[]): string | null {
   const normNode = normalizeForMatch(nodeLabel);
   if (!normNode) return null;
   const match = siblingConcepts.find((s) => {

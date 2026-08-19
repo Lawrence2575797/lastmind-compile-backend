@@ -1,6 +1,6 @@
 import { normalizeConceptKey, getOrGenerateChain } from './chainService';
-import { Chain } from './encodingLessonService';
-import { getMasteryDetailsForConcepts, MasteryDetail } from './reviewService';
+import { Chain, resolveSiblingConceptId, SiblingConcept } from './encodingLessonService';
+import { getMasteryDetailsForConcepts, getMasteryStatesForConcepts, MasteryDetail } from './reviewService';
 import { getConceptsWithLowConfidenceSignal } from './answerSignalService';
 
 // One concept the student has actually added to a folder (a single-lesson
@@ -51,6 +51,17 @@ export interface KnowledgeMapResult {
   // state alone can hide exactly this kind of shakiness, so this rides
   // alongside `mastery` as a separate signal rather than changing it.
   lowConfidenceNodeIds: string[];
+  // Mastery of the LINK itself, not either endpoint — keyed by the exact
+  // same `${source}->${target}` shape as `edges` above (not `mastery`'s
+  // node-id keys). Reflects evidence from BOTH pathways that can grade an
+  // edge: a mechanistic_check chain in an encoding lesson tracing through
+  // it (encodingLessonService.ts's submitEncodingAnswer), or it being
+  // interleaved as a sibling in retrieval practice
+  // (spacedLessonEngine.ts's submitRetrievalAnswer) — both resolve to the
+  // SAME concept_reviews row for the same real link via
+  // resolveSiblingConceptId, so this single lookup surfaces either. An
+  // edge with no row at all is 0 (untested), same convention as `mastery`.
+  edgeMastery: Record<string, 0 | 1 | 2>;
 }
 
 /**
@@ -76,7 +87,7 @@ export async function getKnowledgeMapForFolder(
   concepts: FolderConcept[]
 ): Promise<KnowledgeMapResult> {
   if (!concepts.length) {
-    return { nodes: [], edges: [], mastery: {}, masteryDetail: {}, lowConfidenceNodeIds: [] };
+    return { nodes: [], edges: [], mastery: {}, masteryDetail: {}, lowConfidenceNodeIds: [], edgeMastery: {} };
   }
 
   // Each concept's chain is looked up (or generated, on a genuine
@@ -177,11 +188,46 @@ export async function getKnowledgeMapForFolder(
     });
   });
 
+  // Same fuzzy resolution Phase A's mechanistic_check grading uses to
+  // resolve a chain node's raw id into the student's own page for that
+  // concept (see encodingLessonService.ts's resolveSiblingConceptId) —
+  // reused here so an EDGE's mastery lookup reflects evidence recorded via
+  // EITHER pathway (a traced mechanistic_check chain, or the same link
+  // interleaved in retrieval practice — spacedLessonEngine.ts's
+  // submitRetrievalAnswer), not just this folder's own generated
+  // chain-node ids. Grouped by topic (not one flat list) because
+  // normalizeConceptKey needs the REAL topic the matched page lives in,
+  // and this folder's concepts can span several subfolders.
+  const siblingConceptsByTopic = new Map<string, SiblingConcept[]>();
+  concepts.forEach((c) => {
+    const topic = c.topic || '';
+    if (!siblingConceptsByTopic.has(topic)) siblingConceptsByTopic.set(topic, []);
+    siblingConceptsByTopic.get(topic)!.push({ label: c.concept, done: true });
+  });
+  // Priority mirrors Phase A/B's own resolution order: (1) this node IS
+  // exactly some concept's own target (queryKeyForNode already resolved
+  // this, exact) — reuse that unchanged; else (2) a fuzzy title match
+  // against one of this folder's own pages, tried against every topic the
+  // node itself belongs to (nodeTopics) since the match could live in any
+  // of them; else (3) the node's own raw chain id, ungrounded in any page.
+  function edgeQueryKeyForNode(id: string): string {
+    const exact = queryKeyForNode.get(id);
+    if (exact && exact !== id) return exact;
+    const label = nodeById.get(id)?.name || '';
+    for (const topic of nodeTopics.get(id) || []) {
+      const resolved = resolveSiblingConceptId(label, subject, topic, siblingConceptsByTopic.get(topic) || []);
+      if (resolved) return resolved;
+    }
+    return id;
+  }
+  const edgeQueryKeys = edges.map((e) => `${edgeQueryKeyForNode(e.source)}->${edgeQueryKeyForNode(e.target)}`);
+
   const nodeIds = Array.from(nodeById.keys());
   const queryKeys = nodeIds.map((id) => queryKeyForNode.get(id) || id);
-  const [found, lowConfidenceQueryKeys] = await Promise.all([
+  const [found, lowConfidenceQueryKeys, edgeMasteryStates] = await Promise.all([
     getMasteryDetailsForConcepts(userId, queryKeys),
     getConceptsWithLowConfidenceSignal(userId, queryKeys),
+    getMasteryStatesForConcepts(userId, edgeQueryKeys),
   ]);
   const mastery: Record<string, 0 | 1 | 2> = {};
   const masteryDetail: Record<string, MasteryDetail> = {};
@@ -193,11 +239,18 @@ export async function getKnowledgeMapForFolder(
     if (detail) masteryDetail[id] = detail;
     if (lowConfidenceQueryKeys.has(queryKey)) lowConfidenceNodeIds.push(id);
   });
+  // Keyed by the exact same `${source}->${target}` RAW shape as `edges`
+  // above (never the resolved query key) — the frontend looks this up
+  // per-rendered-edge using the same ids it already has.
+  const edgeMastery: Record<string, 0 | 1 | 2> = {};
+  edges.forEach((e, i) => {
+    edgeMastery[`${e.source}->${e.target}`] = edgeMasteryStates.get(edgeQueryKeys[i]) ?? 0;
+  });
 
   const nodes: KnowledgeMapNode[] = nodeIds.map((id) => {
     const base = nodeById.get(id)!;
     return { id: base.id, name: base.name, topics: Array.from(nodeTopics.get(id) || []) };
   });
 
-  return { nodes, edges, mastery, masteryDetail, lowConfidenceNodeIds };
+  return { nodes, edges, mastery, masteryDetail, lowConfidenceNodeIds, edgeMastery };
 }

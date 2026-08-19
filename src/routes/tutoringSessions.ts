@@ -1,7 +1,7 @@
 import { Router, Request, Response } from 'express';
 import { requireAuth } from '../services/authMiddleware';
 import { syncEndpointLimiter, actionEndpointLimiter } from '../services/rateLimiters';
-import { getSession, listMyTutoringSessions, setReleaseTime } from '../services/tutoringSessionService';
+import { getSession, listMyTutoringSessions, setReleaseTime, suggestReleaseTime } from '../services/tutoringSessionService';
 import { checkAndReassignMissedDeadlines } from '../services/peerTutoringMatchService';
 
 const router = Router();
@@ -33,6 +33,19 @@ router.get('/tutoring-sessions/:id', syncEndpointLimiter, async (req: Request, r
   } catch (err) {
     console.error('Tutoring session fetch failed:', err);
     res.status(500).json({ error: 'could not load that session' });
+  }
+});
+
+// GET /tutoring-sessions/:id/suggest-release-time -> { suggested: ISOString }
+// A calendar-aware default the frontend pre-fills into the booking input —
+// never forced, always overridable via the release-time route below.
+router.get('/tutoring-sessions/:id/suggest-release-time', syncEndpointLimiter, async (req: Request, res: Response) => {
+  try {
+    const suggested = await suggestReleaseTime(req.userId as string, req.params.id);
+    res.json({ suggested });
+  } catch (err: any) {
+    console.error('Release-time suggestion failed:', err);
+    res.status(400).json({ error: err?.message || 'could not suggest a release time' });
   }
 });
 

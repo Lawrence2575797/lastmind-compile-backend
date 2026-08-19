@@ -119,7 +119,7 @@ export async function setReleaseTime(userId: string, sessionId: string, releaseT
 // timestamp but not a moment anyone should be asked to sit down and read
 // a tutoring response). A calibratable product choice, not derived.
 const SUGGESTION_START_HOUR = 9;
-const SUGGESTION_END_HOUR = 21;
+const SUGGESTION_END_HOUR = 22;
 
 // How far forward the suggestion search is willing to look before giving
 // up and just offering the deadline itself — a request with weeks of

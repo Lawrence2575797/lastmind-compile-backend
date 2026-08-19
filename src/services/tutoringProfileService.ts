@@ -12,6 +12,13 @@ const MAX_NAME_LENGTH = 40;
 export interface TutoringProfile {
   displayName: string | null;
   tutoringOptIn: boolean;
+  // Distinguishes "no row exists yet — this student has never been asked"
+  // from "a row exists and they explicitly said no" — both look like
+  // tutoringOptIn: false otherwise. Drives the one-time onboarding prompt
+  // on the Peer Tutoring/My Tutoring pages (see learn/index.html) — it
+  // only ever shows once, the first time, then never again regardless of
+  // which way the student answers; all LATER changes happen in My Account.
+  hasDecided: boolean;
 }
 
 export async function getTutoringProfile(userId: string): Promise<TutoringProfile> {
@@ -20,8 +27,8 @@ export async function getTutoringProfile(userId: string): Promise<TutoringProfil
     .select('display_name, tutoring_opt_in')
     .eq('user_id', userId)
     .maybeSingle();
-  if (error || !data) return { displayName: null, tutoringOptIn: false };
-  return { displayName: data.display_name, tutoringOptIn: !!data.tutoring_opt_in };
+  if (error || !data) return { displayName: null, tutoringOptIn: false, hasDecided: false };
+  return { displayName: data.display_name, tutoringOptIn: !!data.tutoring_opt_in, hasDecided: true };
 }
 
 export async function setTutoringProfile(userId: string, displayName: string | null, tutoringOptIn: boolean): Promise<TutoringProfile> {
@@ -35,7 +42,7 @@ export async function setTutoringProfile(userId: string, displayName: string | n
       updated_at: new Date().toISOString(),
     });
   if (error) throw error;
-  return { displayName: trimmedName, tutoringOptIn };
+  return { displayName: trimmedName, tutoringOptIn, hasDecided: true };
 }
 
 // Bumps last_assigned_at so this helper sorts behind everyone else next

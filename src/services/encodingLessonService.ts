@@ -432,13 +432,24 @@ function buildAttribution(artist: string | null, licenseShortName: string | null
   return 'Via Wikimedia Commons';
 }
 
+// A negative verdict ("nothing suitable found/verified") used to be cached
+// forever — one early failed lookup (a bad Wikimedia search, or Claude's
+// deliberately strict verification declining every candidate) permanently
+// blocked that concept for every student after it, with no way to recover
+// short of manually deleting the row. A positive result stays cached
+// forever (a genuinely good match doesn't go stale), but a negative one
+// now gets retried after this window — cheap insurance against a single
+// unlucky first attempt being permanent.
+const DIAGRAM_NEGATIVE_RETRY_DAYS = 14;
+
 /**
  * Looks up (or fetches + verifies + caches) a diagram for one concept, keyed
  * by concept + qualification + exam board so only the first student per
  * combination pays the search+vision cost — everyone after gets an instant
- * cache hit, including a cached "nothing suitable" negative. Never throws:
- * any failure just means no diagram, since a missing diagram is harmless
- * but a wrong one would actively mislead a student.
+ * cache hit, including a cached "nothing suitable" negative (until it goes
+ * stale — see DIAGRAM_NEGATIVE_RETRY_DAYS). Never throws: any failure just
+ * means no diagram, since a missing diagram is harmless but a wrong one
+ * would actively mislead a student.
  */
 async function getOrFetchDiagram(
   conceptKey: string,
@@ -452,11 +463,15 @@ async function getOrFetchDiagram(
 
   const { data: cached, error: cacheError } = await supabaseAdmin
     .from('encoding_diagrams')
-    .select('diagram')
+    .select('diagram, created_at')
     .eq('diagram_key', diagramKey)
     .maybeSingle();
   if (!cacheError && cached) {
-    return (cached.diagram as EncodingDiagram | null) ?? null;
+    if (cached.diagram) return cached.diagram as EncodingDiagram;
+    const ageDays = (Date.now() - new Date(cached.created_at).getTime()) / (24 * 60 * 60 * 1000);
+    if (ageDays < DIAGRAM_NEGATIVE_RETRY_DAYS) return null;
+    // Stale negative — fall through and retry for real below, same as a
+    // genuine cache miss.
   }
 
   // 3, not 5 — every candidate that survives fetchImageAsBase64 gets sent
@@ -466,7 +481,7 @@ async function getOrFetchDiagram(
   // of them fit, at 40% less image cost per call.
   const candidates = await searchWikimediaImages(searchQuery, 3);
   if (!candidates.length) {
-    await supabaseAdmin.from('encoding_diagrams').insert({ diagram_key: diagramKey, diagram: null });
+    await supabaseAdmin.from('encoding_diagrams').upsert({ diagram_key: diagramKey, diagram: null, created_at: new Date().toISOString() });
     return null;
   }
 
@@ -509,7 +524,7 @@ async function getOrFetchDiagram(
   }
 
   if (parsedVerdict.chosenIndex === null || parsedVerdict.chosenIndex === undefined || !usable[parsedVerdict.chosenIndex]) {
-    await supabaseAdmin.from('encoding_diagrams').insert({ diagram_key: diagramKey, diagram: null });
+    await supabaseAdmin.from('encoding_diagrams').upsert({ diagram_key: diagramKey, diagram: null, created_at: new Date().toISOString() });
     return null;
   }
 
@@ -520,7 +535,7 @@ async function getOrFetchDiagram(
     diagramAttribution: buildAttribution(chosen.artist, chosen.licenseShortName),
   };
 
-  await supabaseAdmin.from('encoding_diagrams').insert({ diagram_key: diagramKey, diagram });
+  await supabaseAdmin.from('encoding_diagrams').upsert({ diagram_key: diagramKey, diagram, created_at: new Date().toISOString() });
   return diagram;
 }
 

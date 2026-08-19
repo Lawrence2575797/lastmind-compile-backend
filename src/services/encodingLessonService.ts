@@ -1,6 +1,6 @@
 import { callClaudeJSON, callClaudeJSONWithImages, MODELS } from './claudeClient';
 import { getOrGenerateChain, customContextDigest } from './chainService';
-import { gradeAndRecordReview, getReviewedConceptIds, FsrsRatingKey } from './reviewService';
+import { gradeAndRecordReview, getReviewedConceptIds, hasAnySubjectHistory, FsrsRatingKey } from './reviewService';
 import { searchWikimediaImages, fetchImageAsBase64 } from './wikimediaService';
 import { supabaseAdmin } from './supabaseAdmin';
 import {
@@ -892,8 +892,26 @@ export async function startEncodingLesson(
   // what it's usually safe to assume. (selfReportedUnsureIds itself was
   // already computed above, before the split, so it can promote whole
   // chains — reused here as-is.)
+  // A genuinely first-ever lesson in this subject (no target-level review
+  // exists for anything in it yet) has no earlier course any prerequisite
+  // could plausibly have come from — "usually assumed prior knowledge,
+  // only verify it" is simply the wrong default here. Force-teach every
+  // grounding node in that case, same mechanism as an unfinished-sibling
+  // or technique match, just triggered subject-wide instead of node-by-
+  // node. Must stay computed IDENTICALLY to the other call site (see the
+  // comment above this function) so contentKey agrees across phase 1/2.
+  // Reported bug this fixes: a first Chemistry lesson on "structure of
+  // the atom" pre-testing "the nucleus" as if it were separate prior
+  // knowledge, when there's no prior Chemistry lesson it could be from.
+  const isFirstEverLessonInSubject = !(await hasAnySubjectHistory(userId, subject));
   const forcedNodeIds = chainNodes
-    .filter((n) => matchesUnfinishedSibling(n.label, siblingConcepts) || !!n.technique || selfReportedUnsureIds.has(n.id))
+    .filter(
+      (n) =>
+        isFirstEverLessonInSubject ||
+        matchesUnfinishedSibling(n.label, siblingConcepts) ||
+        !!n.technique ||
+        selfReportedUnsureIds.has(n.id)
+    )
     .map((n) => n.id)
     .sort();
 
@@ -1044,8 +1062,26 @@ export async function continueEncodingLesson(
   const chainNodes = allChains.flat();
   const coveredIds = new Set([...chainNodes.map((n) => n.id), target.id]);
   const backgroundNodes = chain.nodes.filter((n) => !coveredIds.has(n.id));
+  // A genuinely first-ever lesson in this subject (no target-level review
+  // exists for anything in it yet) has no earlier course any prerequisite
+  // could plausibly have come from — "usually assumed prior knowledge,
+  // only verify it" is simply the wrong default here. Force-teach every
+  // grounding node in that case, same mechanism as an unfinished-sibling
+  // or technique match, just triggered subject-wide instead of node-by-
+  // node. Must stay computed IDENTICALLY to the other call site (see the
+  // comment above this function) so contentKey agrees across phase 1/2.
+  // Reported bug this fixes: a first Chemistry lesson on "structure of
+  // the atom" pre-testing "the nucleus" as if it were separate prior
+  // knowledge, when there's no prior Chemistry lesson it could be from.
+  const isFirstEverLessonInSubject = !(await hasAnySubjectHistory(userId, subject));
   const forcedNodeIds = chainNodes
-    .filter((n) => matchesUnfinishedSibling(n.label, siblingConcepts) || !!n.technique || selfReportedUnsureIds.has(n.id))
+    .filter(
+      (n) =>
+        isFirstEverLessonInSubject ||
+        matchesUnfinishedSibling(n.label, siblingConcepts) ||
+        !!n.technique ||
+        selfReportedUnsureIds.has(n.id)
+    )
     .map((n) => n.id)
     .sort();
 

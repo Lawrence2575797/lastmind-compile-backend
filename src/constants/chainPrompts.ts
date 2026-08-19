@@ -113,3 +113,40 @@ Rules:
 5. The raw extracted text will often be garbled or fragmented in places — a normal side effect of automated PDF-to-text extraction (columns merged oddly, headings separated from their content, repeated page headers/footers). Work with whatever content is legible; if a whole section seems clearly missing or too corrupted to make sense of, note that briefly at the very end rather than fabricating content to fill the gap.
 
 Output: the plain-text outline only, nothing else.`;
+
+// A second, DEEPER extraction pass over the same raw source text
+// SPEC_OUTLINE_RESTATE_PROMPT is given — never a replacement for it. The
+// coarse outline above deliberately stops at the specification's own
+// named sub-topic level (rule 3 there explicitly forbids going further)
+// because that's all loose chain-generation calibration ever needed.
+// Real exam-question spec-alignment needs one more layer down: the
+// actual content points a question could legitimately be about. This
+// prompt exists ONLY to produce that layer, as structured data a
+// downstream system can check a generated question against
+// programmatically — not another paragraph for an LLM to eyeball.
+export const SPEC_MICROTOPICS_EXTRACT_PROMPT = `You are given the SAME raw, mechanically-extracted text from a UK exam board's official qualification specification document you may have seen restated at a coarser level elsewhere. This time, extract ONE LEVEL DEEPER: the individual content points listed beneath each of the specification's own named sub-topics — the a)/b)/c)-style (or bullet-style) items that say what a student is actually expected to know within that sub-topic.
+
+This is internal reference material used to check whether a generated practice question is actually within the real specification's scope. It is never shown to a student and never published anywhere.
+
+Rules:
+1. Output ONLY valid JSON matching the schema below. No prose, no markdown code fences, nothing outside the JSON object itself.
+2. CRITICAL, same discipline as always — restate every microtopic in YOUR OWN independent wording. Never copy the specification's exact sentence, its specific listed phrase, or its verbatim wording, even for a single bullet point. A microtopic name may end up similar to the source simply because there's only one standard way to name a well-established idea (e.g. "price elasticity of demand") — that's fine and unavoidable. What to actively avoid: reproducing the document's own sentence structure, its exact multi-word phrasing, or copying a definition/explanation verbatim. Each microtopic entry should be a short LABEL (a few words, like a lesson title), never a full restated sentence or explanation lifted close to the source — if the source spells out detail beneath a bullet (a definition, a worked method, named examples), name the POINT, do not reproduce that detail.
+3. Preserve the specification's own grouping: which theme/unit each sub-topic belongs to, and which sub-topic each microtopic belongs to. Keep the theme and sub-topic names/order consistent with how a downstream reader would recognize them (same real structure as the coarser outline, if you have both).
+4. Every entry must be genuine SUBJECT CONTENT — strip administrative text, assessment objectives, exam paper/component structure, mark scheme detail, front matter.
+5. If a sub-topic's specific content points are illegible or missing from the extracted text (a normal side effect of automated PDF extraction), include the sub-topic itself with an empty "microtopics" array rather than inventing content to fill the gap.
+6. Do not editorialize, rank, or add difficulty/importance labels — this is a scope inventory, not a study guide.
+
+Output schema:
+{
+  "themes": [
+    {
+      "theme": string,
+      "subtopics": [
+        {
+          "subtopic": string,
+          "microtopics": [string]
+        }
+      ]
+    }
+  ]
+}`;

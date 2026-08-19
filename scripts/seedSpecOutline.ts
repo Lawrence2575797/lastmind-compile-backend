@@ -9,6 +9,14 @@
 // and handed to this script as a local text file; only the RESTATED,
 // independently-worded outline this script produces ever gets persisted.
 //
+// Runs TWO independent extractions over the same source text: the coarse
+// outline (topic/sub-topic structure, used to calibrate chain generation)
+// and the finer microtopic breakdown (content points beneath each
+// sub-topic, structured JSON, used to check practice-question spec
+// alignment) — see extractAndCacheMicrotopics/SPEC_MICROTOPICS_EXTRACT_PROMPT
+// for why this needed to be a genuinely separate pass, not a byproduct of
+// the coarse one.
+//
 // Usage:
 //   npx ts-node scripts/seedSpecOutline.ts \
 //     --subject "Economics" \
@@ -18,7 +26,7 @@
 //     --source "Pearson Edexcel A_Level_Econ_A_Spec.pdf, Issue 2 Oct 2016 — read for topic scope only, not reproduced verbatim"
 import 'dotenv/config';
 import * as fs from 'fs';
-import { restateAndCacheSpecOutline } from '../src/services/chainService';
+import { restateAndCacheSpecOutline, extractAndCacheMicrotopics } from '../src/services/chainService';
 
 function readArg(name: string): string {
   const flag = `--${name}`;
@@ -43,6 +51,12 @@ async function main() {
 
   console.log('\n--- Cached outline ---\n');
   console.log(outline);
+
+  console.log('\nExtracting microtopics (this is the deeper, structured pass — separate call)...');
+  const microtopics = await extractAndCacheMicrotopics(subject, qualification, examBoard, rawExtractedText);
+
+  console.log('\n--- Cached microtopics ---\n');
+  console.log(JSON.stringify(microtopics, null, 2));
   console.log('\n--- Done ---');
 }
 

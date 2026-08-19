@@ -1,6 +1,7 @@
 import { normalizeConceptKey, getOrGenerateChain } from './chainService';
 import { Chain } from './encodingLessonService';
 import { getMasteryDetailsForConcepts, MasteryDetail } from './reviewService';
+import { getConceptsWithLowConfidenceSignal } from './answerSignalService';
 
 // One concept the student has actually added to a folder (a single-lesson
 // page's own title, or one entry of a multi-lesson page's own lessons) —
@@ -45,6 +46,11 @@ export interface KnowledgeMapResult {
   // review row at all (mastery[id] === 0) has no entry here; there's
   // nothing real to show yet.
   masteryDetail: Record<string, MasteryDetail>;
+  // Node ids flagged as "technically passed, but slow AND self-reported
+  // low confidence" (see answerSignalService.ts) — a clean FSRS/mastery
+  // state alone can hide exactly this kind of shakiness, so this rides
+  // alongside `mastery` as a separate signal rather than changing it.
+  lowConfidenceNodeIds: string[];
 }
 
 /**
@@ -70,7 +76,7 @@ export async function getKnowledgeMapForFolder(
   concepts: FolderConcept[]
 ): Promise<KnowledgeMapResult> {
   if (!concepts.length) {
-    return { nodes: [], edges: [], mastery: {}, masteryDetail: {} };
+    return { nodes: [], edges: [], mastery: {}, masteryDetail: {}, lowConfidenceNodeIds: [] };
   }
 
   // Each concept's chain is looked up (or generated, on a genuine
@@ -155,13 +161,19 @@ export async function getKnowledgeMapForFolder(
 
   const nodeIds = Array.from(nodeById.keys());
   const queryKeys = nodeIds.map((id) => queryKeyForNode.get(id) || id);
-  const found = await getMasteryDetailsForConcepts(userId, queryKeys);
+  const [found, lowConfidenceQueryKeys] = await Promise.all([
+    getMasteryDetailsForConcepts(userId, queryKeys),
+    getConceptsWithLowConfidenceSignal(userId, queryKeys),
+  ]);
   const mastery: Record<string, 0 | 1 | 2> = {};
   const masteryDetail: Record<string, MasteryDetail> = {};
+  const lowConfidenceNodeIds: string[] = [];
   nodeIds.forEach((id) => {
-    const detail = found.get(queryKeyForNode.get(id) || id);
+    const queryKey = queryKeyForNode.get(id) || id;
+    const detail = found.get(queryKey);
     mastery[id] = detail?.state ?? 0;
     if (detail) masteryDetail[id] = detail;
+    if (lowConfidenceQueryKeys.has(queryKey)) lowConfidenceNodeIds.push(id);
   });
 
   const nodes: KnowledgeMapNode[] = nodeIds.map((id) => {
@@ -169,5 +181,5 @@ export async function getKnowledgeMapForFolder(
     return { id: base.id, name: base.name, topics: Array.from(nodeTopics.get(id) || []) };
   });
 
-  return { nodes, edges, mastery, masteryDetail };
+  return { nodes, edges, mastery, masteryDetail, lowConfidenceNodeIds };
 }

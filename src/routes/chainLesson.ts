@@ -3,6 +3,7 @@ import { requireAuth } from '../services/authMiddleware';
 import { costlyEndpointLimiter } from '../services/rateLimiters';
 import { normalizeConceptKey } from '../services/chainService';
 import { startRetrievalLesson, continueRetrievalLesson, submitRetrievalAnswer, answerRetrievalQuestion, RetrievalLessonState } from '../services/spacedLessonEngine';
+import { recordConfidenceRating } from '../services/answerSignalService';
 
 const router = Router();
 
@@ -61,19 +62,50 @@ router.post('/chain-lesson/continue', async (req: Request, res: Response) => {
   }
 });
 
-// POST /chain-lesson/submit  { state, answer, dontKnow? }
+// POST /chain-lesson/submit  { state, answer, dontKnow?, responseTimeMs? }
+// responseTimeMs (time on-screen for the LAST step of this session, from
+// the frontend's own timer) only actually gets used when this submission
+// completes the session — see submitRetrievalAnswer/answerSignalService.ts
+// for what it's for.
 router.post('/chain-lesson/submit', async (req: Request, res: Response) => {
-  const { state, answer, dontKnow } = req.body ?? {};
+  const { state, answer, dontKnow, responseTimeMs } = req.body ?? {};
   if (!state) {
     return res.status(400).json({ error: 'state is required (from the previous /chain-lesson/start, /chain-lesson/continue, or /chain-lesson/submit response)' });
   }
 
   try {
-    const result = await submitRetrievalAnswer(req.userId as string, state as RetrievalLessonState, typeof answer === 'string' ? answer : '', !!dontKnow);
+    const result = await submitRetrievalAnswer(
+      req.userId as string,
+      state as RetrievalLessonState,
+      typeof answer === 'string' ? answer : '',
+      !!dontKnow,
+      typeof responseTimeMs === 'number' ? responseTimeMs : undefined
+    );
     res.json(result);
   } catch (err) {
     console.error('Retrieval lesson answer processing failed:', err);
     res.status(500).json({ error: 'could not process this answer' });
+  }
+});
+
+// POST /chain-lesson/confidence  { signalId, rating: 1|2|3 }
+// Only ever called after a /chain-lesson/submit response asked for it
+// (signal.promptConfidence) — a one-tap "how sure were you" follow-up,
+// never part of the FSRS grading path itself.
+router.post('/chain-lesson/confidence', async (req: Request, res: Response) => {
+  const { signalId, rating } = req.body ?? {};
+  if (typeof signalId !== 'string' || !signalId) {
+    return res.status(400).json({ error: 'signalId is required' });
+  }
+  if (rating !== 1 && rating !== 2 && rating !== 3) {
+    return res.status(400).json({ error: 'rating must be 1, 2, or 3' });
+  }
+  try {
+    await recordConfidenceRating(req.userId as string, signalId, rating);
+    res.json({ ok: true });
+  } catch (err) {
+    console.error('Confidence rating save failed:', err);
+    res.status(500).json({ error: 'could not save that' });
   }
 });
 

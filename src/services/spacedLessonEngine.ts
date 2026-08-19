@@ -1,6 +1,7 @@
 import { callClaudeJSON, MODELS } from './claudeClient';
 import { gradeAndRecordReview, getMasteryStatus, listEligibleSiblingConcepts, FsrsRatingKey, DURABLE_RELEARNING_CRITERION } from './reviewService';
 import { getOrGenerateChain } from './chainService';
+import { recordAnswerSignal, AnswerSignalResult } from './answerSignalService';
 import { retrievalLessonPromptForTier, RETRIEVAL_ANSWER_CHECK_PROMPT, RETRIEVAL_MECHANISTIC_CHECK_PROMPT } from '../constants/retrievalLessonPrompts';
 import { ASK_PANEL_PROMPT } from '../constants/encodingLessonPrompts';
 
@@ -115,6 +116,7 @@ export interface RetrievalSubmitResult {
   step?: RetrievalStep;
   state: RetrievalLessonState;
   fsrsUpdate?: FsrsUpdateSummary;
+  signal?: AnswerSignalResult;
 }
 
 interface RawGeneratedStep {
@@ -260,7 +262,8 @@ export async function submitRetrievalAnswer(
   userId: string,
   state: RetrievalLessonState,
   answer: string,
-  dontKnow = false
+  dontKnow = false,
+  responseTimeMs?: number
 ): Promise<RetrievalSubmitResult> {
   const currentStep = state.steps[state.currentIndex];
   if (!currentStep) {
@@ -341,7 +344,12 @@ export async function submitRetrievalAnswer(
         elapsedDays: fsrsRow.elapsed_days,
       },
     };
-    return { done: true, correct, feedback, state: nextState, fsrsUpdate };
+    let signal: AnswerSignalResult | undefined;
+    if (typeof responseTimeMs === 'number' && Number.isFinite(responseTimeMs) && responseTimeMs > 0) {
+      signal = await recordAnswerSignal(userId, state.conceptKey, responseTimeMs, !anyWeakSoFar);
+    }
+
+    return { done: true, correct, feedback, state: nextState, fsrsUpdate, signal };
   }
 
   return { done: false, correct, feedback, step: state.steps[nextIndex], state: nextState };

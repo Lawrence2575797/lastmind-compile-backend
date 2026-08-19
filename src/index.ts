@@ -15,6 +15,7 @@ import tutoringProfileRouter from './routes/tutoringProfile';
 import peerTutoringRouter from './routes/peerTutoring';
 import tutoringSessionsRouter from './routes/tutoringSessions';
 import tutoringResponsesRouter from './routes/tutoringResponses';
+import studySettingsRouter from './routes/studySettings';
 import { globalRateLimiter } from './services/rateLimiters';
 
 const PORT = process.env.PORT || 4100;

@@ -2,12 +2,11 @@ import { Router, Request, Response } from 'express';
 import { requireAuth } from '../services/authMiddleware';
 import { syncEndpointLimiter, actionEndpointLimiter } from '../services/rateLimiters';
 import {
-  createHelpRequest,
-  createCustomHelpRequest,
+  createMultiHelperHelpRequest,
+  prepareCustomConceptId,
+  listEligibleTutorsForBrowsing,
   getHelpRequest,
-  checkAndReassignMissedDeadlines,
-  listClaimableHelpRequests,
-  claimHelpRequest,
+  sweepExpiredHelpRequests,
 } from '../services/peerTutoringMatchService';
 import { getNotificationCounts } from '../services/tutoringSessionService';
 
@@ -15,53 +14,63 @@ const router = Router();
 
 router.use('/peer-tutoring', requireAuth);
 
-// POST /peer-tutoring/help-requests
-// Either { conceptId, subject, topic? } — the "recommended" path, conceptId
-// already a real chain node id from the knowledge map — or { subject,
-// topic?, concept } — the "add your own" path (structured fields, no free
-// text; see createCustomHelpRequest for the filtering/normalization).
-router.post('/peer-tutoring/help-requests', actionEndpointLimiter, async (req: Request, res: Response) => {
-  const { conceptId, subject, topic, concept } = req.body ?? {};
+// GET /peer-tutoring/browse-tutors?conceptId=&subject= -> TutorBrowseCard[]
+router.get('/peer-tutoring/browse-tutors', syncEndpointLimiter, async (req: Request, res: Response) => {
+  const conceptId = typeof req.query.conceptId === 'string' ? req.query.conceptId : '';
+  const subject = typeof req.query.subject === 'string' ? req.query.subject : '';
+  if (!conceptId.trim() || !subject.trim()) {
+    return res.status(400).json({ error: 'conceptId and subject are required' });
+  }
   try {
-    if (typeof conceptId === 'string' && conceptId.trim()) {
-      if (typeof subject !== 'string' || !subject.trim()) {
-        return res.status(400).json({ error: 'subject (string) is required' });
-      }
-      const result = await createHelpRequest(req.userId as string, conceptId, subject, topic ?? null);
-      return res.json(result);
-    }
-    if (typeof subject === 'string' && typeof concept === 'string') {
-      const result = await createCustomHelpRequest(req.userId as string, subject, topic || '', concept);
-      return res.json(result);
-    }
-    return res.status(400).json({ error: 'either conceptId+subject, or subject+concept, is required' });
+    const tutors = await listEligibleTutorsForBrowsing(req.userId as string, conceptId, subject);
+    res.json(tutors);
+  } catch (err: any) {
+    console.error('Browse-tutors fetch failed:', err);
+    res.status(500).json({ error: 'could not load tutors for this' });
+  }
+});
+
+// POST /peer-tutoring/prepare-custom-concept  { subject, topic?, concept }
+// The "add your own" path — filters/normalizes the structured fields and
+// returns the resulting conceptId/label WITHOUT creating a help request;
+// the frontend opens Browse Tutors with the result (see
+// prepareCustomConceptId's own comment for why request-creation is
+// deferred until tutors are actually picked).
+router.post('/peer-tutoring/prepare-custom-concept', actionEndpointLimiter, async (req: Request, res: Response) => {
+  const { subject, topic, concept } = req.body ?? {};
+  if (typeof subject !== 'string' || typeof concept !== 'string') {
+    return res.status(400).json({ error: 'subject and concept (strings) are required' });
+  }
+  try {
+    const prepared = await prepareCustomConceptId(subject, topic || '', concept);
+    res.json(prepared);
+  } catch (err: any) {
+    console.error('Prepare-custom-concept failed:', err);
+    res.status(400).json({ error: err?.message || 'could not prepare that request' });
+  }
+});
+
+// POST /peer-tutoring/help-requests  { conceptId, subject, topic?, helperIds }
+// Creates the request AND one session per chosen (re-verified) tutor — see
+// createMultiHelperHelpRequest. First one to actually submit wins; see
+// tutoringResponseService.ts's submitResponse for the resolution.
+router.post('/peer-tutoring/help-requests', actionEndpointLimiter, async (req: Request, res: Response) => {
+  const { conceptId, subject, topic, helperIds } = req.body ?? {};
+  if (typeof conceptId !== 'string' || !conceptId.trim()) {
+    return res.status(400).json({ error: 'conceptId (string) is required' });
+  }
+  if (typeof subject !== 'string' || !subject.trim()) {
+    return res.status(400).json({ error: 'subject (string) is required' });
+  }
+  if (!Array.isArray(helperIds) || !helperIds.every((id) => typeof id === 'string')) {
+    return res.status(400).json({ error: 'helperIds (string array) is required' });
+  }
+  try {
+    const result = await createMultiHelperHelpRequest(req.userId as string, conceptId, subject, topic ?? null, helperIds);
+    res.json(result);
   } catch (err: any) {
     console.error('Help request creation failed:', err);
     res.status(400).json({ error: err?.message || 'could not create your help request' });
-  }
-});
-
-// GET /peer-tutoring/claimable — open requests this opted-in helper has
-// verified mastery for (see listClaimableHelpRequests's own comment on
-// why this exists alongside the automatic single-assignment path).
-router.get('/peer-tutoring/claimable', syncEndpointLimiter, async (req: Request, res: Response) => {
-  try {
-    const requests = await listClaimableHelpRequests(req.userId as string);
-    res.json(requests);
-  } catch (err) {
-    console.error('Claimable help requests fetch failed:', err);
-    res.status(500).json({ error: 'could not load open requests' });
-  }
-});
-
-// POST /peer-tutoring/help-requests/:id/claim
-router.post('/peer-tutoring/help-requests/:id/claim', actionEndpointLimiter, async (req: Request, res: Response) => {
-  try {
-    const session = await claimHelpRequest(req.userId as string, req.params.id);
-    res.json(session);
-  } catch (err: any) {
-    console.error('Claim failed:', err);
-    res.status(400).json({ error: err?.message || 'could not claim this request' });
   }
 });
 
@@ -78,12 +87,12 @@ router.get('/peer-tutoring/help-requests/:id', syncEndpointLimiter, async (req: 
 });
 
 // GET /peer-tutoring/notifications -> { needsResponseCount, availableCount, total }
-// Sweeps missed deadlines first, same as GET /tutoring-sessions — the
-// topbar badge is checked on load/focus (see learn/index.html), so it's
-// as good a trigger for the lazy reassignment sweep as any other read.
+// Sweeps expired requests first, same as GET /tutoring-sessions — the
+// topbar badge is checked on load/focus (see learn/index.html), so it's as
+// good a trigger for the lazy sweep as any other read.
 router.get('/peer-tutoring/notifications', syncEndpointLimiter, async (req: Request, res: Response) => {
   try {
-    await checkAndReassignMissedDeadlines();
+    await sweepExpiredHelpRequests();
     const counts = await getNotificationCounts(req.userId as string);
     res.json(counts);
   } catch (err) {

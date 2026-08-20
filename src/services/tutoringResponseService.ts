@@ -3,8 +3,18 @@ import { applyStructuredPIIFilter } from '../safety/piiFilterStructured';
 import { applyContextualPIIFilter } from '../safety/piiFilterContextual';
 import { applyHarmfulContentFilter } from '../safety/harmfulContentFilter';
 import { markSubmitted, maybeReleaseSession } from './tutoringSessionService';
+import { adjustCredits } from './creditService';
 
 const MAX_BODY_LENGTH = 4000;
+
+// Flat placeholder, same scale as creditService.ts's own
+// INITIAL_CREDIT_ALLOWANCE=40 (roughly 8 free requests from the signup
+// bonus alone) — real per-activity pricing hasn't been decided yet
+// project-wide, see creditService.ts's own header comment. Charged once,
+// only to whichever helper's response actually wins the race (see
+// submitResponse below) — the other picked helpers cost nothing, since
+// they never did anything.
+const HELP_REQUEST_COST = 5;
 
 // Whether to retain the pre-filter original alongside the filtered version
 // — off by default. Legal's eventual answer on retention shouldn't require
@@ -62,7 +72,7 @@ export async function submitResponse(userId: string, sessionId: string, body: st
 
   const { data: sessionRow, error: sessionError } = await supabaseAdmin
     .from('tutoring_sessions')
-    .select('id, helper_id, status')
+    .select('id, helper_id, requester_id, help_request_id, status')
     .eq('id', sessionId)
     .maybeSingle();
   if (sessionError) throw sessionError;
@@ -88,7 +98,29 @@ export async function submitResponse(userId: string, sessionId: string, body: st
     .single();
   if (insertError) throw insertError;
 
+  // markSubmitted's own conditional `.eq('status','assigned')` update is
+  // the real race-safety here — if a sibling helper's submission already
+  // won in between our read above and this call, this throws and nothing
+  // below runs. Reaching past this line means THIS session genuinely won.
   await markSubmitted(sessionId);
+
+  // First response wins — every other helper picked for this same
+  // help_request never did anything and owes nothing, so their obligation
+  // is simply dropped. Best-effort: a picked-but-not-yet-submitted sibling
+  // losing this race is a normal, expected outcome, not a failure worth
+  // surfacing to anyone.
+  const { error: cancelError } = await supabaseAdmin
+    .from('tutoring_sessions')
+    .update({ status: 'cancelled', updated_at: new Date().toISOString() })
+    .eq('help_request_id', sessionRow.help_request_id)
+    .eq('status', 'assigned')
+    .neq('id', sessionId);
+  if (cancelError) throw cancelError;
+
+  await Promise.all([
+    adjustCredits(sessionRow.requester_id, -HELP_REQUEST_COST, 'tutoring_help_received'),
+    adjustCredits(userId, HELP_REQUEST_COST, 'tutoring_response_given'),
+  ]);
 
   return rowToResponse(inserted);
 }

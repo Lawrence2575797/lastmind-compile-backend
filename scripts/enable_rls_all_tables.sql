@@ -21,6 +21,7 @@ alter table review_log enable row level security;
 alter table revision_plan_items enable row level security;
 alter table study_settings enable row level security;
 alter table tutoring_profiles enable row level security;
+alter table tutoring_ratings enable row level security;
 alter table tutoring_response_reports enable row level security;
 alter table tutoring_responses enable row level security;
 alter table tutoring_sessions enable row level security;

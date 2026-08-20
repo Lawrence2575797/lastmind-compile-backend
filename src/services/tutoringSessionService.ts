@@ -17,11 +17,13 @@ import { listCalendarEvents } from './calendarEventsService';
 // session at any point.
 export type TutoringSessionStatus = 'assigned' | 'submitted' | 'released' | 'missed_deadline' | 'cancelled';
 
-// How long a helper has to submit a written response before the
-// underlying help_request gets reassigned to someone else — see
-// peerTutoringMatchService.checkAndReassignMissedDeadlines. This is the
-// actual reliability mechanism a volunteer-helper system needs, not a
-// policy statement with nothing enforcing it.
+// How long a helper has to submit a written response before their own
+// obligation is marked missed — see
+// peerTutoringMatchService.sweepExpiredHelpRequests. If every helper on a
+// help_request misses it with nobody ever submitting, the whole request
+// surfaces on the owner's admin overdue-queue to personally step in. This
+// is the actual reliability mechanism a volunteer-helper system needs, not
+// a policy statement with nothing enforcing it.
 export const DEFAULT_DEADLINE_HOURS = 48;
 
 export interface TutoringSession {
@@ -268,7 +270,7 @@ export async function listMyTutoringSessions(
 }
 
 // Every 'assigned' session whose deadline has already passed with no
-// submission — the pool peerTutoringMatchService.checkAndReassignMissedDeadlines
+// submission — the pool peerTutoringMatchService.sweepExpiredHelpRequests
 // sweeps on each visit to "My Tutoring" (see that function's own comment
 // for why this is a lazy, read-triggered sweep rather than a cron job).
 export async function listSessionsPastDeadline(): Promise<TutoringSession[]> {

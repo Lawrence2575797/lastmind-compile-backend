@@ -377,9 +377,25 @@ function clean(s: string): string {
 // keys (chain-level tracking), same gap noted throughout this codebase
 // (e.g. learn/index.html's own conceptKeyToLabel). Good enough as LLM
 // generation context; never shown to the student verbatim.
-function conceptIdToLabel(conceptId: string): string {
+export function conceptIdToLabel(conceptId: string): string {
   const lastSegment = conceptId.split(':').pop() || conceptId;
   return lastSegment.replace(/_/g, ' ');
+}
+
+// Same tolerant best-effort labeling, generalized for the peer-tutoring
+// Browse Tutors feature — a help request's own conceptId can now be either
+// a single concept OR a LINK between two, using the exact
+// `${sourceConceptId}->${targetConceptId}` convention knowledgeMapService.ts's
+// edgeMastery already writes into concept_reviews (see that file's own
+// comment on why this needed zero schema change). The single place this
+// split/join happens, reused by every route/page that needs to show a
+// help-request's target to a student rather than its raw id.
+export function formatConceptOrLinkLabel(conceptId: string): string {
+  const arrowIndex = conceptId.indexOf('->');
+  if (arrowIndex === -1) return conceptIdToLabel(conceptId);
+  const source = conceptId.slice(0, arrowIndex);
+  const target = conceptId.slice(arrowIndex + 2);
+  return `${conceptIdToLabel(source)} → ${conceptIdToLabel(target)}`;
 }
 
 // A concept only "counts" as consolidated enough to interleave with a

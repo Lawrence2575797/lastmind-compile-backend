@@ -1,5 +1,6 @@
 import { supabaseAdmin } from './supabaseAdmin';
 import { listCalendarEvents } from './calendarEventsService';
+import { formatConceptOrLinkLabel } from './reviewService';
 
 // A matched-but-not-yet-delivered peer tutoring session — see the plan's
 // "assigned task with a deadline" framing (learn/index.html's own
@@ -231,6 +232,10 @@ export async function markSubmitted(sessionId: string): Promise<TutoringSession>
 export interface TutoringSessionWithContext extends TutoringSession {
   subject: string;
   topic: string | null;
+  // Human-readable form of conceptId — a concept OR now a link (see
+  // formatConceptOrLinkLabel) — computed here so every My-Tutoring card
+  // can just display it directly rather than parsing the raw id itself.
+  conceptLabel: string;
 }
 
 async function attachHelpRequestContext(sessions: TutoringSession[]): Promise<TutoringSessionWithContext[]> {
@@ -244,7 +249,7 @@ async function attachHelpRequestContext(sessions: TutoringSession[]): Promise<Tu
   const byId = new Map((requests || []).map((r) => [r.id as string, r]));
   return sessions.map((s) => {
     const req = byId.get(s.helpRequestId);
-    return { ...s, subject: req?.subject || '', topic: req?.topic || null };
+    return { ...s, subject: req?.subject || '', topic: req?.topic || null, conceptLabel: formatConceptOrLinkLabel(s.conceptId) };
   });
 }
 

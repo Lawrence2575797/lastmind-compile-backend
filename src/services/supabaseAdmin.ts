@@ -15,12 +15,21 @@ if (!SUPABASE_URL || !SUPABASE_SERVICE_ROLE_KEY) {
 // logged, treated exactly like an API secret key.
 export const supabaseAdmin = createClient(SUPABASE_URL || '', SUPABASE_SERVICE_ROLE_KEY || '');
 
+export interface VerifiedUser {
+  id: string;
+  email: string | null;
+}
+
 // Verifies a Supabase access token cryptographically against Supabase
-// itself, returning the real user ID if valid — never trust a
+// itself, returning the real user identity if valid — never trust a
 // client-supplied user ID directly, same principle used throughout the
-// rest of the backend.
-export async function verifyUser(accessToken: string): Promise<string | null> {
+// rest of the backend. Email is included alongside id purely so
+// authMiddleware.ts can gate the admin overdue-queue behind an
+// ADMIN_EMAILS allowlist — there's no role/permissions table anywhere in
+// this codebase, and email is the one piece of real identity Supabase Auth
+// already verifies for us.
+export async function verifyUser(accessToken: string): Promise<VerifiedUser | null> {
   const { data, error } = await supabaseAdmin.auth.getUser(accessToken);
   if (error || !data?.user) return null;
-  return data.user.id;
+  return { id: data.user.id, email: data.user.email || null };
 }

@@ -39,11 +39,14 @@ router.post('/verification/start', actionEndpointLimiter, async (req: Request, r
   }
 });
 
-// POST /verification/submit  { concept, conceptId, rubricKey, scenario, answer }
+// POST /verification/submit  { concept, conceptId, rubricKey, scenario: {context, startPoint, endPointVariable}, answer }
 router.post('/verification/submit', actionEndpointLimiter, async (req: Request, res: Response) => {
   const { concept, conceptId, rubricKey, scenario, answer } = req.body ?? {};
-  if ([concept, conceptId, rubricKey, scenario, answer].some((v) => typeof v !== 'string' || !v.trim())) {
-    return res.status(400).json({ error: 'concept, conceptId, rubricKey, scenario, and answer (strings) are all required' });
+  if ([concept, conceptId, rubricKey, answer].some((v) => typeof v !== 'string' || !v.trim())) {
+    return res.status(400).json({ error: 'concept, conceptId, rubricKey, and answer (strings) are all required' });
+  }
+  if (!scenario || typeof scenario.startPoint !== 'string' || typeof scenario.endPointVariable !== 'string') {
+    return res.status(400).json({ error: 'scenario ({context, startPoint, endPointVariable}) is required' });
   }
   try {
     const result = await gradeVerificationAnswer(req.userId as string, concept, conceptId, rubricKey, scenario, answer);

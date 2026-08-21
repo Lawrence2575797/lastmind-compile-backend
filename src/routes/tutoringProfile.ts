@@ -1,11 +1,11 @@
 import { Router, Request, Response } from 'express';
-import { requireAuth } from '../services/authMiddleware';
+import { requireAuth, requirePaidTier } from '../services/authMiddleware';
 import { syncEndpointLimiter, actionEndpointLimiter } from '../services/rateLimiters';
 import { getTutoringProfile, setTutoringProfile } from '../services/tutoringProfileService';
 
 const router = Router();
 
-router.use('/tutoring-profile', requireAuth);
+router.use('/tutoring-profile', requireAuth, requirePaidTier);
 
 // GET /tutoring-profile -> { displayName, tutoringOptIn }
 router.get('/tutoring-profile', syncEndpointLimiter, async (req: Request, res: Response) => {

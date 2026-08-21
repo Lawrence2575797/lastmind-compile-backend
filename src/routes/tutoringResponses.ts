@@ -1,5 +1,5 @@
 import { Router, Request, Response } from 'express';
-import { requireAuth } from '../services/authMiddleware';
+import { requireAuth, requirePaidTier } from '../services/authMiddleware';
 import { syncEndpointLimiter, actionEndpointLimiter } from '../services/rateLimiters';
 import { submitResponse, getResponse } from '../services/tutoringResponseService';
 import { reportResponse } from '../services/tutoringResponseModerationService';
@@ -7,7 +7,7 @@ import { submitRating, getRatingForSession } from '../services/tutoringRatingSer
 
 const router = Router();
 
-router.use('/tutoring-sessions', requireAuth);
+router.use('/tutoring-sessions', requireAuth, requirePaidTier);
 
 // POST /tutoring-sessions/:id/response  { body }
 router.post('/tutoring-sessions/:id/response', actionEndpointLimiter, async (req: Request, res: Response) => {

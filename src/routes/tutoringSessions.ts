@@ -1,12 +1,12 @@
 import { Router, Request, Response } from 'express';
-import { requireAuth } from '../services/authMiddleware';
+import { requireAuth, requirePaidTier } from '../services/authMiddleware';
 import { syncEndpointLimiter, actionEndpointLimiter } from '../services/rateLimiters';
 import { getSession, listMyTutoringSessions, setReleaseTime, suggestReleaseTime } from '../services/tutoringSessionService';
 import { sweepExpiredHelpRequests } from '../services/peerTutoringMatchService';
 
 const router = Router();
 
-router.use('/tutoring-sessions', requireAuth);
+router.use('/tutoring-sessions', requireAuth, requirePaidTier);
 
 // GET /tutoring-sessions -> { asRequester: [...], asHelper: [...] }
 // Sweeps expired requests first — see sweepExpiredHelpRequests's own

@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from 'express';
-import { verifyUser } from './supabaseAdmin';
+import { verifyUser, supabaseAdmin } from './supabaseAdmin';
 
 // Extends Express's Request type so authenticated routes can read
 // req.userId/req.userEmail without casting.
@@ -57,4 +57,27 @@ export function requireAdmin(req: Request, res: Response, next: NextFunction) {
     return res.status(403).json({ error: 'not authorized' });
   }
   next();
+}
+
+// Peer tutoring is a paid-tier-only feature — this queries the SAME
+// `subscriptions` table lastmind-stripe-backend's /api/token-for-user reads
+// (same Supabase project), rather than trusting anything the frontend
+// claims about the caller's tier. Must run AFTER requireAuth — depends on
+// req.userId already being set.
+export async function requirePaidTier(req: Request, res: Response, next: NextFunction) {
+  try {
+    const { data, error } = await supabaseAdmin
+      .from('subscriptions')
+      .select('status')
+      .eq('user_id', req.userId as string)
+      .maybeSingle();
+    if (error) throw error;
+    if (!data || data.status !== 'active') {
+      return res.status(403).json({ error: 'this feature requires LastMind Premium' });
+    }
+    next();
+  } catch (err) {
+    console.error('Paid-tier check failed:', err);
+    res.status(500).json({ error: 'could not verify your subscription' });
+  }
 }

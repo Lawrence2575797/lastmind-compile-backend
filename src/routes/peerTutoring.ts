@@ -1,5 +1,5 @@
 import { Router, Request, Response } from 'express';
-import { requireAuth } from '../services/authMiddleware';
+import { requireAuth, requirePaidTier } from '../services/authMiddleware';
 import { syncEndpointLimiter, actionEndpointLimiter } from '../services/rateLimiters';
 import {
   createMultiHelperHelpRequest,
@@ -12,7 +12,7 @@ import { getNotificationCounts } from '../services/tutoringSessionService';
 
 const router = Router();
 
-router.use('/peer-tutoring', requireAuth);
+router.use('/peer-tutoring', requireAuth, requirePaidTier);
 
 // GET /peer-tutoring/browse-tutors?conceptId=&subject= -> TutorBrowseCard[]
 router.get('/peer-tutoring/browse-tutors', syncEndpointLimiter, async (req: Request, res: Response) => {

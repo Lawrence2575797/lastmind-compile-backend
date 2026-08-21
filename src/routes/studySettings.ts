@@ -1,11 +1,11 @@
 import { Router, Request, Response } from 'express';
-import { requireAuth } from '../services/authMiddleware';
+import { requireAuth, requirePaidTier } from '../services/authMiddleware';
 import { syncEndpointLimiter, actionEndpointLimiter } from '../services/rateLimiters';
 import { getStudySettings, setStudySettings } from '../services/studySettingsService';
 
 const router = Router();
 
-router.use('/study-settings', requireAuth);
+router.use('/study-settings', requireAuth, requirePaidTier);
 
 // GET /study-settings -> { dailyMinutesBudget }
 router.get('/study-settings', syncEndpointLimiter, async (req: Request, res: Response) => {

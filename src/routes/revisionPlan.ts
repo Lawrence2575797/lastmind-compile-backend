@@ -1,5 +1,5 @@
 import { Router, Request, Response } from 'express';
-import { requireAuth } from '../services/authMiddleware';
+import { requireAuth, requirePaidTier } from '../services/authMiddleware';
 import { costlyEndpointLimiter, syncEndpointLimiter, actionEndpointLimiter } from '../services/rateLimiters';
 import { generateRevisionPlan, listRevisionPlan, setRevisionPlanItemStatus, RevisionPlanConcept } from '../services/revisionPlanService';
 
@@ -12,7 +12,7 @@ const router = Router();
 // POST /knowledge-map already is — see knowledgeMapService.ts's own
 // comment on why (folders live in the client's synced blob, not a
 // normalized server-side table).
-router.post('/revision-plan/generate', requireAuth, costlyEndpointLimiter, async (req: Request, res: Response) => {
+router.post('/revision-plan/generate', requireAuth, requirePaidTier, costlyEndpointLimiter, async (req: Request, res: Response) => {
   const { examEventId, concepts, qualification, examBoard, customTitle, customDescription, examinableLabels } = req.body ?? {};
   if (typeof examEventId !== 'string' || !examEventId) {
     return res.status(400).json({ error: 'examEventId is required' });
@@ -53,7 +53,7 @@ router.post('/revision-plan/generate', requireAuth, costlyEndpointLimiter, async
 
 // GET /revision-plan?examEventId=  -> { items: RevisionPlanItem[] }
 // Currently persisted plan only — does not regenerate.
-router.get('/revision-plan', requireAuth, syncEndpointLimiter, async (req: Request, res: Response) => {
+router.get('/revision-plan', requireAuth, requirePaidTier, syncEndpointLimiter, async (req: Request, res: Response) => {
   const examEventId = req.query.examEventId;
   if (typeof examEventId !== 'string' || !examEventId) {
     return res.status(400).json({ error: 'examEventId is required' });
@@ -68,7 +68,7 @@ router.get('/revision-plan', requireAuth, syncEndpointLimiter, async (req: Reque
 });
 
 // POST /revision-plan/item-status  { itemId, status: 'pending'|'done'|'skipped' }
-router.post('/revision-plan/item-status', requireAuth, actionEndpointLimiter, async (req: Request, res: Response) => {
+router.post('/revision-plan/item-status', requireAuth, requirePaidTier, actionEndpointLimiter, async (req: Request, res: Response) => {
   const { itemId, status } = req.body ?? {};
   if (typeof itemId !== 'string' || !itemId) {
     return res.status(400).json({ error: 'itemId is required' });

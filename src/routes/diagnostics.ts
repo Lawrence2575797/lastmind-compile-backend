@@ -1,6 +1,6 @@
 import { Router, Request, Response } from 'express';
 import { callClaudeJSON, MODELS } from '../services/claudeClient';
-import { requireAuth } from '../services/authMiddleware';
+import { requireAuth, requirePaidTier } from '../services/authMiddleware';
 import { costlyEndpointLimiter } from '../services/rateLimiters';
 import { MULTI_QUESTION_GENERATION_PROMPT } from '../constants/diagnosticPrompts';
 import { runDiagnosticStep, startDiagnosisFromKnownAnswer, startMathDiagnosis, reframeDiagnosticQuestion, retryDiagnosticQuestion, OrchestratorState } from '../services/diagnosticOrchestrator';
@@ -12,7 +12,7 @@ function stripCodeFences(text: string): string {
   return text.trim().replace(/^```(?:json)?\s*/i, '').replace(/```\s*$/, '').trim();
 }
 
-router.use('/diagnostics', requireAuth, costlyEndpointLimiter);
+router.use('/diagnostics', requireAuth, requirePaidTier, costlyEndpointLimiter);
 
 // POST /diagnostics/generate-set
 // { subject, topic, lesson, notes } -> { questions: [{ conceptLabel, question }] }

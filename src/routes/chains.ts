@@ -1,11 +1,11 @@
 import { Router, Request, Response } from 'express';
-import { requireAuth } from '../services/authMiddleware';
+import { requireAuth, requirePaidTier } from '../services/authMiddleware';
 import { costlyEndpointLimiter } from '../services/rateLimiters';
 import { getOrGenerateChain, normalizeConceptKey } from '../services/chainService';
 
 const router = Router();
 
-router.post('/chains/generate', requireAuth, costlyEndpointLimiter, async (req: Request, res: Response) => {
+router.post('/chains/generate', requireAuth, requirePaidTier, costlyEndpointLimiter, async (req: Request, res: Response) => {
   const { subject, topic, concept, qualification, examBoard } = req.body ?? {};
   if (typeof subject !== 'string' || typeof topic !== 'string' || typeof concept !== 'string') {
     return res.status(400).json({ error: 'subject, topic, and concept are all required' });

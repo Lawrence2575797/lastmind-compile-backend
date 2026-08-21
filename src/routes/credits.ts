@@ -1,11 +1,11 @@
 import { Router, Request, Response } from 'express';
-import { requireAuth } from '../services/authMiddleware';
+import { requireAuth, requirePaidTier } from '../services/authMiddleware';
 import { syncEndpointLimiter } from '../services/rateLimiters';
 import { getOrCreateBalance } from '../services/creditService';
 
 const router = Router();
 
-router.use('/credits', requireAuth);
+router.use('/credits', requireAuth, requirePaidTier);
 
 // GET /credits/balance -> { balance }
 // Grants the one-time signup bonus and creates the user's row on their

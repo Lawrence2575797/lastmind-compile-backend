@@ -19,6 +19,7 @@ import studySettingsRouter from './routes/studySettings';
 import revisionPlanRouter from './routes/revisionPlan';
 import creditsRouter from './routes/credits';
 import adminRouter from './routes/admin';
+import verificationRouter from './routes/verification';
 import { globalRateLimiter } from './services/rateLimiters';
 
 const PORT = process.env.PORT || 4100;
@@ -57,6 +58,7 @@ app.use('/', studySettingsRouter);
 app.use('/', revisionPlanRouter);
 app.use('/', creditsRouter);
 app.use('/', adminRouter);
+app.use('/', verificationRouter);
 
 app.get('/health', (_req, res) => res.send('ok'));
 

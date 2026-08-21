@@ -1,5 +1,5 @@
 import { Router, Request, Response } from 'express';
-import { requireAuth } from '../services/authMiddleware';
+import { requireAuth, requirePaidTier } from '../services/authMiddleware';
 import { costlyEndpointLimiter } from '../services/rateLimiters';
 import { normalizeConceptKey } from '../services/chainService';
 import { startRetrievalLesson, continueRetrievalLesson, submitRetrievalAnswer, answerRetrievalQuestion, RetrievalLessonState } from '../services/spacedLessonEngine';
@@ -7,7 +7,7 @@ import { recordConfidenceRating } from '../services/answerSignalService';
 
 const router = Router();
 
-router.use('/chain-lesson', requireAuth, costlyEndpointLimiter);
+router.use('/chain-lesson', requireAuth, requirePaidTier, costlyEndpointLimiter);
 
 // POST /chain-lesson/start  { subject, topic, concept, qualification?, examBoard? }
 // Spaced-repetition RETRIEVAL practice for an already-taught concept — no

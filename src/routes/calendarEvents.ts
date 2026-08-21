@@ -1,11 +1,11 @@
 import { Router, Request, Response } from 'express';
-import { requireAuth } from '../services/authMiddleware';
+import { requireAuth, requirePaidTier } from '../services/authMiddleware';
 import { syncEndpointLimiter, actionEndpointLimiter } from '../services/rateLimiters';
 import { listCalendarEvents, createCalendarEvent, deleteCalendarEvent } from '../services/calendarEventsService';
 
 const router = Router();
 
-router.use('/calendar-events', requireAuth);
+router.use('/calendar-events', requireAuth, requirePaidTier);
 
 const DATE_PATTERN = /^\d{4}-\d{2}-\d{2}$/;
 const TIME_PATTERN = /^([01]\d|2[0-3]):[0-5]\d$/;

@@ -1,12 +1,12 @@
 import { Router, Request, Response } from 'express';
-import { requireAuth } from '../services/authMiddleware';
+import { requireAuth, requirePaidTier } from '../services/authMiddleware';
 import { costlyEndpointLimiter } from '../services/rateLimiters';
 import { normalizeConceptKey } from '../services/chainService';
 import { startEncodingLesson, continueEncodingLesson, submitEncodingAnswer, generateNotesFromLesson, getEncodingLessonOutline, answerLessonQuestion, EncodingLessonState } from '../services/encodingLessonService';
 
 const router = Router();
 
-router.use('/encoding-lesson', requireAuth);
+router.use('/encoding-lesson', requireAuth, requirePaidTier);
 
 // POST /encoding-lesson/outline  { subject, topic, concept, qualification?, examBoard?, customTitle?, customDescription? }
 // -> { targetLabel, groundingKnowledge: [{nodeId,label}], recruitedKnowledge: [{nodeId,label}] }

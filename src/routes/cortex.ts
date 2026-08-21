@@ -1,11 +1,11 @@
 import { Router, Request, Response } from 'express';
-import { requireAuth } from '../services/authMiddleware';
+import { requireAuth, requirePaidTier } from '../services/authMiddleware';
 import { costlyEndpointLimiter } from '../services/rateLimiters';
 import { decideCortexAction, CortexResponseTruncatedError } from '../services/cortexService';
 
 const router = Router();
 
-router.use('/cortex', requireAuth, costlyEndpointLimiter);
+router.use('/cortex', requireAuth, requirePaidTier, costlyEndpointLimiter);
 
 // POST /cortex/message  { message, history, folders, dueReviews }
 // { reply, speakAloud, actions }

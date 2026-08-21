@@ -1,7 +1,7 @@
 import { supabaseAdmin } from './supabaseAdmin';
 import { callClaudeJSON, MODELS } from './claudeClient';
 import { normalizeConceptKey, customContextDigest } from './chainService';
-import { gradeAndRecordReview, getMasteryStatus, FsrsRatingKey } from './reviewService';
+import { gradeAndRecordReview, getMasteryStatus, DURABLE_RELEARNING_CRITERION, FsrsRatingKey } from './reviewService';
 import {
   VERIFICATION_RUBRIC_GENERATION_PROMPT,
   VERIFICATION_FREE_TEXT_GRADE_PROMPT,
@@ -127,6 +127,14 @@ export interface VerificationAttemptStart {
   rubricKey: string;
   conceptId: string;
   scenario: VerificationScenario;
+  // How many genuinely-spaced successful passes this student already has on
+  // this concept, and how many are required for durable verification (the
+  // same DURABLE_RELEARNING_CRITERION the paid side's spaced review uses) —
+  // lets the frontend show real progress ("2 of 3") toward the mastery bar
+  // that will eventually gate the full Key reward for this concept, once
+  // the rewards system consumes isDurablyMastered.
+  spacedSuccessCount: number;
+  masteryTarget: number;
 }
 
 /**
@@ -151,7 +159,7 @@ export async function startVerificationAttempt(
   const { rubricKey, scenarios } = await getOrGenerateRubric(subject, topic, concept, qualification, examBoard, customTitle, customDescription);
   const { spacedSuccessCount } = await getMasteryStatus(userId, conceptId);
   const scenario = scenarios[spacedSuccessCount % scenarios.length];
-  return { rubricKey, conceptId, scenario };
+  return { rubricKey, conceptId, scenario, spacedSuccessCount, masteryTarget: DURABLE_RELEARNING_CRITERION };
 }
 
 interface FreeTextGrade {

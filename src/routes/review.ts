@@ -56,9 +56,11 @@ router.get('/schedule', requireAuth, costlyEndpointLimiter, async (req: Request,
     // for the "how does this work?" info panel next to a page's own due-in
     // badge (learn/index.html) — the calendar itself only ever reads
     // concept_id/due, so this is additive, not a behavior change for it.
+    // spaced_success_count is additive too — the free-tier verification
+    // flow reads it to show progress toward DURABLE_RELEARNING_CRITERION.
     const { data, error } = await supabaseAdmin
       .from('concept_reviews')
-      .select('concept_id, due, stability, difficulty, reps, lapses, state')
+      .select('concept_id, due, stability, difficulty, reps, lapses, state, spaced_success_count')
       .eq('user_id', req.userId as string)
       .order('due', { ascending: true });
 

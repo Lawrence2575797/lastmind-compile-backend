@@ -56,6 +56,18 @@ export type StructuredFollowUp =
   | { type: 'fill_gap'; sentence: string; answer: string; acceptableVariants: string[] }
   | { type: 'order_words'; shuffledSteps: string[]; correctOrder: number[] };
 
+// startPoint is safe to state directly (the given premise). endPointVariable
+// is deliberately phrased as a neutral quantity/question, never the resolved
+// direction — e.g. "the effect on interest rates", never "interest rates
+// rise" — see VERIFICATION_RUBRIC_GENERATION_PROMPT's own rule on this;
+// stating the direction would hand over exactly what the student is
+// supposed to derive for themselves.
+export interface VerificationScenario {
+  context: string;
+  startPoint: string;
+  endPointVariable: string;
+}
+
 function buildRubricKey(subject: string, topic: string, concept: string, qualification: string, examBoard: string, customTitle = '', customDescription = ''): string {
   const conceptKey = normalizeConceptKey(subject, topic, concept);
   const customDigest = customContextDigest(customTitle, customDescription);
@@ -81,7 +93,7 @@ export async function getOrGenerateRubric(
   examBoard: string,
   customTitle = '',
   customDescription = ''
-): Promise<{ rubricKey: string; rubric: VerificationRubric; scenarios: string[] }> {
+): Promise<{ rubricKey: string; rubric: VerificationRubric; scenarios: VerificationScenario[] }> {
   const rubricKey = buildRubricKey(subject, topic, concept, qualification, examBoard, customTitle, customDescription);
 
   const { data: existing, error: fetchError } = await supabaseAdmin
@@ -91,10 +103,10 @@ export async function getOrGenerateRubric(
     .maybeSingle();
   if (fetchError) throw fetchError;
   if (existing) {
-    return { rubricKey, rubric: existing.rubric as VerificationRubric, scenarios: existing.scenarios as string[] };
+    return { rubricKey, rubric: existing.rubric as VerificationRubric, scenarios: existing.scenarios as VerificationScenario[] };
   }
 
-  const generated = await callJSON<{ rubric: VerificationRubric; scenarios: string[] }>(
+  const generated = await callJSON<{ rubric: VerificationRubric; scenarios: VerificationScenario[] }>(
     VERIFICATION_RUBRIC_GENERATION_PROMPT,
     `Subject: ${subject}\nTopic: ${topic || 'unspecified'}\nConcept: ${concept}\nQualification: ${qualification || 'unspecified'}\nExam board: ${examBoard || 'unspecified'}`,
     MODELS.diagnosticTree,
@@ -114,7 +126,7 @@ export async function getOrGenerateRubric(
 export interface VerificationAttemptStart {
   rubricKey: string;
   conceptId: string;
-  scenario: string;
+  scenario: VerificationScenario;
 }
 
 /**
@@ -149,10 +161,10 @@ interface FreeTextGrade {
   unclearReason: string | null;
 }
 
-async function runFreeTextGrade(rubric: VerificationRubric, scenario: string, answer: string, model: string): Promise<FreeTextGrade> {
+async function runFreeTextGrade(rubric: VerificationRubric, scenario: VerificationScenario, answer: string, model: string): Promise<FreeTextGrade> {
   return callJSON<FreeTextGrade>(
     VERIFICATION_FREE_TEXT_GRADE_PROMPT,
-    `Rubric: ${JSON.stringify(rubric)}\nScenario: ${scenario}\nStudent's answer: ${answer}`,
+    `Rubric: ${JSON.stringify(rubric)}\nScenario — starting point: ${scenario.startPoint}. What the student had to explain: ${scenario.endPointVariable}. Additional context: ${scenario.context}\nStudent's answer: ${answer}`,
     model,
     0.2,
     undefined,
@@ -254,7 +266,7 @@ export async function gradeVerificationAnswer(
   concept: string,
   conceptId: string,
   rubricKey: string,
-  scenario: string,
+  scenario: VerificationScenario,
   answer: string
 ): Promise<VerificationGradeResult> {
   const { data: row, error } = await supabaseAdmin.from('verification_rubrics').select('rubric').eq('rubric_key', rubricKey).maybeSingle();

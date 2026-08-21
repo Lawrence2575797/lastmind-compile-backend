@@ -8,6 +8,10 @@ Rules:
 3. "requiredLinks" must list EVERY individual causal connection between consecutive steps as its own separate item, in the student's own words — not just the steps themselves. A student who names both ends of a link but never states the connection between them has not met that item.
 4. "requiredDefinitions" must list every piece of jargon or key term the mechanism depends on that a student could use without actually understanding — each as its own item. A student who uses the term correctly in context without ever defining it has not met that item.
 5. "scenarios" — write 4 genuinely different circumstances/examples this same mechanism could be asked about (different numbers, different real-world framing, different starting conditions) — enough that a student being asked about it on 4 separate occasions is never shown the same one twice, and can't pass by having memorized one specific narrative rather than the underlying mechanism.
+6. Each scenario must make an explicit START point and END point explicit, so the student knows exactly what they must derive a path between — but the END point must be stated NEUTRALLY, as a variable or question to track, never as its own resolved value or direction. This is the single most important rule here: if you give away the direction, you have handed over the answer.
+   - "startPoint": the concrete starting condition or cause under this scenario — safe to state directly and specifically, since it's the given premise, not something the student needs to derive.
+   - "endPointVariable": the thing whose eventual state the student must work out and explain — phrased as a neutral quantity or question, NEVER stating which way it moves or what it resolves to. For example, if the mechanism's real conclusion is that interest rates end up higher, "endPointVariable" must be phrased as something like "the effect on interest rates" or "what happens to interest rates" — NEVER as "interest rates rise" or "higher interest rates", since either of those states the direction the student is supposed to derive for themselves.
+   - "context": any other specific circumstance/numbers/framing for this scenario, beyond the bare start and end points.
 
 Output schema:
 {
@@ -16,7 +20,9 @@ Output schema:
     "requiredLinks": [string],
     "requiredDefinitions": [string]
   },
-  "scenarios": [string, string, string, string]
+  "scenarios": [
+    { "context": string, "startPoint": string, "endPointVariable": string }
+  ]
 }`;
 
 export const VERIFICATION_FREE_TEXT_GRADE_PROMPT = `You are grading a student's free-text explanation of a mechanism against a fixed rubric, for a UK GCSE/A-Level student verifying knowledge they claim to have learned elsewhere.

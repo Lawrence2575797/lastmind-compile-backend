@@ -1,8 +1,9 @@
 import { supabaseAdmin } from './supabaseAdmin';
 
-// The peer-tutoring economy's own currency ("Synapses" in the frontend —
-// named here only in comments; the actual display name lives entirely in
-// learn/index.html so it can be renamed without touching this file).
+// The app's own currency ("Keys" in the frontend — named here only in
+// comments; the actual display name lives entirely in learn/index.html
+// so it can be renamed without touching this file, as already happened
+// once when this was called "Synapses").
 // Deliberately NOT a monthly subscription allotment — see the chat
 // discussion this was built from: a recurring free grant would remove the
 // actual incentive to tutor, which is the whole point of a two-sided

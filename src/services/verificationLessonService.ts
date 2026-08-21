@@ -360,3 +360,27 @@ export function gradeStructuredFollowUp(followUp: StructuredFollowUp, submittedA
     submittedAnswer.every((val, i) => val === followUp.correctOrder[i])
   );
 }
+
+/**
+ * The ONE follow-up path that still needs its own FSRS grade:
+ * resolveUnclear's `knowsIt: true` branch deliberately records nothing (it
+ * isn't real evidence either way — see that function's own comment), which
+ * left the structured follow-up that comes after it as the sole evidence of
+ * whether the student actually knows this, yet nothing ever graded it. This
+ * closes that gap — 'hard' rather than 'good' on a correct answer, since a
+ * self-reported-then-confirmed pass is still weaker evidence than a clean
+ * free-text explanation. The "incorrect free-text" and "unclear, doesn't
+ * know it" paths must NEVER call this: those already graded 'again' the
+ * moment the verdict came back, and grading again here would double-count
+ * one lesson attempt as two FSRS events.
+ */
+export async function gradeStructuredFollowUpWithFsrs(
+  userId: string,
+  conceptId: string,
+  followUp: StructuredFollowUp,
+  submittedAnswer: string | number[]
+): Promise<{ correct: boolean }> {
+  const correct = gradeStructuredFollowUp(followUp, submittedAnswer);
+  await gradeAndRecordReview(userId, conceptId, correct ? 'hard' : 'again');
+  return { correct };
+}

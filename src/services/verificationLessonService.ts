@@ -263,11 +263,17 @@ export interface VerificationGradeResult {
  * the expensive model only ever gets paid for on the (hopefully rare)
  * genuinely-ambiguous cases, not every submission.
  *
- * 'correct' and 'incorrect' both grade immediately via gradeAndRecordReview
- * — the SAME successive-relearning machinery the paid side already uses,
- * so 3 genuinely-spaced correct passes is what it takes to become durably
- * verified, not one lucky explanation. 'unclear' deliberately grades
- * NOTHING yet — see resolveUnclear — since it isn't real evidence either way.
+ * 'correct' grades immediately via gradeAndRecordReview — the SAME
+ * successive-relearning machinery the paid side already uses, so 3
+ * genuinely-spaced correct passes is what it takes to become durably
+ * verified, not one lucky explanation. 'incorrect' does NOT grade yet —
+ * getting the free-text explanation wrong isn't the end of the lesson, it's
+ * the start of the correction; the actual grade is deferred to whether the
+ * follow-up question afterward gets answered correctly (see
+ * gradeStructuredFollowUpWithFsrs) — a wrong-then-corrected attempt still
+ * counts as a genuine pass, only a wrong follow-up too grades 'again'.
+ * 'unclear' deliberately grades NOTHING here either — see resolveUnclear —
+ * since it isn't real evidence either way.
  */
 export async function gradeVerificationAnswer(
   userId: string,
@@ -296,7 +302,6 @@ export async function gradeVerificationAnswer(
   }
 
   if (grade.verdict === 'incorrect') {
-    await gradeAndRecordReview(userId, conceptId, 'again');
     const targetItem = grade.misconceptionNote || concept;
     const [correction, followUp] = await Promise.all([
       generateCorrection(concept, grade.misconceptionNote || concept),
@@ -316,13 +321,13 @@ export interface UnclearResolution {
 
 /**
  * Resolves the self-report checkbox shown after an 'unclear' verdict — "do
- * you actually know this, or was the question just unclear?" `knowsIt:
- * true` skips straight to a cheap structured follow-up on the same point
- * (no free-text re-grade — that's the whole cost-saving of distinguishing
- * unclear from wrong in the first place). `knowsIt: false` is treated
- * exactly like an outright wrong answer: it genuinely wasn't known, so it
- * grades 'again' and gets a correction too, same as gradeVerificationAnswer's
- * own incorrect path.
+ * you actually know this, or was the question just unclear?" Neither branch
+ * grades here — both, like gradeVerificationAnswer's 'incorrect' path,
+ * defer the actual grade to the structured follow-up that comes next (see
+ * gradeStructuredFollowUpWithFsrs): `knowsIt: true` because the self-report
+ * alone isn't real evidence either way, `knowsIt: false` because a genuine
+ * gap that then gets corrected should still count as a pass, same as an
+ * outright-wrong free-text answer that's then corrected.
  */
 export async function resolveUnclear(
   userId: string,
@@ -332,11 +337,7 @@ export async function resolveUnclear(
   unclearReason: string,
   knowsIt: boolean
 ): Promise<UnclearResolution> {
-  let correction: string | null = null;
-  if (!knowsIt) {
-    await gradeAndRecordReview(userId, conceptId, 'again');
-    correction = await generateCorrection(concept, unclearReason);
-  }
+  const correction = knowsIt ? null : await generateCorrection(concept, unclearReason);
   const followUp = await getOrGenerateStructuredFollowUp(rubricKey, concept, unclearReason);
   return { correction, followUp };
 }
@@ -362,17 +363,13 @@ export function gradeStructuredFollowUp(followUp: StructuredFollowUp, submittedA
 }
 
 /**
- * The ONE follow-up path that still needs its own FSRS grade:
- * resolveUnclear's `knowsIt: true` branch deliberately records nothing (it
- * isn't real evidence either way — see that function's own comment), which
- * left the structured follow-up that comes after it as the sole evidence of
- * whether the student actually knows this, yet nothing ever graded it. This
- * closes that gap — 'hard' rather than 'good' on a correct answer, since a
- * self-reported-then-confirmed pass is still weaker evidence than a clean
- * free-text explanation. The "incorrect free-text" and "unclear, doesn't
- * know it" paths must NEVER call this: those already graded 'again' the
- * moment the verdict came back, and grading again here would double-count
- * one lesson attempt as two FSRS events.
+ * The grading moment for every follow-up path — none of gradeVerificationAnswer's
+ * 'incorrect' branch, or either branch of resolveUnclear, grade anything of
+ * their own any more; they all defer here. 'hard' rather than 'good' on a
+ * correct follow-up, since a corrected-then-confirmed pass is still weaker
+ * evidence than a clean first-try free-text explanation, but it's still a
+ * genuine pass — you don't need to get it right first time, only after the
+ * correction. A wrong follow-up too is what actually grades 'again'.
  */
 export async function gradeStructuredFollowUpWithFsrs(
   userId: string,

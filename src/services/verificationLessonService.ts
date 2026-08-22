@@ -138,12 +138,16 @@ export interface VerificationAttemptStart {
 }
 
 /**
- * Rotates through the cached scenario set by how many genuinely-spaced
- * successes this student already has on this concept (spaced_success_count
- * — the exact same counter that drives the paid side's durable-relearning
- * criterion, see reviewService.ts) — so a student's 2nd/3rd successive
- * attempt is never shown the same circumstance as before, without needing
- * any new per-attempt tracking of its own.
+ * Rotates through the cached scenario set by how many times this student
+ * has attempted this concept before (reps — total FSRS reviews recorded,
+ * NOT spaced_success_count). spaced_success_count deliberately can't move
+ * on a first-ever attempt (there's no prior due date to judge "on
+ * schedule" against — see computeSpacedSuccessUpdate's own comment), so
+ * keying rotation off it left every attempt showing scenarios[0] until the
+ * count first ticked up, well after the 2nd/3rd attempt had already
+ * repeated the first scenario verbatim. reps increments on every single
+ * attempt regardless of grade, which is what "don't repeat the same
+ * circumstance next time" actually needs.
  */
 export async function startVerificationAttempt(
   userId: string,
@@ -157,8 +161,9 @@ export async function startVerificationAttempt(
 ): Promise<VerificationAttemptStart> {
   const conceptId = normalizeConceptKey(subject, topic, concept);
   const { rubricKey, scenarios } = await getOrGenerateRubric(subject, topic, concept, qualification, examBoard, customTitle, customDescription);
-  const { spacedSuccessCount } = await getMasteryStatus(userId, conceptId);
-  const scenario = scenarios[spacedSuccessCount % scenarios.length];
+  const { row, spacedSuccessCount } = await getMasteryStatus(userId, conceptId);
+  const attemptsSoFar = row?.reps ?? 0;
+  const scenario = scenarios[attemptsSoFar % scenarios.length];
   return { rubricKey, conceptId, scenario, spacedSuccessCount, masteryTarget: DURABLE_RELEARNING_CRITERION };
 }
 

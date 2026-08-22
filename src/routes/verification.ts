@@ -5,7 +5,6 @@ import {
   startVerificationAttempt,
   gradeVerificationAnswer,
   resolveUnclear,
-  gradeStructuredFollowUp,
   gradeStructuredFollowUpWithFsrs,
   StructuredFollowUp,
 } from '../services/verificationLessonService';
@@ -73,25 +72,25 @@ router.post('/verification/resolve-unclear', actionEndpointLimiter, async (req: 
   }
 });
 
-// POST /verification/submit-followup  { followUp, submittedAnswer, conceptId? }
-// Pure, free, no LLM call — see gradeStructuredFollowUp's own comment.
-// conceptId is ONLY sent by the frontend for the one path where this
-// follow-up is itself the first real evidence (resolveUnclear's
-// `knowsIt: true` branch) — every other path already graded 'again' the
-// moment its verdict came back, and must never re-grade here too. See
-// gradeStructuredFollowUpWithFsrs's own comment.
+// POST /verification/submit-followup  { followUp, submittedAnswer, conceptId }
+// The follow-up is now the ONE grading moment for every path that reaches
+// it (an outright-wrong free-text answer, or either branch of the unclear
+// self-report) — a wrong-then-corrected attempt should still count as a
+// genuine pass, so nothing grades 'again' until/unless the follow-up is
+// wrong too. See gradeStructuredFollowUpWithFsrs's own comment. The plain
+// "correct on the first try" free-text path never reaches this endpoint at
+// all — it already graded immediately and has no follow-up.
 router.post('/verification/submit-followup', actionEndpointLimiter, async (req: Request, res: Response) => {
   const { followUp, submittedAnswer, conceptId } = req.body ?? {};
   if (!followUp || (followUp.type !== 'fill_gap' && followUp.type !== 'order_words')) {
     return res.status(400).json({ error: 'a valid followUp object is required' });
   }
+  if (typeof conceptId !== 'string' || !conceptId.trim()) {
+    return res.status(400).json({ error: 'conceptId (string) is required' });
+  }
   try {
-    if (typeof conceptId === 'string' && conceptId.trim()) {
-      const result = await gradeStructuredFollowUpWithFsrs(req.userId as string, conceptId, followUp as StructuredFollowUp, submittedAnswer);
-      return res.json(result);
-    }
-    const correct = gradeStructuredFollowUp(followUp as StructuredFollowUp, submittedAnswer);
-    res.json({ correct });
+    const result = await gradeStructuredFollowUpWithFsrs(req.userId as string, conceptId, followUp as StructuredFollowUp, submittedAnswer);
+    res.json(result);
   } catch (err: any) {
     console.error('Verification follow-up grading failed:', err);
     res.status(400).json({ error: err?.message || 'could not grade that' });

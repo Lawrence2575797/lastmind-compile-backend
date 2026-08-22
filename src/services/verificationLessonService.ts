@@ -1,6 +1,6 @@
 import { supabaseAdmin } from './supabaseAdmin';
 import { callClaudeJSON, MODELS } from './claudeClient';
-import { normalizeConceptKey, customContextDigest } from './chainService';
+import { normalizeConceptKey, customContextDigest, getSpecOutline } from './chainService';
 import { gradeAndRecordReview, getMasteryStatus, DURABLE_RELEARNING_CRITERION, FsrsRatingKey } from './reviewService';
 import {
   VERIFICATION_RUBRIC_GENERATION_PROMPT,
@@ -106,9 +106,24 @@ export async function getOrGenerateRubric(
     return { rubricKey, rubric: existing.rubric as VerificationRubric, scenarios: existing.scenarios as VerificationScenario[] };
   }
 
+  // Same grounding chainService.ts's getOrGenerateChain already uses for
+  // paid lessons — only ever set for a subject/qualification/exam board
+  // that's actually been prepared (scripts/seedSpecOutline.ts); every other
+  // combination generates exactly as before, on the model's own general
+  // knowledge. This is what stops the rubric from requiring a model/term
+  // (e.g. a named diagram) the student's real board never actually teaches.
+  const specOutline = customDescription ? null : await getSpecOutline(subject, qualification, examBoard);
+
   const generated = await callJSON<{ rubric: VerificationRubric; scenarios: VerificationScenario[] }>(
     VERIFICATION_RUBRIC_GENERATION_PROMPT,
-    `Subject: ${subject}\nTopic: ${topic || 'unspecified'}\nConcept: ${concept}\nQualification: ${qualification || 'unspecified'}\nExam board: ${examBoard || 'unspecified'}`,
+    [
+      `Subject: ${subject}`,
+      `Topic: ${topic || 'unspecified'}`,
+      `Concept: ${concept}`,
+      `Qualification: ${qualification || 'unspecified'}`,
+      `Exam board: ${examBoard || 'unspecified'}`,
+      ...(specOutline ? [`Reference specification scope (see rule 7 — calibration only, not a checklist): ${specOutline}`] : []),
+    ].join('\n'),
     MODELS.diagnosticTree,
     0.4,
     4096,

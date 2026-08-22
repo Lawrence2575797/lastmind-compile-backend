@@ -376,9 +376,15 @@ export function gradeStructuredFollowUp(followUp: StructuredFollowUp, submittedA
     return typeof submittedAnswer === 'string' && candidates.includes(normalize(submittedAnswer));
   }
   if (!Array.isArray(submittedAnswer)) return false;
+  // Number(...), not ===, on both sides — callJSON's Claude-generated
+  // correctOrder is cast with zero runtime validation (see its own
+  // comment), and a model occasionally emits array indices as strings
+  // ("0" instead of 0) in an otherwise-valid JSON response. A genuinely
+  // correct answer must never silently grade wrong just because one side
+  // came back as a string and the other as a number.
   return (
     submittedAnswer.length === followUp.correctOrder.length &&
-    submittedAnswer.every((val, i) => val === followUp.correctOrder[i])
+    submittedAnswer.every((val, i) => Number(val) === Number(followUp.correctOrder[i]))
   );
 }
 

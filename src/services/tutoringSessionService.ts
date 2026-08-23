@@ -238,6 +238,10 @@ export interface TutoringSessionWithContext extends TutoringSession {
   conceptLabel: string;
   activityType: string;
   visibleAt: string;
+  // Only set for a marking-type request — this is the actual content a
+  // tutor needs to see to mark it (null for 'misconception').
+  questionText: string | null;
+  answerText: string | null;
 }
 
 async function attachHelpRequestContext(sessions: TutoringSession[]): Promise<TutoringSessionWithContext[]> {
@@ -245,7 +249,7 @@ async function attachHelpRequestContext(sessions: TutoringSession[]): Promise<Tu
   const helpRequestIds = Array.from(new Set(sessions.map((s) => s.helpRequestId)));
   const { data: requests, error } = await supabaseAdmin
     .from('help_requests')
-    .select('id, subject, topic, activity_type, visible_at')
+    .select('id, subject, topic, activity_type, visible_at, question_text, answer_text')
     .in('id', helpRequestIds);
   if (error) throw error;
   const byId = new Map((requests || []).map((r) => [r.id as string, r]));
@@ -258,6 +262,8 @@ async function attachHelpRequestContext(sessions: TutoringSession[]): Promise<Tu
       conceptLabel: formatConceptOrLinkLabel(s.conceptId),
       activityType: req?.activity_type || 'misconception',
       visibleAt: req?.visible_at || new Date(0).toISOString(),
+      questionText: req?.question_text || null,
+      answerText: req?.answer_text || null,
     };
   });
 }

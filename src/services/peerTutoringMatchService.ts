@@ -12,8 +12,21 @@ import {
   markMissedDeadline,
   TutoringSession,
 } from './tutoringSessionService';
+import { countWords, classifyMarkingActivity, nextReleaseSlot } from './tutoringActivityService';
+import { MARKING_ANSWER_MAX_WORDS, TutoringActivityType } from '../constants/tutoringActivities';
 
 const MAX_FIELD_LENGTH = 60;
+
+// Same 3-filter PII/safety chain as filterField below, just without its
+// 60-character truncation — a marking request's question/answer text is
+// genuinely long-form (up to MARKING_ANSWER_MAX_WORDS), unlike the short
+// subject/topic/concept fields filterField exists for.
+function filterLongText(text: string): string {
+  const trimmed = (text || '').trim();
+  const cleaned1 = applyStructuredPIIFilter(trimmed);
+  const cleaned2 = applyContextualPIIFilter(cleaned1);
+  return applyHarmfulContentFilter(cleaned2);
+}
 
 // A sanity guard, not a product limit — re-verified eligibility below is
 // the real defense; this just stops one request from fanning out
@@ -27,6 +40,10 @@ export interface HelpRequest {
   subject: string;
   topic: string | null;
   status: 'open' | 'assigned' | 'resolved' | 'cancelled' | 'unfulfilled';
+  activityType: TutoringActivityType;
+  questionText: string | null;
+  answerText: string | null;
+  visibleAt: string;
 }
 
 function rowToHelpRequest(row: any): HelpRequest {
@@ -37,6 +54,10 @@ function rowToHelpRequest(row: any): HelpRequest {
     subject: row.subject,
     topic: row.topic,
     status: row.status,
+    activityType: row.activity_type,
+    questionText: row.question_text,
+    answerText: row.answer_text,
+    visibleAt: row.visible_at,
   };
 }
 
@@ -164,6 +185,11 @@ export async function listEligibleTutorsForBrowsing(requesterId: string, concept
   return cards;
 }
 
+export interface MarkingActivityInput {
+  questionText: string;
+  answerText: string;
+}
+
 /**
  * The requester picking N tutors from Browse Tutors — replaces the old
  * server-auto-picks-one flow entirely. One help_requests row, one
@@ -172,13 +198,26 @@ export async function listEligibleTutorsForBrowsing(requesterId: string, concept
  * submitResponse for the winner-take-all resolution. Eligibility is
  * re-checked server-side rather than trusted from the client, same
  * discipline the old claim flow used.
+ *
+ * `marking`, when given, is the NEW "get an answer marked" activity
+ * instead of the original "explain a concept to me" flow: the question/
+ * answer text is PII-filtered (filterLongText — same 3-filter chain as
+ * everywhere else user text becomes visible to another student, just
+ * without filterField's 60-char truncation), the answer's own word count
+ * resolves activity_type to 'short_answer_marking' or 'long_answer_marking'
+ * (rejecting outright past MARKING_ANSWER_MAX_WORDS — never silently
+ * truncated, never accepted at a higher price), and visible_at is pushed to
+ * the next fixed release slot rather than instant. Omitting `marking`
+ * keeps everything exactly as it always was: activity_type
+ * 'misconception', visible_at now().
  */
 export async function createMultiHelperHelpRequest(
   requesterId: string,
   conceptId: string,
   subject: string,
   topic: string | null,
-  helperIds: string[]
+  helperIds: string[],
+  marking?: MarkingActivityInput
 ): Promise<{ helpRequest: HelpRequest; sessions: TutoringSession[] }> {
   const dedupedHelperIds = Array.from(new Set(helperIds)).filter((id) => id !== requesterId);
   if (!dedupedHelperIds.length) throw new Error('pick at least one tutor');
@@ -197,9 +236,36 @@ export async function createMultiHelperHelpRequest(
   const verifiedHelperIds = dedupedHelperIds.filter((id) => mastered.has(id) && optedIn.has(id));
   if (!verifiedHelperIds.length) throw new Error('none of the selected tutors are currently eligible to help with this');
 
+  let activityType: TutoringActivityType = 'misconception';
+  let questionText: string | null = null;
+  let answerText: string | null = null;
+  let visibleAt = new Date();
+  if (marking) {
+    const safeQuestion = filterLongText(marking.questionText);
+    const safeAnswer = filterLongText(marking.answerText);
+    if (!safeQuestion || !safeAnswer) throw new Error('question and answer are both required');
+    const wordCount = countWords(safeAnswer);
+    if (wordCount > MARKING_ANSWER_MAX_WORDS) {
+      throw new Error(`your answer is too long (max ${MARKING_ANSWER_MAX_WORDS} words) — please shorten it and try again`);
+    }
+    activityType = classifyMarkingActivity(wordCount);
+    questionText = safeQuestion;
+    answerText = safeAnswer;
+    visibleAt = nextReleaseSlot(new Date());
+  }
+
   const { data: inserted, error: insertError } = await supabaseAdmin
     .from('help_requests')
-    .insert({ requester_id: requesterId, concept_id: conceptId, subject, topic })
+    .insert({
+      requester_id: requesterId,
+      concept_id: conceptId,
+      subject,
+      topic,
+      activity_type: activityType,
+      question_text: questionText,
+      answer_text: answerText,
+      visible_at: visibleAt.toISOString(),
+    })
     .select()
     .single();
   if (insertError) throw insertError;

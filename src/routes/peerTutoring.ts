@@ -50,12 +50,16 @@ router.post('/peer-tutoring/prepare-custom-concept', actionEndpointLimiter, asyn
   }
 });
 
-// POST /peer-tutoring/help-requests  { conceptId, subject, topic?, helperIds }
+// POST /peer-tutoring/help-requests  { conceptId, subject, topic?, helperIds, questionText?, answerText? }
 // Creates the request AND one session per chosen (re-verified) tutor — see
 // createMultiHelperHelpRequest. First one to actually submit wins; see
 // tutoringResponseService.ts's submitResponse for the resolution.
+// questionText/answerText, given TOGETHER, switch this from the default
+// "misconception" activity to the "get an answer marked" one — see
+// createMultiHelperHelpRequest's own comment for exactly what that changes
+// (pricing tier, PII filtering, delayed release).
 router.post('/peer-tutoring/help-requests', actionEndpointLimiter, async (req: Request, res: Response) => {
-  const { conceptId, subject, topic, helperIds } = req.body ?? {};
+  const { conceptId, subject, topic, helperIds, questionText, answerText } = req.body ?? {};
   if (typeof conceptId !== 'string' || !conceptId.trim()) {
     return res.status(400).json({ error: 'conceptId (string) is required' });
   }
@@ -65,8 +69,19 @@ router.post('/peer-tutoring/help-requests', actionEndpointLimiter, async (req: R
   if (!Array.isArray(helperIds) || !helperIds.every((id) => typeof id === 'string')) {
     return res.status(400).json({ error: 'helperIds (string array) is required' });
   }
+  const wantsMarking = questionText !== undefined || answerText !== undefined;
+  if (wantsMarking && (typeof questionText !== 'string' || !questionText.trim() || typeof answerText !== 'string' || !answerText.trim())) {
+    return res.status(400).json({ error: 'questionText and answerText (strings) are both required for a marking request' });
+  }
   try {
-    const result = await createMultiHelperHelpRequest(req.userId as string, conceptId, subject, topic ?? null, helperIds);
+    const result = await createMultiHelperHelpRequest(
+      req.userId as string,
+      conceptId,
+      subject,
+      topic ?? null,
+      helperIds,
+      wantsMarking ? { questionText, answerText } : undefined
+    );
     res.json(result);
   } catch (err: any) {
     console.error('Help request creation failed:', err);

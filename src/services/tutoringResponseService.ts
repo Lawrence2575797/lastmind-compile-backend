@@ -4,17 +4,9 @@ import { applyContextualPIIFilter } from '../safety/piiFilterContextual';
 import { applyHarmfulContentFilter } from '../safety/harmfulContentFilter';
 import { markSubmitted, maybeReleaseSession } from './tutoringSessionService';
 import { adjustCredits } from './creditService';
+import { TUTORING_ACTIVITY_KEYS, TutoringActivityType } from '../constants/tutoringActivities';
 
 const MAX_BODY_LENGTH = 4000;
-
-// Flat placeholder, same scale as creditService.ts's own
-// INITIAL_CREDIT_ALLOWANCE=40 (roughly 8 free requests from the signup
-// bonus alone) — real per-activity pricing hasn't been decided yet
-// project-wide, see creditService.ts's own header comment. Charged once,
-// only to whichever helper's response actually wins the race (see
-// submitResponse below) — the other picked helpers cost nothing, since
-// they never did anything.
-const HELP_REQUEST_COST = 5;
 
 // Whether to retain the pre-filter original alongside the filtered version
 // — off by default. Legal's eventual answer on retention shouldn't require
@@ -70,11 +62,23 @@ export async function submitResponse(userId: string, sessionId: string, body: st
   if (!trimmed) throw new Error('a response is required');
   if (trimmed.length > MAX_BODY_LENGTH) throw new Error(`response is too long (max ${MAX_BODY_LENGTH} characters)`);
 
+  // Embeds the parent help_requests row via the FK (help_request_id
+  // references help_requests.id) to resolve which activity this session
+  // actually is — cost to the tutee/payout to the tutor depends on it (see
+  // TUTORING_ACTIVITY_KEYS), so it has to be known before the transfer
+  // below.
   const { data: sessionRow, error: sessionError } = await supabaseAdmin
     .from('tutoring_sessions')
-    .select('id, helper_id, requester_id, help_request_id, status')
+    .select('id, helper_id, requester_id, help_request_id, status, help_requests(activity_type)')
     .eq('id', sessionId)
-    .maybeSingle();
+    .maybeSingle<{
+      id: string;
+      helper_id: string;
+      requester_id: string;
+      help_request_id: string;
+      status: string;
+      help_requests: { activity_type: TutoringActivityType } | null;
+    }>();
   if (sessionError) throw sessionError;
   if (!sessionRow) throw new Error('session not found');
   if (sessionRow.helper_id !== userId) throw new Error('only the assigned helper can submit a response');
@@ -117,9 +121,15 @@ export async function submitResponse(userId: string, sessionId: string, body: st
     .neq('id', sessionId);
   if (cancelError) throw cancelError;
 
+  // 'misconception' if the join somehow comes back empty (should never
+  // happen given the not-null FK) — the original, cheapest activity is the
+  // safer default than silently paying nothing.
+  const activityType: TutoringActivityType = sessionRow.help_requests?.activity_type || 'misconception';
+  const amount = TUTORING_ACTIVITY_KEYS[activityType];
+
   await Promise.all([
-    adjustCredits(sessionRow.requester_id, -HELP_REQUEST_COST, 'tutoring_help_received'),
-    adjustCredits(userId, HELP_REQUEST_COST, 'tutoring_response_given'),
+    adjustCredits(sessionRow.requester_id, -amount, 'tutoring_help_received'),
+    adjustCredits(userId, amount, 'tutoring_response_given'),
   ]);
 
   return rowToResponse(inserted);

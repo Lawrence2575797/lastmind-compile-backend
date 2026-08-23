@@ -236,6 +236,8 @@ export interface TutoringSessionWithContext extends TutoringSession {
   // formatConceptOrLinkLabel) — computed here so every My-Tutoring card
   // can just display it directly rather than parsing the raw id itself.
   conceptLabel: string;
+  activityType: string;
+  visibleAt: string;
 }
 
 async function attachHelpRequestContext(sessions: TutoringSession[]): Promise<TutoringSessionWithContext[]> {
@@ -243,13 +245,20 @@ async function attachHelpRequestContext(sessions: TutoringSession[]): Promise<Tu
   const helpRequestIds = Array.from(new Set(sessions.map((s) => s.helpRequestId)));
   const { data: requests, error } = await supabaseAdmin
     .from('help_requests')
-    .select('id, subject, topic')
+    .select('id, subject, topic, activity_type, visible_at')
     .in('id', helpRequestIds);
   if (error) throw error;
   const byId = new Map((requests || []).map((r) => [r.id as string, r]));
   return sessions.map((s) => {
     const req = byId.get(s.helpRequestId);
-    return { ...s, subject: req?.subject || '', topic: req?.topic || null, conceptLabel: formatConceptOrLinkLabel(s.conceptId) };
+    return {
+      ...s,
+      subject: req?.subject || '',
+      topic: req?.topic || null,
+      conceptLabel: formatConceptOrLinkLabel(s.conceptId),
+      activityType: req?.activity_type || 'misconception',
+      visibleAt: req?.visible_at || new Date(0).toISOString(),
+    };
   });
 }
 
@@ -257,6 +266,15 @@ async function attachHelpRequestContext(sessions: TutoringSession[]): Promise<Tu
 // currently either owed (asRequester) or obligated to write (asHelper),
 // enriched with the subject/topic help_requests already knows so the
 // frontend never has to make a second round trip per session.
+//
+// asHelper is filtered to visibleAt <= now() — a marking request queued
+// for a future release slot (see peerTutoringMatchService.ts's
+// createMultiHelperHelpRequest / nextReleaseSlot) simply doesn't exist yet
+// as far as its assigned helper can see, same lazy/read-time-gated idiom
+// `deadline`/`releaseTime` already use elsewhere in this file, no cron
+// needed. asRequester is NEVER filtered this way — the request's own
+// creator should always see their own request regardless of whether it's
+// been delivered to a tutor yet.
 export async function listMyTutoringSessions(
   userId: string
 ): Promise<{ asRequester: TutoringSessionWithContext[]; asHelper: TutoringSessionWithContext[] }> {
@@ -268,9 +286,10 @@ export async function listMyTutoringSessions(
   if (error) throw error;
   const sessions = (data || []).map(rowToSession);
   const withContext = await attachHelpRequestContext(sessions);
+  const now = Date.now();
   return {
     asRequester: withContext.filter((s) => s.requesterId === userId),
-    asHelper: withContext.filter((s) => s.helperId === userId),
+    asHelper: withContext.filter((s) => s.helperId === userId && new Date(s.visibleAt).getTime() <= now),
   };
 }
 

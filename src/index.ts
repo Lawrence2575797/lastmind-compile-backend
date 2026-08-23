@@ -18,6 +18,7 @@ import tutoringResponsesRouter from './routes/tutoringResponses';
 import studySettingsRouter from './routes/studySettings';
 import revisionPlanRouter from './routes/revisionPlan';
 import creditsRouter from './routes/credits';
+import rewardsRouter from './routes/rewards';
 import adminRouter from './routes/admin';
 import verificationRouter from './routes/verification';
 import { globalRateLimiter } from './services/rateLimiters';
@@ -57,6 +58,7 @@ app.use('/', tutoringResponsesRouter);
 app.use('/', studySettingsRouter);
 app.use('/', revisionPlanRouter);
 app.use('/', creditsRouter);
+app.use('/', rewardsRouter);
 app.use('/', adminRouter);
 app.use('/', verificationRouter);
 

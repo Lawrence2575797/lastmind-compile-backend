@@ -84,6 +84,44 @@ function isTemperatureDeprecatedError(err: unknown): boolean {
   return message.includes('temperature') && message.includes('deprecated');
 }
 
+// A transient Anthropic-side failure (rate limited, momentarily overloaded,
+// a network blip, a request that simply timed out) used to propagate
+// straight up through every caller with zero retries — one blip on ANY
+// grading/generation call anywhere in the app (encoding lessons,
+// diagnostics, verification, chain generation, Cortex...) killed the whole
+// request outright, surfacing to the student as an opaque "could not
+// process this answer" dead end with no way to just try again. A student
+// working through a multi-step lesson makes many sequential Claude calls
+// in one sitting, so even a low per-call failure rate compounds into
+// hitting this often. Retried here, not per-caller, so every one of them
+// gets this for free.
+function isTransientClaudeError(err: unknown): boolean {
+  if (err instanceof Anthropic.APIConnectionError) return true; // includes APIConnectionTimeoutError
+  if (err instanceof Anthropic.RateLimitError) return true; // 429
+  if (err instanceof Anthropic.InternalServerError) return true; // 500+
+  // Anthropic's "overloaded_error" (HTTP 529) has no dedicated SDK class at
+  // this SDK version (0.32.1) — it surfaces as a generic APIError with
+  // status 529, so check status directly rather than the specific classes
+  // above for anything else in the 5xx/429 range.
+  if (err instanceof Anthropic.APIError && typeof err.status === 'number' && (err.status === 429 || err.status >= 500)) return true;
+  return false;
+}
+
+const TRANSIENT_RETRY_DELAYS_MS = [500, 1500, 4000];
+
+async function withTransientRetry<T>(fn: () => Promise<T>): Promise<T> {
+  for (let attempt = 0; ; attempt++) {
+    try {
+      return await fn();
+    } catch (err) {
+      if (!isTransientClaudeError(err) || attempt >= TRANSIENT_RETRY_DELAYS_MS.length) throw err;
+      const delay = TRANSIENT_RETRY_DELAYS_MS[attempt];
+      console.warn(`Claude API call hit a transient error — retrying in ${delay}ms (attempt ${attempt + 1}/${TRANSIENT_RETRY_DELAYS_MS.length}).`, err);
+      await new Promise((resolve) => setTimeout(resolve, delay));
+    }
+  }
+}
+
 /**
  * Generic call for anything expecting a strict JSON response (chain
  * generation, fact-checking, diagnostic tree steps). Unlike processNotes,
@@ -181,11 +219,11 @@ async function sendWithTemperatureRetry(
 ): Promise<string> {
   let response;
   try {
-    response = await makeMessageRequest(model, systemPrompt, content, maxTokens, temperature, true, cacheSystemPrompt);
+    response = await withTransientRetry(() => makeMessageRequest(model, systemPrompt, content, maxTokens, temperature, true, cacheSystemPrompt));
   } catch (err) {
     if (!isTemperatureDeprecatedError(err)) throw err;
     console.warn(`Claude call to "${model}" rejected temperature — retrying without it.`);
-    response = await makeMessageRequest(model, systemPrompt, content, maxTokens, temperature, false, cacheSystemPrompt);
+    response = await withTransientRetry(() => makeMessageRequest(model, systemPrompt, content, maxTokens, temperature, false, cacheSystemPrompt));
   }
 
   const textBlock = response.content.find((block) => block.type === 'text');

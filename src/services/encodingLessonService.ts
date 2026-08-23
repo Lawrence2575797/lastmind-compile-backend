@@ -618,21 +618,26 @@ interface DraftStep {
  * verification/repair call — fresh eyes, no memory of drafting it — for
  * EVERY step, not just ones the batch generation itself flagged as
  * "confident: false". Originally gated behind that self-reported flag, but
- * the two specific failure modes this exists to catch (a stacked
- * scene-question-then-general-question in one step, and a step whose own
- * context hands the student the answer before asking) kept reaching
- * students anyway — the author's inline self-check was missing them even
- * though the generation prompt explicitly forbids both, most likely because
- * a leaked-answer step trivially LOOKS like an easy pass under "would the
- * student succeed", which is the only lens the self-check was applying.
- * Running this unconditionally is the only way to actually guarantee
- * coverage rather than hope improved wording changes what the model
- * self-reports. Only ever runs on a cache miss (see startEncodingLesson) —
- * once a concept's content is cached, every later student skips generation
- * (and this verification) entirely, so the added cost is still strictly
- * one-time-per-concept, not per-student.
- * Mutates each step's text/checkQuestion in place when a genuine revision
- * comes back.
+ * the failure modes this exists to catch (stacked questions, a step whose
+ * own context hands the student the answer before asking, a step that
+ * relies on a term never actually defined earlier in the lesson, near-
+ * duplicate steps padding the lesson out) kept reaching students anyway —
+ * the author's inline self-check was missing them even though the
+ * generation prompt explicitly forbids them, most likely because each one
+ * is easy to wave through on a holistic "does this feel okay" read, which
+ * is the only lens the self-check was applying. Running this unconditionally
+ * is the only way to actually guarantee coverage rather than hope improved
+ * wording changes what the model self-reports. Only ever runs on a cache
+ * miss (see startEncodingLesson) — once a concept's content is cached,
+ * every later student skips generation (and this verification) entirely,
+ * so the added cost is still strictly one-time-per-concept, not per-student.
+ * Mutates `steps` in place: revises text/checkQuestion when a genuine
+ * revision comes back, and SPLICES OUT any step flagged genuinely redundant
+ * with an earlier one (see STEP_DERIVABILITY_CHECK_PROMPT's dimension 4) —
+ * restricted here, defense-in-depth, to step types where removal can't
+ * silently drop a prerequisite's own FSRS verification ("check" and
+ * "mechanistic_check" are never removed even if the model flags one, since
+ * each verifies a specific node nothing else in the lesson tests).
  */
 async function repairUncertainSteps(
   steps: DraftStep[],
@@ -641,8 +646,10 @@ async function repairUncertainSteps(
   examBoard: string
 ): Promise<void> {
   const establishedSoFar: { label: string; text: string }[] = [];
+  const redundantIndices: number[] = [];
 
-  for (const step of steps) {
+  for (let stepIndex = 0; stepIndex < steps.length; stepIndex++) {
+    const step = steps[stepIndex];
     // A stacked-question step is mechanically detectable — a well-formed
     // question should end in exactly one "?" and never contain another one
     // earlier. Relying purely on the independent check to NOTICE this on
@@ -678,6 +685,7 @@ async function repairUncertainSteps(
     try {
       const result = await callJSON<{
         needsRevision: boolean;
+        redundant?: boolean;
         revisedText: string | null;
         revisedCheckQuestion: string | null;
         revisedExpectedSolution: string | null;
@@ -695,6 +703,17 @@ async function repairUncertainSteps(
         MODELS.diagnosticTree,
         0.2
       );
+      // Defense-in-depth restriction on top of the prompt's own rule: a
+      // "check"/"mechanistic_check" step is the ONLY thing in the lesson
+      // that verifies its specific prerequisite node — removing one, even
+      // if the model calls it redundant, would silently drop that node's
+      // FSRS grading entirely rather than just trim a genuinely repeated
+      // question.
+      const canBeRedundant = step.type !== 'check' && step.type !== 'mechanistic_check';
+      if (result.redundant && canBeRedundant) {
+        redundantIndices.push(stepIndex);
+        continue; // never established anything new — nothing to push below
+      }
       if (result.needsRevision) {
         if (result.revisedText) step.text = result.revisedText;
         if (step.type === 'explain' && result.revisedCheckQuestion) step.checkQuestion = result.revisedCheckQuestion;
@@ -720,6 +739,12 @@ async function repairUncertainSteps(
       console.error('LastMind: step derivability check failed, keeping original draft.', err);
     }
     establishedSoFar.push({ label: step.label, text: step.text });
+  }
+
+  // Splice out redundant steps highest-index-first, so earlier indices in
+  // the list stay valid as later ones are removed.
+  for (let i = redundantIndices.length - 1; i >= 0; i--) {
+    steps.splice(redundantIndices[i], 1);
   }
 }
 

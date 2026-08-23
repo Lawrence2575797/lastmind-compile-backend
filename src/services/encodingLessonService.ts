@@ -2,6 +2,7 @@ import { callClaudeJSON, callClaudeJSONWithImages, MODELS } from './claudeClient
 import { getOrGenerateChain, customContextDigest, normalizeConceptKey } from './chainService';
 import { gradeAndRecordReview, getReviewedConceptIds, hasAnySubjectHistory, FsrsRatingKey } from './reviewService';
 import { searchWikimediaImages, fetchImageAsBase64 } from './wikimediaService';
+import { adjustCredits, ENCODING_LESSON_COMPLETION_KEYS } from './creditService';
 import { supabaseAdmin } from './supabaseAdmin';
 import {
   ENCODING_LESSON_FIRST_STEP_PROMPT,
@@ -260,6 +261,10 @@ export interface EncodingSubmitResult {
   step?: EncodingStep;
   state: EncodingLessonState;
   fsrsUpdate?: FsrsUpdateSummary;
+  // Keys paid on true lesson completion (index >= 0.5 — see
+  // ENCODING_LESSON_COMPLETION_KEYS in creditService.ts) — 0 on every
+  // non-final return, and 0 on a final one that didn't clear the bar.
+  keysEarned?: number;
   // True when this result is a REWORDED re-ask of the SAME step (see
   // "step"), not a graded outcome — the grading call decided the student's
   // answer was responding to a different question than the one asked, not
@@ -1687,6 +1692,7 @@ export async function submitEncodingAnswer(userId: string, state: EncodingLesson
     // nothing real to average, so nothing to grade rather than dividing by
     // zero or guessing.
     let fsrsUpdate: FsrsUpdateSummary | undefined;
+    let keysEarned = 0;
     if (!state.targetGradedViaDrillDown && coreStepScores.length) {
       // Scoped ENTIRELY to the target's own performance — a wrong
       // prerequisite check elsewhere in the lesson never factors in here
@@ -1701,6 +1707,14 @@ export async function submitEncodingAnswer(userId: string, state: EncodingLesson
       // comfortable pass is a meaningful signal rather than a guess.
       const index = coreStepScores.reduce((sum, s) => sum + s, 0) / coreStepScores.length;
       const rating: FsrsRatingKey = index >= 0.8 ? 'good' : index >= 0.5 ? 'hard' : 'again';
+      // Same bar the FSRS rating itself already uses to distinguish "hard"
+      // from "again" — a lesson bypassed/skipped/failed throughout (index
+      // < 0.5) earns nothing, same reasoning as it not qualifying as even
+      // a "hard" pass.
+      if (index >= 0.5) {
+        await adjustCredits(userId, ENCODING_LESSON_COMPLETION_KEYS, 'encoding_lesson_completed');
+        keysEarned = ENCODING_LESSON_COMPLETION_KEYS;
+      }
       const { previousRow, newState: fsrsRow } = await gradeAndRecordReview(userId, state.conceptKey, rating);
       fsrsUpdate = {
         rating,
@@ -1719,7 +1733,7 @@ export async function submitEncodingAnswer(userId: string, state: EncodingLesson
         },
       };
     }
-    return { done: true, correct, feedback, state: nextState, fsrsUpdate };
+    return { done: true, correct, feedback, state: nextState, fsrsUpdate, keysEarned };
   }
 
   return { done: false, correct, feedback, step: state.steps[nextIndex], state: nextState };

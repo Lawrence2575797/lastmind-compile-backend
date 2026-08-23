@@ -1,5 +1,6 @@
 import { callClaudeJSON, MODELS } from './claudeClient';
-import { gradeAndRecordReview, getMasteryStatus, listEligibleSiblingConcepts, FsrsRatingKey, DURABLE_RELEARNING_CRITERION } from './reviewService';
+import { gradeAndRecordReview, getMasteryStatus, listEligibleSiblingConcepts, FsrsRatingKey, DURABLE_RELEARNING_CRITERION, ConceptReviewRow } from './reviewService';
+import { payMasteryInstallment } from './creditService';
 import { getOrGenerateChain } from './chainService';
 import { recordAnswerSignal, AnswerSignalResult } from './answerSignalService';
 import { retrievalLessonPromptForTier, RETRIEVAL_ANSWER_CHECK_PROMPT, RETRIEVAL_MECHANISTIC_CHECK_PROMPT } from '../constants/retrievalLessonPrompts';
@@ -124,6 +125,10 @@ export interface RetrievalSubmitResult {
   state: RetrievalLessonState;
   fsrsUpdate?: FsrsUpdateSummary;
   signal?: AnswerSignalResult;
+  // Keys paid THIS submission, if it crossed into lesson 1/2/3 of durable
+  // mastery — 0 otherwise. Only ever set on the done:true branch (see
+  // payMasteryInstallment in creditService.ts).
+  keysEarned?: number;
 }
 
 interface RawGeneratedStep {
@@ -362,7 +367,17 @@ export async function submitRetrievalAnswer(
     const rating: FsrsRatingKey = anyWeakSoFar
       ? (state.tier === 0 ? 'again' : 'hard')
       : (state.tier === 0 ? 'easy' : 'good');
-    const { previousRow, newState: fsrsRow } = await gradeAndRecordReview(userId, state.conceptKey, rating);
+    const { previousRow, newState: fsrsRow, spacedSuccessCount } = await gradeAndRecordReview(userId, state.conceptKey, rating);
+    // previousRow carries spaced_success_count at runtime — just narrower
+    // on its declared type (see gradeAndRecordReview's own comment).
+    const priorSpacedSuccessCount = (previousRow as ConceptReviewRow & { spaced_success_count?: number } | null)?.spaced_success_count ?? 0;
+    const keysEarned = await payMasteryInstallment(
+      userId,
+      priorSpacedSuccessCount,
+      spacedSuccessCount,
+      1.0,
+      `retrieval_mastery_lesson_${spacedSuccessCount}`
+    );
     const fsrsUpdate: FsrsUpdateSummary = {
       rating,
       previous: previousRow
@@ -384,7 +399,7 @@ export async function submitRetrievalAnswer(
       signal = await recordAnswerSignal(userId, state.conceptKey, responseTimeMs, !anyWeakSoFar);
     }
 
-    return { done: true, correct, feedback, state: nextState, fsrsUpdate, signal };
+    return { done: true, correct, feedback, state: nextState, fsrsUpdate, signal, keysEarned };
   }
 
   return { done: false, correct, feedback, step: state.steps[nextIndex], state: nextState };

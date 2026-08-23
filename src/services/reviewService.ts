@@ -99,12 +99,21 @@ function computeSpacedSuccessUpdate(
  * MASTERED_THRESHOLD skip-check (is this node already solid enough to
  * skip re-testing) and the "was the schedule actually followed" check
  * (comparing when a review was due against when it actually happened).
+ *
+ * Also returns the freshly-computed `spacedSuccessCount` — needed by
+ * callers paying a Keys reward for reaching lesson 1/2/3 of durable
+ * mastery (see creditService.ts's payMasteryInstallment): a caller
+ * comparing this to `previousRow`'s own `spaced_success_count` (present at
+ * runtime, just not on the narrower declared ConceptReviewRow type — cast
+ * it) can tell whether this grading event genuinely just crossed into a
+ * new milestone, versus merely re-confirming one already reached or not
+ * landing as a genuinely spaced pass at all.
  */
 export async function gradeAndRecordReview(
   userId: string,
   conceptId: string,
   ratingKey: string
-): Promise<{ previousRow: ConceptReviewRow | null; newState: ReturnType<typeof cardToRowFields> }> {
+): Promise<{ previousRow: ConceptReviewRow | null; newState: ReturnType<typeof cardToRowFields>; spacedSuccessCount: number }> {
   const fsrsRating = RATING_MAP[ratingKey.toLowerCase()];
   if (!fsrsRating) {
     throw new Error(`Invalid rating: ${ratingKey}`);
@@ -161,7 +170,7 @@ export async function gradeAndRecordReview(
     console.error('LastMind: failed to write review_log row (non-fatal, grading itself still succeeded).', logError);
   }
 
-  return { previousRow: existingRow, newState: rowFields };
+  return { previousRow: existingRow, newState: rowFields, spacedSuccessCount: spacedSuccess.spaced_success_count };
 }
 
 /**

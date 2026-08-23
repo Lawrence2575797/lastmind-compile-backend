@@ -1,7 +1,13 @@
 import { supabaseAdmin } from './supabaseAdmin';
 import { callClaudeJSON, MODELS } from './claudeClient';
 import { normalizeConceptKey, customContextDigest, getSpecOutline } from './chainService';
-import { gradeAndRecordReview, getMasteryStatus, DURABLE_RELEARNING_CRITERION, FsrsRatingKey } from './reviewService';
+import { gradeAndRecordReview, getMasteryStatus, DURABLE_RELEARNING_CRITERION, FsrsRatingKey, ConceptReviewRow } from './reviewService';
+import { payMasteryInstallment } from './creditService';
+
+// Free tier — this learning didn't happen on LastMind, so it's rewarded
+// with less confidence than premium retrieval lessons (coefficient 1.0).
+// See payMasteryInstallment's own comment in creditService.ts.
+const VERIFICATION_KEYS_COEFFICIENT = 0.6;
 import {
   VERIFICATION_RUBRIC_GENERATION_PROMPT,
   VERIFICATION_FREE_TEXT_GRADE_PROMPT,
@@ -273,6 +279,10 @@ export interface VerificationGradeResult {
   unclearReason: string | null;
   correction?: string;
   followUp?: StructuredFollowUp;
+  // Keys paid THIS call, if this grading event crossed into lesson 1/2/3
+  // of durable mastery — 0 on every other verdict/outcome (see
+  // payMasteryInstallment in creditService.ts).
+  keysEarned?: number;
 }
 
 /**
@@ -317,8 +327,18 @@ export async function gradeVerificationAnswer(
 
   if (grade.verdict === 'correct') {
     const rating: FsrsRatingKey = escalated ? 'hard' : 'good';
-    await gradeAndRecordReview(userId, conceptId, rating);
-    return { verdict: grade.verdict, escalated, misconceptionNote: null, unclearReason: null };
+    const { previousRow, spacedSuccessCount } = await gradeAndRecordReview(userId, conceptId, rating);
+    // previousRow carries spaced_success_count at runtime — just narrower
+    // on its declared type (see gradeAndRecordReview's own comment).
+    const priorCount = (previousRow as ConceptReviewRow & { spaced_success_count?: number } | null)?.spaced_success_count ?? 0;
+    const keysEarned = await payMasteryInstallment(
+      userId,
+      priorCount,
+      spacedSuccessCount,
+      VERIFICATION_KEYS_COEFFICIENT,
+      `verification_mastery_lesson_${spacedSuccessCount}`
+    );
+    return { verdict: grade.verdict, escalated, misconceptionNote: null, unclearReason: null, keysEarned };
   }
 
   if (grade.verdict === 'incorrect') {
@@ -402,8 +422,16 @@ export async function gradeStructuredFollowUpWithFsrs(
   conceptId: string,
   followUp: StructuredFollowUp,
   submittedAnswer: string | number[]
-): Promise<{ correct: boolean }> {
+): Promise<{ correct: boolean; keysEarned: number }> {
   const correct = gradeStructuredFollowUp(followUp, submittedAnswer);
-  await gradeAndRecordReview(userId, conceptId, correct ? 'hard' : 'again');
-  return { correct };
+  const { previousRow, spacedSuccessCount } = await gradeAndRecordReview(userId, conceptId, correct ? 'hard' : 'again');
+  const priorCount = (previousRow as ConceptReviewRow & { spaced_success_count?: number } | null)?.spaced_success_count ?? 0;
+  const keysEarned = await payMasteryInstallment(
+    userId,
+    priorCount,
+    spacedSuccessCount,
+    VERIFICATION_KEYS_COEFFICIENT,
+    `verification_mastery_lesson_${spacedSuccessCount}`
+  );
+  return { correct, keysEarned };
 }

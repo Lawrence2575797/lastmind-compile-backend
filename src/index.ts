@@ -72,11 +72,38 @@ app.get('/health', async (_req, res) => {
   const { count: profileEntriesCount } = await supabaseAdmin
     .from('learning_profile_entries')
     .select('*', { count: 'exact', head: true });
+
+  // Temporary self-consistency probe: writes and immediately reads back a
+  // throwaway row on the server's OWN connection, to rule out this process
+  // talking to a different backing store than external diagnostic scripts
+  // see. Not tied to any real user (user_id null-safe columns only).
+  let selfWriteReadback: unknown = null;
+  let selfWriteError: unknown = null;
+  try {
+    const marker = 'healthcheck-' + Date.now();
+    const { error: insErr } = await supabaseAdmin
+      .from('learning_profile_entries')
+      // Real, known-existing user id (FK requires a row in auth.users) —
+      // the founder's own comp account. Deleted again below immediately.
+      .insert({ user_id: 'd4d76e5b-3f78-4532-af5e-5ff589f8adb1', concept_id: marker, subject: marker, topic: marker, concept: marker });
+    if (insErr) {
+      selfWriteError = insErr;
+    } else {
+      const { data } = await supabaseAdmin.from('learning_profile_entries').select('id').eq('concept_id', marker);
+      selfWriteReadback = data;
+      await supabaseAdmin.from('learning_profile_entries').delete().eq('concept_id', marker);
+    }
+  } catch (err) {
+    selfWriteError = err instanceof Error ? err.message : String(err);
+  }
+
   res.json({
     status: 'ok',
     gitCommit: process.env.RENDER_GIT_COMMIT || 'unknown',
     lockBalancesCount,
     profileEntriesCount,
+    selfWriteReadback,
+    selfWriteError,
   });
 });
 

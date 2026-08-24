@@ -3,6 +3,8 @@ import { requireAuth, requirePaidTier } from '../services/authMiddleware';
 import { costlyEndpointLimiter } from '../services/rateLimiters';
 import { normalizeConceptKey } from '../services/chainService';
 import { startEncodingLesson, continueEncodingLesson, submitEncodingAnswer, generateNotesFromLesson, getEncodingLessonOutline, answerLessonQuestion, EncodingLessonState } from '../services/encodingLessonService';
+import { spendLocks, InsufficientLocksError } from '../services/lockService';
+import { ENCODING_LESSON_LOCK_COST } from '../constants/locks';
 
 const router = Router();
 
@@ -74,6 +76,11 @@ router.post('/encoding-lesson/start', costlyEndpointLimiter, async (req: Request
     : [];
 
   try {
+    // Spend BEFORE generating anything — this is the one commit point for
+    // a genuinely new encoding lesson (/continue is the async second half
+    // of this same call, not a new one, so it must never spend again).
+    await spendLocks(req.userId as string, ENCODING_LESSON_LOCK_COST);
+
     const conceptKey = normalizeConceptKey(subject, topic, concept);
     const result = await startEncodingLesson(
       req.userId as string,
@@ -90,6 +97,9 @@ router.post('/encoding-lesson/start', costlyEndpointLimiter, async (req: Request
     );
     res.json(result);
   } catch (err) {
+    if (err instanceof InsufficientLocksError) {
+      return res.status(402).json({ error: "You're out of Locks for this month — they reset at the start of next month." });
+    }
     console.error('Encoding lesson start failed:', err);
     res.status(500).json({ error: 'could not start the lesson' });
   }

@@ -4,6 +4,8 @@ import { costlyEndpointLimiter } from '../services/rateLimiters';
 import { normalizeConceptKey } from '../services/chainService';
 import { startRetrievalLesson, continueRetrievalLesson, submitRetrievalAnswer, answerRetrievalQuestion, RetrievalLessonState } from '../services/spacedLessonEngine';
 import { recordConfidenceRating } from '../services/answerSignalService';
+import { spendLocks, InsufficientLocksError } from '../services/lockService';
+import { RETRIEVAL_LESSON_LOCK_COST } from '../constants/locks';
 
 const router = Router();
 
@@ -25,6 +27,11 @@ router.post('/chain-lesson/start', async (req: Request, res: Response) => {
   }
 
   try {
+    // Same reasoning as encoding lessons' own /start: spend before
+    // generating anything, and only here — /continue is the async second
+    // half of this same call, not a new commitment.
+    await spendLocks(req.userId as string, RETRIEVAL_LESSON_LOCK_COST);
+
     const conceptKey = normalizeConceptKey(subject, topic, concept);
     const result = await startRetrievalLesson(
       req.userId as string,
@@ -37,6 +44,9 @@ router.post('/chain-lesson/start', async (req: Request, res: Response) => {
     );
     res.json(result);
   } catch (err) {
+    if (err instanceof InsufficientLocksError) {
+      return res.status(402).json({ error: "You're out of Locks for this month — they reset at the start of next month." });
+    }
     console.error('Retrieval lesson start failed:', err);
     res.status(500).json({ error: 'could not start this review' });
   }

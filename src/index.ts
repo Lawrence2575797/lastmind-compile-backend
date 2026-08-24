@@ -22,6 +22,7 @@ import locksRouter from './routes/locks';
 import rewardsRouter from './routes/rewards';
 import adminRouter from './routes/admin';
 import verificationRouter from './routes/verification';
+import onboardingRouter from './routes/onboarding';
 import { globalRateLimiter } from './services/rateLimiters';
 
 const PORT = process.env.PORT || 4100;
@@ -63,6 +64,7 @@ app.use('/', locksRouter);
 app.use('/', rewardsRouter);
 app.use('/', adminRouter);
 app.use('/', verificationRouter);
+app.use('/', onboardingRouter);
 
 app.get('/health', (_req, res) => res.send('ok'));
 

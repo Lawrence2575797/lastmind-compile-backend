@@ -100,3 +100,108 @@ export async function creditLocks(userId: string, amount: number): Promise<LockB
   if (error) throw error;
   return { balance: data.balance };
 }
+
+function today(): string {
+  return new Date().toISOString().slice(0, 10);
+}
+
+/**
+ * Books a weekly lesson slot — spends the deposit, creates the calendar
+ * entry (type 'lesson', reusing calendar_events exactly as busy/exam
+ * already do — its `type` column has no database-level enum constraint,
+ * confirmed via the live schema, so no migration was needed for this),
+ * and creates the 'held' lock_holds row linking them.
+ */
+export async function depositForLessonBooking(
+  userId: string,
+  date: string,
+  startTime: string | null,
+  depositAmount: number
+): Promise<{ balance: number; calendarEventId: string; holdId: string }> {
+  const { balance } = await spendLocks(userId, depositAmount);
+
+  const { data: event, error: eventError } = await supabaseAdmin
+    .from('calendar_events')
+    .insert({ user_id: userId, event_date: date, type: 'lesson', start_time: startTime, end_time: null, folder_id: null })
+    .select('id')
+    .single();
+  if (eventError) throw eventError;
+
+  const { data: hold, error: holdError } = await supabaseAdmin
+    .from('lock_holds')
+    .insert({ user_id: userId, calendar_event_id: event.id, amount: depositAmount, status: 'held' })
+    .select('id')
+    .single();
+  if (holdError) throw holdError;
+
+  return { balance, calendarEventId: event.id, holdId: hold.id };
+}
+
+/**
+ * Called right after a successful lesson-start spend (encoding or
+ * retrieval) — if the student has a 'held' deposit booked for TODAY,
+ * showing up and actually starting a lesson is what "completing it"
+ * means for refund purposes (not finishing every step, which is fragile
+ * to define given a lesson can be exited early — see the plan). Matches
+ * by calendar day rather than a tight time window: forgiving of when
+ * during the day the lesson actually happens, strict about which day.
+ * Silently a no-op if there's no held deposit for today — the common
+ * case, most lesson starts aren't against a booking at all.
+ */
+export async function refundTodaysHeldDepositIfAny(userId: string): Promise<void> {
+  const { data: events, error: eventsError } = await supabaseAdmin
+    .from('calendar_events')
+    .select('id')
+    .eq('user_id', userId)
+    .eq('type', 'lesson')
+    .eq('event_date', today());
+  if (eventsError) throw eventsError;
+  if (!events || !events.length) return;
+
+  const eventIds = events.map((e) => e.id as string);
+  const { data: holds, error: holdsError } = await supabaseAdmin
+    .from('lock_holds')
+    .select('id, user_id, amount')
+    .eq('status', 'held')
+    .in('calendar_event_id', eventIds);
+  if (holdsError) throw holdsError;
+  if (!holds || !holds.length) return;
+
+  for (const hold of holds) {
+    const { error: updateError } = await supabaseAdmin
+      .from('lock_holds')
+      .update({ status: 'refunded', resolved_at: new Date().toISOString() })
+      .eq('id', hold.id)
+      .eq('status', 'held'); // guards against a double-refund race
+    if (updateError) throw updateError;
+    await creditLocks(userId, hold.amount as number);
+  }
+}
+
+/**
+ * The forfeit sweep — lazy, read-triggered, same shape as
+ * peerTutoringMatchService.ts's sweepExpiredHelpRequests (this codebase
+ * has no cron infra). Any 'held' hold whose booked calendar day has
+ * already fully passed, with no qualifying lesson ever started that day
+ * (see refundTodaysHeldDepositIfAny above — if one had been, this row
+ * would already be 'refunded', not 'held'), is marked 'forfeited'. The
+ * deposit was already deducted at booking time, so forfeiting doesn't
+ * move any Locks — it's just closing out the row's status for display.
+ */
+export async function sweepExpiredLockHolds(userId: string): Promise<void> {
+  const { data: pastEvents, error: eventsError } = await supabaseAdmin
+    .from('calendar_events')
+    .select('id')
+    .eq('user_id', userId)
+    .eq('type', 'lesson')
+    .lt('event_date', today());
+  if (eventsError) throw eventsError;
+  if (!pastEvents || !pastEvents.length) return;
+
+  const { error: updateError } = await supabaseAdmin
+    .from('lock_holds')
+    .update({ status: 'forfeited', resolved_at: new Date().toISOString() })
+    .eq('status', 'held')
+    .in('calendar_event_id', pastEvents.map((e) => e.id as string));
+  if (updateError) throw updateError;
+}

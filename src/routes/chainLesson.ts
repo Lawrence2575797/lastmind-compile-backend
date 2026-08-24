@@ -4,7 +4,7 @@ import { costlyEndpointLimiter } from '../services/rateLimiters';
 import { normalizeConceptKey } from '../services/chainService';
 import { startRetrievalLesson, continueRetrievalLesson, submitRetrievalAnswer, answerRetrievalQuestion, RetrievalLessonState } from '../services/spacedLessonEngine';
 import { recordConfidenceRating } from '../services/answerSignalService';
-import { spendLocks, InsufficientLocksError } from '../services/lockService';
+import { spendLocks, refundTodaysHeldDepositIfAny, InsufficientLocksError } from '../services/lockService';
 import { RETRIEVAL_LESSON_LOCK_COST } from '../constants/locks';
 
 const router = Router();
@@ -31,6 +31,7 @@ router.post('/chain-lesson/start', async (req: Request, res: Response) => {
     // generating anything, and only here — /continue is the async second
     // half of this same call, not a new commitment.
     await spendLocks(req.userId as string, RETRIEVAL_LESSON_LOCK_COST);
+    await refundTodaysHeldDepositIfAny(req.userId as string);
 
     const conceptKey = normalizeConceptKey(subject, topic, concept);
     const result = await startRetrievalLesson(

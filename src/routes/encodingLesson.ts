@@ -3,7 +3,7 @@ import { requireAuth, requirePaidTier } from '../services/authMiddleware';
 import { costlyEndpointLimiter } from '../services/rateLimiters';
 import { normalizeConceptKey } from '../services/chainService';
 import { startEncodingLesson, continueEncodingLesson, submitEncodingAnswer, generateNotesFromLesson, getEncodingLessonOutline, answerLessonQuestion, EncodingLessonState } from '../services/encodingLessonService';
-import { spendLocks, InsufficientLocksError } from '../services/lockService';
+import { spendLocks, refundTodaysHeldDepositIfAny, InsufficientLocksError } from '../services/lockService';
 import { ENCODING_LESSON_LOCK_COST } from '../constants/locks';
 
 const router = Router();
@@ -80,6 +80,11 @@ router.post('/encoding-lesson/start', costlyEndpointLimiter, async (req: Request
     // a genuinely new encoding lesson (/continue is the async second half
     // of this same call, not a new one, so it must never spend again).
     await spendLocks(req.userId as string, ENCODING_LESSON_LOCK_COST);
+    // Showing up to a booked slot and starting ANY lesson that day is
+    // what "completing it" means for the deposit — see
+    // refundTodaysHeldDepositIfAny's own comment. No-ops silently when
+    // there's no held deposit for today, which is the common case.
+    await refundTodaysHeldDepositIfAny(req.userId as string);
 
     const conceptKey = normalizeConceptKey(subject, topic, concept);
     const result = await startEncodingLesson(

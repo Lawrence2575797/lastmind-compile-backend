@@ -138,15 +138,17 @@ export async function depositForLessonBooking(
 }
 
 /**
- * Called right after a successful lesson-start spend (encoding or
- * retrieval) — if the student has a 'held' deposit booked for TODAY,
- * showing up and actually starting a lesson is what "completing it"
- * means for refund purposes (not finishing every step, which is fragile
- * to define given a lesson can be exited early — see the plan). Matches
- * by calendar day rather than a tight time window: forgiving of when
- * during the day the lesson actually happens, strict about which day.
- * Silently a no-op if there's no held deposit for today — the common
- * case, most lesson starts aren't against a booking at all.
+ * Called from /encoding-lesson/submit and /chain-lesson/submit, only on
+ * their `done: true` (genuinely finished) response — the deposit is
+ * refunded once a lesson actually completes on the booked day, not
+ * merely starts, matching the founder's own wording ("lost if the lesson
+ * is not completed by midnight of the booked day, the time of booking is
+ * mostly irrelevant"). Matches by calendar day rather than a tight time
+ * window: forgiving of when during the day it happens, strict about
+ * which day — the sweep below only forfeits once event_date is fully in
+ * the past, i.e. midnight has passed with nothing completed. Silently a
+ * no-op if there's no held deposit for today — the common case, most
+ * lesson completions aren't against a booking at all.
  */
 export async function refundTodaysHeldDepositIfAny(userId: string): Promise<void> {
   const { data: events, error: eventsError } = await supabaseAdmin

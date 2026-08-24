@@ -80,11 +80,6 @@ router.post('/encoding-lesson/start', costlyEndpointLimiter, async (req: Request
     // a genuinely new encoding lesson (/continue is the async second half
     // of this same call, not a new one, so it must never spend again).
     await spendLocks(req.userId as string, ENCODING_LESSON_LOCK_COST);
-    // Showing up to a booked slot and starting ANY lesson that day is
-    // what "completing it" means for the deposit — see
-    // refundTodaysHeldDepositIfAny's own comment. No-ops silently when
-    // there's no held deposit for today, which is the common case.
-    await refundTodaysHeldDepositIfAny(req.userId as string);
 
     const conceptKey = normalizeConceptKey(subject, topic, concept);
     const result = await startEncodingLesson(
@@ -153,6 +148,12 @@ router.post('/encoding-lesson/submit', costlyEndpointLimiter, async (req: Reques
 
   try {
     const result = await submitEncodingAnswer(req.userId as string, state as EncodingLessonState, typeof answer === 'string' ? answer : '', !!dontKnow, !!bypass);
+    // A booked deposit is only refunded once the lesson is genuinely
+    // COMPLETED (result.done), not merely started — the time of booking
+    // doesn't matter, only whether a lesson finished on the booked
+    // calendar day before it ends. No-ops silently when there's no held
+    // deposit for today, which is the common case.
+    if (result.done) await refundTodaysHeldDepositIfAny(req.userId as string);
     res.json(result);
   } catch (err) {
     console.error('Encoding lesson answer processing failed:', err);

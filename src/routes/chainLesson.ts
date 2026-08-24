@@ -31,7 +31,6 @@ router.post('/chain-lesson/start', async (req: Request, res: Response) => {
     // generating anything, and only here — /continue is the async second
     // half of this same call, not a new commitment.
     await spendLocks(req.userId as string, RETRIEVAL_LESSON_LOCK_COST);
-    await refundTodaysHeldDepositIfAny(req.userId as string);
 
     const conceptKey = normalizeConceptKey(subject, topic, concept);
     const result = await startRetrievalLesson(
@@ -92,6 +91,10 @@ router.post('/chain-lesson/submit', async (req: Request, res: Response) => {
       !!dontKnow,
       typeof responseTimeMs === 'number' ? responseTimeMs : undefined
     );
+    // Same reasoning as encoding lessons' own /submit — the deposit is
+    // only refunded once the lesson genuinely finishes (result.done), not
+    // merely starts.
+    if (result.done) await refundTodaysHeldDepositIfAny(req.userId as string);
     res.json(result);
   } catch (err) {
     console.error('Retrieval lesson answer processing failed:', err);

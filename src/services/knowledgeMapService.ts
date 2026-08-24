@@ -1,6 +1,6 @@
 import { normalizeConceptKey, getOrGenerateChain } from './chainService';
 import { Chain, resolveSiblingConceptId, SiblingConcept } from './encodingLessonService';
-import { getMasteryDetailsForConcepts, getMasteryStatesForConcepts, MasteryDetail } from './reviewService';
+import { getMasteryDetailsForConcepts, MasteryDetail } from './reviewService';
 import { getConceptsWithLowConfidenceSignal } from './answerSignalService';
 
 // One concept the student has actually added to a folder (a single-lesson
@@ -62,6 +62,10 @@ export interface KnowledgeMapResult {
   // resolveSiblingConceptId, so this single lookup surfaces either. An
   // edge with no row at all is 0 (untested), same convention as `mastery`.
   edgeMastery: Record<string, 0 | 1 | 2>;
+  // Same real-numbers-behind-the-bucket detail as masteryDetail, for the
+  // link itself rather than either endpoint — see edgeMastery above for
+  // the key shape.
+  edgeMasteryDetail: Record<string, MasteryDetail>;
 }
 
 /**
@@ -87,7 +91,7 @@ export async function getKnowledgeMapForFolder(
   concepts: FolderConcept[]
 ): Promise<KnowledgeMapResult> {
   if (!concepts.length) {
-    return { nodes: [], edges: [], mastery: {}, masteryDetail: {}, lowConfidenceNodeIds: [], edgeMastery: {} };
+    return { nodes: [], edges: [], mastery: {}, masteryDetail: {}, lowConfidenceNodeIds: [], edgeMastery: {}, edgeMasteryDetail: {} };
   }
 
   // Each concept's chain is looked up (or generated, on a genuine
@@ -224,10 +228,10 @@ export async function getKnowledgeMapForFolder(
 
   const nodeIds = Array.from(nodeById.keys());
   const queryKeys = nodeIds.map((id) => queryKeyForNode.get(id) || id);
-  const [found, lowConfidenceQueryKeys, edgeMasteryStates] = await Promise.all([
+  const [found, lowConfidenceQueryKeys, edgeFound] = await Promise.all([
     getMasteryDetailsForConcepts(userId, queryKeys),
     getConceptsWithLowConfidenceSignal(userId, queryKeys),
-    getMasteryStatesForConcepts(userId, edgeQueryKeys),
+    getMasteryDetailsForConcepts(userId, edgeQueryKeys),
   ]);
   const mastery: Record<string, 0 | 1 | 2> = {};
   const masteryDetail: Record<string, MasteryDetail> = {};
@@ -243,8 +247,12 @@ export async function getKnowledgeMapForFolder(
   // above (never the resolved query key) — the frontend looks this up
   // per-rendered-edge using the same ids it already has.
   const edgeMastery: Record<string, 0 | 1 | 2> = {};
+  const edgeMasteryDetail: Record<string, MasteryDetail> = {};
   edges.forEach((e, i) => {
-    edgeMastery[`${e.source}->${e.target}`] = edgeMasteryStates.get(edgeQueryKeys[i]) ?? 0;
+    const key = `${e.source}->${e.target}`;
+    const detail = edgeFound.get(edgeQueryKeys[i]);
+    edgeMastery[key] = detail?.state ?? 0;
+    if (detail) edgeMasteryDetail[key] = detail;
   });
 
   const nodes: KnowledgeMapNode[] = nodeIds.map((id) => {
@@ -252,5 +260,5 @@ export async function getKnowledgeMapForFolder(
     return { id: base.id, name: base.name, topics: Array.from(nodeTopics.get(id) || []) };
   });
 
-  return { nodes, edges, mastery, masteryDetail, lowConfidenceNodeIds, edgeMastery };
+  return { nodes, edges, mastery, masteryDetail, lowConfidenceNodeIds, edgeMastery, edgeMasteryDetail };
 }

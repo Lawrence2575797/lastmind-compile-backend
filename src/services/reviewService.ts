@@ -307,6 +307,20 @@ export interface MasteryDetail {
   state: 0 | 1 | 2;
   stability: number;
   reps: number;
+  // FSRS's own "rated Again" counter — the raw material for successRate
+  // below. Exposed alongside reps (rather than pre-dividing here) so a
+  // caller with its own minimum-reps bar can decide when the ratio is
+  // meaningful, same reasoning as leaving `state` and `reps` both exposed
+  // already.
+  lapses: number;
+  // (reps - lapses) / reps — the fraction of graded attempts that were
+  // NOT "Again", across this concept's entire review history. Distinct
+  // from `state`: a concept can be state 2 ("mastered" by the stability/
+  // reps bar) while still having a low successRate if it took many
+  // Agains to get there, and a concept can be state 1 with a perfectly
+  // fine successRate if it just hasn't accumulated enough stability yet
+  // despite consistently correct answers. 0 when reps is 0 (no signal).
+  successRate: number;
   dueDate: string | null;
   spacedSuccessCount: number;
   isDurablyMastered: boolean;
@@ -327,7 +341,7 @@ export async function getMasteryDetailsForConcepts(userId: string, conceptIds: s
 
   const { data, error } = await supabaseAdmin
     .from('concept_reviews')
-    .select('concept_id, stability, reps, due, spaced_success_count')
+    .select('concept_id, stability, reps, lapses, due, spaced_success_count')
     .eq('user_id', userId)
     .in('concept_id', conceptIds);
   if (error) throw error;
@@ -335,10 +349,13 @@ export async function getMasteryDetailsForConcepts(userId: string, conceptIds: s
   (data || []).forEach((row) => {
     const isMastered = row.stability >= MASTERY_STABILITY_THRESHOLD && row.reps >= MIN_REPS_FOR_TRUST;
     const spacedSuccessCount = (row as any).spaced_success_count ?? 0;
+    const lapses = (row as any).lapses ?? 0;
     details.set(row.concept_id as string, {
       state: isMastered ? 2 : 1,
       stability: row.stability,
       reps: row.reps,
+      lapses,
+      successRate: row.reps > 0 ? (row.reps - lapses) / row.reps : 0,
       dueDate: row.due,
       spacedSuccessCount,
       isDurablyMastered: spacedSuccessCount >= DURABLE_RELEARNING_CRITERION,

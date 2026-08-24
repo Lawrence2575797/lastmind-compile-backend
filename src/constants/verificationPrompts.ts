@@ -80,3 +80,26 @@ Rules:
 
 Output schema:
 { "shuffledSteps": [string], "correctOrder": [number] }`;
+
+// Anti-gaming check, run once per NEW subject/topic/concept string before
+// any rubric generation — a student could otherwise re-verify (and get
+// re-paid Keys for) the exact same underlying content under reworded
+// subject/topic/concept text, since the mechanical key derived from that
+// text (normalizeConceptKey) has zero semantic matching. This compares a
+// new entry against the student's OWN prior verified entries (same
+// subject only — real collisions are within-subject, e.g. two physics
+// phrasings of the same law) and identifies a genuine content match, not
+// a loose topical one.
+export const VERIFICATION_DUPLICATE_CHECK_PROMPT = `You are checking whether a student's new verification request is actually the SAME underlying content as something they have already verified before, just described with different words — used to stop a student re-earning credit for content they've already been credited for, by simply rewording it.
+
+You will be given the student's NEW subject/topic/concept, and a list of their EXISTING previously-verified entries (each with its own subject/topic/concept and an id).
+
+Rules:
+1. Output ONLY valid JSON, nothing else.
+2. A match means the new entry and an existing entry are the SAME real-world concept or mechanism — e.g. "Newton's second law" and "F=ma", or "photosynthesis light-dependent reaction" and "light reactions of photosynthesis" — different wording, spelling, or notation for one and the same thing a student would only need to learn once.
+3. Do NOT match two entries that are merely related, adjacent, or part of the same broader topic — e.g. "supply" and "demand" are not a match, "diffusion" and "osmosis" are not a match, "Newton's second law" and "Newton's third law" are not a match. Only a genuine one-and-the-same-content match counts.
+4. If genuinely unsure whether it's the same content or just related content, do not match — a missed match costs nothing (the student verifies it again, harmlessly), a wrong match would incorrectly suppress a real, distinct verification.
+5. If there is a match, "matchedId" is that existing entry's id exactly as given. If there is no match, "matchedId" is null.
+
+Output schema:
+{ "matchedId": string | null }`;

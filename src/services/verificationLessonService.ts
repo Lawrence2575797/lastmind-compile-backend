@@ -14,6 +14,7 @@ import {
   VERIFICATION_CORRECTION_PROMPT,
   VERIFICATION_FILL_GAP_PROMPT,
   VERIFICATION_ORDER_WORDS_PROMPT,
+  VERIFICATION_DUPLICATE_CHECK_PROMPT,
 } from '../constants/verificationPrompts';
 
 function stripCodeFences(text: string): string {
@@ -170,6 +171,75 @@ export interface VerificationAttemptStart {
  * attempt regardless of grade, which is what "don't repeat the same
  * circumstance next time" actually needs.
  */
+interface DuplicateCheckResult {
+  matchedId: string | null;
+}
+
+/**
+ * Anti-gaming: a student could otherwise re-verify (and get re-paid Keys
+ * for) the exact same underlying content under reworded subject/topic/
+ * concept text, since normalizeConceptKey is purely mechanical and has no
+ * semantic matching. Returns the conceptId this attempt should actually
+ * be tracked under — either the freshly-typed one (genuinely new content,
+ * or a literal repeat of something already registered under this exact
+ * id, which the existing payMasteryInstallment newCount>priorCount check
+ * already guards) or an existing entry's conceptId if a Claude check
+ * finds this is the same content, differently worded. Registers a new
+ * learning_profile_entries row the first time a genuinely new conceptId
+ * is used — never on a match, since nothing new was introduced.
+ */
+async function resolveVerificationConceptId(
+  userId: string,
+  subject: string,
+  topic: string,
+  concept: string,
+  conceptId: string,
+  qualification: string,
+  examBoard: string
+): Promise<string> {
+  const { data: existingExact, error: exactError } = await supabaseAdmin
+    .from('learning_profile_entries')
+    .select('id')
+    .eq('user_id', userId)
+    .eq('concept_id', conceptId)
+    .maybeSingle();
+  if (exactError) throw exactError;
+  if (existingExact) return conceptId; // literal repeat — already tracked under this exact id
+
+  const { data: sameSubject, error: subjectError } = await supabaseAdmin
+    .from('learning_profile_entries')
+    .select('concept_id, subject, topic, concept')
+    .eq('user_id', userId)
+    .eq('subject', subject);
+  if (subjectError) throw subjectError;
+
+  if (sameSubject && sameSubject.length) {
+    const candidates = sameSubject.map((e, i) => ({ id: String(i), conceptId: e.concept_id as string, topic: e.topic, concept: e.concept }));
+    const userContent = [
+      `New entry — subject: ${subject}, topic: ${topic}, concept: ${concept}`,
+      `Existing entries:\n${JSON.stringify(candidates.map((c) => ({ id: c.id, topic: c.topic, concept: c.concept })))}`,
+    ].join('\n');
+    try {
+      const check = await callJSON<DuplicateCheckResult>(VERIFICATION_DUPLICATE_CHECK_PROMPT, userContent, MODELS.simpleQuestion, 0);
+      if (check.matchedId !== null) {
+        const matched = candidates.find((c) => c.id === check.matchedId);
+        if (matched) return matched.conceptId;
+      }
+    } catch (err) {
+      // A failed duplicate check should never block a genuine verification
+      // attempt — worst case here is a missed match (harmless, costs a
+      // re-verification), not a wrongly blocked one.
+      console.error('LastMind: verification duplicate-content check failed (non-fatal, proceeding as new).', err);
+    }
+  }
+
+  const { error: insertError } = await supabaseAdmin
+    .from('learning_profile_entries')
+    .insert({ user_id: userId, concept_id: conceptId, subject, topic, concept, qualification: qualification || null, exam_board: examBoard || null });
+  if (insertError) throw insertError;
+  return conceptId;
+}
+
 export async function startVerificationAttempt(
   userId: string,
   subject: string,
@@ -180,7 +250,8 @@ export async function startVerificationAttempt(
   customTitle = '',
   customDescription = ''
 ): Promise<VerificationAttemptStart> {
-  const conceptId = normalizeConceptKey(subject, topic, concept);
+  const rawConceptId = normalizeConceptKey(subject, topic, concept);
+  const conceptId = await resolveVerificationConceptId(userId, subject, topic, concept, rawConceptId, qualification, examBoard);
   const { rubricKey, scenarios } = await getOrGenerateRubric(subject, topic, concept, qualification, examBoard, customTitle, customDescription);
   const { row, spacedSuccessCount } = await getMasteryStatus(userId, conceptId);
   const attemptsSoFar = row?.reps ?? 0;

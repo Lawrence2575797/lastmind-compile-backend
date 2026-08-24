@@ -50,7 +50,7 @@ router.get('/tutoring-sessions/:id/suggest-release-time', syncEndpointLimiter, a
 });
 
 // POST /tutoring-sessions/:id/release-time  { releaseTime }
-router.post('/tutoring-sessions/:id/release-time', async (req: Request, res: Response) => {
+router.post('/tutoring-sessions/:id/release-time', actionEndpointLimiter, async (req: Request, res: Response) => {
   const { releaseTime } = req.body ?? {};
   if (typeof releaseTime !== 'string' || !releaseTime.trim()) {
     return res.status(400).json({ error: 'releaseTime (ISO string) is required' });

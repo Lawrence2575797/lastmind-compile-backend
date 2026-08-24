@@ -1,6 +1,7 @@
 import 'dotenv/config';
 import express from 'express';
 import cors from 'cors';
+import helmet from 'helmet';
 import compileRouter from './routes/compile';
 import reviewRouter from './routes/review';
 import chainsRouter from './routes/chains';
@@ -39,6 +40,11 @@ const app = express();
 // malicious client could forge onto it.
 app.set('trust proxy', 1);
 
+// Standard security headers (X-Content-Type-Options, no X-Powered-By,
+// etc.) — this is a JSON API with no HTML views of its own, so helmet's
+// CSP defaults (meant for pages that render markup) are switched off
+// rather than fought against.
+app.use(helmet({ contentSecurityPolicy: false }));
 app.use(express.json({ limit: '200kb' }));
 app.use(cors({ origin: FRONTEND_ORIGIN, methods: ['POST', 'GET'] }));
 app.use(globalRateLimiter);

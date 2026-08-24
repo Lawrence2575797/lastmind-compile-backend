@@ -29,3 +29,9 @@ alter table user_folders enable row level security;
 alter table user_tutees enable row level security; -- orphaned table, code no longer references it, but it may still exist
 alter table verification_rubrics enable row level security;
 alter table subscriptions enable row level security; -- used by lastmind-stripe-backend, also service-role-only
+alter table user_credits enable row level security;
+alter table answer_confidence_signals enable row level security;
+alter table lock_balances enable row level security;
+alter table lock_holds enable row level security;
+alter table learning_profile_entries enable row level security;
+alter table user_onboarding enable row level security;

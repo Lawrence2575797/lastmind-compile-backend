@@ -64,8 +64,22 @@ app.use('/', rewardsRouter);
 app.use('/', adminRouter);
 app.use('/', verificationRouter);
 
-app.get('/health', (_req, res) => res.send('ok'));
+app.get('/health', async (_req, res) => {
+  const { supabaseAdmin } = await import('./services/supabaseAdmin');
+  const { count: lockBalancesCount } = await supabaseAdmin
+    .from('lock_balances')
+    .select('*', { count: 'exact', head: true });
+  const { count: profileEntriesCount } = await supabaseAdmin
+    .from('learning_profile_entries')
+    .select('*', { count: 'exact', head: true });
+  res.json({
+    status: 'ok',
+    gitCommit: process.env.RENDER_GIT_COMMIT || 'unknown',
+    lockBalancesCount,
+    profileEntriesCount,
+  });
+});
 
 app.listen(PORT, () => {
-  console.log(`LastMind compile backend listening on :${PORT}`);
+  console.log(`LastMind compile backend listening on :${PORT}, commit ${process.env.RENDER_GIT_COMMIT || 'unknown'}`);
 });

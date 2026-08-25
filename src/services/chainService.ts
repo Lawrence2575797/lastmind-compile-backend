@@ -100,7 +100,7 @@ export interface StoredLessonPlanSubtopic {
 // spirit as normalizeConceptKey below just without collapsing everything
 // to one string (subject/qualification/examBoard still need to compare
 // independently).
-function normalizeForPlanMatch(value: string): string {
+export function normalizeForPlanMatch(value: string): string {
   return (value || '').trim().toLowerCase().replace(/[\s-]+/g, '');
 }
 

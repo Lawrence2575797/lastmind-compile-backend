@@ -1,6 +1,24 @@
 import { supabaseAdmin } from './supabaseAdmin';
 import { callClaudeJSON, MODELS } from './claudeClient';
 import { PRACTICE_QUESTION_MARKING_PROMPT } from '../constants/practiceQuestionPrompts';
+import { normalizeForPlanMatch } from './chainService';
+
+// The same general "how marks are awarded" explanation shown to the
+// student on the practice-questions page (see MARK_BREAKDOWN_EXPLAINERS
+// in learn/index.html) — given to the marking AI too, as background
+// framing for how the specific mark_scheme_json for one question fits
+// into the exam board's overall assessment structure. Keyed on a
+// normalized subject/qualification/examBoard, same reasoning as
+// getStoredLessonPlan: free-typed folder fields shouldn't be able to
+// silently miss this by whitespace/hyphen/case alone.
+const MARKING_STRUCTURE_NOTES: Record<string, string> = {
+  'economics|alevel|edexcel': `Edexcel A-Level Economics marks questions in two different ways depending on the mark tariff. Lower-tariff questions (2, 4, and 8 marks) are points-based: separate marks are set aside for accurate knowledge, applying it to the specific context given, building a logical chain of reasoning, and (for 8-markers) weighing it up — each scored on its own and added together. Higher-tariff questions (10, 12, 15, and 25 marks) are levels-based instead: the whole answer is placed into one of several bands based on how well it demonstrates knowledge, application, analysis, and evaluation TOGETHER, not as separately-scored parts — a genuinely strong point on one side does not lift the answer into a higher band if the rest doesn't match it. Multiple choice (1 mark) questions are simply right or wrong.`,
+};
+
+function getMarkingStructureNotes(subject: string, qualification: string, examBoard: string): string | null {
+  const key = `${normalizeForPlanMatch(subject)}|${normalizeForPlanMatch(qualification)}|${normalizeForPlanMatch(examBoard)}`;
+  return MARKING_STRUCTURE_NOTES[key] ?? null;
+}
 
 function stripCodeFences(text: string): string {
   return text.trim().replace(/^```(?:json)?\s*/i, '').replace(/```\s*$/, '').trim();
@@ -69,12 +87,16 @@ export class PracticeQuestionNotFoundError extends Error {
 interface MarkingResult {
   mark: number;
   feedback: string;
+  conceptualMistakes: string | null;
+  examTechniqueTips: string | null;
 }
 
 export interface PracticeQuestionMarkingResult {
   markAwarded: number;
   markTariff: number;
   feedback: string;
+  conceptualMistakes: string | null;
+  examTechniqueTips: string | null;
 }
 
 // Marks against whatever mark_scheme_json this specific question was
@@ -95,6 +117,8 @@ export async function submitPracticeAnswer(userId: string, questionId: string, a
   const markTariff = question.mark_tariff as number;
   let markAwarded: number;
   let feedback: string;
+  let conceptualMistakes: string | null = null;
+  let examTechniqueTips: string | null = null;
 
   // A multiple-choice question has one definitively correct option — no
   // AI call needed (or wanted) to grade a lookup. mark_scheme_json for
@@ -107,15 +131,19 @@ export async function submitPracticeAnswer(userId: string, questionId: string, a
     markAwarded = correct ? markTariff : 0;
     feedback = correct ? `Correct. ${scheme.explanation}` : `Not quite. ${scheme.explanation}`;
   } else {
+    const structureNotes = getMarkingStructureNotes(question.subject as string, question.qualification as string, (question.exam_board as string) || '');
     const userContent = [
       `Question (worth ${markTariff} marks): ${question.question_text}`,
       `Mark scheme type: ${question.mark_scheme_type}`,
       `Mark scheme: ${JSON.stringify(question.mark_scheme_json)}`,
+      structureNotes ? `General marking structure for this subject/qualification/exam board (background context — apply it, don't recite it back): ${structureNotes}` : '',
       `Student's answer: ${answerText}`,
-    ].join('\n\n');
+    ].filter(Boolean).join('\n\n');
     const result = await callJSON<MarkingResult>(PRACTICE_QUESTION_MARKING_PROMPT, userContent, MODELS.simpleQuestion, 0);
     markAwarded = Math.max(0, Math.min(markTariff, Math.round(result.mark)));
     feedback = result.feedback;
+    conceptualMistakes = result.conceptualMistakes || null;
+    examTechniqueTips = result.examTechniqueTips || null;
   }
 
   const { error: insertError } = await supabaseAdmin.from('practice_question_attempts').insert({
@@ -125,8 +153,10 @@ export async function submitPracticeAnswer(userId: string, questionId: string, a
     mark_awarded: markAwarded,
     mark_tariff: markTariff,
     feedback,
+    conceptual_mistakes: conceptualMistakes,
+    exam_technique_tips: examTechniqueTips,
   });
   if (insertError) throw insertError;
 
-  return { markAwarded, markTariff, feedback };
+  return { markAwarded, markTariff, feedback, conceptualMistakes, examTechniqueTips };
 }

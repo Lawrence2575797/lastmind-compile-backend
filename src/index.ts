@@ -25,6 +25,7 @@ import adminRouter from './routes/admin';
 import verificationRouter from './routes/verification';
 import onboardingRouter from './routes/onboarding';
 import rewardSubmissionsRouter from './routes/rewardSubmissions';
+import practiceQuestionsRouter from './routes/practiceQuestions';
 import { globalRateLimiter } from './services/rateLimiters';
 
 const PORT = process.env.PORT || 4100;
@@ -73,6 +74,7 @@ app.use('/', adminRouter);
 app.use('/', verificationRouter);
 app.use('/', onboardingRouter);
 app.use('/', rewardSubmissionsRouter);
+app.use('/', practiceQuestionsRouter);
 
 app.get('/health', (_req, res) => res.send('ok'));
 

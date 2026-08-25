@@ -47,6 +47,14 @@ async function callJSON<T>(systemPrompt: string, userContent: string, model: str
   }
 }
 
+export interface PracticeQuestionMarkingResult {
+  markAwarded: number;
+  markTariff: number;
+  feedback: string;
+  conceptualMistakes: string | null;
+  examTechniqueTips: string | null;
+}
+
 export interface PracticeQuestionSummary {
   id: string;
   questionText: string;
@@ -58,24 +66,52 @@ export interface PracticeQuestionSummary {
   // option's index is deliberately never included here, only in the
   // full row submitPracticeAnswer reads server-side.
   options: string[] | null;
+  // Set once this student has already submitted an answer to this
+  // question — the frontend renders it read-only (their stored answer,
+  // mark, and feedback) instead of a fresh form, since a question can
+  // only ever be answered once (see the unique constraint backing
+  // submitPracticeAnswer's own re-submission guard below).
+  priorAttempt: (PracticeQuestionMarkingResult & { answerText: string }) | null;
 }
 
-export async function listPracticeQuestions(conceptId: string): Promise<PracticeQuestionSummary[]> {
+export async function listPracticeQuestions(conceptId: string, userId: string): Promise<PracticeQuestionSummary[]> {
   const { data, error } = await supabaseAdmin
     .from('practice_questions')
     .select('id, question_text, mark_tariff, requires_diagram, answer_structure_advice, mark_scheme_type, mark_scheme_json')
     .eq('concept_id', conceptId)
     .order('created_at', { ascending: true });
   if (error) throw error;
-  return (data || []).map((row) => ({
-    id: row.id as string,
-    questionText: row.question_text as string,
-    markTariff: row.mark_tariff as number,
-    isMultipleChoice: row.mark_scheme_type === 'multiple_choice',
-    options: row.mark_scheme_type === 'multiple_choice' ? ((row.mark_scheme_json as { options: string[] }).options ?? null) : null,
-    requiresDiagram: row.requires_diagram as boolean,
-    answerStructureAdvice: (row.answer_structure_advice as string | null) ?? null,
-  }));
+  const questions = data || [];
+  if (!questions.length) return [];
+
+  const { data: attempts, error: attemptsError } = await supabaseAdmin
+    .from('practice_question_attempts')
+    .select('question_id, answer_text, mark_awarded, mark_tariff, feedback, conceptual_mistakes, exam_technique_tips')
+    .eq('user_id', userId)
+    .in('question_id', questions.map((q) => q.id));
+  if (attemptsError) throw attemptsError;
+  const attemptByQuestionId = new Map((attempts || []).map((a) => [a.question_id as string, a]));
+
+  return questions.map((row) => {
+    const attempt = attemptByQuestionId.get(row.id as string);
+    return {
+      id: row.id as string,
+      questionText: row.question_text as string,
+      markTariff: row.mark_tariff as number,
+      isMultipleChoice: row.mark_scheme_type === 'multiple_choice',
+      options: row.mark_scheme_type === 'multiple_choice' ? ((row.mark_scheme_json as { options: string[] }).options ?? null) : null,
+      requiresDiagram: row.requires_diagram as boolean,
+      answerStructureAdvice: (row.answer_structure_advice as string | null) ?? null,
+      priorAttempt: attempt ? {
+        answerText: attempt.answer_text as string,
+        markAwarded: attempt.mark_awarded as number,
+        markTariff: attempt.mark_tariff as number,
+        feedback: attempt.feedback as string,
+        conceptualMistakes: (attempt.conceptual_mistakes as string | null) ?? null,
+        examTechniqueTips: (attempt.exam_technique_tips as string | null) ?? null,
+      } : null,
+    };
+  });
 }
 
 export class PracticeQuestionNotFoundError extends Error {
@@ -85,16 +121,19 @@ export class PracticeQuestionNotFoundError extends Error {
   }
 }
 
-interface MarkingResult {
-  mark: number;
-  feedback: string;
-  conceptualMistakes: string | null;
-  examTechniqueTips: string | null;
+// Thrown when this student already has a stored attempt for this question
+// — carries that attempt so the route can hand it straight back rather
+// than just erroring, since the frontend can render it exactly like a
+// fresh result.
+export class PracticeQuestionAlreadyAnsweredError extends Error {
+  constructor(public existing: PracticeQuestionMarkingResult & { answerText: string }) {
+    super('this question has already been answered');
+    this.name = 'PracticeQuestionAlreadyAnsweredError';
+  }
 }
 
-export interface PracticeQuestionMarkingResult {
-  markAwarded: number;
-  markTariff: number;
+interface MarkingResult {
+  mark: number;
   feedback: string;
   conceptualMistakes: string | null;
   examTechniqueTips: string | null;
@@ -114,6 +153,27 @@ export async function submitPracticeAnswer(userId: string, questionId: string, a
     .maybeSingle();
   if (error) throw error;
   if (!question) throw new PracticeQuestionNotFoundError();
+
+  // A question can only ever be answered once — check first so a normal
+  // double-click just gets handed back what's already stored instead of
+  // paying for a second marking call.
+  const { data: existing, error: existingError } = await supabaseAdmin
+    .from('practice_question_attempts')
+    .select('answer_text, mark_awarded, mark_tariff, feedback, conceptual_mistakes, exam_technique_tips')
+    .eq('user_id', userId)
+    .eq('question_id', questionId)
+    .maybeSingle();
+  if (existingError) throw existingError;
+  if (existing) {
+    throw new PracticeQuestionAlreadyAnsweredError({
+      answerText: existing.answer_text as string,
+      markAwarded: existing.mark_awarded as number,
+      markTariff: existing.mark_tariff as number,
+      feedback: existing.feedback as string,
+      conceptualMistakes: (existing.conceptual_mistakes as string | null) ?? null,
+      examTechniqueTips: (existing.exam_technique_tips as string | null) ?? null,
+    });
+  }
 
   const markTariff = question.mark_tariff as number;
   let markAwarded: number;
@@ -157,7 +217,33 @@ export async function submitPracticeAnswer(userId: string, questionId: string, a
     conceptual_mistakes: conceptualMistakes,
     exam_technique_tips: examTechniqueTips,
   });
-  if (insertError) throw insertError;
+  if (insertError) {
+    // 23505 = unique_violation - two near-simultaneous submits (e.g. a
+    // double-click, or two open tabs) both passed the check above; the
+    // unique (user_id, question_id) constraint is what actually decides
+    // the race. Whichever loses just gets handed back the winner's
+    // stored result, same as a normal repeat visit.
+    if ((insertError as { code?: string }).code === '23505') {
+      const { data: existingAfterRace, error: raceLookupError } = await supabaseAdmin
+        .from('practice_question_attempts')
+        .select('answer_text, mark_awarded, mark_tariff, feedback, conceptual_mistakes, exam_technique_tips')
+        .eq('user_id', userId)
+        .eq('question_id', questionId)
+        .maybeSingle();
+      if (raceLookupError) throw raceLookupError;
+      if (existingAfterRace) {
+        throw new PracticeQuestionAlreadyAnsweredError({
+          answerText: existingAfterRace.answer_text as string,
+          markAwarded: existingAfterRace.mark_awarded as number,
+          markTariff: existingAfterRace.mark_tariff as number,
+          feedback: existingAfterRace.feedback as string,
+          conceptualMistakes: (existingAfterRace.conceptual_mistakes as string | null) ?? null,
+          examTechniqueTips: (existingAfterRace.exam_technique_tips as string | null) ?? null,
+        });
+      }
+    }
+    throw insertError;
+  }
 
   return { markAwarded, markTariff, feedback, conceptualMistakes, examTechniqueTips };
 }

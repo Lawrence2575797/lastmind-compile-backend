@@ -2,7 +2,7 @@ import { Router, Request, Response } from 'express';
 import { requireAuth, requirePaidTier } from '../services/authMiddleware';
 import { syncEndpointLimiter, actionEndpointLimiter } from '../services/rateLimiters';
 import { normalizeConceptKey } from '../services/chainService';
-import { listPracticeQuestions, submitPracticeAnswer, PracticeQuestionNotFoundError } from '../services/practiceQuestionService';
+import { listPracticeQuestions, submitPracticeAnswer, PracticeQuestionNotFoundError, PracticeQuestionAlreadyAnsweredError } from '../services/practiceQuestionService';
 
 const router = Router();
 
@@ -16,7 +16,7 @@ router.get('/practice-questions', syncEndpointLimiter, async (req: Request, res:
   }
   const conceptId = normalizeConceptKey(subject, typeof topic === 'string' ? topic : '', concept);
   try {
-    const questions = await listPracticeQuestions(conceptId);
+    const questions = await listPracticeQuestions(conceptId, req.userId as string);
     res.json(questions);
   } catch (err) {
     console.error('Practice questions fetch failed:', err);
@@ -36,6 +36,9 @@ router.post('/practice-questions/:id/submit', actionEndpointLimiter, async (req:
   } catch (err) {
     if (err instanceof PracticeQuestionNotFoundError) {
       return res.status(404).json({ error: 'that question no longer exists' });
+    }
+    if (err instanceof PracticeQuestionAlreadyAnsweredError) {
+      return res.status(409).json({ error: 'this question has already been answered', ...err.existing });
     }
     console.error('Practice question submission failed:', err);
     res.status(500).json({ error: 'could not mark your answer' });

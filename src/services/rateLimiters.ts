@@ -59,3 +59,16 @@ export const actionEndpointLimiter = rateLimit({
   keyGenerator: (req) => req.userId || req.ip || 'unknown',
   message: { error: 'Too many requests. Please slow down.' },
 });
+
+// For the public partner-signup form — the one endpoint in this codebase
+// with no requireAuth at all, so it can't be keyed by user ID like the
+// limiters above. IP-keyed and tight: a genuine business fills this in
+// once, not repeatedly, so there's no legitimate reason to need more than
+// a handful of submissions per IP per hour.
+export const publicFormLimiter = rateLimit({
+  windowMs: 60 * 60 * 1000, // 1 hour
+  limit: 5,
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: { error: 'Too many submissions from this connection. Please try again later.' },
+});

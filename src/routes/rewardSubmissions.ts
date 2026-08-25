@@ -6,6 +6,7 @@ const router = Router();
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const HEX_COLOR_RE = /^#[0-9a-fA-F]{6}$/;
+const VALID_CATEGORIES = ['Local Offers', 'National'];
 
 function cleanString(value: unknown, maxLength: number): string | null {
   if (typeof value !== 'string') return null;
@@ -29,6 +30,9 @@ router.post('/reward-submissions', publicFormLimiter, async (req: Request, res: 
   const terms = body.terms ? cleanString(body.terms, 300) : null;
   const category = body.category ? cleanString(body.category, 50) : null;
   const accentColor = body.accentColor ? cleanString(body.accentColor, 7) : null;
+  const backgroundColor = body.backgroundColor ? cleanString(body.backgroundColor, 7) : null;
+  const textColor = body.textColor ? cleanString(body.textColor, 7) : null;
+  const catchmentArea = body.catchmentArea ? cleanString(body.catchmentArea, 150) : null;
 
   if (!businessName || !contactEmail || !title || !description) {
     return res.status(400).json({ error: 'businessName, contactEmail, title, and description are required.' });
@@ -38,6 +42,18 @@ router.post('/reward-submissions', publicFormLimiter, async (req: Request, res: 
   }
   if (accentColor && !HEX_COLOR_RE.test(accentColor)) {
     return res.status(400).json({ error: 'accentColor must be a hex color like #E6D7B0.' });
+  }
+  if (backgroundColor && !HEX_COLOR_RE.test(backgroundColor)) {
+    return res.status(400).json({ error: 'backgroundColor must be a hex color like #201F21.' });
+  }
+  if (textColor && !HEX_COLOR_RE.test(textColor)) {
+    return res.status(400).json({ error: 'textColor must be a hex color like #F8F5EF.' });
+  }
+  if (category && !VALID_CATEGORIES.includes(category)) {
+    return res.status(400).json({ error: `category must be one of: ${VALID_CATEGORIES.join(', ')}.` });
+  }
+  if (category === 'Local Offers' && !catchmentArea) {
+    return res.status(400).json({ error: 'catchmentArea is required for Local Offers.' });
   }
 
   let suggestedCostKeys: number | null = null;
@@ -59,6 +75,9 @@ router.post('/reward-submissions', publicFormLimiter, async (req: Request, res: 
       category,
       suggested_cost_keys: suggestedCostKeys,
       accent_color: accentColor,
+      background_color: backgroundColor,
+      text_color: textColor,
+      catchment_area: category === 'Local Offers' ? catchmentArea : null,
     });
     if (error) throw error;
     res.json({ ok: true });

@@ -1,5 +1,6 @@
 import { callClaudeJSON, MODELS } from './claudeClient';
 import { CORTEX_INTENT_PROMPT, CORTEX_NOTE_GENERATION_PROMPT } from '../constants/cortexPrompts';
+import { getStoredLessonPlan } from './chainService';
 
 function stripCodeFences(text: string): string {
   return text.trim().replace(/^```(?:json)?\s*/i, '').replace(/```\s*$/, '').trim();
@@ -145,14 +146,37 @@ export async function decideCortexAction(
   folders: CortexFolderSummary[],
   dueReviews: CortexDueReview[]
 ): Promise<CortexResult> {
+  // A rule-8 "lay out this topic" answer should use an authoritative,
+  // hand-prepared lesson plan when one exists for the folder's exact
+  // subject/qualification/examBoard (see chainService.ts's
+  // getStoredLessonPlan) rather than deriving its own order from general
+  // knowledge every time — keeps every student's version of the same real
+  // topic identical, and keeps it aligned with whatever practice_questions
+  // were seeded against that same concept_id space. Deduped by
+  // subject+qualification+examBoard since a student may have several
+  // folders for the same course (rare, but cheap to guard against
+  // fetching the same plan twice).
+  const seenPlanKeys = new Set<string>();
+  const storedPlans: { subject: string; qualification: string; examBoard?: string; subtopics: Awaited<ReturnType<typeof getStoredLessonPlan>> }[] = [];
+  for (const folder of folders) {
+    const planKey = `${folder.name}::${folder.qualification}::${folder.examBoard || ''}`;
+    if (seenPlanKeys.has(planKey)) continue;
+    seenPlanKeys.add(planKey);
+    const plan = await getStoredLessonPlan(folder.name, folder.qualification, folder.examBoard || '');
+    if (plan) storedPlans.push({ subject: folder.name, qualification: folder.qualification, examBoard: folder.examBoard, subtopics: plan });
+  }
+
   const userContent = [
     `Folder structure:\n${JSON.stringify(folders)}`,
     `Due reviews:\n${JSON.stringify(dueReviews)}`,
+    storedPlans.length
+      ? `Authoritative pre-prepared lesson plans (use these EXACTLY, in the given order, for rule 8/9/10/11 — never invent your own order for a subject/qualification/examBoard/subtopic combination listed here):\n${JSON.stringify(storedPlans)}`
+      : '',
     history.length
       ? `Recent conversation:\n${history.map((h) => `${h.role}: ${h.content}`).join('\n')}`
       : 'No prior conversation this session.',
     `Student's latest message: ${message}`,
-  ].join('\n\n');
+  ].filter(Boolean).join('\n\n');
 
   // maxTokens raised well above the 2048 default — same fix as
   // chainService.ts's own comment describes: rule 8's full-topic-layout

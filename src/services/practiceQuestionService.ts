@@ -33,12 +33,18 @@ export interface PracticeQuestionSummary {
   questionText: string;
   markTariff: number;
   requiresDiagram: boolean;
+  answerStructureAdvice: string | null;
+  isMultipleChoice: boolean;
+  // Only ever populated for a multiple-choice question — the correct
+  // option's index is deliberately never included here, only in the
+  // full row submitPracticeAnswer reads server-side.
+  options: string[] | null;
 }
 
 export async function listPracticeQuestions(conceptId: string): Promise<PracticeQuestionSummary[]> {
   const { data, error } = await supabaseAdmin
     .from('practice_questions')
-    .select('id, question_text, mark_tariff, requires_diagram')
+    .select('id, question_text, mark_tariff, requires_diagram, answer_structure_advice, mark_scheme_type, mark_scheme_json')
     .eq('concept_id', conceptId)
     .order('created_at', { ascending: true });
   if (error) throw error;
@@ -46,7 +52,10 @@ export async function listPracticeQuestions(conceptId: string): Promise<Practice
     id: row.id as string,
     questionText: row.question_text as string,
     markTariff: row.mark_tariff as number,
+    isMultipleChoice: row.mark_scheme_type === 'multiple_choice',
+    options: row.mark_scheme_type === 'multiple_choice' ? ((row.mark_scheme_json as { options: string[] }).options ?? null) : null,
     requiresDiagram: row.requires_diagram as boolean,
+    answerStructureAdvice: (row.answer_structure_advice as string | null) ?? null,
   }));
 }
 
@@ -83,16 +92,31 @@ export async function submitPracticeAnswer(userId: string, questionId: string, a
   if (error) throw error;
   if (!question) throw new PracticeQuestionNotFoundError();
 
-  const userContent = [
-    `Question (worth ${question.mark_tariff} marks): ${question.question_text}`,
-    `Mark scheme type: ${question.mark_scheme_type}`,
-    `Mark scheme: ${JSON.stringify(question.mark_scheme_json)}`,
-    `Student's answer: ${answerText}`,
-  ].join('\n\n');
-
-  const result = await callJSON<MarkingResult>(PRACTICE_QUESTION_MARKING_PROMPT, userContent, MODELS.simpleQuestion, 0);
   const markTariff = question.mark_tariff as number;
-  const markAwarded = Math.max(0, Math.min(markTariff, Math.round(result.mark)));
+  let markAwarded: number;
+  let feedback: string;
+
+  // A multiple-choice question has one definitively correct option — no
+  // AI call needed (or wanted) to grade a lookup. mark_scheme_json for
+  // this type is { options: string[], correctIndex: number,
+  // explanation: string }; answerText is the option's index as a string.
+  if (question.mark_scheme_type === 'multiple_choice') {
+    const scheme = question.mark_scheme_json as { correctIndex: number; explanation: string };
+    const chosen = Number(answerText);
+    const correct = chosen === scheme.correctIndex;
+    markAwarded = correct ? markTariff : 0;
+    feedback = correct ? `Correct. ${scheme.explanation}` : `Not quite. ${scheme.explanation}`;
+  } else {
+    const userContent = [
+      `Question (worth ${markTariff} marks): ${question.question_text}`,
+      `Mark scheme type: ${question.mark_scheme_type}`,
+      `Mark scheme: ${JSON.stringify(question.mark_scheme_json)}`,
+      `Student's answer: ${answerText}`,
+    ].join('\n\n');
+    const result = await callJSON<MarkingResult>(PRACTICE_QUESTION_MARKING_PROMPT, userContent, MODELS.simpleQuestion, 0);
+    markAwarded = Math.max(0, Math.min(markTariff, Math.round(result.mark)));
+    feedback = result.feedback;
+  }
 
   const { error: insertError } = await supabaseAdmin.from('practice_question_attempts').insert({
     user_id: userId,
@@ -100,9 +124,9 @@ export async function submitPracticeAnswer(userId: string, questionId: string, a
     answer_text: answerText,
     mark_awarded: markAwarded,
     mark_tariff: markTariff,
-    feedback: result.feedback,
+    feedback,
   });
   if (insertError) throw insertError;
 
-  return { markAwarded, markTariff, feedback: result.feedback };
+  return { markAwarded, markTariff, feedback };
 }

@@ -5,6 +5,7 @@ import { supabaseAdmin } from '../services/supabaseAdmin';
 const router = Router();
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+const PHONE_RE = /^[0-9+()\-\s]{7,20}$/;
 const HEX_COLOR_RE = /^#[0-9a-fA-F]{6}$/;
 const VALID_CATEGORIES = ['Local Offers', 'National'];
 
@@ -15,6 +16,33 @@ function cleanString(value: unknown, maxLength: number): string | null {
   return trimmed;
 }
 
+// Verifies the Turnstile token the widget attaches to the form (see
+// partner-signup/index.html) against Cloudflare's own API — the one thing
+// that actually stops scripted spam on a form with no login at all.
+// TURNSTILE_SECRET_KEY is the private half of the pair; the public site
+// key lives directly in the frontend HTML, same as Supabase's anon key.
+async function verifyTurnstileToken(token: string, remoteIp: string | undefined): Promise<boolean> {
+  const secretKey = process.env.TURNSTILE_SECRET_KEY;
+  if (!secretKey) {
+    console.warn('LastMind: TURNSTILE_SECRET_KEY is not set — skipping Turnstile verification.');
+    return true;
+  }
+  try {
+    const params = new URLSearchParams({ secret: secretKey, response: token });
+    if (remoteIp) params.set('remoteip', remoteIp);
+    const resp = await fetch('https://challenges.cloudflare.com/turnstile/v0/siteverify', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      body: params,
+    });
+    const result = (await resp.json()) as { success?: boolean };
+    return result.success === true;
+  } catch (err) {
+    console.error('Turnstile verification request failed:', err);
+    return false;
+  }
+}
+
 // POST /reward-submissions — public, no auth (businesses aren't LastMind
 // accounts). Purely a mailbox: rows land in reward_submissions for manual
 // review (that table's own Supabase editor is enough, same as `rewards`
@@ -23,8 +51,18 @@ function cleanString(value: unknown, maxLength: number): string | null {
 router.post('/reward-submissions', publicFormLimiter, async (req: Request, res: Response) => {
   const body = req.body ?? {};
 
+  const turnstileToken = cleanString(body.turnstileToken, 2000);
+  if (!turnstileToken) {
+    return res.status(400).json({ error: 'Please complete the verification check.' });
+  }
+  const turnstileOk = await verifyTurnstileToken(turnstileToken, req.ip);
+  if (!turnstileOk) {
+    return res.status(400).json({ error: 'Verification check failed — please try again.' });
+  }
+
   const businessName = cleanString(body.businessName, 100);
   const contactEmail = cleanString(body.contactEmail, 200);
+  const contactPhone = body.contactPhone ? cleanString(body.contactPhone, 20) : null;
   const title = cleanString(body.title, 100);
   const description = cleanString(body.description, 500);
   const terms = body.terms ? cleanString(body.terms, 300) : null;
@@ -39,6 +77,9 @@ router.post('/reward-submissions', publicFormLimiter, async (req: Request, res: 
   }
   if (!EMAIL_RE.test(contactEmail)) {
     return res.status(400).json({ error: 'contactEmail is not a valid email address.' });
+  }
+  if (contactPhone && !PHONE_RE.test(contactPhone)) {
+    return res.status(400).json({ error: 'contactPhone does not look like a valid phone number.' });
   }
   if (accentColor && !HEX_COLOR_RE.test(accentColor)) {
     return res.status(400).json({ error: 'accentColor must be a hex color like #E6D7B0.' });
@@ -69,6 +110,7 @@ router.post('/reward-submissions', publicFormLimiter, async (req: Request, res: 
     const { error } = await supabaseAdmin.from('reward_submissions').insert({
       business_name: businessName,
       contact_email: contactEmail,
+      contact_phone: contactPhone,
       title,
       description,
       terms,

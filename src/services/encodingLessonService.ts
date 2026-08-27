@@ -607,7 +607,6 @@ interface DraftStep {
   text: string;
   checkQuestion?: string;
   diagnosisConceptKey: string;
-  confident?: boolean;
   requiresCalculation?: boolean;
   expectedSolution?: string;
   chainNodes?: { id: string; label: string }[];
@@ -1221,7 +1220,6 @@ async function generateFirstStep(
       type: EncodingStepType;
       text: string;
       checkQuestion?: string;
-      confident?: boolean;
       requiresCalculation?: boolean;
       expectedSolution?: string;
     };
@@ -1265,7 +1263,6 @@ async function generateFirstStep(
     text: s.text,
     checkQuestion: s.checkQuestion,
     diagnosisConceptKey: s.nodeId === target.id ? conceptKey : s.nodeId,
-    confident: s.confident,
     requiresCalculation: !!s.requiresCalculation,
     expectedSolution: s.requiresCalculation ? s.expectedSolution : undefined,
   };
@@ -1273,8 +1270,7 @@ async function generateFirstStep(
 
   await repairUncertainSteps([draftStep], subject, qualification, examBoard);
 
-  const { confident, ...step } = draftStep;
-  return { hookFact: result.hookFact, step };
+  return { hookFact: result.hookFact, step: draftStep };
 }
 
 // Phase 2 — generates every step after the one generateFirstStep already
@@ -1309,7 +1305,6 @@ async function generateLessonContinuation(
       type: EncodingStepType;
       text: string;
       checkQuestion?: string;
-      confident?: boolean;
       requiresCalculation?: boolean;
       expectedSolution?: string;
     }[];
@@ -1351,7 +1346,6 @@ async function generateLessonContinuation(
     text: s.text,
     checkQuestion: s.checkQuestion,
     diagnosisConceptKey: s.nodeId === target.id || s.type === 'implication' ? conceptKey : s.nodeId,
-    confident: s.confident,
     requiresCalculation: !!s.requiresCalculation,
     expectedSolution: s.requiresCalculation ? s.expectedSolution : undefined,
   }));
@@ -1385,7 +1379,7 @@ async function generateLessonContinuation(
     diagramPromise,
   ]);
 
-  const steps: CachedEncodingStep[] = draftSteps.map(({ confident, ...step }) => step);
+  const steps: CachedEncodingStep[] = draftSteps;
 
   if (diagram) {
     const diagramNodeId = diagramForNode ? diagramForNode.id : target.id;

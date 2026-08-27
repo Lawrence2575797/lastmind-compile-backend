@@ -693,7 +693,16 @@ async function repairUncertainSteps(
           }${automatedFlag}`,
         ].join('\n'),
         MODELS.diagnosticTree,
-        0.2
+        0.2,
+        // No output-size reason to change maxTokens — pass through the
+        // 2048 default explicitly so cacheSystemPrompt can be set below.
+        undefined,
+        // STEP_DERIVABILITY_CHECK_PROMPT is fixed and byte-identical on
+        // every call — every other step in this SAME repair loop hits
+        // this within seconds, well inside the cache TTL, so this was
+        // paying full input price per step for no reason. Same caching
+        // win as every other fixed prompt in this file.
+        true
       );
       if (result.needsRevision) {
         if (result.revisedText) step.text = result.revisedText;

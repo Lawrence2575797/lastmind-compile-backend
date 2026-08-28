@@ -23,16 +23,22 @@ export const MODELS = {
   // Dependency chain generation + its fact-check pass — rare (generated
   // once per concept+qualification+examBoard, then cached and reused
   // across every student who hits that same tier), but high-leverage: a
-  // wrong chain silently corrupts every diagnosis built on top of it.
-  // factCheck stays on Opus unconditionally regardless of which
-  // generation model drafted the chain — it's the actual quality gate
-  // (it can rewrite the whole graph via corrected_graph), so cost savings
-  // on the draft never come at the expense of the final result. See
+  // wrong chain silently corrupts every diagnosis built on top of it. See
   // chainService.ts's isUniversityLevel for how chainGeneration vs
   // chainGenerationSimple is chosen.
   chainGeneration: 'claude-opus-4-8',
   chainGenerationSimple: process.env.CLAUDE_MODEL || 'claude-sonnet-5',
-  factCheck: 'claude-opus-4-8',
+  // Deliberately moved OFF Opus (was 'claude-opus-4-8' unconditionally) to
+  // cut cost — a known, accepted tradeoff, not an oversight: this WAS the
+  // one cross-model check catching a weaker Sonnet-drafted chain before
+  // it's cached and served to every student who ever hits that concept.
+  // With this on Sonnet too, a GCSE/A-Level draft (the common case, see
+  // chainGenerationSimple) is now checked by the same tier that wrote it,
+  // not a stronger one. University-level drafts (chainGeneration, still
+  // Opus) are checked by a weaker model than drafted them for the first
+  // time. If bad chains start reaching students, this is the first place
+  // to look — reverting to 'claude-opus-4-8' is the fix.
+  factCheck: process.env.CLAUDE_MODEL || 'claude-sonnet-5',
   // The diagnostic tree itself — corrections, contrastive cues, the
   // nuanced pedagogical judgment calls.
   diagnosticTree: process.env.CLAUDE_MODEL || 'claude-sonnet-5',

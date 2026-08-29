@@ -39,12 +39,17 @@ const KNOWLEDGE_MAP_VERIFICATION_PROMPT = extractPromptConstant(promptsSource, '
 // Same env var claudeClient.ts already reads - not ANTHROPIC_API_KEY.
 const client = new Anthropic({ apiKey: process.env.CLAUDE_API_KEY });
 
-// Matches MODELS.chainGeneration/factCheck in claudeClient.ts: that's the
-// closest existing analogue (a dependency-structure generation task, fact-
-// checked on Opus unconditionally because a wrong chain silently corrupts
-// everything built on it) - the same reasoning applies here, more so,
-// since this runs once per SUBJECT rather than once per concept.
-const GENERATION_MODEL = 'claude-opus-4-8';
+// Matches the draft/gate split already established by
+// chainGenerationSimple + factCheck in claudeClient.ts, not
+// chainGeneration + factCheck (both-Opus) - generation here is a
+// structured decomposition task against explicit rules, which Sonnet
+// handles reliably; verification is the precision-critical judgment call
+// (is this edge actually wrong, is this really a duplicate) applied
+// across the whole batch at once, where Opus's extra reasoning capacity
+// earns its cost. The cost delta between the two options is trivial
+// either way at this volume (roughly $1-1.50 per subject) - this is a
+// quality choice, not a cost one.
+const GENERATION_MODEL = process.env.CLAUDE_MODEL || 'claude-sonnet-5';
 const VERIFICATION_MODEL = 'claude-opus-4-8';
 
 const SUBJECT = 'Economics';

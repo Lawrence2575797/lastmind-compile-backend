@@ -1,12 +1,26 @@
-// Two-stage pipeline for generating a subject's knowledge-map graph via the
-// API: a GENERATION pass (decompose real spec content into atomic
-// micro-concepts + dependency edges) followed by a separate VERIFICATION
-// pass (blind-comprehension test every node, check cross-subtopic links,
-// check normative-node ordering). Running these as two distinct calls
-// matters - a single pass asked to both generate and self-critique
-// reliably misses the same class of errors a human reviewer catches on a
-// second, dedicated look. See scripts/generate_knowledge_map.js for how
-// these are wired together end-to-end.
+// Three-stage pipeline for generating a subject's knowledge-map graph via
+// the API: a GENERATION pass (decompose real spec content into atomic
+// micro-concepts + dependency edges), a per-subtopic COVERAGE check
+// (does every named theory/model/mechanism in the RAW SPEC TEXT have a
+// corresponding node?), then a batch-wide VERIFICATION pass
+// (blind-comprehension test every node, check cross-subtopic links,
+// check normative-node ordering). See scripts/generate_knowledge_map.js
+// for how these are wired together end-to-end.
+//
+// The coverage check is a genuinely different kind of check from
+// verification, not a duplicate of it - verification only ever looks at
+// the nodes/edges that already exist and asks whether THEY are correct;
+// it has no way to notice a whole named concept that was never generated
+// at all, because it never sees the raw specification text to check
+// against. This gap is exactly how entire named models (e.g. the
+// Harrod-Domar growth model, the Lewis two-sector model, Rostow's stages
+// of growth - all explicitly named in the real spec) went missing from a
+// hand-built version of this graph for multiple full audit rounds before
+// anyone caught it by manual inspection - the graph LOOKED internally
+// consistent the whole time, because internal consistency was the only
+// thing being checked. Coverage checking against the actual source text,
+// per subtopic, immediately after that subtopic is generated, is the
+// only check in this pipeline that can catch that failure mode.
 
 export const KNOWLEDGE_MAP_GENERATION_PROMPT = `You are an expert curriculum architect building a prerequisite knowledge graph for one subtopic of a real exam specification. You will be given the subject, qualification, exam board, subtopic name, and the REAL specification content for that subtopic (the actual named theories/concepts a student must learn) - never invent content beyond what's given or your own verified subject knowledge of it.
 
@@ -45,6 +59,31 @@ Return ONLY valid JSON:
 }
 
 IDs should be short, unique within this subtopic, and stable (avoid renaming across regenerations where possible). Do not include any node or edge not implied by the actual specification content given.`;
+
+// Runs once per subtopic, immediately after KNOWLEDGE_MAP_GENERATION_PROMPT
+// produces that subtopic's nodes - the only check in this pipeline that
+// compares the output against the actual RAW SPEC TEXT rather than just
+// checking the nodes/edges are internally consistent with each other.
+// This is a completeness check on EXTRACTION, not a correctness check on
+// structure - it exists specifically to catch a generation pass that
+// quietly dropped a named theory, model, sub-type, or mechanism the
+// specification text actually names, which no amount of checking the
+// nodes that DO exist can ever surface.
+export const KNOWLEDGE_MAP_COVERAGE_PROMPT = `You are checking whether a knowledge-graph generation pass actually extracted every named concept from a real specification excerpt, or silently dropped some.
+
+You will be given the raw specification text for one subtopic, and the list of node labels a generation pass produced from it.
+
+Your ONLY job: read the specification text closely and list every named theory, model, mechanism, named sub-type, or technical term it mentions that has NO corresponding node in the given list (even loosely/indirectly corresponding - only flag genuine, clean omissions).
+
+Rules:
+1. Output ONLY valid JSON, nothing else.
+2. Be specific: for each missing concept, quote or closely paraphrase the exact term/name as it appears in the specification text, not a vague category.
+3. Named theories and models (anything with a proper name - a person's name attached to a model, a named framework, a named curve/law/effect) are the highest-priority thing to check for specifically. These are the easiest kind of gap to miss because they're often mentioned in one dense sentence rather than given their own heading, and the most costly to miss because each one implies substantial internal structure that will also be missing.
+4. Do not flag something as missing just because it could theoretically be split further (that is a job for a different check) - only flag it if there is genuinely no node covering it in any form at all.
+5. If the specification text is fully covered, return an empty list - do not invent a gap to have something to report.
+
+Output ONLY valid JSON, nothing else:
+{ "missingConcepts": [ { "term": "the exact/paraphrased name from the spec text", "whyItMatters": "one sentence on what a student would miss without it" } ] }`;
 
 export const KNOWLEDGE_MAP_VERIFICATION_PROMPT = `You are a rigorous curriculum QA reviewer checking a knowledge-map graph for a real exam specification. You will be given a batch of nodes and edges (possibly spanning several subtopics) already produced by a generation pass. Your job is NOT to regenerate it - it is to find what's wrong with it, using three specific checks.
 

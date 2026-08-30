@@ -34,6 +34,7 @@ function extractPromptConstant(source, name) {
 }
 const promptsSource = fs.readFileSync(path.join(__dirname, '../src/constants/knowledgeMapPrompts.ts'), 'utf8');
 const KNOWLEDGE_MAP_GENERATION_PROMPT = extractPromptConstant(promptsSource, 'KNOWLEDGE_MAP_GENERATION_PROMPT');
+const KNOWLEDGE_MAP_COVERAGE_PROMPT = extractPromptConstant(promptsSource, 'KNOWLEDGE_MAP_COVERAGE_PROMPT');
 const KNOWLEDGE_MAP_VERIFICATION_PROMPT = extractPromptConstant(promptsSource, 'KNOWLEDGE_MAP_VERIFICATION_PROMPT');
 
 // Same env var claudeClient.ts already reads - not ANTHROPIC_API_KEY.
@@ -51,6 +52,13 @@ const client = new Anthropic({ apiKey: process.env.CLAUDE_API_KEY });
 // quality choice, not a cost one.
 const GENERATION_MODEL = process.env.CLAUDE_MODEL || 'claude-sonnet-5';
 const VERIFICATION_MODEL = 'claude-opus-4-8';
+// Coverage-checking against the raw spec text is a completeness GATE,
+// not a draft - same reasoning as VERIFICATION_MODEL, and the class of
+// error it exists to catch (a whole named theory silently dropped) is
+// exactly the kind of thing worth an unconditional Opus check regardless
+// of which model drafted the subtopic.
+const COVERAGE_MODEL = 'claude-opus-4-8';
+const MAX_COVERAGE_ROUNDS = 2;
 
 const SUBJECT = 'Economics';
 const QUALIFICATION = 'A-Level';
@@ -72,18 +80,40 @@ function stripCodeFences(text) {
   return text.trim().replace(/^```(?:json)?\s*/i, '').replace(/```\s*$/, '').trim();
 }
 
-async function generateSubtopic(subtopic, specContent) {
+async function generateSubtopic(subtopic, specContent, missingConcepts) {
+  // missingConcepts is only ever set on a coverage-driven retry (see
+  // main()) - appending it rather than silently starting over means the
+  // model still has every reason for the atomicity/breadth decisions it
+  // already got right, plus an explicit, unmissable instruction covering
+  // exactly what the coverage check found absent.
+  const retryNote = missingConcepts && missingConcepts.length
+    ? `\n\nA completeness check against this same specification text found that your previous attempt did not cover the following - make sure this regeneration includes proper decomposed coverage of each one (not just a one-line mention):\n${missingConcepts.map(m => `- ${m.term}: ${m.whyItMatters}`).join('\n')}`
+    : '';
   const resp = await client.messages.create({
     model: GENERATION_MODEL,
     max_tokens: 8000,
     system: KNOWLEDGE_MAP_GENERATION_PROMPT,
     messages: [{
       role: 'user',
-      content: `Subject: ${SUBJECT}\nQualification: ${QUALIFICATION}\nExam board: ${EXAM_BOARD}\nSubtopic: ${subtopic}\n\nReal specification content:\n${specContent}`,
+      content: `Subject: ${SUBJECT}\nQualification: ${QUALIFICATION}\nExam board: ${EXAM_BOARD}\nSubtopic: ${subtopic}\n\nReal specification content:\n${specContent}${retryNote}`,
     }],
   });
   const text = resp.content.find(b => b.type === 'text').text;
   return JSON.parse(stripCodeFences(text));
+}
+
+async function checkCoverage(specContent, nodes) {
+  const resp = await client.messages.create({
+    model: COVERAGE_MODEL,
+    max_tokens: 4000,
+    system: KNOWLEDGE_MAP_COVERAGE_PROMPT,
+    messages: [{
+      role: 'user',
+      content: `Specification text:\n${specContent}\n\nNode labels already generated from it:\n${JSON.stringify(nodes.map(n => n.label))}`,
+    }],
+  });
+  const text = resp.content.find(b => b.type === 'text').text;
+  return JSON.parse(stripCodeFences(text)).missingConcepts || [];
 }
 
 async function verifyBatch(allNodes, allEdges) {
@@ -161,11 +191,31 @@ async function main() {
 
   for (const { subtopic, specContent } of SUBTOPICS) {
     console.log(`Generating: ${subtopic}...`);
-    const { nodes, edges } = await generateSubtopic(subtopic, specContent);
+    let { nodes, edges } = await generateSubtopic(subtopic, specContent);
+    console.log(`  -> ${nodes.length} nodes, ${edges.length} edges`);
+
+    // Coverage check against the RAW spec text - the only check in this
+    // pipeline that can catch a whole named theory/model dropped
+    // entirely, since it's the only one that ever sees the source text
+    // rather than just the nodes already produced from it (see the
+    // comment above KNOWLEDGE_MAP_COVERAGE_PROMPT for why this is a
+    // distinct failure mode from anything verifyBatch below can catch).
+    for (let round = 0; round < MAX_COVERAGE_ROUNDS; round++) {
+      console.log(`  Checking coverage against spec text (round ${round + 1})...`);
+      const missing = await checkCoverage(specContent, nodes);
+      if (!missing.length) {
+        console.log('  -> full coverage confirmed');
+        break;
+      }
+      console.log(`  -> ${missing.length} concept(s) missing, regenerating:`);
+      missing.forEach(m => console.log(`     - ${m.term}`));
+      ({ nodes, edges } = await generateSubtopic(subtopic, specContent, missing));
+      console.log(`  -> ${nodes.length} nodes, ${edges.length} edges after regeneration`);
+    }
+
     nodes.forEach(n => n.subtopic = subtopic);
     allNodes = allNodes.concat(nodes);
     allEdges = allEdges.concat(edges);
-    console.log(`  -> ${nodes.length} nodes, ${edges.length} edges`);
   }
 
   console.log(`\nVerifying batch of ${allNodes.length} nodes...`);

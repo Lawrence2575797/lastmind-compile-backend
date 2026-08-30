@@ -26,6 +26,22 @@ export const RATING_MAP: Record<string, Grade> = {
 // handlers for how each maps step-level correctness onto this scale.
 export type FsrsRatingKey = 'again' | 'hard' | 'good' | 'easy';
 
+// Practice questions grade on a continuous mark scale (markAwarded/
+// markTariff), unlike every other FSRS-feeding surface in this app, which
+// only ever produces a discrete correct/incorrect per step - this is the
+// one place that needs a ratio-to-rating mapping at all. Thresholds are a
+// product tuning knob, not derived from anything - a near-full-marks
+// answer is genuinely "easy", a bare pass ("hard") is still real partial
+// credit rather than a miss, and anything below the halfway point wasn't
+// a durable recall of the concept.
+export function ratingFromMarkRatio(markAwarded: number, markTariff: number): FsrsRatingKey {
+  const ratio = markTariff > 0 ? markAwarded / markTariff : 0;
+  if (ratio >= 0.85) return 'easy';
+  if (ratio >= 0.6) return 'good';
+  if (ratio >= 0.3) return 'hard';
+  return 'again';
+}
+
 // Grace window (days, either direction) for treating a review as "on
 // schedule" — same magnitude as getMasteryStatus's own overdue check
 // below, applied symmetrically here (early OR late) since an off-schedule

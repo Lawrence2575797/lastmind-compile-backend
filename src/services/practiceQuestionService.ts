@@ -2,6 +2,7 @@ import { supabaseAdmin } from './supabaseAdmin';
 import { callClaudeJSON, MODELS } from './claudeClient';
 import { PRACTICE_QUESTION_MARKING_PROMPT } from '../constants/practiceQuestionPrompts';
 import { normalizeForPlanMatch } from './chainService';
+import { gradeAndRecordReview, ratingFromMarkRatio } from './reviewService';
 
 // The same general "how marks are awarded" explanation shown to the
 // student on the practice-questions page (see MARK_BREAKDOWN_EXPLAINERS
@@ -245,6 +246,13 @@ export async function submitPracticeAnswer(userId: string, questionId: string, a
     }
     throw insertError;
   }
+
+  // Every other graded surface in this app feeds FSRS; practice questions
+  // never did (concept_id is already on the row via normalizeConceptKey at
+  // question-creation time - see create_practice_questions.sql). Graded
+  // after the attempt is safely stored, so a race that turns into
+  // PracticeQuestionAlreadyAnsweredError above never double-grades this.
+  await gradeAndRecordReview(userId, question.concept_id as string, ratingFromMarkRatio(markAwarded, markTariff));
 
   return { markAwarded, markTariff, feedback, conceptualMistakes, examTechniqueTips };
 }

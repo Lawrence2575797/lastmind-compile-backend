@@ -26,6 +26,10 @@ Your job: decompose this subtopic into atomic micro-concepts and the directed pr
 
 6. **Root nodes must be genuinely axiomatic.** A node with no prerequisites should be a self-contained definitional or observational fact, not something that quietly assumes prior knowledge you haven't stated.
 
+7. **Named alternatives get split even when the spec lists them together, and each one gets its own advantages/disadvantages.** A specification bullet that names several distinct options in one line (e.g. "profit, revenue, sales maximisation, satisficing") is naming several SEPARATE technical concepts, not one topic with variants - split every option that has its own defining condition or mechanism into its own node, the same way rule 4 splits named sub-types. Then give EACH option its own "Advantages of X" and "Disadvantages of X" nodes (not one shared evaluation node for the whole group) - these are exactly the nodes most likely to need a real prerequisite from a completely different, non-adjacent subtopic (e.g. an advantage resting on economies of scale defined elsewhere, or a disadvantage resting on a profit or cost concept defined elsewhere). Actively search the rest of the specification for a concept that genuinely justifies each advantage/disadvantage before falling back to one that's merely nearby in the spec's own ordering - proximity in the specification is not a reason to prefer one prerequisite over a better one elsewhere, and is not a reason to skip adding the edge.
+
+8. **A concept that explains WHY an option is chosen is that option's prerequisite, not its consequence.** When node C is the reason a student/firm/policymaker would adopt option O in the first place (e.g. an agency or information problem that motivates choosing a non-standard objective, a market failure that motivates an intervention), the edge is C -> O. Do not point it the other way just because C happens to get taught, or gets its own separate treatment, later in the specification's own ordering - teaching order and specification ordering are not the same thing as genuine prerequisite direction, and this rule takes priority over any assumption based on where each concept sits in the source text.
+
 ## Output format
 
 Return ONLY valid JSON:
@@ -52,10 +56,13 @@ Do not skip this for nodes that only have one prerequisite - single-step compres
 Two concepts that are actually the same underlying mechanism, or where one is a real prerequisite of the other, can end up sitting in different subtopics with no edge between them simply because they were generated in different batches. Scan for:
 - Two nodes describing the same phenomenon under different names/framings (these should be merged or explicitly linked, not left as disconnected duplicates).
 - A node that clearly requires a concept from a different subtopic/theme that hasn't been wired in (e.g. a "growth" concept that never references the GDP measurement concept it's actually built on).
+- Every "Advantages of X" / "Disadvantages of X" node specifically: these are the single most common place a real prerequisite from a distant, non-adjacent subtopic goes missing, because the generation pass for X's own subtopic has no reason to know about a concept several subtopics away. For each one, actively check the rest of the specification (every theme, not just neighbouring subtopics) for a concept that genuinely grounds that specific advantage or disadvantage, and add the edge even though it will look "out of place" next to nodes that were generated together.
 
-## Check 3: Ordering of normative/evaluative nodes
+## Check 3: Ordering of normative/evaluative nodes and explanatory concepts
 
 For every node shaped like "the case for X", "reasons for X", "should X happen": confirm its REASONS component is not gated behind implementation mechanics it doesn't actually need, and its EVALUATION component (if separate) properly requires both the reasons and the costs/mechanics.
+
+Separately, for every node C that exists to explain WHY some option O is chosen/adopted (an agency problem, an information failure, a market failure that motivates an intervention, etc.): confirm the edge runs C -> O, not O -> C. A common error is pointing this backwards because C got its own dedicated treatment later in the specification's own ordering - specification ordering is not evidence of genuine prerequisite direction, and an edge that only makes sense as "O explains C" when C is clearly the motivating concept for O is a wrong_edge, not a stylistic choice.
 
 ## Output format
 

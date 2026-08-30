@@ -7,6 +7,7 @@ import {
   LOCALIZATION_CHECK_PROMPT,
   CHECK_ANSWER_AND_SLIP_PROMPT,
   MATH_ANSWER_CHECK_AND_SLIP_PROMPT,
+  TRANSFER_CHECK_PROMPT,
   CUED_COMBINATION_PROMPT,
   LOCALIZE_INTEGRATION_FAILURE_PROMPT,
   CORRECTION_PROMPT,
@@ -65,7 +66,26 @@ export async function loadChainIfMechanistic(
   return chain;
 }
 
-export type MechanisticStage = 'encoding_check' | 'localizing' | 'sub_diagnostic' | 'combination_check' | 'integration_check';
+export type MechanisticStage = 'encoding_check' | 'localizing' | 'sub_diagnostic' | 'transfer_check' | 'combination_check' | 'integration_check';
+
+// Node-level FSRS state already keys concept_reviews by concept_id alone.
+// Transfer and integration get their OWN tracked FSRS state on the SAME
+// table, zero schema change, via string-keyed conventions:
+//  - transfer: `${prereqId}->${targetId}` - reuses the exact edge-key
+//    shape knowledgeMapService.ts's edgeMastery already reads, so a
+//    dedicated transfer check writing here also lights up that existing
+//    edge-mastery view for free, rather than creating a second,
+//    disconnected notion of "edge mastery".
+//  - integration: `integrate:${targetId}` - only meaningful once a
+//    target has 2+ prerequisites to combine; a single-prerequisite
+//    target has nothing to integrate, so this key is only ever graded
+//    when transferPrereqIds.length >= 2.
+function transferEdgeKey(prereqId: string, targetId: string): string {
+  return `${prereqId}->${targetId}`;
+}
+function integrationKey(targetId: string): string {
+  return `integrate:${targetId}`;
+}
 
 export interface MechanisticState {
   conceptKey: string;
@@ -90,6 +110,12 @@ export interface MechanisticState {
   // that was missing, instead of a generic "practice combining these"
   // note — see CORRECTION_PROMPT's own "integration" bullet.
   integrationLocalizedNodeId?: string;
+  // Set once, when entering transfer_check (findBrokenPrerequisite first
+  // returns null on the TARGET) — the target's own direct prerequisite
+  // ids, snapshotted so transfer_check/combination_check/integration_check
+  // all grade the same fixed set of transfer/integration keys regardless
+  // of which stage concludes the flow.
+  transferPrereqIds?: string[];
   // Same purpose as DiagnosticState.lastShownQuestion — see there.
   lastShownQuestion?: string;
   // Same purpose as DiagnosticState.lastShownOptions — see there.
@@ -124,12 +150,13 @@ export interface MechanisticResult {
 
 // Mirrors diagnosticEngine.ts's currentQuestionCalcInfo of the same
 // purpose — which calc info describes whatever's CURRENTLY on screen,
-// given the stage. 'localizing' and 'integration_check' are both grading
-// a question this engine itself just generated (lastGenerated*); every
-// other free-text stage ('encoding_check' at entry, 'combination_check')
-// is testing originalQuestion itself, directly or cued.
+// given the stage. 'localizing', 'transfer_check' and 'integration_check'
+// are all grading a question this engine itself just generated
+// (lastGenerated*); every other free-text stage ('encoding_check' at
+// entry, 'combination_check') is testing originalQuestion itself,
+// directly or cued.
 function currentQuestionCalcInfo(state: MechanisticState): { requiresCalculation: boolean; expectedSolution?: string } {
-  if (state.stage === 'localizing' || state.stage === 'integration_check') {
+  if (state.stage === 'localizing' || state.stage === 'transfer_check' || state.stage === 'integration_check') {
     return { requiresCalculation: !!state.lastGeneratedRequiresCalculation, expectedSolution: state.lastGeneratedExpectedSolution };
   }
   return { requiresCalculation: !!state.originalQuestionRequiresCalculation, expectedSolution: state.originalQuestionExpectedSolution };
@@ -204,6 +231,49 @@ async function findBrokenPrerequisite(
   return null;
 }
 
+// Runs once every direct prerequisite of the TARGET has independently
+// checked out (findBrokenPrerequisite returned null) — asks a fresh,
+// standalone, UNCUED question requiring the student to reach for those
+// prerequisites themselves. This is the actual transfer test: passing it
+// means the original wrong answer wasn't a persistent gap at all, and
+// there's nothing left to diagnose. Failing it is what justifies moving
+// on to the CUED version (runCombinationCheck) to test integration
+// specifically, now that transfer has already failed on its own,
+// dedicated question rather than being inferred from whatever the
+// original triggering question happened to look like.
+async function runTransferCheck(state: MechanisticState): Promise<MechanisticResult> {
+  const target = findNode(state.chain, state.chain.nodes[state.chain.nodes.length - 1].id);
+  const prereqIds = (target?.depends_on || []).map((e) => e.node_id);
+  const prereqNames = prereqIds.map((id) => findNode(state.chain, id)?.label).filter(Boolean).join(', ');
+
+  const q = await callJSON<{ question: string; requiresCalculation?: boolean; expectedSolution?: string }>(
+    TRANSFER_CHECK_PROMPT,
+    `Subject: ${state.subject}\nTarget concept: ${state.targetConceptLabel}\nPrerequisite concept(s) a correct answer must draw on: ${prereqNames}`,
+    MODELS.diagnosticTree,
+    0.3
+  );
+
+  return {
+    done: false,
+    nextQuestion: q.question,
+    state: {
+      ...state,
+      stage: 'transfer_check',
+      transferPrereqIds: prereqIds,
+      lastShownQuestion: q.question,
+      lastGeneratedRequiresCalculation: !!q.requiresCalculation,
+      lastGeneratedExpectedSolution: q.requiresCalculation ? q.expectedSolution : undefined,
+    },
+    nextRequiresCalculation: !!q.requiresCalculation,
+  };
+}
+
+// Runs once the dedicated transfer_check above has already failed — cues
+// the prerequisites explicitly and re-asks the ORIGINAL question, to test
+// whether the failure was specifically about COMBINING known ideas
+// (rather than not knowing the ideas themselves, or reaching for them
+// unprompted — both already ruled out by this point) - i.e. this is now
+// purely the integration test.
 async function runCombinationCheck(state: MechanisticState): Promise<MechanisticResult> {
   const target = findNode(state.chain, state.chain.nodes[state.chain.nodes.length - 1].id);
   const prereqNames = (target?.depends_on || []).map((e) => findNode(state.chain, e.node_id)?.label).filter(Boolean).join(', ');
@@ -301,7 +371,7 @@ export async function startMechanisticDiagnosis(
 async function proceedToLocalization(userId: string, state: MechanisticState): Promise<MechanisticResult> {
   const broken = await findBrokenPrerequisite(userId, state.subject, state.chain, state.currentNodeId);
   if (!broken) {
-    return { ...(await runCombinationCheck(state)), answerCorrect: true };
+    return { ...(await runTransferCheck(state)), answerCorrect: true };
   }
   return {
     done: false,
@@ -380,6 +450,13 @@ async function resumeWrongAnswerContinuation(userId: string, state: MechanisticS
       return { done: true, diagnosis: subResult.diagnosis, correction: subResult.correction, state, answerCorrect: false };
     }
 
+    // The dedicated uncued transfer probe (processMechanisticAnswer's own
+    // 'transfer_check' case) already failed and graded every transfer
+    // edge 'again' before reaching here — next is the cued version, to
+    // find out whether the prerequisites combine correctly once named.
+    case 'transfer_check':
+      return runCombinationCheck(state);
+
     case 'combination_check': {
       const depth = chainDepth(state.chain, state.chain.nodes[state.chain.nodes.length - 1].id);
       if (depth >= 4) {
@@ -389,6 +466,9 @@ async function resumeWrongAnswerContinuation(userId: string, state: MechanisticS
           return { done: true, diagnosis: 'decay', correction: await generateCorrection(state.targetConceptLabel, 'decay', state), state, answerCorrect: false };
         }
         await gradeAndRecordReview(userId, state.conceptKey, 'again');
+        if ((state.transferPrereqIds || []).length >= 2) {
+          await gradeAndRecordReview(userId, integrationKey(state.conceptKey), 'again');
+        }
         return { done: true, diagnosis: 'global_chain_failure', correction: await generateCorrection(state.targetConceptLabel, 'global_chain_failure', state), state, answerCorrect: false };
       }
 
@@ -450,6 +530,9 @@ async function resumeWrongAnswerContinuation(userId: string, state: MechanisticS
       }
 
       await gradeAndRecordReview(userId, state.conceptKey, 'again');
+      if ((state.transferPrereqIds || []).length >= 2) {
+        await gradeAndRecordReview(userId, integrationKey(state.conceptKey), 'again');
+      }
       return { done: true, diagnosis: 'integration', correction: await generateCorrection(state.targetConceptLabel, 'integration', state), state, answerCorrect: false };
     }
 
@@ -565,7 +648,7 @@ export async function processMechanisticAnswer(
 
       if (check.correct) {
         const broken = await findBrokenPrerequisite(userId, notedState.subject, notedState.chain, notedState.currentNodeId);
-        if (!broken) return { ...(await runCombinationCheck(notedState)), answerCorrect: true };
+        if (!broken) return { ...(await runTransferCheck(notedState)), answerCorrect: true };
         return {
           done: false,
           nextQuestion: broken.question,
@@ -603,6 +686,36 @@ export async function processMechanisticAnswer(
       return { done: true, diagnosis: subResult.diagnosis, correction: subResult.correction, state, answerCorrect: subResult.answerCorrect };
     }
 
+    // Grades the fresh, uncued transfer probe (see runTransferCheck).
+    // Passing means the student reaches for the prerequisites themselves
+    // with no cue at all — genuine transfer, and nothing left to
+    // diagnose (the original wrong answer wasn't a persistent gap).
+    // Failing is what justifies moving on to the cued integration test.
+    case 'transfer_check': {
+      const check = await checkAnswer(
+        state.targetConceptLabel,
+        '(transfer check)',
+        answer,
+        state.lastGeneratedRequiresCalculation ? state.lastGeneratedExpectedSolution : undefined
+      );
+      const notedState = appendNote(state, check.misconceptionNote);
+      const prereqIds = notedState.transferPrereqIds || [];
+
+      if (check.correct) {
+        await gradeAndRecordReview(userId, notedState.conceptKey, 'good');
+        await Promise.all(prereqIds.map((id) => gradeAndRecordReview(userId, transferEdgeKey(id, notedState.conceptKey), 'good')));
+        // Genuinely resolved — no diagnosis/correction needed, the
+        // student just demonstrated this isn't a real gap.
+        return { done: true, state: notedState, answerCorrect: true };
+      }
+
+      // Transfer has now failed on its own dedicated question, not just
+      // inferred from the original — record that against every direct
+      // prerequisite edge before escalating to the cued integration test.
+      await Promise.all(prereqIds.map((id) => gradeAndRecordReview(userId, transferEdgeKey(id, notedState.conceptKey), 'again')));
+      return advanceAfterWrongAnswer(userId, notedState);
+    }
+
     case 'combination_check': {
       const check = await checkAnswer(
         state.targetConceptLabel,
@@ -614,6 +727,15 @@ export async function processMechanisticAnswer(
 
       if (check.correct) {
         await gradeAndRecordReview(userId, notedState.conceptKey, 'hard');
+        // Cued success, right after the dedicated uncued transfer_check
+        // already failed, confirms the prerequisites genuinely DO combine
+        // correctly — that's integration passing, worth its own FSRS
+        // record distinct from the target's, but only when there was
+        // more than one prerequisite to combine in the first place.
+        const prereqIds = notedState.transferPrereqIds || [];
+        if (prereqIds.length >= 2) {
+          await gradeAndRecordReview(userId, integrationKey(notedState.conceptKey), 'good');
+        }
         return { done: true, diagnosis: 'transfer', correction: await generateCorrection(notedState.targetConceptLabel, 'transfer', notedState), state: notedState, answerCorrect: true };
       }
 
@@ -664,6 +786,9 @@ export async function processMechanisticAnswer(
       // "practice combining these" note (see generateCorrection's
       // extraLabel param and CORRECTION_PROMPT's own "integration" bullet).
       if (localizedNode) await gradeAndRecordReview(userId, localizedNode.id, 'good');
+      if ((state.transferPrereqIds || []).length >= 2) {
+        await gradeAndRecordReview(userId, integrationKey(state.conceptKey), 'again');
+      }
       return {
         done: true,
         diagnosis: 'integration',

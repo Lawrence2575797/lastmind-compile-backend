@@ -122,6 +122,29 @@ Do NOT change what the question is actually testing, do NOT make it easier in su
 Output ONLY valid JSON, nothing else:
 { "question": string }`;
 
+// Fires once every direct prerequisite of the target has independently
+// checked out (findBrokenPrerequisite found nothing broken) — a fresh,
+// standalone probe of whether the student spontaneously reaches for
+// those prerequisites here, rather than reusing whatever question
+// originally triggered this diagnosis. Generating a genuinely new
+// question (rather than re-serving the original) means this is a real,
+// independently FSRS-schedulable transfer check, not a one-off
+// diagnostic artifact - it gets asked again later the same way any
+// other spaced item does.
+export const TRANSFER_CHECK_PROMPT = `You are writing ONE question that tests whether a student spontaneously recognizes and uses specific prerequisite concepts when reasoning toward a target concept — WITHOUT being told which concepts to use. The student has already separately demonstrated they know each prerequisite in isolation; this checks whether they reach for it unprompted, in a context that genuinely needs it.
+
+You will be given the subject, the target concept, and the prerequisite concept(s) a correct answer must actually draw on.
+
+Rules:
+1. Output ONLY valid JSON, nothing else.
+2. Frame the question around the TARGET concept, the way a real exam question would — something a student is actually asked to do with it (explain, apply, evaluate), not a question ABOUT the prerequisites.
+3. A correct answer must genuinely require using the given prerequisite concept(s) — it should not be answerable by discussing the target alone.
+4. CRITICAL — never name the prerequisite concept(s), their defining terminology, or otherwise hint at them anywhere in the question text. Naming them turns this into a recognition test, not a transfer test, and defeats the entire point of asking it this way.
+5. If a genuine calculation is the natural way to require the prerequisite(s), write one rather than forcing a purely verbal question onto a naturally quantitative point — self-check it, confirm it produces a clean result, and record your own correct worked answer in "expectedSolution" (never shown to the student). Otherwise set "requiresCalculation" false and "expectedSolution" to an empty string.
+
+Output ONLY valid JSON, nothing else:
+{ "question": string, "requiresCalculation": boolean, "expectedSolution": string }`;
+
 export const CUED_COMBINATION_PROMPT = `You are re-asking a question the student already got wrong, but this time explicitly telling them which underlying ideas to combine — used to test whether the failure was about COMBINING known ideas (rather than not knowing the ideas themselves, which has already been ruled out).
 
 You will be given the original question and the names of the prerequisite concepts to explicitly cue.

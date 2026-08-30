@@ -104,6 +104,20 @@ export function normalizeForPlanMatch(value: string): string {
   return (value || '').trim().toLowerCase().replace(/[\s-]+/g, '');
 }
 
+// The frontend composes GCSE tier directly into the qualification string
+// ("GCSE" + "Higher" -> "GCSE Higher" - see composeQualification in
+// learn/index.html) so every existing backend system keyed on
+// "qualification" as one opaque string gets tier for free. But a stored
+// lesson plan's topic/subtopic LIST is the same real spec regardless of
+// tier - Foundation vs Higher changes exam depth within a topic, not
+// which topics exist - so seeding both tiers' worth of identical rows
+// would be pure duplication. Stripping the tier here before matching
+// means a single untiered "GCSE" plan (see seed_aqa_gcse_*.js) still
+// answers a "GCSE Foundation"/"GCSE Higher" folder's lookup correctly.
+function stripGcseTierForPlanMatch(qualification: string): string {
+  return qualification.replace(/^GCSE\s+(Foundation|Higher)$/i, 'GCSE');
+}
+
 export async function getStoredLessonPlan(subject: string, qualification: string, examBoard: string): Promise<StoredLessonPlanSubtopic[] | null> {
   if (!qualification) return null;
   const { data, error } = await supabaseAdmin
@@ -118,7 +132,7 @@ export async function getStoredLessonPlan(subject: string, qualification: string
   }
   if (!data || !data.length) return null;
 
-  const wantQualification = normalizeForPlanMatch(qualification);
+  const wantQualification = normalizeForPlanMatch(stripGcseTierForPlanMatch(qualification));
   const wantExamBoard = normalizeForPlanMatch(examBoard || '');
   const matched = data.filter((row) =>
     normalizeForPlanMatch(row.qualification as string) === wantQualification &&

@@ -13,7 +13,11 @@
 // Requires ANTHROPIC_API_KEY in the environment (see .env.example).
 // Edit SUBJECT/QUALIFICATION/EXAM_BOARD and SUBTOPICS below before running.
 
-require('dotenv/config');
+// override:true - a stale CLAUDE_API_KEY/Claude_API_KEY inherited from the
+// parent shell's own process environment (Windows env vars are case-
+// insensitive) otherwise wins over whatever this project's own .env says,
+// since dotenv's default behavior never overrides an already-set variable.
+require('dotenv').config({ override: true });
 const fs = require('fs');
 const path = require('path');
 const Anthropic = require('@anthropic-ai/sdk');

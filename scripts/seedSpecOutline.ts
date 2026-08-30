@@ -24,7 +24,12 @@
 //     --examBoard "Edexcel" \
 //     --text ./scratch/edexcel_econ_a_raw.txt \
 //     --source "Pearson Edexcel A_Level_Econ_A_Spec.pdf, Issue 2 Oct 2016 — read for topic scope only, not reproduced verbatim"
-import 'dotenv/config';
+// override:true - a stale CLAUDE_API_KEY/Claude_API_KEY inherited from the
+// parent shell's own process environment (Windows env vars are case-
+// insensitive) otherwise wins over whatever this project's own .env says,
+// since dotenv's default behavior never overrides an already-set variable.
+import dotenv from 'dotenv';
+dotenv.config({ override: true });
 import * as fs from 'fs';
 import { restateAndCacheSpecOutline, extractAndCacheMicrotopics } from '../src/services/chainService';
 

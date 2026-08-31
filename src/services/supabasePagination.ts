@@ -1,5 +1,27 @@
 import { supabaseAdmin } from './supabaseAdmin';
 
+// Both paginated helpers below turn ONE logical fetch into many
+// sequential Supabase REST calls (a 1200-row table is 2+ pages; a
+// 1200-id .in() list is 6+ chunks) — found live via a real "TypeError:
+// fetch failed" on one such call (Render -> Supabase, likely a transient
+// network blip, not a logic bug: identical query succeeds locally every
+// time). More round trips per page load means more chances for exactly
+// one of them to blip, so every individual call gets a short retry
+// rather than failing the whole page load over one transient hiccup.
+const TRANSIENT_RETRY_DELAYS_MS = [300, 1000, 2500];
+
+async function withTransientRetry<T>(fn: () => Promise<{ data: T | null; error: { message: string } | null }>, label: string) {
+  for (let attempt = 0; ; attempt++) {
+    const { data, error } = await fn();
+    if (!error) return { data, error };
+    const transient = /fetch failed|ECONNRESET|ETIMEDOUT|network/i.test(error.message);
+    if (!transient || attempt >= TRANSIENT_RETRY_DELAYS_MS.length) return { data, error };
+    const delay = TRANSIENT_RETRY_DELAYS_MS[attempt];
+    console.warn(`Supabase call (${label}) hit a transient error — retrying in ${delay}ms: ${error.message}`);
+    await new Promise((r) => setTimeout(r, delay));
+  }
+}
+
 /**
  * PostgREST/Supabase caps a plain .select() at 1000 rows by default — the
  * same bug already found and fixed once in scripts/ingest_knowledge_map.js
@@ -15,12 +37,14 @@ export async function selectAllRows<T>(table: string, columns: string, build?: (
   const PAGE = 1000;
   let all: T[] = [];
   for (let from = 0; ; from += PAGE) {
-    let q: any = supabaseAdmin.from(table).select(columns).range(from, from + PAGE - 1);
-    if (build) q = build(q);
-    const { data, error } = await q;
+    const { data, error } = await withTransientRetry(() => {
+      let q: any = supabaseAdmin.from(table).select(columns).range(from, from + PAGE - 1);
+      if (build) q = build(q);
+      return q;
+    }, `${table} page @${from}`);
     if (error) throw new Error(`Paginated select on ${table} failed at offset ${from}: ${error.message}`);
     all = all.concat((data || []) as T[]);
-    if (!data || data.length < PAGE) break;
+    if (!data || (data as unknown[]).length < PAGE) break;
   }
   return all;
 }
@@ -43,9 +67,11 @@ export async function selectRowsByIdChunked<T>(
   let all: T[] = [];
   for (let i = 0; i < ids.length; i += CHUNK) {
     const chunk = ids.slice(i, i + CHUNK);
-    let q: any = supabaseAdmin.from(table).select(columns).in(column, chunk);
-    if (build) q = build(q);
-    const { data, error } = await q;
+    const { data, error } = await withTransientRetry(() => {
+      let q: any = supabaseAdmin.from(table).select(columns).in(column, chunk);
+      if (build) q = build(q);
+      return q;
+    }, `${table}.${column} chunk @${i}`);
     if (error) throw new Error(`Chunked .in() select on ${table}.${column} failed at chunk starting ${i}: ${error.message}`);
     all = all.concat((data || []) as T[]);
   }

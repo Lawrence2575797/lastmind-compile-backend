@@ -299,10 +299,15 @@ export async function getKnowledgeMapForSubject(
   qualification: string,
   examBoard: string
 ): Promise<SubjectMapResult> {
+  // Case-insensitive on all three — `subject` and `examBoard` are free-text
+  // fields on the "add folder" form (no dropdown, no canonicalization), so
+  // a student typing "economics" against generated data stored as
+  // "Economics" must still match. Found live: a real, fully-generated
+  // subject read back as "no map generated yet" purely because of this.
   const nodeRows = await selectAllRows<{ id: string; concept_id: string; label: string; subtopic: string; theme: string | null }>(
     'knowledge_map_nodes',
     'id, concept_id, label, subtopic, theme',
-    (q) => q.eq('subject', subject).eq('qualification', qualification).eq('exam_board', examBoard)
+    (q) => q.ilike('subject', subject.trim()).ilike('qualification', qualification.trim()).ilike('exam_board', examBoard.trim())
   );
   if (!nodeRows.length) {
     return { nodes: [], edges: [], mastery: {}, masteryDetail: {} };

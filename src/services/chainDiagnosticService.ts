@@ -98,10 +98,13 @@ export async function findPrerequisiteGap(
   qualification: string,
   examBoard: string
 ): Promise<GapResult | null> {
+  // Case-insensitive — see getKnowledgeMapForSubject's identical fix in
+  // knowledgeMapService.ts for why (subject/examBoard are free text with
+  // no canonicalization).
   const nodeRows = await selectAllRows<{ id: string; concept_id: string; label: string; subtopic: string }>(
     'knowledge_map_nodes',
     'id, concept_id, label, subtopic',
-    (q) => q.eq('subject', subject).eq('qualification', qualification).eq('exam_board', examBoard)
+    (q) => q.ilike('subject', subject.trim()).ilike('qualification', qualification.trim()).ilike('exam_board', examBoard.trim())
   );
   const nodeById = new Map(nodeRows.map((n) => [n.id, n]));
   const targetRow = nodeById.get(targetNodeId);

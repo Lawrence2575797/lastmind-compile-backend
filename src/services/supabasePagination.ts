@@ -63,7 +63,14 @@ export async function selectRowsByIdChunked<T>(
   ids: string[],
   build?: (query: any) => any
 ): Promise<T[]> {
-  const CHUNK = 200;
+  // 200 still failed consistently (not just occasionally) from Render's
+  // own network path with a raw "fetch failed" — even after retries —
+  // while the identical request succeeds every time from a dev machine.
+  // That points at Render's outbound connection choking on the request
+  // itself (most likely URL length for a 200-uuid .in() list) rather than
+  // a one-off blip retrying can paper over, so shrink the chunk instead
+  // of continuing to retry an request that fails the same way every time.
+  const CHUNK = 40;
   let all: T[] = [];
   for (let i = 0; i < ids.length; i += CHUNK) {
     const chunk = ids.slice(i, i + CHUNK);

@@ -79,7 +79,9 @@ router.get('/knowledge-map-v2', requireAuth, costlyEndpointLimiter, async (req: 
     res.json(result);
   } catch (err) {
     console.error('Subject knowledge map lookup failed:', err);
-    res.status(500).json({ error: 'could not load the knowledge map' });
+    // TEMPORARY: surfacing the real error text to diagnose a live 500 that
+    // doesn't reproduce locally — remove once root-caused.
+    res.status(500).json({ error: 'could not load the knowledge map', debug: err instanceof Error ? err.message : String(err) });
   }
 });
 

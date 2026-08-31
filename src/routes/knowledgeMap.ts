@@ -1,7 +1,8 @@
 import { Router, Request, Response } from 'express';
 import { requireAuth } from '../services/authMiddleware';
 import { costlyEndpointLimiter } from '../services/rateLimiters';
-import { getKnowledgeMapForFolder, FolderConcept } from '../services/knowledgeMapService';
+import { getKnowledgeMapForFolder, getKnowledgeMapForSubject, FolderConcept } from '../services/knowledgeMapService';
+import { supabaseAdmin } from '../services/supabaseAdmin';
 
 const router = Router();
 
@@ -42,6 +43,57 @@ router.post('/knowledge-map', requireAuth, costlyEndpointLimiter, async (req: Re
   } catch (err) {
     console.error('Knowledge map generation failed:', err);
     res.status(500).json({ error: 'could not build your progress map' });
+  }
+});
+
+// GET /knowledge-map-v2?subject=&qualification=&examBoard=
+// -> { nodes: [{id,conceptId,label,subtopic,theme}], edges: [{source,target}], mastery: {[nodeId]: 0|1|2}, masteryDetail }
+// The api-generated, subject-wide map (see scripts/generate_knowledge_map.js
+// + ingest_knowledge_map.js) - one shared graph per (subject, qualification,
+// examBoard), not derived per-student like the /knowledge-map route above.
+// Backs the new folder-click main-content view in learn/index.html,
+// replacing the old "Your Progress" overlay for any subject this pipeline
+// has actually been run for; a subject with no rows yet just returns an
+// empty graph, which the frontend renders as an empty state.
+router.get('/knowledge-map-v2', requireAuth, costlyEndpointLimiter, async (req: Request, res: Response) => {
+  const { subject, qualification, examBoard } = req.query;
+  if (typeof subject !== 'string' || !subject.trim()) {
+    return res.status(400).json({ error: 'subject is required' });
+  }
+  try {
+    const result = await getKnowledgeMapForSubject(
+      req.userId as string,
+      subject,
+      typeof qualification === 'string' ? qualification : '',
+      typeof examBoard === 'string' ? examBoard : ''
+    );
+    res.json(result);
+  } catch (err) {
+    console.error('Subject knowledge map lookup failed:', err);
+    res.status(500).json({ error: 'could not load the knowledge map' });
+  }
+});
+
+// GET /knowledge-map-v2/node/:nodeId/lesson -> the stored encoding lesson
+// { explanation, practiceQuestion } for one node (see
+// scripts/generate_lesson_content.js + create_knowledge_map_node_lessons.sql).
+// Read-only lookup by uuid - no generation happens here, this pipeline is
+// one-time/offline by design (see the lesson-generation prompts' own
+// comment on why lessons are never generated live).
+router.get('/knowledge-map-v2/node/:nodeId/lesson', requireAuth, async (req: Request, res: Response) => {
+  const { nodeId } = req.params;
+  try {
+    const { data, error } = await supabaseAdmin
+      .from('knowledge_map_node_lessons')
+      .select('encoding_content')
+      .eq('node_id', nodeId)
+      .maybeSingle();
+    if (error) throw error;
+    if (!data) return res.status(404).json({ error: 'no lesson generated for this concept yet' });
+    res.json(data.encoding_content);
+  } catch (err) {
+    console.error('Node lesson lookup failed:', err);
+    res.status(500).json({ error: 'could not load this lesson' });
   }
 });
 

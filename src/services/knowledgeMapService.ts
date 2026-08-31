@@ -2,6 +2,7 @@ import { normalizeConceptKey, getOrGenerateChain } from './chainService';
 import { Chain, resolveSiblingConceptId, SiblingConcept } from './encodingLessonService';
 import { getMasteryDetailsForConcepts, MasteryDetail } from './reviewService';
 import { getConceptsWithLowConfidenceSignal } from './answerSignalService';
+import { supabaseAdmin } from './supabaseAdmin';
 
 // One concept the student has actually added to a folder (a single-lesson
 // page's own title, or one entry of a multi-lesson page's own lessons) —
@@ -261,4 +262,83 @@ export async function getKnowledgeMapForFolder(
   });
 
   return { nodes, edges, mastery, masteryDetail, lowConfidenceNodeIds, edgeMastery, edgeMasteryDetail };
+}
+
+// One pre-generated node row from knowledge_map_nodes, as needed by the
+// subject-level map view - see getKnowledgeMapForSubject below.
+export interface SubjectMapNode {
+  id: string; // knowledge_map_nodes.id (uuid) - what edges/lessons key on
+  conceptId: string;
+  label: string;
+  subtopic: string;
+  theme: string | null;
+}
+
+export interface SubjectMapResult {
+  nodes: SubjectMapNode[];
+  edges: KnowledgeMapEdge[]; // source/target are node ids (uuid), not concept keys
+  mastery: Record<string, 0 | 1 | 2>; // keyed by node id (uuid)
+  masteryDetail: Record<string, MasteryDetail>;
+}
+
+/**
+ * The subject-wide map for the NEW api-generated knowledge-map pipeline
+ * (see scripts/generate_knowledge_map.js + ingest_knowledge_map.js) -
+ * unlike getKnowledgeMapForFolder above, this graph is pre-built ONCE per
+ * (subject, qualification, examBoard) and shared by every student, not
+ * derived per-student from their own pages. Mastery is still resolved
+ * per-student via the existing FSRS lookup, keyed by each node's
+ * concept_id (see ingest_knowledge_map.js's conceptId() - same
+ * normalizeConceptKey convention concept_reviews already uses everywhere
+ * else, so no separate mapping table is needed).
+ */
+export async function getKnowledgeMapForSubject(
+  userId: string,
+  subject: string,
+  qualification: string,
+  examBoard: string
+): Promise<SubjectMapResult> {
+  const { data: nodeRows, error: nodeErr } = await supabaseAdmin
+    .from('knowledge_map_nodes')
+    .select('id, concept_id, label, subtopic, theme')
+    .eq('subject', subject)
+    .eq('qualification', qualification)
+    .eq('exam_board', examBoard);
+  if (nodeErr) throw new Error(`Failed to load knowledge_map_nodes: ${nodeErr.message}`);
+  if (!nodeRows || !nodeRows.length) {
+    return { nodes: [], edges: [], mastery: {}, masteryDetail: {} };
+  }
+
+  const nodeIds = nodeRows.map((r) => r.id as string);
+  const { data: edgeRows, error: edgeErr } = await supabaseAdmin
+    .from('knowledge_map_edges')
+    .select('from_node_id, to_node_id')
+    .in('from_node_id', nodeIds);
+  if (edgeErr) throw new Error(`Failed to load knowledge_map_edges: ${edgeErr.message}`);
+
+  const conceptIdById = new Map(nodeRows.map((r) => [r.id as string, r.concept_id as string]));
+  const found = await getMasteryDetailsForConcepts(userId, nodeRows.map((r) => r.concept_id as string));
+
+  const mastery: Record<string, 0 | 1 | 2> = {};
+  const masteryDetail: Record<string, MasteryDetail> = {};
+  nodeRows.forEach((r) => {
+    const detail = found.get(r.concept_id as string);
+    mastery[r.id as string] = detail?.state ?? 0;
+    if (detail) masteryDetail[r.id as string] = detail;
+  });
+
+  return {
+    nodes: nodeRows.map((r) => ({
+      id: r.id as string,
+      conceptId: r.concept_id as string,
+      label: r.label as string,
+      subtopic: r.subtopic as string,
+      theme: (r.theme as string | null) ?? null,
+    })),
+    edges: (edgeRows || [])
+      .filter((e) => conceptIdById.has(e.from_node_id as string) && conceptIdById.has(e.to_node_id as string))
+      .map((e) => ({ source: e.from_node_id as string, target: e.to_node_id as string })),
+    mastery,
+    masteryDetail,
+  };
 }

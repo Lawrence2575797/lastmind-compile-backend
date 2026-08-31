@@ -56,6 +56,24 @@ Once split, check the RESULTING LIST for breadth, not just structure. Two or thr
 
 13. **When a disadvantage is actually a rebuttal of a specific advantage, it depends on that advantage directly, not just the shared definition.** Real evaluation in economics (and any evaluative subject) works by weighing a benefit against a specific challenge to it, not just listing unrelated pros and cons side by side. If disadvantage D specifically undercuts, complicates, or casts doubt on advantage A rather than being an independent cost of its own (e.g. "firms cut quality to protect margins" directly undermines "the price cut protects consumer surplus" and "the discipline effect improves efficiency" - the saving or the efficiency gain may not be real if quality is quietly cut instead), the edge is A -> D, in addition to whichever other genuine grounding D has. A disadvantage that only ever depends on the bare definition, when it's actually a direct response to one specific advantage, is throwing away the real evaluative relationship a mark scheme would credit for connecting the two.
 
+14. **Distinct stakeholder-group impacts of one policy/event must be split by group, not bundled into one "effects" node.** When a policy or event (a tariff, a tax, a minimum wage, a merger) affects several distinct parties differently (e.g. domestic producers gain, consumers lose, the government gains revenue, foreign producers lose), each group's impact is its own node. A mark scheme credits "identifies the effect on producers" and "identifies the effect on consumers" as separate points, so a single bundled "winners and losers" node fails rule 1 the same way an unsplit advantages/disadvantages list does (rule 7) - the two failure modes are the same defect (independently-markable points bundled together), just triggered by stakeholder identity rather than by argument type.
+
+15. **Distinct properties/dimensions of one concept that a mark scheme would credit separately must be split, even when they are always taught side by side.** Some concepts are conventionally defined by two or more named properties that are each independently examinable (e.g. a public good's non-excludability and non-rivalry; a policy objective's being both "low" and "stable"). If a student could know one property without the other, and a mark scheme would award a mark for stating either one alone, they are separate nodes - do not merge them just because the specification always mentions them in the same breath.
+
+16. **A concept with a standard exam diagram splits into three layers - reusable diagram-construction skills, the concept itself, and diagram-application/reading nodes - never one bundled node claiming both understanding and diagrammatic fluency.** A student can genuinely understand what a concept IS without being able to draw or read it correctly on a diagram, and vice versa - these are separately forgettable, separately markable skills (a real mark scheme awards construction marks and interpretation marks separately). Concretely:
+    - (a) If the diagram is built from generic components used elsewhere in the specification (a demand curve, a supply curve, an AD curve, a PPF), each component gets its own "draw/construct X" node, reused by every topic whose diagram needs it - do not duplicate a drawing-skill node per topic. A new diagram-application node wires to the EXISTING construction node(s) it depends on, not a fresh copy.
+    - (b) The underlying concept (what consumer surplus IS, what an indirect tax does to an equilibrium) stays its own node, separate from locating or reading it correctly on an already-constructed diagram.
+    - (c) A node whose real content is "identify/shade/read X on the diagram" (e.g. "identify the area of consumer surplus on a supply-and-demand diagram") depends on BOTH the underlying concept node from (b) AND every diagram-construction node from (a) that the specific diagram actually requires (e.g. both demand and supply for a consumer-surplus diagram) - never just one, and never skip straight from the bare concept to the application without the construction nodes in between.
+{{PRACTICAL_RULE}}
+## Exemptions - do not over-split these
+
+Splitting has a cost too: a node that is broken into pieces which are never independently forgettable just adds graph noise without adding diagnostic value. Do not split:
+- **A formula that IS the definition** (e.g. "price elasticity of demand: definition and calculation" for PED/YED/XED/PES) - the formula is not a separate fact bundled with the definition, it just IS the definition restated symbolically.
+- **A joint price-and-quantity reading off ONE shifted diagram** (e.g. "the tariff raises the domestic price and reduces the quantity demanded") - both readings come from the same single diagram manipulation, so a student who can do one can trivially do the other; they are not independently forgettable.
+- **The two sides of one transaction** (e.g. borrowing and lending, buying and selling) - each side is the mechanical mirror of the other, not a separate fact.
+- **Near-synonym pairs that only make sense read together in their specific context** (e.g. "consumer choice and variety" as a single benefit of competition) - split only when the two halves are genuinely separately markable, not whenever a label happens to contain "and".
+- **A single causal-chain step phrased with "causing"/"leading to"** (rule 3 already covers this as one step, not two) - a step and its immediate, inseparable consequence within the same mechanism link are one node, not two.
+
 ## Output format
 
 Return ONLY valid JSON:
@@ -65,6 +83,22 @@ Return ONLY valid JSON:
 }
 
 IDs should be short, unique within this subtopic, and stable (avoid renaming across regenerations where possible). Do not include any node or edge not implied by the actual specification content given.`;
+
+// Substituted into KNOWLEDGE_MAP_GENERATION_PROMPT's {{PRACTICAL_RULE}}
+// placeholder ONLY for subjects with real lab/fieldwork content (see
+// scripts/generate_knowledge_map.js's HAS_PRACTICAL_CONTENT flag) - for
+// everything else (economics, maths, most humanities) it's replaced with
+// an empty string. Rule 17 never fires outside a practical subject, so
+// there is no reason to spend input tokens on it, or risk it nudging the
+// model toward inventing lab content that was never asked for, on every
+// single subtopic generation call for a subject it can never apply to.
+export const KNOWLEDGE_MAP_GENERATION_PROMPT_PRACTICAL_RULE = `
+17. **An experimental/practical technique splits into the same three layers as rule 16's diagram split - reusable procedural sub-skills, the concept the experiment investigates, and application/interpretation nodes that use the experiment's own output - never one bundled node claiming both "how to do it" and "why it works".** This applies across every science, not one subject specifically: a student can correctly carry out a technique (follow the steps, use the apparatus correctly) without understanding why it works, and vice versa - these are separately forgettable, separately markable skills, exactly like construction vs. concept vs. application for a diagram, just for lab/fieldwork instead of drawing. Concretely:
+    - (a) If the technique is built from generic procedural sub-skills used across multiple investigations (e.g. reading a burette to the nearest graduation, using a top-pan balance, preparing a serial dilution, taking a timed reading at fixed intervals, calibrating an instrument before use), each sub-skill gets its own node, reused wherever it's actually used - do not duplicate a "how to use a burette" node under every experiment that happens to need one. A new experiment's procedure node wires to the EXISTING sub-skill node(s) it depends on, not a fresh copy.
+    - (b) The underlying concept the experiment is designed to investigate or demonstrate (why an indicator changes colour at the endpoint, what absorbance measures, why potential difference varies with current) stays its own node, separate from being able to actually carry out the procedure that investigates it.
+    - (c) A node whose real content is calculating or interpreting a result FROM the experiment's own data (e.g. "calculate the concentration of the acid from the titre volume", "calculate resistance from the gradient of a V-I graph") depends on BOTH the procedure node(s) that produced the data AND the concept node that explains what the data means - never just one, and never skip straight from the bare concept to the calculation without the procedure node that actually generates the numbers.
+    - (d) "Evaluate this method" / "identify sources of error or improvements" nodes depend on the SPECIFIC procedure step they're critiquing (same logic as rule 12), not a generic "practical work" umbrella - a systematic error in reading a meniscus and a random error from an unstable water bath are critiques of different steps, not the same node, and each needs its own edge back to the step it actually targets.
+`;
 
 // Runs once per subtopic, immediately after KNOWLEDGE_MAP_GENERATION_PROMPT
 // produces that subtopic's nodes - the only check in this pipeline that
@@ -91,6 +125,13 @@ Rules:
 Output ONLY valid JSON, nothing else:
 { "missingConcepts": [ { "term": "the exact/paraphrased name from the spec text", "whyItMatters": "one sentence on what a student would miss without it" } ] }`;
 
+// Substituted into KNOWLEDGE_MAP_VERIFICATION_PROMPT's {{PRACTICAL_CHECK}}
+// placeholder ONLY for subjects with real lab/fieldwork content - see
+// KNOWLEDGE_MAP_GENERATION_PROMPT_PRACTICAL_RULE's comment for why this
+// is kept out of the base prompt for every other subject.
+export const KNOWLEDGE_MAP_VERIFICATION_PROMPT_PRACTICAL_CHECK = `Separately again, for any subject with practical/experimental content, check every node that names or clearly implies a lab or field technique against rule 17: does it bundle carrying out the procedure together with the concept it investigates, or together with calculating a result from its data? Flag it as missing_intermediate_node (proposing the procedure/concept/application split from rule 17) whenever a single node requires BOTH performing the technique AND understanding or interpreting it. Also check that any "evaluate the method" or "sources of error" node is wired to the SPECIFIC procedure step it critiques rather than a generic practical-work node - a critique aimed at the wrong step, or at an umbrella node no step-specific critique should exist under, is a wrong_edge.
+`;
+
 export const KNOWLEDGE_MAP_VERIFICATION_PROMPT = `You are a rigorous curriculum QA reviewer checking a knowledge-map graph for a real exam specification. You will be given a batch of nodes and edges (possibly spanning several subtopics) already produced by a generation pass. Your job is NOT to regenerate it - it is to find what's wrong with it, using three specific checks.
 
 ## Check 1: The blind-comprehension test (run this on EVERY node)
@@ -104,6 +145,11 @@ Do not skip this for nodes that only have one prerequisite - single-step compres
 
 Separately, check every "Advantages of X" / "Disadvantages of X" node against rule 7: does its label or implied content bundle more than one genuinely separate justification? If so, that is itself an issue to report (type missing_intermediate_node) even when every prerequisite edge it currently has is individually correct - the bundling itself is the defect, and the fix should split it into one node per justification with each one's own prerequisites.
 
+Separately, check every node against rules 14/15: does its label bundle the impacts on more than one distinct stakeholder group (rule 14), or more than one independently-markable property/dimension of a single concept (rule 15)? Flag it as missing_intermediate_node with the split proposed, unless it falls under one of the stated exemptions (a shared formula/definition, a joint reading off one diagram, two sides of one transaction, an inseparable causal step) - do not flag an exempted bundling just because it technically contains "and".
+
+Separately again, check every node that names or clearly implies a standard exam diagram against rule 16: does it bundle understanding the concept together with constructing or reading it on a diagram? Flag it as missing_intermediate_node (proposing the construction/application split from rule 16) whenever a single node's content requires BOTH knowing what the concept is AND being able to draw or interpret its diagram - and separately check that a proposed diagram-application node actually depends on every diagram-construction node its diagram needs (a consumer-surplus application node depending on demand but not supply, for instance, is a missing_edge even if the node split itself is otherwise correct).
+
+{{PRACTICAL_CHECK}}
 Separately again, check each already-split advantages/disadvantages SET (not each node individually) for breadth: count how many distinct nodes exist for that one option's advantages, and the same for its disadvantages. Two or fewer on either side is a strong signal the decomposition stopped too early - a real mark scheme for this kind of content typically credits four to six distinct points per side. If a set looks thin, report it as missing_intermediate_node with new_nodes proposing the additional genuine justifications a mark scheme would credit (grounded in efficiency, cost, risk, stakeholders, timescale, or a distinguishing feature versus the nearest alternative) - not invented padding, but real points that were simply never generated the first time.
 
 ## Check 2: Cross-subtopic / cross-theme linking

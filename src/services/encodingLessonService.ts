@@ -1,6 +1,6 @@
 import { callClaudeJSON, callClaudeJSONWithImages, MODELS } from './claudeClient';
 import { getOrGenerateChain, customContextDigest, normalizeConceptKey } from './chainService';
-import { gradeAndRecordReview, getReviewedConceptIds, hasAnySubjectHistory, FsrsRatingKey } from './reviewService';
+import { gradeAndRecordReview, gradeCorrectness, getReviewedConceptIds, hasAnySubjectHistory, FsrsRatingKey } from './reviewService';
 import { searchWikimediaImages, fetchImageAsBase64 } from './wikimediaService';
 import { adjustCredits, ENCODING_LESSON_COMPLETION_KEYS } from './creditService';
 import { supabaseAdmin } from './supabaseAdmin';
@@ -1633,6 +1633,12 @@ export async function submitEncodingAnswer(userId: string, state: EncodingLesson
     return { done: false, step: currentStep, state: reattemptState, feedback, partialFollowUp: true };
   }
 
+  // "Needed a retry/reword this same attempt" — shared by every grading
+  // decision below that cares whether this was a clean recall (reframedStepIndex/
+  // partialReattemptStepIndex both still equal state.currentIndex on the
+  // retry submission itself).
+  const hadRetry = state.reframedStepIndex === state.currentIndex || state.partialReattemptStepIndex === state.currentIndex;
+
   // Prerequisite/other-concept steps get their OWN independent FSRS grade
   // right here, at the exact point THEIR OWN correctness is finally known
   // — see EncodingLessonState's own comment on why this replaced folding
@@ -1643,9 +1649,12 @@ export async function submitEncodingAnswer(userId: string, state: EncodingLesson
   // target itself (that's the single aggregate grade below, computed once
   // per lesson) and never for a bypassed step — bypass means "the
   // question/grading itself seemed broken", not genuine evidence about
-  // what the student actually knows of that concept.
+  // what the student actually knows of that concept. gradeCorrectness
+  // (not a flat correct?good:again) so a shaky retried pass reads as
+  // 'hard' and a pass on an already-durable streak reads as 'easy',
+  // rather than every correct answer looking identical to FSRS.
   if (!isCoreStep && !bypass) {
-    await gradeAndRecordReview(userId, currentStep.diagnosisConceptKey, correct ? 'good' : 'again');
+    await gradeCorrectness(userId, currentStep.diagnosisConceptKey, correct, hadRetry);
   }
 
   // A mechanistic_check step's whole point is tracing through a chain of
@@ -1663,7 +1672,7 @@ export async function submitEncodingAnswer(userId: string, state: EncodingLesson
     );
     const edgeGrades: Promise<unknown>[] = [];
     for (let i = 0; i < resolvedIds.length - 1; i++) {
-      edgeGrades.push(gradeAndRecordReview(userId, `${resolvedIds[i]}->${resolvedIds[i + 1]}`, correct ? 'good' : 'again'));
+      edgeGrades.push(gradeCorrectness(userId, `${resolvedIds[i]}->${resolvedIds[i + 1]}`, correct, hadRetry));
     }
     await Promise.all(edgeGrades);
   }
@@ -1671,13 +1680,9 @@ export async function submitEncodingAnswer(userId: string, state: EncodingLesson
   const nextIndex = state.currentIndex + 1;
   // Score THIS core step's final resolution now (never on the earlier
   // reword/reattempt returns above, which aren't final yet) — 1 clean,
-  // 0.5 correct-only-after-a-retry, 0 wrong even after that retry. A step
-  // "needed a retry" if it's the same index a reword or partial-reattempt
-  // was already served for (reframedStepIndex/partialReattemptStepIndex
-  // both still equal state.currentIndex on the retry submission itself).
+  // 0.5 correct-only-after-a-retry, 0 wrong even after that retry.
   let coreStepScores = state.coreStepScores;
   if (isCoreStep) {
-    const hadRetry = state.reframedStepIndex === state.currentIndex || state.partialReattemptStepIndex === state.currentIndex;
     const score = !correct ? 0 : hadRetry ? 0.5 : 1;
     coreStepScores = [...state.coreStepScores, score];
   }

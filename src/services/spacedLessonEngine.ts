@@ -1,5 +1,5 @@
 import { callClaudeJSON, MODELS } from './claudeClient';
-import { gradeAndRecordReview, getMasteryStatus, listEligibleSiblingConcepts, FsrsRatingKey, DURABLE_RELEARNING_CRITERION, ConceptReviewRow } from './reviewService';
+import { gradeAndRecordReview, gradeCorrectness, getMasteryStatus, listEligibleSiblingConcepts, FsrsRatingKey, DURABLE_RELEARNING_CRITERION, ConceptReviewRow } from './reviewService';
 import { payMasteryInstallment } from './creditService';
 import { getOrGenerateChain } from './chainService';
 import { recordAnswerSignal, AnswerSignalResult } from './answerSignalService';
@@ -338,9 +338,14 @@ export async function submitRetrievalAnswer(
   // concept_reviews row too.
   if (currentStep.interleavedConceptIds && currentStep.interleavedConceptIds.length) {
     const dedupedSiblingIds = Array.from(new Set(currentStep.interleavedConceptIds));
+    // gradeCorrectness (not a flat correct?good:again) so a pass on an
+    // already-durable sibling link reads as 'easy' rather than looking
+    // identical to a first-ever correct answer. No retry mechanism exists
+    // for a retrieval step (single-shot, unlike encoding's reword/
+    // reattempt), so hadRetry is always false here.
     await Promise.all(
       dedupedSiblingIds.map((siblingId) =>
-        gradeAndRecordReview(userId, `${siblingId}->${state.conceptKey}`, correct ? 'good' : 'again')
+        gradeCorrectness(userId, `${siblingId}->${state.conceptKey}`, correct, false)
       )
     );
   }

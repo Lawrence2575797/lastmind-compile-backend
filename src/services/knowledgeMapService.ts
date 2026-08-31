@@ -3,6 +3,7 @@ import { Chain, resolveSiblingConceptId, SiblingConcept } from './encodingLesson
 import { getMasteryDetailsForConcepts, MasteryDetail } from './reviewService';
 import { getConceptsWithLowConfidenceSignal } from './answerSignalService';
 import { supabaseAdmin } from './supabaseAdmin';
+import { selectAllRows } from './supabasePagination';
 
 // One concept the student has actually added to a folder (a single-lesson
 // page's own title, or one entry of a multi-lesson page's own lessons) —
@@ -298,25 +299,26 @@ export async function getKnowledgeMapForSubject(
   qualification: string,
   examBoard: string
 ): Promise<SubjectMapResult> {
-  const { data: nodeRows, error: nodeErr } = await supabaseAdmin
-    .from('knowledge_map_nodes')
-    .select('id, concept_id, label, subtopic, theme')
-    .eq('subject', subject)
-    .eq('qualification', qualification)
-    .eq('exam_board', examBoard);
-  if (nodeErr) throw new Error(`Failed to load knowledge_map_nodes: ${nodeErr.message}`);
-  if (!nodeRows || !nodeRows.length) {
+  const nodeRows = await selectAllRows<{ id: string; concept_id: string; label: string; subtopic: string; theme: string | null }>(
+    'knowledge_map_nodes',
+    'id, concept_id, label, subtopic, theme',
+    (q) => q.eq('subject', subject).eq('qualification', qualification).eq('exam_board', examBoard)
+  );
+  if (!nodeRows.length) {
     return { nodes: [], edges: [], mastery: {}, masteryDetail: {} };
   }
 
-  const nodeIds = nodeRows.map((r) => r.id as string);
-  const { data: edgeRows, error: edgeErr } = await supabaseAdmin
-    .from('knowledge_map_edges')
-    .select('from_node_id, to_node_id')
-    .in('from_node_id', nodeIds);
-  if (edgeErr) throw new Error(`Failed to load knowledge_map_edges: ${edgeErr.message}`);
-
+  // Fetched with no id filter at all (rather than .in('from_node_id',
+  // nodeIds) against a 1000+-id list, which itself triggers a "Bad
+  // Request" — found live while building the chain-diagnostic gate) and
+  // filtered down to this subject's own edges below, same pattern
+  // scripts/ingest_knowledge_map.js already uses for exactly this reason.
+  const allEdgeRows = await selectAllRows<{ from_node_id: string; to_node_id: string }>(
+    'knowledge_map_edges',
+    'from_node_id, to_node_id'
+  );
   const conceptIdById = new Map(nodeRows.map((r) => [r.id as string, r.concept_id as string]));
+  const edgeRows = allEdgeRows.filter((e) => conceptIdById.has(e.from_node_id) && conceptIdById.has(e.to_node_id));
   const found = await getMasteryDetailsForConcepts(userId, nodeRows.map((r) => r.concept_id as string));
 
   const mastery: Record<string, 0 | 1 | 2> = {};
@@ -335,9 +337,7 @@ export async function getKnowledgeMapForSubject(
       subtopic: r.subtopic as string,
       theme: (r.theme as string | null) ?? null,
     })),
-    edges: (edgeRows || [])
-      .filter((e) => conceptIdById.has(e.from_node_id as string) && conceptIdById.has(e.to_node_id as string))
-      .map((e) => ({ source: e.from_node_id as string, target: e.to_node_id as string })),
+    edges: edgeRows.map((e) => ({ source: e.from_node_id, target: e.to_node_id })),
     mastery,
     masteryDetail,
   };

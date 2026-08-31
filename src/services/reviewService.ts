@@ -1,4 +1,5 @@
 import { supabaseAdmin } from './supabaseAdmin';
+import { selectRowsByIdChunked } from './supabasePagination';
 import { newCard, gradeReview, rowToCard, cardToRowFields, Rating, Grade, ConceptReviewRow } from './fsrsService';
 
 export type { ConceptReviewRow };
@@ -189,6 +190,51 @@ export async function gradeAndRecordReview(
   return { previousRow: existingRow, newState: rowFields, spacedSuccessCount: spacedSuccess.spaced_success_count };
 }
 
+// Reserved for the CORRECT side of a correctness-driven grade — an
+// incorrect answer must always grade 'again' (FSRS's own definition of a
+// failed recall); softening it toward 'hard' because of a good history
+// would tell FSRS this was a difficult-but-successful recall and schedule
+// a longer interval than a real lapse has earned. The enrichment
+// opportunity is entirely on a correct answer: a recall that needed a
+// reword/retry this same attempt is shaky, not clean ('hard'); a recall
+// riding an already-proven durable streak (spaced_success_count, which
+// resets to 0 on any lapse — see computeSpacedSuccessUpdate) is a
+// genuinely comfortable pass, not a guess ('easy'); anything else is a
+// plain clean pass ('good').
+export function deriveCorrectRating(opts: { hadRetry: boolean; spacedSuccessCount: number }): FsrsRatingKey {
+  if (opts.hadRetry) return 'hard';
+  if (opts.spacedSuccessCount >= DURABLE_RELEARNING_CRITERION) return 'easy';
+  return 'good';
+}
+
+/**
+ * Drop-in replacement for the "correct ? 'good' : 'again'" pattern
+ * repeated at several call sites that grade a plain correct/incorrect
+ * check against an already-previously-taught concept (a prerequisite
+ * re-check, a chain edge, an interleaved sibling) — as opposed to a
+ * first-time encoding pass, which has its own bespoke, deliberately
+ * easy-excluding rating logic elsewhere and should NOT be routed through
+ * this. See deriveCorrectRating for why 'again' is never softened. One
+ * extra read beyond what gradeAndRecordReview needs internally for its
+ * own FSRS transition — an acceptable cost at grading time, never a hot
+ * path.
+ */
+export async function gradeCorrectness(
+  userId: string,
+  conceptId: string,
+  correct: boolean,
+  hadRetry = false
+): Promise<{ rating: FsrsRatingKey; previousRow: ConceptReviewRow | null; newState: ReturnType<typeof cardToRowFields>; spacedSuccessCount: number }> {
+  if (!correct) {
+    const result = await gradeAndRecordReview(userId, conceptId, 'again');
+    return { rating: 'again', ...result };
+  }
+  const status = await getMasteryStatus(userId, conceptId);
+  const rating = deriveCorrectRating({ hadRetry, spacedSuccessCount: status.spacedSuccessCount });
+  const result = await gradeAndRecordReview(userId, conceptId, rating);
+  return { rating, ...result };
+}
+
 /**
  * Batch existence-check — which of these concept ids has this user EVER
  * reviewed on LastMind at all (any concept_reviews row, regardless of
@@ -355,14 +401,19 @@ export async function getMasteryDetailsForConcepts(userId: string, conceptIds: s
   const details = new Map<string, MasteryDetail>();
   if (!conceptIds.length) return details;
 
-  const { data, error } = await supabaseAdmin
-    .from('concept_reviews')
-    .select('concept_id, stability, reps, lapses, due, spaced_success_count')
-    .eq('user_id', userId)
-    .in('concept_id', conceptIds);
-  if (error) throw error;
+  // Chunked, not a single .in() call — a large enough conceptIds list (a
+  // subject-wide knowledge map is 1000+ nodes) can itself exceed
+  // PostgREST's request size limit and come back a flat "Bad Request",
+  // found live via knowledgeMapService.ts's getKnowledgeMapForSubject.
+  const data = await selectRowsByIdChunked<{ concept_id: string; stability: number; reps: number; lapses: number; due: string; spaced_success_count: number }>(
+    'concept_reviews',
+    'concept_id, stability, reps, lapses, due, spaced_success_count',
+    'concept_id',
+    conceptIds,
+    (q) => q.eq('user_id', userId)
+  );
 
-  (data || []).forEach((row) => {
+  data.forEach((row) => {
     const isMastered = row.stability >= MASTERY_STABILITY_THRESHOLD && row.reps >= MIN_REPS_FOR_TRUST;
     const spacedSuccessCount = (row as any).spaced_success_count ?? 0;
     const lapses = (row as any).lapses ?? 0;

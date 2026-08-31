@@ -97,4 +97,36 @@ router.get('/knowledge-map-v2/node/:nodeId/lesson', requireAuth, async (req: Req
   }
 });
 
+// GET /knowledge-map-v2/edge/:fromNodeId/:toNodeId/lesson -> the stored
+// edge lesson { linkTeaching, transferQuestion, integrationQuestion } for
+// the prerequisite relationship between two nodes (see
+// scripts/generate_edge_lessons_haiku_fast.js + create_knowledge_map_edge_lessons.sql).
+// Same read-only, one-time-generation contract as the node lesson route
+// above - looks the edge up by its endpoints since the frontend graph
+// only knows node ids, then joins to its lesson row.
+router.get('/knowledge-map-v2/edge/:fromNodeId/:toNodeId/lesson', requireAuth, async (req: Request, res: Response) => {
+  const { fromNodeId, toNodeId } = req.params;
+  try {
+    const { data, error } = await supabaseAdmin
+      .from('knowledge_map_edges')
+      .select('id, knowledge_map_edge_lessons(link_teaching_content, transfer_question, integration_question)')
+      .eq('from_node_id', fromNodeId)
+      .eq('to_node_id', toNodeId)
+      .maybeSingle();
+    if (error) throw error;
+    const lessonRow = Array.isArray(data?.knowledge_map_edge_lessons)
+      ? data?.knowledge_map_edge_lessons[0]
+      : data?.knowledge_map_edge_lessons;
+    if (!data || !lessonRow) return res.status(404).json({ error: 'no lesson generated for this connection yet' });
+    res.json({
+      linkTeaching: lessonRow.link_teaching_content,
+      transferQuestion: lessonRow.transfer_question,
+      integrationQuestion: lessonRow.integration_question,
+    });
+  } catch (err) {
+    console.error('Edge lesson lookup failed:', err);
+    res.status(500).json({ error: 'could not load this lesson' });
+  }
+});
+
 export default router;

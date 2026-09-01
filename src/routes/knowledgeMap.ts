@@ -543,7 +543,7 @@ router.post('/knowledge-map-v2/verify/submit', requireAuth, requirePaidTier, cos
     res.json({ correct, feedback });
   } catch (err) {
     console.error('Verify grading failed:', err);
-    res.status(500).json({ error: 'could not grade this answer' });
+    res.status(500).json({ error: 'could not grade this answer', debugDetail: err instanceof Error ? err.message : String(err) });
   }
 });
 

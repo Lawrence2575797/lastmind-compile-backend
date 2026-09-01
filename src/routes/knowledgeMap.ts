@@ -14,6 +14,8 @@ import {
 } from '../services/chainDiagnosticService';
 import { gradeDiagramAnswer, DiagramSpec, DiagramAnswerSubmission } from '../services/diagramGradingService';
 import { gradeCorrectness } from '../services/reviewService';
+import { callClaudeJSON, MODELS } from '../services/claudeClient';
+import { KNOWLEDGE_MAP_ANSWER_CHECK_PROMPT } from '../constants/knowledgeMapAnswerCheckPrompt';
 
 const router = Router();
 
@@ -375,6 +377,77 @@ router.post('/knowledge-map-v2/diagram-question/submit', requireAuth, costlyEndp
   } catch (err) {
     console.error('Diagram question grading failed:', err);
     res.status(500).json({ error: 'could not grade this diagram' });
+  }
+});
+
+function stripCodeFences(text: string): string {
+  return text.trim().replace(/^```(?:json)?\s*/i, '').replace(/```\s*$/, '').trim();
+}
+
+// POST /knowledge-map-v2/text-question/submit
+// { nodeId, questionType: 'practice' } or
+// { fromNodeId, toNodeId, questionType: 'transfer'|'integration' }, plus
+// { answer: string } - the free-text/worked-answer counterpart to the
+// diagram-question route above, for every question that ISN'T a diagram.
+// The question text and mark scheme are always re-fetched here, never
+// trusted from the client, same discipline as every other grading route
+// in this file.
+router.post('/knowledge-map-v2/text-question/submit', requireAuth, costlyEndpointLimiter, async (req: Request, res: Response) => {
+  const { nodeId, fromNodeId, toNodeId, questionType, answer } = (req.body ?? {}) as {
+    nodeId?: string;
+    fromNodeId?: string;
+    toNodeId?: string;
+    questionType?: 'practice' | 'transfer' | 'integration';
+    answer?: string;
+  };
+  if (!questionType || typeof answer !== 'string' || !answer.trim()) return res.status(400).json({ error: 'questionType and answer are required' });
+
+  try {
+    const userId = req.userId as string;
+    let question: { questionText?: string; markScheme?: string } | undefined;
+    let conceptId: string | undefined;
+
+    if (questionType === 'practice') {
+      if (!nodeId) return res.status(400).json({ error: 'nodeId is required for a practice question' });
+      const [{ data: node }, { data: lesson }] = await Promise.all([
+        supabaseAdmin.from('knowledge_map_nodes').select('concept_id').eq('id', nodeId).maybeSingle(),
+        supabaseAdmin.from('knowledge_map_node_lessons').select('encoding_content').eq('node_id', nodeId).maybeSingle(),
+      ]);
+      if (!node) return res.status(404).json({ error: 'concept not found' });
+      conceptId = node.concept_id as string;
+      question = (lesson?.encoding_content as { practiceQuestion?: { questionText?: string; markScheme?: string } } | null)?.practiceQuestion;
+    } else {
+      if (!fromNodeId || !toNodeId) return res.status(400).json({ error: 'fromNodeId and toNodeId are required for a transfer/integration question' });
+      const [{ data: fromNode }, { data: toNode }, { data: edgeRow }] = await Promise.all([
+        supabaseAdmin.from('knowledge_map_nodes').select('concept_id').eq('id', fromNodeId).maybeSingle(),
+        supabaseAdmin.from('knowledge_map_nodes').select('concept_id').eq('id', toNodeId).maybeSingle(),
+        supabaseAdmin.from('knowledge_map_edges').select('id').eq('from_node_id', fromNodeId).eq('to_node_id', toNodeId).maybeSingle(),
+      ]);
+      if (!fromNode || !toNode || !edgeRow) return res.status(404).json({ error: 'connection not found' });
+      conceptId = `${fromNode.concept_id}->${toNode.concept_id}`;
+      const { data: lesson } = await supabaseAdmin
+        .from('knowledge_map_edge_lessons')
+        .select('transfer_question, integration_question')
+        .eq('edge_id', edgeRow.id)
+        .maybeSingle();
+      question = (questionType === 'transfer' ? lesson?.transfer_question : lesson?.integration_question) as { questionText?: string; markScheme?: string } | undefined;
+    }
+
+    if (!question || !question.questionText) return res.status(404).json({ error: 'question not found' });
+
+    const raw = await callClaudeJSON({
+      model: MODELS.simpleQuestion,
+      systemPrompt: KNOWLEDGE_MAP_ANSWER_CHECK_PROMPT,
+      userContent: `Question: ${question.questionText}\nMark scheme: ${question.markScheme || ''}\nStudent's answer: ${answer}`,
+      temperature: 0.1,
+    });
+    const { correct, feedback } = JSON.parse(stripCodeFences(raw)) as { correct: boolean; feedback: string };
+
+    await gradeCorrectness(userId, conceptId!, correct);
+    res.json({ correct, feedback });
+  } catch (err) {
+    console.error('Text question grading failed:', err);
+    res.status(500).json({ error: 'could not grade this answer' });
   }
 });
 

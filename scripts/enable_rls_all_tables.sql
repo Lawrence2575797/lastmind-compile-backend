@@ -35,3 +35,5 @@ alter table lock_balances enable row level security;
 alter table lock_holds enable row level security;
 alter table learning_profile_entries enable row level security;
 alter table user_onboarding enable row level security;
+alter table math_help_threads enable row level security;
+alter table math_help_messages enable row level security;

@@ -27,6 +27,7 @@ import onboardingRouter from './routes/onboarding';
 import rewardSubmissionsRouter from './routes/rewardSubmissions';
 import practiceQuestionsRouter from './routes/practiceQuestions';
 import specLessonPlanRouter from './routes/specLessonPlan';
+import mathHelpRouter from './routes/mathHelp';
 import { globalRateLimiter } from './services/rateLimiters';
 
 const PORT = process.env.PORT || 4100;
@@ -77,6 +78,7 @@ app.use('/', onboardingRouter);
 app.use('/', rewardSubmissionsRouter);
 app.use('/', practiceQuestionsRouter);
 app.use('/', specLessonPlanRouter);
+app.use('/', mathHelpRouter);
 
 app.get('/health', (_req, res) => res.send('ok'));
 

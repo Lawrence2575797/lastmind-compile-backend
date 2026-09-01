@@ -1,5 +1,5 @@
 import { Router, Request, Response } from 'express';
-import { requireAuth } from '../services/authMiddleware';
+import { requireAuth, requirePaidTier } from '../services/authMiddleware';
 import { costlyEndpointLimiter } from '../services/rateLimiters';
 import { supabaseAdmin } from '../services/supabaseAdmin';
 import { callClaudeJSON, MODELS } from '../services/claudeClient';
@@ -12,6 +12,12 @@ import { MATH_HELP_ADVICE_PROMPT, MATH_HELP_ANSWER_PROMPT, MATH_HELP_ANSWER_INTR
 // mathHelpPrompts.ts), not a graded lesson surface.
 
 const router = Router();
+
+// Premium-only, enforced here (not just hidden client-side) — same
+// pattern as peerTutoring.ts's router.use, so a free account can't reach
+// any of this by calling the API directly even though the nav button is
+// already hidden for them.
+router.use('/math-help', requireAuth, requirePaidTier);
 
 function truncateTitle(text: string): string {
   const oneLine = text.trim().replace(/\s+/g, ' ');
@@ -29,7 +35,7 @@ function buildTranscript(originalQuestion: string, history: { role: string; cont
 }
 
 // GET /math-help/threads -> [{id, title, mode, updatedAt}] for the sidebar list.
-router.get('/math-help/threads', requireAuth, async (req: Request, res: Response) => {
+router.get('/math-help/threads', async (req: Request, res: Response) => {
   try {
     const { data, error } = await supabaseAdmin
       .from('math_help_threads')
@@ -45,7 +51,7 @@ router.get('/math-help/threads', requireAuth, async (req: Request, res: Response
 });
 
 // GET /math-help/threads/:id -> { id, title, mode, messages: [{role, content}] }
-router.get('/math-help/threads/:id', requireAuth, async (req: Request, res: Response) => {
+router.get('/math-help/threads/:id', async (req: Request, res: Response) => {
   try {
     const { data: thread } = await supabaseAdmin
       .from('math_help_threads')
@@ -72,7 +78,7 @@ router.get('/math-help/threads/:id', requireAuth, async (req: Request, res: Resp
 // Creates a new thread with the student's question as its first message.
 // 'advice' gets an immediate Claude walkthrough; 'answer' gets a hardcoded
 // (not API-generated) prompt to write their own working below.
-router.post('/math-help/threads', requireAuth, costlyEndpointLimiter, async (req: Request, res: Response) => {
+router.post('/math-help/threads', costlyEndpointLimiter, async (req: Request, res: Response) => {
   const { questionText, mode } = (req.body ?? {}) as { questionText?: string; mode?: 'advice' | 'answer' };
   if (typeof questionText !== 'string' || !questionText.trim()) return res.status(400).json({ error: 'questionText is required' });
   if (mode !== 'advice' && mode !== 'answer') return res.status(400).json({ error: "mode must be 'advice' or 'answer'" });
@@ -112,7 +118,7 @@ router.post('/math-help/threads', requireAuth, costlyEndpointLimiter, async (req
 });
 
 // POST /math-help/threads/:id/messages  { content } -> { role: 'assistant', content }
-router.post('/math-help/threads/:id/messages', requireAuth, costlyEndpointLimiter, async (req: Request, res: Response) => {
+router.post('/math-help/threads/:id/messages', costlyEndpointLimiter, async (req: Request, res: Response) => {
   const { content } = (req.body ?? {}) as { content?: string };
   if (typeof content !== 'string' || !content.trim()) return res.status(400).json({ error: 'content is required' });
 

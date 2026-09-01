@@ -1,5 +1,5 @@
 import { Router, Request, Response } from 'express';
-import { requireAuth } from '../services/authMiddleware';
+import { requireAuth, requirePaidTier } from '../services/authMiddleware';
 import { costlyEndpointLimiter } from '../services/rateLimiters';
 import { getKnowledgeMapForFolder, getKnowledgeMapForSubject, FolderConcept } from '../services/knowledgeMapService';
 import { supabaseAdmin } from '../services/supabaseAdmin';
@@ -495,7 +495,7 @@ router.post('/knowledge-map-v2/text-question/submit', requireAuth, costlyEndpoin
 // is deliberately worth less confidence than actually doing the lesson.
 // Question text is generated from re-fetched labels, never trusted from
 // the client, same discipline as every other grading route in this file.
-router.post('/knowledge-map-v2/verify/submit', requireAuth, costlyEndpointLimiter, async (req: Request, res: Response) => {
+router.post('/knowledge-map-v2/verify/submit', requireAuth, requirePaidTier, costlyEndpointLimiter, async (req: Request, res: Response) => {
   const { nodeId, fromNodeId, toNodeId, questionType, answer } = (req.body ?? {}) as {
     nodeId?: string;
     fromNodeId?: string;

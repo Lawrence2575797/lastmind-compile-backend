@@ -374,7 +374,8 @@ router.post('/knowledge-map-v2/diagram-question/submit', requireAuth, costlyEndp
     res.json(result);
   } catch (err) {
     console.error('Diagram question grading failed:', err);
-    res.status(500).json({ error: 'could not grade this diagram' });
+    // TEMPORARY: surfacing the real error to diagnose a live 500 - remove once root-caused.
+    res.status(500).json({ error: 'could not grade this diagram', debug: err instanceof Error ? `${err.message}\n${err.stack}` : String(err) });
   }
 });
 

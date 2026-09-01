@@ -8,7 +8,7 @@ create table reward_submissions (
   business_name text not null,
   contact_email text not null,
   title text not null,
-  description text not null,
+  description text not null default '',
   terms text,
   category text,
   suggested_cost_keys integer,

@@ -537,13 +537,19 @@ router.post('/knowledge-map-v2/verify/submit', requireAuth, requirePaidTier, cos
       userContent: `Question: ${questionText}\nStudent's answer: ${answer}`,
       temperature: 0.1,
     });
-    const { correct, feedback } = JSON.parse(stripCodeFences(raw)) as { correct: boolean; feedback: string };
+    let correct: boolean, feedback: string;
+    try {
+      ({ correct, feedback } = JSON.parse(stripCodeFences(raw)) as { correct: boolean; feedback: string });
+    } catch (parseErr) {
+      console.error('Verify JSON parse failed. Raw model output was:', JSON.stringify(raw));
+      return res.status(500).json({ error: 'could not grade this answer', debugRaw: raw });
+    }
 
     await gradeCorrectness(userId, conceptId, correct, true);
     res.json({ correct, feedback });
   } catch (err) {
     console.error('Verify grading failed:', err);
-    res.status(500).json({ error: 'could not grade this answer' });
+    res.status(500).json({ error: 'could not grade this answer', debugDetail: err instanceof Error ? err.message : String(err) });
   }
 });
 

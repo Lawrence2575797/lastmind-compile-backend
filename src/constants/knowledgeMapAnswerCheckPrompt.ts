@@ -3,7 +3,7 @@
 // that every mark scheme is written for a binary correct/incorrect call,
 // no partial credit - this prompt's output matches that exactly, one
 // verdict, not a score).
-export const KNOWLEDGE_MAP_ANSWER_CHECK_PROMPT = `You are grading a UK GCSE/A-Level student's answer to a knowledge-map question against its own mark scheme. You will be given the concept(s) this question tests (the exact node label(s) from the knowledge-map graph), the question, the mark scheme (what specifically must the answer say to be correct - written for a binary call, not partial credit), and the student's answer.
+export const KNOWLEDGE_MAP_ANSWER_CHECK_PROMPT = `You are grading a UK GCSE/A-Level student's answer to a knowledge-map question against its own mark scheme. You will be given the question, the mark scheme (what specifically must the answer say to be correct - written for a binary call, not partial credit), and the student's answer.
 
 The student's answer may contain literal maths notation typed via a shortcut keyboard - stacked fractions written inline as "(numerator)/(denominator)", exponents/subscripts as "x^(...)"/"x_(...)", Greek letters and symbols as their real characters (α, Δ, ×, √, ∫, etc.), and definite-integral or evaluate-between-limits notation with the limits shown immediately after in brackets. Read this as the mathematical expression it represents, not as prose with stray symbols.
 
@@ -11,8 +11,7 @@ Rules:
 1. Output ONLY valid JSON, nothing else.
 2. Default toward "correct": true unless there's a genuine, substantive gap against the mark scheme - do not withhold it over informal wording, minor rounding differences, or an equivalent but differently-formatted numeric answer (0.5 and 1/2 and 50% are the same answer).
 3. For a calculation question, the student's FINAL ANSWER matching the mark scheme is what matters most - do not penalize a correct final answer for skipping intermediate working the mark scheme doesn't explicitly require, and do not accept a wrong final answer just because some working shown was on the right track.
-4. **The concept label(s) you were given are the real, exclusive scope of this question - not general subject knowledge, and not everything the mark scheme happens to say.** Every knowledge-map concept is deliberately atomic: each node covers exactly one small idea, and related ideas that are conventionally taught alongside it in a textbook are almost always SEPARATE nodes elsewhere in the graph, tested separately. Before applying the mark scheme, check each of its required points against the concept label(s) alone: if a point names or clearly belongs to a distinct idea that is not itself part of what the label asserts - even if a complete real-world/textbook answer would normally include it, and even though the mark scheme literally states it - do not require that point. This overrides the mark scheme's own wording where they conflict: the mark scheme is a drafting aid for testing the labeled concept, never a license to test a different one. Only ever apply this to NARROW a requirement, never to invent a new one the mark scheme doesn't ask for.
-5. "feedback" is a short, plain-language note written directly to the student - a genuine confirmation if correct, or a clear (but non-leaking, never stating the actual correct answer/value) note of what's wrong or missing if not.
+4. "feedback" is a short, plain-language note written directly to the student - a genuine confirmation if correct, or a clear (but non-leaking, never stating the actual correct answer/value) note of what's wrong or missing if not.
 
 Output schema:
 { "correct": boolean, "feedback": string }`;

@@ -354,11 +354,15 @@ router.post('/knowledge-map-v2/diagram-question/submit', requireAuth, costlyEndp
     } else {
       if (!fromNodeId || !toNodeId) return res.status(400).json({ error: 'fromNodeId and toNodeId are required for a transfer/integration question' });
       const [{ data: fromNode }, { data: toNode }, { data: edgeRow }] = await Promise.all([
-        supabaseAdmin.from('knowledge_map_nodes').select('concept_id').eq('id', fromNodeId).maybeSingle(),
-        supabaseAdmin.from('knowledge_map_nodes').select('concept_id').eq('id', toNodeId).maybeSingle(),
+        supabaseAdmin.from('knowledge_map_nodes').select('id, label, concept_id').eq('id', fromNodeId).maybeSingle(),
+        supabaseAdmin.from('knowledge_map_nodes').select('id, label, concept_id').eq('id', toNodeId).maybeSingle(),
         supabaseAdmin.from('knowledge_map_edges').select('id').eq('from_node_id', fromNodeId).eq('to_node_id', toNodeId).maybeSingle(),
       ]);
       if (!fromNode || !toNode || !edgeRow) return res.status(404).json({ error: 'connection not found' });
+
+      const missing = await findMissingEncoding(userId, [fromNode, toNode]);
+      if (missing) return res.json({ requiresEncoding: true, redirect: missing });
+
       conceptId = `${fromNode.concept_id}->${toNode.concept_id}`;
       const { data: lesson } = await supabaseAdmin
         .from('knowledge_map_edge_lessons')
@@ -382,6 +386,31 @@ router.post('/knowledge-map-v2/diagram-question/submit', requireAuth, costlyEndp
 
 function stripCodeFences(text: string): string {
   return text.trim().replace(/^```(?:json)?\s*/i, '').replace(/```\s*$/, '').trim();
+}
+
+// The narrow prerequisite check for an edge's transfer/integration
+// retrieval - deliberately different from the chain-diagnostic gate
+// above (which tests a whole unmastered ANCESTOR CHAIN via one combined
+// free-text/diagram question before starting a node's own lesson). This
+// is just an existence check: has each endpoint of THIS edge ever been
+// encoded at all (any concept_reviews row, regardless of mastery level)?
+// Testing the connection between two concepts means nothing if one of
+// them was never actually taught yet - redirect to encode whichever one
+// is missing instead of grading against a concept the student has no
+// real basis for.
+async function findMissingEncoding(
+  userId: string,
+  candidates: { id: string; label: string; concept_id: string }[]
+): Promise<{ nodeId: string; label: string } | null> {
+  const { data, error } = await supabaseAdmin
+    .from('concept_reviews')
+    .select('concept_id')
+    .eq('user_id', userId)
+    .in('concept_id', candidates.map((n) => n.concept_id));
+  if (error) throw error;
+  const encoded = new Set((data || []).map((r) => r.concept_id as string));
+  const missing = candidates.find((n) => !encoded.has(n.concept_id));
+  return missing ? { nodeId: missing.id, label: missing.label } : null;
 }
 
 // POST /knowledge-map-v2/text-question/submit
@@ -419,11 +448,15 @@ router.post('/knowledge-map-v2/text-question/submit', requireAuth, costlyEndpoin
     } else {
       if (!fromNodeId || !toNodeId) return res.status(400).json({ error: 'fromNodeId and toNodeId are required for a transfer/integration question' });
       const [{ data: fromNode }, { data: toNode }, { data: edgeRow }] = await Promise.all([
-        supabaseAdmin.from('knowledge_map_nodes').select('concept_id').eq('id', fromNodeId).maybeSingle(),
-        supabaseAdmin.from('knowledge_map_nodes').select('concept_id').eq('id', toNodeId).maybeSingle(),
+        supabaseAdmin.from('knowledge_map_nodes').select('id, label, concept_id').eq('id', fromNodeId).maybeSingle(),
+        supabaseAdmin.from('knowledge_map_nodes').select('id, label, concept_id').eq('id', toNodeId).maybeSingle(),
         supabaseAdmin.from('knowledge_map_edges').select('id').eq('from_node_id', fromNodeId).eq('to_node_id', toNodeId).maybeSingle(),
       ]);
       if (!fromNode || !toNode || !edgeRow) return res.status(404).json({ error: 'connection not found' });
+
+      const missing = await findMissingEncoding(req.userId as string, [fromNode, toNode]);
+      if (missing) return res.json({ requiresEncoding: true, redirect: missing });
+
       conceptId = `${fromNode.concept_id}->${toNode.concept_id}`;
       const { data: lesson } = await supabaseAdmin
         .from('knowledge_map_edge_lessons')

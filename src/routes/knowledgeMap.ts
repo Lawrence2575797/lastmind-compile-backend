@@ -449,15 +449,17 @@ router.post('/knowledge-map-v2/text-question/submit', requireAuth, costlyEndpoin
     const userId = req.userId as string;
     let question: { questionText?: string; markScheme?: string } | undefined;
     let conceptId: string | undefined;
+    let conceptLabel: string | undefined;
 
     if (questionType === 'practice') {
       if (!nodeId) return res.status(400).json({ error: 'nodeId is required for a practice question' });
       const [{ data: node }, { data: lesson }] = await Promise.all([
-        supabaseAdmin.from('knowledge_map_nodes').select('concept_id').eq('id', nodeId).maybeSingle(),
+        supabaseAdmin.from('knowledge_map_nodes').select('concept_id, label').eq('id', nodeId).maybeSingle(),
         supabaseAdmin.from('knowledge_map_node_lessons').select('encoding_content').eq('node_id', nodeId).maybeSingle(),
       ]);
       if (!node) return res.status(404).json({ error: 'concept not found' });
       conceptId = node.concept_id as string;
+      conceptLabel = node.label as string;
       question = (lesson?.encoding_content as { practiceQuestion?: { questionText?: string; markScheme?: string } } | null)?.practiceQuestion;
     } else {
       if (!fromNodeId || !toNodeId) return res.status(400).json({ error: 'fromNodeId and toNodeId are required for a transfer/integration question' });
@@ -472,6 +474,7 @@ router.post('/knowledge-map-v2/text-question/submit', requireAuth, costlyEndpoin
       if (missing) return res.json({ requiresEncoding: true, redirect: missing });
 
       conceptId = `${fromNode.concept_id}->${toNode.concept_id}`;
+      conceptLabel = `"${fromNode.label}" -> "${toNode.label}"`;
       const { data: lesson } = await supabaseAdmin
         .from('knowledge_map_edge_lessons')
         .select('transfer_question, integration_question')
@@ -485,7 +488,7 @@ router.post('/knowledge-map-v2/text-question/submit', requireAuth, costlyEndpoin
     const raw = await callClaudeJSON({
       model: MODELS.simpleQuestion,
       systemPrompt: KNOWLEDGE_MAP_ANSWER_CHECK_PROMPT,
-      userContent: `Question: ${question.questionText}\nMark scheme: ${question.markScheme || ''}\nStudent's answer: ${answer}`,
+      userContent: `Concept(s) this question tests: ${conceptLabel}\nQuestion: ${question.questionText}\nMark scheme: ${question.markScheme || ''}\nStudent's answer: ${answer}`,
       temperature: 0.1,
     });
     const { correct, feedback } = JSON.parse(stripCodeFences(raw)) as { correct: boolean; feedback: string };

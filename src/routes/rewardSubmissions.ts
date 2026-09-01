@@ -64,7 +64,6 @@ router.post('/reward-submissions', publicFormLimiter, async (req: Request, res: 
   const contactEmail = cleanString(body.contactEmail, 200);
   const contactPhone = body.contactPhone ? cleanString(body.contactPhone, 20) : null;
   const title = cleanString(body.title, 100);
-  const description = cleanString(body.description, 500);
   const terms = body.terms ? cleanString(body.terms, 300) : null;
   const category = body.category ? cleanString(body.category, 50) : null;
   const accentColor = body.accentColor ? cleanString(body.accentColor, 7) : null;
@@ -72,8 +71,8 @@ router.post('/reward-submissions', publicFormLimiter, async (req: Request, res: 
   const textColor = body.textColor ? cleanString(body.textColor, 7) : null;
   const catchmentArea = body.catchmentArea ? cleanString(body.catchmentArea, 150) : null;
 
-  if (!businessName || !contactEmail || !title || !description) {
-    return res.status(400).json({ error: 'businessName, contactEmail, title, and description are required.' });
+  if (!businessName || !contactEmail || !title) {
+    return res.status(400).json({ error: 'businessName, contactEmail, and title are required.' });
   }
   if (!EMAIL_RE.test(contactEmail)) {
     return res.status(400).json({ error: 'contactEmail is not a valid email address.' });
@@ -112,7 +111,9 @@ router.post('/reward-submissions', publicFormLimiter, async (req: Request, res: 
       contact_email: contactEmail,
       contact_phone: contactPhone,
       title,
-      description,
+      // reward_submissions.description is still NOT NULL in the DB; the form
+      // no longer collects one, so we satisfy the constraint with ''.
+      description: '',
       terms,
       category,
       suggested_cost_keys: suggestedCostKeys,

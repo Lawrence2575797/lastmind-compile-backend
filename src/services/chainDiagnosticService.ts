@@ -37,8 +37,8 @@ function extractJsonValue(text: string): string {
   if (start === -1 || end === -1 || end <= start) return text;
   return text.slice(start, end + 1);
 }
-async function callJSON<T>(systemPrompt: string, userContent: string, model: string, temperature = 0.2): Promise<T> {
-  const raw = await callClaudeJSON({ model, systemPrompt, userContent, temperature });
+async function callJSON<T>(systemPrompt: string, userContent: string, model: string, temperature = 0.2, maxTokens?: number): Promise<T> {
+  const raw = await callClaudeJSON({ model, systemPrompt, userContent, temperature, maxTokens });
   const cleaned = stripCodeFences(raw);
   try {
     return JSON.parse(cleaned) as T;
@@ -289,11 +289,24 @@ export async function gradeChainDiagnosticAnswer(
     .map((c, i) => `${i + 1}. [${c.type}] ${c.label}\nReference (never reveal): ${c.groundTruth}`)
     .join('\n\n');
 
+  // Output scales with the number of unmastered components in the chain
+  // (one { correct, feedback } object per component — see rule 7's
+  // "feedback for EVERY component" requirement) as well as how much the
+  // student's own answer gives the model to reference. The 2048-token
+  // default that callClaudeJSON otherwise falls back to is comfortably
+  // enough for one or two components, but a longer chain plus a
+  // several-line combined answer can genuinely exceed it — a truncated,
+  // syntactically-broken JSON response fails to parse, which surfaced to
+  // the student as a flat "something went wrong" while grading a long
+  // answer to a multi-component chain check. Scaling with the component
+  // count directly (rather than one fixed bump) keeps a short chain cheap
+  // while still covering a long one.
   const { results } = await callJSON<{ results: { correct: boolean; feedback: string }[] }>(
     CHAIN_DIAGNOSTIC_GRADE_PROMPT,
     `Question the student was asked:\n${questionText}\n\nStudent's answer:\n${answer}\n\nComponents to check, in order:\n${numbered}`,
     MODELS.diagnosticTree,
-    0.1
+    0.1,
+    Math.max(2048, components.length * 600 + 512)
   );
 
   return components.map((c, i) => ({

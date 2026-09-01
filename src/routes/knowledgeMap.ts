@@ -389,8 +389,11 @@ router.post('/knowledge-map-v2/diagram-question/submit', requireAuth, costlyEndp
     if (questionType === 'practice' && !result.correct) {
       return res.json({ ...result, retryable: true });
     }
-    await gradeCorrectness(userId, conceptId!, result.correct, questionType === 'practice' ? !!hadRetry : false);
-    res.json(result);
+    const graded = await gradeCorrectness(userId, conceptId!, result.correct, questionType === 'practice' ? !!hadRetry : false);
+    // The frontend needs the fresh due date the moment this grades, not
+    // only after a later /schedule refetch (e.g. on returning to the
+    // dashboard) — see reviewService.ts's cardToRowFields for the fields.
+    res.json({ ...result, schedule: { conceptId, ...graded.newState } });
   } catch (err) {
     console.error('Diagram question grading failed:', err);
     res.status(500).json({ error: 'could not grade this diagram' });
@@ -498,8 +501,9 @@ router.post('/knowledge-map-v2/text-question/submit', requireAuth, costlyEndpoin
     if (questionType === 'practice' && !correct) {
       return res.json({ correct, feedback, retryable: true });
     }
-    await gradeCorrectness(userId, conceptId!, correct, questionType === 'practice' ? !!hadRetry : false);
-    res.json({ correct, feedback });
+    const graded = await gradeCorrectness(userId, conceptId!, correct, questionType === 'practice' ? !!hadRetry : false);
+    // See the identical comment on diagram-question/submit above.
+    res.json({ correct, feedback, schedule: { conceptId, ...graded.newState } });
   } catch (err) {
     console.error('Text question grading failed:', err);
     res.status(500).json({ error: 'could not grade this answer' });

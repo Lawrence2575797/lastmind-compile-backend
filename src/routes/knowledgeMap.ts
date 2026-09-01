@@ -16,6 +16,7 @@ import { gradeDiagramAnswer, DiagramSpec, DiagramAnswerSubmission } from '../ser
 import { gradeCorrectness } from '../services/reviewService';
 import { callClaudeJSON, MODELS } from '../services/claudeClient';
 import { KNOWLEDGE_MAP_ANSWER_CHECK_PROMPT } from '../constants/knowledgeMapAnswerCheckPrompt';
+import { VERIFY_LEARNING_PROMPT, buildVerifyQuestionText } from '../constants/verifyLearningPrompts';
 
 const router = Router();
 
@@ -480,6 +481,68 @@ router.post('/knowledge-map-v2/text-question/submit', requireAuth, costlyEndpoin
     res.json({ correct, feedback });
   } catch (err) {
     console.error('Text question grading failed:', err);
+    res.status(500).json({ error: 'could not grade this answer' });
+  }
+});
+
+// POST /knowledge-map-v2/verify/submit
+// Premium "test out" shortcut, offered alongside Start lesson (a node's
+// own AO1) and Review connection (an edge's transfer/integration): one
+// weakly-prompted free-text answer instead of the full lesson/question.
+// A pass still updates the SAME concept_id FSRS row a full lesson/review
+// would (never a parallel tracking system), but always with hadRetry=true
+// so deriveCorrectRating never grants 'good'/'easy' here — a Verify pass
+// is deliberately worth less confidence than actually doing the lesson.
+// Question text is generated from re-fetched labels, never trusted from
+// the client, same discipline as every other grading route in this file.
+router.post('/knowledge-map-v2/verify/submit', requireAuth, costlyEndpointLimiter, async (req: Request, res: Response) => {
+  const { nodeId, fromNodeId, toNodeId, questionType, answer } = (req.body ?? {}) as {
+    nodeId?: string;
+    fromNodeId?: string;
+    toNodeId?: string;
+    questionType?: 'ao1' | 'transfer' | 'integration';
+    answer?: string;
+  };
+  if (!questionType || typeof answer !== 'string' || !answer.trim()) return res.status(400).json({ error: 'questionType and answer are required' });
+
+  try {
+    const userId = req.userId as string;
+    let conceptId: string;
+    let questionText: string;
+
+    if (questionType === 'ao1') {
+      if (!nodeId) return res.status(400).json({ error: 'nodeId is required for an ao1 verify' });
+      const { data: node } = await supabaseAdmin.from('knowledge_map_nodes').select('concept_id, label').eq('id', nodeId).maybeSingle();
+      if (!node) return res.status(404).json({ error: 'concept not found' });
+      conceptId = node.concept_id as string;
+      questionText = buildVerifyQuestionText('ao1', node.label as string);
+    } else {
+      if (!fromNodeId || !toNodeId) return res.status(400).json({ error: 'fromNodeId and toNodeId are required for a transfer/integration verify' });
+      const [{ data: fromNode }, { data: toNode }] = await Promise.all([
+        supabaseAdmin.from('knowledge_map_nodes').select('id, label, concept_id').eq('id', fromNodeId).maybeSingle(),
+        supabaseAdmin.from('knowledge_map_nodes').select('id, label, concept_id').eq('id', toNodeId).maybeSingle(),
+      ]);
+      if (!fromNode || !toNode) return res.status(404).json({ error: 'connection not found' });
+
+      const missing = await findMissingEncoding(userId, [fromNode, toNode]);
+      if (missing) return res.json({ requiresEncoding: true, redirect: missing });
+
+      conceptId = `${fromNode.concept_id}->${toNode.concept_id}`;
+      questionText = buildVerifyQuestionText(questionType, fromNode.label as string, toNode.label as string);
+    }
+
+    const raw = await callClaudeJSON({
+      model: MODELS.simpleQuestion,
+      systemPrompt: VERIFY_LEARNING_PROMPT,
+      userContent: `Question: ${questionText}\nStudent's answer: ${answer}`,
+      temperature: 0.1,
+    });
+    const { correct, feedback } = JSON.parse(stripCodeFences(raw)) as { correct: boolean; feedback: string };
+
+    await gradeCorrectness(userId, conceptId, correct, true);
+    res.json({ correct, feedback });
+  } catch (err) {
+    console.error('Verify grading failed:', err);
     res.status(500).json({ error: 'could not grade this answer' });
   }
 });

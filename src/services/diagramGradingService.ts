@@ -346,7 +346,13 @@ function polygonIoU(a: Point[], b: Point[]): number {
   return either === 0 ? 0 : both / either;
 }
 
-export function gradeDiagramAnswer(spec: DiagramSpec, answer: DiagramAnswerSubmission): DiagramGradingResult {
+export function gradeDiagramAnswer(specInput: DiagramSpec, answerInput: DiagramAnswerSubmission): DiagramGradingResult {
+  // Generated specs correctly OMIT shades/labels/arrows entirely when a
+  // concept has none (see diagramSpecPrompts.ts's own rules) rather than
+  // writing empty arrays - normalize once here instead of null-checking
+  // every loop below.
+  const spec: DiagramSpec = { curves: specInput.curves || [], given: specInput.given, shades: specInput.shades || [], labels: specInput.labels || [], arrows: specInput.arrows || [] };
+  const answer: DiagramAnswerSubmission = { curves: answerInput.curves || [], shades: answerInput.shades || [], labels: answerInput.labels || [], arrows: answerInput.arrows || [], notes: answerInput.notes };
   const usedInstanceIds = new Set<string>();
   const resolvedByCurveId = new Map<string, Point[]>();
   const curveIssues: string[] = [];

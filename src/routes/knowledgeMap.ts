@@ -14,6 +14,7 @@ import {
 } from '../services/chainDiagnosticService';
 import { gradeDiagramAnswer, DiagramSpec, DiagramAnswerSubmission } from '../services/diagramGradingService';
 import { gradeCorrectness } from '../services/reviewService';
+import { adjustCredits, payMasteryInstallment, ENCODING_LESSON_COMPLETION_KEYS } from '../services/creditService';
 import { callClaudeJSON, MODELS } from '../services/claudeClient';
 import { KNOWLEDGE_MAP_ANSWER_CHECK_PROMPT } from '../constants/knowledgeMapAnswerCheckPrompt';
 import { VERIFY_LEARNING_PROMPT, buildVerifyQuestionText } from '../constants/verifyLearningPrompts';
@@ -390,10 +391,11 @@ router.post('/knowledge-map-v2/diagram-question/submit', requireAuth, costlyEndp
       return res.json({ ...result, retryable: true });
     }
     const graded = await gradeCorrectness(userId, conceptId!, result.correct, questionType === 'practice' ? !!hadRetry : false);
+    const keysEarned = await payLessonCredits(userId, questionType, graded);
     // The frontend needs the fresh due date the moment this grades, not
     // only after a later /schedule refetch (e.g. on returning to the
     // dashboard) — see reviewService.ts's cardToRowFields for the fields.
-    res.json({ ...result, schedule: { conceptId, ...graded.newState } });
+    res.json({ ...result, schedule: { conceptId, ...graded.newState }, keysEarned });
   } catch (err) {
     console.error('Diagram question grading failed:', err);
     res.status(500).json({ error: 'could not grade this diagram' });
@@ -427,6 +429,30 @@ async function findMissingEncoding(
   const encoded = new Set((data || []).map((r) => r.concept_id as string));
   const missing = candidates.find((n) => !encoded.has(n.concept_id));
   return missing ? { nodeId: missing.id, label: missing.label } : null;
+}
+
+// Pays the same credit amounts the older encoding/spaced-lesson engines
+// already use (see creditService.ts) — a first-time node encoding
+// ('practice') is a flat one-off payment, matching encodingLessonService.ts's
+// own ENCODING_LESSON_COMPLETION_KEYS payout on a first-time pass; a
+// transfer/integration pass is a genuine spaced review of an already-
+// encoded edge, paid via the same per-milestone installment schedule
+// spacedLessonEngine.ts uses as spaced_success_count climbs toward durable
+// mastery. `graded` is gradeCorrectness's own return value — its
+// `previousRow` carries spaced_success_count at runtime, just narrower on
+// its declared type (see gradeAndRecordReview's own comment in
+// reviewService.ts).
+async function payLessonCredits(
+  userId: string,
+  questionType: 'practice' | 'transfer' | 'integration',
+  graded: Awaited<ReturnType<typeof gradeCorrectness>>
+): Promise<number> {
+  if (questionType === 'practice') {
+    await adjustCredits(userId, ENCODING_LESSON_COMPLETION_KEYS, 'knowledge_map_encoding_completed');
+    return ENCODING_LESSON_COMPLETION_KEYS;
+  }
+  const priorSpacedSuccessCount = (graded.previousRow as { spaced_success_count?: number } | null)?.spaced_success_count ?? 0;
+  return payMasteryInstallment(userId, priorSpacedSuccessCount, graded.spacedSuccessCount, 1.0, `knowledge_map_${questionType}_mastery_${graded.spacedSuccessCount}`);
 }
 
 // POST /knowledge-map-v2/text-question/submit
@@ -502,8 +528,9 @@ router.post('/knowledge-map-v2/text-question/submit', requireAuth, costlyEndpoin
       return res.json({ correct, feedback, retryable: true });
     }
     const graded = await gradeCorrectness(userId, conceptId!, correct, questionType === 'practice' ? !!hadRetry : false);
+    const keysEarned = await payLessonCredits(userId, questionType, graded);
     // See the identical comment on diagram-question/submit above.
-    res.json({ correct, feedback, schedule: { conceptId, ...graded.newState } });
+    res.json({ correct, feedback, schedule: { conceptId, ...graded.newState }, keysEarned });
   } catch (err) {
     console.error('Text question grading failed:', err);
     res.status(500).json({ error: 'could not grade this answer' });
@@ -564,8 +591,15 @@ router.post('/knowledge-map-v2/verify/submit', requireAuth, requirePaidTier, cos
     });
     const { correct, feedback } = JSON.parse(stripCodeFences(raw)) as { correct: boolean; feedback: string };
 
-    await gradeCorrectness(userId, conceptId, correct, true);
-    res.json({ correct, feedback });
+    const graded = await gradeCorrectness(userId, conceptId, correct, true);
+    // Same 0.6x coefficient as the older verificationLessonService.ts's
+    // VERIFICATION_KEYS_COEFFICIENT — applies to Verify regardless of tier,
+    // not just a free-tier discount (see creditService.ts's comment).
+    const priorSpacedSuccessCount = (graded.previousRow as { spaced_success_count?: number } | null)?.spaced_success_count ?? 0;
+    const keysEarned = correct
+      ? await payMasteryInstallment(userId, priorSpacedSuccessCount, graded.spacedSuccessCount, 0.6, `knowledge_map_verify_mastery_${graded.spacedSuccessCount}`)
+      : 0;
+    res.json({ correct, feedback, keysEarned });
   } catch (err) {
     console.error('Verify grading failed:', err);
     res.status(500).json({ error: 'could not grade this answer' });

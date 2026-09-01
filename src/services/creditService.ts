@@ -23,14 +23,23 @@ const INITIAL_CREDIT_ALLOWANCE = 40;
 // payMasteryInstallment below, the one place this logic lives. Verification
 // applies a 0.6x coefficient on top of these base amounts: that learning
 // didn't happen on LastMind, so it's rewarded with less confidence than
-// practice that did.
-const MASTERY_INSTALLMENT_KEYS = [75, 150, 225]; // index 0 = lesson 1
+// practice that did — and that coefficient applies to Verify regardless of
+// which tier is using it (see VERIFICATION_KEYS_COEFFICIENT in
+// verificationLessonService.ts and the knowledge-map v2 Verify route),
+// never just the free tier.
+// Rescaled 2026-09-01 (÷15 from the original [75,150,225], rounded to a
+// clean multiple of 5) — the original figures were tuned before the
+// knowledge-map's own lesson flow paid credits at all; this is a product
+// tuning knob, not derived from anything.
+const MASTERY_INSTALLMENT_KEYS = [5, 10, 15]; // index 0 = lesson 1
 
 // Flat reward for completing a first-time encoding lesson (premium) — see
 // encodingLessonService.ts's own gate (index >= 0.5, the same bar its FSRS
 // rating already uses to distinguish "hard" from "again") on when this
-// actually gets paid.
-export const ENCODING_LESSON_COMPLETION_KEYS = 100;
+// actually gets paid. Rescaled 2026-09-01 (÷15 from the original 100,
+// rounded down to 5 to land on the same clean scale as
+// MASTERY_INSTALLMENT_KEYS's own new figures) — see that constant's comment.
+export const ENCODING_LESSON_COMPLETION_KEYS = 5;
 
 export interface CreditBalance {
   balance: number;

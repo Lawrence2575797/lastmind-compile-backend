@@ -3,7 +3,7 @@ import { Chain, resolveSiblingConceptId, SiblingConcept } from './encodingLesson
 import { getMasteryDetailsForConcepts, MasteryDetail } from './reviewService';
 import { getConceptsWithLowConfidenceSignal } from './answerSignalService';
 import { supabaseAdmin } from './supabaseAdmin';
-import { selectAllRows } from './supabasePagination';
+import { selectAllRows, selectRowsByIdChunked } from './supabasePagination';
 
 // One concept the student has actually added to a folder (a single-lesson
 // page's own title, or one entry of a multi-lesson page's own lessons) —
@@ -313,17 +313,25 @@ export async function getKnowledgeMapForSubject(
     return { nodes: [], edges: [], mastery: {}, masteryDetail: {} };
   }
 
-  // Fetched with no id filter at all (rather than .in('from_node_id',
-  // nodeIds) against a 1000+-id list, which itself triggers a "Bad
-  // Request" — found live while building the chain-diagnostic gate) and
-  // filtered down to this subject's own edges below, same pattern
-  // scripts/ingest_knowledge_map.js already uses for exactly this reason.
-  const allEdgeRows = await selectAllRows<{ from_node_id: string; to_node_id: string }>(
-    'knowledge_map_edges',
-    'from_node_id, to_node_id'
-  );
+  // Was fetching the ENTIRE global knowledge_map_edges table on every
+  // single load (a plain .in('from_node_id', nodeIds) against a 1000+-id
+  // list itself triggers a "Bad Request" — see this file's own history)
+  // and filtering down to this subject's edges in JS afterward — the
+  // actual cause of the map taking several seconds to open every time,
+  // found live while investigating that report. selectRowsByIdChunked
+  // (built for exactly this "id list too large for one .in()" problem,
+  // see supabasePagination.ts) scopes the query to just this subject's
+  // node ids via parallel chunked requests instead. The to_node_id check
+  // stays as a cheap in-memory safety net — edges shouldn't span subjects
+  // by design, but nothing here depends on that never changing.
   const conceptIdById = new Map(nodeRows.map((r) => [r.id as string, r.concept_id as string]));
-  const edgeRows = allEdgeRows.filter((e) => conceptIdById.has(e.from_node_id) && conceptIdById.has(e.to_node_id));
+  const subjectEdgeRows = await selectRowsByIdChunked<{ from_node_id: string; to_node_id: string }>(
+    'knowledge_map_edges',
+    'from_node_id, to_node_id',
+    'from_node_id',
+    nodeRows.map((r) => r.id as string)
+  );
+  const edgeRows = subjectEdgeRows.filter((e) => conceptIdById.has(e.to_node_id));
   const found = await getMasteryDetailsForConcepts(userId, nodeRows.map((r) => r.concept_id as string));
 
   const mastery: Record<string, 0 | 1 | 2> = {};

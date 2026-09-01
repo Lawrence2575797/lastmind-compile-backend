@@ -329,12 +329,13 @@ router.post('/knowledge-map-v2/chain-diagnostic/submit-retry', requireAuth, cost
 // itself is NEVER sent to or trusted from the client - always re-fetched
 // here by id, same discipline as the chain-diagnostic gate above.
 router.post('/knowledge-map-v2/diagram-question/submit', requireAuth, costlyEndpointLimiter, async (req: Request, res: Response) => {
-  const { nodeId, fromNodeId, toNodeId, questionType, answer } = (req.body ?? {}) as {
+  const { nodeId, fromNodeId, toNodeId, questionType, answer, hadRetry } = (req.body ?? {}) as {
     nodeId?: string;
     fromNodeId?: string;
     toNodeId?: string;
     questionType?: 'practice' | 'transfer' | 'integration';
     answer?: DiagramAnswerSubmission;
+    hadRetry?: boolean;
   };
   if (!answer || !questionType) return res.status(400).json({ error: 'questionType and answer are required' });
 
@@ -377,7 +378,18 @@ router.post('/knowledge-map-v2/diagram-question/submit', requireAuth, costlyEndp
     if (!diagramSpec) return res.status(404).json({ error: 'this question has no diagram to grade' });
 
     const result = gradeDiagramAnswer(diagramSpec, answer);
-    await gradeCorrectness(userId, conceptId!, result.correct);
+
+    // A first-time encoding attempt (questionType 'practice') is a
+    // learning rep, not a real recall test yet - a wrong attempt here
+    // shouldn't record an FSRS lapse (or let the student move on thinking
+    // they've "reviewed" something they never actually got right). Only
+    // transfer/integration (an already-encoded concept's spaced review)
+    // grades every attempt immediately - see deriveCorrectRating's own
+    // comment on why a genuine lapse there must never be softened.
+    if (questionType === 'practice' && !result.correct) {
+      return res.json({ ...result, retryable: true });
+    }
+    await gradeCorrectness(userId, conceptId!, result.correct, questionType === 'practice' ? !!hadRetry : false);
     res.json(result);
   } catch (err) {
     console.error('Diagram question grading failed:', err);
@@ -423,12 +435,13 @@ async function findMissingEncoding(
 // trusted from the client, same discipline as every other grading route
 // in this file.
 router.post('/knowledge-map-v2/text-question/submit', requireAuth, costlyEndpointLimiter, async (req: Request, res: Response) => {
-  const { nodeId, fromNodeId, toNodeId, questionType, answer } = (req.body ?? {}) as {
+  const { nodeId, fromNodeId, toNodeId, questionType, answer, hadRetry } = (req.body ?? {}) as {
     nodeId?: string;
     fromNodeId?: string;
     toNodeId?: string;
     questionType?: 'practice' | 'transfer' | 'integration';
     answer?: string;
+    hadRetry?: boolean;
   };
   if (!questionType || typeof answer !== 'string' || !answer.trim()) return res.status(400).json({ error: 'questionType and answer are required' });
 
@@ -477,7 +490,15 @@ router.post('/knowledge-map-v2/text-question/submit', requireAuth, costlyEndpoin
     });
     const { correct, feedback } = JSON.parse(stripCodeFences(raw)) as { correct: boolean; feedback: string };
 
-    await gradeCorrectness(userId, conceptId!, correct);
+    // See the identical comment on diagram-question/submit above: a wrong
+    // first-time encoding attempt ('practice') is a learning rep, not a
+    // real recall test - don't record an FSRS lapse for it, let the
+    // student retry. Transfer/integration (a spaced review of an
+    // already-encoded concept) still grades every attempt immediately.
+    if (questionType === 'practice' && !correct) {
+      return res.json({ correct, feedback, retryable: true });
+    }
+    await gradeCorrectness(userId, conceptId!, correct, questionType === 'practice' ? !!hadRetry : false);
     res.json({ correct, feedback });
   } catch (err) {
     console.error('Text question grading failed:', err);

@@ -12,6 +12,8 @@ import {
   gradeComponentOutcome,
   redirectForComponent,
 } from '../services/chainDiagnosticService';
+import { gradeDiagramAnswer, DiagramSpec, DiagramAnswerSubmission } from '../services/diagramGradingService';
+import { gradeCorrectness } from '../services/reviewService';
 
 const router = Router();
 
@@ -311,6 +313,68 @@ router.post('/knowledge-map-v2/chain-diagnostic/submit-retry', requireAuth, cost
   } catch (err) {
     console.error('Chain diagnostic retry grading failed:', err);
     res.status(500).json({ error: 'could not grade that answer' });
+  }
+});
+
+// POST /knowledge-map-v2/diagram-question/submit
+// { nodeId, questionType: 'practice' } for a node's own diagram question
+// (MECHANISTIC - build the whole diagram from scratch), or
+// { fromNodeId, toNodeId, questionType: 'transfer'|'integration' } for an
+// edge's (ATOMIC - the prerequisite's diagram is already given/fixed, only
+// the new element this edge represents is graded - see
+// diagramGradingService.ts's own DiagramSpec.given). The diagram_spec
+// itself is NEVER sent to or trusted from the client - always re-fetched
+// here by id, same discipline as the chain-diagnostic gate above.
+router.post('/knowledge-map-v2/diagram-question/submit', requireAuth, costlyEndpointLimiter, async (req: Request, res: Response) => {
+  const { nodeId, fromNodeId, toNodeId, questionType, answer } = (req.body ?? {}) as {
+    nodeId?: string;
+    fromNodeId?: string;
+    toNodeId?: string;
+    questionType?: 'practice' | 'transfer' | 'integration';
+    answer?: DiagramAnswerSubmission;
+  };
+  if (!answer || !questionType) return res.status(400).json({ error: 'questionType and answer are required' });
+
+  try {
+    const userId = req.userId as string;
+    let diagramSpec: DiagramSpec | undefined;
+    let conceptId: string | undefined;
+
+    if (questionType === 'practice') {
+      if (!nodeId) return res.status(400).json({ error: 'nodeId is required for a practice question' });
+      const [{ data: node }, { data: lesson }] = await Promise.all([
+        supabaseAdmin.from('knowledge_map_nodes').select('concept_id').eq('id', nodeId).maybeSingle(),
+        supabaseAdmin.from('knowledge_map_node_lessons').select('encoding_content').eq('node_id', nodeId).maybeSingle(),
+      ]);
+      if (!node) return res.status(404).json({ error: 'concept not found' });
+      conceptId = node.concept_id as string;
+      diagramSpec = (lesson?.encoding_content as { practiceQuestion?: { diagramSpec?: DiagramSpec } } | null)?.practiceQuestion?.diagramSpec;
+    } else {
+      if (!fromNodeId || !toNodeId) return res.status(400).json({ error: 'fromNodeId and toNodeId are required for a transfer/integration question' });
+      const [{ data: fromNode }, { data: toNode }, { data: edgeRow }] = await Promise.all([
+        supabaseAdmin.from('knowledge_map_nodes').select('concept_id').eq('id', fromNodeId).maybeSingle(),
+        supabaseAdmin.from('knowledge_map_nodes').select('concept_id').eq('id', toNodeId).maybeSingle(),
+        supabaseAdmin.from('knowledge_map_edges').select('id').eq('from_node_id', fromNodeId).eq('to_node_id', toNodeId).maybeSingle(),
+      ]);
+      if (!fromNode || !toNode || !edgeRow) return res.status(404).json({ error: 'connection not found' });
+      conceptId = `${fromNode.concept_id}->${toNode.concept_id}`;
+      const { data: lesson } = await supabaseAdmin
+        .from('knowledge_map_edge_lessons')
+        .select('transfer_question, integration_question')
+        .eq('edge_id', edgeRow.id)
+        .maybeSingle();
+      const field = questionType === 'transfer' ? lesson?.transfer_question : lesson?.integration_question;
+      diagramSpec = (field as { diagramSpec?: DiagramSpec } | null)?.diagramSpec;
+    }
+
+    if (!diagramSpec) return res.status(404).json({ error: 'this question has no diagram to grade' });
+
+    const result = gradeDiagramAnswer(diagramSpec, answer);
+    await gradeCorrectness(userId, conceptId!, result.correct);
+    res.json(result);
+  } catch (err) {
+    console.error('Diagram question grading failed:', err);
+    res.status(500).json({ error: 'could not grade this diagram' });
   }
 });
 

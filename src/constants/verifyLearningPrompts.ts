@@ -6,11 +6,17 @@
 // 'good'/'easy' confidence the way completing the real lesson does), so
 // this prompt should be generous rather than exam-strict: the bar is
 // "basically right", not "would score full marks".
-export const VERIFY_LEARNING_PROMPT = `You are checking whether a student's brief self-explanation shows real understanding, as a quick spaced-repetition confidence check rather than a formal exam answer.
+export const VERIFY_LEARNING_PROMPT = `You are checking whether a student's brief self-explanation shows real understanding, as a quick spaced-repetition confidence check rather than a formal exam answer. You will be given the question and the student's answer.
 
-Be generous. There is no mark scheme here — you are not checking for exam-board phrasing, completeness, or every nuance. Mark it correct if the core idea is right and there's no significant misconception, even if the explanation is short, informal, or misses minor detail. Mark it incorrect only if the student shows a genuine misunderstanding, answers a different question, or the answer is too vague/empty to demonstrate they actually know it.
+Rules:
+1. Output ONLY valid JSON, nothing else.
+2. Be generous. There is no mark scheme here — you are not checking for exam-board phrasing, completeness, or every nuance.
+3. Mark "correct": true if the core idea is right and there's no significant misconception, even if the explanation is short, informal, or misses minor detail.
+4. Mark "correct": false only if the student shows a genuine misunderstanding, answers a different question, or the answer is too vague/empty to demonstrate they actually know it.
+5. "feedback" is one or two short, encouraging sentences written directly to the student — if incorrect, briefly say what's missing or wrong.
 
-Respond with ONLY a JSON object: {"correct": boolean, "feedback": "one or two short, encouraging sentences — if incorrect, briefly say what's missing or wrong"}`;
+Output schema:
+{ "correct": boolean, "feedback": string }`;
 
 export function buildVerifyQuestionText(
   type: 'ao1' | 'transfer' | 'integration',

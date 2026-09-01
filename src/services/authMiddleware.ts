@@ -59,20 +59,28 @@ export function requireAdmin(req: Request, res: Response, next: NextFunction) {
   next();
 }
 
-// Peer tutoring is a paid-tier-only feature — this queries the SAME
-// `subscriptions` table lastmind-stripe-backend's /api/token-for-user reads
-// (same Supabase project), rather than trusting anything the frontend
-// claims about the caller's tier. Must run AFTER requireAuth — depends on
+// The same SAME `subscriptions` table lastmind-stripe-backend's
+// /api/token-for-user reads (same Supabase project) — never trusts
+// anything the frontend claims about the caller's tier. Exposed as a plain
+// boolean check (not just the requirePaidTier gate below) for routes that
+// stay reachable on both tiers but need to know WHICH tier applies — e.g.
+// the knowledge-map Verify route's free/premium credit coefficient.
+export async function isUserPaid(userId: string): Promise<boolean> {
+  const { data, error } = await supabaseAdmin
+    .from('subscriptions')
+    .select('status')
+    .eq('user_id', userId)
+    .maybeSingle();
+  if (error) throw error;
+  return !!data && data.status === 'active';
+}
+
+// Peer tutoring is a paid-tier-only feature — gates a route entirely,
+// unlike isUserPaid above. Must run AFTER requireAuth — depends on
 // req.userId already being set.
 export async function requirePaidTier(req: Request, res: Response, next: NextFunction) {
   try {
-    const { data, error } = await supabaseAdmin
-      .from('subscriptions')
-      .select('status')
-      .eq('user_id', req.userId as string)
-      .maybeSingle();
-    if (error) throw error;
-    if (!data || data.status !== 'active') {
+    if (!(await isUserPaid(req.userId as string))) {
       return res.status(403).json({ error: 'this feature requires LastMind Premium' });
     }
     next();

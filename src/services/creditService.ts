@@ -17,21 +17,24 @@ import { supabaseAdmin } from './supabaseAdmin';
 // until then).
 const INITIAL_CREDIT_ALLOWANCE = 40;
 
-// Verification (free tier) and retrieval/spaced lessons (premium) both pay
-// in 3 installments as spaced_success_count crosses into lesson 1/2/3 of
-// durable mastery (DURABLE_RELEARNING_CRITERION in reviewService.ts) — see
-// payMasteryInstallment below, the one place this logic lives. Verification
-// applies a 0.6x coefficient on top of these base amounts: that learning
-// didn't happen on LastMind, so it's rewarded with less confidence than
-// practice that did — and that coefficient applies to Verify regardless of
-// which tier is using it (see VERIFICATION_KEYS_COEFFICIENT in
-// verificationLessonService.ts and the knowledge-map v2 Verify route),
-// never just the free tier.
+// Verify and retrieval/spaced lessons both pay in 3 installments as
+// spaced_success_count crosses into lesson 1/2/3 of durable mastery
+// (DURABLE_RELEARNING_CRITERION in reviewService.ts) — see
+// payMasteryInstallment below, the one place this logic lives. Verify pays
+// the SAME base amounts here (it's graded through the exact same FSRS
+// rating derivation as a real lesson — see knowledgeMap.ts's verify/submit,
+// which no longer forces a capped 'hard' rating), just discounted by a
+// coefficient since that learning didn't happen on LastMind: 0.6x on the
+// free tier, 0.8x on premium (see KM_VERIFY_COEFFICIENT_FREE/PREMIUM in
+// knowledgeMap.ts) — a smaller discount for premium since encouraging a
+// paying user to at least open the app is worth more than a free one's.
+// Exported so a caller can show the un-discounted figure alongside the
+// coefficient (e.g. "you earned 6 of the 10 a full lesson would pay").
 // Rescaled 2026-09-01 (÷15 from the original [75,150,225], rounded to a
 // clean multiple of 5) — the original figures were tuned before the
 // knowledge-map's own lesson flow paid credits at all; this is a product
 // tuning knob, not derived from anything.
-const MASTERY_INSTALLMENT_KEYS = [5, 10, 15]; // index 0 = lesson 1
+export const MASTERY_INSTALLMENT_KEYS = [5, 10, 15]; // index 0 = lesson 1
 
 // Flat reward for completing a first-time encoding lesson (premium) — see
 // encodingLessonService.ts's own gate (index >= 0.5, the same bar its FSRS

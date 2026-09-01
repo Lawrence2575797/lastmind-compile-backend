@@ -1,5 +1,5 @@
 import { Router, Request, Response } from 'express';
-import { requireAuth, requirePaidTier } from '../services/authMiddleware';
+import { requireAuth, requirePaidTier, isUserPaid } from '../services/authMiddleware';
 import { costlyEndpointLimiter } from '../services/rateLimiters';
 import { getKnowledgeMapForFolder, getKnowledgeMapForSubject, FolderConcept } from '../services/knowledgeMapService';
 import { supabaseAdmin } from '../services/supabaseAdmin';
@@ -14,7 +14,7 @@ import {
 } from '../services/chainDiagnosticService';
 import { gradeDiagramAnswer, DiagramSpec, DiagramAnswerSubmission } from '../services/diagramGradingService';
 import { gradeCorrectness } from '../services/reviewService';
-import { adjustCredits, payMasteryInstallment, ENCODING_LESSON_COMPLETION_KEYS } from '../services/creditService';
+import { adjustCredits, payMasteryInstallment, ENCODING_LESSON_COMPLETION_KEYS, MASTERY_INSTALLMENT_KEYS } from '../services/creditService';
 import { callClaudeJSON, MODELS } from '../services/claudeClient';
 import { KNOWLEDGE_MAP_ANSWER_CHECK_PROMPT } from '../constants/knowledgeMapAnswerCheckPrompt';
 import { VERIFY_LEARNING_PROMPT, buildVerifyQuestionText } from '../constants/verifyLearningPrompts';
@@ -391,7 +391,7 @@ router.post('/knowledge-map-v2/diagram-question/submit', requireAuth, costlyEndp
       return res.json({ ...result, retryable: true });
     }
     const graded = await gradeCorrectness(userId, conceptId!, result.correct, questionType === 'practice' ? !!hadRetry : false);
-    const keysEarned = await payLessonCredits(userId, questionType, graded);
+    const { paid: keysEarned } = await payLessonCredits(userId, questionType === 'practice', graded, 1.0, 'knowledge_map_lesson');
     // The frontend needs the fresh due date the moment this grades, not
     // only after a later /schedule refetch (e.g. on returning to the
     // dashboard) — see reviewService.ts's cardToRowFields for the fields.
@@ -432,27 +432,46 @@ async function findMissingEncoding(
 }
 
 // Pays the same credit amounts the older encoding/spaced-lesson engines
-// already use (see creditService.ts) — a first-time node encoding
-// ('practice') is a flat one-off payment, matching encodingLessonService.ts's
-// own ENCODING_LESSON_COMPLETION_KEYS payout on a first-time pass; a
+// already use (see creditService.ts) — a first-time encoding ('practice'
+// for a node, 'ao1' for Verify's node-level check) is a flat one-off
+// payment, matching encodingLessonService.ts's own
+// ENCODING_LESSON_COMPLETION_KEYS payout on a first-time pass; a
 // transfer/integration pass is a genuine spaced review of an already-
 // encoded edge, paid via the same per-milestone installment schedule
 // spacedLessonEngine.ts uses as spaced_success_count climbs toward durable
-// mastery. `graded` is gradeCorrectness's own return value — its
-// `previousRow` carries spaced_success_count at runtime, just narrower on
-// its declared type (see gradeAndRecordReview's own comment in
-// reviewService.ts).
+// mastery. `coefficient` is 1.0 for an actual lesson/review, or Verify's
+// free/premium discount (see knowledgeMap.ts's verify/submit) — Verify is
+// graded through the exact same gradeCorrectness path as a real lesson
+// (no artificial rating cap), so it earns toward the same milestones, just
+// at a reduced rate. Returns both the amount actually paid AND the
+// un-discounted base, so a caller can show a student exactly how much
+// they left on the table by verifying instead of doing the lesson.
+// `graded` is gradeCorrectness's own return value — its `previousRow`
+// carries spaced_success_count at runtime, just narrower on its declared
+// type (see gradeAndRecordReview's own comment in reviewService.ts).
 async function payLessonCredits(
   userId: string,
-  questionType: 'practice' | 'transfer' | 'integration',
-  graded: Awaited<ReturnType<typeof gradeCorrectness>>
-): Promise<number> {
-  if (questionType === 'practice') {
-    await adjustCredits(userId, ENCODING_LESSON_COMPLETION_KEYS, 'knowledge_map_encoding_completed');
-    return ENCODING_LESSON_COMPLETION_KEYS;
+  isFirstTimeEncoding: boolean,
+  graded: Awaited<ReturnType<typeof gradeCorrectness>>,
+  coefficient: number,
+  reasonPrefix: string
+): Promise<{ paid: number; base: number }> {
+  if (isFirstTimeEncoding) {
+    const base = ENCODING_LESSON_COMPLETION_KEYS;
+    const paid = Math.round(base * coefficient);
+    if (paid > 0) await adjustCredits(userId, paid, `${reasonPrefix}_encoding_completed`);
+    return { paid, base };
   }
   const priorSpacedSuccessCount = (graded.previousRow as { spaced_success_count?: number } | null)?.spaced_success_count ?? 0;
-  return payMasteryInstallment(userId, priorSpacedSuccessCount, graded.spacedSuccessCount, 1.0, `knowledge_map_${questionType}_mastery_${graded.spacedSuccessCount}`);
+  const newCount = graded.spacedSuccessCount;
+  // Same milestone gate payMasteryInstallment applies internally —
+  // duplicated here (rather than changing that shared function's return
+  // type, which has three other call sites) purely so `base` is knowable
+  // even when nothing was actually paid.
+  if (newCount <= priorSpacedSuccessCount || newCount < 1 || newCount > MASTERY_INSTALLMENT_KEYS.length) return { paid: 0, base: 0 };
+  const base = MASTERY_INSTALLMENT_KEYS[newCount - 1];
+  const paid = await payMasteryInstallment(userId, priorSpacedSuccessCount, newCount, coefficient, `${reasonPrefix}_mastery_${newCount}`);
+  return { paid, base };
 }
 
 // POST /knowledge-map-v2/text-question/submit
@@ -528,7 +547,7 @@ router.post('/knowledge-map-v2/text-question/submit', requireAuth, costlyEndpoin
       return res.json({ correct, feedback, retryable: true });
     }
     const graded = await gradeCorrectness(userId, conceptId!, correct, questionType === 'practice' ? !!hadRetry : false);
-    const keysEarned = await payLessonCredits(userId, questionType, graded);
+    const { paid: keysEarned } = await payLessonCredits(userId, questionType === 'practice', graded, 1.0, 'knowledge_map_lesson');
     // See the identical comment on diagram-question/submit above.
     res.json({ correct, feedback, schedule: { conceptId, ...graded.newState }, keysEarned });
   } catch (err) {
@@ -537,17 +556,27 @@ router.post('/knowledge-map-v2/text-question/submit', requireAuth, costlyEndpoin
   }
 });
 
+// Verify's free/premium discount coefficients — see MASTERY_INSTALLMENT_KEYS'
+// own comment in creditService.ts. Premium gets the smaller discount (0.8
+// vs free's 0.6) since a paying user opening the app at all, even just to
+// verify, is worth more encouraging than a free one's equivalent action.
+const KM_VERIFY_COEFFICIENT_FREE = 0.6;
+const KM_VERIFY_COEFFICIENT_PREMIUM = 0.8;
+
 // POST /knowledge-map-v2/verify/submit
-// Premium "test out" shortcut, offered alongside Start lesson (a node's
-// own AO1) and Review connection (an edge's transfer/integration): one
-// weakly-prompted free-text answer instead of the full lesson/question.
-// A pass still updates the SAME concept_id FSRS row a full lesson/review
-// would (never a parallel tracking system), but always with hadRetry=true
-// so deriveCorrectRating never grants 'good'/'easy' here — a Verify pass
-// is deliberately worth less confidence than actually doing the lesson.
-// Question text is generated from re-fetched labels, never trusted from
-// the client, same discipline as every other grading route in this file.
-router.post('/knowledge-map-v2/verify/submit', requireAuth, requirePaidTier, costlyEndpointLimiter, async (req: Request, res: Response) => {
+// "Test out" shortcut, available on both tiers, offered alongside Start
+// lesson (a node's own AO1) and Review connection (an edge's transfer/
+// integration): one weakly-prompted free-text answer instead of the full
+// lesson/question. Graded through the EXACT SAME gradeCorrectness path a
+// real lesson uses (no artificial rating cap) — a pass genuinely
+// progresses spaced_success_count toward durable mastery and gets a real
+// FSRS due date scheduled, same concept_id row a full lesson/review would
+// update. The only difference from a real lesson is economic, not
+// mechanical: credits are paid at a coefficient (see above) rather than in
+// full, since this learning didn't happen on LastMind. Question text is
+// generated from re-fetched labels, never trusted from the client, same
+// discipline as every other grading route in this file.
+router.post('/knowledge-map-v2/verify/submit', requireAuth, costlyEndpointLimiter, async (req: Request, res: Response) => {
   const { nodeId, fromNodeId, toNodeId, questionType, answer } = (req.body ?? {}) as {
     nodeId?: string;
     fromNodeId?: string;
@@ -591,15 +620,18 @@ router.post('/knowledge-map-v2/verify/submit', requireAuth, requirePaidTier, cos
     });
     const { correct, feedback } = JSON.parse(stripCodeFences(raw)) as { correct: boolean; feedback: string };
 
-    const graded = await gradeCorrectness(userId, conceptId, correct, true);
-    // Same 0.6x coefficient as the older verificationLessonService.ts's
-    // VERIFICATION_KEYS_COEFFICIENT — applies to Verify regardless of tier,
-    // not just a free-tier discount (see creditService.ts's comment).
-    const priorSpacedSuccessCount = (graded.previousRow as { spaced_success_count?: number } | null)?.spaced_success_count ?? 0;
-    const keysEarned = correct
-      ? await payMasteryInstallment(userId, priorSpacedSuccessCount, graded.spacedSuccessCount, 0.6, `knowledge_map_verify_mastery_${graded.spacedSuccessCount}`)
-      : 0;
-    res.json({ correct, feedback, keysEarned });
+    // hadRetry=false — Verify uses the SAME rating derivation a real lesson
+    // does (deriveCorrectRating in reviewService.ts), so a clean pass can
+    // genuinely earn 'good'/'easy' and progress spaced_success_count,
+    // rather than always being forced to 'hard' (which would reset that
+    // counter to 0 every time and make durable mastery via Verify alone
+    // impossible — found while wiring up its credit payout).
+    const graded = await gradeCorrectness(userId, conceptId, correct, false);
+    const coefficient = (await isUserPaid(userId)) ? KM_VERIFY_COEFFICIENT_PREMIUM : KM_VERIFY_COEFFICIENT_FREE;
+    const { paid: keysEarned, base: keysBase } = correct
+      ? await payLessonCredits(userId, questionType === 'ao1', graded, coefficient, 'knowledge_map_verify')
+      : { paid: 0, base: 0 };
+    res.json({ correct, feedback, keysEarned, keysBase, verifyCoefficient: coefficient });
   } catch (err) {
     console.error('Verify grading failed:', err);
     res.status(500).json({ error: 'could not grade this answer' });

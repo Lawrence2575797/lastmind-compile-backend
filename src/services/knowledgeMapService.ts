@@ -293,6 +293,21 @@ export interface SubjectMapResult {
  * normalizeConceptKey convention concept_reviews already uses everywhere
  * else, so no separate mapping table is needed).
  */
+// A folder's own `qualification` has GCSE tier composed directly into the
+// string for a tiered subject ("GCSE" + "Higher" -> "GCSE Higher" - see
+// learn/index.html's composeQualification/decomposeQualification), because
+// every per-student system needs tier threaded through as part of that one
+// opaque string. This shared subject-wide map has no tier axis at all
+// (one graph per subject, not per tier - the concept dependency structure
+// doesn't change with exam difficulty), so a tiered folder's qualification
+// has to be normalized back to the untiered form before matching against
+// it, or a genuinely-generated map reads back as "not generated yet" for
+// every tiered GCSE folder. Found live, same shape as the case-sensitivity
+// fix below.
+function stripQualificationTier(qualification: string): string {
+  return qualification.trim().replace(/\s+(Foundation|Higher)$/i, '');
+}
+
 export async function getKnowledgeMapForSubject(
   userId: string,
   subject: string,
@@ -307,7 +322,7 @@ export async function getKnowledgeMapForSubject(
   const nodeRows = await selectAllRows<{ id: string; concept_id: string; label: string; subtopic: string; theme: string | null }>(
     'knowledge_map_nodes',
     'id, concept_id, label, subtopic, theme',
-    (q) => q.ilike('subject', subject.trim()).ilike('qualification', qualification.trim()).ilike('exam_board', examBoard.trim())
+    (q) => q.ilike('subject', subject.trim()).ilike('qualification', stripQualificationTier(qualification)).ilike('exam_board', examBoard.trim())
   );
   if (!nodeRows.length) {
     return { nodes: [], edges: [], mastery: {}, masteryDetail: {} };

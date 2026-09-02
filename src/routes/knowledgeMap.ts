@@ -18,6 +18,18 @@ import { adjustCredits, payMasteryInstallment, ENCODING_LESSON_COMPLETION_KEYS, 
 import { callClaudeJSON, MODELS } from '../services/claudeClient';
 import { KNOWLEDGE_MAP_ANSWER_CHECK_PROMPT } from '../constants/knowledgeMapAnswerCheckPrompt';
 import { VERIFY_LEARNING_PROMPT, buildVerifyQuestionText } from '../constants/verifyLearningPrompts';
+import {
+  getQualifyingReviewLinks,
+  linkIdentifyConceptId,
+  linkIntegrationConceptId,
+  generateRewordedAo1Question,
+  gradeRewordedAo1Answer,
+  generateLinkIdentifyQuestion,
+  gradeLinkIdentifyAnswer,
+  generateLinkIdentifyHint,
+  getIntegrationQuestionText,
+  gradeIntegrationAnswer,
+} from '../services/nodeReviewService';
 
 const router = Router();
 
@@ -634,6 +646,149 @@ router.post('/knowledge-map-v2/verify/submit', requireAuth, costlyEndpointLimite
     res.json({ correct, feedback, keysEarned, keysBase, verifyCoefficient: coefficient });
   } catch (err) {
     console.error('Verify grading failed:', err);
+    res.status(500).json({ error: 'could not grade this answer' });
+  }
+});
+
+// ---- Node-level spaced review ----
+// Only nodes are ever launchable, never a link on its own (see
+// nodeReviewService.ts) - once a node has at least one direct downstream
+// neighbor that's also encoded, its spaced review tests all three:
+// a reworded AO1, then "identify the link" (prompted retry until
+// correct) followed by the integration question, for every qualifying
+// link, one combined session. FSRS runs on the node PLUS one row per
+// qualifying link's identify/integration - the node's overall due date is
+// whichever of those is soonest.
+
+router.get('/knowledge-map-v2/node-review/:nodeId/qualifying-links', requireAuth, async (req: Request, res: Response) => {
+  try {
+    const links = await getQualifyingReviewLinks(req.userId as string, req.params.nodeId);
+    res.json({ links: links.map((l) => ({ toNodeId: l.toNode.id, toLabel: l.toNode.label })) });
+  } catch (err) {
+    console.error('Qualifying review links lookup failed:', err);
+    res.status(500).json({ error: 'could not check this concept\'s links' });
+  }
+});
+
+router.post('/knowledge-map-v2/node-review/ao1/start', requireAuth, costlyEndpointLimiter, async (req: Request, res: Response) => {
+  const { nodeId } = (req.body ?? {}) as { nodeId?: string };
+  if (!nodeId) return res.status(400).json({ error: 'nodeId is required' });
+  try {
+    const question = await generateRewordedAo1Question(nodeId);
+    if (!question) return res.status(404).json({ error: 'no lesson generated for this concept yet' });
+    res.json(question);
+  } catch (err) {
+    console.error('AO1 reword generation failed:', err);
+    res.status(500).json({ error: 'could not prepare this review question' });
+  }
+});
+
+router.post('/knowledge-map-v2/node-review/ao1/submit', requireAuth, costlyEndpointLimiter, async (req: Request, res: Response) => {
+  const { nodeId, questionText, answer } = (req.body ?? {}) as { nodeId?: string; questionText?: string; answer?: string };
+  if (!nodeId || !questionText || typeof answer !== 'string' || !answer.trim()) {
+    return res.status(400).json({ error: 'nodeId, questionText and answer are required' });
+  }
+  try {
+    const userId = req.userId as string;
+    const { data: node } = await supabaseAdmin.from('knowledge_map_nodes').select('concept_id').eq('id', nodeId).maybeSingle();
+    if (!node) return res.status(404).json({ error: 'concept not found' });
+    const graded = await gradeRewordedAo1Answer(nodeId, questionText, answer);
+    if (!graded) return res.status(404).json({ error: 'no lesson generated for this concept yet' });
+    const result = await gradeCorrectness(userId, node.concept_id as string, graded.correct, false);
+    const { paid: keysEarned } = await payLessonCredits(userId, false, result, 1.0, 'node_review_ao1');
+    res.json({ correct: graded.correct, feedback: graded.feedback, schedule: { conceptId: node.concept_id, ...result.newState }, keysEarned });
+  } catch (err) {
+    console.error('AO1 reworded grading failed:', err);
+    res.status(500).json({ error: 'could not grade this answer' });
+  }
+});
+
+router.post('/knowledge-map-v2/node-review/link-identify/start', requireAuth, costlyEndpointLimiter, async (req: Request, res: Response) => {
+  const { fromNodeId, toNodeId } = (req.body ?? {}) as { fromNodeId?: string; toNodeId?: string };
+  if (!fromNodeId || !toNodeId) return res.status(400).json({ error: 'fromNodeId and toNodeId are required' });
+  try {
+    const question = await generateLinkIdentifyQuestion(fromNodeId, toNodeId);
+    if (!question) return res.status(404).json({ error: 'connection not found' });
+    res.json(question);
+  } catch (err) {
+    console.error('Link-identify question generation failed:', err);
+    res.status(500).json({ error: 'could not prepare this review question' });
+  }
+});
+
+// Wrong answers here are NEVER FSRS-graded - same "a wrong attempt with a
+// prompted retry is a learning rep, not a real recall test" convention as
+// a first-time encoding elsewhere in this app (see renderTextQuestionWidget's
+// own comment in learn/index.html). Only the FINAL correct pass grades,
+// with hadRetry reflecting whether any hint was needed along the way.
+router.post('/knowledge-map-v2/node-review/link-identify/submit', requireAuth, costlyEndpointLimiter, async (req: Request, res: Response) => {
+  const { fromNodeId, toNodeId, questionText, answer, hadRetry } = (req.body ?? {}) as {
+    fromNodeId?: string; toNodeId?: string; questionText?: string; answer?: string; hadRetry?: boolean;
+  };
+  if (!fromNodeId || !toNodeId || !questionText || typeof answer !== 'string' || !answer.trim()) {
+    return res.status(400).json({ error: 'fromNodeId, toNodeId, questionText and answer are required' });
+  }
+  try {
+    const userId = req.userId as string;
+    const [{ data: fromNode }, { data: toNode }] = await Promise.all([
+      supabaseAdmin.from('knowledge_map_nodes').select('concept_id').eq('id', fromNodeId).maybeSingle(),
+      supabaseAdmin.from('knowledge_map_nodes').select('concept_id').eq('id', toNodeId).maybeSingle(),
+    ]);
+    if (!fromNode || !toNode) return res.status(404).json({ error: 'connection not found' });
+
+    const graded = await gradeLinkIdentifyAnswer(fromNodeId, toNodeId, questionText, answer);
+    if (!graded) return res.status(404).json({ error: 'connection not found' });
+
+    if (!graded.correct) {
+      const hinted = await generateLinkIdentifyHint(fromNodeId, toNodeId, questionText, answer, graded.feedback);
+      return res.json({ correct: false, feedback: graded.feedback, hint: hinted?.hint || '', retryable: true });
+    }
+
+    const conceptId = linkIdentifyConceptId(fromNode.concept_id as string, toNode.concept_id as string);
+    const result = await gradeCorrectness(userId, conceptId, true, !!hadRetry);
+    const { paid: keysEarned } = await payLessonCredits(userId, false, result, 1.0, 'node_review_identify');
+    res.json({ correct: true, feedback: graded.feedback, schedule: { conceptId, ...result.newState }, keysEarned });
+  } catch (err) {
+    console.error('Link-identify grading failed:', err);
+    res.status(500).json({ error: 'could not grade this answer' });
+  }
+});
+
+router.post('/knowledge-map-v2/node-review/integration/start', requireAuth, costlyEndpointLimiter, async (req: Request, res: Response) => {
+  const { fromNodeId, toNodeId } = (req.body ?? {}) as { fromNodeId?: string; toNodeId?: string };
+  if (!fromNodeId || !toNodeId) return res.status(400).json({ error: 'fromNodeId and toNodeId are required' });
+  try {
+    const question = await getIntegrationQuestionText(fromNodeId, toNodeId);
+    if (!question) return res.json({ unavailable: true });
+    res.json({ questionText: question.questionText });
+  } catch (err) {
+    console.error('Integration question lookup failed:', err);
+    res.status(500).json({ error: 'could not load this question' });
+  }
+});
+
+router.post('/knowledge-map-v2/node-review/integration/submit', requireAuth, costlyEndpointLimiter, async (req: Request, res: Response) => {
+  const { fromNodeId, toNodeId, answer } = (req.body ?? {}) as { fromNodeId?: string; toNodeId?: string; answer?: string };
+  if (!fromNodeId || !toNodeId || typeof answer !== 'string' || !answer.trim()) {
+    return res.status(400).json({ error: 'fromNodeId, toNodeId and answer are required' });
+  }
+  try {
+    const userId = req.userId as string;
+    const [{ data: fromNode }, { data: toNode }] = await Promise.all([
+      supabaseAdmin.from('knowledge_map_nodes').select('concept_id').eq('id', fromNodeId).maybeSingle(),
+      supabaseAdmin.from('knowledge_map_nodes').select('concept_id').eq('id', toNodeId).maybeSingle(),
+    ]);
+    if (!fromNode || !toNode) return res.status(404).json({ error: 'connection not found' });
+
+    const graded = await gradeIntegrationAnswer(fromNodeId, toNodeId, answer);
+    if (!graded) return res.status(404).json({ error: 'no integration question available for this connection' });
+
+    const conceptId = linkIntegrationConceptId(fromNode.concept_id as string, toNode.concept_id as string);
+    const result = await gradeCorrectness(userId, conceptId, graded.correct, false);
+    const { paid: keysEarned } = await payLessonCredits(userId, false, result, 1.0, 'node_review_integration');
+    res.json({ correct: graded.correct, feedback: graded.feedback, schedule: { conceptId, ...result.newState }, keysEarned });
+  } catch (err) {
+    console.error('Integration grading failed:', err);
     res.status(500).json({ error: 'could not grade this answer' });
   }
 });

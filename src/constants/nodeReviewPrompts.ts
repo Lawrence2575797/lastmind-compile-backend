@@ -1,10 +1,10 @@
-// The node-level spaced review — three components tested together once a
-// node has both been encoded AND has at least one downstream neighbor
-// also encoded (see nodeReviewService.ts): a reworded AO1 recall, then
-// "identify the link" (transfer, in disguise - don't name the connection,
-// just describe it) with prompted retry until correct, then the existing
-// integration question. See routes/knowledgeMap.ts's node-review routes
-// for how these are wired together.
+// The node-level spaced review — components tested together once a node
+// has both been encoded AND has at least one downstream neighbor also
+// encoded (see nodeReviewService.ts): a reworded AO1 recall, then for
+// each qualifying link, "identify the link" (shown the same link-teaching
+// text its encoding bridge once taught, asked to restate it) followed by
+// the existing integration question. See routes/knowledgeMap.ts's
+// node-review routes for how these are wired together.
 
 // Rewords the node's own stored AO1 question so a repeat spaced review
 // never shows literally the same sentence twice (the underlying recall
@@ -24,47 +24,22 @@ Rules:
 Output schema:
 { "questionText": string }`;
 
-// The "identify the link" question - deliberately does NOT ask the
-// student to explain HOW the two concepts connect (that's the integration
-// question, asked only after this passes) - just to state THAT they
-// connect and roughly in what way, without the question itself giving
-// that away. Grounded on the edge's own link-teaching content.
-export const LINK_IDENTIFY_QUESTION_PROMPT = `You are writing a spaced-repetition question for a UK GCSE/A-Level student. You will be given two concepts they have both already learned, and the reference material describing how the first leads into/connects to the second.
+// Run only on a WRONG AO1 answer, before any FSRS lapse is recorded -
+// distinguishes a genuine gap from a one-word-or-short-phrase slip (e.g.
+// "natural science" written where "social science" was meant) that
+// shouldn't cost the student a real lapse if they can immediately fix it
+// themselves. Deliberately narrow: this is NOT a second chance at a
+// vague or incomplete answer, only at an otherwise-correct one undone by
+// one specific wrong word/phrase.
+export const AO1_SLIP_CHECK_PROMPT = `You are checking whether a UK GCSE/A-Level student's INCORRECT answer to a recall question is a simple slip, not a genuine gap in understanding. You will be given the question, the concept's own explanation (the ground truth), and the student's wrong answer.
 
-Write a free-text question that asks the student to identify that these two concepts ARE connected and briefly what the connection is - without the question itself naming or describing the connection (that would give the answer away). The question should name both concepts, then ask something like what links them or how the first one leads to the second - phrase it in your own way, matching UK exam-question style.
-
-Rules:
-1. Output ONLY valid JSON, nothing else.
-2. Never reveal the actual connection in the question text itself.
-3. Keep it answerable in a few sentences, not a full essay.
-
-Output schema:
-{ "questionText": string }`;
-
-export const LINK_IDENTIFY_GRADE_PROMPT = `You are grading a UK GCSE/A-Level student's answer to a question asking them to identify the connection between two concepts. You will be given the question, the reference material describing the real connection, and the student's answer.
+A slip means: the answer is otherwise complete and correct, and exactly ONE specific word or short phrase (at most 2-3 words) is the sole reason it's marked wrong - substituting a different, specific, incorrect term for the right one. It is NOT a slip if the answer is vague, incomplete, missing a required point, or shows a genuine misunderstanding, even if it's close.
 
 Rules:
 1. Output ONLY valid JSON, nothing else.
-2. "correct" is true only if the student's answer genuinely identifies the real connection described in the reference material - a vague "they're related" or a guess that happens to not be wrong isn't enough, but you do not need the student's wording to match the reference material closely, only the substance.
-3. "feedback" is a short, plain-language note to the student - a genuine confirmation if correct, or (if incorrect) an honest but non-leaking note of what's missing or wrong, never stating the actual connection.
+2. "isSlip": true only under the narrow definition above.
+3. If isSlip is true, "wrongPhrase" must be copied EXACTLY (verbatim, same casing) from the student's own answer - the specific word/phrase that's wrong. Never state or hint at what the correct replacement should be.
+4. If isSlip is false, "wrongPhrase" must be an empty string.
 
 Output schema:
-{ "correct": boolean, "feedback": string }`;
-
-// Fired only when LINK_IDENTIFY_GRADE_PROMPT returns incorrect - a hint
-// toward the SAME question, not a new one, so the student is still
-// working out the real connection rather than being handed a different
-// easier question. Retried until correct (see routes/knowledgeMap.ts) -
-// no FSRS lapse is recorded for these interim wrong attempts, matching
-// this app's existing "a wrong first-time attempt is a learning rep, not
-// a real recall test" convention for anything with a prompted retry loop.
-export const LINK_IDENTIFY_HINT_PROMPT = `You are helping a UK GCSE/A-Level student who just answered a "how do these two concepts connect" question incorrectly. You will be given the question, the reference material describing the real connection (never reveal this to the student), their wrong answer, and the feedback they were already given.
-
-Write a short hint that nudges them toward the real connection - point them at what to think about next, without stating the connection itself. They will be asked the same question again after this.
-
-Rules:
-1. Output ONLY valid JSON, nothing else.
-2. Never state the actual connection, directly or by strong implication - a hint that effectively gives the answer away defeats the entire point of testing recall.
-
-Output schema:
-{ "hint": string }`;
+{ "isSlip": boolean, "wrongPhrase": string }`;

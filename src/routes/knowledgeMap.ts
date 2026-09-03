@@ -24,9 +24,9 @@ import {
   linkIntegrationConceptId,
   generateRewordedAo1Question,
   gradeRewordedAo1Answer,
-  generateLinkIdentifyQuestion,
-  gradeLinkIdentifyAnswer,
-  generateLinkIdentifyHint,
+  checkAo1SlipCandidate,
+  getLinkTeachingText,
+  gradeLinkRestatement,
   getIntegrationQuestionText,
   gradeIntegrationAnswer,
 } from '../services/nodeReviewService';
@@ -683,6 +683,16 @@ router.post('/knowledge-map-v2/node-review/ao1/start', requireAuth, costlyEndpoi
   }
 });
 
+// Shared by both AO1 finalization routes below (a clean pass, and a slip
+// correction that turned out right or wrong) - the only two things a
+// non-slip-candidate wrong answer and a resolved slip attempt both need:
+// record the FSRS outcome and shape the response the same way.
+async function finalizeAo1Grade(userId: string, conceptId: string, correct: boolean, feedback: string) {
+  const result = await gradeCorrectness(userId, conceptId, correct, false);
+  const { paid: keysEarned } = await payLessonCredits(userId, false, result, 1.0, 'node_review_ao1');
+  return { correct, feedback, schedule: { conceptId, ...result.newState }, keysEarned };
+}
+
 router.post('/knowledge-map-v2/node-review/ao1/submit', requireAuth, costlyEndpointLimiter, async (req: Request, res: Response) => {
   const { nodeId, questionText, answer } = (req.body ?? {}) as { nodeId?: string; questionText?: string; answer?: string };
   if (!nodeId || !questionText || typeof answer !== 'string' || !answer.trim()) {
@@ -694,11 +704,58 @@ router.post('/knowledge-map-v2/node-review/ao1/submit', requireAuth, costlyEndpo
     if (!node) return res.status(404).json({ error: 'concept not found' });
     const graded = await gradeRewordedAo1Answer(nodeId, questionText, answer);
     if (!graded) return res.status(404).json({ error: 'no lesson generated for this concept yet' });
-    const result = await gradeCorrectness(userId, node.concept_id as string, graded.correct, false);
-    const { paid: keysEarned } = await payLessonCredits(userId, false, result, 1.0, 'node_review_ao1');
-    res.json({ correct: graded.correct, feedback: graded.feedback, schedule: { conceptId: node.concept_id, ...result.newState }, keysEarned });
+    if (graded.correct) {
+      return res.json(await finalizeAo1Grade(userId, node.concept_id as string, true, graded.feedback));
+    }
+    // Wrong - before recording a real lapse, check whether this is a
+    // one-word slip rather than a genuine gap (see AO1_SLIP_CHECK_PROMPT).
+    // A slip candidate gets ONE narrow chance to fix just the flagged
+    // word (see submit-slip-correction below) with nothing recorded yet;
+    // anything else finalizes as a real wrong answer immediately, same as
+    // before.
+    const slip = await checkAo1SlipCandidate(nodeId, questionText, answer);
+    if (slip?.isSlip && slip.wrongPhrase) {
+      return res.json({ correct: false, feedback: graded.feedback, retryable: true, isSlipCandidate: true, wrongPhrase: slip.wrongPhrase });
+    }
+    res.json(await finalizeAo1Grade(userId, node.concept_id as string, false, graded.feedback));
   } catch (err) {
     console.error('AO1 reworded grading failed:', err);
+    res.status(500).json({ error: 'could not grade this answer' });
+  }
+});
+
+// The narrow one-shot fix for a flagged slip - the student edits only the
+// wrong word/phrase, and this re-grades the RECONSTRUCTED full answer
+// (original answer with wrongPhrase replaced by their correction) through
+// the exact same check a clean first-time answer goes through. Whichever
+// way it lands, THIS is what finally gets recorded - the original wrong
+// attempt never was.
+router.post('/knowledge-map-v2/node-review/ao1/submit-slip-correction', requireAuth, costlyEndpointLimiter, async (req: Request, res: Response) => {
+  const { nodeId, questionText, originalAnswer, wrongPhrase, correction, declined, originalFeedback } = (req.body ?? {}) as {
+    nodeId?: string; questionText?: string; originalAnswer?: string; wrongPhrase?: string; correction?: string;
+    declined?: boolean; originalFeedback?: string;
+  };
+  if (!nodeId || !questionText || !originalAnswer || !wrongPhrase) {
+    return res.status(400).json({ error: 'nodeId, questionText, originalAnswer and wrongPhrase are required' });
+  }
+  try {
+    const userId = req.userId as string;
+    const { data: node } = await supabaseAdmin.from('knowledge_map_nodes').select('concept_id').eq('id', nodeId).maybeSingle();
+    if (!node) return res.status(404).json({ error: 'concept not found' });
+    // "No, I didn't know this" - finalize as wrong right away, no need to
+    // re-run grading on an answer the student isn't changing.
+    if (declined) {
+      return res.json(await finalizeAo1Grade(userId, node.concept_id as string, false, originalFeedback || ''));
+    }
+    if (typeof correction !== 'string' || !correction.trim()) {
+      return res.status(400).json({ error: 'correction is required unless declined' });
+    }
+    const correctedAnswer = originalAnswer.replace(wrongPhrase, correction.trim());
+    const graded = await gradeRewordedAo1Answer(nodeId, questionText, correctedAnswer);
+    if (!graded) return res.status(404).json({ error: 'no lesson generated for this concept yet' });
+    res.json(await finalizeAo1Grade(userId, node.concept_id as string, graded.correct, graded.feedback));
+  } catch (err) {
+    console.error('AO1 slip-correction grading failed:', err);
     res.status(500).json({ error: 'could not grade this answer' });
   }
 });
@@ -707,12 +764,12 @@ router.post('/knowledge-map-v2/node-review/link-identify/start', requireAuth, co
   const { fromNodeId, toNodeId } = (req.body ?? {}) as { fromNodeId?: string; toNodeId?: string };
   if (!fromNodeId || !toNodeId) return res.status(400).json({ error: 'fromNodeId and toNodeId are required' });
   try {
-    const question = await generateLinkIdentifyQuestion(fromNodeId, toNodeId);
-    if (!question) return res.status(404).json({ error: 'connection not found' });
-    res.json(question);
+    const edge = await getLinkTeachingText(fromNodeId, toNodeId);
+    if (!edge) return res.status(404).json({ error: 'connection not found' });
+    res.json(edge);
   } catch (err) {
-    console.error('Link-identify question generation failed:', err);
-    res.status(500).json({ error: 'could not prepare this review question' });
+    console.error('Link-teaching lookup failed:', err);
+    res.status(500).json({ error: 'could not load this connection' });
   }
 });
 
@@ -720,13 +777,16 @@ router.post('/knowledge-map-v2/node-review/link-identify/start', requireAuth, co
 // prompted retry is a learning rep, not a real recall test" convention as
 // a first-time encoding elsewhere in this app (see renderTextQuestionWidget's
 // own comment in learn/index.html). Only the FINAL correct pass grades,
-// with hadRetry reflecting whether any hint was needed along the way.
+// with hadRetry reflecting whether any retry was needed along the way. No
+// hint is generated on a wrong attempt - the link-teaching text stays
+// visible on screen throughout (see learn/index.html's renderNodeReviewIdentify),
+// so there's nothing a separate hint would add.
 router.post('/knowledge-map-v2/node-review/link-identify/submit', requireAuth, costlyEndpointLimiter, async (req: Request, res: Response) => {
-  const { fromNodeId, toNodeId, questionText, answer, hadRetry } = (req.body ?? {}) as {
-    fromNodeId?: string; toNodeId?: string; questionText?: string; answer?: string; hadRetry?: boolean;
+  const { fromNodeId, toNodeId, answer, hadRetry } = (req.body ?? {}) as {
+    fromNodeId?: string; toNodeId?: string; answer?: string; hadRetry?: boolean;
   };
-  if (!fromNodeId || !toNodeId || !questionText || typeof answer !== 'string' || !answer.trim()) {
-    return res.status(400).json({ error: 'fromNodeId, toNodeId, questionText and answer are required' });
+  if (!fromNodeId || !toNodeId || typeof answer !== 'string' || !answer.trim()) {
+    return res.status(400).json({ error: 'fromNodeId, toNodeId and answer are required' });
   }
   try {
     const userId = req.userId as string;
@@ -736,12 +796,11 @@ router.post('/knowledge-map-v2/node-review/link-identify/submit', requireAuth, c
     ]);
     if (!fromNode || !toNode) return res.status(404).json({ error: 'connection not found' });
 
-    const graded = await gradeLinkIdentifyAnswer(fromNodeId, toNodeId, questionText, answer);
+    const graded = await gradeLinkRestatement(fromNodeId, toNodeId, answer);
     if (!graded) return res.status(404).json({ error: 'connection not found' });
 
     if (!graded.correct) {
-      const hinted = await generateLinkIdentifyHint(fromNodeId, toNodeId, questionText, answer, graded.feedback);
-      return res.json({ correct: false, feedback: graded.feedback, hint: hinted?.hint || '', retryable: true });
+      return res.json({ correct: false, feedback: graded.feedback, retryable: true });
     }
 
     const conceptId = linkIdentifyConceptId(fromNode.concept_id as string, toNode.concept_id as string);

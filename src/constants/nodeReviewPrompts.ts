@@ -1,10 +1,11 @@
 // The node-level spaced review — components tested together once a node
 // has both been encoded AND has at least one downstream neighbor also
 // encoded (see nodeReviewService.ts): a reworded AO1 recall, then for
-// each qualifying link, "identify the link" (shown the same link-teaching
-// text its encoding bridge once taught, asked to restate it) followed by
-// the existing integration question. See routes/knowledgeMap.ts's
-// node-review routes for how these are wired together.
+// each qualifying link, "identify the link" (name, in a word or short
+// phrase, WHAT connects the two ideas - no explanation expected) followed
+// by the integration question (explain HOW/WHY it connects - the only
+// step that tests that). See routes/knowledgeMap.ts's node-review routes
+// for how these are wired together.
 
 // Rewords the node's own stored AO1 question so a repeat spaced review
 // never shows literally the same sentence twice (the underlying recall
@@ -43,3 +44,24 @@ Rules:
 
 Output schema:
 { "isSlip": boolean, "wrongPhrase": string }`;
+
+// "Identify the link" is deliberately a ONE-WORD-OR-SHORT-PHRASE naming
+// check, nothing more - can the student name the concept/mechanism that
+// connects the two ideas at all. Explaining HOW or WHY it connects is
+// integration's job, tested separately, later, once identify has passed -
+// this prompt exists specifically so identify stops nagging for that
+// depth on an answer that already correctly named the thing (the exact
+// bug that prompted this: a correct one-line answer was marked down for
+// "not explaining more").
+export const LINK_IDENTIFY_GRADE_PROMPT = `You are checking whether a UK GCSE/A-Level student has correctly named the key concept or mechanism that links two ideas they've both already learned. You will be given the two concepts, reference material describing the real connection (ground truth - never reveal it to the student), and the student's answer.
+
+The student was asked for ONLY a one-word or short-phrase answer naming what links the two concepts - NOT an explanation of how or why it connects.
+
+Rules:
+1. Output ONLY valid JSON, nothing else.
+2. "correct" is true if the student's word or short phrase substantively names the real connecting concept/mechanism in the reference material - exact wording is not required, only that they've identified the right thing. A near-synonym or a slightly different but equivalent term for the same concept still counts.
+3. NEVER mark it wrong, or note it's missing detail/explanation/reasoning, just because it's brief - a bare correct word or phrase is a complete, full-marks answer to THIS question. Do not expect or request any "why"/"how" - that is tested separately and must never factor into this grade or feedback.
+4. "feedback" is a short, plain-language note - a genuine confirmation if correct, or (if incorrect) a brief, non-leaking hint about the kind of thing they're missing, never stating the actual answer.
+
+Output schema:
+{ "correct": boolean, "feedback": string }`;

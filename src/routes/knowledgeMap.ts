@@ -25,8 +25,8 @@ import {
   generateRewordedAo1Question,
   gradeRewordedAo1Answer,
   checkAo1SlipCandidate,
-  getLinkTeachingText,
-  gradeLinkRestatement,
+  getEdgeLabelsForIdentify,
+  gradeLinkIdentifyAnswer,
   getIntegrationQuestionText,
   gradeIntegrationAnswer,
 } from '../services/nodeReviewService';
@@ -764,11 +764,14 @@ router.post('/knowledge-map-v2/node-review/link-identify/start', requireAuth, co
   const { fromNodeId, toNodeId } = (req.body ?? {}) as { fromNodeId?: string; toNodeId?: string };
   if (!fromNodeId || !toNodeId) return res.status(400).json({ error: 'fromNodeId and toNodeId are required' });
   try {
-    const edge = await getLinkTeachingText(fromNodeId, toNodeId);
-    if (!edge) return res.status(404).json({ error: 'connection not found' });
-    res.json(edge);
+    // No LLM call and no link-teaching text sent to the client - just the
+    // two labels, so the frontend can build a plain templated question
+    // ("what links X to Y?") without giving away what it's testing.
+    const labels = await getEdgeLabelsForIdentify(fromNodeId, toNodeId);
+    if (!labels) return res.status(404).json({ error: 'connection not found' });
+    res.json(labels);
   } catch (err) {
-    console.error('Link-teaching lookup failed:', err);
+    console.error('Link-identify lookup failed:', err);
     res.status(500).json({ error: 'could not load this connection' });
   }
 });
@@ -777,10 +780,7 @@ router.post('/knowledge-map-v2/node-review/link-identify/start', requireAuth, co
 // prompted retry is a learning rep, not a real recall test" convention as
 // a first-time encoding elsewhere in this app (see renderTextQuestionWidget's
 // own comment in learn/index.html). Only the FINAL correct pass grades,
-// with hadRetry reflecting whether any retry was needed along the way. No
-// hint is generated on a wrong attempt - the link-teaching text stays
-// visible on screen throughout (see learn/index.html's renderNodeReviewIdentify),
-// so there's nothing a separate hint would add.
+// with hadRetry reflecting whether any retry was needed along the way.
 router.post('/knowledge-map-v2/node-review/link-identify/submit', requireAuth, costlyEndpointLimiter, async (req: Request, res: Response) => {
   const { fromNodeId, toNodeId, answer, hadRetry } = (req.body ?? {}) as {
     fromNodeId?: string; toNodeId?: string; answer?: string; hadRetry?: boolean;
@@ -796,7 +796,7 @@ router.post('/knowledge-map-v2/node-review/link-identify/submit', requireAuth, c
     ]);
     if (!fromNode || !toNode) return res.status(404).json({ error: 'connection not found' });
 
-    const graded = await gradeLinkRestatement(fromNodeId, toNodeId, answer);
+    const graded = await gradeLinkIdentifyAnswer(fromNodeId, toNodeId, answer);
     if (!graded) return res.status(404).json({ error: 'connection not found' });
 
     if (!graded.correct) {

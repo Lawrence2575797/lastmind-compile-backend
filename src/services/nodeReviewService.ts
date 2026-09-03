@@ -2,7 +2,7 @@ import { supabaseAdmin } from './supabaseAdmin';
 import { callClaudeJSON, MODELS } from './claudeClient';
 import { parseModelJson } from './jsonParsing';
 import { KNOWLEDGE_MAP_ANSWER_CHECK_PROMPT } from '../constants/knowledgeMapAnswerCheckPrompt';
-import { AO1_REWORD_QUESTION_PROMPT, AO1_SLIP_CHECK_PROMPT } from '../constants/nodeReviewPrompts';
+import { AO1_REWORD_QUESTION_PROMPT, AO1_SLIP_CHECK_PROMPT, LINK_IDENTIFY_GRADE_PROMPT } from '../constants/nodeReviewPrompts';
 
 // The node-level spaced review. A node's own AO1 concept_id is reused
 // as-is for its reworded retrieval question (same concept, same FSRS
@@ -171,31 +171,34 @@ async function resolveEdgeForReview(fromNodeId: string, toNodeId: string): Promi
 
 // "Identify the link" used to hide the edge's own link-teaching text
 // behind a freshly LLM-generated disguised question - unreliable in
-// practice (the model would often write something that read as an
-// "explain" question, the INTEGRATION step's own job, not "identify"),
-// and it re-taught nothing the student couldn't already recall since the
-// text existed already. Now it just shows that same text outright and
-// asks the student to restate it - a genuine recall check (do they
-// remember what they were taught) with no extra generation call needed
-// for the question itself.
-export async function getLinkTeachingText(fromNodeId: string, toNodeId: string): Promise<{ fromLabel: string; toLabel: string; linkText: string } | null> {
+// practice, since the model would often write something that read as an
+// "explain" question, integration's own job. A later version showed the
+// text outright and asked for a full restatement, which fixed that but
+// created a new version of the same overlap: graded against the FULL
+// link-teaching text (which itself states WHY the link exists), a
+// correct short answer kept getting marked down for "not explaining
+// more" - identify nagging for integration's own depth again, just from
+// the mark scheme instead of the question wording. Now it's a plain
+// one-word/short-phrase naming check with nothing shown up front (a
+// real recall test, not a "read this and repeat it" exercise) - see
+// LINK_IDENTIFY_GRADE_PROMPT for the grading side, which explicitly
+// forbids expecting explanation at all. getEdgeLabelsForIdentify only
+// confirms the edge exists and has something to identify (never sends
+// the link-teaching text to the client - showing it would give away
+// exactly what this step is meant to test).
+export async function getEdgeLabelsForIdentify(fromNodeId: string, toNodeId: string): Promise<{ fromLabel: string; toLabel: string } | null> {
   const edge = await resolveEdgeForReview(fromNodeId, toNodeId);
   if (!edge || !edge.linkTeaching) return null;
-  return { fromLabel: edge.fromNode.label, toLabel: edge.toNode.label, linkText: edge.linkTeaching };
+  return { fromLabel: edge.fromNode.label, toLabel: edge.toNode.label };
 }
 
-// Grades the student's restatement against the SAME text they were just
-// shown - reuses the app's one shared answer-check prompt (question +
-// mark scheme + student answer) rather than a bespoke "identify" prompt,
-// since the bar here is simply "did they capture what they just read",
-// not identifying something withheld from them.
-export async function gradeLinkRestatement(fromNodeId: string, toNodeId: string, answer: string): Promise<{ correct: boolean; feedback: string } | null> {
-  const edge = await getLinkTeachingText(fromNodeId, toNodeId);
-  if (!edge) return null;
+export async function gradeLinkIdentifyAnswer(fromNodeId: string, toNodeId: string, answer: string): Promise<{ correct: boolean; feedback: string } | null> {
+  const edge = await resolveEdgeForReview(fromNodeId, toNodeId);
+  if (!edge || !edge.linkTeaching) return null;
   const raw = await callClaudeJSON({
     model: MODELS.simpleQuestion,
-    systemPrompt: KNOWLEDGE_MAP_ANSWER_CHECK_PROMPT,
-    userContent: `Question: In your own words, restate the connection between "${edge.fromLabel}" and "${edge.toLabel}" that you were just shown.\nMark scheme: ${edge.linkText}\nStudent's answer: ${answer}`,
+    systemPrompt: LINK_IDENTIFY_GRADE_PROMPT,
+    userContent: `Concept A: ${edge.fromNode.label}\nConcept B: ${edge.toNode.label}\nReference (ground truth, never reveal): ${edge.linkTeaching}\nStudent's answer: ${answer}`,
     temperature: 0.1,
   });
   return parseModelJson<{ correct: boolean; feedback: string }>(raw);

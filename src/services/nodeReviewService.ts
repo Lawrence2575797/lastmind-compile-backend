@@ -2,12 +2,7 @@ import { supabaseAdmin } from './supabaseAdmin';
 import { callClaudeJSON, MODELS } from './claudeClient';
 import { parseModelJson } from './jsonParsing';
 import { KNOWLEDGE_MAP_ANSWER_CHECK_PROMPT } from '../constants/knowledgeMapAnswerCheckPrompt';
-import {
-  AO1_REWORD_QUESTION_PROMPT,
-  LINK_IDENTIFY_QUESTION_PROMPT,
-  LINK_IDENTIFY_GRADE_PROMPT,
-  LINK_IDENTIFY_HINT_PROMPT,
-} from '../constants/nodeReviewPrompts';
+import { AO1_REWORD_QUESTION_PROMPT, AO1_SLIP_CHECK_PROMPT } from '../constants/nodeReviewPrompts';
 
 // The node-level spaced review. A node's own AO1 concept_id is reused
 // as-is for its reworded retrieval question (same concept, same FSRS
@@ -123,6 +118,24 @@ export async function gradeRewordedAo1Answer(nodeId: string, questionText: strin
   return parseModelJson<{ correct: boolean; feedback: string }>(raw);
 }
 
+// Only ever called on a WRONG AO1 answer, before any FSRS lapse is
+// recorded (see routes/knowledgeMap.ts's ao1/submit) - distinguishes a
+// one-word slip from a genuine gap, see AO1_SLIP_CHECK_PROMPT's own
+// comment for the narrow bar. The caller re-grades the corrected answer
+// through gradeRewordedAo1Answer itself once the student fixes the
+// flagged word, rather than duplicating that grading logic here.
+export async function checkAo1SlipCandidate(nodeId: string, questionText: string, answer: string): Promise<{ isSlip: boolean; wrongPhrase: string } | null> {
+  const source = await fetchNodeExplanationAndAo1(nodeId);
+  if (!source) return null;
+  const raw = await callClaudeJSON({
+    model: MODELS.simpleQuestion,
+    systemPrompt: AO1_SLIP_CHECK_PROMPT,
+    userContent: `Question: ${questionText}\nExplanation (ground truth): ${source.explanation}\nStudent's wrong answer: ${answer}`,
+    temperature: 0.1,
+  });
+  return parseModelJson<{ isSlip: boolean; wrongPhrase: string }>(raw);
+}
+
 interface ResolvedEdge {
   fromNode: NodeRow;
   toNode: NodeRow;
@@ -156,40 +169,36 @@ async function resolveEdgeForReview(fromNodeId: string, toNodeId: string): Promi
   };
 }
 
-export async function generateLinkIdentifyQuestion(fromNodeId: string, toNodeId: string): Promise<{ questionText: string } | null> {
+// "Identify the link" used to hide the edge's own link-teaching text
+// behind a freshly LLM-generated disguised question - unreliable in
+// practice (the model would often write something that read as an
+// "explain" question, the INTEGRATION step's own job, not "identify"),
+// and it re-taught nothing the student couldn't already recall since the
+// text existed already. Now it just shows that same text outright and
+// asks the student to restate it - a genuine recall check (do they
+// remember what they were taught) with no extra generation call needed
+// for the question itself.
+export async function getLinkTeachingText(fromNodeId: string, toNodeId: string): Promise<{ fromLabel: string; toLabel: string; linkText: string } | null> {
   const edge = await resolveEdgeForReview(fromNodeId, toNodeId);
-  if (!edge) return null;
-  const raw = await callClaudeJSON({
-    model: MODELS.simpleQuestion,
-    systemPrompt: LINK_IDENTIFY_QUESTION_PROMPT,
-    userContent: `Concept A: ${edge.fromNode.label}\nConcept B: ${edge.toNode.label}\nReference (never reveal): ${edge.linkTeaching}`,
-    temperature: 0.4,
-  });
-  return parseModelJson<{ questionText: string }>(raw);
+  if (!edge || !edge.linkTeaching) return null;
+  return { fromLabel: edge.fromNode.label, toLabel: edge.toNode.label, linkText: edge.linkTeaching };
 }
 
-export async function gradeLinkIdentifyAnswer(fromNodeId: string, toNodeId: string, questionText: string, answer: string): Promise<{ correct: boolean; feedback: string } | null> {
-  const edge = await resolveEdgeForReview(fromNodeId, toNodeId);
+// Grades the student's restatement against the SAME text they were just
+// shown - reuses the app's one shared answer-check prompt (question +
+// mark scheme + student answer) rather than a bespoke "identify" prompt,
+// since the bar here is simply "did they capture what they just read",
+// not identifying something withheld from them.
+export async function gradeLinkRestatement(fromNodeId: string, toNodeId: string, answer: string): Promise<{ correct: boolean; feedback: string } | null> {
+  const edge = await getLinkTeachingText(fromNodeId, toNodeId);
   if (!edge) return null;
   const raw = await callClaudeJSON({
     model: MODELS.simpleQuestion,
-    systemPrompt: LINK_IDENTIFY_GRADE_PROMPT,
-    userContent: `Question: ${questionText}\nReference (never reveal): ${edge.linkTeaching}\nStudent's answer: ${answer}`,
+    systemPrompt: KNOWLEDGE_MAP_ANSWER_CHECK_PROMPT,
+    userContent: `Question: In your own words, restate the connection between "${edge.fromLabel}" and "${edge.toLabel}" that you were just shown.\nMark scheme: ${edge.linkText}\nStudent's answer: ${answer}`,
     temperature: 0.1,
   });
   return parseModelJson<{ correct: boolean; feedback: string }>(raw);
-}
-
-export async function generateLinkIdentifyHint(fromNodeId: string, toNodeId: string, questionText: string, wrongAnswer: string, feedback: string): Promise<{ hint: string } | null> {
-  const edge = await resolveEdgeForReview(fromNodeId, toNodeId);
-  if (!edge) return null;
-  const raw = await callClaudeJSON({
-    model: MODELS.simpleQuestion,
-    systemPrompt: LINK_IDENTIFY_HINT_PROMPT,
-    userContent: `Question: ${questionText}\nReference (never reveal): ${edge.linkTeaching}\nStudent's wrong answer: ${wrongAnswer}\nFeedback already given: ${feedback}`,
-    temperature: 0.3,
-  });
-  return parseModelJson<{ hint: string }>(raw);
 }
 
 // Text-only by design (see nodeReviewPrompts.ts's own comment) - an edge

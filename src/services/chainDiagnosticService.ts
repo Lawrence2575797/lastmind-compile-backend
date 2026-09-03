@@ -83,13 +83,18 @@ interface GapResult {
 
 /**
  * Walks the knowledge-map graph backward from the target node, collecting
- * every ancestor that ISN'T yet mastered — stopping each branch's walk at
- * the first mastered ancestor (mastery already implies its own
- * prerequisites were covered when it was learned, so there's no need to
- * keep testing beyond it). Returns componentIds only (ids, never ground
- * truth) in topological (earliest-prerequisite-first) order. An empty
- * componentIds list means no gap — the caller should let the student
- * straight into the target lesson, no diagnostic needed.
+ * every ancestor that HASN'T been encoded at all yet — stopping each
+ * branch's walk at the first already-encoded ancestor (having taken that
+ * lesson already implies its own prerequisites were covered at the time,
+ * so there's no need to keep testing beyond it). This is deliberately not
+ * a mastery bar: a concept encoded once but not yet reviewed to mastery
+ * has still been taught, and gating on mastery here would keep re-testing
+ * a chain the student has already legitimately been through, on every
+ * lesson downstream of it, for as long as it takes to reach mastery.
+ * Returns componentIds only (ids, never ground truth) in topological
+ * (earliest-prerequisite-first) order. An empty componentIds list means
+ * no gap — the caller should let the student straight into the target
+ * lesson, no diagnostic needed.
  */
 export async function findPrerequisiteGap(
   userId: string,
@@ -145,7 +150,11 @@ export async function findPrerequisiteGap(
   const ancestorConceptIds = Array.from(ancestorIds).map((id) => nodeById.get(id)!.concept_id as string);
   const masteryByConceptId = await getMasteryDetailsForConcepts(userId, ancestorConceptIds);
 
-  // Pass 2: BFS backward again, this time stopping at any mastered node.
+  // Pass 2: BFS backward again, this time stopping at any already-encoded
+  // node — getMasteryDetailsForConcepts only returns an entry for a
+  // concept that has at least one concept_reviews row, i.e. has been
+  // encoded at least once, regardless of how far it's since progressed
+  // toward mastery.
   const gapNodeIds = new Set<string>();
   const visited = new Set<string>([targetNodeId]);
   const queue = [targetNodeId];
@@ -155,8 +164,8 @@ export async function findPrerequisiteGap(
       if (visited.has(from)) continue;
       visited.add(from);
       const conceptId = nodeById.get(from)!.concept_id as string;
-      const isMastered = masteryByConceptId.get(conceptId)?.state === 2;
-      if (isMastered) continue;
+      const alreadyEncoded = masteryByConceptId.has(conceptId);
+      if (alreadyEncoded) continue;
       gapNodeIds.add(from);
       queue.push(from);
     }

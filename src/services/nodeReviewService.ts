@@ -136,7 +136,8 @@ export async function checkAo1SlipCandidate(nodeId: string, questionText: string
   return parseModelJson<{ isSlip: boolean; wrongPhrase: string }>(raw);
 }
 
-interface ResolvedEdge {
+export interface ResolvedEdge {
+  id: string;
   fromNode: NodeRow;
   toNode: NodeRow;
   linkTeaching: string;
@@ -147,7 +148,7 @@ interface ResolvedEdge {
 // lookup in this app already uses (findMissingEncoding, text-question/
 // submit, diagram-question/submit) - the frontend's subject-wide graph
 // only ever carries source/target node ids, never a raw edge id.
-async function resolveEdgeForReview(fromNodeId: string, toNodeId: string): Promise<ResolvedEdge | null> {
+export async function resolveEdgeForReview(fromNodeId: string, toNodeId: string): Promise<ResolvedEdge | null> {
   const { data: edge } = await supabaseAdmin
     .from('knowledge_map_edges')
     .select('id, from_node_id, to_node_id')
@@ -162,6 +163,7 @@ async function resolveEdgeForReview(fromNodeId: string, toNodeId: string): Promi
   ]);
   if (!fromNode || !toNode) return null;
   return {
+    id: edge.id as string,
     fromNode,
     toNode,
     linkTeaching: (lesson?.link_teaching_content as string) || '',

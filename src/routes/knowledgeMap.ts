@@ -30,6 +30,7 @@ import {
   getIntegrationQuestionText,
   gradeIntegrationAnswer,
 } from '../services/nodeReviewService';
+import { compileNodeNotes, getNodeNotes, compileEdgeNotes, getEdgeNotes, getNotesIndexForUser } from '../services/knowledgeMapNotesService';
 
 const router = Router();
 
@@ -841,6 +842,65 @@ router.post('/knowledge-map-v2/node-review/integration/submit', requireAuth, cos
   } catch (err) {
     console.error('Integration grading failed:', err);
     res.status(500).json({ error: 'could not grade this answer' });
+  }
+});
+
+// ---- Knowledge-map Notes page (see learn/index.html's openNotesPage) ----
+// Compiled straight from a node's/edge's own ground truth (never a
+// student's own answer), cached once and shared across every student who's
+// earned it - see knowledgeMapNotesService.ts's own top comment.
+
+router.post('/knowledge-map-v2/node/:nodeId/notes/compile', requireAuth, costlyEndpointLimiter, async (req: Request, res: Response) => {
+  try {
+    const notes = await compileNodeNotes(req.params.nodeId);
+    if (!notes) return res.status(404).json({ error: 'no lesson generated for this concept yet' });
+    res.json(notes);
+  } catch (err) {
+    console.error('Node notes compile failed:', err);
+    res.status(500).json({ error: 'could not compile notes for this concept' });
+  }
+});
+
+router.get('/knowledge-map-v2/node/:nodeId/notes', requireAuth, async (req: Request, res: Response) => {
+  try {
+    const notes = await getNodeNotes(req.params.nodeId);
+    if (!notes) return res.status(404).json({ error: 'no notes compiled for this concept yet' });
+    res.json(notes);
+  } catch (err) {
+    console.error('Node notes lookup failed:', err);
+    res.status(500).json({ error: 'could not load these notes' });
+  }
+});
+
+router.post('/knowledge-map-v2/edge/:fromNodeId/:toNodeId/notes/compile', requireAuth, costlyEndpointLimiter, async (req: Request, res: Response) => {
+  try {
+    const notes = await compileEdgeNotes(req.userId as string, req.params.fromNodeId, req.params.toNodeId);
+    if (!notes) return res.status(404).json({ error: 'connection not found' });
+    res.json(notes);
+  } catch (err) {
+    console.error('Edge notes compile failed:', err);
+    res.status(500).json({ error: 'could not compile notes for this connection' });
+  }
+});
+
+router.get('/knowledge-map-v2/edge/:fromNodeId/:toNodeId/notes', requireAuth, async (req: Request, res: Response) => {
+  try {
+    const notes = await getEdgeNotes(req.params.fromNodeId, req.params.toNodeId);
+    if (!notes) return res.status(404).json({ error: 'no notes compiled for this connection yet' });
+    res.json(notes);
+  } catch (err) {
+    console.error('Edge notes lookup failed:', err);
+    res.status(500).json({ error: 'could not load these notes' });
+  }
+});
+
+router.get('/knowledge-map-v2/notes-index', requireAuth, async (req: Request, res: Response) => {
+  try {
+    const index = await getNotesIndexForUser(req.userId as string);
+    res.json(index);
+  } catch (err) {
+    console.error('Notes index lookup failed:', err);
+    res.status(500).json({ error: 'could not load your notes' });
   }
 });
 

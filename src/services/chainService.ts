@@ -114,7 +114,7 @@ export function normalizeForPlanMatch(value: string): string {
 // would be pure duplication. Stripping the tier here before matching
 // means a single untiered "GCSE" plan (see seed_aqa_gcse_*.js) still
 // answers a "GCSE Foundation"/"GCSE Higher" folder's lookup correctly.
-function stripGcseTierForPlanMatch(qualification: string): string {
+export function stripGcseTierForPlanMatch(qualification: string): string {
   return qualification.replace(/^GCSE\s+(Foundation|Higher)$/i, 'GCSE');
 }
 

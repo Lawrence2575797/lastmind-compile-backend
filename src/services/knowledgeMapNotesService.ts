@@ -1,21 +1,23 @@
-// The knowledge map's Notes page (see learn/index.html's openNotesPage) —
-// compiled study notes generated straight from a node's/edge's own already-
-// authored ground truth (encoding_content's explanation, link_teaching_content),
-// never from a student's own answer. Node notes are earned once a node is
-// encoded; edge (transfer+integration) notes are earned once a review
-// session actually passes both the identify and integration checks for that
-// link (see renderNodeReviewSummary's own comment in learn/index.html). Both
-// are compiled ONCE per node/edge and shared across every student who's
-// earned them — same one-time-generation contract as the underlying lesson
-// content itself — via Haiku (MODELS.simpleQuestion), since turning
-// already-written ground truth into a shorter note is a genuinely easy
-// transform, not a task that needs a bigger model.
+// The knowledge map's Notes page (see learn/index.html's Notes sidebar
+// tree) — compiled study notes generated straight from a node's/edge's own
+// already-authored ground truth (encoding_content's explanation,
+// link_teaching_content), never from a student's own answer. Node notes are
+// earned once a node is encoded; edge (transfer+integration) notes are
+// earned once a review session actually passes both the identify and
+// integration checks for that link (see renderNodeReviewSummary's own
+// comment in learn/index.html). Both are compiled ONCE per node/edge and
+// shared across every student who's earned them — same one-time-generation
+// contract as the underlying lesson content itself — via Haiku
+// (MODELS.simpleQuestion), since turning already-written ground truth into
+// a shorter note is a genuinely easy transform, not a task that needs a
+// bigger model.
 import { supabaseAdmin } from './supabaseAdmin';
 import { callClaudeJSON, MODELS } from './claudeClient';
 import { parseModelJson } from './jsonParsing';
 import { selectAllRows, selectRowsByIdChunked } from './supabasePagination';
 import { resolveEdgeForReview } from './nodeReviewService';
-import { NODE_NOTES_COMPILE_PROMPT, EDGE_NOTES_COMPILE_PROMPT } from '../constants/knowledgeMapNotesPrompts';
+import { getSpecMicrotopics, normalizeForPlanMatch, stripGcseTierForPlanMatch } from './chainService';
+import { NODE_NOTES_COMPILE_PROMPT, EDGE_NOTES_COMPILE_PROMPT, SUBTOPIC_NODE_ORDER_PROMPT } from '../constants/knowledgeMapNotesPrompts';
 
 export async function getNodeNotes(nodeId: string): Promise<{ notes: string } | null> {
   const { data } = await supabaseAdmin.from('knowledge_map_node_notes').select('notes_content').eq('node_id', nodeId).maybeSingle();
@@ -107,17 +109,23 @@ interface NotesIndexLink {
 interface NotesIndexNode {
   nodeId: string;
   label: string;
-  subtopic: string;
-  theme: string | null;
   encoded: boolean;
   hasNotes: boolean;
   links: NotesIndexLink[];
+}
+interface NotesIndexSubtopic {
+  subtopic: string;
+  nodes: NotesIndexNode[];
+}
+interface NotesIndexTheme {
+  theme: string;
+  subtopics: NotesIndexSubtopic[];
 }
 export interface NotesIndexSubject {
   subject: string;
   qualification: string;
   examBoard: string;
-  nodes: NotesIndexNode[];
+  themes: NotesIndexTheme[];
 }
 
 interface NotesIndexNodeRow {
@@ -133,45 +141,191 @@ interface NotesIndexNodeRow {
 
 // Subtopic strings are spec-numbered ("1.1 Nature of economics", "4.5 Role
 // of the state in the macroeconomy" - see generate_knowledge_map.js's own
-// SUBTOPICS list) but there's no dedicated sort_order column anywhere on
-// knowledge_map_nodes, so this parses the leading "N" or "N.M" and compares
-// numerically (a plain string sort would put "1.10" before "1.2") - this is
-// the actual specification order, not the order Postgres happens to return
-// rows in (there's no ORDER BY anywhere in this app's existing knowledge-map
-// queries either). Two nodes sharing a subtopic fall back to their label.
+// SUBTOPICS list) - parses the leading "N" or "N.M" and compares
+// numerically (a plain string sort would put "1.10" before "1.2"). This is
+// the actual specification order for GROUPING subtopics into lessons and
+// lessons into themes; ordering the individual concept nodes WITHIN one
+// subtopic is a separate problem this alone can't solve (they all share
+// the same subtopic string) - see getOrComputeSubtopicOrder for that.
 function parseSubtopicOrder(subtopic: string): [number, number] {
   const match = /^(\d+)(?:\.(\d+))?/.exec(subtopic || '');
   if (!match) return [Number.MAX_SAFE_INTEGER, 0];
   return [Number(match[1]), match[2] ? Number(match[2]) : 0];
 }
-function compareBySpecOrder(a: NotesIndexNodeRow, b: NotesIndexNodeRow): number {
-  const [aMajor, aMinor] = parseSubtopicOrder(a.subtopic);
-  const [bMajor, bMinor] = parseSubtopicOrder(b.subtopic);
+function compareSubtopics(a: string, b: string): number {
+  const [aMajor, aMinor] = parseSubtopicOrder(a);
+  const [bMajor, bMinor] = parseSubtopicOrder(b);
   if (aMajor !== bMajor) return aMajor - bMajor;
   if (aMinor !== bMinor) return aMinor - bMinor;
-  if (a.subtopic !== b.subtopic) return a.subtopic.localeCompare(b.subtopic);
-  return a.label.localeCompare(b.label);
+  return a.localeCompare(b);
 }
 
-// Auto-populates the Notes page's own sidebar (see learn/index.html's
-// openNotesPage) - EVERY node on the knowledge map for any subject this
-// student has touched at all (not just the ones they've personally
-// encoded yet - a student should see the whole spec laid out, in spec
-// order, with "not encoded yet" nodes visible but inert, same as the
-// knowledge map graph itself never hides a node just because it isn't
-// done). "Has this student touched this subject at all" is still decided
-// by concept_reviews (any encoded concept in it), same signal the rest of
-// the knowledge map already uses for "has this student started this
-// subject" - a student who's never opened a subject's map at all doesn't
-// get an empty shell for it here either.
+// Real theme names ("Theme 1 - Introduction to markets and market
+// failure") for the Notes sidebar tree's top grouping level - sourced from
+// spec_lesson_plans (the same canonical, hand-authored lesson breakdown
+// chainService.ts's getStoredLessonPlan already uses for chain-generation
+// grounding), keyed by subtopic since that's the join key the two tables
+// actually share. Same normalized matching as getStoredLessonPlan, since
+// qualification is free text that can differ in spacing/hyphenation
+// between where a subject's nodes were ingested ("A-Level") and where its
+// lesson plan was seeded ("A Level"). Falls back to null per subtopic when
+// no lesson plan has been seeded for this subject - the caller derives a
+// bare "Theme N" from the subtopic's own leading digit in that case, same
+// as this app has always grouped themes, so a subject without a seeded
+// plan is never worse off than before this feature, just less nicely named.
+async function getSubtopicThemeMap(subject: string, qualification: string, examBoard: string): Promise<Map<string, string>> {
+  const { data, error } = await supabaseAdmin
+    .from('spec_lesson_plans')
+    .select('qualification, exam_board, subtopic, theme')
+    .ilike('subject', subject.trim());
+  if (error) {
+    console.error('LastMind: spec_lesson_plans theme lookup failed, falling back to bare theme numbers.', error);
+    return new Map();
+  }
+  const wantQualification = normalizeForPlanMatch(stripGcseTierForPlanMatch(qualification));
+  const wantExamBoard = normalizeForPlanMatch(examBoard || '');
+  const map = new Map<string, string>();
+  (data || []).forEach((row) => {
+    if (
+      normalizeForPlanMatch(row.qualification as string) === wantQualification &&
+      normalizeForPlanMatch((row.exam_board as string) || '') === wantExamBoard &&
+      !map.has(row.subtopic as string)
+    ) {
+      map.set(row.subtopic as string, row.theme as string);
+    }
+  });
+  return map;
+}
+
+function fallbackThemeName(subtopic: string): string {
+  const digit = (subtopic || '').split(' ')[0]?.split('.')[0];
+  return digit ? `Theme ${digit}` : 'General';
+}
+
+async function getCachedSubtopicOrder(subject: string, qualification: string, examBoard: string, subtopic: string): Promise<string[] | null> {
+  const { data } = await supabaseAdmin
+    .from('knowledge_map_node_spec_order')
+    .select('node_order')
+    .eq('subject', subject)
+    .eq('qualification', qualification)
+    .eq('exam_board', examBoard)
+    .eq('subtopic', subtopic)
+    .maybeSingle();
+  return (data?.node_order as string[] | undefined) ?? null;
+}
+
+// Node creation order isn't recoverable from the DB (knowledge_map_nodes
+// has no rank column, and its rows are bulk-inserted with a shared
+// created_at per chunk of up to 200 - see ingest_knowledge_map.js), so
+// there's no honest way to reconstruct "the order they were generated in"
+// after the fact. Instead this reconstructs genuine TEACHING order from
+// scratch, once per subtopic, via a cheap model call grounded in
+// exam_spec_outlines' own microtopics breakdown where one has been seeded
+// for this subject (see SUBTOPIC_NODE_ORDER_PROMPT) - a pure enhancement,
+// same as every other spec-outline lookup in this app: a subject with no
+// seeded microtopics still gets a genuine best-effort teaching order from
+// the model's own subject knowledge, just without that extra grounding.
+async function computeSubtopicOrder(
+  subject: string,
+  qualification: string,
+  examBoard: string,
+  subtopic: string,
+  nodes: { id: string; label: string }[]
+): Promise<string[]> {
+  if (nodes.length <= 1) return nodes.map((n) => n.id);
+
+  const microtopics = await getSpecMicrotopics(subject, qualification, examBoard);
+  const matchedSubtopic = microtopics?.themes
+    .flatMap((t) => t.subtopics)
+    .find((s) => s.subtopic.trim().toLowerCase() === subtopic.trim().toLowerCase());
+  const microtopicsList = matchedSubtopic?.microtopics || [];
+
+  const userContent = [
+    `Subtopic: ${subtopic}`,
+    microtopicsList.length
+      ? `Content points, in the order the specification teaches them:\n${microtopicsList.map((m, i) => `${i + 1}. ${m}`).join('\n')}`
+      : null,
+    `Concepts to order (by index):\n${nodes.map((n, i) => `${i}: ${n.label}`).join('\n')}`,
+  ].filter(Boolean).join('\n\n');
+
+  let order: number[] = nodes.map((_, i) => i);
+  try {
+    const raw = await callClaudeJSON({
+      model: MODELS.simpleQuestion,
+      systemPrompt: SUBTOPIC_NODE_ORDER_PROMPT,
+      userContent,
+      temperature: 0.1,
+    });
+    const parsed = parseModelJson<{ order: number[] }>(raw).order;
+    const isValidPermutation =
+      Array.isArray(parsed) &&
+      parsed.length === nodes.length &&
+      new Set(parsed).size === nodes.length &&
+      parsed.every((i) => Number.isInteger(i) && i >= 0 && i < nodes.length);
+    if (isValidPermutation) order = parsed;
+  } catch (err) {
+    console.error(`LastMind: subtopic node ordering failed for "${subtopic}", falling back to original order.`, err);
+  }
+
+  return order.map((i) => nodes[i].id);
+}
+
+// Cache-or-compute, plus a cheap merge for the case a subtopic gained a
+// new node since its order was last cached (no re-computation needed - the
+// new node is simply appended, same "never worse than before" fallback
+// spirit as everywhere else in this file).
+async function getOrComputeSubtopicOrder(
+  subject: string,
+  qualification: string,
+  examBoard: string,
+  subtopic: string,
+  nodes: { id: string; label: string }[]
+): Promise<string[]> {
+  const cached = await getCachedSubtopicOrder(subject, qualification, examBoard, subtopic);
+  if (cached) {
+    const nodeIds = new Set(nodes.map((n) => n.id));
+    const stillValid = cached.filter((id) => nodeIds.has(id));
+    const missing = nodes.filter((n) => !cached.includes(n.id)).map((n) => n.id);
+    if (!missing.length && stillValid.length === cached.length) return stillValid;
+    const merged = [...stillValid, ...missing];
+    const { error } = await supabaseAdmin
+      .from('knowledge_map_node_spec_order')
+      .upsert(
+        { subject, qualification, exam_board: examBoard, subtopic, node_order: merged },
+        { onConflict: 'subject,qualification,exam_board,subtopic' }
+      );
+    if (error) throw error;
+    return merged;
+  }
+
+  const order = await computeSubtopicOrder(subject, qualification, examBoard, subtopic, nodes);
+  const { error } = await supabaseAdmin
+    .from('knowledge_map_node_spec_order')
+    .upsert(
+      { subject, qualification, exam_board: examBoard, subtopic, node_order: order },
+      { onConflict: 'subject,qualification,exam_board,subtopic' }
+    );
+  if (error) throw error;
+  return order;
+}
+
+// Auto-populates the Notes sidebar tree (see learn/index.html's Notes tab)
+// - EVERY node on the knowledge map for any subject this student has
+// touched at all (not just the ones they've personally encoded yet - a
+// student should see the whole spec laid out, with "not encoded yet" nodes
+// visible but inert, same as the knowledge map graph itself never hides a
+// node just because it isn't done). "Has this student touched this subject
+// at all" is still decided by concept_reviews (any encoded concept in it),
+// same signal the rest of the knowledge map already uses.
 //
-// Each node carries its own outgoing links (not a separate subject-level
-// list) - a link only ever appears once notes exist (`unlocked`) or is
-// otherwise show-but-locked (see the frontend's own handling), matching
-// the fact these are only ever auto-compiled after a genuine review pass,
-// never manually triggered - a link to a target that isn't itself encoded
-// yet doesn't appear at all, since nothing could have been tested for it
-// (same qualifying-link rule the node review itself already enforces).
+// Nested Subject -> Theme -> Subtopic ("lesson") -> Node, matching the
+// sidebar tree's own dropdown structure directly so the frontend never has
+// to re-derive groupings. Each node carries its own outgoing links (not a
+// separate subject-level list) - a link to a target that isn't itself
+// encoded yet doesn't appear at all, since nothing could have been tested
+// for it (same qualifying-link rule the node review itself already
+// enforces); an unlocked one is playable, a not-yet-unlocked one still
+// shows locked (see the frontend's own handling).
 export async function getNotesIndexForUser(userId: string): Promise<{ subjects: NotesIndexSubject[] }> {
   const { data: reviewRows, error: reviewError } = await supabaseAdmin
     .from('concept_reviews')
@@ -237,29 +391,78 @@ export async function getNotesIndexForUser(userId: string): Promise<{ subjects: 
       : [];
     const nodesWithNotes = new Set(noteRows.map((r) => r.node_id));
 
-    const sortedNodes = [...allNodes].sort(compareBySpecOrder);
+    const themeMap = await getSubtopicThemeMap(triple.subject, triple.qualification, triple.examBoard);
+
+    const bySubtopic = new Map<string, NotesIndexNodeRow[]>();
+    allNodes.forEach((n) => {
+      const list = bySubtopic.get(n.subtopic) || [];
+      list.push(n);
+      bySubtopic.set(n.subtopic, list);
+    });
+
+    // One (cheap, cache-hit-after-first-time) ordering call per subtopic,
+    // run in parallel across the whole subject rather than serially.
+    const subtopicOrders = new Map<string, string[]>(
+      await Promise.all(
+        Array.from(bySubtopic.entries()).map(async ([subtopic, nodes]) => {
+          const order = await getOrComputeSubtopicOrder(
+            triple.subject,
+            triple.qualification,
+            triple.examBoard,
+            subtopic,
+            nodes.map((n) => ({ id: n.id, label: n.label }))
+          );
+          return [subtopic, order] as [string, string[]];
+        })
+      )
+    );
+
+    const buildNode = (n: NotesIndexNodeRow): NotesIndexNode => ({
+      nodeId: n.id,
+      label: n.label,
+      encoded: encodedConceptIds.has(n.concept_id),
+      hasNotes: nodesWithNotes.has(n.id),
+      links: (edgesByFromNode.get(n.id) || [])
+        .filter((e) => {
+          const toNode = nodeById.get(e.to_node_id);
+          return toNode && encodedConceptIds.has(toNode.concept_id);
+        })
+        .map((e) => {
+          const toNode = nodeById.get(e.to_node_id)!;
+          return { toNodeId: toNode.id, toLabel: toNode.label, unlocked: unlockedEdgeIds.has(e.id) };
+        }),
+    });
+
+    const subtopicsBuilt: NotesIndexSubtopic[] = Array.from(bySubtopic.entries()).map(([subtopic, nodes]) => {
+      const order = subtopicOrders.get(subtopic) || [];
+      const byId = new Map(nodes.map((n) => [n.id, n]));
+      const ordered = order.map((id) => byId.get(id)).filter((n): n is NotesIndexNodeRow => !!n);
+      return { subtopic, nodes: ordered.map(buildNode) };
+    });
+    subtopicsBuilt.sort((a, b) => compareSubtopics(a.subtopic, b.subtopic));
+
+    const themesMap = new Map<string, NotesIndexSubtopic[]>();
+    subtopicsBuilt.forEach((s) => {
+      const themeName = themeMap.get(s.subtopic) || fallbackThemeName(s.subtopic);
+      const list = themesMap.get(themeName) || [];
+      list.push(s);
+      themesMap.set(themeName, list);
+    });
+    // Theme order follows the minimum spec number among its own
+    // subtopics (subtopicsBuilt is already spec-sorted, so this is just
+    // each theme's first-seen position) - robust regardless of whether
+    // the theme's own display name happens to start with "Theme N".
+    const themeOrder: string[] = [];
+    subtopicsBuilt.forEach((s) => {
+      const themeName = themeMap.get(s.subtopic) || fallbackThemeName(s.subtopic);
+      if (!themeOrder.includes(themeName)) themeOrder.push(themeName);
+    });
 
     subjects.push({
       subject: triple.subject,
       qualification: triple.qualification,
       examBoard: triple.examBoard,
-      nodes: sortedNodes.map((n) => ({
-        nodeId: n.id,
-        label: n.label,
-        subtopic: n.subtopic,
-        theme: n.theme,
-        encoded: encodedConceptIds.has(n.concept_id),
-        hasNotes: nodesWithNotes.has(n.id),
-        links: (edgesByFromNode.get(n.id) || [])
-          .filter((e) => {
-            const toNode = nodeById.get(e.to_node_id);
-            return toNode && encodedConceptIds.has(toNode.concept_id);
-          })
-          .map((e) => {
-            const toNode = nodeById.get(e.to_node_id)!;
-            return { toNodeId: toNode.id, toLabel: toNode.label, unlocked: unlockedEdgeIds.has(e.id) };
-          }),
-      })),
+      themes: themeOrder.map((theme) => ({ theme, subtopics: themesMap.get(theme)! })),
     });
   }
 

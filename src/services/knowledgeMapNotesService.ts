@@ -15,7 +15,7 @@ import { supabaseAdmin } from './supabaseAdmin';
 import { callClaudeJSON, MODELS } from './claudeClient';
 import { parseModelJson } from './jsonParsing';
 import { selectAllRows, selectRowsByIdChunked } from './supabasePagination';
-import { resolveEdgeForReview } from './nodeReviewService';
+import { resolveEdgeForReview, linkIdentifyConceptId, linkIntegrationConceptId } from './nodeReviewService';
 import { getSpecMicrotopics, normalizeForPlanMatch, stripGcseTierForPlanMatch } from './chainService';
 import { NODE_NOTES_COMPILE_PROMPT, EDGE_NOTES_COMPILE_PROMPT, SUBTOPIC_NODE_ORDER_PROMPT } from '../constants/knowledgeMapNotesPrompts';
 
@@ -391,6 +391,50 @@ export async function getNotesIndexForUser(userId: string): Promise<{ subjects: 
       : [];
     const nodesWithNotes = new Set(noteRows.map((r) => r.node_id));
 
+    // `knowledge_map_edge_notes_unlocked` only ever gets written live, at
+    // the exact moment renderNodeReviewSummary sees a fresh pass within
+    // ONE browser session (see learn/index.html's own comment on that
+    // hook) - it was never backfilled for links a student had already
+    // passed identify+integration for BEFORE that hook existed, or from a
+    // session that ended before reaching the summary screen. Rather than
+    // leave those permanently "locked" despite being genuinely earned,
+    // also treat a link as unlocked when its identify AND integration
+    // concept_reviews rows show at least one non-lapse ('again') rating
+    // ever recorded (reps > lapses) - the only durable, retroactively-
+    // computable signal available (concept_reviews stores current FSRS
+    // state, not a full attempt history, so this is "ever graded
+    // correct at least once", not "most recent attempt was correct").
+    const candidateEdges = allEdges.filter((e) => {
+      const from = nodeById.get(e.from_node_id);
+      const to = nodeById.get(e.to_node_id);
+      return from && to && encodedConceptIds.has(to.concept_id);
+    });
+    const edgeConceptIdPairs = candidateEdges.map((e) => {
+      const from = nodeById.get(e.from_node_id)!;
+      const to = nodeById.get(e.to_node_id)!;
+      return {
+        edgeId: e.id,
+        identifyId: linkIdentifyConceptId(from.concept_id, to.concept_id),
+        integrationId: linkIntegrationConceptId(from.concept_id, to.concept_id),
+      };
+    });
+    const allLinkConceptIds = Array.from(new Set(edgeConceptIdPairs.flatMap((p) => [p.identifyId, p.integrationId])));
+    const passedRows = allLinkConceptIds.length
+      ? await selectRowsByIdChunked<{ concept_id: string; reps: number; lapses: number }>(
+          'concept_reviews',
+          'concept_id, reps, lapses',
+          'concept_id',
+          allLinkConceptIds,
+          (q) => q.eq('user_id', userId)
+        )
+      : [];
+    const everPassedConceptIds = new Set(passedRows.filter((r) => r.reps > r.lapses).map((r) => r.concept_id));
+    const durablyUnlockedEdgeIds = new Set(
+      edgeConceptIdPairs
+        .filter((p) => everPassedConceptIds.has(p.identifyId) && everPassedConceptIds.has(p.integrationId))
+        .map((p) => p.edgeId)
+    );
+
     const themeMap = await getSubtopicThemeMap(triple.subject, triple.qualification, triple.examBoard);
 
     const bySubtopic = new Map<string, NotesIndexNodeRow[]>();
@@ -429,7 +473,7 @@ export async function getNotesIndexForUser(userId: string): Promise<{ subjects: 
         })
         .map((e) => {
           const toNode = nodeById.get(e.to_node_id)!;
-          return { toNodeId: toNode.id, toLabel: toNode.label, unlocked: unlockedEdgeIds.has(e.id) };
+          return { toNodeId: toNode.id, toLabel: toNode.label, unlocked: unlockedEdgeIds.has(e.id) || durablyUnlockedEdgeIds.has(e.id) };
         }),
     });
 

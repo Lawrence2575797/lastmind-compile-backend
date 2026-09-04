@@ -35,6 +35,7 @@ Produce two pieces of text:
 Rules:
 1. Output ONLY valid JSON, nothing else.
 2. Be faithful ONLY to the given reference material - do not introduce new facts, examples, or claims beyond what it already states.
+3. **Never restate what either concept IS on its own - only the connection between them.** The student already has both concepts' own separate definitions from their own encoding lessons; this note exists specifically to teach and record the BRIDGE, not to re-teach either endpoint. If the reference material drifts into re-explaining one concept standalone, extract and keep only the parts that state or imply the causal/dependency relationship between the two, and leave the rest out entirely - even if that makes the output shorter. A student reading this should come away knowing why/how A connects to B, never a refresher on what A or B individually mean.
 
 Output schema:
 { "transferSummary": string, "integrationSummary": string }`;

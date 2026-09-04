@@ -394,16 +394,21 @@ export async function getNotesIndexForUser(userId: string): Promise<{ subjects: 
     // `knowledge_map_edge_notes_unlocked` only ever gets written live, at
     // the exact moment renderNodeReviewSummary sees a fresh pass within
     // ONE browser session (see learn/index.html's own comment on that
-    // hook) - it was never backfilled for links a student had already
-    // passed identify+integration for BEFORE that hook existed, or from a
-    // session that ended before reaching the summary screen. Rather than
-    // leave those permanently "locked" despite being genuinely earned,
-    // also treat a link as unlocked when its identify AND integration
-    // concept_reviews rows show at least one non-lapse ('again') rating
-    // ever recorded (reps > lapses) - the only durable, retroactively-
-    // computable signal available (concept_reviews stores current FSRS
-    // state, not a full attempt history, so this is "ever graded
-    // correct at least once", not "most recent attempt was correct").
+    // hook) - it was never backfilled for a link a student had already
+    // covered BEFORE that hook existed, or from a session that ended
+    // before reaching the summary screen. Rather than leave those
+    // permanently "locked" despite being genuinely covered, also treat a
+    // link as unlocked once its identify AND integration concept_reviews
+    // rows exist at all - a node's own spaced review always walks through
+    // EVERY one of its qualifying links' identify+integration in one
+    // sitting (see getQualifyingReviewLinks's own comment: never due-
+    // filtered, always all of them), and gradeAndRecordReview writes a row
+    // on every graded attempt regardless of correctness - so "this link's
+    // rows exist" means "a full review covering this link was completed",
+    // matching the actual ask (transfer/integration only ever needs
+    // covering ONCE, not a correctness bar - a wrong answer is exactly
+    // when a student most wants the notes, not when they should be denied
+    // them).
     const candidateEdges = allEdges.filter((e) => {
       const from = nodeById.get(e.from_node_id);
       const to = nodeById.get(e.to_node_id);
@@ -419,19 +424,19 @@ export async function getNotesIndexForUser(userId: string): Promise<{ subjects: 
       };
     });
     const allLinkConceptIds = Array.from(new Set(edgeConceptIdPairs.flatMap((p) => [p.identifyId, p.integrationId])));
-    const passedRows = allLinkConceptIds.length
-      ? await selectRowsByIdChunked<{ concept_id: string; reps: number; lapses: number }>(
+    const coveredRows = allLinkConceptIds.length
+      ? await selectRowsByIdChunked<{ concept_id: string }>(
           'concept_reviews',
-          'concept_id, reps, lapses',
+          'concept_id',
           'concept_id',
           allLinkConceptIds,
           (q) => q.eq('user_id', userId)
         )
       : [];
-    const everPassedConceptIds = new Set(passedRows.filter((r) => r.reps > r.lapses).map((r) => r.concept_id));
+    const everCoveredConceptIds = new Set(coveredRows.map((r) => r.concept_id));
     const durablyUnlockedEdgeIds = new Set(
       edgeConceptIdPairs
-        .filter((p) => everPassedConceptIds.has(p.identifyId) && everPassedConceptIds.has(p.integrationId))
+        .filter((p) => everCoveredConceptIds.has(p.identifyId) && everCoveredConceptIds.has(p.integrationId))
         .map((p) => p.edgeId)
     );
 

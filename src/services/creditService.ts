@@ -1,4 +1,5 @@
 import { supabaseAdmin } from './supabaseAdmin';
+import { gradeCorrectness } from './reviewService';
 
 // The app's own currency ("Keys" in the frontend — named here only in
 // comments; the actual display name lives entirely in learn/index.html
@@ -25,9 +26,14 @@ const INITIAL_CREDIT_ALLOWANCE = 40;
 // rating derivation as a real lesson — see knowledgeMap.ts's verify/submit,
 // which no longer forces a capped 'hard' rating), just discounted by a
 // coefficient since that learning didn't happen on LastMind: 0.6x on the
-// free tier, 0.8x on premium (see KM_VERIFY_COEFFICIENT_FREE/PREMIUM in
-// knowledgeMap.ts) — a smaller discount for premium since encouraging a
+// free tier, 0.8x on premium (see KM_VERIFY_COEFFICIENT_FREE/PREMIUM
+// below) — a smaller discount for premium since encouraging a
 // paying user to at least open the app is worth more than a free one's.
+// The chain-diagnostic prerequisite gate (chainDiagnosticService.ts's
+// gradeComponentOutcome) pays at these SAME coefficients for the same
+// reason - being forced through it because a prerequisite was never
+// encoded is functionally a Verify of that prerequisite, just triggered
+// by the gate rather than chosen directly.
 // Exported so a caller can show the un-discounted figure alongside the
 // coefficient (e.g. "you earned 6 of the 10 a full lesson would pay").
 // Rescaled 2026-09-01 (÷15 from the original [75,150,225], rounded to a
@@ -127,4 +133,60 @@ export async function payMasteryInstallment(
   const amount = Math.round(MASTERY_INSTALLMENT_KEYS[newCount - 1] * coefficient);
   await adjustCredits(userId, amount, reason);
   return amount;
+}
+
+// Premium gets the smaller discount (0.8 vs free's 0.6) since a paying
+// user opening the app at all, even just to verify, is worth more
+// encouraging than a free one's equivalent action. Shared by Verify
+// (knowledgeMap.ts's verify/submit) and the chain-diagnostic prerequisite
+// gate (chainDiagnosticService.ts's gradeComponentOutcome) - both pay a
+// student for demonstrating knowledge they didn't actually gain on
+// LastMind, just reached through different entry points.
+export const KM_VERIFY_COEFFICIENT_FREE = 0.6;
+export const KM_VERIFY_COEFFICIENT_PREMIUM = 0.8;
+
+/**
+ * Pays the same credit amounts the older encoding/spaced-lesson engines
+ * already use — a first-time encoding ('practice' for a node, 'ao1' for
+ * Verify's node-level check, or an 'encoding' chain-diagnostic component)
+ * is a flat one-off payment, matching encodingLessonService.ts's own
+ * ENCODING_LESSON_COMPLETION_KEYS payout on a first-time pass; a
+ * transfer/integration pass is a genuine spaced review of an already-
+ * encoded edge, paid via the same per-milestone installment schedule
+ * spacedLessonEngine.ts uses as spaced_success_count climbs toward durable
+ * mastery. `coefficient` is 1.0 for an actual lesson/review, or the
+ * KM_VERIFY_COEFFICIENT_* discount for Verify/the chain-diagnostic gate —
+ * both are graded through the exact same gradeCorrectness path a real
+ * lesson uses (no artificial rating cap), so they earn toward the same
+ * milestones, just at a reduced rate. Returns both the amount actually
+ * paid AND the un-discounted base, so a caller can show a student exactly
+ * how much they left on the table by verifying instead of doing the
+ * lesson. `graded` is gradeCorrectness's own return value — its
+ * `previousRow` carries spaced_success_count at runtime, just narrower on
+ * its declared type (see gradeAndRecordReview's own comment in
+ * reviewService.ts).
+ */
+export async function payLessonCredits(
+  userId: string,
+  isFirstTimeEncoding: boolean,
+  graded: Awaited<ReturnType<typeof gradeCorrectness>>,
+  coefficient: number,
+  reasonPrefix: string
+): Promise<{ paid: number; base: number }> {
+  if (isFirstTimeEncoding) {
+    const base = ENCODING_LESSON_COMPLETION_KEYS;
+    const paid = Math.round(base * coefficient);
+    if (paid > 0) await adjustCredits(userId, paid, `${reasonPrefix}_encoding_completed`);
+    return { paid, base };
+  }
+  const priorSpacedSuccessCount = (graded.previousRow as { spaced_success_count?: number } | null)?.spaced_success_count ?? 0;
+  const newCount = graded.spacedSuccessCount;
+  // Same milestone gate payMasteryInstallment applies internally —
+  // duplicated here (rather than changing that shared function's return
+  // type, which has three other call sites) purely so `base` is knowable
+  // even when nothing was actually paid.
+  if (newCount <= priorSpacedSuccessCount || newCount < 1 || newCount > MASTERY_INSTALLMENT_KEYS.length) return { paid: 0, base: 0 };
+  const base = MASTERY_INSTALLMENT_KEYS[newCount - 1];
+  const paid = await payMasteryInstallment(userId, priorSpacedSuccessCount, newCount, coefficient, `${reasonPrefix}_mastery_${newCount}`);
+  return { paid, base };
 }

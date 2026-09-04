@@ -14,7 +14,7 @@ import {
 } from '../services/chainDiagnosticService';
 import { gradeDiagramAnswer, DiagramSpec, DiagramAnswerSubmission } from '../services/diagramGradingService';
 import { gradeCorrectness, DURABLE_RELEARNING_CRITERION } from '../services/reviewService';
-import { adjustCredits, payMasteryInstallment, ENCODING_LESSON_COMPLETION_KEYS, MASTERY_INSTALLMENT_KEYS } from '../services/creditService';
+import { payLessonCredits, KM_VERIFY_COEFFICIENT_FREE, KM_VERIFY_COEFFICIENT_PREMIUM } from '../services/creditService';
 import { callClaudeJSON, MODELS } from '../services/claudeClient';
 import { KNOWLEDGE_MAP_ANSWER_CHECK_PROMPT } from '../constants/knowledgeMapAnswerCheckPrompt';
 import { VERIFY_LEARNING_PROMPT, buildVerifyQuestionText } from '../constants/verifyLearningPrompts';
@@ -172,16 +172,27 @@ interface ChainDiagnosticState {
   failureFeedback?: Record<string, string>;
   genuineGapIds?: string[];
   retryQuestionText?: string;
+  // Locked in once at /submit (the first point anything is actually
+  // graded) rather than recomputed from isUserPaid on every later
+  // round-trip - keeps the whole walk paying at one consistent rate even
+  // if the student's tier changes mid-flow, and avoids an extra DB lookup
+  // on every step.
+  coefficient?: number;
+  keysEarnedSoFar?: number;
 }
 
 async function finalizeChainDiagnostic(state: ChainDiagnosticState) {
   const genuineGapIds = state.genuineGapIds || [];
-  if (!genuineGapIds.length) return { passed: true as const };
+  const keysEarned = state.keysEarnedSoFar || 0;
+  if (!genuineGapIds.length) return { passed: true as const, keysEarned };
   // First in chain order — pendingFailureIds/componentIds are already
   // topologically ordered, and genuineGapIds is appended in the same walk
   // order, so the earliest entry is the earliest real gap in the chain.
   const redirect = await redirectForComponent(genuineGapIds[0]);
-  return { passed: false as const, denied: true as const, redirect };
+  // Whatever was earned from the OTHER components that genuinely passed
+  // still stands even though the chain as a whole is denied - a real gap
+  // in one component doesn't undo a real pass on another.
+  return { passed: false as const, denied: true as const, redirect, keysEarned };
 }
 
 // POST /knowledge-map-v2/chain-diagnostic/start  { targetNodeId, subject, qualification, examBoard }
@@ -225,12 +236,18 @@ router.post('/knowledge-map-v2/chain-diagnostic/submit', requireAuth, costlyEndp
   }
   try {
     const userId = req.userId as string;
+    // Locked in for the whole walk - see ChainDiagnosticState's own
+    // comment on why this isn't recomputed on every later step.
+    const coefficient = (await isUserPaid(userId)) ? KM_VERIFY_COEFFICIENT_PREMIUM : KM_VERIFY_COEFFICIENT_FREE;
     const outcomes = await gradeChainDiagnosticAnswer(state.componentIds, state.questionText, answer);
     const failures = outcomes.filter((o) => !o.correct);
-    await Promise.all(outcomes.filter((o) => o.correct).map((o) => gradeComponentOutcome(userId, o.componentId, 'correct')));
+    const paidAmounts = await Promise.all(
+      outcomes.filter((o) => o.correct).map((o) => gradeComponentOutcome(userId, o.componentId, 'correct', coefficient))
+    );
+    const keysEarned = paidAmounts.reduce((sum, paid) => sum + paid, 0);
 
     if (!failures.length) {
-      return res.json({ passed: true });
+      return res.json({ passed: true, keysEarned });
     }
 
     const nextState: ChainDiagnosticState = {
@@ -240,12 +257,15 @@ router.post('/knowledge-map-v2/chain-diagnostic/submit', requireAuth, costlyEndp
       currentIndex: 0,
       failureFeedback: Object.fromEntries(failures.map((f) => [f.componentId, f.feedback])),
       genuineGapIds: [],
+      coefficient,
+      keysEarnedSoFar: keysEarned,
     };
     const first = failures[0];
     res.json({
       passed: false,
       currentFailure: { componentId: first.componentId, type: first.type, label: first.label, feedback: first.feedback },
       remaining: failures.length,
+      keysEarned,
       state: nextState,
     });
   } catch (err) {
@@ -270,10 +290,13 @@ router.post('/knowledge-map-v2/chain-diagnostic/resolve-slip', requireAuth, cost
 
     if (wasSlip) {
       const retryQuestionText = await generateSlipRetryQuestion(componentId, state.answer || '', state.failureFeedback?.[componentId] || '');
-      return res.json({ needsRetry: true, retryQuestionText, state: { ...state, retryQuestionText } });
+      return res.json({ needsRetry: true, retryQuestionText, keysEarned: state.keysEarnedSoFar || 0, state: { ...state, retryQuestionText } });
     }
 
-    await gradeComponentOutcome(userId, componentId, 'genuine_gap');
+    // A genuine gap never pays (see gradeComponentOutcome) - coefficient
+    // is irrelevant on this branch, just threaded through for signature
+    // consistency.
+    await gradeComponentOutcome(userId, componentId, 'genuine_gap', state.coefficient || 0);
     const genuineGapIds = [...(state.genuineGapIds || []), componentId];
     const nextIndex = idx + 1;
     if (nextIndex < pending.length) {
@@ -285,6 +308,7 @@ router.post('/knowledge-map-v2/chain-diagnostic/resolve-slip', requireAuth, cost
           feedback: state.failureFeedback?.[nextComponentId] || '',
         },
         remaining: pending.length - nextIndex,
+        keysEarned: state.keysEarnedSoFar || 0,
         state: nextState,
       });
     }
@@ -310,21 +334,23 @@ router.post('/knowledge-map-v2/chain-diagnostic/submit-retry', requireAuth, cost
   try {
     const userId = req.userId as string;
     const { correct, feedback } = await gradeSlipRetryAnswer(componentId, state.retryQuestionText, answer);
-    await gradeComponentOutcome(userId, componentId, correct ? 'slip_confirmed' : 'genuine_gap');
+    const paidNow = await gradeComponentOutcome(userId, componentId, correct ? 'slip_confirmed' : 'genuine_gap', state.coefficient || 0);
     const genuineGapIds = correct ? state.genuineGapIds || [] : [...(state.genuineGapIds || []), componentId];
+    const keysEarnedSoFar = (state.keysEarnedSoFar || 0) + paidNow;
 
     const nextIndex = idx + 1;
     if (nextIndex < pending.length) {
       const nextComponentId = pending[nextIndex];
-      const nextState: ChainDiagnosticState = { ...state, currentIndex: nextIndex, genuineGapIds, retryQuestionText: undefined };
+      const nextState: ChainDiagnosticState = { ...state, currentIndex: nextIndex, genuineGapIds, retryQuestionText: undefined, keysEarnedSoFar };
       return res.json({
         retryFeedback: feedback,
         currentFailure: { componentId: nextComponentId, feedback: state.failureFeedback?.[nextComponentId] || '' },
         remaining: pending.length - nextIndex,
+        keysEarned: keysEarnedSoFar,
         state: nextState,
       });
     }
-    const result = await finalizeChainDiagnostic({ ...state, genuineGapIds });
+    const result = await finalizeChainDiagnostic({ ...state, genuineGapIds, keysEarnedSoFar });
     res.json({ ...result, retryFeedback: feedback });
   } catch (err) {
     console.error('Chain diagnostic retry grading failed:', err);
@@ -443,25 +469,6 @@ async function findMissingEncoding(
   return missing ? { nodeId: missing.id, label: missing.label } : null;
 }
 
-// Pays the same credit amounts the older encoding/spaced-lesson engines
-// already use (see creditService.ts) — a first-time encoding ('practice'
-// for a node, 'ao1' for Verify's node-level check) is a flat one-off
-// payment, matching encodingLessonService.ts's own
-// ENCODING_LESSON_COMPLETION_KEYS payout on a first-time pass; a
-// transfer/integration pass is a genuine spaced review of an already-
-// encoded edge, paid via the same per-milestone installment schedule
-// spacedLessonEngine.ts uses as spaced_success_count climbs toward durable
-// mastery. `coefficient` is 1.0 for an actual lesson/review, or Verify's
-// free/premium discount (see knowledgeMap.ts's verify/submit) — Verify is
-// graded through the exact same gradeCorrectness path as a real lesson
-// (no artificial rating cap), so it earns toward the same milestones, just
-// at a reduced rate. Returns both the amount actually paid AND the
-// un-discounted base, so a caller can show a student exactly how much
-// they left on the table by verifying instead of doing the lesson.
-// `graded` is gradeCorrectness's own return value — its `previousRow`
-// carries spaced_success_count at runtime, just narrower on its declared
-// type (see gradeAndRecordReview's own comment in reviewService.ts).
-
 // The map's node/link colouring (see the frontend's masteryProgressTier)
 // is derived from spacedSuccessCount/isDurablyMastered, not from the FSRS
 // card fields alone - every submit route below feeds its result straight
@@ -476,31 +483,6 @@ function scheduleWithMastery(conceptId: string, graded: Awaited<ReturnType<typeo
     spacedSuccessCount: graded.spacedSuccessCount,
     isDurablyMastered: graded.spacedSuccessCount >= DURABLE_RELEARNING_CRITERION,
   };
-}
-
-async function payLessonCredits(
-  userId: string,
-  isFirstTimeEncoding: boolean,
-  graded: Awaited<ReturnType<typeof gradeCorrectness>>,
-  coefficient: number,
-  reasonPrefix: string
-): Promise<{ paid: number; base: number }> {
-  if (isFirstTimeEncoding) {
-    const base = ENCODING_LESSON_COMPLETION_KEYS;
-    const paid = Math.round(base * coefficient);
-    if (paid > 0) await adjustCredits(userId, paid, `${reasonPrefix}_encoding_completed`);
-    return { paid, base };
-  }
-  const priorSpacedSuccessCount = (graded.previousRow as { spaced_success_count?: number } | null)?.spaced_success_count ?? 0;
-  const newCount = graded.spacedSuccessCount;
-  // Same milestone gate payMasteryInstallment applies internally —
-  // duplicated here (rather than changing that shared function's return
-  // type, which has three other call sites) purely so `base` is knowable
-  // even when nothing was actually paid.
-  if (newCount <= priorSpacedSuccessCount || newCount < 1 || newCount > MASTERY_INSTALLMENT_KEYS.length) return { paid: 0, base: 0 };
-  const base = MASTERY_INSTALLMENT_KEYS[newCount - 1];
-  const paid = await payMasteryInstallment(userId, priorSpacedSuccessCount, newCount, coefficient, `${reasonPrefix}_mastery_${newCount}`);
-  return { paid, base };
 }
 
 // POST /knowledge-map-v2/text-question/submit
@@ -584,13 +566,6 @@ router.post('/knowledge-map-v2/text-question/submit', requireAuth, costlyEndpoin
     res.status(500).json({ error: 'could not grade this answer' });
   }
 });
-
-// Verify's free/premium discount coefficients — see MASTERY_INSTALLMENT_KEYS'
-// own comment in creditService.ts. Premium gets the smaller discount (0.8
-// vs free's 0.6) since a paying user opening the app at all, even just to
-// verify, is worth more encouraging than a free one's equivalent action.
-const KM_VERIFY_COEFFICIENT_FREE = 0.6;
-const KM_VERIFY_COEFFICIENT_PREMIUM = 0.8;
 
 // POST /knowledge-map-v2/verify/submit
 // "Test out" shortcut, available on both tiers, offered alongside Start

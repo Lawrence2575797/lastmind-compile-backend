@@ -19,6 +19,7 @@ import { supabaseAdmin } from './supabaseAdmin';
 import { selectAllRows } from './supabasePagination';
 import { callClaudeJSON, MODELS } from './claudeClient';
 import { getMasteryDetailsForConcepts, gradeCorrectness } from './reviewService';
+import { payLessonCredits } from './creditService';
 import {
   CHAIN_DIAGNOSTIC_QUESTION_PROMPT,
   CHAIN_DIAGNOSTIC_GRADE_PROMPT,
@@ -350,15 +351,37 @@ export async function gradeSlipRetryAnswer(componentId: string, retryQuestion: s
   );
 }
 
-/** FSRS-grades one resolved component — 'again' for a genuine gap, otherwise routed through gradeCorrectness (hadRetry=true for a slip-then-correct pass, so it reads 'hard' rather than looking identical to a clean first-try pass). */
-export async function gradeComponentOutcome(userId: string, componentId: string, outcome: 'correct' | 'slip_confirmed' | 'genuine_gap'): Promise<void> {
+/**
+ * FSRS-grades one resolved component — 'again' for a genuine gap,
+ * otherwise routed through gradeCorrectness (hadRetry=true for a
+ * slip-then-correct pass, so it reads 'hard' rather than looking
+ * identical to a clean first-try pass). A passing outcome ALSO pays
+ * credits at `coefficient` (the same KM_VERIFY_COEFFICIENT_FREE/PREMIUM
+ * rate Verify itself pays at, passed in by the caller) via the same
+ * payLessonCredits path a real lesson/Verify uses - being forced through
+ * this gate because a prerequisite was never actually encoded is
+ * functionally a Verify of that prerequisite, just reached through the
+ * gate rather than chosen directly, and the coefficient discount (below
+ * the full rate encoding/reviewing it directly would earn) reflects that
+ * this learning didn't happen on LastMind. Returns the amount paid for
+ * THIS component (0 for a genuine gap, or if credits are called for but
+ * nothing was actually due — e.g. a mastery milestone already claimed).
+ */
+export async function gradeComponentOutcome(
+  userId: string,
+  componentId: string,
+  outcome: 'correct' | 'slip_confirmed' | 'genuine_gap',
+  coefficient: number
+): Promise<number> {
   const component = await resolveComponent(componentId);
-  if (!component) return;
+  if (!component) return 0;
   if (outcome === 'genuine_gap') {
     await gradeCorrectness(userId, component.conceptId, false);
-  } else {
-    await gradeCorrectness(userId, component.conceptId, true, outcome === 'slip_confirmed');
+    return 0;
   }
+  const graded = await gradeCorrectness(userId, component.conceptId, true, outcome === 'slip_confirmed');
+  const { paid } = await payLessonCredits(userId, component.type === 'encoding', graded, coefficient, 'knowledge_map_chain_diagnostic');
+  return paid;
 }
 
 /** Redirect target for a genuine gap — the node's own lesson for an 'encoding' failure, or the edge's from/to pair for a 'transfer'/'integration' failure (the Start Lesson bridge already teaches exactly this link). */

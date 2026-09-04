@@ -13,7 +13,7 @@ import {
   redirectForComponent,
 } from '../services/chainDiagnosticService';
 import { gradeDiagramAnswer, DiagramSpec, DiagramAnswerSubmission } from '../services/diagramGradingService';
-import { gradeCorrectness } from '../services/reviewService';
+import { gradeCorrectness, DURABLE_RELEARNING_CRITERION } from '../services/reviewService';
 import { adjustCredits, payMasteryInstallment, ENCODING_LESSON_COMPLETION_KEYS, MASTERY_INSTALLMENT_KEYS } from '../services/creditService';
 import { callClaudeJSON, MODELS } from '../services/claudeClient';
 import { KNOWLEDGE_MAP_ANSWER_CHECK_PROMPT } from '../constants/knowledgeMapAnswerCheckPrompt';
@@ -407,7 +407,7 @@ router.post('/knowledge-map-v2/diagram-question/submit', requireAuth, costlyEndp
     // The frontend needs the fresh due date the moment this grades, not
     // only after a later /schedule refetch (e.g. on returning to the
     // dashboard) — see reviewService.ts's cardToRowFields for the fields.
-    res.json({ ...result, schedule: { conceptId, ...graded.newState }, keysEarned });
+    res.json({ ...result, schedule: scheduleWithMastery(conceptId!, graded), keysEarned });
   } catch (err) {
     console.error('Diagram question grading failed:', err);
     res.status(500).json({ error: 'could not grade this diagram' });
@@ -461,6 +461,23 @@ async function findMissingEncoding(
 // `graded` is gradeCorrectness's own return value — its `previousRow`
 // carries spaced_success_count at runtime, just narrower on its declared
 // type (see gradeAndRecordReview's own comment in reviewService.ts).
+
+// The map's node/link colouring (see the frontend's masteryProgressTier)
+// is derived from spacedSuccessCount/isDurablyMastered, not from the FSRS
+// card fields alone - every submit route below feeds its result straight
+// back into the frontend's own in-memory graph data so the map updates
+// the instant a lesson/review completes (see each route's own comment),
+// so this needs to travel in the same `schedule` payload as the due date,
+// not just `graded.newState` (the bare FSRS fields).
+function scheduleWithMastery(conceptId: string, graded: Awaited<ReturnType<typeof gradeCorrectness>>) {
+  return {
+    conceptId,
+    ...graded.newState,
+    spacedSuccessCount: graded.spacedSuccessCount,
+    isDurablyMastered: graded.spacedSuccessCount >= DURABLE_RELEARNING_CRITERION,
+  };
+}
+
 async function payLessonCredits(
   userId: string,
   isFirstTimeEncoding: boolean,
@@ -561,7 +578,7 @@ router.post('/knowledge-map-v2/text-question/submit', requireAuth, costlyEndpoin
     const graded = await gradeCorrectness(userId, conceptId!, correct, questionType === 'practice' ? !!hadRetry : false);
     const { paid: keysEarned } = await payLessonCredits(userId, questionType === 'practice', graded, 1.0, 'knowledge_map_lesson');
     // See the identical comment on diagram-question/submit above.
-    res.json({ correct, feedback, schedule: { conceptId, ...graded.newState }, keysEarned });
+    res.json({ correct, feedback, schedule: scheduleWithMastery(conceptId!, graded), keysEarned });
   } catch (err) {
     console.error('Text question grading failed:', err);
     res.status(500).json({ error: 'could not grade this answer' });
@@ -690,7 +707,7 @@ router.post('/knowledge-map-v2/node-review/ao1/start', requireAuth, costlyEndpoi
 async function finalizeAo1Grade(userId: string, conceptId: string, correct: boolean, feedback: string) {
   const result = await gradeCorrectness(userId, conceptId, correct, false);
   const { paid: keysEarned } = await payLessonCredits(userId, false, result, 1.0, 'node_review_ao1');
-  return { correct, feedback, schedule: { conceptId, ...result.newState }, keysEarned };
+  return { correct, feedback, schedule: scheduleWithMastery(conceptId, result), keysEarned };
 }
 
 router.post('/knowledge-map-v2/node-review/ao1/submit', requireAuth, costlyEndpointLimiter, async (req: Request, res: Response) => {
@@ -806,7 +823,7 @@ router.post('/knowledge-map-v2/node-review/link-identify/submit', requireAuth, c
     const conceptId = linkIdentifyConceptId(fromNode.concept_id as string, toNode.concept_id as string);
     const result = await gradeCorrectness(userId, conceptId, true, !!hadRetry);
     const { paid: keysEarned } = await payLessonCredits(userId, false, result, 1.0, 'node_review_identify');
-    res.json({ correct: true, feedback: graded.feedback, schedule: { conceptId, ...result.newState }, keysEarned });
+    res.json({ correct: true, feedback: graded.feedback, schedule: scheduleWithMastery(conceptId, result), keysEarned });
   } catch (err) {
     console.error('Link-identify grading failed:', err);
     res.status(500).json({ error: 'could not grade this answer' });
@@ -845,7 +862,7 @@ router.post('/knowledge-map-v2/node-review/integration/submit', requireAuth, cos
     const conceptId = linkIntegrationConceptId(fromNode.concept_id as string, toNode.concept_id as string);
     const result = await gradeCorrectness(userId, conceptId, graded.correct, false);
     const { paid: keysEarned } = await payLessonCredits(userId, false, result, 1.0, 'node_review_integration');
-    res.json({ correct: graded.correct, feedback: graded.feedback, schedule: { conceptId, ...result.newState }, keysEarned });
+    res.json({ correct: graded.correct, feedback: graded.feedback, schedule: scheduleWithMastery(conceptId, result), keysEarned });
   } catch (err) {
     console.error('Integration grading failed:', err);
     res.status(500).json({ error: 'could not grade this answer' });

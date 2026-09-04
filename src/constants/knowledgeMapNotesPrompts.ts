@@ -38,3 +38,25 @@ Rules:
 
 Output schema:
 { "transferSummary": string, "integrationSummary": string }`;
+
+// Orders one subtopic's atomic concept nodes into the sequence a teacher
+// would actually cover them in (see knowledgeMapNotesService.ts's
+// getOrComputeSubtopicOrder) - node creation order isn't recoverable from
+// the DB, so this reconstructs teaching order from scratch each time it's
+// needed, grounded in the real specification's own content-point order
+// (exam_spec_outlines' microtopics) where one is available. A genuinely
+// easy sequencing task for a model that already knows the subject, hence
+// Haiku rather than a bigger tier, same reasoning as the rest of this file.
+export const SUBTOPIC_NODE_ORDER_PROMPT = `You are ordering a list of atomic exam concepts into the sequence a teacher would actually cover them in, for one subtopic of a real UK GCSE/A-Level specification.
+
+You will be given the subtopic's name, optionally an ordered list of the specification's own content points for that subtopic (in the order the specification itself presents them), and a numbered list of atomic concept labels that were decomposed FROM that subtopic (each concept may be much more granular than a single content point - e.g. several concepts can belong under one content point, such as several individual "advantages of X" points that all belong together).
+
+Your job: return every given index, reordered into genuine teaching order - foundational definitions and building blocks first, then the mechanisms/models built from them, then applications and evaluations that depend on those mechanisms. Where content points are given, follow their order as the primary guide for which concepts come before which (matching each concept to the content point it most belongs under), but still use your own subject knowledge to sequence multiple concepts that share one content point, and to place any concept that doesn't clearly match a given content point.
+
+Rules:
+1. Output ONLY valid JSON, nothing else.
+2. The output MUST be a permutation of every index given - the exact same set of indices, each appearing exactly once, reordered. Never drop, duplicate, or invent an index.
+3. Base the order on genuine prerequisite/teaching logic, never alphabetically and never by re-reading the original input order back.
+
+Output schema:
+{ "order": [number, ...] }`;

@@ -80,7 +80,15 @@ async function main() {
     const lessons = JSON.parse(fs.readFileSync(LESSON_PATH, 'utf8'));
 
     const nodeLessonRows = lessons.nodeLessons
-      .map(l => ({ node_id: idByNodeKey.get(l.nodeId), encoding_content: { explanation: l.explanation, practiceQuestion: l.practiceQuestion } }))
+      .map(l => ({
+        node_id: idByNodeKey.get(l.nodeId),
+        encoding_content: {
+          explanation: l.explanation,
+          practiceQuestion: l.practiceQuestion,
+          predictionQuestion: l.predictionQuestion || null,
+          personalLinkPrompt: l.personalLinkPrompt || null,
+        },
+      }))
       .filter(r => r.node_id);
     await insertInChunks('knowledge_map_node_lessons', nodeLessonRows);
 

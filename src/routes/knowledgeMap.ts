@@ -678,17 +678,19 @@ router.post('/knowledge-map-v2/node-review/ao1/start', requireAuth, costlyEndpoi
 });
 
 // Shared by both AO1 finalization routes below (a clean pass, and a slip
-// correction that turned out right or wrong) - the only two things a
-// non-slip-candidate wrong answer and a resolved slip attempt both need:
-// record the FSRS outcome and shape the response the same way.
-async function finalizeAo1Grade(userId: string, conceptId: string, correct: boolean, feedback: string) {
-  const result = await gradeCorrectness(userId, conceptId, correct, false);
+// correction that turned out right) - both only ever reach here once the
+// answer is genuinely correct, so this always records a pass; hadRetry
+// softens the FSRS rating the same way integration/submit's does.
+async function finalizeAo1Grade(userId: string, conceptId: string, feedback: string, hadRetry: boolean) {
+  const result = await gradeCorrectness(userId, conceptId, true, hadRetry);
   const { paid: keysEarned } = await payLessonCredits(userId, false, result, 1.0, 'node_review_ao1');
-  return { correct, feedback, schedule: scheduleWithMastery(conceptId, result), keysEarned };
+  return { correct: true, feedback, schedule: scheduleWithMastery(conceptId, result), keysEarned };
 }
 
 router.post('/knowledge-map-v2/node-review/ao1/submit', requireAuth, costlyEndpointLimiter, async (req: Request, res: Response) => {
-  const { nodeId, questionText, answer } = (req.body ?? {}) as { nodeId?: string; questionText?: string; answer?: string };
+  const { nodeId, questionText, answer, hadRetry } = (req.body ?? {}) as {
+    nodeId?: string; questionText?: string; answer?: string; hadRetry?: boolean;
+  };
   if (!nodeId || !questionText || typeof answer !== 'string' || !answer.trim()) {
     return res.status(400).json({ error: 'nodeId, questionText and answer are required' });
   }
@@ -699,19 +701,18 @@ router.post('/knowledge-map-v2/node-review/ao1/submit', requireAuth, costlyEndpo
     const graded = await gradeRewordedAo1Answer(nodeId, questionText, answer);
     if (!graded) return res.status(404).json({ error: 'no lesson generated for this concept yet' });
     if (graded.correct) {
-      return res.json(await finalizeAo1Grade(userId, node.concept_id as string, true, graded.feedback));
+      return res.json(await finalizeAo1Grade(userId, node.concept_id as string, graded.feedback, !!hadRetry));
     }
-    // Wrong - before recording a real lapse, check whether this is a
-    // one-word slip rather than a genuine gap (see AO1_SLIP_CHECK_PROMPT).
-    // A slip candidate gets ONE narrow chance to fix just the flagged
-    // word (see submit-slip-correction below) with nothing recorded yet;
-    // anything else finalizes as a real wrong answer immediately, same as
-    // before.
+    // Wrong - never fails the lesson (see this section's top comment).
+    // Check whether this reads as a one-word slip so the UI can highlight
+    // just the flagged word (see AO1_SLIP_CHECK_PROMPT) rather than a
+    // generic retry; either way nothing is recorded yet - it's just a
+    // retry with the grading call's own feedback as a hint.
     const slip = await checkAo1SlipCandidate(nodeId, questionText, answer);
     if (slip?.isSlip && slip.wrongPhrase) {
       return res.json({ correct: false, feedback: graded.feedback, retryable: true, isSlipCandidate: true, wrongPhrase: slip.wrongPhrase });
     }
-    res.json(await finalizeAo1Grade(userId, node.concept_id as string, false, graded.feedback));
+    res.json({ correct: false, feedback: graded.feedback, retryable: true });
   } catch (err) {
     console.error('AO1 reworded grading failed:', err);
     res.status(500).json({ error: 'could not grade this answer' });
@@ -721,9 +722,11 @@ router.post('/knowledge-map-v2/node-review/ao1/submit', requireAuth, costlyEndpo
 // The narrow one-shot fix for a flagged slip - the student edits only the
 // wrong word/phrase, and this re-grades the RECONSTRUCTED full answer
 // (original answer with wrongPhrase replaced by their correction) through
-// the exact same check a clean first-time answer goes through. Whichever
-// way it lands, THIS is what finally gets recorded - the original wrong
-// attempt never was.
+// the exact same check a clean first-time answer goes through. Never
+// finalizes as a failure either way - a still-wrong correction, or a
+// decline ("No, I didn't know this"), both drop back into a normal
+// free-text retry with feedback as the hint rather than another narrow
+// slip-fix attempt; only a genuinely correct answer records anything.
 router.post('/knowledge-map-v2/node-review/ao1/submit-slip-correction', requireAuth, costlyEndpointLimiter, async (req: Request, res: Response) => {
   const { nodeId, questionText, originalAnswer, wrongPhrase, correction, declined, originalFeedback } = (req.body ?? {}) as {
     nodeId?: string; questionText?: string; originalAnswer?: string; wrongPhrase?: string; correction?: string;
@@ -736,10 +739,10 @@ router.post('/knowledge-map-v2/node-review/ao1/submit-slip-correction', requireA
     const userId = req.userId as string;
     const { data: node } = await supabaseAdmin.from('knowledge_map_nodes').select('concept_id').eq('id', nodeId).maybeSingle();
     if (!node) return res.status(404).json({ error: 'concept not found' });
-    // "No, I didn't know this" - finalize as wrong right away, no need to
-    // re-run grading on an answer the student isn't changing.
+    // "No, I didn't know this" - not a slip after all; nothing to
+    // re-grade, just hand back the original feedback as the retry hint.
     if (declined) {
-      return res.json(await finalizeAo1Grade(userId, node.concept_id as string, false, originalFeedback || ''));
+      return res.json({ correct: false, feedback: originalFeedback || '', retryable: true });
     }
     if (typeof correction !== 'string' || !correction.trim()) {
       return res.status(400).json({ error: 'correction is required unless declined' });
@@ -747,7 +750,10 @@ router.post('/knowledge-map-v2/node-review/ao1/submit-slip-correction', requireA
     const correctedAnswer = originalAnswer.replace(wrongPhrase, correction.trim());
     const graded = await gradeRewordedAo1Answer(nodeId, questionText, correctedAnswer);
     if (!graded) return res.status(404).json({ error: 'no lesson generated for this concept yet' });
-    res.json(await finalizeAo1Grade(userId, node.concept_id as string, graded.correct, graded.feedback));
+    if (!graded.correct) {
+      return res.json({ correct: false, feedback: graded.feedback, retryable: true });
+    }
+    res.json(await finalizeAo1Grade(userId, node.concept_id as string, graded.feedback, true));
   } catch (err) {
     console.error('AO1 slip-correction grading failed:', err);
     res.status(500).json({ error: 'could not grade this answer' });

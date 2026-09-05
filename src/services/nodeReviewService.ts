@@ -4,6 +4,8 @@ import { parseModelJson } from './jsonParsing';
 import { KNOWLEDGE_MAP_ANSWER_CHECK_PROMPT } from '../constants/knowledgeMapAnswerCheckPrompt';
 import { AO1_REWORD_QUESTION_PROMPT, AO1_SLIP_CHECK_PROMPT } from '../constants/nodeReviewPrompts';
 
+type NodeEncodingContent = { explanation?: string; practiceQuestion?: { questionText?: string }; rewordedAo1Questions?: string[] };
+
 // The node-level spaced review. A node's own AO1 concept_id is reused
 // as-is for its reworded retrieval question (same concept, same FSRS
 // history as its original encoding). Each link's integration gets its
@@ -77,27 +79,52 @@ export async function getQualifyingReviewLinks(userId: string, nodeId: string): 
   return links;
 }
 
-async function fetchNodeExplanationAndAo1(nodeId: string): Promise<{ explanation: string; questionText: string } | null> {
+async function fetchNodeExplanationAndAo1(nodeId: string): Promise<{ explanation: string; questionText: string; rewordedPool: string[] } | null> {
   const { data: lesson } = await supabaseAdmin
     .from('knowledge_map_node_lessons')
     .select('encoding_content')
     .eq('node_id', nodeId)
     .maybeSingle();
-  const content = lesson?.encoding_content as { explanation?: string; practiceQuestion?: { questionText?: string } } | null;
+  const content = lesson?.encoding_content as NodeEncodingContent | null;
   if (!content?.practiceQuestion?.questionText) return null;
-  return { explanation: content.explanation || '', questionText: content.practiceQuestion.questionText };
+  return {
+    explanation: content.explanation || '',
+    questionText: content.practiceQuestion.questionText,
+    rewordedPool: Array.isArray(content.rewordedAo1Questions) ? content.rewordedAo1Questions : [],
+  };
 }
 
-export async function generateRewordedAo1Question(nodeId: string): Promise<{ questionText: string } | null> {
+// Serves a random question from the node's cached reworded-question pool,
+// generating and persisting that pool ONCE (on whichever review happens
+// to be the first to need it) rather than calling Claude on every single
+// review - see AO1_REWORD_QUESTION_PROMPT's own comment on why a fixed
+// pool is enough. Picking uniformly at random (rather than tracking
+// per-student "already seen" state) accepts an occasional immediate
+// repeat as a small, acceptable cost for not needing any extra state.
+export async function getRewordedAo1Question(nodeId: string): Promise<{ questionText: string } | null> {
   const source = await fetchNodeExplanationAndAo1(nodeId);
   if (!source) return null;
-  const raw = await callClaudeJSON({
-    model: MODELS.simpleQuestion,
-    systemPrompt: AO1_REWORD_QUESTION_PROMPT,
-    userContent: `Explanation: ${source.explanation}\n\nOriginal question: ${source.questionText}`,
-    temperature: 0.4,
-  });
-  return parseModelJson<{ questionText: string }>(raw);
+  let pool = source.rewordedPool;
+  if (!pool.length) {
+    const raw = await callClaudeJSON({
+      model: MODELS.simpleQuestion,
+      systemPrompt: AO1_REWORD_QUESTION_PROMPT,
+      userContent: `Explanation: ${source.explanation}\n\nOriginal question: ${source.questionText}`,
+      temperature: 0.4,
+    });
+    const generated = parseModelJson<{ questionTexts: string[] }>(raw);
+    pool = generated?.questionTexts?.filter(Boolean) || [];
+    if (!pool.length) return null;
+    const { data: lesson } = await supabaseAdmin
+      .from('knowledge_map_node_lessons')
+      .select('encoding_content')
+      .eq('node_id', nodeId)
+      .maybeSingle();
+    const content = (lesson?.encoding_content as NodeEncodingContent) || {};
+    content.rewordedAo1Questions = pool;
+    await supabaseAdmin.from('knowledge_map_node_lessons').update({ encoding_content: content }).eq('node_id', nodeId);
+  }
+  return { questionText: pool[Math.floor(Math.random() * pool.length)] };
 }
 
 export async function gradeRewordedAo1Answer(nodeId: string, questionText: string, answer: string): Promise<{ correct: boolean; feedback: string } | null> {

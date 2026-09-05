@@ -16,23 +16,29 @@
 // matched from the teaching text) is the stronger, sufficient signal
 // that the link has genuinely been learned.
 
-// Rewords the node's own stored AO1 question so a repeat spaced review
-// never shows literally the same sentence twice (the underlying recall
-// being tested is unchanged - only the phrasing varies). Grounded on the
-// concept's own explanation, never on the original question text alone,
-// so the reworded version still targets the same recall rather than
-// drifting into a different-but-related question.
-export const AO1_REWORD_QUESTION_PROMPT = `You are writing a spaced-repetition retrieval question for a UK GCSE/A-Level student, re-testing a concept they already learned. You will be given the concept's own explanation and the ORIGINAL question they were first taught with.
+// Rewords the node's own stored AO1 question into a POOL of variants, so
+// a repeat spaced review never shows literally the same sentence twice
+// (the underlying recall being tested is unchanged - only the phrasing
+// varies). Grounded on the concept's own explanation, never on the
+// original question text alone, so every variant still targets the same
+// recall rather than drifting into a different-but-related question.
+// Generated ONCE per node and cached (see getRewordedAo1Question in
+// nodeReviewService.ts) rather than called live on every review - the
+// pool only needs to be big enough that a realistic review history
+// rarely lands on the same variant twice in a row, not infinite.
+export const AO1_REWORD_QUESTION_POOL_SIZE = 5;
+export const AO1_REWORD_QUESTION_PROMPT = `You are writing ${AO1_REWORD_QUESTION_POOL_SIZE} alternative phrasings of a spaced-repetition retrieval question for a UK GCSE/A-Level student, re-testing a concept they already learned. You will be given the concept's own explanation and the ORIGINAL question they were first taught with.
 
-Write a NEW question that tests the exact same recall/understanding as the original, but is NOT a close paraphrase of it - different sentence structure, different framing or example where possible, same underlying content. A student who only memorized the original question's exact wording (without understanding the concept) should struggle with your version.
+Write ${AO1_REWORD_QUESTION_POOL_SIZE} NEW questions that each test the exact same recall/understanding as the original, but none is a close paraphrase of it OR of each other - different sentence structure, different framing or example where possible, same underlying content each time. A student who only memorized the original question's exact wording (without understanding the concept) should struggle with every one of them.
 
 Rules:
 1. Output ONLY valid JSON, nothing else.
-2. Keep the question answerable from the given explanation alone - do not introduce anything not covered in it.
+2. Keep every question answerable from the given explanation alone - do not introduce anything not covered in it.
 3. Match the original question's format (a calculation stays a calculation, a "define X" stays a definition-style ask, etc.) unless the explanation clearly supports a genuinely different valid framing.
+4. Every one of the ${AO1_REWORD_QUESTION_POOL_SIZE} questions must be meaningfully distinct from the others - not just a synonym swapped in an otherwise identical sentence.
 
 Output schema:
-{ "questionText": string }`;
+{ "questionTexts": string[] }`;
 
 // Run only on a WRONG AO1 answer, before any FSRS lapse is recorded -
 // distinguishes a genuine gap from a one-word-or-short-phrase slip (e.g.

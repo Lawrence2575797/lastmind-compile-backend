@@ -15,7 +15,7 @@ import { supabaseAdmin } from './supabaseAdmin';
 import { callClaudeJSON, MODELS } from './claudeClient';
 import { parseModelJson } from './jsonParsing';
 import { selectAllRows, selectRowsByIdChunked } from './supabasePagination';
-import { resolveEdgeForReview, linkIdentifyConceptId, linkIntegrationConceptId } from './nodeReviewService';
+import { resolveEdgeForReview, linkIntegrationConceptId } from './nodeReviewService';
 import { getSpecMicrotopics, normalizeForPlanMatch, stripGcseTierForPlanMatch } from './chainService';
 import { NODE_NOTES_COMPILE_PROMPT, EDGE_NOTES_COMPILE_PROMPT, SUBTOPIC_NODE_ORDER_PROMPT } from '../constants/knowledgeMapNotesPrompts';
 
@@ -398,17 +398,11 @@ export async function getNotesIndexForUser(userId: string): Promise<{ subjects: 
     // covered BEFORE that hook existed, or from a session that ended
     // before reaching the summary screen. Rather than leave those
     // permanently "locked" despite being genuinely covered, also treat a
-    // link as unlocked once its identify AND integration concept_reviews
-    // rows exist at all - a node's own spaced review always walks through
-    // EVERY one of its qualifying links' identify+integration in one
-    // sitting (see getQualifyingReviewLinks's own comment: never due-
-    // filtered, always all of them), and gradeAndRecordReview writes a row
-    // on every graded attempt regardless of correctness - so "this link's
-    // rows exist" means "a full review covering this link was completed",
-    // matching the actual ask (transfer/integration only ever needs
-    // covering ONCE, not a correctness bar - a wrong answer is exactly
-    // when a student most wants the notes, not when they should be denied
-    // them).
+    // link as unlocked once its integration concept_reviews row exists at
+    // all - integration never fails any more (see node-review/integration/
+    // submit's own comment: wrong answers retry, only a genuine correct
+    // pass ever gets recorded), so the row's mere existence already means
+    // this exact link was genuinely passed, not just attempted.
     const candidateEdges = allEdges.filter((e) => {
       const from = nodeById.get(e.from_node_id);
       const to = nodeById.get(e.to_node_id);
@@ -417,13 +411,9 @@ export async function getNotesIndexForUser(userId: string): Promise<{ subjects: 
     const edgeConceptIdPairs = candidateEdges.map((e) => {
       const from = nodeById.get(e.from_node_id)!;
       const to = nodeById.get(e.to_node_id)!;
-      return {
-        edgeId: e.id,
-        identifyId: linkIdentifyConceptId(from.concept_id, to.concept_id),
-        integrationId: linkIntegrationConceptId(from.concept_id, to.concept_id),
-      };
+      return { edgeId: e.id, integrationId: linkIntegrationConceptId(from.concept_id, to.concept_id) };
     });
-    const allLinkConceptIds = Array.from(new Set(edgeConceptIdPairs.flatMap((p) => [p.identifyId, p.integrationId])));
+    const allLinkConceptIds = Array.from(new Set(edgeConceptIdPairs.map((p) => p.integrationId)));
     const coveredRows = allLinkConceptIds.length
       ? await selectRowsByIdChunked<{ concept_id: string }>(
           'concept_reviews',
@@ -435,9 +425,7 @@ export async function getNotesIndexForUser(userId: string): Promise<{ subjects: 
       : [];
     const everCoveredConceptIds = new Set(coveredRows.map((r) => r.concept_id));
     const durablyUnlockedEdgeIds = new Set(
-      edgeConceptIdPairs
-        .filter((p) => everCoveredConceptIds.has(p.identifyId) && everCoveredConceptIds.has(p.integrationId))
-        .map((p) => p.edgeId)
+      edgeConceptIdPairs.filter((p) => everCoveredConceptIds.has(p.integrationId)).map((p) => p.edgeId)
     );
 
     const themeMap = await getSubtopicThemeMap(triple.subject, triple.qualification, triple.examBoard);

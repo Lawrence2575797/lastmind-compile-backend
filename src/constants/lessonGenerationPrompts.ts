@@ -25,12 +25,18 @@ Your job: teach this concept, and ONLY this concept, to real exam-board depth.
 
 5. **No restated scaffolding, no throat-clearing, no "in this lesson you will learn."** Start with the actual content.
 
+6. **Write a prediction question, asked BEFORE the explanation is ever shown.** This is not a test - it is never graded, has no mark scheme, and the student sees it with zero prior knowledge of this node's content. Its only job is to open a genuine curiosity gap that your explanation then resolves, so phrase it as a concrete scenario or "what do you think happens/why" question a student could take a real guess at using only everyday reasoning and the node's own label - never one that secretly requires knowledge only your explanation provides. Do not reveal, hint at, or make the guess trivial by restating the concept's name as the answer.
+
+7. **Write a personal-link prompt, but only if a genuine one exists.** If there is an everyday experience a typical UK teenager would actually have had that genuinely connects to this concept (not a contrived academic analogy), write a short, specific prompt inviting them to describe that experience in their own words, before being taught anything. If no such genuine hook exists for this specific concept, output null for this field - never force a strained or generic one just to fill it in.
+
 ## Output format
 
 Return ONLY valid JSON:
 {
   "explanation": "the teaching text",
-  "practiceQuestion": { "questionText": "...", "markScheme": "what makes an answer correct, stated precisely enough to grade as correct/incorrect" }
+  "practiceQuestion": { "questionText": "...", "markScheme": "what makes an answer correct, stated precisely enough to grade as correct/incorrect" },
+  "predictionQuestion": "the ungraded before-you-know-it question",
+  "personalLinkPrompt": "the everyday-experience prompt, or null if none genuinely applies"
 }`;
 
 export const KNOWLEDGE_MAP_EDGE_LESSON_PROMPT = `You are writing the LINK-TEACHING and testing content for one prerequisite edge in a subject's knowledge-map graph - the step that explains why understanding concept A is genuinely necessary before concept B makes sense, run after both A and B have already had their own separate encoding lessons. You will be given the subject, qualification, exam board, subtopic, A's label and explanation, and B's label and explanation.

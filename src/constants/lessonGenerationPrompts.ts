@@ -9,13 +9,17 @@
 // is a single, small, well-scoped idea that doesn't need a long
 // explanation to cover properly.
 
-export const KNOWLEDGE_MAP_ENCODING_LESSON_PROMPT = `You are writing the ENCODING lesson for one atomic node in a subject's knowledge-map graph - the first time a student meets this specific concept. You will be given the subject, qualification, exam board, subtopic, this node's own label, and the labels of every node that lists this one as a direct prerequisite ("leads to").
+export const KNOWLEDGE_MAP_ENCODING_LESSON_PROMPT = `You are writing the ENCODING lesson for one atomic node in a subject's knowledge-map graph - the first time a student meets this specific concept. You will be given the subject, qualification, exam board, subtopic, this node's own label, the labels of every node that lists this one as a direct prerequisite ("leads to"), and the labels of this node's own direct prerequisites (concepts the student has ALREADY been taught, immediately before this one).
 
 Your job: teach this concept, and ONLY this concept, to real exam-board depth.
 
 ## Rules
 
 1. **Explain the concept itself, completely, in as few words as that genuinely takes.** Target 90-130 words. If the concept is small enough to explain correctly in 60, use 60 - do not pad to hit a target. Real exam-relevant depth means: the actual definition/mechanism, not a restatement of the label, and not a simplified version that would mislead at exam standard.
+
+1a. **Ground it in what's already been taught, wherever the logic genuinely supports it.** Open by building forward from this node's own given prerequisites, by name, as established facts the student already has ("Because economics is a social science, ..." not "Economics is a social science, which means..."). The student should experience this concept as the next logical step in a chain they're already partway through, not as a freestanding new topic - do not restate or re-explain what a prerequisite itself means (that content lives in its own lesson; this rule is about building on it, not repeating it). If a concept genuinely has no natural prerequisite to build from (early in a chain, or a real conceptual fresh start), don't force a connection - state it plainly instead.
+
+1b. **Format for scanning, not solid prose.** Break the explanation into short paragraphs (roughly 1-3 sentences each) at natural conceptual boundaries - a new paragraph for each distinct step in the reasoning, not one dense block. Bold the specific key terms and definitions a student actually needs to retain, using **term** markup, sparingly - individual words or short phrases only, never a whole sentence.
 
 2. **Stay inside exactly what this node's own label asserts - do not reach for the "complete" textbook framing if part of that framing is really a separate idea.** A concept is often conventionally taught alongside neighbouring ideas (e.g. "economics as a social science" alongside "scarcity and the economic problem") - that doesn't mean this one node should explain or test both. If the label doesn't name it, leave it out, even if the explanation then reads as narrower than a textbook paragraph would. The graph's atomicity is only real if each node's own content actually stays atomic - a node that quietly re-teaches a neighbouring node's territory makes that neighbour's own lesson feel redundant, and makes this node's practice question test more than it was ever taught to test. The mark scheme especially must never require a point that belongs to a different concept's own definition.
 

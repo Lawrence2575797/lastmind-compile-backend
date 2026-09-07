@@ -27,7 +27,7 @@ import {
   getIntegrationStepData,
   gradeIntegrationAnswer,
 } from '../services/nodeReviewService';
-import { compileNodeNotes, getNodeNotes, compileEdgeNotes, getEdgeNotes, getNotesIndexForUser } from '../services/knowledgeMapNotesService';
+import { compileNodeNotes, getNodeNotes, compileEdgeNotes, getEdgeNotes, getNotesIndexForUser, getPersonalNote, savePersonalNote } from '../services/knowledgeMapNotesService';
 
 const router = Router();
 
@@ -878,6 +878,33 @@ router.get('/knowledge-map-v2/notes-index', requireAuth, async (req: Request, re
   } catch (err) {
     console.error('Notes index lookup failed:', err);
     res.status(500).json({ error: 'could not load your notes' });
+  }
+});
+
+// A student's own hand-written note for a node - see
+// knowledgeMapNotesService.ts's PersonalNoteContent. No costlyEndpointLimiter:
+// this never calls Claude, it's just reading/writing the student's own text.
+router.get('/knowledge-map-v2/node/:nodeId/personal-notes', requireAuth, async (req: Request, res: Response) => {
+  try {
+    const note = await getPersonalNote(req.userId as string, req.params.nodeId);
+    if (!note) return res.status(404).json({ error: 'no personal note saved for this concept yet' });
+    res.json(note);
+  } catch (err) {
+    console.error('Personal note lookup failed:', err);
+    res.status(500).json({ error: 'could not load your note' });
+  }
+});
+
+router.put('/knowledge-map-v2/node/:nodeId/personal-notes', requireAuth, async (req: Request, res: Response) => {
+  try {
+    const { mode, heading, body, diagram } = req.body || {};
+    if (mode !== 'freeText' && mode !== 'template') return res.status(400).json({ error: 'invalid note mode' });
+    if (typeof body !== 'string') return res.status(400).json({ error: 'note body is required' });
+    await savePersonalNote(req.userId as string, req.params.nodeId, { mode, heading, body, diagram });
+    res.json({ saved: true });
+  } catch (err) {
+    console.error('Personal note save failed:', err);
+    res.status(500).json({ error: 'could not save your note' });
   }
 });
 

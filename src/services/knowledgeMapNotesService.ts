@@ -648,13 +648,18 @@ export async function getNotesIndexForUser(userId: string): Promise<{ subjects: 
 // the shared compiled notes above: never touches the Claude API, never
 // shared between students, and `content` is opaque to this service (the
 // frontend owns its shape - free text today, or a template with a
-// heading/body/diagram - so a future template change never needs a
-// migration here).
+// heading/body/diagram plus opt-in contrast/example add-ons, and an
+// always-available quick-notes scratchpad - so a future template change
+// never needs a migration here).
 export interface PersonalNoteContent {
   mode: 'freeText' | 'template';
   heading?: string;
   body: string;
   diagram?: unknown;
+  sections?: { diagram?: boolean; contrast?: boolean; example?: boolean };
+  contrastText?: string;
+  exampleText?: string;
+  quickNotes?: string;
 }
 
 export async function getPersonalNote(userId: string, nodeId: string): Promise<PersonalNoteContent | null> {

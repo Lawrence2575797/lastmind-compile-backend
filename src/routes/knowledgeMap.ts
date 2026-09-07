@@ -900,10 +900,10 @@ router.get('/knowledge-map-v2/node/:nodeId/personal-notes', requireAuth, async (
 
 router.put('/knowledge-map-v2/node/:nodeId/personal-notes', requireAuth, async (req: Request, res: Response) => {
   try {
-    const { mode, heading, body, diagram } = req.body || {};
+    const { mode, heading, body, diagram, sections, contrastText, exampleText, quickNotes } = req.body || {};
     if (mode !== 'freeText' && mode !== 'template') return res.status(400).json({ error: 'invalid note mode' });
     if (typeof body !== 'string') return res.status(400).json({ error: 'note body is required' });
-    await savePersonalNote(req.userId as string, req.params.nodeId, { mode, heading, body, diagram });
+    await savePersonalNote(req.userId as string, req.params.nodeId, { mode, heading, body, diagram, sections, contrastText, exampleText, quickNotes });
     res.json({ saved: true });
   } catch (err) {
     console.error('Personal note save failed:', err);

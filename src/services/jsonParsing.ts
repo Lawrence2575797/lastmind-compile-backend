@@ -71,6 +71,47 @@ function repairUnescapedQuotes(text: string): string {
   return out;
 }
 
+// Targeted, schema-aware parse for the `{ "correct": boolean, "feedback":
+// string }` shape (KNOWLEDGE_MAP_ANSWER_CHECK_PROMPT, VERIFY_LEARNING_PROMPT
+// and their callers in routes/knowledgeMap.ts and nodeReviewService.ts) —
+// this is the shape that actually kept producing the recurring "ceteris
+// paribus" submit failure even after repairUnescapedQuotes above: that
+// heuristic treats a `"` followed by a comma as a real closing quote (a
+// perfectly reasonable JSON continuation), but a model quoting a term back
+// to the student very naturally continues straight into a comma
+// afterwards — "...used "ceteris paribus", which shows..." — so the
+// generic repair snaps the string shut right there and the rest of the
+// sentence is left dangling outside it, still broken.
+//
+// "feedback" is always this schema's LAST field (fixed by the prompt's own
+// output schema), so its real closing quote is unambiguously the LAST `"`
+// in the object — no character-by-character guessing needed at all, and
+// every internal `"` the model left unescaped is simply part of the value.
+export function parseCorrectFeedbackJson(raw: string): { correct: boolean; feedback: string } {
+  const cleaned = stripCodeFences(raw);
+  try {
+    return JSON.parse(cleaned) as { correct: boolean; feedback: string };
+  } catch {
+    // fall through to targeted extraction below
+  }
+  const extracted = extractJsonObject(cleaned);
+  const correctMatch = extracted.match(/"correct"\s*:\s*(true|false)/i);
+  const feedbackKeyMatch = extracted.match(/"feedback"\s*:\s*"/);
+  if (correctMatch && feedbackKeyMatch) {
+    const valueStart = feedbackKeyMatch.index! + feedbackKeyMatch[0].length;
+    const lastQuote = extracted.lastIndexOf('"');
+    if (lastQuote > valueStart) {
+      const feedbackRaw = extracted.slice(valueStart, lastQuote);
+      const feedback = feedbackRaw.replace(
+        /\\(["\\/bfnrt])/g,
+        (_, c: string) => ({ '"': '"', '\\': '\\', '/': '/', b: '\b', f: '\f', n: '\n', r: '\r', t: '\t' })[c] as string
+      );
+      return { correct: correctMatch[1].toLowerCase() === 'true', feedback };
+    }
+  }
+  return parseModelJson<{ correct: boolean; feedback: string }>(raw);
+}
+
 export function parseModelJson<T>(raw: string): T {
   const cleaned = stripCodeFences(raw);
   try {

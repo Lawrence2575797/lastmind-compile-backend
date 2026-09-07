@@ -16,7 +16,7 @@ import { gradeDiagramAnswer, DiagramSpec, DiagramAnswerSubmission } from '../ser
 import { gradeCorrectness, DURABLE_RELEARNING_CRITERION } from '../services/reviewService';
 import { payLessonCredits, KM_VERIFY_COEFFICIENT_FREE, KM_VERIFY_COEFFICIENT_PREMIUM } from '../services/creditService';
 import { callClaudeJSON, MODELS } from '../services/claudeClient';
-import { parseModelJson } from '../services/jsonParsing';
+import { parseCorrectFeedbackJson } from '../services/jsonParsing';
 import { KNOWLEDGE_MAP_ANSWER_CHECK_PROMPT } from '../constants/knowledgeMapAnswerCheckPrompt';
 import { VERIFY_LEARNING_PROMPT, buildVerifyQuestionText } from '../constants/verifyLearningPrompts';
 import {
@@ -542,12 +542,13 @@ router.post('/knowledge-map-v2/text-question/submit', requireAuth, costlyEndpoin
       userContent: `Question: ${question.questionText}\nMark scheme: ${question.markScheme || ''}\nStudent's answer: ${answer}`,
       temperature: 0.1,
     });
-    // parseModelJson (not a bare JSON.parse) - it falls back to extracting
-    // just the JSON object out of the response before giving up, so an
-    // occasional stray sentence around otherwise-valid JSON doesn't turn
-    // into a hard 500 (a real, reported failure: submitting an answer
-    // repeatedly hit "something went wrong" with no way through).
-    const { correct, feedback } = parseModelJson<{ correct: boolean; feedback: string }>(raw);
+    // parseCorrectFeedbackJson (not a bare JSON.parse) - see its own
+    // comment: a stray sentence around otherwise-valid JSON, or an
+    // unescaped internal quote in feedback (e.g. quoting "ceteris
+    // paribus" back to the student), doesn't turn into a hard 500 (a
+    // real, reported failure: submitting an answer repeatedly hit
+    // "something went wrong" with no way through).
+    const { correct, feedback } = parseCorrectFeedbackJson(raw);
 
     // See the identical comment on diagram-question/submit above: a wrong
     // first-time encoding attempt ('practice') is a learning rep, not a
@@ -623,7 +624,7 @@ router.post('/knowledge-map-v2/verify/submit', requireAuth, costlyEndpointLimite
       temperature: 0.1,
     });
     // See the identical comment on text-question/submit above.
-    const { correct, feedback } = parseModelJson<{ correct: boolean; feedback: string }>(raw);
+    const { correct, feedback } = parseCorrectFeedbackJson(raw);
 
     // hadRetry=false — Verify uses the SAME rating derivation a real lesson
     // does (deriveCorrectRating in reviewService.ts), so a clean pass can

@@ -1,4 +1,4 @@
-import { normalizeConceptKey, getOrGenerateChain } from './chainService';
+import { normalizeConceptKey, getOrGenerateChain, getSubtopicThemeMap, fallbackThemeName } from './chainService';
 import { Chain, resolveSiblingConceptId, SiblingConcept } from './encodingLessonService';
 import { getMasteryDetailsForConcepts, MasteryDetail } from './reviewService';
 import { getConceptsWithLowConfidenceSignal } from './answerSignalService';
@@ -272,7 +272,7 @@ export interface SubjectMapNode {
   conceptId: string;
   label: string;
   subtopic: string;
-  theme: string | null;
+  theme: string; // real display name, always resolved - see getSubtopicThemeMap/fallbackThemeName
 }
 
 export interface SubjectMapResult {
@@ -357,13 +357,23 @@ export async function getKnowledgeMapForSubject(
     if (detail) masteryDetail[r.id as string] = detail;
   });
 
+  // Real theme names ("Theme 1 - Introduction to markets and market
+  // failure"), not the bare "Theme 1" knowledge_map_nodes.theme actually
+  // stores - same enrichment the Notes sidebar tree already applies (see
+  // getSubtopicThemeMap's own comment), so the Subjects sidebar tree
+  // shows the same real names instead of a plain number. Passed the
+  // original (possibly tiered) qualification, not stripQualificationTier's
+  // untiered form above - getSubtopicThemeMap does its own GCSE-tier
+  // normalization internally, matching how the Notes lookup already calls it.
+  const themeMap = await getSubtopicThemeMap(subject, qualification, examBoard);
+
   return {
     nodes: nodeRows.map((r) => ({
       id: r.id as string,
       conceptId: r.concept_id as string,
       label: r.label as string,
       subtopic: r.subtopic as string,
-      theme: (r.theme as string | null) ?? null,
+      theme: themeMap.get(r.subtopic as string) || fallbackThemeName(r.subtopic as string),
     })),
     edges: edgeRows.map((e) => ({ source: e.from_node_id, target: e.to_node_id })),
     mastery,

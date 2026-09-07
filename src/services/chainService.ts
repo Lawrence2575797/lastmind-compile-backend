@@ -118,6 +118,51 @@ export function stripGcseTierForPlanMatch(qualification: string): string {
   return qualification.replace(/^GCSE\s+(Foundation|Higher)$/i, 'GCSE');
 }
 
+// Real theme names ("Theme 1 - Introduction to markets and market
+// failure") for anywhere a subject's nodes are grouped by theme (the
+// Notes sidebar tree, and the Subjects sidebar tree - see
+// knowledgeMapNotesService.ts's getNotesIndexForUser and
+// knowledgeMapService.ts's getKnowledgeMapForSubject) - sourced from
+// spec_lesson_plans (the same canonical, hand-authored lesson breakdown
+// getStoredLessonPlan above already uses for chain-generation grounding),
+// keyed by subtopic since that's the join key the two tables actually
+// share. Same normalized matching as getStoredLessonPlan, since
+// qualification is free text that can differ in spacing/hyphenation
+// between where a subject's nodes were ingested ("A-Level") and where its
+// lesson plan was seeded ("A Level"). Falls back to null per subtopic when
+// no lesson plan has been seeded for this subject - the caller derives a
+// bare "Theme N" from the subtopic's own leading digit in that case (see
+// fallbackThemeName), so a subject without a seeded plan is never worse
+// off than before this feature, just less nicely named.
+export async function getSubtopicThemeMap(subject: string, qualification: string, examBoard: string): Promise<Map<string, string>> {
+  const { data, error } = await supabaseAdmin
+    .from('spec_lesson_plans')
+    .select('qualification, exam_board, subtopic, theme')
+    .ilike('subject', subject.trim());
+  if (error) {
+    console.error('LastMind: spec_lesson_plans theme lookup failed, falling back to bare theme numbers.', error);
+    return new Map();
+  }
+  const wantQualification = normalizeForPlanMatch(stripGcseTierForPlanMatch(qualification));
+  const wantExamBoard = normalizeForPlanMatch(examBoard || '');
+  const map = new Map<string, string>();
+  (data || []).forEach((row) => {
+    if (
+      normalizeForPlanMatch(row.qualification as string) === wantQualification &&
+      normalizeForPlanMatch((row.exam_board as string) || '') === wantExamBoard &&
+      !map.has(row.subtopic as string)
+    ) {
+      map.set(row.subtopic as string, row.theme as string);
+    }
+  });
+  return map;
+}
+
+export function fallbackThemeName(subtopic: string): string {
+  const digit = (subtopic || '').split(' ')[0]?.split('.')[0];
+  return digit ? `Theme ${digit}` : 'General';
+}
+
 export async function getStoredLessonPlan(subject: string, qualification: string, examBoard: string): Promise<StoredLessonPlanSubtopic[] | null> {
   if (!qualification) return null;
   const { data, error } = await supabaseAdmin

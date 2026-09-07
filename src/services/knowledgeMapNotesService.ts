@@ -642,3 +642,34 @@ export async function getNotesIndexForUser(userId: string): Promise<{ subjects: 
 
   return { subjects };
 }
+
+// A student's own hand-written note for one node - see
+// knowledge_map_node_personal_notes' own comment. Entirely separate from
+// the shared compiled notes above: never touches the Claude API, never
+// shared between students, and `content` is opaque to this service (the
+// frontend owns its shape - free text today, or a template with a
+// heading/body/diagram - so a future template change never needs a
+// migration here).
+export interface PersonalNoteContent {
+  mode: 'freeText' | 'template';
+  heading?: string;
+  body: string;
+  diagram?: unknown;
+}
+
+export async function getPersonalNote(userId: string, nodeId: string): Promise<PersonalNoteContent | null> {
+  const { data } = await supabaseAdmin
+    .from('knowledge_map_node_personal_notes')
+    .select('content')
+    .eq('user_id', userId)
+    .eq('node_id', nodeId)
+    .maybeSingle();
+  return (data?.content as PersonalNoteContent | undefined) ?? null;
+}
+
+export async function savePersonalNote(userId: string, nodeId: string, content: PersonalNoteContent): Promise<void> {
+  const { error } = await supabaseAdmin
+    .from('knowledge_map_node_personal_notes')
+    .upsert({ user_id: userId, node_id: nodeId, content, updated_at: new Date().toISOString() }, { onConflict: 'user_id,node_id' });
+  if (error) throw error;
+}

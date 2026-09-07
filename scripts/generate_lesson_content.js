@@ -52,12 +52,13 @@ const LESSON_MODEL = process.env.CLAUDE_MODEL || 'claude-sonnet-5';
 // Sonnet 5 using adaptive thinking by default even with no explicit
 // `thinking` param - on that prompt it burned 12-17k tokens on invisible
 // reasoning before writing any real output, and max_tokens caps
-// thinking+output TOGETHER. This prompt is simpler/more constrained than
-// the map generator's, so it may not need anywhere near this - but a
-// batch job can't be corrected mid-flight the way a synchronous retry
-// can, and a higher cap costs nothing extra unless the model actually
-// uses it (the model stops at end_turn well before the cap regardless),
-// so there's no reason not to leave real headroom here.
+// thinking+output TOGETHER. Both requests below now explicitly disable
+// thinking (matching claudeClient.ts's own fix for this exact behavior),
+// so this headroom is no longer paying for invisible reasoning - kept
+// generous anyway since a batch job can't be corrected mid-flight the way
+// a synchronous retry can, and a higher cap costs nothing extra unless the
+// model actually uses it (it stops at end_turn well before the cap
+// regardless).
 const MAX_TOKENS = 16000;
 
 const SUBJECT = 'Economics';
@@ -139,6 +140,7 @@ async function main() {
     params: {
       model: LESSON_MODEL,
       max_tokens: MAX_TOKENS,
+      thinking: { type: 'disabled' },
       system: cachedSystem(KNOWLEDGE_MAP_ENCODING_LESSON_PROMPT),
       messages: [{
         role: 'user',
@@ -164,6 +166,7 @@ async function main() {
       params: {
         model: LESSON_MODEL,
         max_tokens: MAX_TOKENS,
+        thinking: { type: 'disabled' },
         system: cachedSystem(KNOWLEDGE_MAP_EDGE_LESSON_PROMPT),
         messages: [{
           role: 'user',

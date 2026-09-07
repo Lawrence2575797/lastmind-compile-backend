@@ -1,6 +1,6 @@
 import { supabaseAdmin } from './supabaseAdmin';
 import { callClaudeJSON, MODELS } from './claudeClient';
-import { parseModelJson } from './jsonParsing';
+import { parseModelJson, parseCorrectFeedbackJson } from './jsonParsing';
 import { KNOWLEDGE_MAP_ANSWER_CHECK_PROMPT } from '../constants/knowledgeMapAnswerCheckPrompt';
 import { AO1_REWORD_QUESTION_PROMPT, AO1_SLIP_CHECK_PROMPT } from '../constants/nodeReviewPrompts';
 
@@ -136,7 +136,7 @@ export async function gradeRewordedAo1Answer(nodeId: string, questionText: strin
     userContent: `Question: ${questionText}\nMark scheme: ${source.explanation}\nStudent's answer: ${answer}`,
     temperature: 0.1,
   });
-  return parseModelJson<{ correct: boolean; feedback: string }>(raw);
+  return parseCorrectFeedbackJson(raw);
 }
 
 // Only ever called on a WRONG AO1 answer, before any FSRS lapse is
@@ -238,5 +238,5 @@ export async function gradeIntegrationAnswer(fromNodeId: string, toNodeId: strin
     userContent: `Question: ${edge.integrationQuestion.questionText}\nMark scheme: ${edge.integrationQuestion.markScheme || ''}\nStudent's answer: ${answer}`,
     temperature: 0.1,
   });
-  return parseModelJson<{ correct: boolean; feedback: string }>(raw);
+  return parseCorrectFeedbackJson(raw);
 }

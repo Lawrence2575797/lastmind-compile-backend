@@ -6,6 +6,7 @@ import { supabaseAdmin } from './supabaseAdmin';
 import { selectAllRows, selectRowsByIdChunked } from './supabasePagination';
 import { resolveSubjectTriple } from './subjectResolution';
 import { compareSubtopics, getOrComputeSubtopicOrder } from './knowledgeMapNotesService';
+import { topologicalNodeOrder } from './nodeOrdering';
 
 // One concept the student has actually added to a folder (a single-lesson
 // page's own title, or one entry of a multi-lesson page's own lessons) —
@@ -413,8 +414,25 @@ export async function getKnowledgeMapForSubject(
     return order.map((id) => byId.get(id)).filter((r): r is NodeRow => !!r);
   });
 
+  // The subtopic/teaching order above is just a model's guess from labels
+  // alone, with no view of this subject's actual prerequisite graph - it
+  // can (and did, live: "Proof by exhaustion" above its own prerequisite
+  // "Structure of a mathematical proof") disagree with the real edges.
+  // topologicalNodeOrder corrects that: it uses orderedNodeRows purely as
+  // a tie-break preference, only deviating from it where a real
+  // prerequisite edge requires a concept to move after what it depends
+  // on. Deterministic, no extra cost.
+  const nodeRowById = new Map(orderedNodeRows.map((r) => [r.id as string, r]));
+  const tieBreakRank = new Map(orderedNodeRows.map((r, i) => [r.id as string, i]));
+  const dependencyOrderedIds = topologicalNodeOrder(
+    orderedNodeRows.map((r) => r.id as string),
+    edgeRows.map((e) => ({ from: e.from_node_id, to: e.to_node_id })),
+    tieBreakRank
+  );
+  const finalNodeRows = dependencyOrderedIds.map((id) => nodeRowById.get(id)).filter((r): r is NodeRow => !!r);
+
   return {
-    nodes: orderedNodeRows.map((r) => ({
+    nodes: finalNodeRows.map((r) => ({
       id: r.id as string,
       conceptId: r.concept_id as string,
       label: r.label as string,

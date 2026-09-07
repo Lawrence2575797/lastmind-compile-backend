@@ -19,6 +19,7 @@ import { resolveEdgeForReview, linkIntegrationConceptId } from './nodeReviewServ
 import { getSpecMicrotopics, getSubtopicThemeMap, fallbackThemeName } from './chainService';
 import { listUserFolders } from './folderSyncService';
 import { resolveSubjectTriple } from './subjectResolution';
+import { topologicalNodeOrder } from './nodeOrdering';
 import { NODE_NOTES_COMPILE_PROMPT, EDGE_NOTES_COMPILE_PROMPT, SUBTOPIC_NODE_ORDER_PROMPT } from '../constants/knowledgeMapNotesPrompts';
 
 export type NodeNoteVisual =
@@ -594,13 +595,44 @@ export async function getNotesIndexForUser(userId: string): Promise<{ subjects: 
         }),
     });
 
-    const subtopicsBuilt: NotesIndexSubtopic[] = Array.from(bySubtopic.entries()).map(([subtopic, nodes]) => {
-      const order = subtopicOrders.get(subtopic) || [];
+    const orderedSubtopicKeys = Array.from(bySubtopic.keys()).sort(compareSubtopics);
+    const baselineOrderedNodes: NotesIndexNodeRow[] = orderedSubtopicKeys.flatMap((subtopic) => {
+      const nodes = bySubtopic.get(subtopic)!;
+      const order = subtopicOrders.get(subtopic) || nodes.map((n) => n.id);
       const byId = new Map(nodes.map((n) => [n.id, n]));
-      const ordered = order.map((id) => byId.get(id)).filter((n): n is NotesIndexNodeRow => !!n);
-      return { subtopic, nodes: ordered.map(buildNode) };
+      return order.map((id) => byId.get(id)).filter((n): n is NotesIndexNodeRow => !!n);
     });
-    subtopicsBuilt.sort((a, b) => compareSubtopics(a.subtopic, b.subtopic));
+
+    // The subtopic/teaching order above is just a model's guess from
+    // labels alone, with no view of this subject's actual prerequisite
+    // graph - it can disagree with the real edges (found live: "Proof by
+    // exhaustion" listed above its own prerequisite "Structure of a
+    // mathematical proof"). topologicalNodeOrder corrects that, using
+    // baselineOrderedNodes purely as a tie-break preference and only
+    // deviating where a real prerequisite edge requires it - same
+    // correction getKnowledgeMapForSubject applies, kept consistent here
+    // so the Notes tree and the knowledge-map sidebar always agree.
+    const subjectEdges = allEdges.filter((e) => nodeById.has(e.from_node_id) && nodeById.has(e.to_node_id));
+    const tieBreakRank = new Map(baselineOrderedNodes.map((n, i) => [n.id, i]));
+    const dependencyOrderedIds = topologicalNodeOrder(
+      baselineOrderedNodes.map((n) => n.id),
+      subjectEdges.map((e) => ({ from: e.from_node_id, to: e.to_node_id })),
+      tieBreakRank
+    );
+    const finalNodeById = new Map(baselineOrderedNodes.map((n) => [n.id, n]));
+    const bySubtopicOrdered = new Map<string, NotesIndexNodeRow[]>();
+    dependencyOrderedIds.forEach((id) => {
+      const n = finalNodeById.get(id);
+      if (!n) return;
+      const list = bySubtopicOrdered.get(n.subtopic) || [];
+      list.push(n);
+      bySubtopicOrdered.set(n.subtopic, list);
+    });
+
+    const subtopicsBuilt: NotesIndexSubtopic[] = orderedSubtopicKeys.map((subtopic) => ({
+      subtopic,
+      nodes: (bySubtopicOrdered.get(subtopic) || []).map(buildNode),
+    }));
 
     const themesMap = new Map<string, NotesIndexSubtopic[]>();
     subtopicsBuilt.forEach((s) => {

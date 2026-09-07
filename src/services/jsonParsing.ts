@@ -71,6 +71,40 @@ function repairUnescapedQuotes(text: string): string {
   return out;
 }
 
+// Repairs a real, reproducible failure mode: the model writes a literal
+// newline (or other raw control character) INSIDE a JSON string value
+// instead of escaping it as \n - most often when a prompt asks for
+// multi-paragraph text (e.g. an "explanation" field), since a model
+// naturally reaches for a real line break between paragraphs. Valid JSON
+// forbids raw control characters inside a string outright, so this fails
+// even a well-formed-looking response before extractJsonObject or
+// repairUnescapedQuotes get a chance to help (found live: "Bad control
+// character in string literal in JSON" on a knowledge-map lesson
+// generation call). Walks character by character tracking string state
+// (same escape-aware approach as repairUnescapedQuotes) and escapes any
+// raw \n/\r/\t found while inside a string; already-escaped JSON passes
+// through unchanged.
+export function escapeRawControlCharsInStrings(text: string): string {
+  let out = '';
+  let inString = false;
+  let escaped = false;
+  for (const ch of text) {
+    if (inString) {
+      if (escaped) { out += ch; escaped = false; continue; }
+      if (ch === '\\') { out += ch; escaped = true; continue; }
+      if (ch === '"') { inString = false; out += ch; continue; }
+      if (ch === '\n') { out += '\\n'; continue; }
+      if (ch === '\r') { out += '\\r'; continue; }
+      if (ch === '\t') { out += '\\t'; continue; }
+      out += ch;
+      continue;
+    }
+    if (ch === '"') inString = true;
+    out += ch;
+  }
+  return out;
+}
+
 // Targeted, schema-aware parse for the `{ "correct": boolean, "feedback":
 // string }` shape (KNOWLEDGE_MAP_ANSWER_CHECK_PROMPT, VERIFY_LEARNING_PROMPT
 // and their callers in routes/knowledgeMap.ts and nodeReviewService.ts) —
@@ -123,9 +157,21 @@ export function parseModelJson<T>(raw: string): T {
     } catch {
       try {
         return JSON.parse(repairUnescapedQuotes(extracted)) as T;
-      } catch (err) {
-        console.error('LastMind: model call returned invalid JSON.', { raw });
-        throw err;
+      } catch {
+        try {
+          // Raw control characters (most often a literal newline between
+          // paragraphs) fail JSON.parse outright, before either repair
+          // above gets a chance - tried last since it's the rarer case and
+          // the two repairs are independent of each other.
+          return JSON.parse(escapeRawControlCharsInStrings(extracted)) as T;
+        } catch {
+          try {
+            return JSON.parse(escapeRawControlCharsInStrings(repairUnescapedQuotes(extracted))) as T;
+          } catch (err) {
+            console.error('LastMind: model call returned invalid JSON.', { raw });
+            throw err;
+          }
+        }
       }
     }
   }

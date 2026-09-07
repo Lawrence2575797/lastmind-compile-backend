@@ -8,7 +8,7 @@
 // routes/knowledgeMap.ts's GET node/edge lesson routes, the only callers.
 import { supabaseAdmin } from './supabaseAdmin';
 import { callClaudeJSON } from './claudeClient';
-import { parseModelJson, stripCodeFences } from './jsonParsing';
+import { parseModelJson, stripCodeFences, escapeRawControlCharsInStrings } from './jsonParsing';
 import { KNOWLEDGE_MAP_ENCODING_LESSON_PROMPT, KNOWLEDGE_MAP_EDGE_LESSON_PROMPT } from '../constants/lessonGenerationPrompts';
 
 // Same model choice as the offline pipeline (generate_lesson_content.js's
@@ -33,7 +33,12 @@ function parseWithClosingBraceRepair<T>(raw: string): T {
   try {
     return parseModelJson<T>(raw);
   } catch (firstErr) {
-    const text = stripCodeFences(raw);
+    // parseModelJson already tries escapeRawControlCharsInStrings on its
+    // own, but only against an as-is (correctly-balanced) string - applied
+    // again here, against the bracket-repaired text below, to also cover
+    // the compound case (both a raw control character AND a missing
+    // closing brace in the same response).
+    const text = escapeRawControlCharsInStrings(stripCodeFences(raw));
     const stack: string[] = [];
     let inString = false;
     let escaped = false;

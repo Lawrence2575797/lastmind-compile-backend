@@ -92,7 +92,44 @@ function cachedSystem(promptText) {
   return [{ type: 'text', text: promptText, cache_control: { type: 'ephemeral' } }];
 }
 
-const SUBJECT = 'Economics';
+// Hard spend ceiling for THIS run, checked before every API call and
+// after every response - not just an estimate printed at the end. Set
+// deliberately close to (not far above) the quoted estimate for this
+// specific subject, since the whole point of asking for a cap is that it
+// actually holds, not that it's generous. Standard (non-intro) per-token
+// rates are used for the running total on purpose: if intro pricing
+// applies, real spend comes in under what this tracker reports, which is
+// the safe direction to be wrong in for a cap - never the other way.
+const SPEND_CAP_USD = 2.5;
+const PRICING_PER_MTOK = {
+  'claude-sonnet-5': { in: 3, out: 15 },
+  'claude-opus-5': { in: 5, out: 25 },
+};
+let totalSpendUsd = 0;
+function recordUsage(model, usage) {
+  const p = PRICING_PER_MTOK[model];
+  if (!p || !usage) return;
+  const inTok = usage.input_tokens || 0;
+  const cacheWriteTok = usage.cache_creation_input_tokens || 0;
+  const cacheReadTok = usage.cache_read_input_tokens || 0;
+  const outTok = usage.output_tokens || 0;
+  const cost = (inTok * p.in + cacheWriteTok * p.in * 1.25 + cacheReadTok * p.in * 0.1 + outTok * p.out) / 1e6;
+  totalSpendUsd += cost;
+  console.error(`  [spend] +$${cost.toFixed(4)} (${model}) -> running total $${totalSpendUsd.toFixed(4)} / $${SPEND_CAP_USD} cap`);
+  if (totalSpendUsd >= SPEND_CAP_USD) {
+    throw new Error(`SPEND CAP REACHED: running total $${totalSpendUsd.toFixed(4)} has hit the $${SPEND_CAP_USD} cap for this run. Stopping before starting further calls - re-run with a higher SPEND_CAP_USD if this was expected and you want to continue from the checkpoint.`);
+  }
+}
+// Checked at the START of every call site too (not just after), so a
+// chunk that's already at/over cap from a sibling call refuses to even
+// start its own next API call rather than only noticing after paying for it.
+function assertUnderCap() {
+  if (totalSpendUsd >= SPEND_CAP_USD) {
+    throw new Error(`SPEND CAP REACHED: running total $${totalSpendUsd.toFixed(4)} already at/over the $${SPEND_CAP_USD} cap - refusing to start another call.`);
+  }
+}
+
+const SUBJECT = 'Mathematics';
 const QUALIFICATION = 'A-Level';
 const EXAM_BOARD = 'Edexcel';
 
@@ -102,1229 +139,844 @@ const EXAM_BOARD = 'Edexcel';
 // possibly-stale recall of the spec.
 const SUBTOPICS = [
   {
-    subtopic: "1.1 Nature of economics",
-    specContent: `1.1 Nature of economics
+    subtopic: "1 Proof",
+    specContent: `1 Proof
 
-Subject content        What students need to learn:
-1.1.1
-Economics as a         a) Thinking like an economist: the process of developing
-social science              models in economics, including the need to make
-                            assumptions
-1.1.2
-Positive and           b) The use of the ceteris paribus assumption in building
-normative economic          models
-statements
-1.1.3                  c) The inability in economics to make scientific experiments
-The economic
-problem                a) Distinction between positive and normative economic
-                            statements
-1.1.4
-Production             b) The role of value judgements in influencing economic
-possibility frontiers       decision making and policy
+Content        What students need to learn:
+1.1 Understand and use the structure of mathematical proof, proceeding from given
+assumptions through a series of logical steps to a conclusion; use methods of proof,
+including:
+- Proof by deduction
+- Proof by exhaustion
+- Disproof by counter example
+- Proof by contradiction (including proof of the irrationality of sqrt(2) and the infinity
+  of primes, and application to unfamiliar proofs).
 
-1.1.5                  a) The problem of scarcity - where there are unlimited
-Specialisation and          wants and finite resources
-the division of
-labour                 b) The distinction between renewable and non-renewable
-                            resources
-1.1.6
-Free market            c) The importance of opportunity costs to economic agents
-economies, mixed            (consumers, producers and government)
-economy and
-command economy        a) The use of production possibility frontiers to depict:
-                            o the maximum productive potential of an economy
-                            o opportunity cost (through marginal analysis)
-                            o economic growth or decline
-                            o efficient or inefficient allocation of resources
-                            o possible and unobtainable production
-
-                       b) The distinction between movements along and shifts in
-                            production possibility curves, considering the possible
-                            causes for such changes
-
-                       c) The distinction between capital and consumer goods
-
-                       a) Specialisation and the division of labour: reference to
-                            Adam Smith
-
-                       b) The advantages and disadvantages of specialisation and
-                            the division of labour in organising production
-
-                       c) The advantages and disadvantages of specialising in the
-                            production of goods and services to trade
-
-                       d) The functions of money (as a medium of exchange, a
-                            measure of value, a store of value, a method of deferred
-                            payment)
-
-                       a) The distinction between free market, mixed and
-                            command economies: reference to Adam Smith,
-                            Friedrich Hayek and Karl Marx
-
-                       b) The advantages and disadvantages of a free market
-                            economy and a command economy
-
-                       c) The role of the state in a mixed economy`,
+Guidance - Examples of proofs:
+- Proof by deduction: e.g. using completion of the square, prove that n^2 - 6n + 10 is
+  positive for all values of n or, for example, differentiation from first principles for
+  small positive integer powers of x, or proving results for arithmetic and geometric
+  series. This is the most commonly used method of proof throughout this specification.
+- Proof by exhaustion: Given that p is a prime number such that 3 < p < 25, prove by
+  exhaustion that (p - 1)(p + 1) is a multiple of 12.
+- Disproof by counter example: e.g. show that the statement "n^2 - n + 1 is a prime
+  number for all values of n" is untrue.
+- Proof by contradiction, including proof of the irrationality of sqrt(2) and the infinity
+  of primes, and application to unfamiliar proofs.`
   },
   {
-    subtopic: "1.2 How markets work",
-    specContent: `1.2 How markets work
+    subtopic: "2 Algebra and functions",
+    specContent: `2 Algebra and functions
 
-Subject content        What students need to learn:
-1.2.1
-Rational decision      a) The underlying assumptions of rational economic
-making                      decision making:
-1.2.2                       o consumers aim to maximise utility
-Demand                      o firms aim to maximise profits
+Content        What students need to learn:
+2.1 Understand and use the laws of indices for all rational exponents.
+Guidance: a^m * a^n = a^(m+n), a^m / a^n = a^(m-n), (a^m)^n = a^(mn). The equivalence of
+a^(m/n) and (n-th root of a)^m should be known.
 
-1.2.3                  a) The distinction between movements along a demand
-Price, income and           curve and shifts of a demand curve
-cross elasticities of
-demand                 b) The factors that may cause a shift in the demand curve
-                            (the conditions of demand)
-1.2.4
-Supply                 c) The concept of diminishing marginal utility and how this
-                            influences the shape of the demand curve
+2.2 Use and manipulate surds, including rationalising the denominator.
+Guidance: Students should be able to simplify algebraic surds using the results
+(sqrt(x))^2 = x, sqrt(x)*sqrt(y) = sqrt(xy), and (sqrt(x)+sqrt(y))(sqrt(x)-sqrt(y)) = x - y.
 
-                       a) Understanding of price, income and cross elasticities of
-                            demand
+2.3 Work with quadratic functions and their graphs. The notation f(x) may be used.
+- The discriminant of a quadratic function, including the conditions for real and
+  repeated roots. Need to know and use b^2 - 4ac > 0, b^2 - 4ac = 0 and b^2 - 4ac < 0.
+- Completing the square: ax^2 + bx + c = a(x + b/(2a))^2 + (c - b^2/(4a)).
+- Solution of quadratic equations by factorisation, use of the formula, use of a
+  calculator or completing the square, including solving quadratic equations in a
+  function of the unknown. Guidance: these functions could include powers of x,
+  trigonometric functions of x, exponential and logarithmic functions of x.
 
-                       b) Use formulae to calculate price, income and cross
-                            elasticities of demand
+2.4 Solve simultaneous equations in two variables by elimination and by substitution,
+including one linear and one quadratic equation.
+Guidance: This may involve powers of 2 in one unknown or in both unknowns,
+e.g. solve y = 2x + 3, y = x^2 - 4x + 8 or 2x - 3y = 6, x^2 - y^2 + 3x = 50.
 
-                       c) Interpret numerical values of
-                            o price elasticity of demand: unitary elastic, perfectly
-                                 and relatively elastic, and perfectly and relatively
-                                 inelastic
-                            o income elasticity of demand: inferior, normal and
-                                 luxury goods; relatively elastic and relatively inelastic
-                            o cross elasticity of demand: substitutes,
-                                 complementary and unrelated goods
+2.5 Solve linear and quadratic inequalities in a single variable and interpret such
+inequalities graphically, e.g. solving ax + b > cx + d, px^2 + qx + r >= 0,
+px^2 + qx + r < ax + b and interpreting the third inequality as the range of x for which
+the curve y = px^2 + qx + r is below the line with equation y = ax + b, including
+inequalities with brackets and fractions.
+Guidance: These would be reducible to linear or quadratic inequalities, e.g. a/x < b
+becomes ax < bx^2. Express solutions through correct use of 'and' and 'or', or through
+set notation. So, e.g. x < a or x > b is equivalent to {x : x < a} union {x : x > b},
+and {x : c < x} intersect {x : x < d} is equivalent to x > c and x < d. Represent linear
+and quadratic inequalities such as y > x + 1 and y > ax^2 + bx + c graphically. Shading
+and use of dotted and solid line convention is required.
 
-                       d) The factors influencing elasticities of demand
-                       e) The significance of elasticities of demand to firms and
+2.6 Manipulate polynomials algebraically, including expanding brackets and collecting
+like terms, factorisation and simple algebraic division; use of the factor theorem.
+Simplify rational expressions, including by factorising and cancelling, and algebraic
+division (by linear expressions only).
+Guidance: Only division by (ax + b) or (ax - b) will be required. Students should know
+that if f(x) = 0 when x = b/a, then (ax - b) is a factor of f(x). Students may be
+required to factorise cubic expressions such as x^3 + 3x^2 - 4 and 6x^3 + 11x^2 - x - 6.
+Denominators of rational expressions will be linear or quadratic, e.g. 1/(ax + b),
+(ax + b)/(px^2 + qx + r), (x^3 + a^3)/(x^2 - a^2).
 
-                            government in terms of:
-                            o the imposition of indirect taxes and subsidies
-                            o changes in real income
-                            o changes in the prices of substitute and
+2.7 Understand and use graphs of functions; sketch curves defined by simple equations
+including polynomials.
+Guidance: Graph to include simple cubic and quartic functions, e.g. sketch the graph
+with equation y = x^2(2x - 1)^2.
+- The modulus of a linear function. Students should be able to sketch the graph of
+  y = |ax + b| and use their graph. For example, sketch the graph with equation
+  y = |2x - 1| and use the graph to solve the equation |2x - 1| = x or the inequality
+  |2x - 1| > x.
+- y = a/x and y = a/x^2 (including their vertical and horizontal asymptotes). The
+  asymptotes will be parallel to the axes, e.g. the asymptotes of the curve with
+  equation y = a/(x + b) + c are the lines with equations y = c and x = -b.
+- Interpret algebraic solution of equations graphically; use intersection points of
+  graphs to solve equations.
+- Understand and use proportional relationships and their graphs. Express relationship
+  between two variables using the proportion symbol (~) or using an equation involving
+  a constant, e.g. the circumference of a semicircle is directly proportional to its
+  diameter so C ~ d or C = kd, and the graph of C against d is a straight line through
+  the origin with gradient k.
 
-                                 complementary goods
-                       f) The relationship between price elasticity of demand and
+2.8 Understand and use composite functions; inverse functions and their graphs.
+Guidance: The concept of a function as a one-one or many-one mapping from R (or a
+subset of R) to R. The notation f: x -> ... and f(x) will be used. Domain and range of
+functions. Students should know that fg will mean 'do g first, then f' and that if
+f^-1 exists, then f^-1 f(x) = f f^-1(x) = x. They should also know that the graph of
+y = f^-1(x) is the image of the graph of y = f(x) after reflection in the line y = x.
 
-                            total revenue (including calculation)
+2.9 Understand the effect of simple transformations on the graph of y = f(x), including
+sketching associated graphs: y = a f(x), y = f(x) + a, y = f(x + a), y = f(ax) and
+combinations of these transformations.
+Guidance: Students should be able to find the graphs of y = f(x) and y = f(-x), given
+the graph of y = f(x). Students should be able to apply a combination of these
+transformations to any of the functions in the A Level specification (quadratics,
+cubics, quartics, reciprocal, a/x^2, sqrt(x), sin x, cos x, tan x, e^x and a^x) and
+sketch the resulting graph. Given the graph of y = f(x), students should be able to
+sketch the graph of, e.g. y = 2f(3x), or y = f(-x) + 1, and should be able to sketch
+(for example) y = 3 + sin 2x, y = -cos(x/4 + pi).
 
-                       a) The distinction between movements along a supply
-                            curve and shifts of a supply curve
+2.10 Decompose rational functions into partial fractions (denominators not more
+complicated than squared linear terms and with no more than 3 terms, numerators
+constant or linear).
+Guidance: Partial fractions to include denominators such as (ax + b)(cx + d)(ex + f)
+and (ax + b)(cx + d)^2. Applications to integration, differentiation and series
+expansions.
 
-                       b) The factors that may cause a shift in the supply curve
-                            (the conditions of supply)
-
-Subject content       What students need to learn:
-1.2.5
-Elasticity of supply  a) Understanding of price elasticity of supply
-                      b) Use formula to calculate price elasticity of supply
-1.2.6                 c) Interpret numerical values of price elasticity of supply:
-Price determination
-                           perfectly and relatively elastic, and perfectly and
-1.2.7                      relatively inelastic
-Price mechanism       d) Factors that influence price elasticity of supply
-                      e) The distinction between short run and long run in
-1.2.8                      economics and its significance for elasticity of supply
-Consumer and
-producer surplus      a) Equilibrium price and quantity and how they are
-1.2.9                      determined
-Indirect taxes and
-subsidies             b) The use of supply and demand diagrams to depict
-                           excess supply and excess demand
-1.2.10
-Alternative views of  c) The operation of market forces to eliminate excess
-consumer behaviour         demand and excess supply
-
-                      d) The use of supply and demand diagrams to show how
-                           shifts in demand and supply curves cause the
-                           equilibrium price and quantity to change in real-world
-                           situations
-
-                      a) Functions of the price mechanism to allocate resources:
-                           o rationing
-                           o incentive
-                           o signalling
-
-                      b) The price mechanism in the context of different types of
-                           markets, including local, national and global markets
-
-                      a) The distinction between consumer and producer surplus
-                      b) The use of supply and demand diagrams to illustrate
-
-                           consumer and producer surplus
-                      c) How changes in supply and demand might affect
-
-                           consumer and producer surplus
-
-                      a) Supply and demand analysis, elasticities, and:
-                           o the impact of indirect taxes on consumers, producers
-                                and government
-                           o the incidence of indirect taxes on consumers and
-                                producers
-                           o the impact of subsidies on consumers, producers and
-                                government
-                           o the area that represents the producer subsidy and
-                                consumer subsidy
-
-                      a) The reasons why consumers may not behave rationally:
-                           o consideration of the influence of other people's
-                                behaviour
-                           o the importance of habitual behaviour
-                           o consumer weakness at computation`,
+2.11 Use of functions in modelling, including consideration of limitations and
+refinements of the models.
+Guidance: For example, use of trigonometric functions for modelling tides, hours of
+sunlight, etc. Use of exponential functions for growth and decay (see Paper 1,
+Section 6.7). Use of reciprocal function for inverse proportion (e.g. pressure and
+volume).`
   },
   {
-    subtopic: "1.3 Market failure",
-    specContent: `1.3 Market failure
+    subtopic: "3 Coordinate geometry in the (x, y) plane",
+    specContent: `3 Coordinate geometry in the (x, y) plane
 
-Subject content     What students need to learn:
-1.3.1
-Types of market     a) Understanding of market failure
-failure             b) Types of market failure
-1.3.2
-Externalities            o externalities
-                         o under-provision of public goods
-1.3.3                    o information gaps
-Public goods
-1.3.4               a) Distinction between private costs, external costs and
-Information gaps         social costs
+Content        What students need to learn:
+3.1 Understand and use the equation of a straight line, including the forms
+y - y1 = m(x - x1) and ax + by + c = 0.
+Guidance: To include the equation of a line through two given points, and the equation
+of a line parallel (or perpendicular) to a given line through a given point.
+- Gradient conditions for two straight lines to be parallel or perpendicular:
+  m1 = m2 for parallel lines and m1 = -1/m2 for perpendicular lines.
+- Be able to use straight line models in a variety of contexts. For example, the line
+  for converting degrees Celsius to degrees Fahrenheit, distance against time for
+  constant speed, etc.
 
-                    b) Distinction between private benefits, external benefits
-                         and social benefits
+3.2 Understand and use the coordinate geometry of the circle including using the
+equation of a circle in the form (x - a)^2 + (y - b)^2 = r^2.
+Guidance: Students should be able to find the radius and the coordinates of the centre
+of the circle given the equation of the circle, and vice versa. Students should also be
+familiar with the equation x^2 + y^2 + 2fx + 2gy + c = 0.
+- Completing the square to find the centre and radius of a circle; use of the following
+  properties:
+  - the angle in a semicircle is a right angle
+  - the perpendicular from the centre to a chord bisects the chord
+  - the radius of a circle at a given point on its circumference is perpendicular to
+    the tangent to the circle at that point.
+Guidance: Students should be able to find the equation of a circumcircle of a triangle
+with given vertices using these properties. Students should be able to find the
+equation of a tangent at a specified point, using the perpendicular property of tangent
+and radius.
 
-                    c) Use of a diagram to illustrate:
-                         o the external costs of production using marginal
-                              analysis
-                         o the distinction between market equilibrium and social
-                              optimum position
-                         o identification of welfare loss area
+3.3 Understand and use the parametric equations of curves and conversion between
+Cartesian and parametric forms.
+Guidance: For example: x = 3cos t, y = 3sin t describes a circle centre O radius 3;
+x = 2 + 5cos t, y = -4 + 5sin t describes a circle centre (2, -4) with radius 5;
+x = 5t, y = 5/t describes the curve xy = 25 (or y = 25/x); x = 5t, y = 3t^2 describes
+the quadratic curve 25y = 3x^2 and other familiar curves covered in the specification.
+Students should pay particular attention to the domain of the parameter t, as a
+specific section of a curve may be described.
 
-                    d) Use of a diagram to illustrate:
-                         o the external benefits of consumption using marginal
-                              analysis
-                         o the distinction between market equilibrium and social
-                              optimum position
-                         o identification of welfare gain area
-
-                    e) The impact on economic agents of externalities and
-                         government intervention in various markets
-
-                    a) Distinction between public and private goods using the
-                         concepts of non-rivalry and non-excludability
-
-                    b) Why public goods may not be provided by the private
-                         sector: the free rider problem
-
-                    a) The distinction between symmetric and asymmetric
-                         information
-
-                    b) How imperfect market information may lead to a
-                         misallocation of resources`,
+3.4 Use parametric equations in modelling in a variety of contexts.
+Guidance: A shape may be modelled using parametric equations or students may be asked
+to find parametric equations for a motion. For example, an object moves with constant
+velocity from (1, 8) at t = 0 to (6, 20) at t = 5. This may also be tested in Paper 3,
+section 7 (kinematics).`
   },
   {
-    subtopic: "1.4 Government intervention",
-    specContent: `1.4 Government intervention
+    subtopic: "4 Sequences and series",
+    specContent: `4 Sequences and series
 
-Subject content     What students need to learn:
-1.4.1
-Government          a) Purpose of intervention with reference to market failure
-intervention in          and using diagrams in various contexts:
-markets                  o indirect taxation (ad valorem and specific)
-                         o subsidies
-1.4.2                    o maximum and minimum prices
-Government failure
-                    b) Other methods of government intervention:
-                         o trade pollution permits
-                         o state provision of public goods
-                         o provision of information
-                         o regulation
+Content        What students need to learn:
+4.1 Understand and use the binomial expansion of (a + bx)^n for positive integer n; the
+notations n! and nCr link to binomial probabilities. Use of Pascal's triangle. Relation
+between binomial coefficients.
+Guidance: Also be aware of alternative notations such as C(n, r) and nCr. Considered
+further in Paper 3 Section 4.1.
+- Extend to any rational n, including its use for approximation; be aware that the
+  expansion is valid for |bx/a| < 1 (proof not required).
+Guidance: May be used with the expansion of rational functions by decomposition into
+partial fractions. May be asked to comment on the range of validity.
 
-                    a) Understanding of government failure as intervention that
-                         results in a net welfare loss
+4.2 Work with sequences including those given by a formula for the nth term and those
+generated by a simple relation of the form x_(n+1) = f(x_n); increasing sequences;
+decreasing sequences; periodic sequences.
+Guidance: For example u_n = 1/(3n+1) describes a decreasing sequence as u_(n+1) < u_n
+for all integer n; u_n = 2^n is an increasing sequence as u_(n+1) > u_n for all integer
+n; u_(n+1) = 1/u_n for n > 1 and u_1 = 3 describes a periodic sequence of order 2.
 
-                    b) Causes of government failure:
-                         o distortion of price signals
-                         o unintended consequences
-                         o excessive administrative costs
-                         o information gaps
+4.3 Understand and use sigma notation for sums of series.
+Guidance: Knowledge that sum from i=1 to n of 1 = n is expected.
 
-                    c) Government failure in various markets
+4.4 Understand and work with arithmetic sequences and series, including the formulae
+for nth term and the sum to n terms.
+Guidance: The proof of the sum formula for an arithmetic sequence should be known,
+including the formula for the sum of the first n natural numbers.
 
-Theme 2: The UK economy - performance and
-policies
+4.5 Understand and work with geometric sequences and series, including the formulae
+for the nth term and the sum of a finite geometric series; the sum to infinity of a
+convergent geometric series, including the use of |r| < 1; modulus notation.
+Guidance: The proof of the sum formula should be known. Given the sum of a series,
+students should be able to use logs to find the value of n. The sum to infinity may be
+expressed as S-infinity.
 
-Overview  This theme is one of two in this qualification that focuses on
-Content   macroeconomics. This theme introduces the key measures
-          of economic performance and the main instruments of
-          economic policy primarily in a UK context.
-
-          Students will need to build upon the knowledge, skills and
-          understanding developed from Theme 2 in Theme 4,
-          making connections across these two macroeconomic
-          themes for Paper 2, and across Themes 1, 2, 3 and 4 in
-          Paper 3. Teaching approaches to content must reflect this.
-
-          Students will need to apply their knowledge and
-          understanding to both familiar and unfamiliar contexts in
-          the assessments and demonstrate an awareness of current
-          economic events and policies.
-
-          Students will be introduced to the aggregate
-          demand/aggregate supply model so that they can use it to
-          analyse changes in real output and the price level. They
-          will: examine the use of demand-side policies, supply-side
-          policies and direct controls as means of improving an
-          economy's performance; recognise the underlying
-          assumptions; predict the likely impact and effectiveness of
-          such policies; and consider these in an historical context.
-
-          Students should consider the different approaches that may
-          be used by policymakers to address macroeconomic issues
-          and be able to identify the criteria for success.
-
-          Students should have knowledge of the UK economy in the
-          last 10 years.
-
-          This theme will provide a coherent coverage of
-          macroeconomic content with students drawing on local and
-          national contexts, as appropriate.
-
-          Students are encouraged to use an enquiring, critical and
-          thoughtful approach to the study of economics and to
-          develop an ability to think as an economist.
-
-          To develop their skills, knowledge and understanding in
-          economics, students need to have acquired competence in
-          quantitative skills that are relevant to and applied in the
-          context of this theme (see Appendix 3: Quantitative skills).`,
+4.6 Use sequences and series in modelling.
+Guidance: Examples could include amounts paid into saving schemes, increasing by the
+same amount (arithmetic) or by the same percentage (geometric) or could include other
+series defined by a formula or a relation.`
   },
   {
-    subtopic: "2.1 Measures of economic performance",
-    specContent: `2.1 Measures of economic performance
+    subtopic: "5 Trigonometry",
+    specContent: `5 Trigonometry
 
-Subject content  What students need to learn:
-2.1.1
-Economic growth  a) Rates of change of real Gross Domestic Product (GDP) as
-                      a measure of economic growth
-2.1.2
-Inflation        b) Distinction between:
-                      o real and nominal
-                      o total and per capita
-                      o value and volume
+Content        What students need to learn:
+5.1 Understand and use the definitions of sine, cosine and tangent for all arguments;
+the sine and cosine rules; the area of a triangle in the form (1/2)ab sin C.
+Guidance: Use of x and y coordinates of points on the unit circle to give cosine and
+sine respectively, including the ambiguous case of the sine rule.
+- Work with radian measure, including use for arc length and area of sector.
+Guidance: Use of the formulae s = r*theta and A = (1/2) r^2 * theta for arc lengths and
+areas of sectors of a circle.
 
-                 c) Other national income measures:
-                      o Gross National Income (GNI)
+5.2 Understand and use the standard small angle approximations of sine, cosine and
+tangent: sin(theta) ~ theta, cos(theta) ~ 1 - theta^2/2, tan(theta) ~ theta, where theta
+is in radians.
+Guidance: Students should be able to approximate, e.g. (cos 3x - 1) / (x sin 4x) when x
+is small, to -9/8.
 
-                 d) Comparison of rates of growth between countries and
-                      over time
+5.3 Understand and use the sine, cosine and tangent functions; their graphs, symmetries
+and periodicity.
+Guidance: Knowledge of graphs of curves with equations such as y = sin x,
+y = cos(x + 30 degrees), y = tan 2x is expected. Know and use exact values of sin and
+cos for 0, pi/6, pi/4, pi/3, pi/2, pi and multiples thereof, and exact values of tan for
+0, pi/6, pi/4, pi/3 and multiples thereof.
 
-                 e) Understanding of Purchasing Power Parities (PPPs) and
-                      the use of PPP-adjusted figures in international
-                      comparisons
+5.4 Understand and use the definitions of secant, cosecant and cotangent and of
+arcsin, arccos and arctan; their relationships to sine, cosine and tangent;
+understanding of their graphs; their ranges and domains.
+Guidance: Angles measured in both degrees and radians.
 
-                 f) The limitations of using GDP to compare living standards
-                      between countries and over time
+5.5 Understand and use tan(theta) = sin(theta)/cos(theta). Understand and use
+sin^2(theta) + cos^2(theta) = 1, sec^2(theta) = 1 + tan^2(theta) and
+cosec^2(theta) = 1 + cot^2(theta).
+Guidance: These identities may be used to solve trigonometric equations and angles may
+be in degrees or radians. They may also be used to prove further identities.
 
-                 g) National happiness:
-                      o UK national wellbeing
-                      o The relationship between real incomes and subjective
-                           happiness
+5.6 Understand and use double angle formulae; use of formulae for sin(A +/- B),
+cos(A +/- B), and tan(A +/- B); understand geometrical proofs of these formulae.
+Guidance: To include application to half angles. Knowledge of the tan(theta/2)
+formulae will not be required.
+- Understand and use expressions for a*cos(theta) + b*sin(theta) in the equivalent
+  forms of r*cos(theta +/- alpha) or r*sin(theta +/- alpha).
+Guidance: Students should be able to solve equations such as
+a*cos(theta) + b*sin(theta) = c in a given interval.
 
-                 a) Understanding of:
-                      o inflation
-                      o deflation
-                      o disinflation
+5.7 Solve simple trigonometric equations in a given interval, including quadratic
+equations in sin, cos and tan and equations involving multiples of the unknown angle.
+Guidance: Students should be able to solve equations such as sin(x + 70 degrees) = 0.5
+for 0 < x < 360 degrees, 3 + 5cos(2x) = 1 for -180 degrees < x < 180 degrees,
+6cos^2(x) + sin(x) - 5 = 0 for 0 <= x < 360 degrees. These may be in degrees or radians
+and this will be specified in the question.
 
-                 b) The process of calculating the rate of inflation in the UK
-                      using the Consumer Prices Index (CPI)
+5.8 Construct proofs involving trigonometric functions and identities.
+Guidance: Students need to prove identities such as
+cos(x)cos(2x) + sin(x)sin(2x) = cos(x).
 
-                 c) The limitations of CPI in measuring the rate of inflation
-                 d) The Retail Prices Index (RPI) as an alternative measure
-
-                      of the rate of inflation
-                 e) Causes of inflation:
-
-                      o demand pull
-                      o cost push
-                      o growth of the money supply
-                 f) The effects of inflation on consumers, firms, the
-                      government and workers
-
-Subject content  What students need to learn:
-2.1.3
-Employment and   a) Measures of unemployment:
-unemployment          o the claimant count
-                      o the International Labour Organisation (ILO) and the
-2.1.4                      UK Labour Force Survey
-Balance of
-payments         b) The distinction between unemployment and
-                      under-employment
-
-                 c) The significance of changes in the rates of:
-                      o employment
-                      o unemployment
-                      o inactivity
-
-                 d) The causes of unemployment:
-                      o structural unemployment
-                      o frictional unemployment
-                      o seasonal unemployment
-                      o demand deficiency and cyclical unemployment
-                      o real wage inflexibility
-
-                 e) The significance of migration and skills for employment
-                      and unemployment
-
-                 f) The effects of unemployment on consumers, firms,
-                      workers, the government and society
-
-                 a) Components of the balance of payments, with particular
-                      reference to the current account, and the balance of
-                      trade in goods and services
-
-                 b) Current account deficits and surpluses
-                 c) The relationship between current account imbalances
-
-                      and other macroeconomic objectives
-                 d) The interconnectedness of economies through
-
-                      international trade`,
+5.9 Use trigonometric functions to solve problems in context, including problems
+involving vectors, kinematics and forces.
+Guidance: Problems could involve (for example) wave motion, the height of a point on a
+vertical circular wheel, or the hours of sunlight throughout the year. Angles may be
+measured in degrees or in radians.`
   },
   {
-    subtopic: "2.2 Aggregate demand (AD)",
-    specContent: `2.2 Aggregate demand (AD)
+    subtopic: "6 Exponentials and logarithms",
+    specContent: `6 Exponentials and logarithms
 
-Subject content      What students need to learn:
-2.2.1
-The characteristics  a) Components of AD: C+I+G+(X-M)
-of AD                b) The relative importance of the components of AD
-                     c) The AD curve
-2.2.2                d) The distinction between a movement along, and a shift
-Consumption (C)
-                          of, the AD curve
-2.2.3
-Investment (I)       a) Disposable income and its influence on consumer
-                          spending
-2.2.4
-Government           b) An understanding of the relationship between savings
-expenditure (G)           and consumption
-2.2.5
-Net trade (X-M)      c) Other influences on consumer spending:
-                          o interest rates
-                          o consumer confidence
-                          o wealth effects
+Content        What students need to learn:
+6.1 Know and use the function a^x and its graph, where a is positive.
+Guidance: Understand the difference in shape between a < 1 and a > 1.
+- Know and use the function e^x and its graph.
+Guidance: To include the graph of y = e^(ax+b) + c.
 
-                     a) Distinction between gross and net investment
-                     b) Influences on investment:
+6.2 Know that the gradient of e^(kx) is equal to k*e^(kx) and hence understand why the
+exponential model is suitable in many applications.
+Guidance: Realise that when the rate of change is proportional to the y value, an
+exponential model should be used.
 
-                          o the rate of economic growth
-                          o business expectations and confidence
-                          o Keynes and \`animal spirits'
-                          o demand for exports
-                          o interest rates
-                          o access to credit
-                          o the influence of government and regulations
+6.3 Know and use the definition of log_a(x) as the inverse of a^x, where a is positive
+and x >= 0.
+- Know and use the function ln(x) and its graph (a not equal to 1).
+- Know and use ln(x) as the inverse function of e^x.
+Guidance: Solution of equations of the form e^(ax+b) = p and ln(ax + b) = q is expected.
 
-                     a) The main influences on government expenditure:
-                          o the trade cycle
-                          o fiscal policy
+6.4 Understand and use the laws of logarithms:
+log_a(x) + log_a(y) = log_a(xy)
+log_a(x) - log_a(y) = log_a(x/y)
+k*log_a(x) = log_a(x^k) (including, for example, k = -1 and k = -1/2)
+Guidance: Includes log_a(a) = 1.
 
-                     a) The main influences on the (net) trade balance:
-                          o real income
-                          o exchange rates
-                          o state of the world economy
-                          o degree of protectionism
-                          o non-price factors`,
+6.5 Solve equations of the form a^x = b.
+Guidance: Students may use the change of base formula. Questions may be of the form,
+e.g. 2^(3x-1) = 3.
+
+6.6 Use logarithmic graphs to estimate parameters in relationships of the form
+y = a*x^n and y = k*b^x, given data for x and y.
+Guidance: Plot log(y) against log(x) and obtain a straight line where the intercept is
+log(a) and the gradient is n. Plot log(y) against x and obtain a straight line where
+the intercept is log(k) and the gradient is log(b).
+
+6.7 Understand and use exponential growth and decay; use in modelling (examples may
+include the use of e in continuous compound interest, radioactive decay, drug
+concentration decay, exponential growth as a model for population growth);
+consideration of limitations and refinements of exponential models.
+Guidance: Students may be asked to find the constants used in a model. They need to be
+familiar with terms such as initial, meaning when t = 0. They may need to explore the
+behaviour for large values of t or to consider whether the range of values predicted is
+appropriate. Consideration of an improved model may be required.`
   },
   {
-    subtopic: "2.3 Aggregate supply (AS)",
-    specContent: `2.3 Aggregate supply (AS)
+    subtopic: "7 Differentiation",
+    specContent: `7 Differentiation
 
-Subject content      What students need to learn:
-2.3.1
-The characteristics  a) The AS curve
-of AS                b) The distinction between movement along, and a shift of,
+Content        What students need to learn:
+7.1 Understand and use the derivative of f(x) as the gradient of the tangent to the
+graph of y = f(x) at a general point (x, y); the gradient of the tangent as a limit;
+interpretation as a rate of change.
+Guidance: Know that dy/dx is the rate of change of y with respect to x. The notation
+f'(x) may be used for the first derivative and f''(x) may be used for the second
+derivative.
+- Sketching the gradient function for a given curve; second derivatives.
+Guidance: Given for example the graph of y = f(x), sketch the graph of y = f'(x) using
+given axes and scale. This could relate speed and acceleration for example.
+- Differentiation from first principles for small positive integer powers of x and for
+  sin x and cos x.
+Guidance: For example, students should be able to use, for n = 2 and n = 3, the
+gradient expression lim(h->0) [((x+h)^n - x^n)/h]. Students may use delta-x or h.
+- Understand and use the second derivative as the rate of change of gradient;
+  connection to convex and concave sections of curves and points of inflection.
+Guidance: Use the condition f''(x) > 0 implies a minimum and f''(x) < 0 implies a
+maximum for points where f'(x) = 0. Know that at an inflection point f''(x) changes
+sign. Consider cases where f'(x) = 0 and f''(x) = 0 where the point may be a minimum, a
+maximum or a point of inflection (e.g. y = x^n, n > 2).
 
-2.3.2                     the AS curve
-Short-run AS         c) The relationship between short-run AS and long-run AS
+7.2 Differentiate x^n, for rational values of n, and related constant multiples, sums
+and differences.
+Guidance: For example, the ability to differentiate expressions such as
+(2x + 5)(x - 1) and (3x^2 + 4x - 5)/(4*sqrt(x)), x > 0, is expected.
+- Differentiate e^(kx) and a^(kx), sin(kx), cos(kx), tan(kx) and related sums,
+  differences and constant multiples.
+- Understand and use the derivative of ln(x).
+Guidance: Knowledge and use of the result d/dx(a^(kx)) = k*a^(kx)*ln(a) is expected.
 
-2.3.3                a) Factors influencing short-run AS:
-Long-run AS               o changes in costs of raw materials and energy
-                          o changes in exchange rates
-                          o changes in tax rates
+7.3 Apply differentiation to find gradients, tangents and normals.
+Guidance: Use of differentiation to find equations of tangents and normals at specific
+points on a curve.
+- Maxima and minima and stationary points, points of inflection.
+Guidance: To include applications to curve sketching. Maxima and minima problems may be
+set in the context of a practical problem.
+- Identify where functions are increasing or decreasing.
+Guidance: To include applications to curve sketching.
 
-                     a) Different shapes of the long-run AS curve:
-                          o Keynesian
-                          o classical
+7.4 Differentiate using the product rule, the quotient rule and the chain rule,
+including problems involving connected rates of change and inverse functions.
+Guidance: Differentiation of cosec x, cot x and sec x. Differentiation of functions of
+the form x = sin y, x = 3 tan 2y and the use of dy/dx = 1 / (dx/dy). Use of connected
+rates of change in models, e.g. dV/dt = dV/dr * dr/dt. Skill will be expected in the
+differentiation of functions generated from standard forms using products, quotients
+and composition, such as 2x^4 sin x, e^(3x)/x, cos^2(x) and tan^2(2x).
 
-                     b) Factors influencing long-run AS:
-                          o technological advances
-                          o changes in relative productivity
-                          o changes in education and skills
-                          o changes in government regulations
-                          o demographic changes and migration
-                          o competition policy`,
+7.5 Differentiate simple functions and relations defined implicitly or
+parametrically, for first derivative only.
+Guidance: The finding of equations of tangents and normals to curves given
+parametrically or implicitly is required.
+
+7.6 Construct simple differential equations in pure mathematics and in context,
+(contexts may include kinematics, population growth and modelling the relationship
+between price and demand).
+Guidance: Set up a differential equation using given information. For example: in a
+simple model, the rate of decrease of the radius of the mint is inversely proportional
+to the square of the radius.`
   },
   {
-    subtopic: "2.4 National income",
-    specContent: `2.4 National income
+    subtopic: "8 Integration",
+    specContent: `8 Integration
 
-Subject content        What students need to learn:
+Content        What students need to learn:
+8.1 Know and use the Fundamental Theorem of Calculus.
+Guidance: Integration as the reverse process of differentiation. Students should know
+that for indefinite integrals a constant of integration is required.
 
-2.4.1                  a) The circular flow of income
-National income        b) The distinction between income and wealth
-2.4.2
-Injections and         a) The impact of injections into, and withdrawals from, the
-withdrawals                 circular flow of income
-2.4.3
-Equilibrium levels of  a) The concept of equilibrium real national output
-real national output   b) The use of AD/AS diagrams to show how shifts in AD or
+8.2 Integrate x^n (excluding n = -1) and related sums, differences and constant
+multiples.
+Guidance: For example, the ability to integrate expressions such as
+(3x^2 - 2)/(2*sqrt(x)) and (x+2)^2/(2*sqrt(x)) is expected. Given f'(x) and a point on
+the curve, students should be able to find an equation of the curve in the form
+y = f(x).
+- Integrate e^(kx), 1/x, sin(kx), cos(kx) and related sums, differences and constant
+  multiples.
+Guidance: To include integration of standard functions such as sin 3x, sec^2(2x),
+tan x, e^(5x), 1/(2x). Students are expected to be able to use trigonometric
+identities to integrate, for example, sin^2(x), tan^2(x), cos^2(3x).
 
-2.4.4                       AS cause changes in the equilibrium price level and real
-The multiplier              national output
+8.3 Evaluate definite integrals; use a definite integral to find the area under a
+curve and the area between two curves.
+Guidance: Students will be expected to be able to evaluate the area of a region
+bounded by a curve and given straight lines, or between two curves. This includes
+curves defined parametrically. For example, find the finite area bounded by the curve
+y = 6x - x^2 and the line y = 2x. Or find the finite area bounded by the curve
+y = x^2 - 5x + 6 and the curve y = 4 - x^2.
 
-                       a) The multiplier ratio
-                       b) The multiplier process
-                       c) Effects of the multiplier on the economy
-                       d) Understanding of marginal propensities and their effects
+8.4 Understand and use integration as the limit of a sum.
+Guidance: Recognise that the integral from a to b of f(x) dx = lim(delta-x -> 0) of
+the sum of f(x) * delta-x.
 
-                            on the multiplier:
-                            o the marginal propensity to consume (MPC)
-                            o the marginal propensity to save (MPS)
-                            o the marginal propensity to tax (MPT)
-                            o the marginal propensity to import (MPM)
-                       e) Calculations of the multiplier using the formulae
-                            1/(1-MPC) and 1/MPW, where MPW=MPS+MPT+MPM
-                       f) The significance of the multiplier for shifts in AD`,
+8.5 Carry out simple cases of integration by substitution and integration by parts;
+understand these methods as the inverse processes of the chain and product rules
+respectively (integration by substitution includes finding a suitable substitution and
+is limited to cases where one substitution will lead to a function which can be
+integrated; integration by parts includes more than one application of the method but
+excludes reduction formulae).
+Guidance: Students should recognise integrals of the form the integral of
+f'(x)/f(x) dx = ln|f(x)| + c. The integral of ln(x) dx is required.
+
+8.6 Integrate using partial fractions that are linear in the denominator.
+Guidance: Integration of rational expressions such as those arising from partial
+fractions, e.g. 2/(3x+5). Note that the integration of other rational expressions,
+such as x/(2x+5) and 4/(2x-1)^2 is also required (see previous paragraph).
+
+8.7 Evaluate the analytical solution of simple first order differential equations
+with separable variables, including finding particular solutions (separation of
+variables may require factorisation involving a common factor).
+Guidance: Students may be asked to sketch members of the family of solution curves.
+
+8.8 Interpret the solution of a differential equation in the context of solving a
+problem, including identifying limitations of the solution; includes links to
+kinematics.
+Guidance: The validity of the solution for large values should be considered.`
   },
   {
-    subtopic: "2.5 Economic growth",
-    specContent: `2.5 Economic growth
+    subtopic: "9 Numerical methods",
+    specContent: `9 Numerical methods
 
-Subject content   What students need to learn:
-2.5.1
-Causes of growth  a) Factors which could cause economic growth
-                  b) The distinction between actual and potential growth
-2.5.2             c) The importance of international trade for (export-led)
-Output gaps
-                       economic growth
-2.5.3
-Trade (business)  a) Distinction between actual growth rates and long-term
-cycle                  trends in growth rates
-2.5.4
-The impact of     b) Understanding of positive and negative output gaps and
-economic growth        the difficulties of measurement
+Content        What students need to learn:
+9.1 Locate roots of f(x) = 0 by considering changes of sign of f(x) in an interval of
+x on which f(x) is sufficiently well behaved.
+Guidance: Students should know that sign change is appropriate for continuous
+functions in a small interval.
+- Understand how change of sign methods can fail.
+Guidance: When the interval is too large sign may not change as there may be an even
+number of roots. If the function is not continuous, sign may change but there may be
+an asymptote (not a root).
 
-                  c) Use of an AD/AS diagram to illustrate an output gap
-                       (level of spare capacity) in an economy
+9.2 Solve equations approximately using simple iterative methods; be able to draw
+associated cobweb and staircase diagrams.
+Guidance: Understand that many mathematical problems cannot be solved analytically,
+but numerical methods permit solution to a required level of accuracy. Use an
+iteration of the form x_(n+1) = f(x_n) to find a root of the equation x = f(x) and show
+understanding of the convergence in geometrical terms by drawing cobweb and staircase
+diagrams.
 
-                  a) Understanding of the trade (business) cycle
-                  b) Characteristics of a boom
-                  c) Characteristics of a recession
+9.3 Solve equations using the Newton-Raphson method and other recurrence relations of
+the form x_(n+1) = g(x_n).
+Guidance: Understand how such methods can fail. For the Newton-Raphson method,
+students should understand its working in geometrical terms, so that they understand
+its failure near to points where the gradient is small.
 
-                  a) The benefits and costs of economic growth and the
-                       impact on:
-                       o consumers
-                       o firms
-                       o the government
-                       o current and future living standards`,
+9.4 Understand and use numerical integration of functions, including the use of the
+trapezium rule and estimating the approximate area under a curve and limits that it
+must lie between.
+Guidance: For example, evaluate the integral from 0 to 1 of sqrt(2x+1) dx using the
+values of sqrt(2x+1) at x = 0, 0.25, 0.5, 0.75 and 1 and use a sketch on a given graph
+to determine whether the trapezium rule gives an over-estimate or an under-estimate.
+
+9.5 Use numerical methods to solve problems in context.
+Guidance: Iterations may be suggested for the solution of equations not soluble by
+analytic means.`
   },
   {
-    subtopic: "2.6 Macroeconomic objectives and policies",
-    specContent: `2.6 Macroeconomic objectives and policies
+    subtopic: "10 Vectors",
+    specContent: `10 Vectors
 
-Subject content  What students need to learn:
-2.6.1
-Possible         a) Economic growth
-macroeconomic    b) Low unemployment
-objectives       c) Low and stable rate of inflation
-                 d) Balance of payments equilibrium on current account
-2.6.2            e) Balanced government budget
-Demand-side      f) Protection of the environment
-policies         g) Greater income equality
+Content        What students need to learn:
+10.1 Use vectors in two dimensions and in three dimensions.
+Guidance: Students should be familiar with column vectors and with the use of i and j
+unit vectors in two dimensions and i, j and k unit vectors in three dimensions.
 
-                 a) Distinction between monetary and fiscal policy
-                 b) Monetary policy instruments:
+10.2 Calculate the magnitude and direction of a vector and convert between component
+form and magnitude/direction form.
+Guidance: Students should be able to find a unit vector in the direction of a, and be
+familiar with the notation |a|.
 
-                      o interest rates
-                      o asset purchases to increase the money supply
+10.3 Add vectors diagrammatically and perform the algebraic operations of vector
+addition and multiplication by scalars, and understand their geometrical
+interpretations.
+Guidance: The triangle and parallelogram laws of addition. Parallel vectors.
 
-                           (quantitative easing)
-                 c) Fiscal policy instruments:
+10.4 Understand and use position vectors; calculate the distance between two points
+represented by position vectors.
+Guidance: Vector AB = OB - OA = b - a. The distance d between two points (x1, y1) and
+(x2, y2) is given by d^2 = (x1 - x2)^2 + (y1 - y2)^2. In three dimensions, the distance
+d between two points (x1, y1, z1) and (x2, y2, z2) is given by
+d^2 = (x1 - x2)^2 + (y1 - y2)^2 + (z1 - z2)^2.
 
-                      o government spending and taxation
-                 d) Distinction between government budget (fiscal) deficit
-
-                      and surplus
-                 e) Distinction between, and examples of, direct and indirect
-
-                      taxation
-                 f) Use of AD/AS diagrams to illustrate demand-side policies
-                 g) The role of the Bank of England:
-
-                      o the role and operation of the Bank of England's
-                           Monetary Policy Committee
-
-                 h) Awareness of demand-side policies in the Great
-                      Depression and the Global Financial Crisis of 2008
-                      o different interpretations
-                      o policy responses in the US and UK
-
-                 i) Strengths and weaknesses of demand-side policies
-
-Subject content       What students need to learn:
-2.6.3
-Supply-side policies  a) Distinction between market-based and interventionist
-                           methods
-2.6.4
-Conflicts and trade-  b) Market-based and interventionist policies:
-offs between               o to increase incentives
-objectives and             o to promote competition
-policies                   o to reform the labour market
-                           o to improve skills and quality of the labour force
-                           o to improve infrastructure
-
-                      c) Use of AD/AS diagrams to illustrate supply-side policies
-                      d) Strengths and weaknesses of supply-side policies
-
-                      a) Potential conflicts and trade-offs between the
-                           macroeconomic objectives
-
-                      b) Short-run Phillips curve
-                      c) Potential policy conflicts and trade-offs
-
-Theme 3: Business behaviour and the labour
-market
-
-Overview  This theme builds on the content of Theme 1: Introduction
-Content   to markets and market failure and focuses on business
-          economics.
-
-          Students will need to build upon the knowledge, skills and
-          understanding developed from Theme 1 in Theme 3,
-          making connections across these two microeconomic
-          themes in Paper 1, and across Themes 1, 2, 3 and 4 in
-          Paper 3. Teaching approaches to content must reflect this.
-
-          Students will need to apply their knowledge and
-          understanding to both familiar and unfamiliar contexts in
-          the assessments and demonstrate an awareness of current
-          economic events and policies.
-
-          This theme examines how the number and size of market
-          participants, and the level of contestability, affect the
-          pricing and nature of competition among firms. Students
-          will consider the size and growth of firms through exploring
-          organic growth, mergers and takeovers. They will look at
-          the reasons for demergers and why some firms tend to
-          remain small.
-
-          Students will look at the rational assumption that firms are
-          profit maximisers and then challenge this by looking at
-          alternative business objectives. Revenues, costs and profits
-          are explored before linking these ideas to different market
-          structures. Students will then be able to analyse and
-          evaluate the pricing and output decisions of firms in
-          different contexts and understand the role of competition in
-          business decision making. Supply and demand analysis is
-          specifically applied to the labour market to see how wages
-          are determined in competitive and non-competitive
-          markets.
-
-          At the end of this theme students should be capable of
-          making an appraisal of government intervention aimed at
-          promoting competitive markets.
-
-          This theme will provide a coherent coverage of
-          microeconomic content, drawing on local, national and
-          global contexts.
-
-          Students are encouraged to use an enquiring, critical and
-          thoughtful approach to the study of economics and to
-          develop an ability to think as an economist.
-
-          To develop their skills, knowledge and understanding in
-          economics, students need to have acquired competence in
-          quantitative skills that are relevant to and applied in the
-          context of this theme (see Appendix 3: Quantitative skills).`,
+10.5 Use vectors to solve problems in pure mathematics and in context (including
+forces).
+Guidance: For example, finding position vector of the fourth corner of a shape (e.g.
+parallelogram) ABCD with three given position vectors for the corners A, B and C.
+Contexts such as velocity, displacement, kinematics and forces will be covered in
+Paper 3, Sections 6.1, 7.3 and 8.1 - 8.4.`
   },
   {
-    subtopic: "3.1 Business growth",
-    specContent: `3.1 Business growth
+    subtopic: "1 Statistical sampling",
+    specContent: `1 Statistical sampling
 
-Subject content      What students need to learn:
-3.1.1
-Sizes and types of   a) Reasons why some firms tend to remain small and why
-firms                     others grow
+(Paper 3: Statistics and Mechanics. All the Pure Mathematics content is assumed
+knowledge for Paper 3 and may be tested in parts of questions.)
 
-3.1.2                b) Significance of the divorce of ownership from control:
-Business growth           the principal-agent problem
-
-3.1.3                c) Distinction between public and private sector
-Demergers                 organisations
-
-                     d) Distinction between profit and not-for-profit
-                          organisations
-
-                     a) How businesses grow:
-                          o organic growth
-                          o forward and backward vertical integration
-                          o horizontal integration
-                          o conglomerate integration
-
-                     b) Advantages and disadvantages of:
-                          o organic growth
-                          o vertical integration
-                          o horizontal integration
-                          o conglomerate integration
-
-                     c) Constraints on business growth:
-                          o size of the market
-                          o access to finance
-                          o owner objectives
-                          o regulation
-
-                     a) Reasons for demergers
-                     b) Impact of demergers on businesses, workers and
-
-                          consumers`,
+Content        What students need to learn:
+1.1 Understand and use the terms 'population' and 'sample'.
+- Use samples to make informal inferences about the population.
+Guidance: Students will be expected to comment on the advantages and disadvantages
+associated with a census and a sample.
+- Understand and use sampling techniques, including simple random sampling and
+  opportunity sampling.
+Guidance: Students will be expected to be familiar with: simple random sampling,
+stratified sampling, systematic sampling, quota sampling and opportunity (or
+convenience) sampling.
+- Select or critique sampling techniques in the context of solving a statistical
+  problem, including understanding that different samples can lead to different
+  conclusions about the population.`
   },
   {
-    subtopic: "3.2 Business objectives",
-    specContent: `3.2 Business objectives
+    subtopic: "2 Data presentation and interpretation",
+    specContent: `2 Data presentation and interpretation
 
-Subject content      What students need to learn:
+Content        What students need to learn:
+2.1 Interpret diagrams for single-variable data, including understanding that area in
+a histogram represents frequency.
+Guidance: Students should be familiar with histograms, frequency polygons, box and
+whisker plots (including outliers) and cumulative frequency diagrams.
+- Connect to probability distributions.
 
-3.2.1                a) Different business objectives and reasons for them:
-Business objectives       o profit maximisation
-                          o revenue maximisation
-                          o sales maximisation
-                          o satisficing
+2.2 Interpret scatter diagrams and regression lines for bivariate data, including
+recognition of scatter diagrams which include distinct sections of the population
+(calculations involving regression lines are excluded).
+Guidance: Students should be familiar with the terms explanatory (independent) and
+response (dependent) variables. Use of interpolation and the dangers of extrapolation.
+Variables other than x and y may be used. Use to make predictions within the range of
+values of the explanatory variable. Change of variable may be required, e.g. using
+knowledge of logarithms to reduce a relationship of the form y = ax^n or y = kb^x into
+linear form to estimate a and n or k and b.
+- Understand informal interpretation of correlation.
+- Understand that correlation does not imply causation.
+Guidance: Use of terms such as positive, negative, zero, strong and weak are expected.
 
-                     b) Diagrams and formulae to illustrate the different
-                          business objectives:
-                          o profit maximisation
-                          o revenue maximisation
-                          o sales maximisation`,
+2.3 Interpret measures of central tendency and variation, extending to standard
+deviation.
+Guidance: Data may be discrete, continuous, grouped or ungrouped. Understanding and
+use of coding. Measures of central tendency: mean, median, mode. Measures of
+variation: variance, standard deviation, range and interpercentile ranges. Use of
+linear interpolation to calculate percentiles from grouped data is expected.
+- Be able to calculate standard deviation, including from summary statistics.
+Guidance: Students should be able to use the statistic Sxx = sum of (x - x-bar)^2 =
+sum of x^2 - (sum of x)^2 / n. Use of standard deviation = sqrt(Sxx / n) (or
+equivalent) is expected but the use of s = sqrt(Sxx / (n-1)) (as used on spreadsheets)
+will be accepted.
+
+2.4 Recognise and interpret possible outliers in data sets and statistical diagrams.
+Guidance: Any rule needed to identify outliers will be specified in the question. For
+example, use of Q1 - 1.5 * IQR and Q3 + 1.5 * IQR or mean +/- 3 * standard deviation.
+- Select or critique data presentation techniques in the context of a statistical
+  problem.
+Guidance: Students will be expected to draw simple inferences and give interpretations
+to measures of central tendency and variation. Significance tests, other than those
+mentioned in Section 5, will not be expected.
+- Be able to clean data, including dealing with missing data, errors and outliers.
+Guidance: For example, students may be asked to identify possible outliers on a box
+plot or scatter diagram.`
   },
   {
-    subtopic: "3.3 Revenues, costs and profits",
-    specContent: `3.3 Revenues, costs and profits
+    subtopic: "3 Probability",
+    specContent: `3 Probability
 
-Subject content      What students need to learn:
-3.3.1
-Revenue              a) Formulae to calculate and understand the relationship
-                          between:
-3.3.2                     o total revenue
-Costs                     o average revenue
-                          o marginal revenue
-3.3.3
-Economies and        b) Price elasticity of demand and its relationship to revenue
-diseconomies of           concepts (calculation required)
-scale
-3.3.4                a) Formulae to calculate and understand the relationship
-Normal profits,           between:
-supernormal profits       o total cost
-and losses                o total fixed cost
-                          o total variable cost
-                          o average (total) cost
-                          o average fixed cost
-                          o average variable cost
-                          o marginal cost
+Content        What students need to learn:
+3.1 Understand and use mutually exclusive and independent events when calculating
+probabilities.
+Guidance: Venn diagrams or tree diagrams may be used. Set notation to describe events
+may be used. Use of P(B|A) = P(B), P(A|B) = P(A), P(A intersect B) = P(A)P(B) in
+connection with independent events.
+- Link to discrete and continuous distributions.
+Guidance: No formal knowledge of probability density functions is required but
+students should understand that area under the curve represents probability in the
+case of a continuous distribution.
 
-                     b) Derivation of short-run cost curves from the assumption
-                          of diminishing marginal productivity
+3.2 Understand and use conditional probability, including the use of tree diagrams,
+Venn diagrams, two-way tables.
+- Understand and use the conditional probability formula
+  P(A|B) = P(A intersect B) / P(B)
+Guidance: Understanding and use of P(A') = 1 - P(A),
+P(A union B) = P(A) + P(B) - P(A intersect B), P(A intersect B) = P(A)P(B|A).
 
-                     c) Relationship between short-run and long-run average
-                          cost curves
-
-                     a) Types of economies and diseconomies of scale
-                     b) Minimum efficient scale
-                     c) Distinction between internal and external economies of
-
-                          scale
-
-                     a) Condition for profit maximisation
-                     b) Normal profit, supernormal profit and losses
-                     c) Short-run and long-run shut-down points: diagrammatic
-
-                          analysis`,
+3.3 Modelling with probability, including critiquing assumptions made and the likely
+effect of more realistic assumptions.
+Guidance: For example, questioning the assumption that a die or coin is fair.`
   },
   {
-    subtopic: "3.4 Market structures",
-    specContent: `3.4 Market structures
+    subtopic: "4 Statistical distributions",
+    specContent: `4 Statistical distributions
 
-Subject content      What students need to learn:
-3.4.1
-Efficiency           a) Allocative efficiency
-                     b) Productive efficiency
-3.4.2                c) Dynamic efficiency
-Perfect competition  d) X-inefficiency
-3.4.3                e) Efficiency/inefficiency in different market structures
-Monopolistic
-competition          a) Characteristics of perfect competition
-3.4.4                b) Profit maximising equilibrium in the short run and long
-Oligopoly
-                          run
-3.4.5                c) Diagrammatic analysis
-Monopoly
-                     a) Characteristics of monopolistically competitive markets
-                     b) Profit maximising equilibrium in the short run and long
+Content        What students need to learn:
+4.1 Understand and use simple, discrete probability distributions (calculation of
+mean and variance of discrete random variables is excluded), including the binomial
+distribution, as a model; calculate probabilities using the binomial distribution.
+Guidance: Students will be expected to use distributions to model a real-world
+situation and to comment critically on the appropriateness. Students should know and
+be able to identify the discrete uniform distribution. The notation X ~ B(n, p) may be
+used. Use of a calculator to find individual or cumulative binomial probabilities.
 
-                          run
-                     c) Diagrammatic analysis
+4.2 Understand and use the Normal distribution as a model; find probabilities using
+the Normal distribution.
+Guidance: The notation X ~ N(mu, sigma^2) may be used. Knowledge of the shape and the
+symmetry of the distribution is required. Knowledge of the probability density
+function is not required. Derivation of the mean, variance and cumulative
+distribution function is not required. Questions may involve the solution of
+simultaneous equations. Students will be expected to use their calculator to find
+probabilities connected with the normal distribution.
+- Link to histograms, mean, standard deviation, points of inflection, and the binomial
+  distribution.
+Guidance: Students should know that the points of inflection on the normal curve are
+at x = mu +/- sigma. The derivation of this result is not expected. Students should
+know that when n is large and p is close to 0.5 the distribution B(n, p) can be
+approximated by N(np, np(1-p)). The application of a continuity correction is
+expected.
 
-                     a) Characteristics of oligopoly
-                          o high barriers to entry and exit
-                          o high concentration ratio
-                          o interdependence of firms
-                          o product differentiation
-
-                     b) Calculation of n-firm concentration ratios and their
-                          significance
-
-                     c) Reasons for collusive and non-collusive behaviour
-                     d) Overt and tacit collusion; cartels and price leadership
-                     e) Simple game theory: the prisoner's dilemma in a simple
-
-                          two firm/two outcome model
-                     f) Types of price competition:
-
-                          o price wars
-                          o predatory pricing
-                          o limit pricing
-                     g) Types of non-price competition
-
-                     a) Characteristics of monopoly
-                     b) Profit maximising equilibrium
-                     c) Diagrammatic analysis
-                     d) Third degree price discrimination:
-
-                          o necessary conditions
-                          o diagrammatic analysis
-                          o costs and benefits to consumers and producers
-                     e) Costs and benefits of monopoly to firms, consumers,
-                          employees and suppliers
-                     f) Natural monopoly
-
-Subject content  What students need to learn:
-3.4.6
-Monopsony        a) Characteristics and conditions for a monopsony to
-                      operate
-3.4.7
-Contestability   b) Costs and benefits of a monopsony to firms, consumers,
-                      employees and suppliers
-
-                 a) Characteristics of contestable markets
-                 b) Implications of contestable markets for the behaviour of
-
-                      firms
-                 c) Types of barrier to entry and exit
-                 d) Sunk costs and the degree of contestability`,
+4.3 Select an appropriate probability distribution for a context, with appropriate
+reasoning, including recognising when the binomial or Normal model may not be
+appropriate.
+Guidance: Students should know under what conditions a binomial distribution or a
+Normal distribution might be a suitable model.`
   },
   {
-    subtopic: "3.5 Labour market",
-    specContent: `3.5 Labour market
+    subtopic: "5 Statistical hypothesis testing",
+    specContent: `5 Statistical hypothesis testing
 
-Subject content     What students need to learn:
+Content        What students need to learn:
+5.1 Understand and apply the language of statistical hypothesis testing, developed
+through a binomial model: null hypothesis, alternative hypothesis, significance
+level, test statistic, 1-tail test, 2-tail test, critical value, critical region,
+acceptance region, p-value.
+Guidance: An informal appreciation that the expected value of a binomial distribution
+is given by np may be required for a 2-tail test.
+- Extend to correlation coefficients as measures of how close data points lie to a
+  straight line, and be able to interpret a given correlation coefficient using a
+  given p-value or critical value (calculation of correlation coefficients is
+  excluded).
+Guidance: Students should know that the product moment correlation coefficient r
+satisfies |r| <= 1 and that a value of r = +/-1 means the data points all lie on a
+straight line. Students will be expected to calculate a value of r using their
+calculator but use of the formula is not required. Hypotheses should be stated in
+terms of rho, with a null hypothesis of rho = 0 where rho represents the population
+correlation coefficient. Tables of critical values or a p-value will be given.
 
-3.5.1               a) Factors that influence the demand for labour
-Demand for labour   b) Demand for labour as a derived demand
-3.5.2
-Supply of labour    a) Factors that influence the supply of labour to a particular
-                         occupation
-3.5.3
-Wage determination  b) Market failure in labour markets: the geographical and
-in competitive and       occupational mobility and immobility of labour
-non-competitive
-markets             a) Diagrammatic analysis of labour market equilibrium
-                    b) Understanding of current labour market issues
-                    c) Government intervention in the labour market:
+5.2 Conduct a statistical hypothesis test for the proportion in the binomial
+distribution and interpret the results in context.
+- Understand that a sample is being used to make an inference about the population,
+  and appreciate that the significance level is the probability of incorrectly
+  rejecting the null hypothesis.
+Guidance: Hypotheses should be expressed in terms of the population parameter p. A
+formal understanding of Type I errors is not expected.
 
-                         o maximum and minimum wages
-                         o public sector wage setting
-                         o policies to tackle labour market immobility
-                    d) The significance of the elasticity of demand for labour
-                         and the elasticity of supply of labour`,
+5.3 Conduct a statistical hypothesis test for the mean of a Normal distribution with
+known, given or assumed variance and interpret the results in context.
+Guidance: Students should know that: if X ~ N(mu, sigma^2) then
+X-bar ~ N(mu, sigma^2/n), and that a test for mu can be carried out using
+(X-bar - mu) / (sigma/sqrt(n)) ~ N(0, 1^2). No proofs required. Hypotheses should be
+stated in terms of the population mean mu. Knowledge of the Central Limit Theorem or
+other large sample approximations is not required.`
   },
   {
-    subtopic: "3.6 Government intervention",
-    specContent: `3.6 Government intervention
+    subtopic: "6 Quantities and units in mechanics",
+    specContent: `6 Quantities and units in mechanics
 
-Subject content  What students need to learn:
-3.6.1
-Government       a) Government intervention to control mergers
-intervention     b) Government intervention to control monopolies:
+(Paper 3: Statistics and Mechanics. All the Pure Mathematics content is assumed
+knowledge for Paper 3 and may be tested in parts of questions.)
 
-3.6.2                 o price regulation
-The impact of         o profit regulation
-government            o quality standards
-intervention          o performance targets
-                 c) Government intervention to promote competition and
-                      contestability:
-                      o enhancing competition between firms through
-
-                           promotion of small business
-                      o deregulation
-                      o competitive tendering for government contracts
-                      o privatisation
-                 d) Government intervention to protect suppliers and
-                      employees:
-                      o restrictions on monopsony power of firms
-                      o nationalisation
-
-                 a) The impact of government intervention on:
-                      o prices
-                      o profit
-                      o efficiency
-                      o quality
-                      o choice
-
-                 b) Limits to government intervention:
-                      o regulatory capture
-                      o asymmetric information
-
-Theme 4: A global perspective
-
-Overview  This theme builds on the knowledge and skills gained in
-Content   Theme 2: The UK economy - performance and policies, and
-          applies them in a global context.
-
-          Students will need to build upon the knowledge, skills and
-          understanding developed from Theme 2 in Theme 4,
-          making connections across these two macroeconomic
-          themes in Paper 2, and across Themes 1, 2, 3 and 4 in
-          Paper 3. Teaching approaches to content must reflect this.
-
-          Students will need to apply their knowledge and
-          understanding to both familiar and unfamiliar contexts in
-          the assessments and demonstrate an awareness of current
-          economic events and policies.
-
-          Students will be expected to understand the significance of
-          globalisation, international trade, the balance of payments
-          and exchange rates. They will examine public finance,
-          macroeconomic policies and the role of the financial sector
-          in a global context. Students will consider the factors
-          influencing the growth and development of emerging and
-          developing countries.
-
-          In examining these areas, application, analysis and
-          evaluation of economic models is required as well as an
-          ability to assess policies that might be used to address
-          national and global economic challenges. Students should
-          develop an awareness of trends in the global economy over
-          the last 25 years through wider reading and research so
-          that they can include relevant examples in their analysis
-          and evaluation.
-
-          Students are encouraged to use an enquiring, critical and
-          thoughtful approach to the study of economics and to
-          develop an ability to think as an economist.
-
-          To develop their skills, knowledge and understanding in
-          economics, students need to have acquired competence in
-          quantitative skills that are relevant to and applied in the
-          context of this theme (see Appendix 3: Quantitative skills).`,
+Content        What students need to learn:
+6.1 Understand and use fundamental quantities and units in the S.I. system: length,
+time, mass.
+- Understand and use derived quantities and units: velocity, acceleration, force,
+  weight, moment.
+Guidance: Students may be required to convert one unit into another, e.g. km h^-1 into
+m s^-1.`
   },
   {
-    subtopic: "4.1 International economics",
-    specContent: `4.1 International economics
+    subtopic: "7 Kinematics",
+    specContent: `7 Kinematics
 
-Subject content       What students need to learn:
-4.1.1
-Globalisation         a) Characteristics of globalisation
-                      b) Factors contributing to globalisation in the last 50 years
-4.1.2                 c) Impacts of globalisation and global companies on
-Specialisation and
-trade                      individual countries, governments, producers and
-                           consumers, workers and the environment
-4.1.3
-Pattern of trade      a) Absolute and comparative advantage (numerical and
-                           diagrammatic): assumptions and limitations relating to
-4.1.4                      the theory of comparative advantage
-Terms of trade
-4.1.5                 b) Advantages and disadvantages of specialisation and
-Trading blocs and          trade in an international context
-the World Trade
-Organisation (WTO)    a) Factors influencing the pattern of trade between
-                           countries and changes in trade flows between countries:
-4.1.6                      o comparative advantage
-Restrictions on free       o impact of emerging economies
-trade                      o growth of trading blocs and bilateral trading
-                                agreements
-                           o changes in relative exchange rates
+Content        What students need to learn:
+7.1 Understand and use the language of kinematics: position; displacement; distance
+travelled; velocity; speed; acceleration.
+Guidance: Students should know that distance and speed must be positive.
 
-                      a) Calculation of terms of trade
-                      b) Factors influencing a country's terms of trade
-                      c) Impact of changes in a country's terms of trade
+7.2 Understand, use and interpret graphs in kinematics for motion in a straight line:
+displacement against time and interpretation of gradient; velocity against time and
+interpretation of gradient and area under the graph.
+Guidance: Graphical solutions to problems may be required.
 
-                      a) Types of trading blocs (regional trade agreements and
-                           bilateral trade agreements):
-                           o free trade areas
-                           o customs unions
-                           o common markets
-                           o monetary unions: conditions necessary for their
-                                success with particular reference to the Eurozone
+7.3 Understand, use and derive the formulae for constant acceleration for motion in a
+straight line.
+Guidance: Derivation may use knowledge of sections 7.2 and/or 7.4.
+- Extend to 2 dimensions using vectors.
+Guidance: Understand and use suvat formulae for constant acceleration in 2-D, e.g.
+v = u + at, r = ut + (1/2)at^2, with vectors given in i-j or column vector form. Use
+vectors to solve problems.
 
-                      b) Costs and benefits of regional trade agreements
-                      c) Role of the WTO in trade liberalisation
-                      d) Possible conflicts between regional trade agreements
+7.4 Use calculus in kinematics for motion in a straight line: v = dr/dt,
+a = dv/dt = d^2r/dt^2, r = integral of v dt, v = integral of a dt.
+Guidance: The level of calculus required will be consistent with that in Sections 7
+and 8 in the Pure Mathematics content.
+- Extend to 2 dimensions using vectors.
+Guidance: Differentiation and integration of a vector with respect to time, e.g. given
+r = t^3 i + 2t^2 j, find r-dot (v) and r-double-dot (a) at a given time.
 
-                           and the WTO
-
-                      a) Reasons for restrictions on free trade
-                      b) Types of restrictions on trade:
-
-                           o tariffs
-                           o quotas
-                           o subsidies to domestic producers
-                           o non-tariff barriers
-                      c) Impact of protectionist policies on consumers,
-                           producers, governments, living standards, equality
-
-Subject content  What students need to learn:
-4.1.7
-Balance of       a) Components of the balance of payments:
-payments              o the current account
-                      o the capital and financial accounts
-4.1.8
-Exchange rates   b) Causes of deficits and surpluses on the current account
-                 c) Measures to reduce a country's imbalance on the current
-4.1.9
-International         account
-competitiveness  d) Significance of global trade imbalances
-
-                 a) Exchange rate systems:
-                      o floating
-                      o fixed
-                      o managed
-
-                 b) Distinction between revaluation and appreciation of a
-                      currency
-
-                 c) Distinction between devaluation and depreciation of a
-                      currency
-
-                 d) Factors influencing floating exchange rates
-                 e) Government intervention in currency markets through
-
-                      foreign currency transactions and the use of interest
-                      rates
-                 f) Competitive devaluation/depreciation and its
-                      consequences
-                 g) Impact of changes in exchange rates:
-                      o the current account of the balance of payments
-
-                           (reference to Marshall-Lerner condition and J curve
-                           effect)
-                      o economic growth and employment/unemployment
-                      o rate of inflation
-                      o foreign direct investment (FDI) flows
-
-                 a) Measures of international competitiveness:
-                      o relative unit labour costs
-                      o relative export prices
-
-                 b) Factors influencing international competitiveness
-                 c) Significance of international competitiveness:
-
-                      o benefits of being internationally competitive
-                      o problems of being internationally uncompetitive`,
+7.5 Model motion under gravity in a vertical plane using vectors; projectiles.
+Guidance: Derivation of formulae for time of flight, range and greatest height and the
+derivation of the equation of the path of a projectile may be required.`
   },
   {
-    subtopic: "4.2 Poverty and inequality",
-    specContent: `4.2 Poverty and inequality
+    subtopic: "8 Forces and Newton's laws",
+    specContent: `8 Forces and Newton's laws
 
-Subject content   What students need to learn:
-4.2.1
-Absolute and      a) Distinction between absolute poverty and relative
-relative poverty       poverty
+Content        What students need to learn:
+8.1 Understand the concept of a force; understand and use Newton's first law.
+Guidance: Normal reaction, tension, thrust or compression, resistance.
 
-4.2.2             b) Measures of absolute poverty and relative poverty
-Inequality        c) Causes of changes in absolute poverty and relative
+8.2 Understand and use Newton's second law for motion in a straight line (restricted
+to forces in two perpendicular directions or simple cases of forces given as 2-D
+vectors); extend to situations where forces need to be resolved (restricted to 2
+dimensions).
+Guidance: Problems will involve motion in a straight line with constant acceleration
+in scalar form, where the forces act either parallel or perpendicular to the motion.
+Problems may involve motion in a straight line with constant acceleration in vector
+form, where the forces are given in i-j form or as column vectors. Extend to problems
+where forces need to be resolved, e.g. a particle moving on an inclined plane.
 
-                       poverty
+8.3 Understand and use weight and motion in a straight line under gravity;
+gravitational acceleration, g, and its value in S.I. units to varying degrees of
+accuracy. (The inverse square law for gravitation is not required and g may be
+assumed to be constant, but students should be aware that g is not a universal
+constant but depends on location.)
+Guidance: The default value of g will be 9.8 m s^-2 but some questions may specify
+another value, e.g. g = 10 m s^-2.
 
-                  a) Distinction between wealth and income inequality
-                  b) Measurements of income inequality:
+8.4 Understand and use Newton's third law; equilibrium of forces on a particle and
+motion in a straight line (restricted to forces in two perpendicular directions or
+simple cases of forces given as 2-D vectors); application to problems involving
+smooth pulleys and connected particles; resolving forces in 2 dimensions; equilibrium
+of a particle under coplanar forces.
+Guidance: Connected particle problems could include problems with particles in
+contact, e.g. lift problems. Problems may be set where forces need to be resolved,
+e.g. at least one of the particles is moving on an inclined plane.
 
-                       o the Lorenz curve (diagrammatic analysis)
-                       o the Gini coefficient
-                  c) Causes of income and wealth inequality within countries
-                       and between countries
-                  d) Impact of economic change and development on
-                       inequality
-                  e) Significance of capitalism for inequality`,
+8.5 Understand and use addition of forces; resultant forces; dynamics for motion in a
+plane.
+Guidance: Students may be required to resolve a vector into two components or use a
+vector diagram, e.g. problems involving two or more forces, given in
+magnitude-direction form.
+
+8.6 Understand and use the F <= mu*R model for friction; coefficient of friction;
+motion of a body on a rough surface; limiting friction and statics.
+Guidance: An understanding of F = mu*R when a particle is moving. An understanding of
+F <= mu*R in a situation of equilibrium.`
   },
   {
-    subtopic: "4.3 Emerging and developing economies",
-    specContent: `4.3 Emerging and developing economies
+    subtopic: "9 Moments",
+    specContent: `9 Moments
 
-Subject content      What students need to learn:
-4.3.1
-Measures of          a) The three dimensions of the Human Development Index
-development               (HDI) (education, health and living standards) and how
-                          they are measured and combined
-4.3.2
-Factors influencing  b) The advantages and limitations of using the HDI to
-growth and                compare levels of development between countries and
-development               over time
-
-                     c) Other indicators of development
-
-                     a) Impact of economic factors in different countries:
-                          o primary product dependency
-                          o volatility of commodity prices
-                          o savings gap: Harrod-Domar model
-                          o foreign currency gap
-                          o capital flight
-                          o demographic factors
-                          o debt
-                          o access to credit and banking
-                          o infrastructure
-                          o education/skills
-                          o absence of property rights
-
-                     b) Impact of non-economic factors in different countries
-
-Subject content     What students need to learn:
-
-4.3.3               a) Market-orientated strategies:
-Strategies               o trade liberalisation
-influencing growth       o promotion of FDI
-and development          o removal of government subsidies
-                         o floating exchange rate systems
-                         o microfinance schemes
-                         o privatisation
-
-                    b) Interventionist strategies:
-                         o development of human capital
-                         o protectionism
-                         o managed exchange rates
-                         o infrastructure development
-                         o promoting joint ventures with global companies
-                         o buffer stock schemes
-
-                    c) Other strategies:
-                         o industrialisation: the Lewis model
-                         o development of tourism
-                         o development of primary industries
-                         o Fairtrade schemes
-                         o aid
-                         o debt relief
-
-                    d) Awareness of the role of international institutions and
-                         non-government organisations (NGOs):
-                         o World Bank
-                         o International Monetary Fund (IMF)
-                         o NGOs`,
-  },
-  {
-    subtopic: "4.4 The financial sector",
-    specContent: `4.4 The financial sector
-
-Subject content        What students need to learn:
-4.4.1
-Role of financial      a) To facilitate saving
-markets                b) To lend to businesses and individuals
-                       c) To facilitate the exchange of goods and services
-4.4.2                  d) To provide forward markets in currencies and
-Market failure in the
-financial sector            commodities
-                       e) To provide a market for equities
-4.4.3
-Role of central        a) Consideration of:
-banks                       o asymmetric information
-                            o externalities
-                            o moral hazard
-                            o speculation and market bubbles
-                            o market rigging
-
-                       a) Key functions of central banks:
-                            o implementation of monetary policy
-                            o banker to the government
-                            o banker to the banks - lender of last resort
-                            o role in regulation of the banking industry`,
-  },
-  {
-    subtopic: "4.5 Role of the state in the macroeconomy",
-    specContent: `4.5 Role of the state in the macroeconomy
-
-Subject content     What students need to learn:
-4.5.1
-Public expenditure  a) Distinction between capital expenditure, current
-                         expenditure and transfer payments
-4.5.2
-Taxation            b) Reasons for the changing size and composition of public
-                         expenditure in a global context
-4.5.3
-Public sector       c) The significance of differing levels of public expenditure
-finances                 as a proportion of GDP on:
-                         o productivity and growth
-                         o living standards
-                         o crowding out
-                         o level of taxation
-                         o equality
-
-                    a) Distinction between progressive, proportional and
-                         regressive taxes
-
-                    b) The economic effects of changes in direct and indirect
-                         tax rates on other variables:
-                         o incentives to work
-                         o tax revenues: the Laffer curve
-                         o income distribution
-                         o real output and employment
-                         o the price level
-                         o the trade balance
-                         o FDI flows
-
-                    a) Distinction between automatic stabilisers and
-                         discretionary fiscal policy
-
-                    b) Distinction between a fiscal deficit and the national debt
-                    c) Distinction between structural and cyclical deficits
-                    d) Factors influencing the size of fiscal deficits
-                    e) Factors influencing the size of national debts
-                    f) The significance of the size of fiscal deficits and national
-
-                         debts
-
-Subject content       What students need to learn:
-
-4.5.4                 a) Use of fiscal policy, monetary policy, exchange rate
-Macroeconomic              policy, supply-side policies and direct controls in
-policies in a global       different countries, with specific reference to the impact
-context                    of:
-                           o measures to reduce fiscal deficits and national debts
-                           o measures to reduce poverty and inequality
-                           o changes in interest rates and the supply of money
-                           o measures to increase international competitiveness
-
-                      b) Use and impact of macroeconomic policies to respond to
-                           external shocks to the global economy
-
-                      c) Measures to control global companies' (transnationals')
-                           operations:
-                           o the regulation of transfer pricing
-                           o limits to government ability to control global
-                                companies
-
-                      d) Problems facing policymakers when applying policies:
-                           o inaccurate information
-                           o risks and uncertainties
-                           o inability to control external shocks`,
-  },
+Content        What students need to learn:
+9.1 Understand and use moments in simple static contexts.
+Guidance: Equilibrium of rigid bodies. Problems involving parallel and non-parallel
+coplanar forces, e.g. ladder problems.`
+  }
 ];
 
 function stripCodeFences(text) {
   return text.trim().replace(/^```(?:json)?\s*/i, '').replace(/```\s*$/, '').trim();
+}
+
+// Found live on this exact subject's real run: two coverage-check
+// responses came back missing precisely their final closing '}' - every
+// string properly terminated, every array properly closed, just the one
+// outermost brace dropped (confirmed by counting: 3 '{' vs 2 '}' in both
+// cases, nothing else off). Too small and too specific a defect to be
+// max_tokens truncation (these responses were a few hundred tokens
+// against a 16000 cap) - looks like an occasional real model formatting
+// slip on this call shape. A plain JSON.parse has no way to recover from
+// that; this repairs the one specific, common case (a handful of missing
+// closers at the very end, string content itself intact) by walking the
+// text tracking bracket/brace/string-quote state and appending whatever
+// closers are still open, in the correct nesting order, before a final
+// parse attempt. Does not attempt to fix anything IN the middle of the
+// text (a truncated string value, a missing comma) - those are genuine
+// truncations that should keep failing loudly, not be silently patched.
+function parseJsonWithRepair(text, context) {
+  try {
+    return JSON.parse(text);
+  } catch (firstErr) {
+    const stack = [];
+    let inString = false;
+    let escaped = false;
+    for (const ch of text) {
+      if (inString) {
+        if (escaped) escaped = false;
+        else if (ch === '\\') escaped = true;
+        else if (ch === '"') inString = false;
+        continue;
+      }
+      if (ch === '"') inString = true;
+      else if (ch === '{') stack.push('}');
+      else if (ch === '[') stack.push(']');
+      else if (ch === '}' || ch === ']') {
+        if (stack[stack.length - 1] === ch) stack.pop();
+      }
+    }
+    if (inString || !stack.length) throw firstErr; // not the "missing trailing closers" shape - a real truncation, don't paper over it
+    const repaired = text + stack.reverse().join('');
+    try {
+      const parsed = JSON.parse(repaired);
+      console.error(`  [repair] ${context}: response was missing ${stack.length} trailing closer(s) - repaired and parsed successfully`);
+      return parsed;
+    } catch (secondErr) {
+      throw firstErr; // repair attempt didn't work either - surface the ORIGINAL error, not the repaired one
+    }
+  }
 }
 
 async function generateSubtopic(subtopic, specContent, missingConcepts) {
@@ -1351,6 +1003,7 @@ async function generateSubtopic(subtopic, specContent, missingConcepts) {
   // to describe (it was burning most of a 16k budget on invisible
   // reasoning before writing a single character of the actual JSON).
   // max_tokens now only has to cover the actual output.
+  assertUnderCap();
   const stream1 = client.messages.stream({
     model: GENERATION_MODEL,
     max_tokens: 32000,
@@ -1365,6 +1018,7 @@ async function generateSubtopic(subtopic, specContent, missingConcepts) {
   stream1.on('streamEvent', (e) => { if (e.type === 'message_delta' || e.type === 'message_stop') console.error('STREAM EVENT:', JSON.stringify(e)); });
   const resp = await stream1.finalMessage();
   console.error('stop_reason:', resp.stop_reason, ' usage:', JSON.stringify(resp.usage));
+  recordUsage(GENERATION_MODEL, resp.usage);
   const debugPath = path.join(__dirname, `debug_generation_${safeId(subtopic)}.txt`);
   const textBlock1 = resp.content.find(b => b.type === 'text');
   if (!textBlock1) {
@@ -1374,7 +1028,7 @@ async function generateSubtopic(subtopic, specContent, missingConcepts) {
   const text = textBlock1.text;
   const cleaned = stripCodeFences(text);
   try {
-    return JSON.parse(cleaned);
+    return parseJsonWithRepair(cleaned, `generate ${subtopic}`);
   } catch (err) {
     fs.writeFileSync(debugPath, cleaned);
     console.error(`JSON parse failed for subtopic "${subtopic}" - raw response written to ${debugPath}`);
@@ -1392,6 +1046,7 @@ async function checkCoverage(subtopic, specContent, nodes) {
   // output is bounded by how much the FIRST pass actually missed, so it
   // rarely approaches this, but 4k was cutting it close on worst-case
   // subtopics with several dropped named theories at once.
+  assertUnderCap();
   const stream2 = client.messages.stream({
     model: COVERAGE_MODEL,
     max_tokens: 16000,
@@ -1403,10 +1058,11 @@ async function checkCoverage(subtopic, specContent, nodes) {
     }],
   });
   const resp = await stream2.finalMessage();
+  recordUsage(COVERAGE_MODEL, resp.usage);
   const textBlock2 = resp.content.find(b => b.type === 'text');
   if (!textBlock2) throw new Error(`Coverage check: no text block, stop_reason: ${resp.stop_reason}`);
   try {
-    return JSON.parse(stripCodeFences(textBlock2.text)).missingConcepts || [];
+    return parseJsonWithRepair(stripCodeFences(textBlock2.text), `coverage ${subtopic}`).missingConcepts || [];
   } catch (err) {
     const debugPath = path.join(__dirname, `debug_coverage_${safeId(subtopic)}.txt`);
     fs.writeFileSync(debugPath, textBlock2.text);
@@ -1423,6 +1079,7 @@ async function verifyBatch(allNodes, allEdges) {
   // pipeline to have been silently truncating its JSON output at 8k on a
   // real full-subject run. Streamed for the same request-timeout reason
   // as generateSubtopic, more so here given the larger cap.
+  assertUnderCap();
   const stream3 = client.messages.stream({
     model: VERIFICATION_MODEL,
     max_tokens: 60000,
@@ -1435,10 +1092,11 @@ async function verifyBatch(allNodes, allEdges) {
   });
   const resp = await stream3.finalMessage();
   console.error('verification stop_reason:', resp.stop_reason, ' usage:', JSON.stringify(resp.usage));
+  recordUsage(VERIFICATION_MODEL, resp.usage);
   const textBlock = resp.content.find(b => b.type === 'text');
   if (!textBlock) throw new Error(`Verification: no text block, stop_reason: ${resp.stop_reason}`);
   try {
-    return JSON.parse(stripCodeFences(textBlock.text));
+    return parseJsonWithRepair(stripCodeFences(textBlock.text), 'verification');
   } catch (err) {
     fs.writeFileSync(path.join(__dirname, 'debug_last_verification_response.txt'), textBlock.text);
     console.error('Verification JSON parse failed - raw response written to scripts/debug_last_verification_response.txt');
@@ -1575,12 +1233,15 @@ async function processSubtopic(subtopic, specContent) {
   return { subtopic, nodes, edges };
 }
 
-// Concurrency limited (not all 21 at once) to stay well clear of the
+// Concurrency limited (not all 19 at once) to stay well clear of the
 // account's own rate limits rather than guess at exactly where they are
-// and find out the hard way mid-run - each subtopic is already a large,
-// thinking-heavy call, so even a modest concurrency genuinely compresses
-// the sequential ~4-5 min/subtopic wall-clock time.
-const SUBTOPIC_CONCURRENCY = 4;
+// and find out the hard way mid-run. Lowered from 4 to 2 specifically for
+// this run's hard SPEND_CAP_USD - the cap is only checked between calls,
+// not mid-stream, so the worst-case overshoot once it trips is bounded by
+// however many calls were already in flight in that chunk; halving
+// concurrency halves that worst case, at the cost of roughly doubling
+// wall-clock time.
+const SUBTOPIC_CONCURRENCY = 2;
 
 async function main() {
   const state = loadCheckpoint();

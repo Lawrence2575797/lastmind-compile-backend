@@ -5,6 +5,7 @@ import { getConceptsWithLowConfidenceSignal } from './answerSignalService';
 import { supabaseAdmin } from './supabaseAdmin';
 import { selectAllRows, selectRowsByIdChunked } from './supabasePagination';
 import { resolveSubjectTriple } from './subjectResolution';
+import { compareSubtopics, getOrComputeSubtopicOrder } from './knowledgeMapNotesService';
 
 // One concept the student has actually added to a folder (a single-lesson
 // page's own title, or one entry of a multi-lesson page's own lessons) —
@@ -371,8 +372,49 @@ export async function getKnowledgeMapForSubject(
   // normalization internally, matching how the Notes lookup already calls it.
   const themeMap = await getSubtopicThemeMap(subject, qualification, examBoard);
 
+  // Same real teaching order the Notes sidebar tree already computes (see
+  // getOrComputeSubtopicOrder's own comment on why DB insertion order
+  // can't be trusted as "generation order") - without this, nodeRows came
+  // back in whatever order the DB query happened to return them in (no
+  // ORDER BY on the query above), which the sidebar tree's own top-to-
+  // bottom rendering then displayed as-is instead of spec order. Grouped
+  // by subtopic, subtopics sorted via the same numeric-aware compare the
+  // Notes tree uses, nodes within each subtopic ordered via the same
+  // cached-or-computed teaching order (a real Claude call only the first
+  // time a given subtopic is ever ordered - free from then on, and
+  // already cached today for any subtopic the Notes tree has shown).
+  type NodeRow = (typeof nodeRows)[number];
+  const bySubtopic = new Map<string, NodeRow[]>();
+  nodeRows.forEach((r) => {
+    const subtopic = r.subtopic as string;
+    const list = bySubtopic.get(subtopic) || [];
+    list.push(r);
+    bySubtopic.set(subtopic, list);
+  });
+  const subtopicOrders = new Map<string, string[]>(
+    await Promise.all(
+      Array.from(bySubtopic.entries()).map(async ([subtopic, rows]) => {
+        const order = await getOrComputeSubtopicOrder(
+          subject,
+          qualification,
+          examBoard,
+          subtopic,
+          rows.map((r) => ({ id: r.id as string, label: r.label as string }))
+        );
+        return [subtopic, order] as [string, string[]];
+      })
+    )
+  );
+  const orderedSubtopics = Array.from(bySubtopic.keys()).sort(compareSubtopics);
+  const orderedNodeRows = orderedSubtopics.flatMap((subtopic) => {
+    const rows = bySubtopic.get(subtopic)!;
+    const byId = new Map(rows.map((r) => [r.id as string, r]));
+    const order = subtopicOrders.get(subtopic) || rows.map((r) => r.id as string);
+    return order.map((id) => byId.get(id)).filter((r): r is NodeRow => !!r);
+  });
+
   return {
-    nodes: nodeRows.map((r) => ({
+    nodes: orderedNodeRows.map((r) => ({
       id: r.id as string,
       conceptId: r.concept_id as string,
       label: r.label as string,

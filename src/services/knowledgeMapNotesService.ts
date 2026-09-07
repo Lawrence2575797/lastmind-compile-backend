@@ -295,7 +295,7 @@ function parseSubtopicOrder(subtopic: string): [number, number] {
   if (!match) return [Number.MAX_SAFE_INTEGER, 0];
   return [Number(match[1]), match[2] ? Number(match[2]) : 0];
 }
-function compareSubtopics(a: string, b: string): number {
+export function compareSubtopics(a: string, b: string): number {
   const [aMajor, aMinor] = parseSubtopicOrder(a);
   const [bMajor, bMinor] = parseSubtopicOrder(b);
   if (aMajor !== bMajor) return aMajor - bMajor;
@@ -375,7 +375,7 @@ async function computeSubtopicOrder(
 // new node since its order was last cached (no re-computation needed - the
 // new node is simply appended, same "never worse than before" fallback
 // spirit as everywhere else in this file).
-async function getOrComputeSubtopicOrder(
+export async function getOrComputeSubtopicOrder(
   subject: string,
   qualification: string,
   examBoard: string,

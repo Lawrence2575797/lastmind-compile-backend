@@ -109,7 +109,17 @@ export async function generateAndCacheNodeLesson(nodeId: string): Promise<unknow
     userContent,
     maxTokens: MAX_TOKENS,
   });
-  const encodingContent = parseWithClosingBraceRepair<unknown>(raw);
+  let encodingContent: unknown;
+  try {
+    encodingContent = parseWithClosingBraceRepair<unknown>(raw);
+  } catch (err) {
+    // Logged with enough to actually diagnose a live failure from Render's
+    // own logs (no other way to see this - this route is live/single-shot,
+    // unlike the offline batch pipeline's own debug-file dump) without
+    // ever putting the raw model output in the student-facing error.
+    console.error(`LastMind: node lesson generation failed to parse for "${typedNode.label}" (${nodeId}).`, { rawLength: raw.length, rawSnippet: raw.slice(0, 300) }, err);
+    throw err;
+  }
 
   // Upsert (not a plain insert) - node_id is unique-constrained, so two
   // students racing on the same brand-new node both generate but only one
@@ -175,7 +185,13 @@ export async function generateAndCacheEdgeLesson(fromNodeId: string, toNodeId: s
     userContent,
     maxTokens: MAX_TOKENS,
   });
-  const parsed = parseWithClosingBraceRepair<EdgeLessonResult>(raw);
+  let parsed: EdgeLessonResult;
+  try {
+    parsed = parseWithClosingBraceRepair<EdgeLessonResult>(raw);
+  } catch (err) {
+    console.error(`LastMind: edge lesson generation failed to parse for "${fromNode.label}" -> "${toNode.label}" (${fromNodeId}->${toNodeId}).`, { rawLength: raw.length, rawSnippet: raw.slice(0, 300) }, err);
+    throw err;
+  }
 
   const { error: upsertError } = await supabaseAdmin
     .from('knowledge_map_edge_lessons')

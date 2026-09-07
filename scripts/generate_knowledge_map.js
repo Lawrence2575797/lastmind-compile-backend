@@ -1343,15 +1343,18 @@ async function generateSubtopic(subtopic, specContent, missingConcepts) {
   // exactly the subtopics that need the most decomposition. Streamed
   // (not just a higher max_tokens) because a long non-streamed generation
   // risks the client's own request timeout, independent of the token cap.
-  // Sonnet 5 uses adaptive thinking by default even with no explicit
-  // `thinking` param - on this task it burned ~14k of a 16k max_tokens
-  // budget on invisible reasoning before writing a single character of
-  // the actual JSON, hitting max_tokens mid-string every time (discovered
-  // empirically on the real first run, not assumed). max_tokens caps
-  // thinking+output TOGETHER, so this has to be sized for both.
+  // thinking explicitly disabled, matching claudeClient.ts's
+  // THINKS_BY_DEFAULT_MODELS handling for every other Sonnet 5/Opus 5 call
+  // in this codebase: this is a rule-driven structured-JSON extraction
+  // task, not one that benefits from extended reasoning, and adaptive
+  // thinking is what caused the original truncation bug this comment used
+  // to describe (it was burning most of a 16k budget on invisible
+  // reasoning before writing a single character of the actual JSON).
+  // max_tokens now only has to cover the actual output.
   const stream1 = client.messages.stream({
     model: GENERATION_MODEL,
     max_tokens: 32000,
+    thinking: { type: 'disabled' },
     system: cachedSystem(KNOWLEDGE_MAP_GENERATION_PROMPT),
     messages: [{
       role: 'user',
@@ -1387,6 +1390,7 @@ async function checkCoverage(specContent, nodes) {
   const stream2 = client.messages.stream({
     model: COVERAGE_MODEL,
     max_tokens: 16000,
+    thinking: { type: 'disabled' },
     system: cachedSystem(KNOWLEDGE_MAP_COVERAGE_PROMPT),
     messages: [{
       role: 'user',
@@ -1416,6 +1420,7 @@ async function verifyBatch(allNodes, allEdges) {
   const stream3 = client.messages.stream({
     model: VERIFICATION_MODEL,
     max_tokens: 60000,
+    thinking: { type: 'disabled' },
     system: cachedSystem(KNOWLEDGE_MAP_VERIFICATION_PROMPT),
     messages: [{
       role: 'user',

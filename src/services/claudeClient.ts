@@ -59,6 +59,13 @@ export async function processNotes(safeText: string): Promise<string> {
       model: MODELS.compile,
       max_tokens: 1024,
       system: TUTOR_SYSTEM_PROMPT,
+      // This call is a raw SDK call rather than going through
+      // makeMessageRequest below, so it doesn't get that function's own
+      // THINKS_BY_DEFAULT_MODELS handling for free - needs the same
+      // explicit opt-out here, or MODELS.compile resolving to
+      // claude-sonnet-5 silently runs with adaptive thinking on, billed as
+      // output tokens on top of this call's own max_tokens.
+      ...(THINKS_BY_DEFAULT_MODELS.has(MODELS.compile) ? { thinking: { type: 'disabled' as const } } : {}),
       messages: [
         {
           role: 'user',

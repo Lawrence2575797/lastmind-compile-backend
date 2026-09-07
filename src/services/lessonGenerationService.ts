@@ -8,6 +8,7 @@
 // routes/knowledgeMap.ts's GET node/edge lesson routes, the only callers.
 import { supabaseAdmin } from './supabaseAdmin';
 import { callClaudeJSON } from './claudeClient';
+import { parseModelJson, stripCodeFences } from './jsonParsing';
 import { KNOWLEDGE_MAP_ENCODING_LESSON_PROMPT, KNOWLEDGE_MAP_EDGE_LESSON_PROMPT } from '../constants/lessonGenerationPrompts';
 
 // Same model choice as the offline pipeline (generate_lesson_content.js's
@@ -18,8 +19,41 @@ import { KNOWLEDGE_MAP_ENCODING_LESSON_PROMPT, KNOWLEDGE_MAP_EDGE_LESSON_PROMPT 
 const LESSON_MODEL = process.env.CLAUDE_MODEL || 'claude-sonnet-5';
 const MAX_TOKENS = 16000;
 
-function stripCodeFences(text: string): string {
-  return text.trim().replace(/^```(?:json)?\s*/i, '').replace(/```\s*$/, '').trim();
+// jsonParsing.ts's own repairs (code-fence stripping, extracting the
+// outermost {...} span, fixing unescaped internal quotes) don't cover
+// this exact prompt's own reproducible failure mode: a response missing
+// PRECISELY its final closing brace/bracket, otherwise well-formed -
+// confirmed live during the real Maths knowledge-map generation run via
+// byte-level brace counting, not genuine truncation (see
+// generate_knowledge_map.js's own parseJsonWithRepair, which this
+// mirrors for the same reason). That pipeline could inspect a failure and
+// retry by hand; this is now a live, single-shot, user-facing path, so
+// it's worth this last-resort repair before giving up outright.
+function parseWithClosingBraceRepair<T>(raw: string): T {
+  try {
+    return parseModelJson<T>(raw);
+  } catch (firstErr) {
+    const text = stripCodeFences(raw);
+    const stack: string[] = [];
+    let inString = false;
+    let escaped = false;
+    for (const ch of text) {
+      if (inString) {
+        if (escaped) escaped = false;
+        else if (ch === '\\') escaped = true;
+        else if (ch === '"') inString = false;
+        continue;
+      }
+      if (ch === '"') inString = true;
+      else if (ch === '{') stack.push('}');
+      else if (ch === '[') stack.push(']');
+      else if (ch === '}' || ch === ']') {
+        if (stack[stack.length - 1] === ch) stack.pop();
+      }
+    }
+    if (inString || !stack.length) throw firstErr;
+    return JSON.parse(text + stack.reverse().join('')) as T;
+  }
 }
 
 interface NodeRow {
@@ -75,7 +109,7 @@ export async function generateAndCacheNodeLesson(nodeId: string): Promise<unknow
     userContent,
     maxTokens: MAX_TOKENS,
   });
-  const encodingContent = JSON.parse(stripCodeFences(raw));
+  const encodingContent = parseWithClosingBraceRepair<unknown>(raw);
 
   // Upsert (not a plain insert) - node_id is unique-constrained, so two
   // students racing on the same brand-new node both generate but only one
@@ -141,7 +175,7 @@ export async function generateAndCacheEdgeLesson(fromNodeId: string, toNodeId: s
     userContent,
     maxTokens: MAX_TOKENS,
   });
-  const parsed = JSON.parse(stripCodeFences(raw)) as EdgeLessonResult;
+  const parsed = parseWithClosingBraceRepair<EdgeLessonResult>(raw);
 
   const { error: upsertError } = await supabaseAdmin
     .from('knowledge_map_edge_lessons')

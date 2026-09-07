@@ -1,6 +1,6 @@
 import { Router, Request, Response } from 'express';
 import { requireAuth, requirePaidTier, isUserPaid } from '../services/authMiddleware';
-import { costlyEndpointLimiter } from '../services/rateLimiters';
+import { costlyEndpointLimiter, syncEndpointLimiter } from '../services/rateLimiters';
 import { getKnowledgeMapForFolder, getKnowledgeMapForSubject, FolderConcept } from '../services/knowledgeMapService';
 import { supabaseAdmin } from '../services/supabaseAdmin';
 import {
@@ -109,8 +109,13 @@ router.get('/knowledge-map-v2', requireAuth, costlyEndpointLimiter, async (req: 
 // scripts/generate_lesson_content.js's offline Batches pipeline
 // established - this just triggers it live instead of via a pre-generated
 // batch, so a subject's lessons only ever get generated for nodes
-// students actually reach.
-router.get('/knowledge-map-v2/node/:nodeId/lesson', requireAuth, costlyEndpointLimiter, async (req: Request, res: Response) => {
+// students actually reach. syncEndpointLimiter, not costlyEndpointLimiter
+// - the overwhelming common case here is a cheap cached read (any node
+// already reached by any student), and a real generation only ever
+// happens once per node forever after, so the tight 10/min "every call
+// costs money" limiter would just break a student legitimately browsing
+// more than 10 concepts a minute on the knowledge map.
+router.get('/knowledge-map-v2/node/:nodeId/lesson', requireAuth, syncEndpointLimiter, async (req: Request, res: Response) => {
   const { nodeId } = req.params;
   try {
     const { data, error } = await supabaseAdmin
@@ -138,8 +143,9 @@ router.get('/knowledge-map-v2/node/:nodeId/lesson', requireAuth, costlyEndpointL
 // generating it live on a cache miss (generateAndCacheEdgeLesson returns
 // null, and this 404s, if either endpoint isn't encoded yet - it
 // structurally shouldn't be reachable before both are, per
-// findMissingEncoding's own gate).
-router.get('/knowledge-map-v2/edge/:fromNodeId/:toNodeId/lesson', requireAuth, costlyEndpointLimiter, async (req: Request, res: Response) => {
+// findMissingEncoding's own gate). syncEndpointLimiter for the same
+// reason as the node lesson route above.
+router.get('/knowledge-map-v2/edge/:fromNodeId/:toNodeId/lesson', requireAuth, syncEndpointLimiter, async (req: Request, res: Response) => {
   const { fromNodeId, toNodeId } = req.params;
   try {
     const { data, error } = await supabaseAdmin

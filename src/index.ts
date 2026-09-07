@@ -28,6 +28,7 @@ import rewardSubmissionsRouter from './routes/rewardSubmissions';
 import practiceQuestionsRouter from './routes/practiceQuestions';
 import specLessonPlanRouter from './routes/specLessonPlan';
 import mathHelpRouter from './routes/mathHelp';
+import personalNotesRouter from './routes/personalNotes';
 import { globalRateLimiter } from './services/rateLimiters';
 
 const PORT = process.env.PORT || 4100;
@@ -79,6 +80,7 @@ app.use('/', rewardSubmissionsRouter);
 app.use('/', practiceQuestionsRouter);
 app.use('/', specLessonPlanRouter);
 app.use('/', mathHelpRouter);
+app.use('/', personalNotesRouter);
 
 app.get('/health', (_req, res) => res.send('ok'));
 

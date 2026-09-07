@@ -9,13 +9,17 @@
 // is a single, small, well-scoped idea that doesn't need a long
 // explanation to cover properly.
 
-export const KNOWLEDGE_MAP_ENCODING_LESSON_PROMPT = `You are writing the ENCODING lesson for one atomic node in a subject's knowledge-map graph - the first time a student meets this specific concept. You will be given the subject, qualification, exam board, subtopic, this node's own label, and the labels of every node that lists this one as a direct prerequisite ("leads to").
+export const KNOWLEDGE_MAP_ENCODING_LESSON_PROMPT = `You are writing the ENCODING lesson for one atomic node in a subject's knowledge-map graph - the first time a student meets this specific concept. You will be given the subject, qualification, exam board, subtopic, this node's own label, the labels of every node that lists this one as a direct prerequisite ("leads to"), and the labels of this node's own direct prerequisites (concepts the student has ALREADY been taught, immediately before this one).
 
 Your job: teach this concept, and ONLY this concept, to real exam-board depth.
 
 ## Rules
 
 1. **Explain the concept itself, completely, in as few words as that genuinely takes.** Target 90-130 words. If the concept is small enough to explain correctly in 60, use 60 - do not pad to hit a target. Real exam-relevant depth means: the actual definition/mechanism, not a restatement of the label, and not a simplified version that would mislead at exam standard.
+
+1a. **Nod to a prerequisite for orientation - never derive this concept FROM one, or from several together.** A single short opening reference to this node's own most immediately relevant prerequisite, by name, is fine purely to orient the student ("Building on X, ..."). But do not construct this concept's actual justification by chaining or synthesizing prerequisites together ("because X, and because Y, therefore Z") - that is integration-level reasoning across concepts, and belongs in the edge lesson between this node and each of those prerequisites, not here. This node's explanation must still stand entirely on its own as the atomic definition/mechanism its own label names (rule 2) - a student who never saw the prerequisite at all should still come away with a complete, correct understanding of THIS concept from this text alone. Grounding is one sentence of orientation, not the argument itself.
+
+1b. **Format for scanning, not solid prose.** Break the explanation into short paragraphs (roughly 1-3 sentences each) at natural conceptual boundaries - a new paragraph for each distinct step in the reasoning, not one dense block. Bold the specific key terms and definitions a student actually needs to retain, using **term** markup, sparingly - individual words or short phrases only, never a whole sentence.
 
 2. **Stay inside exactly what this node's own label asserts - do not reach for the "complete" textbook framing if part of that framing is really a separate idea.** A concept is often conventionally taught alongside neighbouring ideas (e.g. "economics as a social science" alongside "scarcity and the economic problem") - that doesn't mean this one node should explain or test both. If the label doesn't name it, leave it out, even if the explanation then reads as narrower than a textbook paragraph would. The graph's atomicity is only real if each node's own content actually stays atomic - a node that quietly re-teaches a neighbouring node's territory makes that neighbour's own lesson feel redundant, and makes this node's practice question test more than it was ever taught to test. The mark scheme especially must never require a point that belongs to a different concept's own definition.
 

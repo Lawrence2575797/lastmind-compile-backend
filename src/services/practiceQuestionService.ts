@@ -23,6 +23,35 @@ function getMarkingStructureNotes(subject: string, qualification: string, examBo
   return MARKING_STRUCTURE_NOTES[key] ?? null;
 }
 
+// Which node labels within this subject/qualification/exam board the
+// student has actually encoded on the knowledge map (any concept_reviews
+// row against that node's own concept_id) - the real exam mark scheme a
+// practice question is marked against is broader than LastMind's own
+// lesson coverage, so the marking prompt needs this to tell "genuinely
+// missing from your preparation" apart from "real syllabus content you
+// haven't reached here yet" (see PRACTICE_QUESTION_MARKING_PROMPT's own
+// rule on this).
+async function getCoveredNodeLabels(userId: string, subject: string, qualification: string, examBoard: string): Promise<string[]> {
+  const { data: reviewRows, error: reviewError } = await supabaseAdmin
+    .from('concept_reviews')
+    .select('concept_id')
+    .eq('user_id', userId);
+  if (reviewError) throw reviewError;
+  const reviewedConceptIds = new Set((reviewRows || []).map((r) => r.concept_id as string));
+  if (!reviewedConceptIds.size) return [];
+
+  const { data: nodeRows, error: nodeError } = await supabaseAdmin
+    .from('knowledge_map_nodes')
+    .select('label, concept_id')
+    .ilike('subject', subject.trim())
+    .ilike('qualification', qualification.trim())
+    .ilike('exam_board', examBoard.trim());
+  if (nodeError) throw nodeError;
+  return (nodeRows || [])
+    .filter((n) => reviewedConceptIds.has(n.concept_id as string))
+    .map((n) => n.label as string);
+}
+
 function stripCodeFences(text: string): string {
   return text.trim().replace(/^```(?:json)?\s*/i, '').replace(/```\s*$/, '').trim();
 }
@@ -195,11 +224,15 @@ export async function submitPracticeAnswer(userId: string, questionId: string, a
     feedback = correct ? `Correct. ${scheme.explanation}` : `Not quite. ${scheme.explanation}`;
   } else {
     const structureNotes = getMarkingStructureNotes(question.subject as string, question.qualification as string, (question.exam_board as string) || '');
+    const coveredLabels = await getCoveredNodeLabels(userId, question.subject as string, question.qualification as string, (question.exam_board as string) || '');
     const userContent = [
       `Question (worth ${markTariff} marks): ${question.question_text}`,
       `Mark scheme type: ${question.mark_scheme_type}`,
       `Mark scheme: ${JSON.stringify(question.mark_scheme_json)}`,
       structureNotes ? `General marking structure for this subject/qualification/exam board (background context — apply it, don't recite it back): ${structureNotes}` : '',
+      coveredLabels.length
+        ? `Concepts this student has already covered in their LastMind lessons for this subject (see rule on this — anything else in the mark scheme is real syllabus content they haven't reached here yet): ${JSON.stringify(coveredLabels)}`
+        : `This student has not covered any concepts for this subject in LastMind's lessons yet — treat every mark scheme point they missed as not-yet-covered, not as a gap in their preparation.`,
       `Student's answer: ${answerText}`,
     ].filter(Boolean).join('\n\n');
     const result = await callJSON<MarkingResult>(PRACTICE_QUESTION_MARKING_PROMPT, userContent, MODELS.simpleQuestion, 0);

@@ -126,9 +126,12 @@ async function main() {
 
   // ---- Phase 1: encoding lessons, one request per node ----
   const leadsToByNode = new Map(nodes.map(n => [n.id, []]));
+  const leadsFromByNode = new Map(nodes.map(n => [n.id, []]));
   edges.forEach(([from, to]) => {
     const toLabel = nodeById.get(to)?.label;
+    const fromLabel = nodeById.get(from)?.label;
     if (leadsToByNode.has(from) && toLabel) leadsToByNode.get(from).push(toLabel);
+    if (leadsFromByNode.has(to) && fromLabel) leadsFromByNode.get(to).push(fromLabel);
   });
 
   const nodeRequests = nodes.map(node => ({
@@ -139,7 +142,7 @@ async function main() {
       system: cachedSystem(KNOWLEDGE_MAP_ENCODING_LESSON_PROMPT),
       messages: [{
         role: 'user',
-        content: `Subject: ${SUBJECT}\nQualification: ${QUALIFICATION}\nExam board: ${EXAM_BOARD}\nSubtopic: ${node.subtopic || ''}\nConcept to teach: ${node.label}\nConcepts this leads to (do not explain or foreshadow these - see rule 2): ${JSON.stringify((leadsToByNode.get(node.id) || []).filter(Boolean))}`,
+        content: `Subject: ${SUBJECT}\nQualification: ${QUALIFICATION}\nExam board: ${EXAM_BOARD}\nSubtopic: ${node.subtopic || ''}\nConcept to teach: ${node.label}\nConcepts this leads to (do not explain or foreshadow these - see rule 3): ${JSON.stringify((leadsToByNode.get(node.id) || []).filter(Boolean))}\nThis node's own direct prerequisites, already taught immediately before this one (ground and build forward from these - see rule 1a): ${JSON.stringify((leadsFromByNode.get(node.id) || []).filter(Boolean))}`,
       }],
     },
   }));

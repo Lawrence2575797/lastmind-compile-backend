@@ -19,39 +19,173 @@ import { resolveEdgeForReview, linkIntegrationConceptId } from './nodeReviewServ
 import { getSpecMicrotopics, normalizeForPlanMatch, stripGcseTierForPlanMatch } from './chainService';
 import { NODE_NOTES_COMPILE_PROMPT, EDGE_NOTES_COMPILE_PROMPT, SUBTOPIC_NODE_ORDER_PROMPT } from '../constants/knowledgeMapNotesPrompts';
 
-export async function getNodeNotes(nodeId: string): Promise<{ notes: string } | null> {
-  const { data } = await supabaseAdmin.from('knowledge_map_node_notes').select('notes_content').eq('node_id', nodeId).maybeSingle();
-  return data ? { notes: data.notes_content as string } : null;
+export type NodeNoteVisual =
+  | { type: 'diagram'; spec: unknown }
+  | { type: 'comparison'; otherLabel: string; thisPoints: string[]; otherPoints: string[] }
+  | { type: 'example'; text: string }
+  | { type: 'none' };
+
+export interface NodeNotesResult {
+  heading: string;
+  paragraphs: string[];
+  visual: NodeNoteVisual;
 }
 
-export async function compileNodeNotes(nodeId: string): Promise<{ notes: string } | null> {
+// notes_content stays a plain `text` column (no schema change) but now
+// carries a JSON-encoded NodeNotesResult instead of a raw string - avoids
+// a manual DB migration for what's otherwise an opaque cache blob. A
+// pre-existing row from before this change (a bare string, not JSON)
+// still degrades gracefully: shown as a single untitled paragraph rather
+// than breaking the page.
+function parseStoredNodeNotes(raw: string, fallbackLabel: string): NodeNotesResult {
+  try {
+    const parsed = JSON.parse(raw);
+    if (parsed && typeof parsed === 'object' && Array.isArray(parsed.paragraphs)) {
+      return { heading: parsed.heading || fallbackLabel, paragraphs: parsed.paragraphs, visual: parsed.visual || { type: 'none' } };
+    }
+  } catch {
+    // Legacy plain-text row - fall through to the wrap-as-one-paragraph case below.
+  }
+  return { heading: fallbackLabel, paragraphs: [raw], visual: { type: 'none' } };
+}
+
+export async function getNodeNotes(nodeId: string): Promise<NodeNotesResult | null> {
+  const { data } = await supabaseAdmin.from('knowledge_map_node_notes').select('notes_content').eq('node_id', nodeId).maybeSingle();
+  if (!data) return null;
+  const { data: node } = await supabaseAdmin.from('knowledge_map_nodes').select('label').eq('id', nodeId).maybeSingle();
+  return parseStoredNodeNotes(data.notes_content as string, node?.label || '');
+}
+
+interface SiblingCandidate {
+  label: string;
+  explanation: string;
+}
+
+// Up to 6 other nodes in the same subtopic, each with their own
+// explanation - candidates the compile prompt can pick a genuine
+// comparison from (see NODE_NOTES_COMPILE_PROMPT's visualType rules).
+// Capped since this is a per-compile-call cost, not a one-time index
+// build, and a subtopic can have far more than 6 nodes.
+async function getSiblingCandidates(nodeId: string, subtopic: string, subject: string, qualification: string, examBoard: string): Promise<SiblingCandidate[]> {
+  if (!subtopic) return [];
+  const { data: siblingNodes } = await supabaseAdmin
+    .from('knowledge_map_nodes')
+    .select('id, label')
+    .eq('subtopic', subtopic)
+    .ilike('subject', subject.trim())
+    .ilike('qualification', qualification.trim())
+    .ilike('exam_board', examBoard.trim())
+    .neq('id', nodeId)
+    .limit(6);
+  if (!siblingNodes?.length) return [];
+
+  const siblingIds = siblingNodes.map((n) => n.id as string);
+  const { data: lessons } = await supabaseAdmin
+    .from('knowledge_map_node_lessons')
+    .select('node_id, encoding_content')
+    .in('node_id', siblingIds);
+  const explanationByNodeId = new Map(
+    (lessons || []).map((l) => [l.node_id as string, (l.encoding_content as { explanation?: string } | null)?.explanation])
+  );
+
+  return siblingNodes
+    .map((n) => ({ label: n.label as string, explanation: explanationByNodeId.get(n.id as string) }))
+    .filter((c): c is SiblingCandidate => !!c.explanation);
+}
+
+interface NodeNotesModelResponse {
+  heading: string;
+  paragraphs: string[];
+  visualType: 'comparison' | 'example' | 'none';
+  comparison?: { otherLabel: string; thisPoints: string[]; otherPoints: string[] };
+  example?: string;
+}
+
+export async function compileNodeNotes(nodeId: string): Promise<NodeNotesResult | null> {
   const cached = await getNodeNotes(nodeId);
   if (cached) return cached;
 
   const [{ data: node }, { data: lesson }] = await Promise.all([
-    supabaseAdmin.from('knowledge_map_nodes').select('label').eq('id', nodeId).maybeSingle(),
+    supabaseAdmin.from('knowledge_map_nodes').select('label, subtopic, subject, qualification, exam_board').eq('id', nodeId).maybeSingle(),
     supabaseAdmin.from('knowledge_map_node_lessons').select('encoding_content').eq('node_id', nodeId).maybeSingle(),
   ]);
-  const explanation = (lesson?.encoding_content as { explanation?: string } | null)?.explanation;
+  const encodingContent = lesson?.encoding_content as { explanation?: string; practiceQuestion?: { diagramSpec?: { notDiagrammatic?: boolean } } } | null;
+  const explanation = encodingContent?.explanation;
   if (!node || !explanation) return null;
+
+  // The diagram check already ran once, offline, for every diagrammatic
+  // node (see generate_diagram_specs.js / MECHANISTIC_DIAGRAM_SPEC_PROMPT)
+  // - reuse that verdict rather than asking the model to re-decide
+  // diagram-appropriateness here. Dual coding's payoff is real diagram
+  // content, so a genuine diagramSpec always wins over the model's own
+  // comparison/example choice below.
+  const diagramSpec = encodingContent?.practiceQuestion?.diagramSpec;
+  const hasDiagram = !!diagramSpec && !diagramSpec.notDiagrammatic;
+
+  const siblings = hasDiagram
+    ? []
+    : await getSiblingCandidates(nodeId, node.subtopic as string, node.subject as string, node.qualification as string, node.exam_board as string);
+
+  const userContent = [
+    `Concept: ${node.label}`,
+    `Explanation: ${explanation}`,
+    siblings.length
+      ? `Sibling concepts from the same lesson (possible comparison candidates):\n${siblings.map((s) => `- ${s.label}: ${s.explanation}`).join('\n')}`
+      : null,
+  ].filter(Boolean).join('\n\n');
 
   const raw = await callClaudeJSON({
     model: MODELS.simpleQuestion,
     systemPrompt: NODE_NOTES_COMPILE_PROMPT,
-    userContent: `Concept: ${node.label}\nExplanation: ${explanation}`,
+    userContent,
     temperature: 0.2,
   });
-  const notes = raw.trim();
+  const modelResult = parseModelJson<NodeNotesModelResponse>(raw);
+
+  let visual: NodeNoteVisual = { type: 'none' };
+  if (hasDiagram) {
+    visual = { type: 'diagram', spec: diagramSpec };
+  } else if (modelResult.visualType === 'comparison' && modelResult.comparison) {
+    const matchedSibling = siblings.find((s) => s.label === modelResult.comparison!.otherLabel);
+    if (matchedSibling) visual = { type: 'comparison', ...modelResult.comparison };
+  } else if (modelResult.visualType === 'example' && modelResult.example) {
+    visual = { type: 'example', text: modelResult.example };
+  }
+
+  const result: NodeNotesResult = { heading: modelResult.heading || node.label, paragraphs: modelResult.paragraphs || [], visual };
 
   const { error } = await supabaseAdmin
     .from('knowledge_map_node_notes')
-    .upsert({ node_id: nodeId, notes_content: notes }, { onConflict: 'node_id' });
+    .upsert({ node_id: nodeId, notes_content: JSON.stringify(result) }, { onConflict: 'node_id' });
   if (error) throw error;
 
-  return { notes };
+  return result;
 }
 
-export async function getEdgeNotes(fromNodeId: string, toNodeId: string): Promise<{ transferSummary: string; integrationSummary: string } | null> {
+export interface EdgeNotesResult {
+  transferSummary: string;
+  heading: string;
+  paragraphs: string[];
+}
+
+// integration_summary stays a plain `text` column but now carries a
+// JSON-encoded {heading, paragraphs} instead of one text blob - same
+// no-migration reasoning as parseStoredNodeNotes above. A pre-existing
+// plain-string row degrades to a fallback heading plus itself as the one
+// paragraph, rather than breaking.
+function parseStoredIntegrationSummary(raw: string, fallbackHeading: string): { heading: string; paragraphs: string[] } {
+  try {
+    const parsed = JSON.parse(raw);
+    if (parsed && typeof parsed === 'object' && Array.isArray(parsed.paragraphs)) {
+      return { heading: parsed.heading || fallbackHeading, paragraphs: parsed.paragraphs };
+    }
+  } catch {
+    // Legacy plain-text row - fall through.
+  }
+  return { heading: fallbackHeading, paragraphs: [raw] };
+}
+
+export async function getEdgeNotes(fromNodeId: string, toNodeId: string): Promise<EdgeNotesResult | null> {
   const edge = await resolveEdgeForReview(fromNodeId, toNodeId);
   if (!edge) return null;
   const { data } = await supabaseAdmin
@@ -59,7 +193,9 @@ export async function getEdgeNotes(fromNodeId: string, toNodeId: string): Promis
     .select('transfer_summary, integration_summary')
     .eq('edge_id', edge.id)
     .maybeSingle();
-  return data ? { transferSummary: data.transfer_summary as string, integrationSummary: data.integration_summary as string } : null;
+  if (!data) return null;
+  const { heading, paragraphs } = parseStoredIntegrationSummary(data.integration_summary as string, `${edge.fromNode.label} → ${edge.toNode.label}`);
+  return { transferSummary: data.transfer_summary as string, heading, paragraphs };
 }
 
 // Also unlocks these notes for `userId` (see knowledge_map_edge_notes_unlocked's
@@ -70,7 +206,7 @@ export async function compileEdgeNotes(
   userId: string,
   fromNodeId: string,
   toNodeId: string
-): Promise<{ transferSummary: string; integrationSummary: string } | null> {
+): Promise<EdgeNotesResult | null> {
   const edge = await resolveEdgeForReview(fromNodeId, toNodeId);
   if (!edge || !edge.linkTeaching) return null;
 
@@ -82,12 +218,13 @@ export async function compileEdgeNotes(
       userContent: `Concept A: ${edge.fromNode.label}\nConcept B: ${edge.toNode.label}\nReference material: ${edge.linkTeaching}`,
       temperature: 0.2,
     });
-    notes = parseModelJson<{ transferSummary: string; integrationSummary: string }>(raw);
+    const modelResult = parseModelJson<{ transferSummary: string; heading: string; paragraphs: string[] }>(raw);
+    notes = { transferSummary: modelResult.transferSummary, heading: modelResult.heading, paragraphs: modelResult.paragraphs };
 
     const { error } = await supabaseAdmin
       .from('knowledge_map_edge_notes')
       .upsert(
-        { edge_id: edge.id, transfer_summary: notes.transferSummary, integration_summary: notes.integrationSummary },
+        { edge_id: edge.id, transfer_summary: notes.transferSummary, integration_summary: JSON.stringify({ heading: notes.heading, paragraphs: notes.paragraphs }) },
         { onConflict: 'edge_id' }
       );
     if (error) throw error;

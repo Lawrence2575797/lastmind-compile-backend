@@ -21,7 +21,7 @@ import { VERIFY_LEARNING_PROMPT, buildVerifyQuestionText } from '../constants/ve
 import {
   getQualifyingReviewLinks,
   linkIntegrationConceptId,
-  generateRewordedAo1Question,
+  getRewordedAo1Question,
   gradeRewordedAo1Answer,
   checkAo1SlipCandidate,
   getIntegrationStepData,
@@ -668,7 +668,7 @@ router.post('/knowledge-map-v2/node-review/ao1/start', requireAuth, costlyEndpoi
   const { nodeId } = (req.body ?? {}) as { nodeId?: string };
   if (!nodeId) return res.status(400).json({ error: 'nodeId is required' });
   try {
-    const question = await generateRewordedAo1Question(nodeId);
+    const question = await getRewordedAo1Question(nodeId);
     if (!question) return res.status(404).json({ error: 'no lesson generated for this concept yet' });
     res.json(question);
   } catch (err) {

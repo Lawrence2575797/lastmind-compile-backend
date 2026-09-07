@@ -1365,23 +1365,28 @@ async function generateSubtopic(subtopic, specContent, missingConcepts) {
   stream1.on('streamEvent', (e) => { if (e.type === 'message_delta' || e.type === 'message_stop') console.error('STREAM EVENT:', JSON.stringify(e)); });
   const resp = await stream1.finalMessage();
   console.error('stop_reason:', resp.stop_reason, ' usage:', JSON.stringify(resp.usage));
+  const debugPath = path.join(__dirname, `debug_generation_${safeId(subtopic)}.txt`);
   const textBlock1 = resp.content.find(b => b.type === 'text');
   if (!textBlock1) {
-    fs.writeFileSync(path.join(__dirname, 'debug_last_generation_response.txt'), JSON.stringify(resp, null, 2));
-    throw new Error(`No text block in response for subtopic "${subtopic}" - stop_reason: ${resp.stop_reason}, full response dumped to scripts/debug_last_generation_response.txt`);
+    fs.writeFileSync(debugPath, JSON.stringify(resp, null, 2));
+    throw new Error(`No text block in response for subtopic "${subtopic}" - stop_reason: ${resp.stop_reason}, full response dumped to ${debugPath}`);
   }
   const text = textBlock1.text;
   const cleaned = stripCodeFences(text);
   try {
     return JSON.parse(cleaned);
   } catch (err) {
-    fs.writeFileSync(path.join(__dirname, 'debug_last_generation_response.txt'), cleaned);
-    console.error(`JSON parse failed for subtopic "${subtopic}" - raw response written to scripts/debug_last_generation_response.txt`);
+    fs.writeFileSync(debugPath, cleaned);
+    console.error(`JSON parse failed for subtopic "${subtopic}" - raw response written to ${debugPath}`);
     throw err;
   }
 }
 
-async function checkCoverage(specContent, nodes) {
+function safeId(raw) {
+  return raw.replace(/[^a-zA-Z0-9_-]/g, '_').slice(0, 64);
+}
+
+async function checkCoverage(subtopic, specContent, nodes) {
   // 6k (up from 4k): a thin margin above what a genuinely thorough
   // missing-concepts list for a dense subtopic could need - this call's
   // output is bounded by how much the FIRST pass actually missed, so it
@@ -1403,8 +1408,9 @@ async function checkCoverage(specContent, nodes) {
   try {
     return JSON.parse(stripCodeFences(textBlock2.text)).missingConcepts || [];
   } catch (err) {
-    fs.writeFileSync(path.join(__dirname, 'debug_last_coverage_response.txt'), textBlock2.text);
-    console.error('Coverage JSON parse failed - raw response written to scripts/debug_last_coverage_response.txt');
+    const debugPath = path.join(__dirname, `debug_coverage_${safeId(subtopic)}.txt`);
+    fs.writeFileSync(debugPath, textBlock2.text);
+    console.error(`Coverage JSON parse failed for "${subtopic}" - raw response written to ${debugPath}`);
     throw err;
   }
 }
@@ -1504,14 +1510,19 @@ function validate(nodes, edges) {
 // wrapped in its own try/catch inside generateSubtopic/checkCoverage/
 // verifyBatch that writes a debug dump - only the raw network/SDK-level
 // exception these three functions can also throw.
-async function withRetry(fn, label, maxRetries = 3) {
+async function withRetry(fn, label, maxRetries = 4) {
   for (let attempt = 1; attempt <= maxRetries; attempt++) {
     try {
       return await fn();
     } catch (err) {
-      const transient = err?.cause?.code === 'ECONNRESET' || err?.status >= 500 || err?.name === 'APIConnectionError';
+      // 429 added after raising SUBTOPIC_CONCURRENCY made hitting a rate
+      // limit a real possibility, not just a network blip - a 429 needs a
+      // longer, escalating wait than a dropped connection does, since
+      // retrying immediately into an active rate limit just fails again.
+      const isRateLimit = err?.status === 429;
+      const transient = isRateLimit || err?.cause?.code === 'ECONNRESET' || err?.status >= 500 || err?.name === 'APIConnectionError';
       if (!transient || attempt === maxRetries) throw err;
-      const waitMs = 5000 * attempt;
+      const waitMs = isRateLimit ? 20000 * attempt : 5000 * attempt;
       console.warn(`  ! ${label} failed (attempt ${attempt}/${maxRetries}: ${err.message}) - retrying in ${waitMs / 1000}s...`);
       await new Promise(resolve => setTimeout(resolve, waitMs));
     }
@@ -1531,42 +1542,82 @@ function saveCheckpoint(state) {
   fs.writeFileSync(CHECKPOINT_PATH, JSON.stringify(state));
 }
 
+// One subtopic's full generate -> coverage-check -> regenerate pipeline,
+// as a standalone unit safe to run concurrently with others (each only
+// ever touches its own local `nodes`/`edges`, never shared state) - the
+// only genuine cross-subtopic dependency in the whole pipeline is the
+// FINAL verifyBatch call, which needs everything already finished, so
+// nothing here needs to run sequentially.
+async function processSubtopic(subtopic, specContent) {
+  console.log(`Generating: ${subtopic}...`);
+  let { nodes, edges } = await withRetry(() => generateSubtopic(subtopic, specContent), `generate ${subtopic}`);
+  console.log(`  -> ${subtopic}: ${nodes.length} nodes, ${edges.length} edges`);
+
+  // Coverage check against the RAW spec text - the only check in this
+  // pipeline that can catch a whole named theory/model dropped entirely,
+  // since it's the only one that ever sees the source text rather than
+  // just the nodes already produced from it (see the comment above
+  // KNOWLEDGE_MAP_COVERAGE_PROMPT for why this is a distinct failure
+  // mode from anything verifyBatch below can catch).
+  for (let round = 0; round < MAX_COVERAGE_ROUNDS; round++) {
+    console.log(`  [${subtopic}] Checking coverage (round ${round + 1})...`);
+    const missing = await withRetry(() => checkCoverage(subtopic, specContent, nodes), `coverage check ${subtopic}`);
+    if (!missing.length) {
+      console.log(`  -> ${subtopic}: full coverage confirmed`);
+      break;
+    }
+    console.log(`  -> ${subtopic}: ${missing.length} concept(s) missing, regenerating: ${missing.map(m => m.term).join('; ')}`);
+    ({ nodes, edges } = await withRetry(() => generateSubtopic(subtopic, specContent, missing), `regenerate ${subtopic}`));
+    console.log(`  -> ${subtopic}: ${nodes.length} nodes, ${edges.length} edges after regeneration`);
+  }
+
+  nodes.forEach(n => n.subtopic = subtopic);
+  return { subtopic, nodes, edges };
+}
+
+// Concurrency limited (not all 21 at once) to stay well clear of the
+// account's own rate limits rather than guess at exactly where they are
+// and find out the hard way mid-run - each subtopic is already a large,
+// thinking-heavy call, so even a modest concurrency genuinely compresses
+// the sequential ~4-5 min/subtopic wall-clock time.
+const SUBTOPIC_CONCURRENCY = 4;
+
 async function main() {
   const state = loadCheckpoint();
   let { allNodes, allEdges } = state;
   const done = new Set(state.completedSubtopics);
 
-  for (const { subtopic, specContent } of SUBTOPICS) {
-    if (done.has(subtopic)) { console.log(`Skipping (already done): ${subtopic}`); continue; }
+  const remaining = SUBTOPICS.filter(s => !done.has(s.subtopic));
+  for (const s of SUBTOPICS) { if (done.has(s.subtopic)) console.log(`Skipping (already done): ${s.subtopic}`); }
 
-    console.log(`Generating: ${subtopic}...`);
-    let { nodes, edges } = await withRetry(() => generateSubtopic(subtopic, specContent), `generate ${subtopic}`);
-    console.log(`  -> ${nodes.length} nodes, ${edges.length} edges`);
-
-    // Coverage check against the RAW spec text - the only check in this
-    // pipeline that can catch a whole named theory/model dropped
-    // entirely, since it's the only one that ever sees the source text
-    // rather than just the nodes already produced from it (see the
-    // comment above KNOWLEDGE_MAP_COVERAGE_PROMPT for why this is a
-    // distinct failure mode from anything verifyBatch below can catch).
-    for (let round = 0; round < MAX_COVERAGE_ROUNDS; round++) {
-      console.log(`  Checking coverage against spec text (round ${round + 1})...`);
-      const missing = await withRetry(() => checkCoverage(specContent, nodes), `coverage check ${subtopic}`);
-      if (!missing.length) {
-        console.log('  -> full coverage confirmed');
-        break;
+  let anyFailed = false;
+  for (let i = 0; i < remaining.length; i += SUBTOPIC_CONCURRENCY) {
+    const chunk = remaining.slice(i, i + SUBTOPIC_CONCURRENCY);
+    // allSettled, not all - a genuine failure in one subtopic (e.g. a
+    // real max_tokens truncation, not just a transient network blip)
+    // must not throw away the OTHER subtopics in the same chunk that
+    // finished fine. Promise.all would reject the whole chunk the moment
+    // any one item threw, silently discarding already-done work that
+    // was never given a chance to reach saveCheckpoint - exactly what
+    // happened on the real run this was found on.
+    const settled = await Promise.allSettled(chunk.map(s => processSubtopic(s.subtopic, s.specContent)));
+    settled.forEach((result, idx) => {
+      if (result.status === 'fulfilled') {
+        const { subtopic, nodes, edges } = result.value;
+        allNodes = allNodes.concat(nodes);
+        allEdges = allEdges.concat(edges);
+        done.add(subtopic);
+      } else {
+        anyFailed = true;
+        console.error(`FAILED: ${chunk[idx].subtopic}: ${result.reason?.message || result.reason}`);
       }
-      console.log(`  -> ${missing.length} concept(s) missing, regenerating:`);
-      missing.forEach(m => console.log(`     - ${m.term}`));
-      ({ nodes, edges } = await withRetry(() => generateSubtopic(subtopic, specContent, missing), `regenerate ${subtopic}`));
-      console.log(`  -> ${nodes.length} nodes, ${edges.length} edges after regeneration`);
-    }
-
-    nodes.forEach(n => n.subtopic = subtopic);
-    allNodes = allNodes.concat(nodes);
-    allEdges = allEdges.concat(edges);
-    done.add(subtopic);
+    });
     saveCheckpoint({ completedSubtopics: Array.from(done), allNodes, allEdges });
+    console.log(`Checkpoint saved: ${done.size}/${SUBTOPICS.length} subtopics done.`);
+  }
+  if (anyFailed) {
+    console.error('\nOne or more subtopics failed permanently (see FAILED lines above) - fix the underlying issue, then just re-run this script. The checkpoint means only the failed subtopic(s) get retried, nothing already-done gets re-paid for.');
+    process.exit(1);
   }
 
   console.log(`\nVerifying batch of ${allNodes.length} nodes...`);

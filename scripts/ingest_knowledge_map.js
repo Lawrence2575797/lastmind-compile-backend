@@ -28,6 +28,28 @@ function conceptId(subtopic, label) { return `${clean(SUBJECT)}:${clean(subtopic
 const MAP_PATH = path.join(__dirname, `knowledge_map_${SUBJECT.toLowerCase()}_${QUALIFICATION.toLowerCase().replace(/[^a-z0-9]/g, '')}.json`);
 const LESSON_PATH = path.join(__dirname, `lesson_content_${SUBJECT.toLowerCase()}_${QUALIFICATION.toLowerCase().replace(/[^a-z0-9]/g, '')}.json`);
 
+// Supabase/PostgREST caps a plain .select() at 1000 rows by default -
+// found the hard way when a 1209-node subject silently got only 1000
+// nodes back on re-fetch, causing every edge that touched one of the
+// missing 209 to be dropped as "node id not found" with no error thrown
+// anywhere. Paginate with .range() until a page comes back short of the
+// page size, which is the only reliable "that was the last page" signal
+// (the row count is a rough estimate on some Postgres plans, not
+// something to loop against directly).
+async function selectAll(table, columns, filters) {
+  const PAGE = 1000;
+  let all = [];
+  for (let from = 0; ; from += PAGE) {
+    let q = supabase.from(table).select(columns).range(from, from + PAGE - 1);
+    Object.entries(filters || {}).forEach(([k, v]) => { q = q.eq(k, v); });
+    const { data, error } = await q;
+    if (error) throw new Error(`Paginated select on ${table} failed at offset ${from}: ${error.message}`);
+    all = all.concat(data);
+    if (data.length < PAGE) break;
+  }
+  return all;
+}
+
 // Supabase's default insert batch has no hard row cap here, but chunking
 // keeps any single request well under request-size limits for ~1800 rows.
 async function insertInChunks(table, rows, chunkSize = 200) {
@@ -59,11 +81,7 @@ async function main() {
   await insertInChunks('knowledge_map_nodes', nodeRows);
 
   // Need the DB-assigned uuids back to wire edges/lessons by id, not node_key.
-  const { data: insertedNodes, error: fetchErr } = await supabase
-    .from('knowledge_map_nodes')
-    .select('id, node_key')
-    .eq('subject', SUBJECT).eq('qualification', QUALIFICATION).eq('exam_board', EXAM_BOARD);
-  if (fetchErr) throw new Error(`Could not re-fetch inserted nodes: ${fetchErr.message}`);
+  const insertedNodes = await selectAll('knowledge_map_nodes', 'id, node_key', { subject: SUBJECT, qualification: QUALIFICATION, exam_board: EXAM_BOARD });
   const idByNodeKey = new Map(insertedNodes.map(r => [r.node_key, r.id]));
 
   const edgeRows = edges
@@ -92,10 +110,7 @@ async function main() {
       .filter(r => r.node_id);
     await insertInChunks('knowledge_map_node_lessons', nodeLessonRows);
 
-    const { data: insertedEdges, error: edgeFetchErr } = await supabase
-      .from('knowledge_map_edges')
-      .select('id, from_node_id, to_node_id');
-    if (edgeFetchErr) throw new Error(`Could not re-fetch inserted edges: ${edgeFetchErr.message}`);
+    const insertedEdges = await selectAll('knowledge_map_edges', 'id, from_node_id, to_node_id');
     const edgeIdByPair = new Map(insertedEdges.map(r => [`${r.from_node_id}|${r.to_node_id}`, r.id]));
 
     const edgeLessonRows = lessons.edgeLessons

@@ -84,21 +84,27 @@ function cachedSystem(promptText) {
 
 // Submits a batch, polls every 60s until processing_status is "ended",
 // then streams results back as a Map<custom_id, resultObject>.
+// client.beta.messages.batches, not client.messages.batches - this repo
+// has @anthropic-ai/sdk 0.32.1 pinned, old enough that the Batches API is
+// still under the beta namespace here even though it's graduated to
+// stable in the current docs/SDK. Checked against the actually-installed
+// package rather than assumed from the docs, after the first run failed
+// on this within seconds - no API call happened before it was caught.
 async function runBatch(requests, label) {
   console.log(`Submitting batch "${label}" (${requests.length} requests)...`);
-  const batch = await client.messages.batches.create({ requests });
+  const batch = await client.beta.messages.batches.create({ requests });
   console.log(`  -> batch id ${batch.id}, polling until ended...`);
 
   let current = batch;
   while (current.processing_status !== 'ended') {
     await new Promise(resolve => setTimeout(resolve, 60_000));
-    current = await client.messages.batches.retrieve(batch.id);
+    current = await client.beta.messages.batches.retrieve(batch.id);
     console.log(`  -> ${label}: ${JSON.stringify(current.request_counts)}`);
   }
 
   const results = new Map();
   let parseFailures = 0;
-  for await (const result of await client.messages.batches.results(batch.id)) {
+  for await (const result of await client.beta.messages.batches.results(batch.id)) {
     if (result.result.type !== 'succeeded') {
       console.warn(`  -> ${label}: ${result.custom_id} did not succeed (${result.result.type})`);
       continue;

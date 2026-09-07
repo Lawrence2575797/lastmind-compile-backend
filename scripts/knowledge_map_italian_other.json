@@ -1,0 +1,4389 @@
+{
+  "subject": "Italian",
+  "qualification": "Other",
+  "examBoard": "",
+  "nodes": [
+    {
+      "id": "greet_time",
+      "label": "Time-of-day greetings: buongiorno, buonasera, buonanotte",
+      "subtopic": "A1.1 Greetings, introductions and register"
+    },
+    {
+      "id": "greet_casual",
+      "label": "Casual greetings/farewells: ciao, salve",
+      "subtopic": "A1.1 Greetings, introductions and register"
+    },
+    {
+      "id": "greet_farewell",
+      "label": "Farewell expressions: arrivederci, a presto, a domani",
+      "subtopic": "A1.1 Greetings, introductions and register"
+    },
+    {
+      "id": "register_concept",
+      "label": "Concept of register: formal vs informal address",
+      "subtopic": "A1.1 Greetings, introductions and register"
+    },
+    {
+      "id": "subj_pronouns",
+      "label": "Subject pronouns: io, tu, lui/lei, noi, voi, loro",
+      "subtopic": "A1.1 Greetings, introductions and register"
+    },
+    {
+      "id": "lei_formal",
+      "label": "Formal 'Lei' as distinct capitalised address form, contrasted with 'tu'",
+      "subtopic": "A1.1 Greetings, introductions and register"
+    },
+    {
+      "id": "intro_self",
+      "label": "Introducing yourself: mi chiamo...",
+      "subtopic": "A1.1 Greetings, introductions and register"
+    },
+    {
+      "id": "ask_name_informal",
+      "label": "Asking someone's name informally: come ti chiami?",
+      "subtopic": "A1.1 Greetings, introductions and register"
+    },
+    {
+      "id": "ask_name_formal",
+      "label": "Asking someone's name formally: come si chiama?",
+      "subtopic": "A1.1 Greetings, introductions and register"
+    },
+    {
+      "id": "piacere",
+      "label": "Expressing pleasure on meeting: piacere",
+      "subtopic": "A1.1 Greetings, introductions and register"
+    },
+    {
+      "id": "courtesy_basic",
+      "label": "Basic courtesy expressions: per favore, grazie, prego",
+      "subtopic": "A1.1 Greetings, introductions and register"
+    },
+    {
+      "id": "courtesy_apology",
+      "label": "Apology/attention expressions: scusa (informal) / scusi (formal)",
+      "subtopic": "A1.1 Greetings, introductions and register"
+    },
+    {
+      "id": "courtesy_response",
+      "label": "Response to thanks: di niente",
+      "subtopic": "A1.1 Greetings, introductions and register"
+    },
+    {
+      "id": "ask_origin_informal",
+      "label": "Asking origin informally: di dove sei?",
+      "subtopic": "A1.1 Greetings, introductions and register"
+    },
+    {
+      "id": "ask_origin_formal",
+      "label": "Asking origin formally: di dov'e?",
+      "subtopic": "A1.1 Greetings, introductions and register"
+    },
+    {
+      "id": "state_origin",
+      "label": "Stating origin: sono di...",
+      "subtopic": "A1.1 Greetings, introductions and register"
+    },
+    {
+      "id": "nationality_agree",
+      "label": "Nationality adjectives: masculine/feminine/plural agreement (italiano/a/i/e, inglese/i)",
+      "subtopic": "A1.1 Greetings, introductions and register"
+    },
+    {
+      "id": "yesno",
+      "label": "Yes/no words: si, no",
+      "subtopic": "A1.1 Greetings, introductions and register"
+    },
+    {
+      "id": "question_words",
+      "label": "Question words: come, dove, quando, perche, chi, cosa, quanto",
+      "subtopic": "A1.1 Greetings, introductions and register"
+    },
+    {
+      "id": "NUM_0_20",
+      "label": "Cardinal numbers 0-20",
+      "subtopic": "A1.2 Numbers, time and dates"
+    },
+    {
+      "id": "NUM_21_100",
+      "label": "Cardinal numbers 21-100 and tens pattern (venti, trenta, etc.)",
+      "subtopic": "A1.2 Numbers, time and dates"
+    },
+    {
+      "id": "NUM_ABOVE_100",
+      "label": "Pattern for numbers above 100 (cento, duecento, mille)",
+      "subtopic": "A1.2 Numbers, time and dates"
+    },
+    {
+      "id": "CHE_ORE_SONO",
+      "label": "Asking the time: che ore sono?",
+      "subtopic": "A1.2 Numbers, time and dates"
+    },
+    {
+      "id": "SONO_LE",
+      "label": "Stating the time: sono le... (+ number)",
+      "subtopic": "A1.2 Numbers, time and dates"
+    },
+    {
+      "id": "MEZZOGIORNO_MEZZANOTTE",
+      "label": "Special time expressions: e mezzogiorno / e mezzanotte",
+      "subtopic": "A1.2 Numbers, time and dates"
+    },
+    {
+      "id": "E_MENO_QUARTER_HALF",
+      "label": "Using 'e' and 'meno' for quarter/half past/to",
+      "subtopic": "A1.2 Numbers, time and dates"
+    },
+    {
+      "id": "DAYS_OF_WEEK",
+      "label": "Days of the week (lunedi-domenica)",
+      "subtopic": "A1.2 Numbers, time and dates"
+    },
+    {
+      "id": "ASK_STATE_DAY",
+      "label": "Asking/stating what day it is",
+      "subtopic": "A1.2 Numbers, time and dates"
+    },
+    {
+      "id": "MONTHS_YEAR",
+      "label": "Months of the year",
+      "subtopic": "A1.2 Numbers, time and dates"
+    },
+    {
+      "id": "DATE_FORMULA",
+      "label": "Stating a date: il + number + month",
+      "subtopic": "A1.2 Numbers, time and dates"
+    },
+    {
+      "id": "IL_PRIMO_EXCEPTION",
+      "label": "Exception: 'il primo' for the 1st",
+      "subtopic": "A1.2 Numbers, time and dates"
+    },
+    {
+      "id": "SEASONS",
+      "label": "Seasons (primavera, estate, autunno, inverno)",
+      "subtopic": "A1.2 Numbers, time and dates"
+    },
+    {
+      "id": "AVERE_VERB",
+      "label": "Verb avere (to have) - basic present tense forms",
+      "subtopic": "A1.2 Numbers, time and dates"
+    },
+    {
+      "id": "QUANTI_ANNI_HAI",
+      "label": "Asking age: quanti anni hai?",
+      "subtopic": "A1.2 Numbers, time and dates"
+    },
+    {
+      "id": "HO_ANNI",
+      "label": "Giving age: ho ... anni (using avere, not essere)",
+      "subtopic": "A1.2 Numbers, time and dates"
+    },
+    {
+      "id": "noun_o_masc",
+      "label": "Nouns ending in -o are regular masculine",
+      "subtopic": "A1.3 Articles, gender, plurals and agreement"
+    },
+    {
+      "id": "noun_a_fem",
+      "label": "Nouns ending in -a are regular feminine",
+      "subtopic": "A1.3 Articles, gender, plurals and agreement"
+    },
+    {
+      "id": "noun_e_either",
+      "label": "Nouns ending in -e can be masculine or feminine, learned individually",
+      "subtopic": "A1.3 Articles, gender, plurals and agreement"
+    },
+    {
+      "id": "plural_o_i",
+      "label": "Plural formation: -o becomes -i",
+      "subtopic": "A1.3 Articles, gender, plurals and agreement"
+    },
+    {
+      "id": "plural_a_e",
+      "label": "Plural formation: -a becomes -e",
+      "subtopic": "A1.3 Articles, gender, plurals and agreement"
+    },
+    {
+      "id": "plural_e_i",
+      "label": "Plural formation: -e becomes -i",
+      "subtopic": "A1.3 Articles, gender, plurals and agreement"
+    },
+    {
+      "id": "plural_irregular",
+      "label": "Irregular/invariable plurals (e.g. citta, foto, re)",
+      "subtopic": "A1.3 Articles, gender, plurals and agreement"
+    },
+    {
+      "id": "initial_sound_rule",
+      "label": "Initial-sound rule: vowel, s+consonant, z, gn, x, y, ps as special triggers",
+      "subtopic": "A1.3 Articles, gender, plurals and agreement"
+    },
+    {
+      "id": "def_art_forms",
+      "label": "Definite article forms: il, lo, la, l', i, gli, le",
+      "subtopic": "A1.3 Articles, gender, plurals and agreement"
+    },
+    {
+      "id": "def_art_selection",
+      "label": "Selecting correct definite article form by noun gender/initial sound",
+      "subtopic": "A1.3 Articles, gender, plurals and agreement"
+    },
+    {
+      "id": "indef_art_forms",
+      "label": "Indefinite article forms: un, uno, una, un'",
+      "subtopic": "A1.3 Articles, gender, plurals and agreement"
+    },
+    {
+      "id": "indef_art_selection",
+      "label": "Selecting correct indefinite article form by noun gender/initial sound",
+      "subtopic": "A1.3 Articles, gender, plurals and agreement"
+    },
+    {
+      "id": "adj_agreement_gender",
+      "label": "Adjective agreement with noun in gender",
+      "subtopic": "A1.3 Articles, gender, plurals and agreement"
+    },
+    {
+      "id": "adj_agreement_number",
+      "label": "Adjective agreement with noun in number",
+      "subtopic": "A1.3 Articles, gender, plurals and agreement"
+    },
+    {
+      "id": "adj_e_ending",
+      "label": "Adjectives ending in -e: same form for masculine/feminine, only number changes",
+      "subtopic": "A1.3 Articles, gender, plurals and agreement"
+    },
+    {
+      "id": "adj_position_default",
+      "label": "Default adjective position: after the noun",
+      "subtopic": "A1.3 Articles, gender, plurals and agreement"
+    },
+    {
+      "id": "adj_position_exceptions",
+      "label": "Small set of high-frequency adjectives (bello, buono, grande, giovane) commonly precede the noun",
+      "subtopic": "A1.3 Articles, gender, plurals and agreement"
+    },
+    {
+      "id": "SUBJ_PRON",
+      "label": "Italian subject pronouns (io, tu, lui/lei, noi, voi, loro)",
+      "subtopic": "A1.4 Present tense: essere, avere and regular verbs"
+    },
+    {
+      "id": "ESSERE_CONJ",
+      "label": "Present tense conjugation of essere (sono, sei, è, siamo, siete, sono)",
+      "subtopic": "A1.4 Present tense: essere, avere and regular verbs"
+    },
+    {
+      "id": "ESSERE_IDENTITY",
+      "label": "Essere: expressing identity (chi sono)",
+      "subtopic": "A1.4 Present tense: essere, avere and regular verbs"
+    },
+    {
+      "id": "ESSERE_NATIONALITY",
+      "label": "Essere: expressing nationality",
+      "subtopic": "A1.4 Present tense: essere, avere and regular verbs"
+    },
+    {
+      "id": "ESSERE_CHARACTERISTICS",
+      "label": "Essere: describing characteristics/qualities",
+      "subtopic": "A1.4 Present tense: essere, avere and regular verbs"
+    },
+    {
+      "id": "ESSERE_LOCATION",
+      "label": "Essere a/in: expressing location",
+      "subtopic": "A1.4 Present tense: essere, avere and regular verbs"
+    },
+    {
+      "id": "AVERE_CONJ",
+      "label": "Present tense conjugation of avere (ho, hai, ha, abbiamo, avete, hanno)",
+      "subtopic": "A1.4 Present tense: essere, avere and regular verbs"
+    },
+    {
+      "id": "AVERE_POSSESSION",
+      "label": "Avere: expressing possession",
+      "subtopic": "A1.4 Present tense: essere, avere and regular verbs"
+    },
+    {
+      "id": "AVERE_AGE",
+      "label": "Avere: expressing age",
+      "subtopic": "A1.4 Present tense: essere, avere and regular verbs"
+    },
+    {
+      "id": "AVERE_EXPRESSIONS",
+      "label": "Avere: fixed expressions (fame, sete, freddo, caldo, paura, ragione, torto, bisogno di)",
+      "subtopic": "A1.4 Present tense: essere, avere and regular verbs"
+    },
+    {
+      "id": "VERB_ENDINGS_CONCEPT",
+      "label": "Concept of verb infinitive endings (-are, -ere, -ire) and stem/ending split",
+      "subtopic": "A1.4 Present tense: essere, avere and regular verbs"
+    },
+    {
+      "id": "ARE_CONJ",
+      "label": "Present tense of regular -are verbs (e.g. parlare)",
+      "subtopic": "A1.4 Present tense: essere, avere and regular verbs"
+    },
+    {
+      "id": "ERE_CONJ",
+      "label": "Present tense of regular -ere verbs (e.g. prendere)",
+      "subtopic": "A1.4 Present tense: essere, avere and regular verbs"
+    },
+    {
+      "id": "IRE_NORMAL_CONJ",
+      "label": "Present tense of regular -ire verbs, normal pattern (e.g. dormire)",
+      "subtopic": "A1.4 Present tense: essere, avere and regular verbs"
+    },
+    {
+      "id": "IRE_ISC_CONJ",
+      "label": "Present tense of regular -ire verbs, -isc- pattern (e.g. capire)",
+      "subtopic": "A1.4 Present tense: essere, avere and regular verbs"
+    },
+    {
+      "id": "NEGATION_NON",
+      "label": "Negation with 'non' before the conjugated verb",
+      "subtopic": "A1.4 Present tense: essere, avere and regular verbs"
+    },
+    {
+      "id": "FAM_VOCAB",
+      "label": "Family vocabulary (madre, padre, fratello, sorella, nonno, nonna, figlio, figlia, marito, moglie, zio, zia, cugino/a)",
+      "subtopic": "A1.5 Family, description and common irregular verbs"
+    },
+    {
+      "id": "ADJ_AGREEMENT",
+      "label": "Adjective gender/number agreement (from earlier topics)",
+      "subtopic": "A1.5 Family, description and common irregular verbs"
+    },
+    {
+      "id": "POSS_ADJ_FORMS",
+      "label": "Possessive adjective forms (il mio, la mia, i miei, le mie, etc.)",
+      "subtopic": "A1.5 Family, description and common irregular verbs"
+    },
+    {
+      "id": "POSS_ADJ_EXCEPTION",
+      "label": "Exception: possessives drop the article with singular family-member nouns (mia madre, not *la mia madre)",
+      "subtopic": "A1.5 Family, description and common irregular verbs"
+    },
+    {
+      "id": "PHYS_APPEARANCE_ADJ",
+      "label": "Adjectives of physical appearance (alto/basso, giovane/vecchio)",
+      "subtopic": "A1.5 Family, description and common irregular verbs"
+    },
+    {
+      "id": "PERSONALITY_ADJ",
+      "label": "Adjectives of personality (simpatico/antipatico)",
+      "subtopic": "A1.5 Family, description and common irregular verbs"
+    },
+    {
+      "id": "ESSERE_AVERE",
+      "label": "Verbs essere/avere for description (previously learned)",
+      "subtopic": "A1.5 Family, description and common irregular verbs"
+    },
+    {
+      "id": "DESCRIBE_PEOPLE",
+      "label": "Describing people's physical appearance and personality using essere/avere + adjectives",
+      "subtopic": "A1.5 Family, description and common irregular verbs"
+    },
+    {
+      "id": "PRESENT_REGULAR",
+      "label": "Present tense of regular verbs (-are, -ere, -ire) (previously learned)",
+      "subtopic": "A1.5 Family, description and common irregular verbs"
+    },
+    {
+      "id": "SUBJECT_PRONOUNS",
+      "label": "Subject pronouns (io, tu, lui/lei, noi, voi, loro)",
+      "subtopic": "A1.5 Family, description and common irregular verbs"
+    },
+    {
+      "id": "ANDARE",
+      "label": "Present tense of andare (vado, vai, va, andiamo, andate, vanno)",
+      "subtopic": "A1.5 Family, description and common irregular verbs"
+    },
+    {
+      "id": "FARE",
+      "label": "Present tense of fare (faccio, fai, fa, facciamo, fate, fanno)",
+      "subtopic": "A1.5 Family, description and common irregular verbs"
+    },
+    {
+      "id": "DARE",
+      "label": "Present tense of dare",
+      "subtopic": "A1.5 Family, description and common irregular verbs"
+    },
+    {
+      "id": "STARE",
+      "label": "Present tense of stare",
+      "subtopic": "A1.5 Family, description and common irregular verbs"
+    },
+    {
+      "id": "POTERE",
+      "label": "Present tense of potere (posso, puoi, puo, possiamo, potete, possono)",
+      "subtopic": "A1.5 Family, description and common irregular verbs"
+    },
+    {
+      "id": "DOVERE",
+      "label": "Present tense of dovere (devo, devi, deve, dobbiamo, dovete, devono)",
+      "subtopic": "A1.5 Family, description and common irregular verbs"
+    },
+    {
+      "id": "VOLERE",
+      "label": "Present tense of volere (voglio, vuoi, vuole, vogliamo, volete, vogliono)",
+      "subtopic": "A1.5 Family, description and common irregular verbs"
+    },
+    {
+      "id": "INFINITIVE_FORM",
+      "label": "Infinitive verb form (previously learned)",
+      "subtopic": "A1.5 Family, description and common irregular verbs"
+    },
+    {
+      "id": "MODAL_INFINITIVE_CONSTRUCTION",
+      "label": "Modal verb (potere/dovere/volere) + infinitive construction",
+      "subtopic": "A1.5 Family, description and common irregular verbs"
+    },
+    {
+      "id": "FOOD_VOCAB",
+      "label": "Food and drink vocabulary (un caffè, un cappuccino, un panino, l'acqua, il vino, etc.)",
+      "subtopic": "A1.6 Food, shopping and everyday requests"
+    },
+    {
+      "id": "VORREI",
+      "label": "Vorrei + noun/infinitive for polite requests",
+      "subtopic": "A1.6 Food, shopping and everyday requests"
+    },
+    {
+      "id": "DEFINITE_ARTICLES",
+      "label": "Definite articles (il/lo/la/i/gli/le) as basis for partitive forms",
+      "subtopic": "A1.6 Food, shopping and everyday requests"
+    },
+    {
+      "id": "PARTITIVE",
+      "label": "Partitive article del/dello/della/dei/degli/delle for 'some'",
+      "subtopic": "A1.6 Food, shopping and everyday requests"
+    },
+    {
+      "id": "SHOPPING_VOCAB",
+      "label": "Shopping vocabulary (shop types, items)",
+      "subtopic": "A1.6 Food, shopping and everyday requests"
+    },
+    {
+      "id": "NUMBERS_CARDINAL",
+      "label": "Cardinal numbers",
+      "subtopic": "A1.6 Food, shopping and everyday requests"
+    },
+    {
+      "id": "CURRENCY_VOCAB",
+      "label": "Currency vocabulary (euro, centesimi)",
+      "subtopic": "A1.6 Food, shopping and everyday requests"
+    },
+    {
+      "id": "QUANTO_COSTA",
+      "label": "Asking prices: quanto costa? / quanto costano?",
+      "subtopic": "A1.6 Food, shopping and everyday requests"
+    },
+    {
+      "id": "NUMBERS_WITH_CURRENCY",
+      "label": "Understanding numbers used with currency",
+      "subtopic": "A1.6 Food, shopping and everyday requests"
+    },
+    {
+      "id": "ORDINAL_NUMBERS",
+      "label": "Ordinal numbers (primo, secondo, terzo...)",
+      "subtopic": "A1.6 Food, shopping and everyday requests"
+    },
+    {
+      "id": "ORDINALS_CONTEXT",
+      "label": "Ordinal numbers used in shop/menu/floor contexts",
+      "subtopic": "A1.6 Food, shopping and everyday requests"
+    },
+    {
+      "id": "VERBS_COMPRARE_PRENDERE_VOLERE",
+      "label": "Common verbs comprare, prendere, volere (conjugated forms)",
+      "subtopic": "A1.6 Food, shopping and everyday requests"
+    },
+    {
+      "id": "DIRECT_OBJECT_NOUNS",
+      "label": "Direct object nouns with common verbs in simple sentences",
+      "subtopic": "A1.6 Food, shopping and everyday requests"
+    },
+    {
+      "id": "DI_PREPOSITION",
+      "label": "Preposition 'di' linking quantity to noun",
+      "subtopic": "A1.6 Food, shopping and everyday requests"
+    },
+    {
+      "id": "CONTAINERS_QUANTITIES",
+      "label": "Common containers/quantities (un chilo di, una bottiglia di, un etto di)",
+      "subtopic": "A1.6 Food, shopping and everyday requests"
+    },
+    {
+      "id": "PRESENT_AVERE",
+      "label": "Present tense of avere (known prior knowledge)",
+      "subtopic": "A2.1 Passato prossimo"
+    },
+    {
+      "id": "PRESENT_ESSERE",
+      "label": "Present tense of essere (known prior knowledge)",
+      "subtopic": "A2.1 Passato prossimo"
+    },
+    {
+      "id": "PAST_PARTICIPLE_REGULAR",
+      "label": "Regular past participle formation: -are→-ato, -ere→-uto, -ire→-ito",
+      "subtopic": "A2.1 Passato prossimo"
+    },
+    {
+      "id": "PAST_PARTICIPLE_IRREGULAR",
+      "label": "Common irregular past participles (fatto, detto, visto, letto, scritto, aperto, chiuso, preso, messo, venuto, rimasto, nato, morto, successo)",
+      "subtopic": "A2.1 Passato prossimo"
+    },
+    {
+      "id": "AUX_CHOICE_ESSERE_SET",
+      "label": "Verbs taking essere as auxiliary (motion/state-change verbs + reflexives)",
+      "subtopic": "A2.1 Passato prossimo"
+    },
+    {
+      "id": "AUX_CHOICE_AVERE_SET",
+      "label": "Verbs taking avere as auxiliary (majority, mainly transitive verbs)",
+      "subtopic": "A2.1 Passato prossimo"
+    },
+    {
+      "id": "FORMATION_AVERE",
+      "label": "Formation of passato prossimo with avere + past participle",
+      "subtopic": "A2.1 Passato prossimo"
+    },
+    {
+      "id": "FORMATION_ESSERE",
+      "label": "Formation of passato prossimo with essere + past participle",
+      "subtopic": "A2.1 Passato prossimo"
+    },
+    {
+      "id": "AGREEMENT_ESSERE",
+      "label": "Past participle agreement with subject in gender/number when auxiliary is essere",
+      "subtopic": "A2.1 Passato prossimo"
+    },
+    {
+      "id": "NON_AGREEMENT_AVERE",
+      "label": "No agreement of past participle when auxiliary is avere",
+      "subtopic": "A2.1 Passato prossimo"
+    },
+    {
+      "id": "AGREEMENT_PRECEDING_DO_PRONOUN",
+      "label": "Agreement with avere when a preceding direct object pronoun applies",
+      "subtopic": "A2.1 Passato prossimo"
+    },
+    {
+      "id": "PRECEDING_DO_PRONOUNS",
+      "label": "Direct object pronouns placed before the verb (known prior knowledge)",
+      "subtopic": "A2.1 Passato prossimo"
+    },
+    {
+      "id": "NEGATION_PLACEMENT",
+      "label": "Placement of 'non' with the passato prossimo",
+      "subtopic": "A2.1 Passato prossimo"
+    },
+    {
+      "id": "TIME_EXPRESSIONS_KNOWN",
+      "label": "Time expressions: ieri, la settimana scorsa, gia, non...ancora (vocabulary)",
+      "subtopic": "A2.1 Passato prossimo"
+    },
+    {
+      "id": "TIME_EXPRESSION_PLACEMENT",
+      "label": "Placement of time expressions with the passato prossimo",
+      "subtopic": "A2.1 Passato prossimo"
+    },
+    {
+      "id": "IMPF_ARE",
+      "label": "Imperfetto formation: -are verbs (-avo/-avi/-ava/-avamo/-avate/-avano)",
+      "subtopic": "A2.2 Imperfetto and its contrast with passato prossimo"
+    },
+    {
+      "id": "IMPF_ERE",
+      "label": "Imperfetto formation: -ere verbs (-evo/-evi/-eva/-evamo/-evate/-evano)",
+      "subtopic": "A2.2 Imperfetto and its contrast with passato prossimo"
+    },
+    {
+      "id": "IMPF_IRE",
+      "label": "Imperfetto formation: -ire verbs (-ivo/-ivi/-iva/-ivamo/-ivate/-ivano)",
+      "subtopic": "A2.2 Imperfetto and its contrast with passato prossimo"
+    },
+    {
+      "id": "IMPF_ESSERE",
+      "label": "Irregular imperfetto stem: essere (ero, eri, era...)",
+      "subtopic": "A2.2 Imperfetto and its contrast with passato prossimo"
+    },
+    {
+      "id": "IMPF_FARE",
+      "label": "Irregular imperfetto stem: fare (facevo...)",
+      "subtopic": "A2.2 Imperfetto and its contrast with passato prossimo"
+    },
+    {
+      "id": "IMPF_DIRE",
+      "label": "Irregular imperfetto stem: dire (dicevo...)",
+      "subtopic": "A2.2 Imperfetto and its contrast with passato prossimo"
+    },
+    {
+      "id": "IMPF_BERE",
+      "label": "Irregular imperfetto stem: bere (bevevo...)",
+      "subtopic": "A2.2 Imperfetto and its contrast with passato prossimo"
+    },
+    {
+      "id": "IMPF_USE_HABITUAL",
+      "label": "Imperfetto use: habitual/repeated past actions",
+      "subtopic": "A2.2 Imperfetto and its contrast with passato prossimo"
+    },
+    {
+      "id": "IMPF_USE_BACKGROUND",
+      "label": "Imperfetto use: ongoing background description",
+      "subtopic": "A2.2 Imperfetto and its contrast with passato prossimo"
+    },
+    {
+      "id": "IMPF_USE_STATES",
+      "label": "Imperfetto use: describing past states (age, weather, feelings, physical description) with no defined endpoint",
+      "subtopic": "A2.2 Imperfetto and its contrast with passato prossimo"
+    },
+    {
+      "id": "PP_KNOWLEDGE",
+      "label": "Prior knowledge: passato prossimo formation (avere/essere + past participle)",
+      "subtopic": "A2.2 Imperfetto and its contrast with passato prossimo"
+    },
+    {
+      "id": "PP_USE_SINGLE",
+      "label": "Passato prossimo use: a single completed action",
+      "subtopic": "A2.2 Imperfetto and its contrast with passato prossimo"
+    },
+    {
+      "id": "PP_USE_SEQUENCE",
+      "label": "Passato prossimo use: a sequence of completed actions",
+      "subtopic": "A2.2 Imperfetto and its contrast with passato prossimo"
+    },
+    {
+      "id": "PP_USE_DEFINED",
+      "label": "Passato prossimo use: an action with a defined start/end",
+      "subtopic": "A2.2 Imperfetto and its contrast with passato prossimo"
+    },
+    {
+      "id": "CONTRAST",
+      "label": "Direct contrast: imperfetto for background/scene-setting + passato prossimo for interrupting event in same sentence",
+      "subtopic": "A2.2 Imperfetto and its contrast with passato prossimo"
+    },
+    {
+      "id": "TRANSITIVE_VERB",
+      "label": "Concept of a verb taking a direct object (transitive verb)",
+      "subtopic": "A2.3 Object pronouns and reflexive verbs"
+    },
+    {
+      "id": "DOP_FORMS",
+      "label": "Direct object pronoun forms: mi, ti, lo, la, ci, vi, li, le",
+      "subtopic": "A2.3 Object pronouns and reflexive verbs"
+    },
+    {
+      "id": "DOP_PLACEMENT",
+      "label": "Placement of direct object pronoun immediately before a conjugated verb",
+      "subtopic": "A2.3 Object pronouns and reflexive verbs"
+    },
+    {
+      "id": "A_PERSON_VERBS",
+      "label": "Verbs taking 'a + person' construction (dare, dire, scrivere, telefonare, piacere)",
+      "subtopic": "A2.3 Object pronouns and reflexive verbs"
+    },
+    {
+      "id": "IOP_FORMS",
+      "label": "Indirect object pronoun forms: mi, ti, gli, le, ci, vi, gli/loro",
+      "subtopic": "A2.3 Object pronouns and reflexive verbs"
+    },
+    {
+      "id": "IOP_PLACEMENT",
+      "label": "Placement of indirect object pronoun before conjugated verb",
+      "subtopic": "A2.3 Object pronouns and reflexive verbs"
+    },
+    {
+      "id": "PIACERE_INVERSION",
+      "label": "Piacere as impersonal/inverted verb: the thing liked is the grammatical subject",
+      "subtopic": "A2.3 Object pronouns and reflexive verbs"
+    },
+    {
+      "id": "PIACERE_SG_PL",
+      "label": "Piacere agreement: piace (singular) vs piacciono (plural) with the liked item",
+      "subtopic": "A2.3 Object pronouns and reflexive verbs"
+    },
+    {
+      "id": "REFLEXIVE_PRONOUNS",
+      "label": "Reflexive pronoun forms: mi, ti, si, ci, vi, si",
+      "subtopic": "A2.3 Object pronouns and reflexive verbs"
+    },
+    {
+      "id": "REFLEXIVE_VERB_CONCEPT",
+      "label": "Concept of a reflexive verb (action performed on oneself)",
+      "subtopic": "A2.3 Object pronouns and reflexive verbs"
+    },
+    {
+      "id": "REFLEXIVE_FORMATION",
+      "label": "Formation of reflexive verbs: reflexive pronoun + conjugated verb",
+      "subtopic": "A2.3 Object pronouns and reflexive verbs"
+    },
+    {
+      "id": "REFLEXIVE_EXAMPLES",
+      "label": "Common reflexive verbs: svegliarsi, alzarsi, lavarsi, vestirsi, chiamarsi",
+      "subtopic": "A2.3 Object pronouns and reflexive verbs"
+    },
+    {
+      "id": "PASSATO_PROSSIMO",
+      "label": "Passato prossimo formation (auxiliary + past participle)",
+      "subtopic": "A2.3 Object pronouns and reflexive verbs"
+    },
+    {
+      "id": "ESSERE_AGREEMENT",
+      "label": "Past participle agreement with essere auxiliary (gender/number)",
+      "subtopic": "A2.3 Object pronouns and reflexive verbs"
+    },
+    {
+      "id": "REFLEXIVE_PASSATO",
+      "label": "Reflexive verbs in passato prossimo: always with essere, with participle agreement",
+      "subtopic": "A2.3 Object pronouns and reflexive verbs"
+    },
+    {
+      "id": "MODAL_INFINITIVE",
+      "label": "Modal verb + infinitive construction (potere, volere, dovere + infinitive)",
+      "subtopic": "A2.3 Object pronouns and reflexive verbs"
+    },
+    {
+      "id": "PRONOUN_MODAL_PLACEMENT",
+      "label": "Object pronoun placement with modal + infinitive: attach to infinitive or precede modal",
+      "subtopic": "A2.3 Object pronouns and reflexive verbs"
+    },
+    {
+      "id": "adj_base",
+      "label": "Base adjective agreement (used in comparisons)",
+      "subtopic": "A2.4 Comparatives, superlatives and the future tense"
+    },
+    {
+      "id": "comp_maggioranza",
+      "label": "Comparative of majority: più...di/che",
+      "subtopic": "A2.4 Comparatives, superlatives and the future tense"
+    },
+    {
+      "id": "comp_minoranza",
+      "label": "Comparative of minority: meno...di/che",
+      "subtopic": "A2.4 Comparatives, superlatives and the future tense"
+    },
+    {
+      "id": "comp_uguaglianza",
+      "label": "Comparative of equality: così...come / tanto...quanto",
+      "subtopic": "A2.4 Comparatives, superlatives and the future tense"
+    },
+    {
+      "id": "di_che_rule",
+      "label": "Rule for choosing 'di' vs 'che' in comparisons",
+      "subtopic": "A2.4 Comparatives, superlatives and the future tense"
+    },
+    {
+      "id": "irr_comp_migliore_peggiore",
+      "label": "Irregular comparatives: migliore/peggiore",
+      "subtopic": "A2.4 Comparatives, superlatives and the future tense"
+    },
+    {
+      "id": "irr_comp_maggiore_minore",
+      "label": "Irregular comparatives: maggiore/minore",
+      "subtopic": "A2.4 Comparatives, superlatives and the future tense"
+    },
+    {
+      "id": "rel_superlative",
+      "label": "Relative superlative: il/la più...di",
+      "subtopic": "A2.4 Comparatives, superlatives and the future tense"
+    },
+    {
+      "id": "abs_superlative_issimo",
+      "label": "Absolute superlative: -issimo/a/i/e ending",
+      "subtopic": "A2.4 Comparatives, superlatives and the future tense"
+    },
+    {
+      "id": "abs_superlative_molto",
+      "label": "Absolute superlative: molto + adjective",
+      "subtopic": "A2.4 Comparatives, superlatives and the future tense"
+    },
+    {
+      "id": "verb_infinitive_conj",
+      "label": "Verb infinitive groups (-are/-ere/-ire) and stem concept",
+      "subtopic": "A2.4 Comparatives, superlatives and the future tense"
+    },
+    {
+      "id": "future_endings_are_ere",
+      "label": "Future endings for -are/-ere verbs (-o,-ai,-a,-emo,-ete,-anno) with -er- stem",
+      "subtopic": "A2.4 Comparatives, superlatives and the future tense"
+    },
+    {
+      "id": "future_endings_ire",
+      "label": "Future endings for -ire verbs with -ir- stem",
+      "subtopic": "A2.4 Comparatives, superlatives and the future tense"
+    },
+    {
+      "id": "future_irr_stems",
+      "label": "Key irregular future stems (essere, avere, andare, fare, potere, dovere, volere, venire)",
+      "subtopic": "A2.4 Comparatives, superlatives and the future tense"
+    },
+    {
+      "id": "future_prediction_planning",
+      "label": "Future tense used for prediction/planning",
+      "subtopic": "A2.4 Comparatives, superlatives and the future tense"
+    },
+    {
+      "id": "future_probability",
+      "label": "Future tense for probability/conjecture about the present (futuro di probabilità)",
+      "subtopic": "A2.4 Comparatives, superlatives and the future tense"
+    },
+    {
+      "id": "Q_DOVE",
+      "label": "Question form: dov'è...? (asking where something is)",
+      "subtopic": "A2.5 Directions, travel, health and making plans"
+    },
+    {
+      "id": "Q_COME",
+      "label": "Question form: come arrivo a...? (asking how to get somewhere)",
+      "subtopic": "A2.5 Directions, travel, health and making plans"
+    },
+    {
+      "id": "DIR_VOCAB",
+      "label": "Direction vocabulary: sempre dritto, a destra, a sinistra, all'angolo, di fronte a, vicino a",
+      "subtopic": "A2.5 Directions, travel, health and making plans"
+    },
+    {
+      "id": "VERB_CONJ_KNOWLEDGE",
+      "label": "Knowledge of regular/irregular verb conjugation patterns",
+      "subtopic": "A2.5 Directions, travel, health and making plans"
+    },
+    {
+      "id": "TU_LEI_DISTINCTION",
+      "label": "Distinction between informal (tu) and formal (Lei) address",
+      "subtopic": "A2.5 Directions, travel, health and making plans"
+    },
+    {
+      "id": "IMP_TU",
+      "label": "Imperative mood: informal tu-form (gira)",
+      "subtopic": "A2.5 Directions, travel, health and making plans"
+    },
+    {
+      "id": "IMP_LEI",
+      "label": "Imperative mood: formal Lei-form (prenda, continui)",
+      "subtopic": "A2.5 Directions, travel, health and making plans"
+    },
+    {
+      "id": "GIVE_DIRECTIONS",
+      "label": "Giving directions/instructions using imperative + direction vocabulary",
+      "subtopic": "A2.5 Directions, travel, health and making plans"
+    },
+    {
+      "id": "TRANSPORT_VOCAB",
+      "label": "Travel and transport vocabulary: il treno, l'aereo, la stazione, il biglietto, la prenotazione",
+      "subtopic": "A2.5 Directions, travel, health and making plans"
+    },
+    {
+      "id": "PREP_PLACE_MOVE",
+      "label": "Prepositions of place/movement: a, in, da, per, su, con",
+      "subtopic": "A2.5 Directions, travel, health and making plans"
+    },
+    {
+      "id": "PREP_TRANSPORT_USE",
+      "label": "Using prepositions with means of transport and destinations",
+      "subtopic": "A2.5 Directions, travel, health and making plans"
+    },
+    {
+      "id": "BODY_PARTS",
+      "label": "Vocabulary: parts of the body",
+      "subtopic": "A2.5 Directions, travel, health and making plans"
+    },
+    {
+      "id": "HEALTH_EXPR",
+      "label": "Health expressions: mi fa male..., ho mal di testa/stomaco",
+      "subtopic": "A2.5 Directions, travel, health and making plans"
+    },
+    {
+      "id": "STO_BENE_MALE",
+      "label": "Expression: sto bene/male (general wellbeing)",
+      "subtopic": "A2.5 Directions, travel, health and making plans"
+    },
+    {
+      "id": "INFINITIVE_KNOWLEDGE",
+      "label": "Knowledge of the infinitive verb form",
+      "subtopic": "A2.5 Directions, travel, health and making plans"
+    },
+    {
+      "id": "VUOI_VORRESTI",
+      "label": "Making invitations: vuoi/vorresti + infinitive",
+      "subtopic": "A2.5 Directions, travel, health and making plans"
+    },
+    {
+      "id": "TI_VA_DI",
+      "label": "Making invitations: ti va di...?",
+      "subtopic": "A2.5 Directions, travel, health and making plans"
+    },
+    {
+      "id": "ANDIAMO_A",
+      "label": "Proposing plans: andiamo a...",
+      "subtopic": "A2.5 Directions, travel, health and making plans"
+    },
+    {
+      "id": "RESPOND_SUGGESTION",
+      "label": "Responding to a suggestion: va bene, mi dispiace ma...",
+      "subtopic": "A2.5 Directions, travel, health and making plans"
+    },
+    {
+      "id": "MAKE_RESPOND_PLANS",
+      "label": "Proposing and responding to plans/invitations (combined exchange)",
+      "subtopic": "A2.5 Directions, travel, health and making plans"
+    },
+    {
+      "id": "FUTURE_TIME_EXPR",
+      "label": "Time expressions for future plans: domani, la prossima settimana, tra due giorni",
+      "subtopic": "A2.5 Directions, travel, health and making plans"
+    },
+    {
+      "id": "STATE_FUTURE_PLANS",
+      "label": "Stating future plans using time expressions with plan-making language",
+      "subtopic": "A2.5 Directions, travel, health and making plans"
+    },
+    {
+      "id": "future_tense_stems",
+      "label": "Irregular future-tense stems (already known, reused for conditional)",
+      "subtopic": "B1.1 Conditional mood and modal verbs in context"
+    },
+    {
+      "id": "pres_cond_endings",
+      "label": "Present conditional endings: -ei, -esti, -ebbe, -emmo, -este, -ebbero",
+      "subtopic": "B1.1 Conditional mood and modal verbs in context"
+    },
+    {
+      "id": "pres_cond_formation",
+      "label": "Present conditional formation: irregular future stem + conditional endings",
+      "subtopic": "B1.1 Conditional mood and modal verbs in context"
+    },
+    {
+      "id": "pres_cond_polite_requests",
+      "label": "Use: polite requests (vorrei, potrebbe)",
+      "subtopic": "B1.1 Conditional mood and modal verbs in context"
+    },
+    {
+      "id": "pres_cond_advice",
+      "label": "Use: giving advice (dovresti)",
+      "subtopic": "B1.1 Conditional mood and modal verbs in context"
+    },
+    {
+      "id": "pres_cond_wish",
+      "label": "Use: expressing a wish",
+      "subtopic": "B1.1 Conditional mood and modal verbs in context"
+    },
+    {
+      "id": "pres_cond_hedging",
+      "label": "Use: hedging an opinion (direi che...)",
+      "subtopic": "B1.1 Conditional mood and modal verbs in context"
+    },
+    {
+      "id": "avere_essere_present",
+      "label": "Present conditional of avere/essere (as auxiliary forms)",
+      "subtopic": "B1.1 Conditional mood and modal verbs in context"
+    },
+    {
+      "id": "past_participle",
+      "label": "Past participle formation (regular/irregular)",
+      "subtopic": "B1.1 Conditional mood and modal verbs in context"
+    },
+    {
+      "id": "auxiliary_choice",
+      "label": "Choice of auxiliary (avere vs essere) and agreement rules",
+      "subtopic": "B1.1 Conditional mood and modal verbs in context"
+    },
+    {
+      "id": "past_cond_formation",
+      "label": "Past conditional formation: present conditional of avere/essere + past participle",
+      "subtopic": "B1.1 Conditional mood and modal verbs in context"
+    },
+    {
+      "id": "past_cond_unfulfilled_wish",
+      "label": "Use: unfulfilled past wish/intention (avrei voluto, sarei andato/a)",
+      "subtopic": "B1.1 Conditional mood and modal verbs in context"
+    },
+    {
+      "id": "past_cond_reported_future",
+      "label": "Use: reported speech about a future-in-the-past event (ha detto che sarebbe venuto)",
+      "subtopic": "B1.1 Conditional mood and modal verbs in context"
+    },
+    {
+      "id": "modal_verbs_present",
+      "label": "Modal verbs potere, dovere, volere in the present tense (baseline meanings)",
+      "subtopic": "B1.1 Conditional mood and modal verbs in context"
+    },
+    {
+      "id": "modal_verbs_conditional",
+      "label": "Modal verbs (potere, dovere, volere) in the conditional to soften requests/obligations/suggestions",
+      "subtopic": "B1.1 Conditional mood and modal verbs in context"
+    },
+    {
+      "id": "present_vs_past_cond_choice",
+      "label": "Distinguishing present conditional vs past conditional based on reference point (now vs already-past moment)",
+      "subtopic": "B1.1 Conditional mood and modal verbs in context"
+    },
+    {
+      "id": "ind_obj_pron",
+      "label": "Indirect object pronouns (mi, ti, gli, le, ci, vi, gli/loro)",
+      "subtopic": "B1.2 Combined and complex pronouns"
+    },
+    {
+      "id": "dir_obj_pron",
+      "label": "Direct object pronouns (lo, la, li, le)",
+      "subtopic": "B1.2 Combined and complex pronouns"
+    },
+    {
+      "id": "single_pron_placement",
+      "label": "Single pronoun placement rules (before conjugated verb; attached to infinitive/gerund/imperative)",
+      "subtopic": "B1.2 Combined and complex pronouns"
+    },
+    {
+      "id": "ci_location",
+      "label": "Ci used for location (ci vado, ci sono stato)",
+      "subtopic": "B1.2 Combined and complex pronouns"
+    },
+    {
+      "id": "ci_replace_a_in_su",
+      "label": "Ci replacing a/in/su + a thing already mentioned (non ci penso)",
+      "subtopic": "B1.2 Combined and complex pronouns"
+    },
+    {
+      "id": "ne_quantity",
+      "label": "Ne replacing di + noun for quantity (quanti ne vuoi? ne prendo due)",
+      "subtopic": "B1.2 Combined and complex pronouns"
+    },
+    {
+      "id": "ne_topic",
+      "label": "Ne replacing di + noun for topic (ne parliamo domani)",
+      "subtopic": "B1.2 Combined and complex pronouns"
+    },
+    {
+      "id": "combine_order",
+      "label": "Order of combined pronouns: indirect before direct",
+      "subtopic": "B1.2 Combined and complex pronouns"
+    },
+    {
+      "id": "spelling_change_mi_ti_ci_vi",
+      "label": "Spelling change of mi/ti/ci/vi to me/te/ce/ve before direct object pronoun",
+      "subtopic": "B1.2 Combined and complex pronouns"
+    },
+    {
+      "id": "spelling_change_gli_le",
+      "label": "Spelling change of gli/le to glie- fused forms (glielo, gliela, glieli, gliele)",
+      "subtopic": "B1.2 Combined and complex pronouns"
+    },
+    {
+      "id": "combined_forms",
+      "label": "Full set of combined pronoun forms (me lo, te la, glielo, gliela, ce lo, ve la, etc.)",
+      "subtopic": "B1.2 Combined and complex pronouns"
+    },
+    {
+      "id": "combined_placement",
+      "label": "Placement of combined pronouns (matching single-pronoun rules)",
+      "subtopic": "B1.2 Combined and complex pronouns"
+    },
+    {
+      "id": "passato_prossimo",
+      "label": "Passato prossimo formation (avere/essere + past participle)",
+      "subtopic": "B1.2 Combined and complex pronouns"
+    },
+    {
+      "id": "participle_agreement_direct",
+      "label": "Past participle agreement with preceding direct object pronoun (lo, la, li, le)",
+      "subtopic": "B1.2 Combined and complex pronouns"
+    },
+    {
+      "id": "participle_agreement_combined",
+      "label": "Past participle agreement with combined pronouns in passato prossimo",
+      "subtopic": "B1.2 Combined and complex pronouns"
+    },
+    {
+      "id": "identify_underlying_pairing",
+      "label": "Identifying the underlying indirect + direct pronoun pairing before applying the combined form",
+      "subtopic": "B1.2 Combined and complex pronouns"
+    },
+    {
+      "id": "MAIN_CLAUSE_SUBORD",
+      "label": "Concept of joining two clauses via a linking word (main + subordinate clause)",
+      "subtopic": "B1.3 Relative pronouns and complex sentences"
+    },
+    {
+      "id": "SUBJ_OBJ_DISTINCTION",
+      "label": "Distinguishing grammatical subject from direct object in a clause",
+      "subtopic": "B1.3 Relative pronouns and complex sentences"
+    },
+    {
+      "id": "GENDER_NUMBER_AGREEMENT",
+      "label": "Gender and number agreement rules in Italian (adjectives/pronouns agree with noun)",
+      "subtopic": "B1.3 Relative pronouns and complex sentences"
+    },
+    {
+      "id": "PREPOSITIONS_BASIC",
+      "label": "Basic Italian prepositions (a, di, con, per, etc.)",
+      "subtopic": "B1.3 Relative pronouns and complex sentences"
+    },
+    {
+      "id": "ANTECEDENT_CONCEPT",
+      "label": "Concept of an antecedent (the noun a pronoun refers back to)",
+      "subtopic": "B1.3 Relative pronouns and complex sentences"
+    },
+    {
+      "id": "CHE_RELATIVE",
+      "label": "'Che' as all-purpose relative pronoun for subject/direct object (people and things, no preposition)",
+      "subtopic": "B1.3 Relative pronouns and complex sentences"
+    },
+    {
+      "id": "CUI_RELATIVE",
+      "label": "'Cui' used after a preposition (a cui, di cui, con cui, per cui) referring to a person or thing",
+      "subtopic": "B1.3 Relative pronouns and complex sentences"
+    },
+    {
+      "id": "IL_QUALE_RELATIVE",
+      "label": "'Il quale/la quale/i quali/le quali' as formal alternative to cui, agreeing in gender/number",
+      "subtopic": "B1.3 Relative pronouns and complex sentences"
+    },
+    {
+      "id": "IL_QUALE_DISAMBIG",
+      "label": "Using il quale forms to disambiguate which noun is being referred to",
+      "subtopic": "B1.3 Relative pronouns and complex sentences"
+    },
+    {
+      "id": "CHI_RELATIVE",
+      "label": "'Chi' as indefinite relative meaning 'the person who/whoever'",
+      "subtopic": "B1.3 Relative pronouns and complex sentences"
+    },
+    {
+      "id": "AVOID_NOUN_RESTATEMENT",
+      "label": "Avoiding the learner error of restating the noun instead of using a relative pronoun",
+      "subtopic": "B1.3 Relative pronouns and complex sentences"
+    },
+    {
+      "id": "FORMING_COMPLEX_SENTENCES",
+      "label": "Forming complex sentences by joining two clauses with a relative pronoun",
+      "subtopic": "B1.3 Relative pronouns and complex sentences"
+    },
+    {
+      "id": "RESTRICTIVE_CLAUSE",
+      "label": "Restrictive relative clauses (no comma, essential information)",
+      "subtopic": "B1.3 Relative pronouns and complex sentences"
+    },
+    {
+      "id": "NONRESTRICTIVE_CLAUSE",
+      "label": "Non-restrictive relative clauses (comma-separated, extra information)",
+      "subtopic": "B1.3 Relative pronouns and complex sentences"
+    },
+    {
+      "id": "RESTRICTIVE_VS_NON",
+      "label": "Distinguishing restrictive from non-restrictive relative clauses",
+      "subtopic": "B1.3 Relative pronouns and complex sentences"
+    },
+    {
+      "id": "PP_AGREE",
+      "label": "Past participle agreement with subject (used with essere)",
+      "subtopic": "B1.5 Passive voice and impersonal si"
+    },
+    {
+      "id": "TRANS_VERBS",
+      "label": "Concept of transitive verbs (needed to form a passive)",
+      "subtopic": "B1.5 Passive voice and impersonal si"
+    },
+    {
+      "id": "PASSIVE_ESSERE",
+      "label": "Passive voice formation: essere + past participle",
+      "subtopic": "B1.5 Passive voice and impersonal si"
+    },
+    {
+      "id": "PASSIVE_AGENT_DA",
+      "label": "Introducing the agent with 'da' (agent complement)",
+      "subtopic": "B1.5 Passive voice and impersonal si"
+    },
+    {
+      "id": "SIMPLE_TENSES",
+      "label": "Concept of simple vs compound tenses",
+      "subtopic": "B1.5 Passive voice and impersonal si"
+    },
+    {
+      "id": "VENIRE_CONJ",
+      "label": "Conjugation of venire across simple tenses",
+      "subtopic": "B1.5 Passive voice and impersonal si"
+    },
+    {
+      "id": "PASSIVE_VENIRE",
+      "label": "Passive voice formation: venire + past participle (simple tenses only)",
+      "subtopic": "B1.5 Passive voice and impersonal si"
+    },
+    {
+      "id": "VENIRE_ESSERE_STYLE",
+      "label": "Stylistic preference: venire as common substitute for essere-passive",
+      "subtopic": "B1.5 Passive voice and impersonal si"
+    },
+    {
+      "id": "SI_REFLEXIVE_FORM",
+      "label": "Reflexive pronoun 'si' and reflexive verb construction",
+      "subtopic": "B1.5 Passive voice and impersonal si"
+    },
+    {
+      "id": "SUBJ_VERB_AGREEMENT",
+      "label": "Basic subject-verb number agreement",
+      "subtopic": "B1.5 Passive voice and impersonal si"
+    },
+    {
+      "id": "SI_PASSIVANTE",
+      "label": "Si passivante: verb agrees in number with following noun, agent unknown/unimportant",
+      "subtopic": "B1.5 Passive voice and impersonal si"
+    },
+    {
+      "id": "SI_IMPERSONALE",
+      "label": "Si impersonale: general statements equivalent to 'one/people/you'",
+      "subtopic": "B1.5 Passive voice and impersonal si"
+    },
+    {
+      "id": "SI_IMPERSONALE_REFLEXIVE",
+      "label": "Si impersonale with reflexive verbs (ci si alza presto)",
+      "subtopic": "B1.5 Passive voice and impersonal si"
+    },
+    {
+      "id": "DIRECT_OBJECT_CONCEPT",
+      "label": "Concept of a direct object noun",
+      "subtopic": "B1.5 Passive voice and impersonal si"
+    },
+    {
+      "id": "SI_DISTINGUISH",
+      "label": "Distinguishing si passivante from si impersonale by presence of direct object noun",
+      "subtopic": "B1.5 Passive voice and impersonal si"
+    },
+    {
+      "id": "PASSIVE_ESSERE_EVAL",
+      "label": "When essere-passive is stylistically preferred",
+      "subtopic": "B1.5 Passive voice and impersonal si"
+    },
+    {
+      "id": "PASSIVE_VENIRE_EVAL",
+      "label": "When venire-passive is stylistically preferred",
+      "subtopic": "B1.5 Passive voice and impersonal si"
+    },
+    {
+      "id": "SI_PASSIVANTE_EVAL",
+      "label": "When si passivante is stylistically preferred",
+      "subtopic": "B1.5 Passive voice and impersonal si"
+    },
+    {
+      "id": "PASSIVE_FORM_CHOICE",
+      "label": "Overall choice between essere, venire, and si passive forms in context",
+      "subtopic": "B1.5 Passive voice and impersonal si"
+    },
+    {
+      "id": "TRIGGERS",
+      "label": "Core subjunctive triggers (opinion, doubt, emotion, desire, necessity) require the subjunctive mood",
+      "subtopic": "B2.1 Congiuntivo passato, imperfetto and trapassato"
+    },
+    {
+      "id": "PRES_SUB_AVERE_ESSERE",
+      "label": "Present subjunctive forms of avere and essere",
+      "subtopic": "B2.1 Congiuntivo passato, imperfetto and trapassato"
+    },
+    {
+      "id": "PAST_PARTICIPLE",
+      "label": "Formation of the past participle",
+      "subtopic": "B2.1 Congiuntivo passato, imperfetto and trapassato"
+    },
+    {
+      "id": "AUX_CHOICE_AGREEMENT",
+      "label": "Choice of auxiliary (avere/essere) and past participle agreement in compound tenses",
+      "subtopic": "B2.1 Congiuntivo passato, imperfetto and trapassato"
+    },
+    {
+      "id": "IMPF_SUB_ARE",
+      "label": "Congiuntivo imperfetto formation: regular -are verbs (-assi/-assi/-asse/-assimo/-aste/-assero)",
+      "subtopic": "B2.1 Congiuntivo passato, imperfetto and trapassato"
+    },
+    {
+      "id": "IMPF_SUB_ERE_IRE",
+      "label": "Congiuntivo imperfetto formation: equivalent patterns for -ere/-ire verbs",
+      "subtopic": "B2.1 Congiuntivo passato, imperfetto and trapassato"
+    },
+    {
+      "id": "IMPF_SUB_AVERE_ESSERE",
+      "label": "Congiuntivo imperfetto forms of avere and essere",
+      "subtopic": "B2.1 Congiuntivo passato, imperfetto and trapassato"
+    },
+    {
+      "id": "TIMING_SIMULTANEOUS_VS_PRIOR",
+      "label": "Concept of relative timing: dependent action simultaneous/ongoing vs prior to main clause",
+      "subtopic": "B2.1 Congiuntivo passato, imperfetto and trapassato"
+    },
+    {
+      "id": "CONG_PASSATO",
+      "label": "Congiuntivo passato: present subjunctive of avere/essere + past participle, for prior action after a present-tense trigger",
+      "subtopic": "B2.1 Congiuntivo passato, imperfetto and trapassato"
+    },
+    {
+      "id": "CONG_IMPERFETTO",
+      "label": "Congiuntivo imperfetto: used when main clause is past/conditional and dependent action is simultaneous/ongoing",
+      "subtopic": "B2.1 Congiuntivo passato, imperfetto and trapassato"
+    },
+    {
+      "id": "CONG_TRAPASSATO",
+      "label": "Congiuntivo trapassato: imperfect subjunctive of avere/essere + past participle, for action prior to a past-tense main clause",
+      "subtopic": "B2.1 Congiuntivo passato, imperfetto and trapassato"
+    },
+    {
+      "id": "MAIN_CLAUSE_TENSE_PRESENT_VS_PAST",
+      "label": "Recognising whether the subjunctive-triggering main clause is in the present or in a past/conditional tense",
+      "subtopic": "B2.1 Congiuntivo passato, imperfetto and trapassato"
+    },
+    {
+      "id": "CONCORDANZA_TEMPI",
+      "label": "Concordanza dei tempi: selecting the correct subjunctive tense based on main clause tense AND relative timing",
+      "subtopic": "B2.1 Congiuntivo passato, imperfetto and trapassato"
+    },
+    {
+      "id": "present_indicative",
+      "label": "Present indicative (morphology/usage)",
+      "subtopic": "B2.2 Periodo ipotetico (if-clauses)"
+    },
+    {
+      "id": "future_indicative",
+      "label": "Future indicative (morphology/usage)",
+      "subtopic": "B2.2 Periodo ipotetico (if-clauses)"
+    },
+    {
+      "id": "imperfect_subjunctive",
+      "label": "Imperfect subjunctive (morphology/usage)",
+      "subtopic": "B2.2 Periodo ipotetico (if-clauses)"
+    },
+    {
+      "id": "present_conditional",
+      "label": "Present conditional (morphology/usage)",
+      "subtopic": "B2.2 Periodo ipotetico (if-clauses)"
+    },
+    {
+      "id": "trapassato_congiuntivo",
+      "label": "Trapassato congiuntivo / pluperfect subjunctive (morphology/usage)",
+      "subtopic": "B2.2 Periodo ipotetico (if-clauses)"
+    },
+    {
+      "id": "past_conditional",
+      "label": "Past conditional (morphology/usage)",
+      "subtopic": "B2.2 Periodo ipotetico (if-clauses)"
+    },
+    {
+      "id": "se_general_truth",
+      "label": "'Se' + indicative for general truths/habits (se piove, l'erba cresce)",
+      "subtopic": "B2.2 Periodo ipotetico (if-clauses)"
+    },
+    {
+      "id": "type1_real",
+      "label": "Periodo ipotetico della realtà (type 1): se + present indicative, present/future indicative in result clause",
+      "subtopic": "B2.2 Periodo ipotetico (if-clauses)"
+    },
+    {
+      "id": "type2_possibility",
+      "label": "Periodo ipotetico della possibilità (type 2): se + imperfect subjunctive, present conditional in result clause",
+      "subtopic": "B2.2 Periodo ipotetico (if-clauses)"
+    },
+    {
+      "id": "type3_unreality",
+      "label": "Periodo ipotetico dell'irrealtà (type 3): se + trapassato congiuntivo, past conditional in result clause",
+      "subtopic": "B2.2 Periodo ipotetico (if-clauses)"
+    },
+    {
+      "id": "tense_matching_rule",
+      "label": "Correct sequencing: se-clause and result clause must use matching tense/mood pairs",
+      "subtopic": "B2.2 Periodo ipotetico (if-clauses)"
+    },
+    {
+      "id": "type2_type3_error",
+      "label": "Common error: mixing a type-2 se-clause with a type-3 result clause is incorrect",
+      "subtopic": "B2.2 Periodo ipotetico (if-clauses)"
+    },
+    {
+      "id": "mixed_hypothetical",
+      "label": "Mixed hypothetical: past condition (trapassato congiuntivo) with present-time consequence (present conditional)",
+      "subtopic": "B2.2 Periodo ipotetico (if-clauses)"
+    },
+    {
+      "id": "contrast_general_vs_hypothetical",
+      "label": "Contrasting periodo ipotetico with simple 'se' + indicative for general truths/habits",
+      "subtopic": "B2.2 Periodo ipotetico (if-clauses)"
+    },
+    {
+      "id": "DIR_SPEECH",
+      "label": "Concept of direct speech (a quoted original utterance)",
+      "subtopic": "B2.3 Discorso indiretto (reported speech)"
+    },
+    {
+      "id": "REPORT_VERBS",
+      "label": "Reporting verbs: ha detto che, ha spiegato che, ha chiesto se",
+      "subtopic": "B2.3 Discorso indiretto (reported speech)"
+    },
+    {
+      "id": "PAST_TENSES",
+      "label": "Knowledge of Italian past tenses (passato prossimo, imperfetto, trapassato prossimo)",
+      "subtopic": "B2.3 Discorso indiretto (reported speech)"
+    },
+    {
+      "id": "FUTURE_COND",
+      "label": "Knowledge of futuro semplice and condizionale presente",
+      "subtopic": "B2.3 Discorso indiretto (reported speech)"
+    },
+    {
+      "id": "PRESENT_TENSE",
+      "label": "Knowledge of presente indicativo",
+      "subtopic": "B2.3 Discorso indiretto (reported speech)"
+    },
+    {
+      "id": "BACKSHIFT_PRES_IMPF",
+      "label": "Backshift: presente -> imperfetto",
+      "subtopic": "B2.3 Discorso indiretto (reported speech)"
+    },
+    {
+      "id": "BACKSHIFT_PP_TRAP",
+      "label": "Backshift: passato prossimo -> trapassato prossimo",
+      "subtopic": "B2.3 Discorso indiretto (reported speech)"
+    },
+    {
+      "id": "BACKSHIFT_FUT_COND",
+      "label": "Backshift: futuro -> condizionale presente",
+      "subtopic": "B2.3 Discorso indiretto (reported speech)"
+    },
+    {
+      "id": "REPORTING_VERB_TENSE_RULE",
+      "label": "Rule: backshift applies only when reporting verb is in a past tense",
+      "subtopic": "B2.3 Discorso indiretto (reported speech)"
+    },
+    {
+      "id": "NO_BACKSHIFT_PRESENT",
+      "label": "No backshift when reporting verb is in the present tense (dice che viene)",
+      "subtopic": "B2.3 Discorso indiretto (reported speech)"
+    },
+    {
+      "id": "POSSESSIVES",
+      "label": "Possessive adjectives (il mio, il tuo, il suo...)",
+      "subtopic": "B2.3 Discorso indiretto (reported speech)"
+    },
+    {
+      "id": "PRONOUN_SHIFT",
+      "label": "Pronoun perspective changes in reported speech (io -> lui/lei)",
+      "subtopic": "B2.3 Discorso indiretto (reported speech)"
+    },
+    {
+      "id": "POSSESSIVE_SHIFT",
+      "label": "Possessive perspective changes in reported speech (il mio -> il suo)",
+      "subtopic": "B2.3 Discorso indiretto (reported speech)"
+    },
+    {
+      "id": "TIME_ADVERBS",
+      "label": "Time/place adverbs in direct speech (oggi, domani, ieri, qui)",
+      "subtopic": "B2.3 Discorso indiretto (reported speech)"
+    },
+    {
+      "id": "TIME_ADVERB_SHIFT",
+      "label": "Time/place adverb changes in reported speech (oggi->quel giorno, domani->il giorno dopo, ieri->il giorno prima, qui->lì)",
+      "subtopic": "B2.3 Discorso indiretto (reported speech)"
+    },
+    {
+      "id": "YN_QUESTIONS",
+      "label": "Yes/no questions in direct speech",
+      "subtopic": "B2.3 Discorso indiretto (reported speech)"
+    },
+    {
+      "id": "WH_QUESTIONS",
+      "label": "Wh-questions in direct speech (question words + word order)",
+      "subtopic": "B2.3 Discorso indiretto (reported speech)"
+    },
+    {
+      "id": "REPORT_YN_SE",
+      "label": "Reporting yes/no questions with se",
+      "subtopic": "B2.3 Discorso indiretto (reported speech)"
+    },
+    {
+      "id": "STATEMENT_WORD_ORDER",
+      "label": "Statement word order (subject-verb, not inverted question order)",
+      "subtopic": "B2.3 Discorso indiretto (reported speech)"
+    },
+    {
+      "id": "REPORT_WH",
+      "label": "Reporting wh-questions: keep question word, switch to statement word order",
+      "subtopic": "B2.3 Discorso indiretto (reported speech)"
+    },
+    {
+      "id": "FULL_REPORTED_SPEECH",
+      "label": "Constructing full reported speech combining tense, pronoun, and adverb shifts",
+      "subtopic": "B2.3 Discorso indiretto (reported speech)"
+    },
+    {
+      "id": "verb_conj_basic",
+      "label": "Regular verb conjugation classes (-are, -ere, -ire)",
+      "subtopic": "B2.4 Gerund, advanced connectors and register"
+    },
+    {
+      "id": "gerund_formation",
+      "label": "Gerund formation: -are → -ando, -ere/-ire → -endo",
+      "subtopic": "B2.4 Gerund, advanced connectors and register"
+    },
+    {
+      "id": "essere_stare_present",
+      "label": "Conjugation of stare (present and imperfect)",
+      "subtopic": "B2.4 Gerund, advanced connectors and register"
+    },
+    {
+      "id": "progressive_tense",
+      "label": "Present/past progressive: stare + gerund (sto mangiando, stavo mangiando)",
+      "subtopic": "B2.4 Gerund, advanced connectors and register"
+    },
+    {
+      "id": "subordinate_clauses_basic",
+      "label": "Concept of subordinating conjunctions joining clauses",
+      "subtopic": "B2.4 Gerund, advanced connectors and register"
+    },
+    {
+      "id": "gerund_adverbial",
+      "label": "Gerund used adverbially for manner/cause/simultaneous action without a conjunction",
+      "subtopic": "B2.4 Gerund, advanced connectors and register"
+    },
+    {
+      "id": "object_reflexive_pronouns",
+      "label": "Direct/indirect object and reflexive pronouns",
+      "subtopic": "B2.4 Gerund, advanced connectors and register"
+    },
+    {
+      "id": "pronoun_attachment_rules",
+      "label": "Rules for attaching pronouns to infinitives/gerunds/imperatives",
+      "subtopic": "B2.4 Gerund, advanced connectors and register"
+    },
+    {
+      "id": "gerund_pronoun_attached",
+      "label": "Gerund with pronoun attached (vedendolo, alzandosi)",
+      "subtopic": "B2.4 Gerund, advanced connectors and register"
+    },
+    {
+      "id": "subjunctive_mood",
+      "label": "Present subjunctive formation and use",
+      "subtopic": "B2.4 Gerund, advanced connectors and register"
+    },
+    {
+      "id": "connector_tuttavia",
+      "label": "Connector: tuttavia (however)",
+      "subtopic": "B2.4 Gerund, advanced connectors and register"
+    },
+    {
+      "id": "connector_quindi_dunque_percio",
+      "label": "Connectors: quindi, dunque, perciò (therefore/so)",
+      "subtopic": "B2.4 Gerund, advanced connectors and register"
+    },
+    {
+      "id": "connector_daltra_parte",
+      "label": "Connector: d'altra parte (on the other hand)",
+      "subtopic": "B2.4 Gerund, advanced connectors and register"
+    },
+    {
+      "id": "connector_nonostante",
+      "label": "Connector: nonostante (despite) + subjunctive",
+      "subtopic": "B2.4 Gerund, advanced connectors and register"
+    },
+    {
+      "id": "connector_sebbene",
+      "label": "Connector: sebbene (although) + subjunctive",
+      "subtopic": "B2.4 Gerund, advanced connectors and register"
+    },
+    {
+      "id": "connector_malgrado",
+      "label": "Connector: malgrado (despite) + subjunctive",
+      "subtopic": "B2.4 Gerund, advanced connectors and register"
+    },
+    {
+      "id": "lexical_register_choice",
+      "label": "Vocabulary choice by register (comprendere vs capire)",
+      "subtopic": "B2.4 Gerund, advanced connectors and register"
+    },
+    {
+      "id": "avoid_contractions_colloquialisms",
+      "label": "Avoidance of contractions and colloquialisms in formal writing",
+      "subtopic": "B2.4 Gerund, advanced connectors and register"
+    },
+    {
+      "id": "si_impersonale",
+      "label": "Si impersonale construction",
+      "subtopic": "B2.4 Gerund, advanced connectors and register"
+    },
+    {
+      "id": "passive_construction",
+      "label": "Passive voice construction",
+      "subtopic": "B2.4 Gerund, advanced connectors and register"
+    },
+    {
+      "id": "formal_vs_tu_directed",
+      "label": "Preference for si impersonale/passive over 'tu'-directed phrasing in formal writing",
+      "subtopic": "B2.4 Gerund, advanced connectors and register"
+    },
+    {
+      "id": "thesis_statement",
+      "label": "Stating a thesis in an argumentative paragraph",
+      "subtopic": "B2.4 Gerund, advanced connectors and register"
+    },
+    {
+      "id": "concluding_connectors",
+      "label": "Concluding connectors: in conclusione, in sintesi",
+      "subtopic": "B2.4 Gerund, advanced connectors and register"
+    },
+    {
+      "id": "argumentative_paragraph_structure",
+      "label": "Structuring a short argumentative paragraph using thesis, connectors, and conclusion",
+      "subtopic": "B2.4 Gerund, advanced connectors and register"
+    },
+    {
+      "id": "IND_ENDINGS",
+      "label": "Knowledge of indicative present tense endings (baseline for contrast)",
+      "subtopic": "B1.4 Congiuntivo presente: formation and core triggers"
+    },
+    {
+      "id": "SUBJ_FORM_ARE",
+      "label": "Present subjunctive formation: regular -are verbs",
+      "subtopic": "B1.4 Congiuntivo presente: formation and core triggers"
+    },
+    {
+      "id": "SUBJ_FORM_ERE",
+      "label": "Present subjunctive formation: regular -ere verbs",
+      "subtopic": "B1.4 Congiuntivo presente: formation and core triggers"
+    },
+    {
+      "id": "SUBJ_FORM_IRE",
+      "label": "Present subjunctive formation: regular -ire verbs",
+      "subtopic": "B1.4 Congiuntivo presente: formation and core triggers"
+    },
+    {
+      "id": "SUBJ_SAME_PERSON_ENDING",
+      "label": "Same ending shared across io/tu/lui-lei forms in the subjunctive",
+      "subtopic": "B1.4 Congiuntivo presente: formation and core triggers"
+    },
+    {
+      "id": "SUBJ_IRREG_ESSERE",
+      "label": "Irregular stem: essere -> sia",
+      "subtopic": "B1.4 Congiuntivo presente: formation and core triggers"
+    },
+    {
+      "id": "SUBJ_IRREG_AVERE",
+      "label": "Irregular stem: avere -> abbia",
+      "subtopic": "B1.4 Congiuntivo presente: formation and core triggers"
+    },
+    {
+      "id": "SUBJ_IRREG_ANDARE",
+      "label": "Irregular stem: andare -> vada",
+      "subtopic": "B1.4 Congiuntivo presente: formation and core triggers"
+    },
+    {
+      "id": "SUBJ_IRREG_FARE",
+      "label": "Irregular stem: fare -> faccia",
+      "subtopic": "B1.4 Congiuntivo presente: formation and core triggers"
+    },
+    {
+      "id": "SUBJ_IRREG_POTERE",
+      "label": "Irregular stem: potere -> possa",
+      "subtopic": "B1.4 Congiuntivo presente: formation and core triggers"
+    },
+    {
+      "id": "SUBJ_IRREG_DOVERE",
+      "label": "Irregular stem: dovere -> debba",
+      "subtopic": "B1.4 Congiuntivo presente: formation and core triggers"
+    },
+    {
+      "id": "SUBJ_IRREG_VOLERE",
+      "label": "Irregular stem: volere -> voglia",
+      "subtopic": "B1.4 Congiuntivo presente: formation and core triggers"
+    },
+    {
+      "id": "SUBJ_IRREG_VENIRE",
+      "label": "Irregular stem: venire -> venga",
+      "subtopic": "B1.4 Congiuntivo presente: formation and core triggers"
+    },
+    {
+      "id": "SUBJ_IRREG_DIRE",
+      "label": "Irregular stem: dire -> dica",
+      "subtopic": "B1.4 Congiuntivo presente: formation and core triggers"
+    },
+    {
+      "id": "DEPENDENT_CLAUSE_CHE",
+      "label": "Concept of a dependent clause introduced by 'che'",
+      "subtopic": "B1.4 Congiuntivo presente: formation and core triggers"
+    },
+    {
+      "id": "DIFFERENT_SUBJECT_CONDITION",
+      "label": "Condition: subject of main clause differs from subject of dependent clause",
+      "subtopic": "B1.4 Congiuntivo presente: formation and core triggers"
+    },
+    {
+      "id": "TRIGGER_OPINION",
+      "label": "Trigger category: opinion (e.g. penso che)",
+      "subtopic": "B1.4 Congiuntivo presente: formation and core triggers"
+    },
+    {
+      "id": "TRIGGER_DOUBT",
+      "label": "Trigger category: doubt (e.g. dubito che)",
+      "subtopic": "B1.4 Congiuntivo presente: formation and core triggers"
+    },
+    {
+      "id": "TRIGGER_EMOTION",
+      "label": "Trigger category: emotion (e.g. ho paura che)",
+      "subtopic": "B1.4 Congiuntivo presente: formation and core triggers"
+    },
+    {
+      "id": "TRIGGER_DESIRE",
+      "label": "Trigger category: desire (e.g. spero che)",
+      "subtopic": "B1.4 Congiuntivo presente: formation and core triggers"
+    },
+    {
+      "id": "TRIGGER_NECESSITY",
+      "label": "Trigger category: necessity (e.g. e importante che)",
+      "subtopic": "B1.4 Congiuntivo presente: formation and core triggers"
+    },
+    {
+      "id": "CORE_RULE",
+      "label": "Core rule: subjunctive after che-clause when main clause expresses opinion/doubt/emotion/desire/necessity and subjects differ",
+      "subtopic": "B1.4 Congiuntivo presente: formation and core triggers"
+    },
+    {
+      "id": "IMPERSONAL_TRIGGERS",
+      "label": "Impersonal expressions triggering subjunctive (bisogna che, e possibile che, sembra che)",
+      "subtopic": "B1.4 Congiuntivo presente: formation and core triggers"
+    },
+    {
+      "id": "CERTAINTY_INDICATIVE",
+      "label": "Verbs of certainty/fact (so che, e vero che) take the indicative, not subjunctive",
+      "subtopic": "B1.4 Congiuntivo presente: formation and core triggers"
+    },
+    {
+      "id": "SAME_SUBJECT_RULE",
+      "label": "Recognising same-subject case: no subjunctive needed",
+      "subtopic": "B1.4 Congiuntivo presente: formation and core triggers"
+    },
+    {
+      "id": "DI_INFINITIVE_SUB",
+      "label": "'di + infinitive' replaces 'che + subjunctive' when subject is the same",
+      "subtopic": "B1.4 Congiuntivo presente: formation and core triggers"
+    },
+    {
+      "id": "EXAMPLE_CREDO_DI_AVERE",
+      "label": "Worked example: 'credo di avere ragione'",
+      "subtopic": "B1.4 Congiuntivo presente: formation and core triggers"
+    },
+    {
+      "id": "IMPF_AVERE",
+      "label": "Imperfetto of avere (avevo, avevi, aveva...) used for past states (age, ho fame etc.)"
+    },
+    {
+      "id": "TRAPASSATO_PROSSIMO_FORM",
+      "label": "Trapassato prossimo formation: imperfetto of avere/essere + past participle"
+    },
+    {
+      "id": "register_written",
+      "label": "Concept of formal vs informal/spoken register in writing"
+    },
+    {
+      "id": "ESSERE_ALL_TENSES",
+      "label": "Conjugation of essere across tenses (present, imperfetto, future, conditional)"
+    }
+  ],
+  "edges": [
+    [
+      "register_concept",
+      "greet_time"
+    ],
+    [
+      "register_concept",
+      "greet_casual"
+    ],
+    [
+      "subj_pronouns",
+      "lei_formal"
+    ],
+    [
+      "register_concept",
+      "lei_formal"
+    ],
+    [
+      "lei_formal",
+      "ask_name_formal"
+    ],
+    [
+      "subj_pronouns",
+      "ask_name_informal"
+    ],
+    [
+      "register_concept",
+      "ask_name_informal"
+    ],
+    [
+      "register_concept",
+      "ask_name_formal"
+    ],
+    [
+      "intro_self",
+      "piacere"
+    ],
+    [
+      "ask_name_informal",
+      "piacere"
+    ],
+    [
+      "ask_name_formal",
+      "piacere"
+    ],
+    [
+      "register_concept",
+      "courtesy_apology"
+    ],
+    [
+      "lei_formal",
+      "ask_origin_formal"
+    ],
+    [
+      "register_concept",
+      "ask_origin_formal"
+    ],
+    [
+      "subj_pronouns",
+      "ask_origin_informal"
+    ],
+    [
+      "register_concept",
+      "ask_origin_informal"
+    ],
+    [
+      "ask_origin_informal",
+      "state_origin"
+    ],
+    [
+      "ask_origin_formal",
+      "state_origin"
+    ],
+    [
+      "state_origin",
+      "nationality_agree"
+    ],
+    [
+      "question_words",
+      "ask_origin_informal"
+    ],
+    [
+      "question_words",
+      "ask_origin_formal"
+    ],
+    [
+      "question_words",
+      "ask_name_informal"
+    ],
+    [
+      "question_words",
+      "ask_name_formal"
+    ],
+    [
+      "NUM_0_20",
+      "NUM_21_100"
+    ],
+    [
+      "NUM_21_100",
+      "NUM_ABOVE_100"
+    ],
+    [
+      "NUM_0_20",
+      "CHE_ORE_SONO"
+    ],
+    [
+      "CHE_ORE_SONO",
+      "SONO_LE"
+    ],
+    [
+      "NUM_0_20",
+      "SONO_LE"
+    ],
+    [
+      "SONO_LE",
+      "MEZZOGIORNO_MEZZANOTTE"
+    ],
+    [
+      "SONO_LE",
+      "E_MENO_QUARTER_HALF"
+    ],
+    [
+      "DAYS_OF_WEEK",
+      "ASK_STATE_DAY"
+    ],
+    [
+      "MONTHS_YEAR",
+      "DATE_FORMULA"
+    ],
+    [
+      "NUM_0_20",
+      "DATE_FORMULA"
+    ],
+    [
+      "NUM_21_100",
+      "DATE_FORMULA"
+    ],
+    [
+      "DATE_FORMULA",
+      "IL_PRIMO_EXCEPTION"
+    ],
+    [
+      "AVERE_VERB",
+      "QUANTI_ANNI_HAI"
+    ],
+    [
+      "NUM_0_20",
+      "QUANTI_ANNI_HAI"
+    ],
+    [
+      "QUANTI_ANNI_HAI",
+      "HO_ANNI"
+    ],
+    [
+      "NUM_21_100",
+      "HO_ANNI"
+    ],
+    [
+      "noun_o_masc",
+      "plural_o_i"
+    ],
+    [
+      "noun_a_fem",
+      "plural_a_e"
+    ],
+    [
+      "noun_e_either",
+      "plural_e_i"
+    ],
+    [
+      "noun_o_masc",
+      "plural_irregular"
+    ],
+    [
+      "noun_a_fem",
+      "plural_irregular"
+    ],
+    [
+      "noun_e_either",
+      "plural_irregular"
+    ],
+    [
+      "noun_o_masc",
+      "def_art_forms"
+    ],
+    [
+      "noun_a_fem",
+      "def_art_forms"
+    ],
+    [
+      "noun_e_either",
+      "def_art_forms"
+    ],
+    [
+      "def_art_forms",
+      "initial_sound_rule"
+    ],
+    [
+      "initial_sound_rule",
+      "def_art_selection"
+    ],
+    [
+      "plural_o_i",
+      "def_art_selection"
+    ],
+    [
+      "plural_a_e",
+      "def_art_selection"
+    ],
+    [
+      "plural_e_i",
+      "def_art_selection"
+    ],
+    [
+      "noun_o_masc",
+      "indef_art_forms"
+    ],
+    [
+      "noun_a_fem",
+      "indef_art_forms"
+    ],
+    [
+      "noun_e_either",
+      "indef_art_forms"
+    ],
+    [
+      "indef_art_forms",
+      "initial_sound_rule"
+    ],
+    [
+      "initial_sound_rule",
+      "indef_art_selection"
+    ],
+    [
+      "noun_o_masc",
+      "adj_agreement_gender"
+    ],
+    [
+      "noun_a_fem",
+      "adj_agreement_gender"
+    ],
+    [
+      "noun_e_either",
+      "adj_agreement_gender"
+    ],
+    [
+      "plural_o_i",
+      "adj_agreement_number"
+    ],
+    [
+      "plural_a_e",
+      "adj_agreement_number"
+    ],
+    [
+      "plural_e_i",
+      "adj_agreement_number"
+    ],
+    [
+      "adj_agreement_gender",
+      "adj_e_ending"
+    ],
+    [
+      "adj_agreement_number",
+      "adj_e_ending"
+    ],
+    [
+      "adj_agreement_gender",
+      "adj_position_default"
+    ],
+    [
+      "adj_agreement_number",
+      "adj_position_default"
+    ],
+    [
+      "adj_position_default",
+      "adj_position_exceptions"
+    ],
+    [
+      "SUBJ_PRON",
+      "ESSERE_CONJ"
+    ],
+    [
+      "SUBJ_PRON",
+      "AVERE_CONJ"
+    ],
+    [
+      "SUBJ_PRON",
+      "ARE_CONJ"
+    ],
+    [
+      "SUBJ_PRON",
+      "ERE_CONJ"
+    ],
+    [
+      "SUBJ_PRON",
+      "IRE_NORMAL_CONJ"
+    ],
+    [
+      "SUBJ_PRON",
+      "IRE_ISC_CONJ"
+    ],
+    [
+      "ESSERE_CONJ",
+      "ESSERE_IDENTITY"
+    ],
+    [
+      "ESSERE_CONJ",
+      "ESSERE_NATIONALITY"
+    ],
+    [
+      "ESSERE_CONJ",
+      "ESSERE_CHARACTERISTICS"
+    ],
+    [
+      "ESSERE_CONJ",
+      "ESSERE_LOCATION"
+    ],
+    [
+      "AVERE_CONJ",
+      "AVERE_POSSESSION"
+    ],
+    [
+      "AVERE_CONJ",
+      "AVERE_AGE"
+    ],
+    [
+      "AVERE_CONJ",
+      "AVERE_EXPRESSIONS"
+    ],
+    [
+      "VERB_ENDINGS_CONCEPT",
+      "ARE_CONJ"
+    ],
+    [
+      "VERB_ENDINGS_CONCEPT",
+      "ERE_CONJ"
+    ],
+    [
+      "VERB_ENDINGS_CONCEPT",
+      "IRE_NORMAL_CONJ"
+    ],
+    [
+      "IRE_NORMAL_CONJ",
+      "IRE_ISC_CONJ"
+    ],
+    [
+      "ESSERE_CONJ",
+      "NEGATION_NON"
+    ],
+    [
+      "AVERE_CONJ",
+      "NEGATION_NON"
+    ],
+    [
+      "ARE_CONJ",
+      "NEGATION_NON"
+    ],
+    [
+      "ERE_CONJ",
+      "NEGATION_NON"
+    ],
+    [
+      "IRE_NORMAL_CONJ",
+      "NEGATION_NON"
+    ],
+    [
+      "IRE_ISC_CONJ",
+      "NEGATION_NON"
+    ],
+    [
+      "FAM_VOCAB",
+      "POSS_ADJ_EXCEPTION"
+    ],
+    [
+      "POSS_ADJ_FORMS",
+      "POSS_ADJ_EXCEPTION"
+    ],
+    [
+      "ADJ_AGREEMENT",
+      "PHYS_APPEARANCE_ADJ"
+    ],
+    [
+      "ADJ_AGREEMENT",
+      "PERSONALITY_ADJ"
+    ],
+    [
+      "PHYS_APPEARANCE_ADJ",
+      "DESCRIBE_PEOPLE"
+    ],
+    [
+      "PERSONALITY_ADJ",
+      "DESCRIBE_PEOPLE"
+    ],
+    [
+      "ESSERE_AVERE",
+      "DESCRIBE_PEOPLE"
+    ],
+    [
+      "FAM_VOCAB",
+      "DESCRIBE_PEOPLE"
+    ],
+    [
+      "SUBJECT_PRONOUNS",
+      "ANDARE"
+    ],
+    [
+      "SUBJECT_PRONOUNS",
+      "FARE"
+    ],
+    [
+      "SUBJECT_PRONOUNS",
+      "DARE"
+    ],
+    [
+      "SUBJECT_PRONOUNS",
+      "STARE"
+    ],
+    [
+      "SUBJECT_PRONOUNS",
+      "POTERE"
+    ],
+    [
+      "SUBJECT_PRONOUNS",
+      "DOVERE"
+    ],
+    [
+      "SUBJECT_PRONOUNS",
+      "VOLERE"
+    ],
+    [
+      "PRESENT_REGULAR",
+      "ANDARE"
+    ],
+    [
+      "PRESENT_REGULAR",
+      "FARE"
+    ],
+    [
+      "PRESENT_REGULAR",
+      "DARE"
+    ],
+    [
+      "PRESENT_REGULAR",
+      "STARE"
+    ],
+    [
+      "PRESENT_REGULAR",
+      "POTERE"
+    ],
+    [
+      "PRESENT_REGULAR",
+      "DOVERE"
+    ],
+    [
+      "PRESENT_REGULAR",
+      "VOLERE"
+    ],
+    [
+      "INFINITIVE_FORM",
+      "MODAL_INFINITIVE_CONSTRUCTION"
+    ],
+    [
+      "POTERE",
+      "MODAL_INFINITIVE_CONSTRUCTION"
+    ],
+    [
+      "DOVERE",
+      "MODAL_INFINITIVE_CONSTRUCTION"
+    ],
+    [
+      "VOLERE",
+      "MODAL_INFINITIVE_CONSTRUCTION"
+    ],
+    [
+      "FOOD_VOCAB",
+      "VORREI"
+    ],
+    [
+      "DEFINITE_ARTICLES",
+      "PARTITIVE"
+    ],
+    [
+      "FOOD_VOCAB",
+      "PARTITIVE"
+    ],
+    [
+      "SHOPPING_VOCAB",
+      "QUANTO_COSTA"
+    ],
+    [
+      "NUMBERS_CARDINAL",
+      "CURRENCY_VOCAB"
+    ],
+    [
+      "CURRENCY_VOCAB",
+      "NUMBERS_WITH_CURRENCY"
+    ],
+    [
+      "QUANTO_COSTA",
+      "NUMBERS_WITH_CURRENCY"
+    ],
+    [
+      "NUMBERS_CARDINAL",
+      "ORDINAL_NUMBERS"
+    ],
+    [
+      "ORDINAL_NUMBERS",
+      "ORDINALS_CONTEXT"
+    ],
+    [
+      "SHOPPING_VOCAB",
+      "ORDINALS_CONTEXT"
+    ],
+    [
+      "VERBS_COMPRARE_PRENDERE_VOLERE",
+      "DIRECT_OBJECT_NOUNS"
+    ],
+    [
+      "FOOD_VOCAB",
+      "DIRECT_OBJECT_NOUNS"
+    ],
+    [
+      "SHOPPING_VOCAB",
+      "DIRECT_OBJECT_NOUNS"
+    ],
+    [
+      "DI_PREPOSITION",
+      "CONTAINERS_QUANTITIES"
+    ],
+    [
+      "FOOD_VOCAB",
+      "CONTAINERS_QUANTITIES"
+    ],
+    [
+      "NUMBERS_CARDINAL",
+      "CONTAINERS_QUANTITIES"
+    ],
+    [
+      "PRESENT_AVERE",
+      "FORMATION_AVERE"
+    ],
+    [
+      "PRESENT_ESSERE",
+      "FORMATION_ESSERE"
+    ],
+    [
+      "PAST_PARTICIPLE_REGULAR",
+      "FORMATION_AVERE"
+    ],
+    [
+      "PAST_PARTICIPLE_REGULAR",
+      "FORMATION_ESSERE"
+    ],
+    [
+      "PAST_PARTICIPLE_IRREGULAR",
+      "FORMATION_AVERE"
+    ],
+    [
+      "PAST_PARTICIPLE_IRREGULAR",
+      "FORMATION_ESSERE"
+    ],
+    [
+      "AUX_CHOICE_AVERE_SET",
+      "FORMATION_AVERE"
+    ],
+    [
+      "AUX_CHOICE_ESSERE_SET",
+      "FORMATION_ESSERE"
+    ],
+    [
+      "FORMATION_ESSERE",
+      "AGREEMENT_ESSERE"
+    ],
+    [
+      "FORMATION_AVERE",
+      "NON_AGREEMENT_AVERE"
+    ],
+    [
+      "NON_AGREEMENT_AVERE",
+      "AGREEMENT_PRECEDING_DO_PRONOUN"
+    ],
+    [
+      "PRECEDING_DO_PRONOUNS",
+      "AGREEMENT_PRECEDING_DO_PRONOUN"
+    ],
+    [
+      "FORMATION_AVERE",
+      "NEGATION_PLACEMENT"
+    ],
+    [
+      "FORMATION_ESSERE",
+      "NEGATION_PLACEMENT"
+    ],
+    [
+      "FORMATION_AVERE",
+      "TIME_EXPRESSION_PLACEMENT"
+    ],
+    [
+      "FORMATION_ESSERE",
+      "TIME_EXPRESSION_PLACEMENT"
+    ],
+    [
+      "TIME_EXPRESSIONS_KNOWN",
+      "TIME_EXPRESSION_PLACEMENT"
+    ],
+    [
+      "IMPF_ARE",
+      "IMPF_USE_HABITUAL"
+    ],
+    [
+      "IMPF_ERE",
+      "IMPF_USE_HABITUAL"
+    ],
+    [
+      "IMPF_IRE",
+      "IMPF_USE_HABITUAL"
+    ],
+    [
+      "IMPF_ARE",
+      "IMPF_USE_BACKGROUND"
+    ],
+    [
+      "IMPF_ERE",
+      "IMPF_USE_BACKGROUND"
+    ],
+    [
+      "IMPF_IRE",
+      "IMPF_USE_BACKGROUND"
+    ],
+    [
+      "IMPF_ARE",
+      "IMPF_USE_STATES"
+    ],
+    [
+      "IMPF_ERE",
+      "IMPF_USE_STATES"
+    ],
+    [
+      "IMPF_IRE",
+      "IMPF_USE_STATES"
+    ],
+    [
+      "IMPF_ESSERE",
+      "IMPF_USE_STATES"
+    ],
+    [
+      "IMPF_FARE",
+      "IMPF_USE_HABITUAL"
+    ],
+    [
+      "IMPF_DIRE",
+      "IMPF_USE_HABITUAL"
+    ],
+    [
+      "IMPF_BERE",
+      "IMPF_USE_HABITUAL"
+    ],
+    [
+      "IMPF_FARE",
+      "IMPF_USE_BACKGROUND"
+    ],
+    [
+      "IMPF_DIRE",
+      "IMPF_USE_BACKGROUND"
+    ],
+    [
+      "IMPF_BERE",
+      "IMPF_USE_BACKGROUND"
+    ],
+    [
+      "PP_KNOWLEDGE",
+      "PP_USE_SINGLE"
+    ],
+    [
+      "PP_KNOWLEDGE",
+      "PP_USE_SEQUENCE"
+    ],
+    [
+      "PP_KNOWLEDGE",
+      "PP_USE_DEFINED"
+    ],
+    [
+      "IMPF_USE_BACKGROUND",
+      "CONTRAST"
+    ],
+    [
+      "IMPF_USE_STATES",
+      "CONTRAST"
+    ],
+    [
+      "PP_USE_SINGLE",
+      "CONTRAST"
+    ],
+    [
+      "PP_USE_DEFINED",
+      "CONTRAST"
+    ],
+    [
+      "TRANSITIVE_VERB",
+      "DOP_FORMS"
+    ],
+    [
+      "DOP_FORMS",
+      "DOP_PLACEMENT"
+    ],
+    [
+      "A_PERSON_VERBS",
+      "IOP_FORMS"
+    ],
+    [
+      "IOP_FORMS",
+      "IOP_PLACEMENT"
+    ],
+    [
+      "A_PERSON_VERBS",
+      "PIACERE_INVERSION"
+    ],
+    [
+      "IOP_PLACEMENT",
+      "PIACERE_INVERSION"
+    ],
+    [
+      "PIACERE_INVERSION",
+      "PIACERE_SG_PL"
+    ],
+    [
+      "REFLEXIVE_VERB_CONCEPT",
+      "REFLEXIVE_PRONOUNS"
+    ],
+    [
+      "REFLEXIVE_PRONOUNS",
+      "REFLEXIVE_FORMATION"
+    ],
+    [
+      "DOP_PLACEMENT",
+      "REFLEXIVE_FORMATION"
+    ],
+    [
+      "REFLEXIVE_FORMATION",
+      "REFLEXIVE_EXAMPLES"
+    ],
+    [
+      "PASSATO_PROSSIMO",
+      "ESSERE_AGREEMENT"
+    ],
+    [
+      "REFLEXIVE_EXAMPLES",
+      "REFLEXIVE_PASSATO"
+    ],
+    [
+      "ESSERE_AGREEMENT",
+      "REFLEXIVE_PASSATO"
+    ],
+    [
+      "DOP_PLACEMENT",
+      "PRONOUN_MODAL_PLACEMENT"
+    ],
+    [
+      "IOP_PLACEMENT",
+      "PRONOUN_MODAL_PLACEMENT"
+    ],
+    [
+      "MODAL_INFINITIVE",
+      "PRONOUN_MODAL_PLACEMENT"
+    ],
+    [
+      "adj_base",
+      "comp_maggioranza"
+    ],
+    [
+      "adj_base",
+      "comp_minoranza"
+    ],
+    [
+      "adj_base",
+      "comp_uguaglianza"
+    ],
+    [
+      "comp_maggioranza",
+      "di_che_rule"
+    ],
+    [
+      "comp_minoranza",
+      "di_che_rule"
+    ],
+    [
+      "comp_maggioranza",
+      "irr_comp_migliore_peggiore"
+    ],
+    [
+      "comp_maggioranza",
+      "irr_comp_maggiore_minore"
+    ],
+    [
+      "di_che_rule",
+      "rel_superlative"
+    ],
+    [
+      "comp_maggioranza",
+      "rel_superlative"
+    ],
+    [
+      "adj_base",
+      "abs_superlative_issimo"
+    ],
+    [
+      "adj_base",
+      "abs_superlative_molto"
+    ],
+    [
+      "verb_infinitive_conj",
+      "future_endings_are_ere"
+    ],
+    [
+      "verb_infinitive_conj",
+      "future_endings_ire"
+    ],
+    [
+      "future_endings_are_ere",
+      "future_irr_stems"
+    ],
+    [
+      "future_endings_ire",
+      "future_irr_stems"
+    ],
+    [
+      "future_endings_are_ere",
+      "future_prediction_planning"
+    ],
+    [
+      "future_endings_ire",
+      "future_prediction_planning"
+    ],
+    [
+      "future_irr_stems",
+      "future_prediction_planning"
+    ],
+    [
+      "future_prediction_planning",
+      "future_probability"
+    ],
+    [
+      "Q_DOVE",
+      "GIVE_DIRECTIONS"
+    ],
+    [
+      "Q_COME",
+      "GIVE_DIRECTIONS"
+    ],
+    [
+      "DIR_VOCAB",
+      "GIVE_DIRECTIONS"
+    ],
+    [
+      "VERB_CONJ_KNOWLEDGE",
+      "IMP_TU"
+    ],
+    [
+      "VERB_CONJ_KNOWLEDGE",
+      "IMP_LEI"
+    ],
+    [
+      "TU_LEI_DISTINCTION",
+      "IMP_TU"
+    ],
+    [
+      "TU_LEI_DISTINCTION",
+      "IMP_LEI"
+    ],
+    [
+      "IMP_TU",
+      "GIVE_DIRECTIONS"
+    ],
+    [
+      "IMP_LEI",
+      "GIVE_DIRECTIONS"
+    ],
+    [
+      "TRANSPORT_VOCAB",
+      "PREP_TRANSPORT_USE"
+    ],
+    [
+      "PREP_PLACE_MOVE",
+      "PREP_TRANSPORT_USE"
+    ],
+    [
+      "BODY_PARTS",
+      "HEALTH_EXPR"
+    ],
+    [
+      "INFINITIVE_KNOWLEDGE",
+      "VUOI_VORRESTI"
+    ],
+    [
+      "VUOI_VORRESTI",
+      "MAKE_RESPOND_PLANS"
+    ],
+    [
+      "TI_VA_DI",
+      "MAKE_RESPOND_PLANS"
+    ],
+    [
+      "ANDIAMO_A",
+      "MAKE_RESPOND_PLANS"
+    ],
+    [
+      "RESPOND_SUGGESTION",
+      "MAKE_RESPOND_PLANS"
+    ],
+    [
+      "MAKE_RESPOND_PLANS",
+      "STATE_FUTURE_PLANS"
+    ],
+    [
+      "FUTURE_TIME_EXPR",
+      "STATE_FUTURE_PLANS"
+    ],
+    [
+      "future_tense_stems",
+      "pres_cond_formation"
+    ],
+    [
+      "pres_cond_endings",
+      "pres_cond_formation"
+    ],
+    [
+      "pres_cond_formation",
+      "pres_cond_polite_requests"
+    ],
+    [
+      "pres_cond_formation",
+      "pres_cond_advice"
+    ],
+    [
+      "pres_cond_formation",
+      "pres_cond_wish"
+    ],
+    [
+      "pres_cond_formation",
+      "pres_cond_hedging"
+    ],
+    [
+      "pres_cond_formation",
+      "avere_essere_present"
+    ],
+    [
+      "avere_essere_present",
+      "past_cond_formation"
+    ],
+    [
+      "past_participle",
+      "past_cond_formation"
+    ],
+    [
+      "auxiliary_choice",
+      "past_cond_formation"
+    ],
+    [
+      "past_cond_formation",
+      "past_cond_unfulfilled_wish"
+    ],
+    [
+      "past_cond_formation",
+      "past_cond_reported_future"
+    ],
+    [
+      "modal_verbs_present",
+      "modal_verbs_conditional"
+    ],
+    [
+      "pres_cond_formation",
+      "modal_verbs_conditional"
+    ],
+    [
+      "pres_cond_wish",
+      "present_vs_past_cond_choice"
+    ],
+    [
+      "past_cond_unfulfilled_wish",
+      "present_vs_past_cond_choice"
+    ],
+    [
+      "past_cond_reported_future",
+      "present_vs_past_cond_choice"
+    ],
+    [
+      "ind_obj_pron",
+      "ci_location"
+    ],
+    [
+      "ind_obj_pron",
+      "ci_replace_a_in_su"
+    ],
+    [
+      "ind_obj_pron",
+      "combine_order"
+    ],
+    [
+      "dir_obj_pron",
+      "combine_order"
+    ],
+    [
+      "single_pron_placement",
+      "combine_order"
+    ],
+    [
+      "combine_order",
+      "spelling_change_mi_ti_ci_vi"
+    ],
+    [
+      "combine_order",
+      "spelling_change_gli_le"
+    ],
+    [
+      "spelling_change_mi_ti_ci_vi",
+      "combined_forms"
+    ],
+    [
+      "spelling_change_gli_le",
+      "combined_forms"
+    ],
+    [
+      "combined_forms",
+      "combined_placement"
+    ],
+    [
+      "single_pron_placement",
+      "combined_placement"
+    ],
+    [
+      "dir_obj_pron",
+      "participle_agreement_direct"
+    ],
+    [
+      "passato_prossimo",
+      "participle_agreement_direct"
+    ],
+    [
+      "participle_agreement_direct",
+      "participle_agreement_combined"
+    ],
+    [
+      "combined_forms",
+      "participle_agreement_combined"
+    ],
+    [
+      "combined_forms",
+      "identify_underlying_pairing"
+    ],
+    [
+      "combined_placement",
+      "identify_underlying_pairing"
+    ],
+    [
+      "MAIN_CLAUSE_SUBORD",
+      "ANTECEDENT_CONCEPT"
+    ],
+    [
+      "ANTECEDENT_CONCEPT",
+      "CHE_RELATIVE"
+    ],
+    [
+      "SUBJ_OBJ_DISTINCTION",
+      "CHE_RELATIVE"
+    ],
+    [
+      "ANTECEDENT_CONCEPT",
+      "CUI_RELATIVE"
+    ],
+    [
+      "PREPOSITIONS_BASIC",
+      "CUI_RELATIVE"
+    ],
+    [
+      "CUI_RELATIVE",
+      "IL_QUALE_RELATIVE"
+    ],
+    [
+      "GENDER_NUMBER_AGREEMENT",
+      "IL_QUALE_RELATIVE"
+    ],
+    [
+      "IL_QUALE_RELATIVE",
+      "IL_QUALE_DISAMBIG"
+    ],
+    [
+      "ANTECEDENT_CONCEPT",
+      "CHI_RELATIVE"
+    ],
+    [
+      "CHE_RELATIVE",
+      "AVOID_NOUN_RESTATEMENT"
+    ],
+    [
+      "CUI_RELATIVE",
+      "AVOID_NOUN_RESTATEMENT"
+    ],
+    [
+      "CHE_RELATIVE",
+      "FORMING_COMPLEX_SENTENCES"
+    ],
+    [
+      "CUI_RELATIVE",
+      "FORMING_COMPLEX_SENTENCES"
+    ],
+    [
+      "IL_QUALE_RELATIVE",
+      "FORMING_COMPLEX_SENTENCES"
+    ],
+    [
+      "CHI_RELATIVE",
+      "FORMING_COMPLEX_SENTENCES"
+    ],
+    [
+      "AVOID_NOUN_RESTATEMENT",
+      "FORMING_COMPLEX_SENTENCES"
+    ],
+    [
+      "FORMING_COMPLEX_SENTENCES",
+      "RESTRICTIVE_CLAUSE"
+    ],
+    [
+      "FORMING_COMPLEX_SENTENCES",
+      "NONRESTRICTIVE_CLAUSE"
+    ],
+    [
+      "RESTRICTIVE_CLAUSE",
+      "RESTRICTIVE_VS_NON"
+    ],
+    [
+      "NONRESTRICTIVE_CLAUSE",
+      "RESTRICTIVE_VS_NON"
+    ],
+    [
+      "PP_AGREE",
+      "PASSIVE_ESSERE"
+    ],
+    [
+      "TRANS_VERBS",
+      "PASSIVE_ESSERE"
+    ],
+    [
+      "PASSIVE_ESSERE",
+      "PASSIVE_AGENT_DA"
+    ],
+    [
+      "SIMPLE_TENSES",
+      "PASSIVE_VENIRE"
+    ],
+    [
+      "VENIRE_CONJ",
+      "PASSIVE_VENIRE"
+    ],
+    [
+      "PP_AGREE",
+      "PASSIVE_VENIRE"
+    ],
+    [
+      "TRANS_VERBS",
+      "PASSIVE_VENIRE"
+    ],
+    [
+      "PASSIVE_ESSERE",
+      "PASSIVE_VENIRE"
+    ],
+    [
+      "PASSIVE_VENIRE",
+      "VENIRE_ESSERE_STYLE"
+    ],
+    [
+      "PASSIVE_ESSERE",
+      "VENIRE_ESSERE_STYLE"
+    ],
+    [
+      "SI_REFLEXIVE_FORM",
+      "SI_PASSIVANTE"
+    ],
+    [
+      "SUBJ_VERB_AGREEMENT",
+      "SI_PASSIVANTE"
+    ],
+    [
+      "TRANS_VERBS",
+      "SI_PASSIVANTE"
+    ],
+    [
+      "SI_REFLEXIVE_FORM",
+      "SI_IMPERSONALE"
+    ],
+    [
+      "SI_IMPERSONALE",
+      "SI_IMPERSONALE_REFLEXIVE"
+    ],
+    [
+      "DIRECT_OBJECT_CONCEPT",
+      "SI_DISTINGUISH"
+    ],
+    [
+      "SI_PASSIVANTE",
+      "SI_DISTINGUISH"
+    ],
+    [
+      "SI_IMPERSONALE",
+      "SI_DISTINGUISH"
+    ],
+    [
+      "PASSIVE_ESSERE",
+      "PASSIVE_ESSERE_EVAL"
+    ],
+    [
+      "PASSIVE_AGENT_DA",
+      "PASSIVE_ESSERE_EVAL"
+    ],
+    [
+      "PASSIVE_VENIRE",
+      "PASSIVE_VENIRE_EVAL"
+    ],
+    [
+      "VENIRE_ESSERE_STYLE",
+      "PASSIVE_VENIRE_EVAL"
+    ],
+    [
+      "SI_PASSIVANTE",
+      "SI_PASSIVANTE_EVAL"
+    ],
+    [
+      "SI_DISTINGUISH",
+      "SI_PASSIVANTE_EVAL"
+    ],
+    [
+      "PASSIVE_ESSERE_EVAL",
+      "PASSIVE_FORM_CHOICE"
+    ],
+    [
+      "PASSIVE_VENIRE_EVAL",
+      "PASSIVE_FORM_CHOICE"
+    ],
+    [
+      "SI_PASSIVANTE_EVAL",
+      "PASSIVE_FORM_CHOICE"
+    ],
+    [
+      "PRES_SUB_AVERE_ESSERE",
+      "CONG_PASSATO"
+    ],
+    [
+      "PAST_PARTICIPLE",
+      "AUX_CHOICE_AGREEMENT"
+    ],
+    [
+      "AUX_CHOICE_AGREEMENT",
+      "CONG_PASSATO"
+    ],
+    [
+      "AUX_CHOICE_AGREEMENT",
+      "CONG_TRAPASSATO"
+    ],
+    [
+      "IMPF_SUB_ARE",
+      "IMPF_SUB_AVERE_ESSERE"
+    ],
+    [
+      "IMPF_SUB_ERE_IRE",
+      "IMPF_SUB_AVERE_ESSERE"
+    ],
+    [
+      "IMPF_SUB_ARE",
+      "CONG_IMPERFETTO"
+    ],
+    [
+      "IMPF_SUB_ERE_IRE",
+      "CONG_IMPERFETTO"
+    ],
+    [
+      "IMPF_SUB_AVERE_ESSERE",
+      "CONG_TRAPASSATO"
+    ],
+    [
+      "TRIGGERS",
+      "CONG_PASSATO"
+    ],
+    [
+      "TRIGGERS",
+      "CONG_IMPERFETTO"
+    ],
+    [
+      "TRIGGERS",
+      "CONG_TRAPASSATO"
+    ],
+    [
+      "TIMING_SIMULTANEOUS_VS_PRIOR",
+      "CONG_PASSATO"
+    ],
+    [
+      "TIMING_SIMULTANEOUS_VS_PRIOR",
+      "CONG_IMPERFETTO"
+    ],
+    [
+      "TIMING_SIMULTANEOUS_VS_PRIOR",
+      "CONG_TRAPASSATO"
+    ],
+    [
+      "MAIN_CLAUSE_TENSE_PRESENT_VS_PAST",
+      "CONG_PASSATO"
+    ],
+    [
+      "MAIN_CLAUSE_TENSE_PRESENT_VS_PAST",
+      "CONG_IMPERFETTO"
+    ],
+    [
+      "MAIN_CLAUSE_TENSE_PRESENT_VS_PAST",
+      "CONG_TRAPASSATO"
+    ],
+    [
+      "CONG_PASSATO",
+      "CONCORDANZA_TEMPI"
+    ],
+    [
+      "CONG_IMPERFETTO",
+      "CONCORDANZA_TEMPI"
+    ],
+    [
+      "CONG_TRAPASSATO",
+      "CONCORDANZA_TEMPI"
+    ],
+    [
+      "present_indicative",
+      "type1_real"
+    ],
+    [
+      "future_indicative",
+      "type1_real"
+    ],
+    [
+      "imperfect_subjunctive",
+      "type2_possibility"
+    ],
+    [
+      "present_conditional",
+      "type2_possibility"
+    ],
+    [
+      "trapassato_congiuntivo",
+      "type3_unreality"
+    ],
+    [
+      "past_conditional",
+      "type3_unreality"
+    ],
+    [
+      "type1_real",
+      "tense_matching_rule"
+    ],
+    [
+      "type2_possibility",
+      "tense_matching_rule"
+    ],
+    [
+      "type3_unreality",
+      "tense_matching_rule"
+    ],
+    [
+      "tense_matching_rule",
+      "type2_type3_error"
+    ],
+    [
+      "type2_possibility",
+      "type2_type3_error"
+    ],
+    [
+      "type3_unreality",
+      "type2_type3_error"
+    ],
+    [
+      "type3_unreality",
+      "mixed_hypothetical"
+    ],
+    [
+      "present_conditional",
+      "mixed_hypothetical"
+    ],
+    [
+      "trapassato_congiuntivo",
+      "mixed_hypothetical"
+    ],
+    [
+      "present_indicative",
+      "se_general_truth"
+    ],
+    [
+      "type1_real",
+      "contrast_general_vs_hypothetical"
+    ],
+    [
+      "se_general_truth",
+      "contrast_general_vs_hypothetical"
+    ],
+    [
+      "type2_possibility",
+      "contrast_general_vs_hypothetical"
+    ],
+    [
+      "type3_unreality",
+      "contrast_general_vs_hypothetical"
+    ],
+    [
+      "DIR_SPEECH",
+      "REPORT_VERBS"
+    ],
+    [
+      "PAST_TENSES",
+      "BACKSHIFT_PRES_IMPF"
+    ],
+    [
+      "PRESENT_TENSE",
+      "BACKSHIFT_PRES_IMPF"
+    ],
+    [
+      "PAST_TENSES",
+      "BACKSHIFT_PP_TRAP"
+    ],
+    [
+      "FUTURE_COND",
+      "BACKSHIFT_FUT_COND"
+    ],
+    [
+      "REPORT_VERBS",
+      "REPORTING_VERB_TENSE_RULE"
+    ],
+    [
+      "PAST_TENSES",
+      "REPORTING_VERB_TENSE_RULE"
+    ],
+    [
+      "REPORTING_VERB_TENSE_RULE",
+      "BACKSHIFT_PRES_IMPF"
+    ],
+    [
+      "REPORTING_VERB_TENSE_RULE",
+      "BACKSHIFT_PP_TRAP"
+    ],
+    [
+      "REPORTING_VERB_TENSE_RULE",
+      "BACKSHIFT_FUT_COND"
+    ],
+    [
+      "REPORTING_VERB_TENSE_RULE",
+      "NO_BACKSHIFT_PRESENT"
+    ],
+    [
+      "PRESENT_TENSE",
+      "NO_BACKSHIFT_PRESENT"
+    ],
+    [
+      "SUBJECT_PRONOUNS",
+      "PRONOUN_SHIFT"
+    ],
+    [
+      "REPORT_VERBS",
+      "PRONOUN_SHIFT"
+    ],
+    [
+      "POSSESSIVES",
+      "POSSESSIVE_SHIFT"
+    ],
+    [
+      "REPORT_VERBS",
+      "POSSESSIVE_SHIFT"
+    ],
+    [
+      "TIME_ADVERBS",
+      "TIME_ADVERB_SHIFT"
+    ],
+    [
+      "REPORT_VERBS",
+      "TIME_ADVERB_SHIFT"
+    ],
+    [
+      "YN_QUESTIONS",
+      "REPORT_YN_SE"
+    ],
+    [
+      "REPORT_VERBS",
+      "REPORT_YN_SE"
+    ],
+    [
+      "WH_QUESTIONS",
+      "REPORT_WH"
+    ],
+    [
+      "STATEMENT_WORD_ORDER",
+      "REPORT_WH"
+    ],
+    [
+      "REPORT_VERBS",
+      "REPORT_WH"
+    ],
+    [
+      "BACKSHIFT_PRES_IMPF",
+      "FULL_REPORTED_SPEECH"
+    ],
+    [
+      "BACKSHIFT_PP_TRAP",
+      "FULL_REPORTED_SPEECH"
+    ],
+    [
+      "BACKSHIFT_FUT_COND",
+      "FULL_REPORTED_SPEECH"
+    ],
+    [
+      "NO_BACKSHIFT_PRESENT",
+      "FULL_REPORTED_SPEECH"
+    ],
+    [
+      "PRONOUN_SHIFT",
+      "FULL_REPORTED_SPEECH"
+    ],
+    [
+      "POSSESSIVE_SHIFT",
+      "FULL_REPORTED_SPEECH"
+    ],
+    [
+      "TIME_ADVERB_SHIFT",
+      "FULL_REPORTED_SPEECH"
+    ],
+    [
+      "REPORT_YN_SE",
+      "FULL_REPORTED_SPEECH"
+    ],
+    [
+      "REPORT_WH",
+      "FULL_REPORTED_SPEECH"
+    ],
+    [
+      "verb_conj_basic",
+      "gerund_formation"
+    ],
+    [
+      "essere_stare_present",
+      "progressive_tense"
+    ],
+    [
+      "gerund_formation",
+      "progressive_tense"
+    ],
+    [
+      "gerund_formation",
+      "gerund_adverbial"
+    ],
+    [
+      "subordinate_clauses_basic",
+      "gerund_adverbial"
+    ],
+    [
+      "gerund_formation",
+      "gerund_pronoun_attached"
+    ],
+    [
+      "object_reflexive_pronouns",
+      "gerund_pronoun_attached"
+    ],
+    [
+      "pronoun_attachment_rules",
+      "gerund_pronoun_attached"
+    ],
+    [
+      "subjunctive_mood",
+      "connector_nonostante"
+    ],
+    [
+      "subjunctive_mood",
+      "connector_sebbene"
+    ],
+    [
+      "subjunctive_mood",
+      "connector_malgrado"
+    ],
+    [
+      "si_impersonale",
+      "formal_vs_tu_directed"
+    ],
+    [
+      "passive_construction",
+      "formal_vs_tu_directed"
+    ],
+    [
+      "thesis_statement",
+      "argumentative_paragraph_structure"
+    ],
+    [
+      "connector_tuttavia",
+      "argumentative_paragraph_structure"
+    ],
+    [
+      "connector_quindi_dunque_percio",
+      "argumentative_paragraph_structure"
+    ],
+    [
+      "connector_daltra_parte",
+      "argumentative_paragraph_structure"
+    ],
+    [
+      "connector_nonostante",
+      "argumentative_paragraph_structure"
+    ],
+    [
+      "connector_sebbene",
+      "argumentative_paragraph_structure"
+    ],
+    [
+      "connector_malgrado",
+      "argumentative_paragraph_structure"
+    ],
+    [
+      "concluding_connectors",
+      "argumentative_paragraph_structure"
+    ],
+    [
+      "lexical_register_choice",
+      "argumentative_paragraph_structure"
+    ],
+    [
+      "avoid_contractions_colloquialisms",
+      "argumentative_paragraph_structure"
+    ],
+    [
+      "formal_vs_tu_directed",
+      "argumentative_paragraph_structure"
+    ],
+    [
+      "IND_ENDINGS",
+      "SUBJ_FORM_ARE"
+    ],
+    [
+      "IND_ENDINGS",
+      "SUBJ_FORM_ERE"
+    ],
+    [
+      "IND_ENDINGS",
+      "SUBJ_FORM_IRE"
+    ],
+    [
+      "SUBJ_FORM_ARE",
+      "SUBJ_SAME_PERSON_ENDING"
+    ],
+    [
+      "SUBJ_FORM_ERE",
+      "SUBJ_SAME_PERSON_ENDING"
+    ],
+    [
+      "SUBJ_FORM_IRE",
+      "SUBJ_SAME_PERSON_ENDING"
+    ],
+    [
+      "SUBJ_FORM_ARE",
+      "SUBJ_IRREG_ESSERE"
+    ],
+    [
+      "SUBJ_FORM_ARE",
+      "SUBJ_IRREG_AVERE"
+    ],
+    [
+      "SUBJ_FORM_ARE",
+      "SUBJ_IRREG_ANDARE"
+    ],
+    [
+      "SUBJ_FORM_ARE",
+      "SUBJ_IRREG_FARE"
+    ],
+    [
+      "SUBJ_FORM_ERE",
+      "SUBJ_IRREG_POTERE"
+    ],
+    [
+      "SUBJ_FORM_ERE",
+      "SUBJ_IRREG_DOVERE"
+    ],
+    [
+      "SUBJ_FORM_ERE",
+      "SUBJ_IRREG_VOLERE"
+    ],
+    [
+      "SUBJ_FORM_IRE",
+      "SUBJ_IRREG_VENIRE"
+    ],
+    [
+      "SUBJ_FORM_IRE",
+      "SUBJ_IRREG_DIRE"
+    ],
+    [
+      "DEPENDENT_CLAUSE_CHE",
+      "CORE_RULE"
+    ],
+    [
+      "DIFFERENT_SUBJECT_CONDITION",
+      "CORE_RULE"
+    ],
+    [
+      "TRIGGER_OPINION",
+      "CORE_RULE"
+    ],
+    [
+      "TRIGGER_DOUBT",
+      "CORE_RULE"
+    ],
+    [
+      "TRIGGER_EMOTION",
+      "CORE_RULE"
+    ],
+    [
+      "TRIGGER_DESIRE",
+      "CORE_RULE"
+    ],
+    [
+      "TRIGGER_NECESSITY",
+      "CORE_RULE"
+    ],
+    [
+      "SUBJ_SAME_PERSON_ENDING",
+      "CORE_RULE"
+    ],
+    [
+      "SUBJ_IRREG_ESSERE",
+      "CORE_RULE"
+    ],
+    [
+      "SUBJ_IRREG_AVERE",
+      "CORE_RULE"
+    ],
+    [
+      "SUBJ_IRREG_ANDARE",
+      "CORE_RULE"
+    ],
+    [
+      "SUBJ_IRREG_FARE",
+      "CORE_RULE"
+    ],
+    [
+      "SUBJ_IRREG_POTERE",
+      "CORE_RULE"
+    ],
+    [
+      "SUBJ_IRREG_DOVERE",
+      "CORE_RULE"
+    ],
+    [
+      "SUBJ_IRREG_VOLERE",
+      "CORE_RULE"
+    ],
+    [
+      "SUBJ_IRREG_VENIRE",
+      "CORE_RULE"
+    ],
+    [
+      "SUBJ_IRREG_DIRE",
+      "CORE_RULE"
+    ],
+    [
+      "CORE_RULE",
+      "IMPERSONAL_TRIGGERS"
+    ],
+    [
+      "CORE_RULE",
+      "CERTAINTY_INDICATIVE"
+    ],
+    [
+      "CORE_RULE",
+      "SAME_SUBJECT_RULE"
+    ],
+    [
+      "DIFFERENT_SUBJECT_CONDITION",
+      "SAME_SUBJECT_RULE"
+    ],
+    [
+      "SAME_SUBJECT_RULE",
+      "DI_INFINITIVE_SUB"
+    ],
+    [
+      "DI_INFINITIVE_SUB",
+      "EXAMPLE_CREDO_DI_AVERE"
+    ],
+    [
+      "TRIGGER_OPINION",
+      "EXAMPLE_CREDO_DI_AVERE"
+    ],
+    [
+      "subj_pronouns",
+      "intro_self"
+    ],
+    [
+      "intro_self",
+      "ask_name_formal"
+    ],
+    [
+      "intro_self",
+      "ask_name_informal"
+    ],
+    [
+      "lei_formal",
+      "courtesy_apology"
+    ],
+    [
+      "courtesy_basic",
+      "courtesy_response"
+    ],
+    [
+      "adj_agreement_gender",
+      "nationality_agree"
+    ],
+    [
+      "adj_agreement_number",
+      "nationality_agree"
+    ],
+    [
+      "def_art_selection",
+      "SONO_LE"
+    ],
+    [
+      "NUM_21_100",
+      "SONO_LE"
+    ],
+    [
+      "question_words",
+      "ASK_STATE_DAY"
+    ],
+    [
+      "ESSERE_CONJ",
+      "ASK_STATE_DAY"
+    ],
+    [
+      "def_art_selection",
+      "DATE_FORMULA"
+    ],
+    [
+      "ORDINAL_NUMBERS",
+      "IL_PRIMO_EXCEPTION"
+    ],
+    [
+      "question_words",
+      "QUANTI_ANNI_HAI"
+    ],
+    [
+      "AVERE_VERB",
+      "AVERE_CONJ"
+    ],
+    [
+      "AVERE_CONJ",
+      "PRESENT_AVERE"
+    ],
+    [
+      "AVERE_CONJ",
+      "ESSERE_AVERE"
+    ],
+    [
+      "ESSERE_CONJ",
+      "ESSERE_AVERE"
+    ],
+    [
+      "ESSERE_CONJ",
+      "PRESENT_ESSERE"
+    ],
+    [
+      "subj_pronouns",
+      "SUBJ_PRON"
+    ],
+    [
+      "SUBJ_PRON",
+      "SUBJECT_PRONOUNS"
+    ],
+    [
+      "adj_agreement_gender",
+      "ADJ_AGREEMENT"
+    ],
+    [
+      "adj_agreement_number",
+      "ADJ_AGREEMENT"
+    ],
+    [
+      "def_art_selection",
+      "POSS_ADJ_FORMS"
+    ],
+    [
+      "ADJ_AGREEMENT",
+      "POSS_ADJ_FORMS"
+    ],
+    [
+      "ARE_CONJ",
+      "PRESENT_REGULAR"
+    ],
+    [
+      "ERE_CONJ",
+      "PRESENT_REGULAR"
+    ],
+    [
+      "IRE_NORMAL_CONJ",
+      "PRESENT_REGULAR"
+    ],
+    [
+      "VERB_ENDINGS_CONCEPT",
+      "INFINITIVE_FORM"
+    ],
+    [
+      "VERB_ENDINGS_CONCEPT",
+      "INFINITIVE_KNOWLEDGE"
+    ],
+    [
+      "VOLERE",
+      "VORREI"
+    ],
+    [
+      "INFINITIVE_FORM",
+      "VORREI"
+    ],
+    [
+      "VORREI",
+      "pres_cond_polite_requests"
+    ],
+    [
+      "DI_PREPOSITION",
+      "PARTITIVE"
+    ],
+    [
+      "def_art_selection",
+      "DEFINITE_ARTICLES"
+    ],
+    [
+      "question_words",
+      "QUANTO_COSTA"
+    ],
+    [
+      "ARE_CONJ",
+      "QUANTO_COSTA"
+    ],
+    [
+      "NUM_0_20",
+      "NUMBERS_CARDINAL"
+    ],
+    [
+      "NUM_21_100",
+      "NUMBERS_CARDINAL"
+    ],
+    [
+      "NUM_ABOVE_100",
+      "NUMBERS_CARDINAL"
+    ],
+    [
+      "ADJ_AGREEMENT",
+      "ORDINAL_NUMBERS"
+    ],
+    [
+      "VERB_ENDINGS_CONCEPT",
+      "PAST_PARTICIPLE_REGULAR"
+    ],
+    [
+      "adj_agreement_gender",
+      "AGREEMENT_ESSERE"
+    ],
+    [
+      "adj_agreement_number",
+      "AGREEMENT_ESSERE"
+    ],
+    [
+      "NEGATION_NON",
+      "NEGATION_PLACEMENT"
+    ],
+    [
+      "FORMATION_AVERE",
+      "PP_KNOWLEDGE"
+    ],
+    [
+      "FORMATION_ESSERE",
+      "PP_KNOWLEDGE"
+    ],
+    [
+      "FORMATION_AVERE",
+      "PASSATO_PROSSIMO"
+    ],
+    [
+      "FORMATION_ESSERE",
+      "PASSATO_PROSSIMO"
+    ],
+    [
+      "FORMATION_AVERE",
+      "passato_prossimo"
+    ],
+    [
+      "FORMATION_ESSERE",
+      "passato_prossimo"
+    ],
+    [
+      "VERB_ENDINGS_CONCEPT",
+      "IMPF_ARE"
+    ],
+    [
+      "VERB_ENDINGS_CONCEPT",
+      "IMPF_ERE"
+    ],
+    [
+      "VERB_ENDINGS_CONCEPT",
+      "IMPF_IRE"
+    ],
+    [
+      "IMPF_ERE",
+      "IMPF_AVERE"
+    ],
+    [
+      "IMPF_AVERE",
+      "IMPF_USE_STATES"
+    ],
+    [
+      "IMPF_FARE",
+      "IMPF_USE_STATES"
+    ],
+    [
+      "PP_USE_SEQUENCE",
+      "CONTRAST"
+    ],
+    [
+      "IMPF_USE_HABITUAL",
+      "CONTRAST"
+    ],
+    [
+      "DOP_FORMS",
+      "IOP_FORMS"
+    ],
+    [
+      "SUBJ_VERB_AGREEMENT",
+      "PIACERE_SG_PL"
+    ],
+    [
+      "PASSATO_PROSSIMO",
+      "REFLEXIVE_PASSATO"
+    ],
+    [
+      "REFLEXIVE_FORMATION",
+      "REFLEXIVE_PASSATO"
+    ],
+    [
+      "MODAL_INFINITIVE_CONSTRUCTION",
+      "MODAL_INFINITIVE"
+    ],
+    [
+      "comp_uguaglianza",
+      "di_che_rule"
+    ],
+    [
+      "adj_agreement_gender",
+      "adj_base"
+    ],
+    [
+      "adj_agreement_number",
+      "adj_base"
+    ],
+    [
+      "def_art_selection",
+      "rel_superlative"
+    ],
+    [
+      "VERB_ENDINGS_CONCEPT",
+      "verb_infinitive_conj"
+    ],
+    [
+      "ARE_CONJ",
+      "VERB_CONJ_KNOWLEDGE"
+    ],
+    [
+      "ERE_CONJ",
+      "VERB_CONJ_KNOWLEDGE"
+    ],
+    [
+      "IRE_NORMAL_CONJ",
+      "VERB_CONJ_KNOWLEDGE"
+    ],
+    [
+      "lei_formal",
+      "TU_LEI_DISTINCTION"
+    ],
+    [
+      "register_concept",
+      "TU_LEI_DISTINCTION"
+    ],
+    [
+      "question_words",
+      "Q_DOVE"
+    ],
+    [
+      "ESSERE_LOCATION",
+      "Q_DOVE"
+    ],
+    [
+      "question_words",
+      "Q_COME"
+    ],
+    [
+      "PREP_PLACE_MOVE",
+      "Q_COME"
+    ],
+    [
+      "FARE",
+      "HEALTH_EXPR"
+    ],
+    [
+      "AVERE_CONJ",
+      "HEALTH_EXPR"
+    ],
+    [
+      "IOP_FORMS",
+      "HEALTH_EXPR"
+    ],
+    [
+      "STARE",
+      "STO_BENE_MALE"
+    ],
+    [
+      "VOLERE",
+      "VUOI_VORRESTI"
+    ],
+    [
+      "MODAL_INFINITIVE_CONSTRUCTION",
+      "VUOI_VORRESTI"
+    ],
+    [
+      "IOP_FORMS",
+      "TI_VA_DI"
+    ],
+    [
+      "INFINITIVE_KNOWLEDGE",
+      "TI_VA_DI"
+    ],
+    [
+      "ANDARE",
+      "ANDIAMO_A"
+    ],
+    [
+      "INFINITIVE_KNOWLEDGE",
+      "ANDIAMO_A"
+    ],
+    [
+      "future_prediction_planning",
+      "STATE_FUTURE_PLANS"
+    ],
+    [
+      "future_irr_stems",
+      "future_tense_stems"
+    ],
+    [
+      "future_endings_are_ere",
+      "pres_cond_formation"
+    ],
+    [
+      "future_endings_ire",
+      "pres_cond_formation"
+    ],
+    [
+      "future_tense_stems",
+      "avere_essere_present"
+    ],
+    [
+      "past_cond_reported_future",
+      "BACKSHIFT_FUT_COND"
+    ],
+    [
+      "POTERE",
+      "modal_verbs_present"
+    ],
+    [
+      "DOVERE",
+      "modal_verbs_present"
+    ],
+    [
+      "VOLERE",
+      "modal_verbs_present"
+    ],
+    [
+      "pres_cond_advice",
+      "present_vs_past_cond_choice"
+    ],
+    [
+      "pres_cond_polite_requests",
+      "present_vs_past_cond_choice"
+    ],
+    [
+      "PREP_PLACE_MOVE",
+      "ci_location"
+    ],
+    [
+      "DI_PREPOSITION",
+      "ne_quantity"
+    ],
+    [
+      "DI_PREPOSITION",
+      "ne_topic"
+    ],
+    [
+      "CONTAINERS_QUANTITIES",
+      "ne_quantity"
+    ],
+    [
+      "IOP_FORMS",
+      "ind_obj_pron"
+    ],
+    [
+      "DOP_FORMS",
+      "dir_obj_pron"
+    ],
+    [
+      "DOP_PLACEMENT",
+      "single_pron_placement"
+    ],
+    [
+      "IOP_PLACEMENT",
+      "single_pron_placement"
+    ],
+    [
+      "PRONOUN_MODAL_PLACEMENT",
+      "single_pron_placement"
+    ],
+    [
+      "AGREEMENT_PRECEDING_DO_PRONOUN",
+      "participle_agreement_direct"
+    ],
+    [
+      "MAIN_CLAUSE_SUBORD",
+      "DEPENDENT_CLAUSE_CHE"
+    ],
+    [
+      "MAIN_CLAUSE_SUBORD",
+      "subordinate_clauses_basic"
+    ],
+    [
+      "adj_agreement_gender",
+      "GENDER_NUMBER_AGREEMENT"
+    ],
+    [
+      "adj_agreement_number",
+      "GENDER_NUMBER_AGREEMENT"
+    ],
+    [
+      "def_art_selection",
+      "IL_QUALE_RELATIVE"
+    ],
+    [
+      "PREPOSITIONS_BASIC",
+      "IL_QUALE_RELATIVE"
+    ],
+    [
+      "PREP_PLACE_MOVE",
+      "PREPOSITIONS_BASIC"
+    ],
+    [
+      "DI_PREPOSITION",
+      "PREPOSITIONS_BASIC"
+    ],
+    [
+      "TRANSITIVE_VERB",
+      "SUBJ_OBJ_DISTINCTION"
+    ],
+    [
+      "AGREEMENT_ESSERE",
+      "PP_AGREE"
+    ],
+    [
+      "PAST_PARTICIPLE_REGULAR",
+      "PP_AGREE"
+    ],
+    [
+      "TRANSITIVE_VERB",
+      "TRANS_VERBS"
+    ],
+    [
+      "PREP_PLACE_MOVE",
+      "PASSIVE_AGENT_DA"
+    ],
+    [
+      "REFLEXIVE_FORMATION",
+      "SI_REFLEXIVE_FORM"
+    ],
+    [
+      "SI_IMPERSONALE",
+      "si_impersonale"
+    ],
+    [
+      "PASSIVE_ESSERE",
+      "passive_construction"
+    ],
+    [
+      "SI_PASSIVANTE",
+      "passive_construction"
+    ],
+    [
+      "SI_REFLEXIVE_FORM",
+      "SI_IMPERSONALE_REFLEXIVE"
+    ],
+    [
+      "PASSIVE_ESSERE",
+      "SI_PASSIVANTE_EVAL"
+    ],
+    [
+      "CORE_RULE",
+      "TRIGGERS"
+    ],
+    [
+      "SUBJ_IRREG_ESSERE",
+      "PRES_SUB_AVERE_ESSERE"
+    ],
+    [
+      "SUBJ_IRREG_AVERE",
+      "PRES_SUB_AVERE_ESSERE"
+    ],
+    [
+      "PAST_PARTICIPLE_REGULAR",
+      "PAST_PARTICIPLE"
+    ],
+    [
+      "PAST_PARTICIPLE_IRREGULAR",
+      "PAST_PARTICIPLE"
+    ],
+    [
+      "AUX_CHOICE_ESSERE_SET",
+      "AUX_CHOICE_AGREEMENT"
+    ],
+    [
+      "AUX_CHOICE_AVERE_SET",
+      "AUX_CHOICE_AGREEMENT"
+    ],
+    [
+      "AGREEMENT_ESSERE",
+      "AUX_CHOICE_AGREEMENT"
+    ],
+    [
+      "VERB_ENDINGS_CONCEPT",
+      "IMPF_SUB_ARE"
+    ],
+    [
+      "VERB_ENDINGS_CONCEPT",
+      "IMPF_SUB_ERE_IRE"
+    ],
+    [
+      "IMPF_ARE",
+      "IMPF_SUB_ARE"
+    ],
+    [
+      "IMPF_ERE",
+      "IMPF_SUB_ERE_IRE"
+    ],
+    [
+      "pres_cond_formation",
+      "CONG_IMPERFETTO"
+    ],
+    [
+      "IMPF_SUB_AVERE_ESSERE",
+      "CONG_IMPERFETTO"
+    ],
+    [
+      "FORMATION_AVERE",
+      "MAIN_CLAUSE_TENSE_PRESENT_VS_PAST"
+    ],
+    [
+      "IMPF_ARE",
+      "MAIN_CLAUSE_TENSE_PRESENT_VS_PAST"
+    ],
+    [
+      "pres_cond_formation",
+      "MAIN_CLAUSE_TENSE_PRESENT_VS_PAST"
+    ],
+    [
+      "CONG_IMPERFETTO",
+      "imperfect_subjunctive"
+    ],
+    [
+      "IMPF_SUB_AVERE_ESSERE",
+      "imperfect_subjunctive"
+    ],
+    [
+      "CONG_TRAPASSATO",
+      "trapassato_congiuntivo"
+    ],
+    [
+      "pres_cond_formation",
+      "present_conditional"
+    ],
+    [
+      "past_cond_formation",
+      "past_conditional"
+    ],
+    [
+      "future_prediction_planning",
+      "future_indicative"
+    ],
+    [
+      "ARE_CONJ",
+      "present_indicative"
+    ],
+    [
+      "type2_possibility",
+      "mixed_hypothetical"
+    ],
+    [
+      "FORMATION_AVERE",
+      "PAST_TENSES"
+    ],
+    [
+      "IMPF_ARE",
+      "PAST_TENSES"
+    ],
+    [
+      "future_prediction_planning",
+      "FUTURE_COND"
+    ],
+    [
+      "pres_cond_formation",
+      "FUTURE_COND"
+    ],
+    [
+      "ARE_CONJ",
+      "PRESENT_TENSE"
+    ],
+    [
+      "POSS_ADJ_FORMS",
+      "POSSESSIVES"
+    ],
+    [
+      "question_words",
+      "WH_QUESTIONS"
+    ],
+    [
+      "IMPF_ARE",
+      "TRAPASSATO_PROSSIMO_FORM"
+    ],
+    [
+      "PAST_PARTICIPLE_REGULAR",
+      "TRAPASSATO_PROSSIMO_FORM"
+    ],
+    [
+      "TRAPASSATO_PROSSIMO_FORM",
+      "BACKSHIFT_PP_TRAP"
+    ],
+    [
+      "question_words",
+      "REPORT_WH"
+    ],
+    [
+      "VERB_ENDINGS_CONCEPT",
+      "verb_conj_basic"
+    ],
+    [
+      "STARE",
+      "essere_stare_present"
+    ],
+    [
+      "IMPF_ARE",
+      "essere_stare_present"
+    ],
+    [
+      "DOP_FORMS",
+      "object_reflexive_pronouns"
+    ],
+    [
+      "IOP_FORMS",
+      "object_reflexive_pronouns"
+    ],
+    [
+      "REFLEXIVE_PRONOUNS",
+      "object_reflexive_pronouns"
+    ],
+    [
+      "single_pron_placement",
+      "pronoun_attachment_rules"
+    ],
+    [
+      "combined_placement",
+      "pronoun_attachment_rules"
+    ],
+    [
+      "CORE_RULE",
+      "subjunctive_mood"
+    ],
+    [
+      "SUBJ_SAME_PERSON_ENDING",
+      "subjunctive_mood"
+    ],
+    [
+      "register_concept",
+      "register_written"
+    ],
+    [
+      "register_written",
+      "lexical_register_choice"
+    ],
+    [
+      "register_written",
+      "avoid_contractions_colloquialisms"
+    ],
+    [
+      "register_written",
+      "formal_vs_tu_directed"
+    ],
+    [
+      "ESSERE_CONJ",
+      "ESSERE_ALL_TENSES"
+    ],
+    [
+      "IMPF_ESSERE",
+      "ESSERE_ALL_TENSES"
+    ],
+    [
+      "future_irr_stems",
+      "ESSERE_ALL_TENSES"
+    ],
+    [
+      "ESSERE_ALL_TENSES",
+      "PASSIVE_ESSERE"
+    ],
+    [
+      "TRIGGER_OPINION",
+      "thesis_statement"
+    ],
+    [
+      "register_written",
+      "thesis_statement"
+    ],
+    [
+      "IND_ENDINGS",
+      "CERTAINTY_INDICATIVE"
+    ],
+    [
+      "INFINITIVE_FORM",
+      "DI_INFINITIVE_SUB"
+    ],
+    [
+      "DI_PREPOSITION",
+      "DI_INFINITIVE_SUB"
+    ],
+    [
+      "ESSERE_CONJ",
+      "IMPERSONAL_TRIGGERS"
+    ],
+    [
+      "AUX_CHOICE_ESSERE_SET",
+      "REFLEXIVE_PASSATO"
+    ],
+    [
+      "POSS_ADJ_EXCEPTION",
+      "DESCRIBE_PEOPLE"
+    ],
+    [
+      "indef_art_forms",
+      "indef_art_selection"
+    ],
+    [
+      "noun_o_masc",
+      "indef_art_selection"
+    ],
+    [
+      "noun_a_fem",
+      "indef_art_selection"
+    ],
+    [
+      "def_art_forms",
+      "def_art_selection"
+    ],
+    [
+      "NUM_21_100",
+      "E_MENO_QUARTER_HALF"
+    ],
+    [
+      "ESSERE_CONJ",
+      "MEZZOGIORNO_MEZZANOTTE"
+    ],
+    [
+      "AVERE_VERB",
+      "HO_ANNI"
+    ],
+    [
+      "HO_ANNI",
+      "AVERE_AGE"
+    ],
+    [
+      "def_art_selection",
+      "DIRECT_OBJECT_NOUNS"
+    ],
+    [
+      "indef_art_selection",
+      "DIRECT_OBJECT_NOUNS"
+    ],
+    [
+      "ARE_CONJ",
+      "VERBS_COMPRARE_PRENDERE_VOLERE"
+    ],
+    [
+      "ERE_CONJ",
+      "VERBS_COMPRARE_PRENDERE_VOLERE"
+    ],
+    [
+      "VOLERE",
+      "VERBS_COMPRARE_PRENDERE_VOLERE"
+    ],
+    [
+      "def_art_selection",
+      "PREP_TRANSPORT_USE"
+    ],
+    [
+      "intro_self",
+      "REFLEXIVE_EXAMPLES"
+    ]
+  ]
+}

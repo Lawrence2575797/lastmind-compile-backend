@@ -14,9 +14,9 @@ const path = require('path');
 const { createClient } = require('@supabase/supabase-js');
 const supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_SERVICE_ROLE_KEY);
 
-const SUBJECT = 'Mathematics';
-const QUALIFICATION = 'A-Level';
-const EXAM_BOARD = 'Edexcel';
+const SUBJECT = 'Italian';
+const QUALIFICATION = 'Other';
+const EXAM_BOARD = '';
 
 // Same clean()/concept-key convention as scripts/seed_aqa_econ_lesson_plan.js
 // and chainService.ts's normalizeConceptKey - so concept_reviews (FSRS) and

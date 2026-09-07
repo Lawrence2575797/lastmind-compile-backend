@@ -21,20 +21,20 @@ function stripCodeFences(text: string): string {
   return text.trim().replace(/^```(?:json)?\s*/i, '').replace(/```\s*$/, '').trim();
 }
 
-// A cached encoding_lesson_content row gets REUSED across students only
-// when this is explicitly turned on (Render env var
-// ENCODING_LESSON_CACHE_ENABLED=true) — off by default. While off, every
-// lesson start generates fresh, so a bad generation (wrong prompt, missed
-// contradiction, etc.) never gets served to a second student just because
-// the first student happened to hit it first. The lesson is still WRITTEN
-// to encoding_lesson_content either way (see continueEncodingLesson) —
-// grading a calculation step re-reads its expectedSolution from that same
-// row (fetchExpectedSolution), so the write can't be skipped without
-// breaking grading for the student who's already mid-lesson; only the
-// cross-student REUSE of an existing row is what this flag controls.
-// Flip the env var back on once lesson quality is trusted again — no code
-// change needed to resume caching.
-const LESSON_CACHE_REUSE_ENABLED = process.env.ENCODING_LESSON_CACHE_ENABLED === 'true';
+// A cached encoding_lesson_content row gets REUSED across students —
+// covers both startEncodingLesson's own first-step read (the "encoding"
+// half) and continueEncodingLesson's read of a concurrently-completed row
+// (the "integration" half that assembles the rest of the lesson) — now
+// that lesson quality is trusted, this defaults ON. The lesson is still
+// WRITTEN to encoding_lesson_content regardless of this flag (see
+// continueEncodingLesson) — grading a calculation step re-reads its
+// expectedSolution from that same row (fetchExpectedSolution), so the
+// write can't be skipped without breaking grading for a student already
+// mid-lesson; only the cross-student REUSE of an existing row is what this
+// flag controls. Set the Render env var ENCODING_LESSON_CACHE_ENABLED=false
+// to force fresh generation again (e.g. while iterating on a concept whose
+// cached content turned out bad), no code change needed to turn it back off.
+const LESSON_CACHE_REUSE_ENABLED = process.env.ENCODING_LESSON_CACHE_ENABLED !== 'false';
 
 // Belt-and-suspenders against stray prose around the JSON body (e.g. a
 // model narrating its self-check reasoning before settling into the

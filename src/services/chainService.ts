@@ -159,7 +159,44 @@ export async function getSubtopicThemeMap(subject: string, qualification: string
   return map;
 }
 
+// Known component breakdown for a subject whose real spec has multiple
+// separately-numbered components sharing the same subtopic digits -
+// Edexcel A-Level Maths ingests Pure Mathematics (1-10), Statistics
+// (1-5), and Mechanics (continuing the SAME numbering as 6-9, confirmed
+// against the official spec PDF - see project memory on that
+// extraction), so a bare leading-digit fallback would collide two
+// genuinely different components into the same "Theme 1"/"Theme 6" etc.
+// No spec_lesson_plans data exists for Mathematics (that table is a
+// separate, hand-authored per-student lesson-plan system used to
+// pre-populate a NEW folder's structure at creation time - see
+// fetchStoredLessonPlan in learn/index.html - seeding placeholder rows
+// there just to carry a theme name would leak fake content into that
+// unrelated flow). Keyed by the exact subtopic string knowledge_map_nodes
+// stores for this subject. Extend as new subjects are generated.
+const SUBTOPIC_THEME_OVERRIDES: Record<string, string> = {
+  '1 Proof': 'Pure Mathematics',
+  '2 Algebra and functions': 'Pure Mathematics',
+  '3 Coordinate geometry in the (x, y) plane': 'Pure Mathematics',
+  '4 Sequences and series': 'Pure Mathematics',
+  '5 Trigonometry': 'Pure Mathematics',
+  '6 Exponentials and logarithms': 'Pure Mathematics',
+  '7 Differentiation': 'Pure Mathematics',
+  '8 Integration': 'Pure Mathematics',
+  '9 Numerical methods': 'Pure Mathematics',
+  '10 Vectors': 'Pure Mathematics',
+  '1 Statistical sampling': 'Statistics',
+  '2 Data presentation and interpretation': 'Statistics',
+  '3 Probability': 'Statistics',
+  '4 Statistical distributions': 'Statistics',
+  '5 Statistical hypothesis testing': 'Statistics',
+  '6 Quantities and units in mechanics': 'Mechanics',
+  '7 Kinematics': 'Mechanics',
+  "8 Forces and Newton's laws": 'Mechanics',
+  '9 Moments': 'Mechanics',
+};
+
 export function fallbackThemeName(subtopic: string): string {
+  if (SUBTOPIC_THEME_OVERRIDES[subtopic]) return SUBTOPIC_THEME_OVERRIDES[subtopic];
   const digit = (subtopic || '').split(' ')[0]?.split('.')[0];
   return digit ? `Theme ${digit}` : 'General';
 }

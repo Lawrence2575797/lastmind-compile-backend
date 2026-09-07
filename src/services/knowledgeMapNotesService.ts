@@ -17,6 +17,7 @@ import { parseModelJson } from './jsonParsing';
 import { selectAllRows, selectRowsByIdChunked } from './supabasePagination';
 import { resolveEdgeForReview, linkIntegrationConceptId } from './nodeReviewService';
 import { getSpecMicrotopics, getSubtopicThemeMap, fallbackThemeName } from './chainService';
+import { listUserFolders } from './folderSyncService';
 import { NODE_NOTES_COMPILE_PROMPT, EDGE_NOTES_COMPILE_PROMPT, SUBTOPIC_NODE_ORDER_PROMPT } from '../constants/knowledgeMapNotesPrompts';
 
 export type NodeNoteVisual =
@@ -432,22 +433,40 @@ export async function getNotesIndexForUser(userId: string): Promise<{ subjects: 
     .eq('user_id', userId);
   if (reviewError) throw reviewError;
   const encodedConceptIds = new Set((reviewRows || []).map((r) => r.concept_id as string));
-  if (!encodedConceptIds.size) return { subjects: [] };
 
   // Only used to discover which (subject, qualification, exam_board)
   // triples this student has touched at all - the full, spec-complete
   // node list for each of those triples is fetched separately below.
-  const touchedNodeRows = await selectRowsByIdChunked<NotesIndexNodeRow>(
-    'knowledge_map_nodes',
-    'id, subject, qualification, exam_board, label, subtopic, theme, concept_id',
-    'concept_id',
-    Array.from(encodedConceptIds)
-  );
+  const touchedNodeRows = encodedConceptIds.size
+    ? await selectRowsByIdChunked<NotesIndexNodeRow>(
+        'knowledge_map_nodes',
+        'id, subject, qualification, exam_board, label, subtopic, theme, concept_id',
+        'concept_id',
+        Array.from(encodedConceptIds)
+      )
+    : [];
   const subjectTriples = new Map<string, { subject: string; qualification: string; examBoard: string }>();
   touchedNodeRows.forEach((n) => {
     const key = `${n.subject} ${n.qualification} ${n.exam_board}`;
     if (!subjectTriples.has(key)) subjectTriples.set(key, { subject: n.subject, qualification: n.qualification, examBoard: n.exam_board });
   });
+
+  // Also seed a triple for every subject folder the student has added at
+  // all, even with zero encodings yet - a brand-new subject should still
+  // show its full Theme/Subtopic/Lesson tree in the Notes sidebar (same
+  // tree the knowledge-map sidebar already shows via buildSubjectTreeHtml),
+  // just with every node rendered "not encoded" (buildNode's own encoded
+  // flag already defaults to false for anything not in encodedConceptIds -
+  // no other change needed for that to fall out correctly).
+  const folders = await listUserFolders(userId);
+  folders.forEach((f) => {
+    if (f.deletedAt) return;
+    const data = f.data as { subject?: string; qualification?: string; examBoard?: string } | null;
+    if (!data?.subject || !data.qualification || !data.examBoard) return;
+    const key = `${data.subject} ${data.qualification} ${data.examBoard}`;
+    if (!subjectTriples.has(key)) subjectTriples.set(key, { subject: data.subject, qualification: data.qualification, examBoard: data.examBoard });
+  });
+  if (!subjectTriples.size) return { subjects: [] };
 
   const { data: unlockedRows, error: unlockedError } = await supabaseAdmin
     .from('knowledge_map_edge_notes_unlocked')

@@ -16,7 +16,7 @@ import { callClaudeJSON, MODELS } from './claudeClient';
 import { parseModelJson } from './jsonParsing';
 import { selectAllRows, selectRowsByIdChunked } from './supabasePagination';
 import { resolveEdgeForReview, linkIntegrationConceptId } from './nodeReviewService';
-import { getSpecMicrotopics, normalizeForPlanMatch, stripGcseTierForPlanMatch } from './chainService';
+import { getSpecMicrotopics, getSubtopicThemeMap, fallbackThemeName } from './chainService';
 import { NODE_NOTES_COMPILE_PROMPT, EDGE_NOTES_COMPILE_PROMPT, SUBTOPIC_NODE_ORDER_PROMPT } from '../constants/knowledgeMapNotesPrompts';
 
 export type NodeNoteVisual =
@@ -295,48 +295,6 @@ function compareSubtopics(a: string, b: string): number {
   if (aMajor !== bMajor) return aMajor - bMajor;
   if (aMinor !== bMinor) return aMinor - bMinor;
   return a.localeCompare(b);
-}
-
-// Real theme names ("Theme 1 - Introduction to markets and market
-// failure") for the Notes sidebar tree's top grouping level - sourced from
-// spec_lesson_plans (the same canonical, hand-authored lesson breakdown
-// chainService.ts's getStoredLessonPlan already uses for chain-generation
-// grounding), keyed by subtopic since that's the join key the two tables
-// actually share. Same normalized matching as getStoredLessonPlan, since
-// qualification is free text that can differ in spacing/hyphenation
-// between where a subject's nodes were ingested ("A-Level") and where its
-// lesson plan was seeded ("A Level"). Falls back to null per subtopic when
-// no lesson plan has been seeded for this subject - the caller derives a
-// bare "Theme N" from the subtopic's own leading digit in that case, same
-// as this app has always grouped themes, so a subject without a seeded
-// plan is never worse off than before this feature, just less nicely named.
-async function getSubtopicThemeMap(subject: string, qualification: string, examBoard: string): Promise<Map<string, string>> {
-  const { data, error } = await supabaseAdmin
-    .from('spec_lesson_plans')
-    .select('qualification, exam_board, subtopic, theme')
-    .ilike('subject', subject.trim());
-  if (error) {
-    console.error('LastMind: spec_lesson_plans theme lookup failed, falling back to bare theme numbers.', error);
-    return new Map();
-  }
-  const wantQualification = normalizeForPlanMatch(stripGcseTierForPlanMatch(qualification));
-  const wantExamBoard = normalizeForPlanMatch(examBoard || '');
-  const map = new Map<string, string>();
-  (data || []).forEach((row) => {
-    if (
-      normalizeForPlanMatch(row.qualification as string) === wantQualification &&
-      normalizeForPlanMatch((row.exam_board as string) || '') === wantExamBoard &&
-      !map.has(row.subtopic as string)
-    ) {
-      map.set(row.subtopic as string, row.theme as string);
-    }
-  });
-  return map;
-}
-
-function fallbackThemeName(subtopic: string): string {
-  const digit = (subtopic || '').split(' ')[0]?.split('.')[0];
-  return digit ? `Theme ${digit}` : 'General';
 }
 
 async function getCachedSubtopicOrder(subject: string, qualification: string, examBoard: string, subtopic: string): Promise<string[] | null> {

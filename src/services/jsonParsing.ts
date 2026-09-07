@@ -72,18 +72,21 @@ function repairUnescapedQuotes(text: string): string {
 }
 
 // Repairs a real, reproducible failure mode: the model writes a literal
-// newline (or other raw control character) INSIDE a JSON string value
-// instead of escaping it as \n - most often when a prompt asks for
-// multi-paragraph text (e.g. an "explanation" field), since a model
-// naturally reaches for a real line break between paragraphs. Valid JSON
-// forbids raw control characters inside a string outright, so this fails
-// even a well-formed-looking response before extractJsonObject or
-// repairUnescapedQuotes get a chance to help (found live: "Bad control
-// character in string literal in JSON" on a knowledge-map lesson
-// generation call). Walks character by character tracking string state
-// (same escape-aware approach as repairUnescapedQuotes) and escapes any
-// raw \n/\r/\t found while inside a string; already-escaped JSON passes
-// through unchanged.
+// control character (a real newline between paragraphs is the most common
+// case, but JSON forbids the ENTIRE U+0000-U+001F range unescaped inside a
+// string, not just \n/\r/\t) instead of escaping it. First found live as a
+// literal \n (most often when a prompt asks for multi-paragraph text, e.g.
+// an "explanation" field, since a model naturally reaches for a real line
+// break between paragraphs) - then found AGAIN, still failing, on a
+// response that had already been through this exact repair, meaning the
+// culprit that time was some OTHER control character outside the
+// originally-handled \n/\r/\t set. Rather than keep adding one character
+// at a time as each one turns up live, this now escapes the full control
+// range generically: the five with a short JSON escape use it (\n \r \t \b
+// \f), anything else uses \uXXXX. Walks character by character tracking
+// string state (same escape-aware approach as repairUnescapedQuotes);
+// already-escaped JSON passes through unchanged.
+const JSON_SHORT_ESCAPES: Record<string, string> = { '\n': '\\n', '\r': '\\r', '\t': '\\t', '\b': '\\b', '\f': '\\f' };
 export function escapeRawControlCharsInStrings(text: string): string {
   let out = '';
   let inString = false;
@@ -93,9 +96,11 @@ export function escapeRawControlCharsInStrings(text: string): string {
       if (escaped) { out += ch; escaped = false; continue; }
       if (ch === '\\') { out += ch; escaped = true; continue; }
       if (ch === '"') { inString = false; out += ch; continue; }
-      if (ch === '\n') { out += '\\n'; continue; }
-      if (ch === '\r') { out += '\\r'; continue; }
-      if (ch === '\t') { out += '\\t'; continue; }
+      const code = ch.charCodeAt(0);
+      if (code < 0x20) {
+        out += JSON_SHORT_ESCAPES[ch] || `\\u${code.toString(16).padStart(4, '0')}`;
+        continue;
+      }
       out += ch;
       continue;
     }

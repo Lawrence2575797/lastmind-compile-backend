@@ -16,6 +16,7 @@ import { gradeDiagramAnswer, DiagramSpec, DiagramAnswerSubmission } from '../ser
 import { gradeCorrectness, DURABLE_RELEARNING_CRITERION } from '../services/reviewService';
 import { payLessonCredits, KM_VERIFY_COEFFICIENT_FREE, KM_VERIFY_COEFFICIENT_PREMIUM } from '../services/creditService';
 import { callClaudeJSON, MODELS } from '../services/claudeClient';
+import { parseModelJson } from '../services/jsonParsing';
 import { KNOWLEDGE_MAP_ANSWER_CHECK_PROMPT } from '../constants/knowledgeMapAnswerCheckPrompt';
 import { VERIFY_LEARNING_PROMPT, buildVerifyQuestionText } from '../constants/verifyLearningPrompts';
 import {
@@ -438,10 +439,6 @@ router.post('/knowledge-map-v2/diagram-question/submit', requireAuth, costlyEndp
   }
 });
 
-function stripCodeFences(text: string): string {
-  return text.trim().replace(/^```(?:json)?\s*/i, '').replace(/```\s*$/, '').trim();
-}
-
 // The narrow prerequisite check for an edge's transfer/integration
 // retrieval - deliberately different from the chain-diagnostic gate
 // above (which tests a whole unmastered ANCESTOR CHAIN via one combined
@@ -545,7 +542,12 @@ router.post('/knowledge-map-v2/text-question/submit', requireAuth, costlyEndpoin
       userContent: `Question: ${question.questionText}\nMark scheme: ${question.markScheme || ''}\nStudent's answer: ${answer}`,
       temperature: 0.1,
     });
-    const { correct, feedback } = JSON.parse(stripCodeFences(raw)) as { correct: boolean; feedback: string };
+    // parseModelJson (not a bare JSON.parse) - it falls back to extracting
+    // just the JSON object out of the response before giving up, so an
+    // occasional stray sentence around otherwise-valid JSON doesn't turn
+    // into a hard 500 (a real, reported failure: submitting an answer
+    // repeatedly hit "something went wrong" with no way through).
+    const { correct, feedback } = parseModelJson<{ correct: boolean; feedback: string }>(raw);
 
     // See the identical comment on diagram-question/submit above: a wrong
     // first-time encoding attempt ('practice') is a learning rep, not a
@@ -620,7 +622,8 @@ router.post('/knowledge-map-v2/verify/submit', requireAuth, costlyEndpointLimite
       userContent: `Question: ${questionText}\nStudent's answer: ${answer}`,
       temperature: 0.1,
     });
-    const { correct, feedback } = JSON.parse(stripCodeFences(raw)) as { correct: boolean; feedback: string };
+    // See the identical comment on text-question/submit above.
+    const { correct, feedback } = parseModelJson<{ correct: boolean; feedback: string }>(raw);
 
     // hadRetry=false — Verify uses the SAME rating derivation a real lesson
     // does (deriveCorrectRating in reviewService.ts), so a clean pass can

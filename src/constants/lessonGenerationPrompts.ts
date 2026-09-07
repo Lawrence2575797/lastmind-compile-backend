@@ -29,9 +29,7 @@ Your job: teach this concept, and ONLY this concept, to real exam-board depth.
 
 5. **No restated scaffolding, no throat-clearing, no "in this lesson you will learn."** Start with the actual content.
 
-6. **Write a prediction question, asked BEFORE the explanation is ever shown.** This is not a test - it is never graded, has no mark scheme, and the student sees it with zero prior knowledge of this node's content. Its only job is to open a genuine curiosity gap that your explanation then resolves, so phrase it as a concrete scenario or "what do you think happens/why" question a student could take a real guess at using only everyday reasoning and the node's own label - never one that secretly requires knowledge only your explanation provides. Do not reveal, hint at, or make the guess trivial by restating the concept's name as the answer.
-
-7. **Write a personal-link prompt, but only if a genuine one exists.** If there is an everyday experience a typical UK teenager would actually have had that genuinely connects to this concept (not a contrived academic analogy), write a short, specific prompt inviting them to describe that experience in their own words, before being taught anything. If no such genuine hook exists for this specific concept, output null for this field - never force a strained or generic one just to fill it in.
+6. **Write a prediction question, asked BEFORE the explanation is ever shown.** This is not a test - it is never graded, has no mark scheme, and the student sees it with zero prior knowledge of this node's content. Its only job is to open a genuine curiosity gap that your explanation then resolves. Write one for essentially every node - only output null if this specific concept genuinely admits no "guess before you know it" framing at all (e.g. a bare naming convention or notation with no phenomenon to predict). For a concrete scenario or mechanism, phrase it as "what do you think happens/why"; for a formula, definition, or procedural concept (which most Maths nodes are), phrase it as a concrete question the student could take a real numeric or logical guess at using only everyday reasoning and the node's own label (e.g. "If you double every value in a small data set, what do you think happens to its mean? What about its range?") - never one that secretly requires knowledge only your explanation provides, and never reveal, hint at, or make the guess trivial by restating the concept's name as the answer.
 
 ## Output format
 
@@ -39,8 +37,7 @@ Return ONLY valid JSON:
 {
   "explanation": "the teaching text",
   "practiceQuestion": { "questionText": "...", "markScheme": "what makes an answer correct, stated precisely enough to grade as correct/incorrect" },
-  "predictionQuestion": "the ungraded before-you-know-it question",
-  "personalLinkPrompt": "the everyday-experience prompt, or null if none genuinely applies"
+  "predictionQuestion": "the ungraded before-you-know-it question, or null if genuinely none applies"
 }`;
 
 export const KNOWLEDGE_MAP_EDGE_LESSON_PROMPT = `You are writing the LINK-TEACHING and testing content for one prerequisite edge in a subject's knowledge-map graph - the step that explains why understanding concept A is genuinely necessary before concept B makes sense, run after both A and B have already had their own separate encoding lessons. You will be given the subject, qualification, exam board, subtopic, A's label and explanation, and B's label and explanation.
@@ -55,6 +52,8 @@ Your job: teach the CONNECTION, not either concept again, then test it twice - o
 
 3. **The integration question tests the same connection at slightly greater depth or in a further-transformed context** - assume it is only ever shown to a student who has already passed the transfer question, so it does not need to re-establish the basics, but it must still be answerable from A, B, and the link alone (no smuggled-in third concept). Write a precise mark scheme.
 
+3a. **Decide how the integration question should be answered.** Set "answerInputType" to "math" if a correct answer genuinely requires writing out a calculation, formula, or symbolic expression (the student answers using a maths-notation keyboard, not a plain textbox) - or "words" if it's answered by explaining the connection/reasoning in prose, even if that prose mentions numbers or a quantity in passing. Choose "math" only when the answer itself IS the working/expression, not merely because the topic is mathematical.
+
 4. **No restated scaffolding, no throat-clearing.** Start with the actual content.
 
 ## Output format
@@ -63,5 +62,5 @@ Return ONLY valid JSON:
 {
   "linkTeaching": "the bridge explanation",
   "transferQuestion": { "questionText": "...", "markScheme": "..." },
-  "integrationQuestion": { "questionText": "...", "markScheme": "..." }
+  "integrationQuestion": { "questionText": "...", "markScheme": "...", "answerInputType": "words" | "math" }
 }`;

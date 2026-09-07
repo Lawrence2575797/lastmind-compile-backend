@@ -29,6 +29,7 @@ import {
   gradeIntegrationAnswer,
 } from '../services/nodeReviewService';
 import { compileNodeNotes, getNodeNotes, compileEdgeNotes, getEdgeNotes, getNotesIndexForUser, getPersonalNote, savePersonalNote } from '../services/knowledgeMapNotesService';
+import { generateAndCacheNodeLesson, generateAndCacheEdgeLesson } from '../services/lessonGenerationService';
 
 const router = Router();
 
@@ -101,12 +102,15 @@ router.get('/knowledge-map-v2', requireAuth, costlyEndpointLimiter, async (req: 
 });
 
 // GET /knowledge-map-v2/node/:nodeId/lesson -> the stored encoding lesson
-// { explanation, practiceQuestion } for one node (see
-// scripts/generate_lesson_content.js + create_knowledge_map_node_lessons.sql).
-// Read-only lookup by uuid - no generation happens here, this pipeline is
-// one-time/offline by design (see the lesson-generation prompts' own
-// comment on why lessons are never generated live).
-router.get('/knowledge-map-v2/node/:nodeId/lesson', requireAuth, async (req: Request, res: Response) => {
+// { explanation, practiceQuestion, predictionQuestion } for one node.
+// Generated on demand (see lessonGenerationService.ts) the first time any
+// student's request finds no row yet, then served identically to every
+// student from then on, same one-time-content-cost contract
+// scripts/generate_lesson_content.js's offline Batches pipeline
+// established - this just triggers it live instead of via a pre-generated
+// batch, so a subject's lessons only ever get generated for nodes
+// students actually reach.
+router.get('/knowledge-map-v2/node/:nodeId/lesson', requireAuth, costlyEndpointLimiter, async (req: Request, res: Response) => {
   const { nodeId } = req.params;
   try {
     const { data, error } = await supabaseAdmin
@@ -115,22 +119,27 @@ router.get('/knowledge-map-v2/node/:nodeId/lesson', requireAuth, async (req: Req
       .eq('node_id', nodeId)
       .maybeSingle();
     if (error) throw error;
-    if (!data) return res.status(404).json({ error: 'no lesson generated for this concept yet' });
-    res.json(data.encoding_content);
+    if (data) return res.json(data.encoding_content);
+
+    const generated = await generateAndCacheNodeLesson(nodeId);
+    if (!generated) return res.status(404).json({ error: 'concept not found' });
+    res.json(generated);
   } catch (err) {
-    console.error('Node lesson lookup failed:', err);
+    console.error('Node lesson lookup/generation failed:', err);
     res.status(500).json({ error: 'could not load this lesson' });
   }
 });
 
 // GET /knowledge-map-v2/edge/:fromNodeId/:toNodeId/lesson -> the stored
 // edge lesson { linkTeaching, transferQuestion, integrationQuestion } for
-// the prerequisite relationship between two nodes (see
-// scripts/generate_edge_lessons_haiku_fast.js + create_knowledge_map_edge_lessons.sql).
-// Same read-only, one-time-generation contract as the node lesson route
-// above - looks the edge up by its endpoints since the frontend graph
-// only knows node ids, then joins to its lesson row.
-router.get('/knowledge-map-v2/edge/:fromNodeId/:toNodeId/lesson', requireAuth, async (req: Request, res: Response) => {
+// the prerequisite relationship between two nodes. Same on-demand
+// generate-and-cache contract as the node lesson route above - looks the
+// edge up by its endpoints since the frontend graph only knows node ids,
+// generating it live on a cache miss (generateAndCacheEdgeLesson returns
+// null, and this 404s, if either endpoint isn't encoded yet - it
+// structurally shouldn't be reachable before both are, per
+// findMissingEncoding's own gate).
+router.get('/knowledge-map-v2/edge/:fromNodeId/:toNodeId/lesson', requireAuth, costlyEndpointLimiter, async (req: Request, res: Response) => {
   const { fromNodeId, toNodeId } = req.params;
   try {
     const { data, error } = await supabaseAdmin
@@ -143,14 +152,19 @@ router.get('/knowledge-map-v2/edge/:fromNodeId/:toNodeId/lesson', requireAuth, a
     const lessonRow = Array.isArray(data?.knowledge_map_edge_lessons)
       ? data?.knowledge_map_edge_lessons[0]
       : data?.knowledge_map_edge_lessons;
-    if (!data || !lessonRow) return res.status(404).json({ error: 'no lesson generated for this connection yet' });
-    res.json({
-      linkTeaching: lessonRow.link_teaching_content,
-      transferQuestion: lessonRow.transfer_question,
-      integrationQuestion: lessonRow.integration_question,
-    });
+    if (lessonRow) {
+      return res.json({
+        linkTeaching: lessonRow.link_teaching_content,
+        transferQuestion: lessonRow.transfer_question,
+        integrationQuestion: lessonRow.integration_question,
+      });
+    }
+
+    const generated = await generateAndCacheEdgeLesson(fromNodeId, toNodeId);
+    if (!generated) return res.status(404).json({ error: 'connection not found or not ready yet' });
+    res.json(generated);
   } catch (err) {
-    console.error('Edge lesson lookup failed:', err);
+    console.error('Edge lesson lookup/generation failed:', err);
     res.status(500).json({ error: 'could not load this lesson' });
   }
 });

@@ -4,6 +4,7 @@ import { getMasteryDetailsForConcepts, MasteryDetail } from './reviewService';
 import { getConceptsWithLowConfidenceSignal } from './answerSignalService';
 import { supabaseAdmin } from './supabaseAdmin';
 import { selectAllRows, selectRowsByIdChunked } from './supabasePagination';
+import { resolveSubjectTriple } from './subjectResolution';
 
 // One concept the student has actually added to a folder (a single-lesson
 // page's own title, or one entry of a multi-lesson page's own lessons) —
@@ -310,15 +311,18 @@ function stripQualificationTier(qualification: string): string {
 
 export async function getKnowledgeMapForSubject(
   userId: string,
-  subject: string,
-  qualification: string,
-  examBoard: string
+  rawSubject: string,
+  rawQualification: string,
+  rawExamBoard: string
 ): Promise<SubjectMapResult> {
-  // Case-insensitive on all three — `subject` and `examBoard` are free-text
-  // fields on the "add folder" form (no dropdown, no canonicalization), so
-  // a student typing "economics" against generated data stored as
-  // "Economics" must still match. Found live: a real, fully-generated
-  // subject read back as "no map generated yet" purely because of this.
+  // Resolves a misspelled/abbreviated typed triple ("Maths", "Edexcell")
+  // to the real one it's closest to before doing anything else - see
+  // resolveSubjectTriple's own comment. Case-only differences ("economics"
+  // vs "Economics") were already handled below via ilike; this extends
+  // that to genuine typos/abbreviations, never guessing a subject that
+  // isn't actually a close match (falls through to the typed value, same
+  // "no map generated yet" result as before this existed).
+  const { subject, qualification, examBoard } = await resolveSubjectTriple(rawSubject, rawQualification, rawExamBoard);
   const nodeRows = await selectAllRows<{ id: string; concept_id: string; label: string; subtopic: string; theme: string | null }>(
     'knowledge_map_nodes',
     'id, concept_id, label, subtopic, theme',

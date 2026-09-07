@@ -2,6 +2,7 @@ import { createHash } from 'crypto';
 import { supabaseAdmin } from './supabaseAdmin';
 import { callClaudeJSON, MODELS } from './claudeClient';
 import { CHAIN_GENERATION_PROMPT, FACT_CHECK_PROMPT, SPEC_OUTLINE_RESTATE_PROMPT, SPEC_MICROTOPICS_EXTRACT_PROMPT } from '../constants/chainPrompts';
+import { resolveSubjectTriple } from './subjectResolution';
 
 function stripCodeFences(text: string): string {
   return text.trim().replace(/^```(?:json)?\s*/i, '').replace(/```\s*$/, '').trim();
@@ -163,8 +164,14 @@ export function fallbackThemeName(subtopic: string): string {
   return digit ? `Theme ${digit}` : 'General';
 }
 
-export async function getStoredLessonPlan(subject: string, qualification: string, examBoard: string): Promise<StoredLessonPlanSubtopic[] | null> {
+export async function getStoredLessonPlan(rawSubject: string, qualification: string, examBoard: string): Promise<StoredLessonPlanSubtopic[] | null> {
   if (!qualification) return null;
+  // Resolves a misspelled/abbreviated subject ("Maths") to the real one
+  // it's closest to among ingested knowledge_map_nodes subjects (see
+  // resolveSubjectTriple's own comment) before matching against this
+  // separate, older per-student lesson-plan table - same spelling
+  // conventions, so the same canonicalization applies.
+  const { subject } = await resolveSubjectTriple(rawSubject, qualification, examBoard);
   const { data, error } = await supabaseAdmin
     .from('spec_lesson_plans')
     .select('subject, qualification, exam_board, subtopic, concept, lesson_order')

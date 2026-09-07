@@ -3,6 +3,7 @@ import { callClaudeJSON, MODELS } from './claudeClient';
 import { PRACTICE_QUESTION_MARKING_PROMPT } from '../constants/practiceQuestionPrompts';
 import { normalizeForPlanMatch } from './chainService';
 import { gradeAndRecordReview, ratingFromMarkRatio } from './reviewService';
+import { resolveSubjectTriple } from './subjectResolution';
 
 // The same general "how marks are awarded" explanation shown to the
 // student on the practice-questions page (see MARK_BREAKDOWN_EXPLAINERS
@@ -31,7 +32,7 @@ function getMarkingStructureNotes(subject: string, qualification: string, examBo
 // missing from your preparation" apart from "real syllabus content you
 // haven't reached here yet" (see PRACTICE_QUESTION_MARKING_PROMPT's own
 // rule on this).
-async function getCoveredNodeLabels(userId: string, subject: string, qualification: string, examBoard: string): Promise<string[]> {
+async function getCoveredNodeLabels(userId: string, rawSubject: string, rawQualification: string, rawExamBoard: string): Promise<string[]> {
   const { data: reviewRows, error: reviewError } = await supabaseAdmin
     .from('concept_reviews')
     .select('concept_id')
@@ -40,6 +41,10 @@ async function getCoveredNodeLabels(userId: string, subject: string, qualificati
   const reviewedConceptIds = new Set((reviewRows || []).map((r) => r.concept_id as string));
   if (!reviewedConceptIds.size) return [];
 
+  // Resolves a misspelled/abbreviated typed triple to the real one it's
+  // closest to (see resolveSubjectTriple's own comment) - same fix as
+  // getKnowledgeMapForSubject, kept consistent here.
+  const { subject, qualification, examBoard } = await resolveSubjectTriple(rawSubject, rawQualification, rawExamBoard);
   const { data: nodeRows, error: nodeError } = await supabaseAdmin
     .from('knowledge_map_nodes')
     .select('label, concept_id')

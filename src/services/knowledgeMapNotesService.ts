@@ -18,6 +18,7 @@ import { selectAllRows, selectRowsByIdChunked } from './supabasePagination';
 import { resolveEdgeForReview, linkIntegrationConceptId } from './nodeReviewService';
 import { getSpecMicrotopics, getSubtopicThemeMap, fallbackThemeName } from './chainService';
 import { listUserFolders } from './folderSyncService';
+import { resolveSubjectTriple } from './subjectResolution';
 import { NODE_NOTES_COMPILE_PROMPT, EDGE_NOTES_COMPILE_PROMPT, SUBTOPIC_NODE_ORDER_PROMPT } from '../constants/knowledgeMapNotesPrompts';
 
 export type NodeNoteVisual =
@@ -459,13 +460,18 @@ export async function getNotesIndexForUser(userId: string): Promise<{ subjects: 
   // flag already defaults to false for anything not in encodedConceptIds -
   // no other change needed for that to fall out correctly).
   const folders = await listUserFolders(userId);
-  folders.forEach((f) => {
-    if (f.deletedAt) return;
+  for (const f of folders) {
+    if (f.deletedAt) continue;
     const data = f.data as { subject?: string; qualification?: string; examBoard?: string } | null;
-    if (!data?.subject || !data.qualification || !data.examBoard) return;
-    const key = `${data.subject} ${data.qualification} ${data.examBoard}`;
-    if (!subjectTriples.has(key)) subjectTriples.set(key, { subject: data.subject, qualification: data.qualification, examBoard: data.examBoard });
-  });
+    if (!data?.subject || !data.qualification || !data.examBoard) continue;
+    // Resolves a misspelled/abbreviated folder ("Maths", "Edexcell") to
+    // the real ingested triple it's closest to (see resolveSubjectTriple's
+    // own comment) - otherwise a folder typed slightly differently from
+    // the exact ingested spelling would never show a tree at all.
+    const resolved = await resolveSubjectTriple(data.subject, data.qualification, data.examBoard);
+    const key = `${resolved.subject} ${resolved.qualification} ${resolved.examBoard}`;
+    if (!subjectTriples.has(key)) subjectTriples.set(key, resolved);
+  }
   if (!subjectTriples.size) return { subjects: [] };
 
   const { data: unlockedRows, error: unlockedError } = await supabaseAdmin

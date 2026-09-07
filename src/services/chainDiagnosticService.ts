@@ -18,6 +18,7 @@
 import { supabaseAdmin } from './supabaseAdmin';
 import { selectAllRows } from './supabasePagination';
 import { callClaudeJSON, MODELS } from './claudeClient';
+import { resolveSubjectTriple } from './subjectResolution';
 import { getMasteryDetailsForConcepts, gradeCorrectness } from './reviewService';
 import { payLessonCredits } from './creditService';
 import {
@@ -100,13 +101,16 @@ interface GapResult {
 export async function findPrerequisiteGap(
   userId: string,
   targetNodeId: string,
-  subject: string,
-  qualification: string,
-  examBoard: string
+  rawSubject: string,
+  rawQualification: string,
+  rawExamBoard: string
 ): Promise<GapResult | null> {
-  // Case-insensitive — see getKnowledgeMapForSubject's identical fix in
-  // knowledgeMapService.ts for why (subject/examBoard are free text with
-  // no canonicalization).
+  // Resolves a misspelled/abbreviated typed triple to the real one it's
+  // closest to before matching (see resolveSubjectTriple's own comment) -
+  // same fix as getKnowledgeMapForSubject in knowledgeMapService.ts, kept
+  // consistent here since this gate reads the same knowledge_map_nodes
+  // graph for the same folder.
+  const { subject, qualification, examBoard } = await resolveSubjectTriple(rawSubject, rawQualification, rawExamBoard);
   const nodeRows = await selectAllRows<{ id: string; concept_id: string; label: string; subtopic: string }>(
     'knowledge_map_nodes',
     'id, concept_id, label, subtopic',

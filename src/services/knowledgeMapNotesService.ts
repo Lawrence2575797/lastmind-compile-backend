@@ -22,6 +22,7 @@ import { NODE_NOTES_COMPILE_PROMPT, EDGE_NOTES_COMPILE_PROMPT, SUBTOPIC_NODE_ORD
 export type NodeNoteVisual =
   | { type: 'diagram'; spec: unknown }
   | { type: 'comparison'; otherLabel: string; thisPoints: string[]; otherPoints: string[] }
+  | { type: 'workedExample'; steps: string[] }
   | { type: 'example'; text: string }
   | { type: 'none' };
 
@@ -96,8 +97,9 @@ async function getSiblingCandidates(nodeId: string, subtopic: string, subject: s
 interface NodeNotesModelResponse {
   heading: string;
   paragraphs: string[];
-  visualType: 'comparison' | 'example' | 'none';
+  visualType: 'comparison' | 'workedExample' | 'example' | 'none';
   comparison?: { otherLabel: string; thisPoints: string[]; otherPoints: string[] };
+  workedExample?: { steps: string[] };
   example?: string;
 }
 
@@ -148,6 +150,8 @@ export async function compileNodeNotes(nodeId: string): Promise<NodeNotesResult 
   } else if (modelResult.visualType === 'comparison' && modelResult.comparison) {
     const matchedSibling = siblings.find((s) => s.label === modelResult.comparison!.otherLabel);
     if (matchedSibling) visual = { type: 'comparison', ...modelResult.comparison };
+  } else if (modelResult.visualType === 'workedExample' && modelResult.workedExample?.steps?.length) {
+    visual = { type: 'workedExample', steps: modelResult.workedExample.steps };
   } else if (modelResult.visualType === 'example' && modelResult.example) {
     visual = { type: 'example', text: modelResult.example };
   }

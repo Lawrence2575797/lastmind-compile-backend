@@ -25,14 +25,16 @@ Rules:
 2. "paragraphs": an array of SHORT paragraphs (plain text, "**bold**" around key facts/terms/definitions only, no other markdown) that together cover the explanation faithfully - do not introduce new facts, examples, or claims beyond what it already states. One main idea per paragraph, short enough that a student's attention doesn't drift before the point lands - never one dense block. Bold only load-bearing terms, not ordinary connecting prose, and do not over-bold.
 3. "visualType": choose exactly one -
    - "comparison" ONLY if a genuinely contrastive/parallel sibling concept was given (e.g. two definitions that are easy to confuse, or a concept that only really makes sense set against its counterpart) - this should be RARE; most concepts don't have one, and forcing a comparison onto an unrelated sibling is worse than skipping it.
-   - "example" if a short, concrete real-world illustration would genuinely help and isn't already redundant with the explanation itself.
-   - "none" if neither adds real value.
+   - "workedExample" if the concept is fundamentally a FORMULA or CALCULATION METHOD (e.g. price elasticity of demand, a growth-rate or index-number calculation) - a real step-by-step worked calculation with invented-but-realistic numbers is what dual coding actually needs here, not prose.
+   - "example" if a short, concrete real-world illustration (not a calculation) would genuinely help and isn't already redundant with the explanation itself.
+   - "none" if none of the above adds real value.
 4. If "visualType" is "comparison", also return "comparison": { "otherLabel": the EXACT label of the sibling concept you're contrasting with (must be copied character-for-character from one of the siblings given), "thisPoints": 2-4 short strings distinguishing THIS concept, "otherPoints": 2-4 short strings distinguishing the OTHER concept }.
-5. If "visualType" is "example", also return "example": a short, concrete real-world illustration (plain text, "**bold**" allowed), faithful to the concept as explained - grounding it in a recognisable scenario, never inventing a new fact about the concept itself.
-6. Be faithful ONLY to the given explanation (and, for a comparison, the given sibling's own explanation) - never introduce claims beyond what's given.
+5. If "visualType" is "workedExample", also return "workedExample": { "steps": string[] }, each entry one line of the calculation written as real LaTeX (e.g. "PED = \\frac{\\%\\Delta Q_d}{\\%\\Delta P}", "PED = \\frac{-20\\%}{10\\%} = -2"), faithful to the exact formula/method the explanation actually gives - never inventing a formula the explanation doesn't state. Invented numbers are fine (and expected) as long as the METHOD is real; show enough intermediate lines that a student could follow how the final answer was reached, not just the answer alone.
+6. If "visualType" is "example", also return "example": a short, concrete real-world illustration (plain text, "**bold**" allowed), faithful to the concept as explained - grounding it in a recognisable scenario, never inventing a new fact about the concept itself.
+7. Be faithful ONLY to the given explanation (and, for a comparison, the given sibling's own explanation) - never introduce claims beyond what's given.
 
 Output ONLY valid JSON, nothing else, matching this schema:
-{ "heading": string, "paragraphs": string[], "visualType": "comparison" | "example" | "none", "comparison"?: { "otherLabel": string, "thisPoints": string[], "otherPoints": string[] }, "example"?: string }`;
+{ "heading": string, "paragraphs": string[], "visualType": "comparison" | "workedExample" | "example" | "none", "comparison"?: { "otherLabel": string, "thisPoints": string[], "otherPoints": string[] }, "workedExample"?: { "steps": string[] }, "example"?: string }`;
 
 // transferSummary matches LINK_IDENTIFY_GRADE_PROMPT's own grading bar
 // exactly (one sentence, a real causal claim, not a bare keyword) - this

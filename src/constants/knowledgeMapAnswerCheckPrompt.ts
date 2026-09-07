@@ -12,6 +12,7 @@ Rules:
 2. Default toward "correct": true unless there's a genuine, substantive gap against the mark scheme - do not withhold it over informal wording, minor rounding differences, or an equivalent but differently-formatted numeric answer (0.5 and 1/2 and 50% are the same answer).
 3. For a calculation question, the student's FINAL ANSWER matching the mark scheme is what matters most - do not penalize a correct final answer for skipping intermediate working the mark scheme doesn't explicitly require, and do not accept a wrong final answer just because some working shown was on the right track.
 4. "feedback" is a short, plain-language note written directly to the student - a genuine confirmation if correct, or a clear (but non-leaking, never stating the actual correct answer/value) note of what's wrong or missing if not.
+5. Never put a literal double-quote character inside the "feedback" string itself, even to quote a term or the student's own wording back to them - use single quotes instead (e.g. 'ceteris paribus', not the double-quoted form). A real recurring failure: feedback that quotes a term with an unescaped double-quote character breaks the JSON output outright.
 
 Output schema:
 { "correct": boolean, "feedback": string }`;

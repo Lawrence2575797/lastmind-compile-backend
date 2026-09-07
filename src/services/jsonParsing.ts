@@ -20,16 +20,72 @@ function extractJsonObject(text: string): string {
   return text.slice(start, end + 1);
 }
 
+// Repairs the single most common way a model breaks its own "output ONLY
+// JSON" instruction despite the brace-extraction fallback above already
+// handling stray prose: quoting a term/phrase INSIDE a string value with
+// literal " characters instead of escaping them - e.g. feedback text like
+// `"...you rightly identified that "ceteris paribus" means..."`, found
+// live (a real, reproducible grading failure specific to any concept name
+// a model naturally wants to quote back to the student). extractJsonObject
+// can't fix this - the JSON is genuinely malformed mid-string, not just
+// wrapped in extra text.
+//
+// Walks character by character tracking whether we're inside a string; a
+// `"` encountered there is treated as a real closing quote only if what
+// follows (after whitespace) looks like a genuine JSON continuation (`,`,
+// `}`, `]`, `:`, or end of string) - otherwise it's an internal quote that
+// gets escaped and string mode continues. Already-valid JSON (including
+// JSON with correctly escaped internal quotes) passes through unchanged,
+// since every quote in it is already exactly where this heuristic expects
+// a real one to be.
+function repairUnescapedQuotes(text: string): string {
+  let out = '';
+  let inString = false;
+  for (let i = 0; i < text.length; i++) {
+    const ch = text[i];
+    if (ch === '\\' && inString) {
+      out += ch + (text[i + 1] || '');
+      i++;
+      continue;
+    }
+    if (ch === '"') {
+      if (!inString) {
+        inString = true;
+        out += ch;
+        continue;
+      }
+      let j = i + 1;
+      while (j < text.length && /\s/.test(text[j])) j++;
+      const next = text[j];
+      const looksLikeRealClose = next === undefined || ',}]:'.includes(next);
+      if (looksLikeRealClose) {
+        inString = false;
+        out += ch;
+      } else {
+        out += '\\"';
+      }
+      continue;
+    }
+    out += ch;
+  }
+  return out;
+}
+
 export function parseModelJson<T>(raw: string): T {
   const cleaned = stripCodeFences(raw);
   try {
     return JSON.parse(cleaned) as T;
   } catch {
+    const extracted = extractJsonObject(cleaned);
     try {
-      return JSON.parse(extractJsonObject(cleaned)) as T;
-    } catch (err) {
-      console.error('LastMind: model call returned invalid JSON.', { raw });
-      throw err;
+      return JSON.parse(extracted) as T;
+    } catch {
+      try {
+        return JSON.parse(repairUnescapedQuotes(extracted)) as T;
+      } catch (err) {
+        console.error('LastMind: model call returned invalid JSON.', { raw });
+        throw err;
+      }
     }
   }
 }

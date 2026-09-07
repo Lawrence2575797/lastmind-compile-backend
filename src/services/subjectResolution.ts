@@ -10,6 +10,7 @@
 // Deterministic string matching only, no model call - free to run on
 // every lookup.
 import { supabaseAdmin } from './supabaseAdmin';
+import { selectAllRows } from './supabasePagination';
 
 export interface SubjectTriple {
   subject: string;
@@ -71,15 +72,24 @@ const SIMILARITY_THRESHOLD = 0.6;
 const CACHE_MS = 5 * 60 * 1000;
 let cachedTriples: { data: SubjectTriple[]; fetchedAt: number } | null = null;
 
+// Paginated (selectAllRows, PostgREST's default db-max-rows caps a plain
+// .select() at 1000 - see ingest_knowledge_map.js's own comment on this
+// exact landmine) since this table already holds 1800+ rows across just
+// 2 subjects and only grows. This full fetch is ONLY used for the fuzzy
+// fallback below, never for deciding whether an exact/aliased match
+// exists - that's checked directly against the DB first, so a correctly
+// (or case-differently) typed triple never depends on this being complete.
 async function getRealSubjectTriples(): Promise<SubjectTriple[]> {
   if (cachedTriples && Date.now() - cachedTriples.fetchedAt < CACHE_MS) return cachedTriples.data;
-  const { data, error } = await supabaseAdmin.from('knowledge_map_nodes').select('subject, qualification, exam_board');
-  if (error) throw error;
+  const rows = await selectAllRows<{ subject: string; qualification: string; exam_board: string }>(
+    'knowledge_map_nodes',
+    'subject, qualification, exam_board'
+  );
   const seen = new Map<string, SubjectTriple>();
-  (data || []).forEach((r) => {
-    const key = `${normalize(r.subject as string)}|${normalize(r.qualification as string)}|${normalize(r.exam_board as string)}`;
+  rows.forEach((r) => {
+    const key = `${normalize(r.subject)}|${normalize(r.qualification)}|${normalize(r.exam_board)}`;
     if (!seen.has(key)) {
-      seen.set(key, { subject: r.subject as string, qualification: r.qualification as string, examBoard: r.exam_board as string });
+      seen.set(key, { subject: r.subject, qualification: r.qualification, examBoard: r.exam_board });
     }
   });
   cachedTriples = { data: Array.from(seen.values()), fetchedAt: Date.now() };
@@ -97,6 +107,25 @@ export async function resolveSubjectTriple(subject: string, qualification: strin
   const aliasedSubject = SUBJECT_ALIASES[normalize(subject)] || subject;
   const typed: SubjectTriple = { subject: aliasedSubject, qualification, examBoard };
 
+  // Fast, direct exact-match check FIRST, against the real table rather
+  // than a fetched-and-deduped snapshot - a correctly (or case-
+  // differently) typed triple must never depend on whether this subject's
+  // rows happened to survive some other query's row cap or pagination
+  // window. This is the overwhelmingly common case and the only one that
+  // matters for subjects typed correctly, so it must never be weaker than
+  // the plain ilike lookup this function is wrapping.
+  const { data: exactRows, error: exactError } = await supabaseAdmin
+    .from('knowledge_map_nodes')
+    .select('subject, qualification, exam_board')
+    .ilike('subject', aliasedSubject.trim())
+    .ilike('qualification', qualification.trim())
+    .ilike('exam_board', examBoard.trim())
+    .limit(1);
+  if (!exactError && exactRows && exactRows.length) {
+    const r = exactRows[0];
+    return { subject: r.subject as string, qualification: r.qualification as string, examBoard: r.exam_board as string };
+  }
+
   let real: SubjectTriple[];
   try {
     real = await getRealSubjectTriples();
@@ -104,13 +133,6 @@ export async function resolveSubjectTriple(subject: string, qualification: strin
     console.error('LastMind: subject triple resolution failed, using the typed values as-is.', err);
     return typed;
   }
-
-  const exact = real.find((r) =>
-    normalize(r.subject) === normalize(typed.subject) &&
-    normalize(r.qualification) === normalize(typed.qualification) &&
-    normalize(r.examBoard) === normalize(typed.examBoard)
-  );
-  if (exact) return exact;
 
   let best: SubjectTriple | null = null;
   let bestScore = 0;

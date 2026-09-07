@@ -39,25 +39,55 @@ Output ONLY valid JSON, nothing else, matching this schema:
 // transferSummary matches LINK_IDENTIFY_GRADE_PROMPT's own grading bar
 // exactly (one sentence, a real causal claim, not a bare keyword) - this
 // IS what a student who passed that check should end up with written
-// down. heading+paragraphs replace the old single integrationSummary
-// blob with the same structured, question-framed, short-paragraph shape
-// NODE_NOTES_COMPILE_PROMPT uses, minus a visual - dual coding's spatial-
-// contiguity payoff is about a concept's OWN explanation, not a link
-// between two already-learned ones, so a link's notes stay text-only.
+// down. heading+paragraphs+visual are the same structured,
+// question-framed, short-paragraph-plus-optional-visual shape
+// NODE_NOTES_COMPILE_PROMPT uses. No "comparison" option here, unlike the
+// node prompt - a link has no sibling list to contrast against, only the
+// two concepts it already connects.
 export const EDGE_NOTES_COMPILE_PROMPT = `You are compiling revision notes for a UK GCSE/A-Level student on the link between two concepts they've both already learned, from that link's own already-written reference material. You will be given both concepts' names and the reference material describing the real connection between them.
 
 Produce:
 1. "transferSummary" - ONE SENTENCE stating the causal link between the two concepts' own explanations (roughly: "[A's key idea] means/causes/leads to [B's key idea]") - a bare term or keyword alone does not count, and neither does the full mechanism (that's paragraphs' job below). Plain text, no markup.
 2. "heading" - phrase as a genuine QUESTION about the CONNECTION itself (e.g. "Why does scarcity mean economics can't run controlled experiments?"), never about either concept alone.
 3. "paragraphs" - an array of SHORT paragraphs (plain text with "**bold**" around key facts/terms/definitions only, no other markdown) explaining the mechanism connecting them - one idea per paragraph, short enough to hold attention, faithful only to the given reference material.
+4. "visualType": choose exactly one -
+   - "workedExample" if applying the connection genuinely means performing a calculation with both concepts together (e.g. using one formula's output as another's input) - a real step-by-step worked calculation with invented-but-realistic numbers.
+   - "example" if a short, concrete real-world illustration of the CONNECTION (not either concept alone) would genuinely help.
+   - "none" if neither adds real value - true for most conceptual/causal links, which need no visual at all.
+5. If "visualType" is "workedExample", also return "workedExample": { "steps": string[] }, each entry one line of the calculation written as real LaTeX, faithful to the exact method the reference material actually describes - never inventing a method it doesn't state. Show enough intermediate lines that a student could follow how the final answer was reached.
+6. If "visualType" is "example", also return "example": a short, concrete real-world illustration (plain text, "**bold**" allowed) of the connection specifically, faithful to the reference material.
 
 Rules:
 1. Output ONLY valid JSON, nothing else.
 2. Be faithful ONLY to the given reference material - do not introduce new facts, examples, or claims beyond what it already states.
-3. **Never restate what either concept IS on its own - only the connection between them.** The student already has both concepts' own separate definitions from their own encoding lessons; this note exists specifically to teach and record the BRIDGE, not to re-teach either endpoint. If the reference material drifts into re-explaining one concept standalone, extract and keep only the parts that state or imply the causal/dependency relationship between the two, and leave the rest out entirely - even if that makes the output shorter. A student reading this should come away knowing why/how A connects to B, never a refresher on what A or B individually mean.
+3. **Never restate what either concept IS on its own - only the connection between them.** The student already has both concepts' own separate definitions from their own encoding lessons; this note exists specifically to teach and record the BRIDGE, not to re-teach either endpoint. If the reference material drifts into re-explaining one concept standalone, extract and keep only the parts that state or imply the causal/dependency relationship between the two, and leave the rest out entirely - even if that makes the output shorter. A student reading this should come away knowing why/how A connects to B, never a refresher on what A or B individually mean. This applies to the visual too - a workedExample or example must illustrate the CONNECTION, never just re-demonstrate one concept in isolation.
 
 Output schema:
-{ "transferSummary": string, "heading": string, "paragraphs": string[] }`;
+{ "transferSummary": string, "heading": string, "paragraphs": string[], "visualType": "workedExample" | "example" | "none", "workedExample"?: { "steps": string[] }, "example"?: string }`;
+
+// Checks one line of a student's own attempt at a worked example they're
+// following along with (see renderNodeNoteBlock's interactive
+// workedExample walkthrough) - the ground truth (every line, in order) is
+// already known, so this is a targeted check against a known answer, not
+// open tutoring, hence Haiku like the rest of this file's compile work.
+// The student's own line arrives in the math-shortcut editor's plain,
+// LaTeX-free notation (fractions as "(num)/(den)", powers as "^(...)",
+// etc. - see createMathShortcutEditor's own serializeNode comment), while
+// the ground truth is real LaTeX - the prompt itself has to bridge that,
+// not a preprocessing step, since judging mathematical equivalence across
+// notations is exactly what a model is good at and a string comparison
+// isn't.
+export const WORKED_EXAMPLE_STEP_CHECK_PROMPT = `You are checking one line of a student's own attempt at a worked example they are following along with, step by step, against the correct line at that exact position. The student typed their own attempt rather than just reading the worked example - your job is to confirm they got THIS line right, or explain briefly what's off if not.
+
+You will be given the full worked example (every line, in order, as real LaTeX, for context only), which line number the student is attempting (1-indexed), and the student's own typed line in a plain, LaTeX-free notation (fractions as "(num)/(den)", powers as "^(...)", subscripts as "_(...)", integral limits as "[lower, upper]" - read this as maths, not as prose).
+
+Rules:
+1. Judge whether the student's line is MATHEMATICALLY EQUIVALENT to the correct line at that position - not an exact string or notation match. Different notation, spacing, or algebraically equivalent rearrangement all count as correct.
+2. If correct, say so briefly and encouragingly - do not restate the full correct line back, since it's revealed to the student separately right after.
+3. If incorrect, name specifically what's wrong (a sign error, wrong operation, a dropped term, an arithmetic slip) without simply handing over the correct line.
+4. Never reveal any LATER line's own content, even in feedback - the student hasn't reached it yet.
+
+Output ONLY valid JSON: { "correct": boolean, "feedback": "one short sentence" }`;
 
 // Orders one subtopic's atomic concept nodes into the sequence a teacher
 // would actually cover them in (see knowledgeMapNotesService.ts's

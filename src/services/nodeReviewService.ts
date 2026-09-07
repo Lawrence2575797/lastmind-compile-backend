@@ -162,7 +162,7 @@ export interface ResolvedEdge {
   fromNode: NodeRow;
   toNode: NodeRow;
   linkTeaching: string;
-  integrationQuestion: { questionText?: string; markScheme?: string; diagramSpec?: unknown } | null;
+  integrationQuestion: { questionText?: string; markScheme?: string; diagramSpec?: unknown; answerInputType?: 'words' | 'math' } | null;
 }
 
 // Keyed off the endpoint node ids, same convention every other edge
@@ -207,6 +207,11 @@ export interface IntegrationStepData {
   markScheme: string;
   linkTeaching: string;
   isFirstAttempt: boolean;
+  // Undefined for any edge lesson generated before this field existed -
+  // the caller falls back to its own looksLikeCalculationQuestion regex
+  // heuristic in that case, same as every other question type already did
+  // before diagramSpec/answerInputType-style fields existed.
+  answerInputType?: 'words' | 'math';
 }
 
 export async function getIntegrationStepData(userId: string, fromNodeId: string, toNodeId: string): Promise<IntegrationStepData | null> {
@@ -226,6 +231,7 @@ export async function getIntegrationStepData(userId: string, fromNodeId: string,
     markScheme: edge.integrationQuestion.markScheme || '',
     linkTeaching: edge.linkTeaching,
     isFirstAttempt: !existing,
+    answerInputType: edge.integrationQuestion.answerInputType,
   };
 }
 

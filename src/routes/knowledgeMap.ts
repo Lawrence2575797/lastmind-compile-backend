@@ -28,7 +28,7 @@ import {
   getIntegrationStepData,
   gradeIntegrationAnswer,
 } from '../services/nodeReviewService';
-import { compileNodeNotes, getNodeNotes, compileEdgeNotes, getEdgeNotes, getNotesIndexForUser, getPersonalNote, savePersonalNote } from '../services/knowledgeMapNotesService';
+import { compileNodeNotes, getNodeNotes, compileEdgeNotes, compileEdgeNotesContent, getEdgeNotes, getNotesIndexForUser, getPersonalNote, savePersonalNote, checkWorkedExampleStep } from '../services/knowledgeMapNotesService';
 import { generateAndCacheNodeLesson, generateAndCacheEdgeLesson } from '../services/lessonGenerationService';
 
 const router = Router();
@@ -795,10 +795,19 @@ router.post('/knowledge-map-v2/node-review/integration/start', requireAuth, cost
     const userId = req.userId as string;
     const step = await getIntegrationStepData(userId, fromNodeId, toNodeId);
     if (!step) return res.json({ unavailable: true });
+    // The dual-coding visual is only ever relevant alongside linkTeaching
+    // itself - shown once, on a genuine first attempt, never on a later
+    // spaced review (see IntegrationStepData's own comment on why
+    // linkTeaching is withheld then too). compileEdgeNotesContent has no
+    // per-user unlock side effect - the separate Notes page's "earned"
+    // unlock still only happens on an actual pass (renderNodeReviewSummary).
+    const notes = step.isFirstAttempt ? await compileEdgeNotesContent(fromNodeId, toNodeId) : null;
     res.json({
       questionText: step.questionText,
       isFirstAttempt: step.isFirstAttempt,
       linkTeaching: step.isFirstAttempt ? step.linkTeaching : null,
+      answerInputType: step.answerInputType || null,
+      notes: notes ? { heading: notes.heading, paragraphs: notes.paragraphs, visual: notes.visual } : null,
     });
   } catch (err) {
     console.error('Integration question lookup failed:', err);
@@ -892,6 +901,50 @@ router.get('/knowledge-map-v2/edge/:fromNodeId/:toNodeId/notes', requireAuth, as
   } catch (err) {
     console.error('Edge notes lookup failed:', err);
     res.status(500).json({ error: 'could not load these notes' });
+  }
+});
+
+// POST /knowledge-map-v2/node/:nodeId/worked-example-step/check
+// { stepIndex, answer } -> { correct, feedback } - checks one line of a
+// student's own attempt at the interactive worked-example walkthrough
+// against the already-compiled ground truth (see renderNodeNoteBlock's
+// workedExample branch). The visual must already be compiled (a student
+// reaches this only after opening the node, which always compiles notes
+// first) - a 404 here means genuinely nothing to check against, not a
+// transient miss worth retrying with a fresh generation.
+router.post('/knowledge-map-v2/node/:nodeId/worked-example-step/check', requireAuth, costlyEndpointLimiter, async (req: Request, res: Response) => {
+  const { stepIndex, answer } = (req.body ?? {}) as { stepIndex?: number; answer?: string };
+  if (typeof stepIndex !== 'number' || typeof answer !== 'string' || !answer.trim()) {
+    return res.status(400).json({ error: 'stepIndex and answer are required' });
+  }
+  try {
+    const notes = await getNodeNotes(req.params.nodeId);
+    const steps = notes?.visual.type === 'workedExample' ? notes.visual.steps : null;
+    if (!steps || !steps[stepIndex]) return res.status(404).json({ error: 'no worked example step found at that index' });
+    const result = await checkWorkedExampleStep(steps, stepIndex, answer);
+    res.json(result);
+  } catch (err) {
+    console.error('Worked example step check failed:', err);
+    res.status(500).json({ error: 'could not check this step' });
+  }
+});
+
+// Same contract as the node route above, for an edge's own workedExample
+// visual (see EDGE_NOTES_COMPILE_PROMPT).
+router.post('/knowledge-map-v2/edge/:fromNodeId/:toNodeId/worked-example-step/check', requireAuth, costlyEndpointLimiter, async (req: Request, res: Response) => {
+  const { stepIndex, answer } = (req.body ?? {}) as { stepIndex?: number; answer?: string };
+  if (typeof stepIndex !== 'number' || typeof answer !== 'string' || !answer.trim()) {
+    return res.status(400).json({ error: 'stepIndex and answer are required' });
+  }
+  try {
+    const notes = await getEdgeNotes(req.params.fromNodeId, req.params.toNodeId);
+    const steps = notes?.visual.type === 'workedExample' ? notes.visual.steps : null;
+    if (!steps || !steps[stepIndex]) return res.status(404).json({ error: 'no worked example step found at that index' });
+    const result = await checkWorkedExampleStep(steps, stepIndex, answer);
+    res.json(result);
+  } catch (err) {
+    console.error('Worked example step check failed:', err);
+    res.status(500).json({ error: 'could not check this step' });
   }
 });
 

@@ -20,7 +20,7 @@ import { getSpecMicrotopics, getSubtopicThemeMap, fallbackThemeName } from './ch
 import { listUserFolders } from './folderSyncService';
 import { resolveSubjectTriple } from './subjectResolution';
 import { topologicalNodeOrder } from './nodeOrdering';
-import { NODE_NOTES_COMPILE_PROMPT, EDGE_NOTES_COMPILE_PROMPT, SUBTOPIC_NODE_ORDER_PROMPT } from '../constants/knowledgeMapNotesPrompts';
+import { NODE_NOTES_COMPILE_PROMPT, EDGE_NOTES_COMPILE_PROMPT, SUBTOPIC_NODE_ORDER_PROMPT, WORKED_EXAMPLE_STEP_CHECK_PROMPT } from '../constants/knowledgeMapNotesPrompts';
 
 export type NodeNoteVisual =
   | { type: 'diagram'; spec: unknown }
@@ -173,23 +173,24 @@ export interface EdgeNotesResult {
   transferSummary: string;
   heading: string;
   paragraphs: string[];
+  visual: NodeNoteVisual;
 }
 
 // integration_summary stays a plain `text` column but now carries a
-// JSON-encoded {heading, paragraphs} instead of one text blob - same
-// no-migration reasoning as parseStoredNodeNotes above. A pre-existing
-// plain-string row degrades to a fallback heading plus itself as the one
-// paragraph, rather than breaking.
-function parseStoredIntegrationSummary(raw: string, fallbackHeading: string): { heading: string; paragraphs: string[] } {
+// JSON-encoded {heading, paragraphs, visual} instead of one text blob -
+// same no-migration reasoning as parseStoredNodeNotes above. A
+// pre-existing plain-string OR pre-visual {heading, paragraphs} row
+// degrades to a fallback heading/no-visual, rather than breaking.
+function parseStoredIntegrationSummary(raw: string, fallbackHeading: string): { heading: string; paragraphs: string[]; visual: NodeNoteVisual } {
   try {
     const parsed = JSON.parse(raw);
     if (parsed && typeof parsed === 'object' && Array.isArray(parsed.paragraphs)) {
-      return { heading: parsed.heading || fallbackHeading, paragraphs: parsed.paragraphs };
+      return { heading: parsed.heading || fallbackHeading, paragraphs: parsed.paragraphs, visual: parsed.visual || { type: 'none' } };
     }
   } catch {
     // Legacy plain-text row - fall through.
   }
-  return { heading: fallbackHeading, paragraphs: [raw] };
+  return { heading: fallbackHeading, paragraphs: [raw], visual: { type: 'none' } };
 }
 
 export async function getEdgeNotes(fromNodeId: string, toNodeId: string): Promise<EdgeNotesResult | null> {
@@ -201,8 +202,57 @@ export async function getEdgeNotes(fromNodeId: string, toNodeId: string): Promis
     .eq('edge_id', edge.id)
     .maybeSingle();
   if (!data) return null;
-  const { heading, paragraphs } = parseStoredIntegrationSummary(data.integration_summary as string, `${edge.fromNode.label} → ${edge.toNode.label}`);
-  return { transferSummary: data.transfer_summary as string, heading, paragraphs };
+  const { heading, paragraphs, visual } = parseStoredIntegrationSummary(data.integration_summary as string, `${edge.fromNode.label} → ${edge.toNode.label}`);
+  return { transferSummary: data.transfer_summary as string, heading, paragraphs, visual };
+}
+
+// Fetch-or-generate ONLY - no per-user unlock side effect. Split out of
+// compileEdgeNotes (below) so the integration REVIEW step (see
+// routes/knowledgeMap.ts's node-review/integration/start) can show this
+// same compiled visual on a student's first attempt - exactly when
+// linkTeaching itself is already shown raw, before they've answered
+// anything - without prematurely marking these notes "earned" on the
+// separate Notes page, which stays gated on an actual pass (see this
+// file's own top comment). The generated content is shared/global either
+// way; only the unlock flag is per-student.
+export async function compileEdgeNotesContent(fromNodeId: string, toNodeId: string): Promise<EdgeNotesResult | null> {
+  const edge = await resolveEdgeForReview(fromNodeId, toNodeId);
+  if (!edge || !edge.linkTeaching) return null;
+
+  const cached = await getEdgeNotes(fromNodeId, toNodeId);
+  if (cached) return cached;
+
+  const raw = await callClaudeJSON({
+    model: MODELS.simpleQuestion,
+    systemPrompt: EDGE_NOTES_COMPILE_PROMPT,
+    userContent: `Concept A: ${edge.fromNode.label}\nConcept B: ${edge.toNode.label}\nReference material: ${edge.linkTeaching}`,
+    temperature: 0.2,
+  });
+  const modelResult = parseModelJson<{
+    transferSummary: string;
+    heading: string;
+    paragraphs: string[];
+    visualType: 'workedExample' | 'example' | 'none';
+    workedExample?: { steps: string[] };
+    example?: string;
+  }>(raw);
+  const visual: NodeNoteVisual =
+    modelResult.visualType === 'workedExample' && modelResult.workedExample
+      ? { type: 'workedExample', steps: modelResult.workedExample.steps }
+      : modelResult.visualType === 'example' && modelResult.example
+      ? { type: 'example', text: modelResult.example }
+      : { type: 'none' };
+  const notes: EdgeNotesResult = { transferSummary: modelResult.transferSummary, heading: modelResult.heading, paragraphs: modelResult.paragraphs, visual };
+
+  const { error } = await supabaseAdmin
+    .from('knowledge_map_edge_notes')
+    .upsert(
+      { edge_id: edge.id, transfer_summary: notes.transferSummary, integration_summary: JSON.stringify({ heading: notes.heading, paragraphs: notes.paragraphs, visual: notes.visual }) },
+      { onConflict: 'edge_id' }
+    );
+  if (error) throw error;
+
+  return notes;
 }
 
 // Also unlocks these notes for `userId` (see knowledge_map_edge_notes_unlocked's
@@ -214,35 +264,39 @@ export async function compileEdgeNotes(
   fromNodeId: string,
   toNodeId: string
 ): Promise<EdgeNotesResult | null> {
+  const notes = await compileEdgeNotesContent(fromNodeId, toNodeId);
+  if (!notes) return null;
+
   const edge = await resolveEdgeForReview(fromNodeId, toNodeId);
-  if (!edge || !edge.linkTeaching) return null;
-
-  let notes = await getEdgeNotes(fromNodeId, toNodeId);
-  if (!notes) {
-    const raw = await callClaudeJSON({
-      model: MODELS.simpleQuestion,
-      systemPrompt: EDGE_NOTES_COMPILE_PROMPT,
-      userContent: `Concept A: ${edge.fromNode.label}\nConcept B: ${edge.toNode.label}\nReference material: ${edge.linkTeaching}`,
-      temperature: 0.2,
-    });
-    const modelResult = parseModelJson<{ transferSummary: string; heading: string; paragraphs: string[] }>(raw);
-    notes = { transferSummary: modelResult.transferSummary, heading: modelResult.heading, paragraphs: modelResult.paragraphs };
-
-    const { error } = await supabaseAdmin
-      .from('knowledge_map_edge_notes')
-      .upsert(
-        { edge_id: edge.id, transfer_summary: notes.transferSummary, integration_summary: JSON.stringify({ heading: notes.heading, paragraphs: notes.paragraphs }) },
-        { onConflict: 'edge_id' }
-      );
-    if (error) throw error;
-  }
-
+  if (!edge) return null;
   const { error: unlockError } = await supabaseAdmin
     .from('knowledge_map_edge_notes_unlocked')
     .upsert({ user_id: userId, edge_id: edge.id }, { onConflict: 'user_id,edge_id' });
   if (unlockError) throw unlockError;
 
   return notes;
+}
+
+// Checks one line of a student's own attempt at an interactive worked-
+// example walkthrough (see renderNodeNoteBlock's workedExample branch in
+// learn/index.html) against the corresponding ground-truth line - a
+// targeted check against an already-known answer, not open tutoring,
+// hence Haiku. Shared by both the node and edge worked-example visuals
+// (identical shape, {steps: string[]}), so callers just pass whichever
+// steps array they already fetched via getNodeNotes/getEdgeNotes.
+export async function checkWorkedExampleStep(
+  steps: string[],
+  stepIndex: number,
+  answer: string
+): Promise<{ correct: boolean; feedback: string }> {
+  const userContent = `Full worked example:\n${steps.map((s, i) => `${i + 1}. ${s}`).join('\n')}\n\nStudent is attempting line ${stepIndex + 1}.\nStudent's own typed line: ${answer}`;
+  const raw = await callClaudeJSON({
+    model: MODELS.simpleQuestion,
+    systemPrompt: WORKED_EXAMPLE_STEP_CHECK_PROMPT,
+    userContent,
+    temperature: 0.1,
+  });
+  return parseModelJson<{ correct: boolean; feedback: string }>(raw);
 }
 
 interface NotesIndexLink {

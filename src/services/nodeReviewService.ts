@@ -4,7 +4,11 @@ import { parseModelJson, parseCorrectFeedbackJson } from './jsonParsing';
 import { KNOWLEDGE_MAP_ANSWER_CHECK_PROMPT } from '../constants/knowledgeMapAnswerCheckPrompt';
 import { AO1_REWORD_QUESTION_PROMPT, AO1_SLIP_CHECK_PROMPT } from '../constants/nodeReviewPrompts';
 
-type NodeEncodingContent = { explanation?: string; practiceQuestion?: { questionText?: string }; rewordedAo1Questions?: string[] };
+type NodeEncodingContent = {
+  explanation?: string;
+  practiceQuestion?: { questionText?: string; modality?: 'reading' | 'writing' | 'listening' | 'speaking'; audioText?: string };
+  rewordedAo1Questions?: string[];
+};
 
 // The node-level spaced review. A node's own AO1 concept_id is reused
 // as-is for its reworded retrieval question (same concept, same FSRS
@@ -79,7 +83,7 @@ export async function getQualifyingReviewLinks(userId: string, nodeId: string): 
   return links;
 }
 
-async function fetchNodeExplanationAndAo1(nodeId: string): Promise<{ explanation: string; questionText: string; rewordedPool: string[] } | null> {
+async function fetchNodeExplanationAndAo1(nodeId: string): Promise<{ explanation: string; questionText: string; rewordedPool: string[]; modality?: 'reading' | 'writing' | 'listening' | 'speaking'; audioText?: string } | null> {
   const { data: lesson } = await supabaseAdmin
     .from('knowledge_map_node_lessons')
     .select('encoding_content')
@@ -91,6 +95,8 @@ async function fetchNodeExplanationAndAo1(nodeId: string): Promise<{ explanation
     explanation: content.explanation || '',
     questionText: content.practiceQuestion.questionText,
     rewordedPool: Array.isArray(content.rewordedAo1Questions) ? content.rewordedAo1Questions : [],
+    modality: content.practiceQuestion.modality,
+    audioText: content.practiceQuestion.audioText,
   };
 }
 
@@ -101,7 +107,7 @@ async function fetchNodeExplanationAndAo1(nodeId: string): Promise<{ explanation
 // pool is enough. Picking uniformly at random (rather than tracking
 // per-student "already seen" state) accepts an occasional immediate
 // repeat as a small, acceptable cost for not needing any extra state.
-export async function getRewordedAo1Question(nodeId: string): Promise<{ questionText: string } | null> {
+export async function getRewordedAo1Question(nodeId: string): Promise<{ questionText: string; modality?: 'reading' | 'writing' | 'listening' | 'speaking'; audioText?: string } | null> {
   const source = await fetchNodeExplanationAndAo1(nodeId);
   if (!source) return null;
   let pool = source.rewordedPool;
@@ -124,7 +130,17 @@ export async function getRewordedAo1Question(nodeId: string): Promise<{ question
     content.rewordedAo1Questions = pool;
     await supabaseAdmin.from('knowledge_map_node_lessons').update({ encoding_content: content }).eq('node_id', nodeId);
   }
-  return { questionText: pool[Math.floor(Math.random() * pool.length)] };
+  // The reword prompt only ever produces new question TEXT, never a new
+  // audio phrase - so a "listening" original keeps testing the exact same
+  // spoken phrase on every reworded retrieval attempt (still genuine
+  // spaced repetition, just asked about differently each time). Modality
+  // itself always carries over unchanged: it's a property of how this
+  // concept is tested, not of the specific wording a reword happens to use.
+  return {
+    questionText: pool[Math.floor(Math.random() * pool.length)],
+    modality: source.modality,
+    audioText: source.modality === 'listening' ? source.audioText : undefined,
+  };
 }
 
 export async function gradeRewordedAo1Answer(nodeId: string, questionText: string, answer: string): Promise<{ correct: boolean; feedback: string } | null> {
@@ -162,7 +178,7 @@ export interface ResolvedEdge {
   fromNode: NodeRow;
   toNode: NodeRow;
   linkTeaching: string;
-  integrationQuestion: { questionText?: string; markScheme?: string; diagramSpec?: unknown; answerInputType?: 'words' | 'math' } | null;
+  integrationQuestion: { questionText?: string; markScheme?: string; diagramSpec?: unknown; answerInputType?: 'words' | 'math'; modality?: 'reading' | 'writing' | 'listening' | 'speaking'; audioText?: string } | null;
 }
 
 // Keyed off the endpoint node ids, same convention every other edge
@@ -212,6 +228,9 @@ export interface IntegrationStepData {
   // heuristic in that case, same as every other question type already did
   // before diagramSpec/answerInputType-style fields existed.
   answerInputType?: 'words' | 'math';
+  // Undefined for the same pre-existing-content reason as answerInputType.
+  modality?: 'reading' | 'writing' | 'listening' | 'speaking';
+  audioText?: string;
 }
 
 export async function getIntegrationStepData(userId: string, fromNodeId: string, toNodeId: string): Promise<IntegrationStepData | null> {
@@ -232,6 +251,8 @@ export async function getIntegrationStepData(userId: string, fromNodeId: string,
     linkTeaching: edge.linkTeaching,
     isFirstAttempt: !existing,
     answerInputType: edge.integrationQuestion.answerInputType,
+    modality: edge.integrationQuestion.modality,
+    audioText: edge.integrationQuestion.audioText,
   };
 }
 

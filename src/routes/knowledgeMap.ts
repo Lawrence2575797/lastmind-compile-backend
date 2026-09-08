@@ -807,6 +807,8 @@ router.post('/knowledge-map-v2/node-review/integration/start', requireAuth, cost
       isFirstAttempt: step.isFirstAttempt,
       linkTeaching: step.isFirstAttempt ? step.linkTeaching : null,
       answerInputType: step.answerInputType || null,
+      modality: step.modality || null,
+      audioText: step.audioText || null,
       notes: notes ? { heading: notes.heading, paragraphs: notes.paragraphs, visual: notes.visual } : null,
     });
   } catch (err) {

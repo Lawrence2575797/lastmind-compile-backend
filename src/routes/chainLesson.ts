@@ -5,6 +5,7 @@ import { normalizeConceptKey } from '../services/chainService';
 import { startRetrievalLesson, continueRetrievalLesson, submitRetrievalAnswer, answerRetrievalQuestion, RetrievalLessonState } from '../services/spacedLessonEngine';
 import { recordConfidenceRating } from '../services/answerSignalService';
 import { spendLocks, refundTodaysHeldDepositIfAny, InsufficientLocksError } from '../services/lockService';
+import { ReviewNotDueError, assertConceptReviewDue } from '../services/reviewService';
 import { RETRIEVAL_LESSON_LOCK_COST } from '../constants/locks';
 
 const router = Router();
@@ -27,12 +28,22 @@ router.post('/chain-lesson/start', async (req: Request, res: Response) => {
   }
 
   try {
+    const conceptKey = normalizeConceptKey(subject, topic, concept);
+
+    // Checked BEFORE spendLocks, deliberately — this route has no
+    // client-side due-date gate of its own (unlike the knowledge-map
+    // panel's disabled "Start review" button), so it's the one place a
+    // student could otherwise pay Locks for a session that then gets
+    // rejected as not-due. startRetrievalLesson repeats this check as
+    // defense in depth for any other caller, but ordering it here is what
+    // actually protects the student's Locks.
+    await assertConceptReviewDue(req.userId as string, conceptKey);
+
     // Same reasoning as encoding lessons' own /start: spend before
     // generating anything, and only here — /continue is the async second
     // half of this same call, not a new commitment.
     await spendLocks(req.userId as string, RETRIEVAL_LESSON_LOCK_COST);
 
-    const conceptKey = normalizeConceptKey(subject, topic, concept);
     const result = await startRetrievalLesson(
       req.userId as string,
       conceptKey,
@@ -44,6 +55,9 @@ router.post('/chain-lesson/start', async (req: Request, res: Response) => {
     );
     res.json(result);
   } catch (err) {
+    if (err instanceof ReviewNotDueError) {
+      return res.status(403).json({ error: 'This review isn\'t due yet.', dueDate: err.dueDate });
+    }
     if (err instanceof InsufficientLocksError) {
       return res.status(402).json({ error: "You're out of Locks for this month — they reset at the start of next month." });
     }

@@ -13,7 +13,7 @@ import {
   redirectForComponent,
 } from '../services/chainDiagnosticService';
 import { gradeDiagramAnswer, DiagramSpec, DiagramAnswerSubmission } from '../services/diagramGradingService';
-import { gradeCorrectness, DURABLE_RELEARNING_CRITERION } from '../services/reviewService';
+import { gradeCorrectness, DURABLE_RELEARNING_CRITERION, ReviewNotDueError } from '../services/reviewService';
 import { payLessonCredits, KM_VERIFY_COEFFICIENT_FREE, KM_VERIFY_COEFFICIENT_PREMIUM } from '../services/creditService';
 import { callClaudeJSON, MODELS } from '../services/claudeClient';
 import { parseCorrectFeedbackJson } from '../services/jsonParsing';
@@ -27,6 +27,7 @@ import {
   checkAo1SlipCandidate,
   getIntegrationStepData,
   gradeIntegrationAnswer,
+  assertNodeReviewDue,
 } from '../services/nodeReviewService';
 import { compileNodeNotes, getNodeNotes, compileEdgeNotes, compileEdgeNotesContent, getEdgeNotes, getNotesIndexForUser, getPersonalNote, savePersonalNote, checkWorkedExampleStep } from '../services/knowledgeMapNotesService';
 import { generateAndCacheNodeLesson, generateAndCacheEdgeLesson } from '../services/lessonGenerationService';
@@ -718,10 +719,14 @@ router.post('/knowledge-map-v2/node-review/ao1/start', requireAuth, costlyEndpoi
   const { nodeId } = (req.body ?? {}) as { nodeId?: string };
   if (!nodeId) return res.status(400).json({ error: 'nodeId is required' });
   try {
+    await assertNodeReviewDue(req.userId as string, nodeId);
     const question = await getRewordedAo1Question(nodeId);
     if (!question) return res.status(404).json({ error: 'no lesson generated for this concept yet' });
     res.json(question);
   } catch (err) {
+    if (err instanceof ReviewNotDueError) {
+      return res.status(403).json({ error: 'This review isn\'t due yet.', dueDate: err.dueDate });
+    }
     console.error('AO1 reword generation failed:', err);
     res.status(500).json({ error: 'could not prepare this review question' });
   }
@@ -819,6 +824,10 @@ router.post('/knowledge-map-v2/node-review/integration/start', requireAuth, cost
   if (!fromNodeId || !toNodeId) return res.status(400).json({ error: 'fromNodeId and toNodeId are required' });
   try {
     const userId = req.userId as string;
+    // Same session-level gate as ao1/start, checked again here since a
+    // client could reach this route directly (resuming a session,
+    // stepping through links) without re-hitting ao1/start first.
+    await assertNodeReviewDue(userId, fromNodeId);
     const step = await getIntegrationStepData(userId, fromNodeId, toNodeId);
     if (!step) return res.json({ unavailable: true });
     // The dual-coding visual is only ever relevant alongside linkTeaching
@@ -838,6 +847,9 @@ router.post('/knowledge-map-v2/node-review/integration/start', requireAuth, cost
       notes: notes ? { heading: notes.heading, paragraphs: notes.paragraphs, visual: notes.visual } : null,
     });
   } catch (err) {
+    if (err instanceof ReviewNotDueError) {
+      return res.status(403).json({ error: 'This review isn\'t due yet.', dueDate: err.dueDate });
+    }
     console.error('Integration question lookup failed:', err);
     res.status(500).json({ error: 'could not load this question' });
   }

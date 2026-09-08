@@ -1,5 +1,5 @@
 import { callClaudeJSON, MODELS } from './claudeClient';
-import { gradeAndRecordReview, gradeCorrectness, getMasteryStatus, listEligibleSiblingConcepts, FsrsRatingKey, DURABLE_RELEARNING_CRITERION, ConceptReviewRow } from './reviewService';
+import { gradeAndRecordReview, gradeCorrectness, getMasteryStatus, listEligibleSiblingConcepts, FsrsRatingKey, DURABLE_RELEARNING_CRITERION, ConceptReviewRow, isDueByCalendarDay, ReviewNotDueError } from './reviewService';
 import { payMasteryInstallment } from './creditService';
 import { getOrGenerateChain } from './chainService';
 import { recordAnswerSignal, AnswerSignalResult } from './answerSignalService';
@@ -237,6 +237,17 @@ export async function startRetrievalLesson(
   examBoard = ''
 ): Promise<RetrievalStartResult> {
   const { row, spacedSuccessCount } = await getMasteryStatus(userId, conceptKey);
+  // Same enforcement as node-review's assertNodeReviewDue — this route is
+  // one of several ways a client can reach a spaced-retrieval session
+  // (the multi-lesson page's own "Review" button has no due-date gate of
+  // its own client-side, unlike the knowledge-map panel's disabled
+  // button), so the real gate has to live here, not just in a UI that can
+  // be bypassed. A concept never reviewed before (row === null) has no
+  // due date to violate, so it's always due — same convention as
+  // isDueByCalendarDay's own no-row case.
+  if (row && !isDueByCalendarDay(row.due)) {
+    throw new ReviewNotDueError(row.due);
+  }
   const stability = row?.stability ?? 0;
   const m = computeMechanisticReadiness(stability, spacedSuccessCount);
   const tier = tierForM(m);

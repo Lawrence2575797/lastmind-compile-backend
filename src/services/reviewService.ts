@@ -470,6 +470,45 @@ function clean(s: string): string {
 // keys (chain-level tracking), same gap noted throughout this codebase
 // (e.g. learn/index.html's own conceptKeyToLabel). Good enough as LLM
 // generation context; never shown to the student verbatim.
+// Mirrors learn/index.html's own isScheduleEntryDue: a concept is due
+// once its FSRS due date's calendar DAY has arrived, not the exact
+// timestamp — "today" always counts as due regardless of what time of
+// day the original review happened to land at. A concept with no row at
+// all has never been reviewed, which counts as due now (same convention
+// used everywhere else "due" is computed in this app).
+export function isDueByCalendarDay(dueIso: string | null | undefined, now: Date = new Date()): boolean {
+  if (!dueIso) return true;
+  const due = new Date(dueIso);
+  const dueDay = Date.UTC(due.getUTCFullYear(), due.getUTCMonth(), due.getUTCDate());
+  const today = Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate());
+  return dueDay <= today;
+}
+
+// Thrown by every review-start route/service once it's actually enforcing
+// isDueByCalendarDay, so callers can tell "not due yet" apart from a real
+// failure and respond 403 (not 500) with the actual due date attached.
+export class ReviewNotDueError extends Error {
+  constructor(public dueDate: string | null) {
+    super('This review is not due yet.');
+    this.name = 'ReviewNotDueError';
+  }
+}
+
+// Server-side enforcement of the due-date gate the client already shows
+// (its "Start review" button is disabled until this is true) — UI-only
+// gating isn't enough, since several routes can start a spaced-retrieval
+// session directly. Starting early tests short-term memory rather than
+// the retrieval strength FSRS is actually trying to measure, and would
+// corrupt the very schedule it feeds back into (see
+// computeSpacedSuccessUpdate/gradeCorrectness above). Throws rather than
+// returning a boolean so a caller can't accidentally ignore the result.
+export async function assertConceptReviewDue(userId: string, conceptId: string): Promise<void> {
+  const { row } = await getMasteryStatus(userId, conceptId);
+  if (row && !isDueByCalendarDay(row.due)) {
+    throw new ReviewNotDueError(row.due);
+  }
+}
+
 export function conceptIdToLabel(conceptId: string): string {
   const lastSegment = conceptId.split(':').pop() || conceptId;
   return lastSegment.replace(/_/g, ' ');

@@ -3,6 +3,7 @@ import { callClaudeJSON, MODELS } from './claudeClient';
 import { parseModelJson, parseCorrectFeedbackJson } from './jsonParsing';
 import { KNOWLEDGE_MAP_ANSWER_CHECK_PROMPT } from '../constants/knowledgeMapAnswerCheckPrompt';
 import { AO1_REWORD_QUESTION_PROMPT, AO1_SLIP_CHECK_PROMPT } from '../constants/nodeReviewPrompts';
+import { isDueByCalendarDay, ReviewNotDueError } from './reviewService';
 
 type NodeEncodingContent = {
   explanation?: string;
@@ -81,6 +82,51 @@ export async function getQualifyingReviewLinks(userId: string, nodeId: string): 
     }
   });
   return links;
+}
+
+// Server-side mirror of learn/index.html's own isNodeReviewDue — the
+// client already disables its "Start review" button until this is true,
+// but that's UX only, not enforcement: ao1/start and integration/start
+// below are both real backend routes a session could reach directly.
+// Due if ANY component of the combined session still needs testing - the
+// node's own AO1 concept, or any qualifying link's integration - same
+// "whichever comes first" convention the client's own due-badge uses.
+// Called with the SESSION's from-node, not per-link, since AO1 and every
+// qualifying link's integration are one combined review (see this file's
+// own top-of-section comment in knowledgeMap.ts) - starting the session
+// early because one component happens to be due defeats the point of
+// gating it at all.
+export async function assertNodeReviewDue(userId: string, nodeId: string): Promise<void> {
+  const { data: node, error: nodeErr } = await supabaseAdmin
+    .from('knowledge_map_nodes')
+    .select('id, label, concept_id')
+    .eq('id', nodeId)
+    .maybeSingle<NodeRow>();
+  if (nodeErr) throw nodeErr;
+  if (!node) return; // the route's own 404 check handles a missing node
+
+  const links = await getQualifyingReviewLinks(userId, nodeId);
+  const conceptIds = [
+    node.concept_id,
+    ...links.map((l) => linkIntegrationConceptId(l.fromNode.concept_id, l.toNode.concept_id)),
+  ];
+
+  const { data: rows, error: rowErr } = await supabaseAdmin
+    .from('concept_reviews')
+    .select('concept_id, due')
+    .eq('user_id', userId)
+    .in('concept_id', conceptIds);
+  if (rowErr) throw rowErr;
+  const dueByConceptId = new Map((rows || []).map((r) => [r.concept_id as string, r.due as string]));
+
+  let anyDue = false;
+  let earliestDue: string | null = null;
+  for (const id of conceptIds) {
+    const due = dueByConceptId.get(id) ?? null;
+    if (!due || isDueByCalendarDay(due)) { anyDue = true; break; }
+    if (!earliestDue || new Date(due) < new Date(earliestDue)) earliestDue = due;
+  }
+  if (!anyDue) throw new ReviewNotDueError(earliestDue);
 }
 
 async function fetchNodeExplanationAndAo1(nodeId: string): Promise<{ explanation: string; questionText: string; rewordedPool: string[]; modality?: 'reading' | 'writing' | 'listening' | 'speaking'; audioText?: string } | null> {

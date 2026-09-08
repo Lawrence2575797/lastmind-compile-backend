@@ -14,8 +14,10 @@ import { KNOWLEDGE_MAP_ENCODING_LESSON_PROMPT, KNOWLEDGE_MAP_EDGE_LESSON_PROMPT 
 // Same model choice as the offline pipeline (generate_lesson_content.js's
 // LESSON_MODEL) - a structured writing task against an explicit spec, not
 // a judgment call, so no need for a bigger tier. Thinking is disabled
-// automatically for this model by claudeClient's own THINKS_BY_DEFAULT_MODELS
-// handling - no per-call opt-in needed.
+// automatically for this model by claudeClient's own modelThinksByDefault
+// handling (base-name matched, so this still works even if CLAUDE_MODEL is
+// overridden to a dated snapshot rather than the bare alias) - no per-call
+// opt-in needed.
 const LESSON_MODEL = process.env.CLAUDE_MODEL || 'claude-sonnet-5';
 const MAX_TOKENS = 16000;
 

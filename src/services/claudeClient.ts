@@ -61,11 +61,11 @@ export async function processNotes(safeText: string): Promise<string> {
       system: TUTOR_SYSTEM_PROMPT,
       // This call is a raw SDK call rather than going through
       // makeMessageRequest below, so it doesn't get that function's own
-      // THINKS_BY_DEFAULT_MODELS handling for free - needs the same
-      // explicit opt-out here, or MODELS.compile resolving to
-      // claude-sonnet-5 silently runs with adaptive thinking on, billed as
-      // output tokens on top of this call's own max_tokens.
-      ...(THINKS_BY_DEFAULT_MODELS.has(MODELS.compile) ? { thinking: { type: 'disabled' as const } } : {}),
+      // modelThinksByDefault handling for free - needs the same explicit
+      // opt-out here, or MODELS.compile resolving to a sonnet-5/opus-5
+      // variant silently runs with adaptive thinking on, billed as output
+      // tokens on top of this call's own max_tokens.
+      ...(modelThinksByDefault(MODELS.compile) ? { thinking: { type: 'disabled' as const } } : {}),
       messages: [
         {
           role: 'user',
@@ -169,7 +169,23 @@ async function withTransientRetry<T>(fn: () => Promise<T>): Promise<T> {
 // answering. Scoped to the specific model IDs that default to on, rather
 // than applied unconditionally: older/other models (Opus 4.8, Haiku) don't
 // document a "disabled" thinking type at all and may reject it.
-const THINKS_BY_DEFAULT_MODELS = new Set(['claude-sonnet-5', 'claude-opus-5']);
+//
+// Matched by BASE NAME, not exact string equality — several of this app's
+// MODELS entries resolve through `process.env.CLAUDE_MODEL`, which can be
+// set to a dated/pinned snapshot ("claude-sonnet-5-20260115") rather than
+// the bare alias. An exact Set.has() against that would silently miss,
+// leaving thinking ON by default: real money spent on invisible reasoning
+// tokens, billed as output, with zero visible change to the actual
+// explanation/question text this app returns - a genuine live bug found
+// this way (the deployed CLAUDE_MODEL didn't match the bare alias).
+// `model === base` still covers the bare alias itself; `startsWith(base +
+// '-')` covers every dated snapshot of it without needing to enumerate
+// them, while still requiring the dash so a hypothetical unrelated future
+// model name that merely starts with the same characters can't false-match.
+const THINKS_BY_DEFAULT_MODEL_BASES = ['claude-sonnet-5', 'claude-opus-5'];
+function modelThinksByDefault(model: string): boolean {
+  return THINKS_BY_DEFAULT_MODEL_BASES.some((base) => model === base || model.startsWith(`${base}-`));
+}
 
 async function makeMessageRequest(
   model: string,
@@ -184,7 +200,7 @@ async function makeMessageRequest(
     model,
     max_tokens: maxTokens ?? 2048,
     ...(includeTemperature ? { temperature } : {}),
-    ...(THINKS_BY_DEFAULT_MODELS.has(model) ? { thinking: { type: 'disabled' as const } } : {}),
+    ...(modelThinksByDefault(model) ? { thinking: { type: 'disabled' as const } } : {}),
     messages: [{ role: 'user' as const, content }],
   };
   // Only worth marking cacheable for the handful of large, FIXED prompts

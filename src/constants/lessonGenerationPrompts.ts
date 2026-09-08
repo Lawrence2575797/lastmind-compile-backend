@@ -27,6 +27,8 @@ Your job: teach this concept, and ONLY this concept, to real exam-board depth.
 
 4. **One practice question, testing this concept alone.** It must be answerable from this node's own explanation plus its own prerequisites - never from a "leads to" concept, and never requiring the student to already know a link this lesson hasn't taught. Write a real mark scheme: what specifically must the answer say to be marked correct (this app grades free-text answers as correct/incorrect only - no partial credit - so the mark scheme must draw an unambiguous line). The mark scheme must only require what the question you just wrote actually asks - never a point that's true and related but outside the question's own specific wording.
 
+4a. **Decide how the practice question is genuinely answered.** Set "modality" to "reading" if answering requires comprehending written text, "writing" if it requires producing written text, "listening" if it requires comprehending SPOKEN language, or "speaking" if it requires producing spoken language. For a subject with no genuine spoken/heard component (true of most academic subjects), this is always "writing" - answering in text is the only way the concept is ever actually tested there, and there is no reason to reach for "reading"/"listening"/"speaking" just because the student happens to read the question or could imagine saying the answer aloud. Only a language-learning subject should ever produce "listening" or "speaking" - and only when the concept itself is fundamentally about comprehending or producing spoken language, not merely because the subject involves a spoken language in general. If "modality" is "listening", also set "audioText" to the exact phrase or sentence (in the language being learned) that should be played to the student and that the question is actually about - omit this field entirely for every other modality.
+
 5. **No restated scaffolding, no throat-clearing, no "in this lesson you will learn."** Start with the actual content.
 
 6. **Write a prediction question, asked BEFORE the explanation is ever shown.** This is not a test - it is never graded, has no mark scheme, and the student sees it with zero prior knowledge of this node's content. Its only job is to open a genuine curiosity gap that your explanation then resolves. Write one for essentially every node - only output null if this specific concept genuinely admits no "guess before you know it" framing at all (e.g. a bare naming convention or notation with no phenomenon to predict). For a concrete scenario or mechanism, phrase it as "what do you think happens/why"; for a formula, definition, or procedural concept (which most Maths nodes are), phrase it as a concrete question the student could take a real numeric or logical guess at using only everyday reasoning and the node's own label (e.g. "If you double every value in a small data set, what do you think happens to its mean? What about its range?") - never one that secretly requires knowledge only your explanation provides, and never reveal, hint at, or make the guess trivial by restating the concept's name as the answer.
@@ -36,7 +38,7 @@ Your job: teach this concept, and ONLY this concept, to real exam-board depth.
 Return ONLY valid JSON:
 {
   "explanation": "the teaching text",
-  "practiceQuestion": { "questionText": "...", "markScheme": "what makes an answer correct, stated precisely enough to grade as correct/incorrect" },
+  "practiceQuestion": { "questionText": "...", "markScheme": "what makes an answer correct, stated precisely enough to grade as correct/incorrect", "modality": "reading" | "writing" | "listening" | "speaking", "audioText": "the phrase to play, ONLY when modality is \"listening\" - omit otherwise" },
   "predictionQuestion": "the ungraded before-you-know-it question, or null if genuinely none applies"
 }`;
 
@@ -50,9 +52,11 @@ Your job: teach the CONNECTION, not either concept again, then test it twice - o
 
 2. **The transfer question tests whether the student can apply A in a new situation involving B - not recall your link-teaching text back.** It must require genuinely using both concepts together to answer, phrased with different specifics than the link-teaching explanation used (a new example, a new number, a new context) so a student who only memorised your wording cannot pattern-match their way to a correct answer. Write a precise mark scheme (correct/incorrect only, no partial credit).
 
-3. **The integration question tests the same connection at slightly greater depth or in a further-transformed context** - assume it is only ever shown to a student who has already passed the transfer question, so it does not need to re-establish the basics, but it must still be answerable from A, B, and the link alone (no smuggled-in third concept). Write a precise mark scheme.
+2a. **Decide how the transfer question is genuinely answered** - same "modality"/"audioText" decision as the encoding lesson's practice question (reading/writing for most academic subjects, listening/speaking only for a language-learning subject and only when the concept itself is fundamentally about comprehending or producing spoken language).
 
-3a. **Decide how the integration question should be answered.** Set "answerInputType" to "math" if a correct answer genuinely requires writing out a calculation, formula, or symbolic expression (the student answers using a maths-notation keyboard, not a plain textbox) - or "words" if it's answered by explaining the connection/reasoning in prose, even if that prose mentions numbers or a quantity in passing. Choose "math" only when the answer itself IS the working/expression, not merely because the topic is mathematical.
+3. **The integration question tests the same connection at slightly greater depth or in a further-transformed context** - assume it is only ever shown to a student who has already passed the transfer question, so it does not need to re-establish the basics, but it must still be answerable from A, B, and the link alone (no smuggled-in third concept). Write a precise mark scheme, and decide its own "modality"/"audioText" the same way.
+
+3a. **Decide whether the integration question needs the maths keyboard.** Set "answerInputType" to "math" if a correct answer genuinely requires writing out a calculation, formula, or symbolic expression (the student answers using a maths-notation keyboard, not a plain textbox) - or "words" if it's answered by explaining the connection/reasoning in prose, even if that prose mentions numbers or a quantity in passing. Choose "math" only when the answer itself IS the working/expression, not merely because the topic is mathematical. This is independent of "modality" above - a "speaking" question is always answered in words, never via this maths keyboard, so only set "answerInputType" when "modality" is "reading" or "writing".
 
 4. **No restated scaffolding, no throat-clearing.** Start with the actual content.
 
@@ -61,6 +65,6 @@ Your job: teach the CONNECTION, not either concept again, then test it twice - o
 Return ONLY valid JSON:
 {
   "linkTeaching": "the bridge explanation",
-  "transferQuestion": { "questionText": "...", "markScheme": "..." },
-  "integrationQuestion": { "questionText": "...", "markScheme": "...", "answerInputType": "words" | "math" }
+  "transferQuestion": { "questionText": "...", "markScheme": "...", "modality": "reading" | "writing" | "listening" | "speaking", "audioText": "ONLY when modality is \"listening\"" },
+  "integrationQuestion": { "questionText": "...", "markScheme": "...", "modality": "reading" | "writing" | "listening" | "speaking", "audioText": "ONLY when modality is \"listening\"", "answerInputType": "words" | "math" }
 }`;

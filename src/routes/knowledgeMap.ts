@@ -137,7 +137,7 @@ router.get('/knowledge-map-v2/node/:nodeId/lesson', requireAuth, syncEndpointLim
     if (await isUserPaid(userId)) {
       await assertFreshGenerationWithinCap(userId);
     }
-    const generated = await generateAndCacheNodeLesson(nodeId);
+    const generated = await generateAndCacheNodeLesson(nodeId, userId);
     if (!generated) return res.status(404).json({ error: 'concept not found' });
     await recordFreshGenerationEvent(userId);
     res.json(generated);
@@ -166,7 +166,7 @@ router.post('/knowledge-map-v2/node/:nodeId/ask', requireAuth, costlyEndpointLim
     return res.status(400).json({ error: 'a non-empty question is required' });
   }
   try {
-    const result = await answerKnowledgeMapQuestion(nodeId, question.trim());
+    const result = await answerKnowledgeMapQuestion(nodeId, question.trim(), req.userId as string);
     if (!result) return res.status(404).json({ error: 'concept not found' });
     res.json(result);
   } catch (err) {
@@ -210,7 +210,7 @@ router.get('/knowledge-map-v2/edge/:fromNodeId/:toNodeId/lesson', requireAuth, s
     if (await isUserPaid(userId)) {
       await assertFreshGenerationWithinCap(userId);
     }
-    const generated = await generateAndCacheEdgeLesson(fromNodeId, toNodeId);
+    const generated = await generateAndCacheEdgeLesson(fromNodeId, toNodeId, userId);
     if (!generated) return res.status(404).json({ error: 'connection not found or not ready yet' });
     await recordFreshGenerationEvent(userId);
     res.json(generated);
@@ -282,7 +282,7 @@ router.post('/knowledge-map-v2/chain-diagnostic/start', requireAuth, costlyEndpo
     if (!gap) return res.status(404).json({ error: 'concept not found' });
     if (!gap.componentIds.length) return res.json({ requiresDiagnostic: false });
 
-    const { questionText } = await generateChainDiagnosticQuestion(gap.targetLabel, gap.componentIds);
+    const { questionText } = await generateChainDiagnosticQuestion(gap.targetLabel, gap.componentIds, req.userId as string);
     const state: ChainDiagnosticState = { targetNodeId, componentIds: gap.componentIds, questionText };
     res.json({ requiresDiagnostic: true, questionText, state });
   } catch (err) {
@@ -306,7 +306,7 @@ router.post('/knowledge-map-v2/chain-diagnostic/submit', requireAuth, costlyEndp
     // Locked in for the whole walk - see ChainDiagnosticState's own
     // comment on why this isn't recomputed on every later step.
     const coefficient = (await isUserPaid(userId)) ? KM_VERIFY_COEFFICIENT_PREMIUM : KM_VERIFY_COEFFICIENT_FREE;
-    const outcomes = await gradeChainDiagnosticAnswer(state.componentIds, state.questionText, answer);
+    const outcomes = await gradeChainDiagnosticAnswer(state.componentIds, state.questionText, answer, userId);
     const failures = outcomes.filter((o) => !o.correct);
     const paidAmounts = await Promise.all(
       outcomes.filter((o) => o.correct).map((o) => gradeComponentOutcome(userId, o.componentId, 'correct', coefficient))
@@ -356,7 +356,7 @@ router.post('/knowledge-map-v2/chain-diagnostic/resolve-slip', requireAuth, cost
     const userId = req.userId as string;
 
     if (wasSlip) {
-      const retryQuestionText = await generateSlipRetryQuestion(componentId, state.answer || '', state.failureFeedback?.[componentId] || '');
+      const retryQuestionText = await generateSlipRetryQuestion(componentId, state.answer || '', state.failureFeedback?.[componentId] || '', userId);
       return res.json({ needsRetry: true, retryQuestionText, keysEarned: state.keysEarnedSoFar || 0, state: { ...state, retryQuestionText } });
     }
 
@@ -400,7 +400,7 @@ router.post('/knowledge-map-v2/chain-diagnostic/submit-retry', requireAuth, cost
   const componentId = pending[idx];
   try {
     const userId = req.userId as string;
-    const { correct, feedback } = await gradeSlipRetryAnswer(componentId, state.retryQuestionText, answer);
+    const { correct, feedback } = await gradeSlipRetryAnswer(componentId, state.retryQuestionText, answer, userId);
     const paidNow = await gradeComponentOutcome(userId, componentId, correct ? 'slip_confirmed' : 'genuine_gap', state.coefficient || 0);
     const genuineGapIds = correct ? state.genuineGapIds || [] : [...(state.genuineGapIds || []), componentId];
     const keysEarnedSoFar = (state.keysEarnedSoFar || 0) + paidNow;
@@ -609,6 +609,7 @@ router.post('/knowledge-map-v2/text-question/submit', requireAuth, costlyEndpoin
       systemPrompt: KNOWLEDGE_MAP_ANSWER_CHECK_PROMPT,
       userContent: `Question: ${question.questionText}\nMark scheme: ${question.markScheme || ''}\nStudent's answer: ${answer}`,
       temperature: 0.1,
+      userId,
     });
     // parseCorrectFeedbackJson (not a bare JSON.parse) - see its own
     // comment: a stray sentence around otherwise-valid JSON, or an
@@ -690,6 +691,7 @@ router.post('/knowledge-map-v2/verify/submit', requireAuth, costlyEndpointLimite
       systemPrompt: VERIFY_LEARNING_PROMPT,
       userContent: `Question: ${questionText}\nStudent's answer: ${answer}`,
       temperature: 0.1,
+      userId,
     });
     // See the identical comment on text-question/submit above.
     const { correct, feedback } = parseCorrectFeedbackJson(raw);
@@ -741,7 +743,7 @@ router.post('/knowledge-map-v2/node-review/ao1/start', requireAuth, costlyEndpoi
   if (!nodeId) return res.status(400).json({ error: 'nodeId is required' });
   try {
     await assertNodeReviewDue(req.userId as string, nodeId);
-    const question = await getRewordedAo1Question(nodeId);
+    const question = await getRewordedAo1Question(nodeId, req.userId as string);
     if (!question) return res.status(404).json({ error: 'no lesson generated for this concept yet' });
     res.json(question);
   } catch (err) {
@@ -776,7 +778,7 @@ router.post('/knowledge-map-v2/node-review/ao1/submit', requireAuth, costlyEndpo
     const userId = req.userId as string;
     const { data: node } = await supabaseAdmin.from('knowledge_map_nodes').select('concept_id').eq('id', nodeId).maybeSingle();
     if (!node) return res.status(404).json({ error: 'concept not found' });
-    const graded = await gradeRewordedAo1Answer(nodeId, questionText, answer);
+    const graded = await gradeRewordedAo1Answer(nodeId, questionText, answer, userId);
     if (!graded) return res.status(404).json({ error: 'no lesson generated for this concept yet' });
     if (graded.correct) {
       return res.json(await finalizeAo1Grade(userId, node.concept_id as string, graded.feedback, Number(retryCount) || 0));
@@ -786,7 +788,7 @@ router.post('/knowledge-map-v2/node-review/ao1/submit', requireAuth, costlyEndpo
     // just the flagged word (see AO1_SLIP_CHECK_PROMPT) rather than a
     // generic retry; either way nothing is recorded yet - it's just a
     // retry with the grading call's own feedback as a hint.
-    const slip = await checkAo1SlipCandidate(nodeId, questionText, answer);
+    const slip = await checkAo1SlipCandidate(nodeId, questionText, answer, userId);
     if (slip?.isSlip && slip.wrongPhrase) {
       return res.json({ correct: false, feedback: graded.feedback, retryable: true, isSlipCandidate: true, wrongPhrase: slip.wrongPhrase });
     }
@@ -826,7 +828,7 @@ router.post('/knowledge-map-v2/node-review/ao1/submit-slip-correction', requireA
       return res.status(400).json({ error: 'correction is required unless declined' });
     }
     const correctedAnswer = originalAnswer.replace(wrongPhrase, correction.trim());
-    const graded = await gradeRewordedAo1Answer(nodeId, questionText, correctedAnswer);
+    const graded = await gradeRewordedAo1Answer(nodeId, questionText, correctedAnswer, userId);
     if (!graded) return res.status(404).json({ error: 'no lesson generated for this concept yet' });
     if (!graded.correct) {
       return res.json({ correct: false, feedback: graded.feedback, retryable: true });
@@ -863,7 +865,7 @@ router.post('/knowledge-map-v2/node-review/integration/start', requireAuth, cost
     // linkTeaching is withheld then too). compileEdgeNotesContent has no
     // per-user unlock side effect - the separate Notes page's "earned"
     // unlock still only happens on an actual pass (renderNodeReviewSummary).
-    const notes = step.isFirstAttempt ? await compileEdgeNotesContent(fromNodeId, toNodeId) : null;
+    const notes = step.isFirstAttempt ? await compileEdgeNotesContent(fromNodeId, toNodeId, userId) : null;
     res.json({
       questionText: step.questionText,
       isFirstAttempt: step.isFirstAttempt,
@@ -906,7 +908,7 @@ router.post('/knowledge-map-v2/node-review/integration/submit', requireAuth, cos
     ]);
     if (!fromNode || !toNode) return res.status(404).json({ error: 'connection not found' });
 
-    const graded = await gradeIntegrationAnswer(fromNodeId, toNodeId, answer);
+    const graded = await gradeIntegrationAnswer(fromNodeId, toNodeId, answer, userId);
     if (!graded) return res.status(404).json({ error: 'no integration question available for this connection' });
 
     if (!graded.correct) {
@@ -930,7 +932,7 @@ router.post('/knowledge-map-v2/node-review/integration/submit', requireAuth, cos
 
 router.post('/knowledge-map-v2/node/:nodeId/notes/compile', requireAuth, costlyEndpointLimiter, async (req: Request, res: Response) => {
   try {
-    const notes = await compileNodeNotes(req.params.nodeId);
+    const notes = await compileNodeNotes(req.params.nodeId, req.userId as string);
     if (!notes) return res.status(404).json({ error: 'no lesson generated for this concept yet' });
     res.json(notes);
   } catch (err) {
@@ -989,7 +991,7 @@ router.post('/knowledge-map-v2/node/:nodeId/worked-example-step/check', requireA
     const notes = await getNodeNotes(req.params.nodeId);
     const steps = notes?.visual.type === 'workedExample' ? notes.visual.steps : null;
     if (!steps || !steps[stepIndex]) return res.status(404).json({ error: 'no worked example step found at that index' });
-    const result = await checkWorkedExampleStep(steps, stepIndex, answer);
+    const result = await checkWorkedExampleStep(steps, stepIndex, answer, req.userId as string);
     res.json(result);
   } catch (err) {
     console.error('Worked example step check failed:', err);
@@ -1008,7 +1010,7 @@ router.post('/knowledge-map-v2/edge/:fromNodeId/:toNodeId/worked-example-step/ch
     const notes = await getEdgeNotes(req.params.fromNodeId, req.params.toNodeId);
     const steps = notes?.visual.type === 'workedExample' ? notes.visual.steps : null;
     if (!steps || !steps[stepIndex]) return res.status(404).json({ error: 'no worked example step found at that index' });
-    const result = await checkWorkedExampleStep(steps, stepIndex, answer);
+    const result = await checkWorkedExampleStep(steps, stepIndex, answer, req.userId as string);
     res.json(result);
   } catch (err) {
     console.error('Worked example step check failed:', err);

@@ -28,7 +28,8 @@ router.post('/cortex/message', async (req: Request, res: Response) => {
       message,
       Array.isArray(history) ? history : [],
       Array.isArray(folders) ? folders : [],
-      Array.isArray(dueReviews) ? dueReviews : []
+      Array.isArray(dueReviews) ? dueReviews : [],
+      req.userId as string
     );
     res.json(result);
   } catch (err) {

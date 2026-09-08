@@ -76,7 +76,7 @@ interface NodeRow {
 // the node itself doesn't exist (caller 404s); a generation failure
 // throws, same as every other Claude call in this app - there is
 // deliberately no silent fallback content for a real lesson.
-export async function generateAndCacheNodeLesson(nodeId: string): Promise<unknown | null> {
+export async function generateAndCacheNodeLesson(nodeId: string, userId: string): Promise<unknown | null> {
   const { data: node, error: nodeError } = await supabaseAdmin
     .from('knowledge_map_nodes')
     .select('id, label, subtopic, subject, qualification, exam_board')
@@ -122,6 +122,7 @@ export async function generateAndCacheNodeLesson(nodeId: string): Promise<unknow
     // fresh generation was paying full input-token price on this prompt
     // for no reason.
     cacheSystemPrompt: true,
+    userId,
   });
   let encodingContent: unknown;
   try {
@@ -158,7 +159,7 @@ interface EdgeLessonResult {
 // structurally a student can't reach this point without both already
 // being encoded (findMissingEncoding gates it), but this is checked
 // directly rather than trusted blindly.
-export async function generateAndCacheEdgeLesson(fromNodeId: string, toNodeId: string): Promise<EdgeLessonResult | null> {
+export async function generateAndCacheEdgeLesson(fromNodeId: string, toNodeId: string, userId: string): Promise<EdgeLessonResult | null> {
   const { data: edgeRow, error: edgeError } = await supabaseAdmin
     .from('knowledge_map_edges')
     .select('id')
@@ -202,6 +203,7 @@ export async function generateAndCacheEdgeLesson(fromNodeId: string, toNodeId: s
     // tokens, under Sonnet's 1024-token cache minimum, so a cache_control
     // marker would silently do nothing (see claudeClient.ts's own
     // comment) - unlike the node lesson prompt above.
+    userId,
   });
   let parsed: EdgeLessonResult;
   try {

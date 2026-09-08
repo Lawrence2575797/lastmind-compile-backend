@@ -2,24 +2,27 @@ import { Router, Request, Response } from 'express';
 import { requireAuth } from '../services/authMiddleware';
 import { syncEndpointLimiter, actionEndpointLimiter } from '../services/rateLimiters';
 import { getOrCreateLockBalance, sweepExpiredLockHolds, depositForLessonBooking, InsufficientLocksError } from '../services/lockService';
-import { LESSON_DEPOSIT_LOCK_AMOUNT } from '../constants/locks';
+import { LESSON_DEPOSIT_LOCK_AMOUNT, MONTHLY_LOCK_ALLOTMENT } from '../constants/locks';
 
 const router = Router();
 
 router.use('/locks', requireAuth);
 
-// GET /locks/balance -> { balance }
+// GET /locks/balance -> { balance, allotment }
 // Grants the monthly allotment and creates the user's row on their very
 // first call, applies the lazy monthly reset if a new calendar month has
 // started, and sweeps any held deposit whose booked day has fully passed
 // into 'forfeited' — see lockService.ts's getOrCreateLockBalance and
 // sweepExpiredLockHolds. Same lazy, read-triggered pattern as the
 // tutoring queue's own overdue sweep; this codebase has no cron.
+// `allotment` added for the sidebar usage bar (learn/index.html) — the
+// raw monthly figure is fine to expose (it's a lock COUNT, not a $
+// figure), unlike the deliberately-obscured £/Lock exchange rate itself.
 router.get('/locks/balance', syncEndpointLimiter, async (req: Request, res: Response) => {
   try {
     await sweepExpiredLockHolds(req.userId as string);
     const balance = await getOrCreateLockBalance(req.userId as string);
-    res.json(balance);
+    res.json({ ...balance, allotment: MONTHLY_LOCK_ALLOTMENT });
   } catch (err) {
     console.error('Lock balance fetch failed:', err);
     res.status(500).json({ error: 'could not load your Locks balance' });

@@ -144,7 +144,8 @@ export async function decideCortexAction(
   message: string,
   history: CortexHistoryTurn[],
   folders: CortexFolderSummary[],
-  dueReviews: CortexDueReview[]
+  dueReviews: CortexDueReview[],
+  userId: string
 ): Promise<CortexResult> {
   // A rule-8 "lay out this topic" answer should use an authoritative,
   // hand-prepared lesson plan when one exists for the folder's exact
@@ -211,6 +212,7 @@ export async function decideCortexAction(
       temperature: 0.3,
       maxTokens: 32000,
       cacheSystemPrompt: true,
+      userId,
     });
   } catch (err) {
     // callClaudeJSON itself throws when there's no text block at all (every
@@ -258,6 +260,7 @@ export async function decideCortexAction(
           userContent: `Subject: ${action.subject}\nTopic: ${action.topic}\nLesson: ${action.lesson}`,
           temperature: 0.4,
           maxTokens: 4096,
+          userId,
         });
         const notesParsed = JSON.parse(stripCodeFences(notesRaw)) as { notes: string };
         action.noteContent = notesParsed.notes;

@@ -85,6 +85,29 @@ export async function spendLocks(userId: string, amount: number): Promise<LockBa
 }
 
 /**
+ * Debits Locks for a REAL, already-incurred API cost (see
+ * generationCostService.ts) - deliberately distinct from spendLocks, which
+ * is a pre-flight check-then-spend for an action whose cost is known
+ * BEFORE it happens (the two /start routes). Here the cost is only known
+ * AFTER a Claude call already completed and already cost real money, so
+ * refusing to record it over an insufficient balance would just make the
+ * accounting wrong, not undo the spend - this allows the balance to go
+ * negative instead, same as any real-world usage-based bill can run over
+ * a prepaid credit right up until the next reset.
+ */
+export async function chargeLocksForUsage(userId: string, amount: number): Promise<LockBalance> {
+  const current = await getOrCreateLockBalance(userId);
+  const { data, error } = await supabaseAdmin
+    .from('lock_balances')
+    .update({ balance: current.balance - amount, updated_at: new Date().toISOString() })
+    .eq('user_id', userId)
+    .select('balance')
+    .single();
+  if (error) throw error;
+  return { balance: data.balance };
+}
+
+/**
  * Credits a Lock back — used for a deposit refund, never goes through
  * spendLocks (that's a debit-only path with its own insufficient-balance
  * check, which doesn't apply here).

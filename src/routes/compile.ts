@@ -32,7 +32,7 @@ router.post('/compile', requireAuth, requirePaidTier, costlyEndpointLimiter, asy
     const safeText = applyHarmfulContentFilter(cleaned2);
 
     // 4) Only the filtered text ever reaches Claude.
-    const result = await processNotes(safeText);
+    const result = await processNotes(safeText, req.userId as string);
 
     return res.status(200).json({
       result,

@@ -28,8 +28,8 @@ function extractJsonObject(text: string): string {
   return text.slice(start, end + 1);
 }
 
-async function callJSON<T>(systemPrompt: string, userContent: string, model: string, temperature = 0, maxTokens?: number, cacheSystemPrompt = false): Promise<T> {
-  const raw = await callClaudeJSON({ model, systemPrompt, userContent, temperature, maxTokens, cacheSystemPrompt });
+async function callJSON<T>(systemPrompt: string, userContent: string, model: string, temperature = 0, maxTokens?: number, cacheSystemPrompt = false, userId?: string): Promise<T> {
+  const raw = await callClaudeJSON({ model, systemPrompt, userContent, temperature, maxTokens, cacheSystemPrompt, userId });
   const cleaned = stripCodeFences(raw);
   try {
     return JSON.parse(cleaned) as T;
@@ -99,7 +99,8 @@ export async function getOrGenerateRubric(
   qualification: string,
   examBoard: string,
   customTitle = '',
-  customDescription = ''
+  customDescription = '',
+  userId?: string
 ): Promise<{ rubricKey: string; rubric: VerificationRubric; scenarios: VerificationScenario[] }> {
   const rubricKey = buildRubricKey(subject, topic, concept, qualification, examBoard, customTitle, customDescription);
 
@@ -134,7 +135,8 @@ export async function getOrGenerateRubric(
     MODELS.diagnosticTree,
     0.4,
     4096,
-    true
+    true,
+    userId
   );
 
   const { error: upsertError } = await supabaseAdmin
@@ -220,7 +222,7 @@ async function resolveVerificationConceptId(
       `Existing entries:\n${JSON.stringify(candidates.map((c) => ({ id: c.id, topic: c.topic, concept: c.concept })))}`,
     ].join('\n');
     try {
-      const check = await callJSON<DuplicateCheckResult>(VERIFICATION_DUPLICATE_CHECK_PROMPT, userContent, MODELS.simpleQuestion, 0);
+      const check = await callJSON<DuplicateCheckResult>(VERIFICATION_DUPLICATE_CHECK_PROMPT, userContent, MODELS.simpleQuestion, 0, undefined, false, userId);
       if (check.matchedId !== null) {
         const matched = candidates.find((c) => c.id === check.matchedId);
         if (matched) return matched.conceptId;
@@ -252,7 +254,7 @@ export async function startVerificationAttempt(
 ): Promise<VerificationAttemptStart> {
   const rawConceptId = normalizeConceptKey(subject, topic, concept);
   const conceptId = await resolveVerificationConceptId(userId, subject, topic, concept, rawConceptId, qualification, examBoard);
-  const { rubricKey, scenarios } = await getOrGenerateRubric(subject, topic, concept, qualification, examBoard, customTitle, customDescription);
+  const { rubricKey, scenarios } = await getOrGenerateRubric(subject, topic, concept, qualification, examBoard, customTitle, customDescription, userId);
   const { row, spacedSuccessCount } = await getMasteryStatus(userId, conceptId);
   const attemptsSoFar = row?.reps ?? 0;
   const scenario = scenarios[attemptsSoFar % scenarios.length];
@@ -266,7 +268,7 @@ interface FreeTextGrade {
   unclearReason: string | null;
 }
 
-async function runFreeTextGrade(rubric: VerificationRubric, scenario: VerificationScenario, answer: string, model: string): Promise<FreeTextGrade> {
+async function runFreeTextGrade(rubric: VerificationRubric, scenario: VerificationScenario, answer: string, model: string, userId: string): Promise<FreeTextGrade> {
   return callJSON<FreeTextGrade>(
     VERIFICATION_FREE_TEXT_GRADE_PROMPT,
     `Rubric: ${JSON.stringify(rubric)}\nScenario — starting point: ${scenario.startPoint}. What the student had to explain: ${scenario.endPointVariable}. Additional context: ${scenario.context}\nStudent's answer: ${answer}`,
@@ -278,16 +280,20 @@ async function runFreeTextGrade(rubric: VerificationRubric, scenario: Verificati
     // student app-wide — the highest-volume call in this whole feature, so
     // caching it matters far more than caching the (much rarer) rubric
     // generation call above.
-    true
+    true,
+    userId
   );
 }
 
-export async function generateCorrection(concept: string, misconceptionOrGap: string): Promise<string> {
+export async function generateCorrection(concept: string, misconceptionOrGap: string, userId: string): Promise<string> {
   const result = await callJSON<{ correction: string }>(
     VERIFICATION_CORRECTION_PROMPT,
     `Concept: ${concept}\nMisconception: ${misconceptionOrGap}`,
     MODELS.simpleQuestion,
-    0.3
+    0.3,
+    undefined,
+    false,
+    userId
   );
   return result.correction;
 }
@@ -302,7 +308,7 @@ export async function generateCorrection(concept: string, misconceptionOrGap: st
  * so behavior stays reproducible to debug) — order-words is skipped
  * whenever the mechanism doesn't have enough real steps to shuffle.
  */
-export async function getOrGenerateStructuredFollowUp(rubricKey: string, concept: string, targetItem: string): Promise<StructuredFollowUp> {
+export async function getOrGenerateStructuredFollowUp(rubricKey: string, concept: string, targetItem: string, userId: string): Promise<StructuredFollowUp> {
   const { data: row, error } = await supabaseAdmin
     .from('verification_rubrics')
     .select('rubric, follow_ups')
@@ -324,7 +330,10 @@ export async function getOrGenerateStructuredFollowUp(rubricKey: string, concept
           VERIFICATION_ORDER_WORDS_PROMPT,
           `Concept: ${concept}\nMechanism steps: ${JSON.stringify(rubric.mechanismSteps)}`,
           MODELS.simpleQuestion,
-          0.4
+          0.4,
+          undefined,
+          false,
+          userId
         )),
       }
     : {
@@ -333,7 +342,10 @@ export async function getOrGenerateStructuredFollowUp(rubricKey: string, concept
           VERIFICATION_FILL_GAP_PROMPT,
           `Concept: ${concept}\nLink or definition to test: ${targetItem}`,
           MODELS.simpleQuestion,
-          0.4
+          0.4,
+          undefined,
+          false,
+          userId
         )),
       };
 
@@ -389,10 +401,10 @@ export async function gradeVerificationAnswer(
   if (!row) throw new Error('rubric not found');
   const rubric = row.rubric as VerificationRubric;
 
-  let grade = await runFreeTextGrade(rubric, scenario, answer, MODELS.simpleQuestion);
+  let grade = await runFreeTextGrade(rubric, scenario, answer, MODELS.simpleQuestion, userId);
   let escalated = false;
   if (grade.confidence < GRADE_CONFIDENCE_ESCALATION_THRESHOLD) {
-    grade = await runFreeTextGrade(rubric, scenario, answer, MODELS.diagnosticTree);
+    grade = await runFreeTextGrade(rubric, scenario, answer, MODELS.diagnosticTree, userId);
     escalated = true;
   }
 
@@ -415,8 +427,8 @@ export async function gradeVerificationAnswer(
   if (grade.verdict === 'incorrect') {
     const targetItem = grade.misconceptionNote || concept;
     const [correction, followUp] = await Promise.all([
-      generateCorrection(concept, grade.misconceptionNote || concept),
-      getOrGenerateStructuredFollowUp(rubricKey, concept, targetItem),
+      generateCorrection(concept, grade.misconceptionNote || concept, userId),
+      getOrGenerateStructuredFollowUp(rubricKey, concept, targetItem, userId),
     ]);
     return { verdict: grade.verdict, escalated, misconceptionNote: grade.misconceptionNote, unclearReason: null, correction, followUp };
   }
@@ -448,8 +460,8 @@ export async function resolveUnclear(
   unclearReason: string,
   knowsIt: boolean
 ): Promise<UnclearResolution> {
-  const correction = knowsIt ? null : await generateCorrection(concept, unclearReason);
-  const followUp = await getOrGenerateStructuredFollowUp(rubricKey, concept, unclearReason);
+  const correction = knowsIt ? null : await generateCorrection(concept, unclearReason, userId);
+  const followUp = await getOrGenerateStructuredFollowUp(rubricKey, concept, unclearReason, userId);
   return { correction, followUp };
 }
 

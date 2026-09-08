@@ -106,7 +106,7 @@ interface NodeNotesModelResponse {
   example?: string;
 }
 
-export async function compileNodeNotes(nodeId: string): Promise<NodeNotesResult | null> {
+export async function compileNodeNotes(nodeId: string, userId: string): Promise<NodeNotesResult | null> {
   const cached = await getNodeNotes(nodeId);
   if (cached) return cached;
 
@@ -144,6 +144,7 @@ export async function compileNodeNotes(nodeId: string): Promise<NodeNotesResult 
     systemPrompt: NODE_NOTES_COMPILE_PROMPT,
     userContent,
     temperature: 0.2,
+    userId,
   });
   const modelResult = parseModelJson<NodeNotesModelResponse>(raw);
 
@@ -215,7 +216,7 @@ export async function getEdgeNotes(fromNodeId: string, toNodeId: string): Promis
 // separate Notes page, which stays gated on an actual pass (see this
 // file's own top comment). The generated content is shared/global either
 // way; only the unlock flag is per-student.
-export async function compileEdgeNotesContent(fromNodeId: string, toNodeId: string): Promise<EdgeNotesResult | null> {
+export async function compileEdgeNotesContent(fromNodeId: string, toNodeId: string, userId: string): Promise<EdgeNotesResult | null> {
   const edge = await resolveEdgeForReview(fromNodeId, toNodeId);
   if (!edge || !edge.linkTeaching) return null;
 
@@ -227,6 +228,7 @@ export async function compileEdgeNotesContent(fromNodeId: string, toNodeId: stri
     systemPrompt: EDGE_NOTES_COMPILE_PROMPT,
     userContent: `Concept A: ${edge.fromNode.label}\nConcept B: ${edge.toNode.label}\nReference material: ${edge.linkTeaching}`,
     temperature: 0.2,
+    userId,
   });
   const modelResult = parseModelJson<{
     transferSummary: string;
@@ -264,7 +266,7 @@ export async function compileEdgeNotes(
   fromNodeId: string,
   toNodeId: string
 ): Promise<EdgeNotesResult | null> {
-  const notes = await compileEdgeNotesContent(fromNodeId, toNodeId);
+  const notes = await compileEdgeNotesContent(fromNodeId, toNodeId, userId);
   if (!notes) return null;
 
   const edge = await resolveEdgeForReview(fromNodeId, toNodeId);
@@ -287,7 +289,8 @@ export async function compileEdgeNotes(
 export async function checkWorkedExampleStep(
   steps: string[],
   stepIndex: number,
-  answer: string
+  answer: string,
+  userId: string
 ): Promise<{ correct: boolean; feedback: string }> {
   const userContent = `Full worked example:\n${steps.map((s, i) => `${i + 1}. ${s}`).join('\n')}\n\nStudent is attempting line ${stepIndex + 1}.\nStudent's own typed line: ${answer}`;
   const raw = await callClaudeJSON({
@@ -295,6 +298,7 @@ export async function checkWorkedExampleStep(
     systemPrompt: WORKED_EXAMPLE_STEP_CHECK_PROMPT,
     userContent,
     temperature: 0.1,
+    userId,
   });
   return parseModelJson<{ correct: boolean; feedback: string }>(raw);
 }

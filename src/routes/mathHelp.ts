@@ -93,7 +93,7 @@ router.post('/math-help/threads', costlyEndpointLimiter, async (req: Request, re
     if (threadErr || !thread) throw threadErr || new Error('thread insert returned nothing');
 
     const assistantContent = mode === 'advice'
-      ? await callClaudeJSON({ model: MODELS.compile, systemPrompt: MATH_HELP_ADVICE_PROMPT, userContent: `Original question: ${questionText}` })
+      ? await callClaudeJSON({ model: MODELS.compile, systemPrompt: MATH_HELP_ADVICE_PROMPT, userContent: `Original question: ${questionText}`, userId })
       : MATH_HELP_ANSWER_INTRO_MESSAGE;
 
     const { error: msgErr } = await supabaseAdmin.from('math_help_messages').insert([
@@ -140,7 +140,7 @@ router.post('/math-help/threads/:id/messages', costlyEndpointLimiter, async (req
     const originalQuestion = (history || []).find((m) => m.role === 'user')?.content || content;
     const transcript = buildTranscript(originalQuestion, [...(history || []), { role: 'user', content }]);
     const systemPrompt = thread.mode === 'answer' ? MATH_HELP_ANSWER_PROMPT : MATH_HELP_ADVICE_PROMPT;
-    const assistantContent = await callClaudeJSON({ model: MODELS.compile, systemPrompt, userContent: transcript });
+    const assistantContent = await callClaudeJSON({ model: MODELS.compile, systemPrompt, userContent: transcript, userId: req.userId as string });
 
     const { error: insertErr } = await supabaseAdmin.from('math_help_messages').insert([
       { thread_id: thread.id, role: 'user', content },

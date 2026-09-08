@@ -68,8 +68,8 @@ function extractJsonObject(text: string): string {
   return text.slice(start, end + 1);
 }
 
-async function callJSON<T>(systemPrompt: string, userContent: string, model: string, temperature = 0): Promise<T> {
-  const raw = await callClaudeJSON({ model, systemPrompt, userContent, temperature });
+async function callJSON<T>(systemPrompt: string, userContent: string, model: string, temperature = 0, userId?: string): Promise<T> {
+  const raw = await callClaudeJSON({ model, systemPrompt, userContent, temperature, userId });
   const cleaned = stripCodeFences(raw);
   try {
     return JSON.parse(cleaned) as T;
@@ -240,7 +240,7 @@ export async function submitPracticeAnswer(userId: string, questionId: string, a
         : `This student has not covered any concepts for this subject in LastMind's lessons yet — treat every mark scheme point they missed as not-yet-covered, not as a gap in their preparation.`,
       `Student's answer: ${answerText}`,
     ].filter(Boolean).join('\n\n');
-    const result = await callJSON<MarkingResult>(PRACTICE_QUESTION_MARKING_PROMPT, userContent, MODELS.simpleQuestion, 0);
+    const result = await callJSON<MarkingResult>(PRACTICE_QUESTION_MARKING_PROMPT, userContent, MODELS.simpleQuestion, 0, userId);
     markAwarded = Math.max(0, Math.min(markTariff, Math.round(result.mark)));
     feedback = result.feedback;
     conceptualMistakes = result.conceptualMistakes || null;

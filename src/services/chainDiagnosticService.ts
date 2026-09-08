@@ -39,8 +39,8 @@ function extractJsonValue(text: string): string {
   if (start === -1 || end === -1 || end <= start) return text;
   return text.slice(start, end + 1);
 }
-async function callJSON<T>(systemPrompt: string, userContent: string, model: string, temperature = 0.2, maxTokens?: number): Promise<T> {
-  const raw = await callClaudeJSON({ model, systemPrompt, userContent, temperature, maxTokens });
+async function callJSON<T>(systemPrompt: string, userContent: string, model: string, temperature = 0.2, maxTokens?: number, userId?: string): Promise<T> {
+  const raw = await callClaudeJSON({ model, systemPrompt, userContent, temperature, maxTokens, userId });
   const cleaned = stripCodeFences(raw);
   try {
     return JSON.parse(cleaned) as T;
@@ -264,7 +264,7 @@ export interface ChainDiagnosticQuestion {
   questionText: string;
 }
 
-export async function generateChainDiagnosticQuestion(targetLabel: string, componentIds: string[]): Promise<ChainDiagnosticQuestion> {
+export async function generateChainDiagnosticQuestion(targetLabel: string, componentIds: string[], userId: string): Promise<ChainDiagnosticQuestion> {
   const components = (await Promise.all(componentIds.map(resolveComponent))).filter((c): c is ResolvedComponent => !!c);
   // Only the encoding + integration components carry genuinely distinct
   // ground truth worth showing the question-writer (transfer shares the
@@ -280,7 +280,9 @@ export async function generateChainDiagnosticQuestion(targetLabel: string, compo
     CHAIN_DIAGNOSTIC_QUESTION_PROMPT,
     `Target concept (context only, never explain its own content): ${targetLabel}\n\nOrdered chain the student is skipping:\n${chainForPrompt}`,
     MODELS.diagnosticTree,
-    0.3
+    0.3,
+    undefined,
+    userId
   );
   return { componentIds, questionText };
 }
@@ -296,7 +298,8 @@ export interface ChainDiagnosticGradeOutcome {
 export async function gradeChainDiagnosticAnswer(
   componentIds: string[],
   questionText: string,
-  answer: string
+  answer: string,
+  userId: string
 ): Promise<ChainDiagnosticGradeOutcome[]> {
   const components = (await Promise.all(componentIds.map(resolveComponent))).filter((c): c is ResolvedComponent => !!c);
   const numbered = components
@@ -320,7 +323,8 @@ export async function gradeChainDiagnosticAnswer(
     `Question the student was asked:\n${questionText}\n\nStudent's answer:\n${answer}\n\nComponents to check, in order:\n${numbered}`,
     MODELS.diagnosticTree,
     0.1,
-    Math.max(2048, components.length * 600 + 512)
+    Math.max(2048, components.length * 600 + 512),
+    userId
   );
 
   return components.map((c, i) => ({
@@ -332,26 +336,30 @@ export async function gradeChainDiagnosticAnswer(
   }));
 }
 
-export async function generateSlipRetryQuestion(componentId: string, originalAnswer: string, originalFeedback: string): Promise<string> {
+export async function generateSlipRetryQuestion(componentId: string, originalAnswer: string, originalFeedback: string, userId: string): Promise<string> {
   const component = await resolveComponent(componentId);
   if (!component) throw new Error('component not found');
   const { questionText } = await callJSON<{ questionText: string }>(
     CHAIN_DIAGNOSTIC_SLIP_RETRY_QUESTION_PROMPT,
     `Check type: ${component.type}\nConcept(s): ${component.label}\nReference (never reveal): ${component.groundTruth}\nStudent's original wrong answer: ${originalAnswer}\nFeedback they were given: ${originalFeedback}`,
     MODELS.simpleQuestion,
-    0.3
+    0.3,
+    undefined,
+    userId
   );
   return questionText;
 }
 
-export async function gradeSlipRetryAnswer(componentId: string, retryQuestion: string, answer: string): Promise<{ correct: boolean; feedback: string }> {
+export async function gradeSlipRetryAnswer(componentId: string, retryQuestion: string, answer: string, userId: string): Promise<{ correct: boolean; feedback: string }> {
   const component = await resolveComponent(componentId);
   if (!component) throw new Error('component not found');
   return callJSON<{ correct: boolean; feedback: string }>(
     CHAIN_DIAGNOSTIC_SLIP_RETRY_GRADE_PROMPT,
     `Check type: ${component.type}\nConcept(s): ${component.label}\nReference (never reveal): ${component.groundTruth}\nQuestion asked: ${retryQuestion}\nStudent's answer: ${answer}`,
     MODELS.simpleQuestion,
-    0.1
+    0.1,
+    undefined,
+    userId
   );
 }
 

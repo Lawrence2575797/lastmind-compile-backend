@@ -153,7 +153,7 @@ async function fetchNodeExplanationAndAo1(nodeId: string): Promise<{ explanation
 // pool is enough. Picking uniformly at random (rather than tracking
 // per-student "already seen" state) accepts an occasional immediate
 // repeat as a small, acceptable cost for not needing any extra state.
-export async function getRewordedAo1Question(nodeId: string): Promise<{ questionText: string; modality?: 'reading' | 'writing' | 'listening' | 'speaking'; audioText?: string } | null> {
+export async function getRewordedAo1Question(nodeId: string, userId: string): Promise<{ questionText: string; modality?: 'reading' | 'writing' | 'listening' | 'speaking'; audioText?: string } | null> {
   const source = await fetchNodeExplanationAndAo1(nodeId);
   if (!source) return null;
   let pool = source.rewordedPool;
@@ -163,6 +163,7 @@ export async function getRewordedAo1Question(nodeId: string): Promise<{ question
       systemPrompt: AO1_REWORD_QUESTION_PROMPT,
       userContent: `Explanation: ${source.explanation}\n\nOriginal question: ${source.questionText}`,
       temperature: 0.4,
+      userId,
     });
     const generated = parseModelJson<{ questionTexts: string[] }>(raw);
     pool = generated?.questionTexts?.filter(Boolean) || [];
@@ -189,7 +190,7 @@ export async function getRewordedAo1Question(nodeId: string): Promise<{ question
   };
 }
 
-export async function gradeRewordedAo1Answer(nodeId: string, questionText: string, answer: string): Promise<{ correct: boolean; feedback: string } | null> {
+export async function gradeRewordedAo1Answer(nodeId: string, questionText: string, answer: string, userId: string): Promise<{ correct: boolean; feedback: string } | null> {
   const source = await fetchNodeExplanationAndAo1(nodeId);
   if (!source) return null;
   const raw = await callClaudeJSON({
@@ -197,6 +198,7 @@ export async function gradeRewordedAo1Answer(nodeId: string, questionText: strin
     systemPrompt: KNOWLEDGE_MAP_ANSWER_CHECK_PROMPT,
     userContent: `Question: ${questionText}\nMark scheme: ${source.explanation}\nStudent's answer: ${answer}`,
     temperature: 0.1,
+    userId,
   });
   return parseCorrectFeedbackJson(raw);
 }
@@ -207,7 +209,7 @@ export async function gradeRewordedAo1Answer(nodeId: string, questionText: strin
 // comment for the narrow bar. The caller re-grades the corrected answer
 // through gradeRewordedAo1Answer itself once the student fixes the
 // flagged word, rather than duplicating that grading logic here.
-export async function checkAo1SlipCandidate(nodeId: string, questionText: string, answer: string): Promise<{ isSlip: boolean; wrongPhrase: string } | null> {
+export async function checkAo1SlipCandidate(nodeId: string, questionText: string, answer: string, userId: string): Promise<{ isSlip: boolean; wrongPhrase: string } | null> {
   const source = await fetchNodeExplanationAndAo1(nodeId);
   if (!source) return null;
   const raw = await callClaudeJSON({
@@ -215,6 +217,7 @@ export async function checkAo1SlipCandidate(nodeId: string, questionText: string
     systemPrompt: AO1_SLIP_CHECK_PROMPT,
     userContent: `Question: ${questionText}\nExplanation (ground truth): ${source.explanation}\nStudent's wrong answer: ${answer}`,
     temperature: 0.1,
+    userId,
   });
   return parseModelJson<{ isSlip: boolean; wrongPhrase: string }>(raw);
 }
@@ -302,7 +305,7 @@ export async function getIntegrationStepData(userId: string, fromNodeId: string,
   };
 }
 
-export async function gradeIntegrationAnswer(fromNodeId: string, toNodeId: string, answer: string): Promise<{ correct: boolean; feedback: string } | null> {
+export async function gradeIntegrationAnswer(fromNodeId: string, toNodeId: string, answer: string, userId: string): Promise<{ correct: boolean; feedback: string } | null> {
   const edge = await resolveEdgeForReview(fromNodeId, toNodeId);
   if (!edge?.integrationQuestion?.questionText || edge.integrationQuestion.diagramSpec) return null;
   const raw = await callClaudeJSON({
@@ -310,6 +313,7 @@ export async function gradeIntegrationAnswer(fromNodeId: string, toNodeId: strin
     systemPrompt: KNOWLEDGE_MAP_ANSWER_CHECK_PROMPT,
     userContent: `Question: ${edge.integrationQuestion.questionText}\nMark scheme: ${edge.integrationQuestion.markScheme || ''}\nStudent's answer: ${answer}`,
     temperature: 0.1,
+    userId,
   });
   return parseCorrectFeedbackJson(raw);
 }

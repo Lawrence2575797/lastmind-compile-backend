@@ -1,4 +1,5 @@
 import Anthropic from '@anthropic-ai/sdk';
+import { chargeForClaudeCall } from './generationCostService';
 
 const CLAUDE_API_KEY = process.env.CLAUDE_API_KEY;
 
@@ -53,7 +54,7 @@ const FALLBACK_MESSAGE = 'There was an issue processing your notes. Please try a
  * harmful-content filter before it reaches this function — this module
  * does not re-check that; the route handler is responsible for ordering.
  */
-export async function processNotes(safeText: string): Promise<string> {
+export async function processNotes(safeText: string, userId: string): Promise<string> {
   try {
     const response = await anthropic.messages.create({
       model: MODELS.compile,
@@ -73,6 +74,10 @@ export async function processNotes(safeText: string): Promise<string> {
         },
       ],
     });
+    // Same raw-SDK-call reasoning as the thinking opt-out above - this
+    // doesn't go through callClaudeJSON, so it doesn't get metered for
+    // free either; charged explicitly here instead.
+    await chargeForClaudeCall(userId, MODELS.compile, response.usage as ClaudeCallUsage);
 
     const textBlock = response.content.find((block) => block.type === 'text');
     if (textBlock && textBlock.type === 'text') {
@@ -187,6 +192,21 @@ function modelThinksByDefault(model: string): boolean {
   return THINKS_BY_DEFAULT_MODEL_BASES.some((base) => model === base || model.startsWith(`${base}-`));
 }
 
+// The runtime Message.usage object always carries these fields (confirmed
+// against the SDK's own .d.ts) regardless of which of makeMessageRequest's
+// two branches (plain vs promptCaching) produced it - but TypeScript infers
+// the function's return type as a union of both branches' own Message
+// types, and the cache fields aren't present on every member of that
+// union, so `response.usage` itself can't be typed precisely without this.
+// Defined here (not imported from the SDK) so generationCostService.ts
+// doesn't need its own Anthropic import just to type this one value.
+export interface ClaudeCallUsage {
+  input_tokens: number;
+  output_tokens: number;
+  cache_creation_input_tokens?: number | null;
+  cache_read_input_tokens?: number | null;
+}
+
 async function makeMessageRequest(
   model: string,
   systemPrompt: string,
@@ -239,7 +259,7 @@ async function sendWithTemperatureRetry(
   maxTokens: number | undefined,
   temperature: number | undefined,
   cacheSystemPrompt = false
-): Promise<string> {
+): Promise<{ text: string; usage: ClaudeCallUsage }> {
   let response;
   try {
     response = await withTransientRetry(() => makeMessageRequest(model, systemPrompt, content, maxTokens, temperature, true, cacheSystemPrompt));
@@ -261,7 +281,7 @@ async function sendWithTemperatureRetry(
         `blocks=[${response.content.map((b) => b.type).join(', ')}], output_tokens=${response.usage?.output_tokens})`
     );
   }
-  return textBlock.text;
+  return { text: textBlock.text, usage: response.usage as ClaudeCallUsage };
 }
 
 export async function callClaudeJSON(params: {
@@ -275,8 +295,25 @@ export async function callClaudeJSON(params: {
   // calls (e.g. chain generation, encoding lesson batch generation). See
   // makeMessageRequest's comment for why this isn't just always-on.
   cacheSystemPrompt?: boolean;
+  // Meters this call against the given user's real Locks balance, priced
+  // off this exact call's own response.usage (see generationCostService.ts)
+  // - omit entirely for a call that's already covered by some other
+  // pre-flight lock spend (the two /start routes' own flat charge) or that
+  // genuinely shouldn't be metered. This is the ONLY thing that actually
+  // turns metering on for a given call site - everything else about this
+  // function is unchanged either way.
+  userId?: string;
 }): Promise<string> {
-  return sendWithTemperatureRetry(params.model, params.systemPrompt, params.userContent, params.maxTokens, params.temperature, params.cacheSystemPrompt);
+  const { text, usage } = await sendWithTemperatureRetry(params.model, params.systemPrompt, params.userContent, params.maxTokens, params.temperature, params.cacheSystemPrompt);
+  if (params.userId) {
+    // Deliberately not awaited into the request's critical path beyond
+    // this point being reached — see chargeForClaudeCall's own comment on
+    // why it never throws, but it IS awaited (not fire-and-forget) so a
+    // charge is never silently skipped by the process exiting before it
+    // lands.
+    await chargeForClaudeCall(params.userId, params.model, usage);
+  }
+  return text;
 }
 
 export interface ClaudeImageInput {
@@ -298,6 +335,8 @@ export async function callClaudeJSONWithImages(params: {
   images: ClaudeImageInput[];
   maxTokens?: number;
   temperature?: number;
+  // Same metering opt-in as callClaudeJSON's own userId param.
+  userId?: string;
 }): Promise<string> {
   const content: Array<Anthropic.Messages.TextBlockParam | Anthropic.Messages.ImageBlockParam> = [{ type: 'text', text: params.userText }];
   for (const image of params.images) {
@@ -307,5 +346,9 @@ export async function callClaudeJSONWithImages(params: {
       source: { type: 'base64', media_type: image.mediaType, data: image.base64Data },
     });
   }
-  return sendWithTemperatureRetry(params.model, params.systemPrompt, content, params.maxTokens, params.temperature);
+  const { text, usage } = await sendWithTemperatureRetry(params.model, params.systemPrompt, content, params.maxTokens, params.temperature);
+  if (params.userId) {
+    await chargeForClaudeCall(params.userId, params.model, usage);
+  }
+  return text;
 }

@@ -21,7 +21,7 @@ export interface KnowledgeMapAskResult {
 // node with no lesson content yet still gets an answer, just without the
 // explanation/current-question context (subject/qualification/label
 // alone are still enough for the off-subject check and a general answer).
-export async function answerKnowledgeMapQuestion(nodeId: string, question: string): Promise<KnowledgeMapAskResult | null> {
+export async function answerKnowledgeMapQuestion(nodeId: string, question: string, userId: string): Promise<KnowledgeMapAskResult | null> {
   const [{ data: node }, { data: lesson }] = await Promise.all([
     supabaseAdmin.from('knowledge_map_nodes').select('label, subtopic, subject, qualification, exam_board').eq('id', nodeId).maybeSingle(),
     supabaseAdmin.from('knowledge_map_node_lessons').select('encoding_content').eq('node_id', nodeId).maybeSingle(),
@@ -47,6 +47,7 @@ export async function answerKnowledgeMapQuestion(nodeId: string, question: strin
     systemPrompt: KNOWLEDGE_MAP_ASK_PROMPT,
     userContent,
     temperature: 0.4,
+    userId,
   });
   return parseModelJson<KnowledgeMapAskResult>(raw);
 }

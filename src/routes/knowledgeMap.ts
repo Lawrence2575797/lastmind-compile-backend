@@ -30,6 +30,7 @@ import {
 } from '../services/nodeReviewService';
 import { compileNodeNotes, getNodeNotes, compileEdgeNotes, compileEdgeNotesContent, getEdgeNotes, getNotesIndexForUser, getPersonalNote, savePersonalNote, checkWorkedExampleStep } from '../services/knowledgeMapNotesService';
 import { generateAndCacheNodeLesson, generateAndCacheEdgeLesson } from '../services/lessonGenerationService';
+import { answerKnowledgeMapQuestion } from '../services/knowledgeMapAskService';
 
 const router = Router();
 
@@ -132,6 +133,31 @@ router.get('/knowledge-map-v2/node/:nodeId/lesson', requireAuth, syncEndpointLim
   } catch (err) {
     console.error('Node lesson lookup/generation failed:', err);
     res.status(500).json({ error: 'could not load this lesson' });
+  }
+});
+
+// POST /knowledge-map-v2/node/:nodeId/ask  { question }
+// The "Ask Cortex" corner panel shown during a knowledge-map lesson - a
+// place for genuine curiosity without derailing the lesson, and without
+// the student having to leave it for their main Cortex chat (see
+// KNOWLEDGE_MAP_ASK_PROMPT). Purely advisory: never touches FSRS,
+// credits, or the practice question's own state - the student hasn't
+// been tested on anything by asking. costlyEndpointLimiter, unlike the
+// lesson-content route above - this is a live generation call every
+// single time, never cached, since the question itself is never the same.
+router.post('/knowledge-map-v2/node/:nodeId/ask', requireAuth, costlyEndpointLimiter, async (req: Request, res: Response) => {
+  const { nodeId } = req.params;
+  const { question } = (req.body ?? {}) as { question?: string };
+  if (typeof question !== 'string' || !question.trim()) {
+    return res.status(400).json({ error: 'a non-empty question is required' });
+  }
+  try {
+    const result = await answerKnowledgeMapQuestion(nodeId, question.trim());
+    if (!result) return res.status(404).json({ error: 'concept not found' });
+    res.json(result);
+  } catch (err) {
+    console.error('Knowledge-map ask-panel question failed:', err);
+    res.status(500).json({ error: 'could not answer that right now' });
   }
 });
 

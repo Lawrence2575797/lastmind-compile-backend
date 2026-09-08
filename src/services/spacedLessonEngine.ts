@@ -356,7 +356,7 @@ export async function submitRetrievalAnswer(
     // reattempt), so hadRetry is always false here.
     await Promise.all(
       dedupedSiblingIds.map((siblingId) =>
-        gradeCorrectness(userId, `${siblingId}->${state.conceptKey}`, correct, false)
+        gradeCorrectness(userId, `${siblingId}->${state.conceptKey}`, correct, 0)
       )
     );
   }

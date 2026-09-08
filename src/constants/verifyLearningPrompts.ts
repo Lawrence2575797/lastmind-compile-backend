@@ -1,11 +1,12 @@
 // "Verify" is a deliberately lighter-weight alternative to taking a full
 // lesson: no mark scheme, no worked-answer rigor — just a check that the
 // student's own explanation shows they actually already have the idea.
-// Passing it still updates FSRS (see knowledgeMap.ts's /verify/submit,
-// which always grades with hadRetry=true so a pass never earns full
-// 'good'/'easy' confidence the way completing the real lesson does), so
-// this prompt should be generous rather than exam-strict: the bar is
-// "basically right", not "would score full marks".
+// Passing it still updates FSRS through the SAME rating derivation a real
+// lesson uses (see knowledgeMap.ts's /verify/submit, which always grades
+// with retryCount=0 — a Verify pass earns full 'good'/'easy' confidence
+// exactly like completing the real lesson would, deliberately), so this
+// prompt should be generous rather than exam-strict: the bar is "basically
+// right", not "would score full marks".
 export const VERIFY_LEARNING_PROMPT = `You are checking whether a student's brief self-explanation shows real understanding, as a quick spaced-repetition confidence check rather than a formal exam answer. You will be given the question and the student's answer.
 
 Rules:

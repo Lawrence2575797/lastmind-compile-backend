@@ -1654,7 +1654,7 @@ export async function submitEncodingAnswer(userId: string, state: EncodingLesson
   // 'hard' and a pass on an already-durable streak reads as 'easy',
   // rather than every correct answer looking identical to FSRS.
   if (!isCoreStep && !bypass) {
-    await gradeCorrectness(userId, currentStep.diagnosisConceptKey, correct, hadRetry);
+    await gradeCorrectness(userId, currentStep.diagnosisConceptKey, correct, hadRetry ? 1 : 0);
   }
 
   // A mechanistic_check step's whole point is tracing through a chain of
@@ -1672,7 +1672,7 @@ export async function submitEncodingAnswer(userId: string, state: EncodingLesson
     );
     const edgeGrades: Promise<unknown>[] = [];
     for (let i = 0; i < resolvedIds.length - 1; i++) {
-      edgeGrades.push(gradeCorrectness(userId, `${resolvedIds[i]}->${resolvedIds[i + 1]}`, correct, hadRetry));
+      edgeGrades.push(gradeCorrectness(userId, `${resolvedIds[i]}->${resolvedIds[i + 1]}`, correct, hadRetry ? 1 : 0));
     }
     await Promise.all(edgeGrades);
   }

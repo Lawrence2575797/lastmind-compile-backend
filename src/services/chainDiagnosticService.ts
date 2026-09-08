@@ -357,7 +357,7 @@ export async function gradeSlipRetryAnswer(componentId: string, retryQuestion: s
 
 /**
  * FSRS-grades one resolved component — 'again' for a genuine gap,
- * otherwise routed through gradeCorrectness (hadRetry=true for a
+ * otherwise routed through gradeCorrectness (retryCount=1 for a
  * slip-then-correct pass, so it reads 'hard' rather than looking
  * identical to a clean first-try pass). A passing outcome ALSO pays
  * credits at `coefficient` (the same KM_VERIFY_COEFFICIENT_FREE/PREMIUM
@@ -383,7 +383,7 @@ export async function gradeComponentOutcome(
     await gradeCorrectness(userId, component.conceptId, false);
     return 0;
   }
-  const graded = await gradeCorrectness(userId, component.conceptId, true, outcome === 'slip_confirmed');
+  const graded = await gradeCorrectness(userId, component.conceptId, true, outcome === 'slip_confirmed' ? 1 : 0);
   const { paid } = await payLessonCredits(userId, component.type === 'encoding', graded, coefficient, 'knowledge_map_chain_diagnostic');
   return paid;
 }

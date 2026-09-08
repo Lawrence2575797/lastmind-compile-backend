@@ -414,13 +414,13 @@ router.post('/knowledge-map-v2/chain-diagnostic/submit-retry', requireAuth, cost
 // itself is NEVER sent to or trusted from the client - always re-fetched
 // here by id, same discipline as the chain-diagnostic gate above.
 router.post('/knowledge-map-v2/diagram-question/submit', requireAuth, costlyEndpointLimiter, async (req: Request, res: Response) => {
-  const { nodeId, fromNodeId, toNodeId, questionType, answer, hadRetry } = (req.body ?? {}) as {
+  const { nodeId, fromNodeId, toNodeId, questionType, answer, retryCount } = (req.body ?? {}) as {
     nodeId?: string;
     fromNodeId?: string;
     toNodeId?: string;
     questionType?: 'practice' | 'transfer' | 'integration';
     answer?: DiagramAnswerSubmission;
-    hadRetry?: boolean;
+    retryCount?: number;
   };
   if (!answer || !questionType) return res.status(400).json({ error: 'questionType and answer are required' });
 
@@ -474,7 +474,7 @@ router.post('/knowledge-map-v2/diagram-question/submit', requireAuth, costlyEndp
     if (questionType === 'practice' && !result.correct) {
       return res.json({ ...result, retryable: true });
     }
-    const graded = await gradeCorrectness(userId, conceptId!, result.correct, questionType === 'practice' ? !!hadRetry : false);
+    const graded = await gradeCorrectness(userId, conceptId!, result.correct, questionType === 'practice' ? (Number(retryCount) || 0) : 0);
     const { paid: keysEarned } = await payLessonCredits(userId, questionType === 'practice', graded, 1.0, 'knowledge_map_lesson');
     // The frontend needs the fresh due date the moment this grades, not
     // only after a later /schedule refetch (e.g. on returning to the
@@ -536,13 +536,13 @@ function scheduleWithMastery(conceptId: string, graded: Awaited<ReturnType<typeo
 // trusted from the client, same discipline as every other grading route
 // in this file.
 router.post('/knowledge-map-v2/text-question/submit', requireAuth, costlyEndpointLimiter, async (req: Request, res: Response) => {
-  const { nodeId, fromNodeId, toNodeId, questionType, answer, hadRetry } = (req.body ?? {}) as {
+  const { nodeId, fromNodeId, toNodeId, questionType, answer, retryCount } = (req.body ?? {}) as {
     nodeId?: string;
     fromNodeId?: string;
     toNodeId?: string;
     questionType?: 'practice' | 'transfer' | 'integration';
     answer?: string;
-    hadRetry?: boolean;
+    retryCount?: number;
   };
   if (!questionType || typeof answer !== 'string' || !answer.trim()) return res.status(400).json({ error: 'questionType and answer are required' });
 
@@ -605,7 +605,7 @@ router.post('/knowledge-map-v2/text-question/submit', requireAuth, costlyEndpoin
     if (questionType === 'practice' && !correct) {
       return res.json({ correct, feedback, retryable: true });
     }
-    const graded = await gradeCorrectness(userId, conceptId!, correct, questionType === 'practice' ? !!hadRetry : false);
+    const graded = await gradeCorrectness(userId, conceptId!, correct, questionType === 'practice' ? (Number(retryCount) || 0) : 0);
     const { paid: keysEarned } = await payLessonCredits(userId, questionType === 'practice', graded, 1.0, 'knowledge_map_lesson');
     // See the identical comment on diagram-question/submit above.
     res.json({ correct, feedback, schedule: scheduleWithMastery(conceptId!, graded), keysEarned });
@@ -673,13 +673,13 @@ router.post('/knowledge-map-v2/verify/submit', requireAuth, costlyEndpointLimite
     // See the identical comment on text-question/submit above.
     const { correct, feedback } = parseCorrectFeedbackJson(raw);
 
-    // hadRetry=false — Verify uses the SAME rating derivation a real lesson
+    // retryCount=0 — Verify uses the SAME rating derivation a real lesson
     // does (deriveCorrectRating in reviewService.ts), so a clean pass can
     // genuinely earn 'good'/'easy' and progress spaced_success_count,
     // rather than always being forced to 'hard' (which would reset that
     // counter to 0 every time and make durable mastery via Verify alone
     // impossible — found while wiring up its credit payout).
-    const graded = await gradeCorrectness(userId, conceptId, correct, false);
+    const graded = await gradeCorrectness(userId, conceptId, correct, 0);
     const coefficient = (await isUserPaid(userId)) ? KM_VERIFY_COEFFICIENT_PREMIUM : KM_VERIFY_COEFFICIENT_FREE;
     const { paid: keysEarned, base: keysBase } = correct
       ? await payLessonCredits(userId, questionType === 'ao1', graded, coefficient, 'knowledge_map_verify')
@@ -734,17 +734,19 @@ router.post('/knowledge-map-v2/node-review/ao1/start', requireAuth, costlyEndpoi
 
 // Shared by both AO1 finalization routes below (a clean pass, and a slip
 // correction that turned out right) - both only ever reach here once the
-// answer is genuinely correct, so this always records a pass; hadRetry
-// softens the FSRS rating the same way integration/submit's does.
-async function finalizeAo1Grade(userId: string, conceptId: string, feedback: string, hadRetry: boolean) {
-  const result = await gradeCorrectness(userId, conceptId, true, hadRetry);
+// answer is genuinely correct, so this always records a pass; retryCount
+// (how many wrong attempts came before this one, this same review) feeds
+// the FSRS rating the same way integration/submit's does — see
+// deriveCorrectRating for the exact 0/1/2+ thresholds.
+async function finalizeAo1Grade(userId: string, conceptId: string, feedback: string, retryCount: number) {
+  const result = await gradeCorrectness(userId, conceptId, true, retryCount);
   const { paid: keysEarned } = await payLessonCredits(userId, false, result, 1.0, 'node_review_ao1');
   return { correct: true, feedback, schedule: scheduleWithMastery(conceptId, result), keysEarned };
 }
 
 router.post('/knowledge-map-v2/node-review/ao1/submit', requireAuth, costlyEndpointLimiter, async (req: Request, res: Response) => {
-  const { nodeId, questionText, answer, hadRetry } = (req.body ?? {}) as {
-    nodeId?: string; questionText?: string; answer?: string; hadRetry?: boolean;
+  const { nodeId, questionText, answer, retryCount } = (req.body ?? {}) as {
+    nodeId?: string; questionText?: string; answer?: string; retryCount?: number;
   };
   if (!nodeId || !questionText || typeof answer !== 'string' || !answer.trim()) {
     return res.status(400).json({ error: 'nodeId, questionText and answer are required' });
@@ -756,7 +758,7 @@ router.post('/knowledge-map-v2/node-review/ao1/submit', requireAuth, costlyEndpo
     const graded = await gradeRewordedAo1Answer(nodeId, questionText, answer);
     if (!graded) return res.status(404).json({ error: 'no lesson generated for this concept yet' });
     if (graded.correct) {
-      return res.json(await finalizeAo1Grade(userId, node.concept_id as string, graded.feedback, !!hadRetry));
+      return res.json(await finalizeAo1Grade(userId, node.concept_id as string, graded.feedback, Number(retryCount) || 0));
     }
     // Wrong - never fails the lesson (see this section's top comment).
     // Check whether this reads as a one-word slip so the UI can highlight
@@ -783,9 +785,9 @@ router.post('/knowledge-map-v2/node-review/ao1/submit', requireAuth, costlyEndpo
 // free-text retry with feedback as the hint rather than another narrow
 // slip-fix attempt; only a genuinely correct answer records anything.
 router.post('/knowledge-map-v2/node-review/ao1/submit-slip-correction', requireAuth, costlyEndpointLimiter, async (req: Request, res: Response) => {
-  const { nodeId, questionText, originalAnswer, wrongPhrase, correction, declined, originalFeedback } = (req.body ?? {}) as {
+  const { nodeId, questionText, originalAnswer, wrongPhrase, correction, declined, originalFeedback, retryCount } = (req.body ?? {}) as {
     nodeId?: string; questionText?: string; originalAnswer?: string; wrongPhrase?: string; correction?: string;
-    declined?: boolean; originalFeedback?: string;
+    declined?: boolean; originalFeedback?: string; retryCount?: number;
   };
   if (!nodeId || !questionText || !originalAnswer || !wrongPhrase) {
     return res.status(400).json({ error: 'nodeId, questionText, originalAnswer and wrongPhrase are required' });
@@ -808,7 +810,11 @@ router.post('/knowledge-map-v2/node-review/ao1/submit-slip-correction', requireA
     if (!graded.correct) {
       return res.json({ correct: false, feedback: graded.feedback, retryable: true });
     }
-    res.json(await finalizeAo1Grade(userId, node.concept_id as string, graded.feedback, true));
+    // retryCount as sent by the frontend already counts the miss that
+    // triggered this slip-check (it's incremented BEFORE the slip-check
+    // UI is ever shown) - this correction, once confirmed right, is that
+    // same review's final answer, not a second miss on top of it.
+    res.json(await finalizeAo1Grade(userId, node.concept_id as string, graded.feedback, Math.max(1, Number(retryCount) || 0)));
   } catch (err) {
     console.error('AO1 slip-correction grading failed:', err);
     res.status(500).json({ error: 'could not grade this answer' });
@@ -861,11 +867,12 @@ router.post('/knowledge-map-v2/node-review/integration/start', requireAuth, cost
 // (see renderTextQuestionWidget's own comment in learn/index.html) - no
 // separate "identify the link" step exists any more (see this file's own
 // comment above the node-review section), integration alone is the real,
-// sufficient gate. Only the FINAL correct pass grades, with hadRetry
-// reflecting whether any retry was needed along the way.
+// sufficient gate. Only the FINAL correct pass grades, with retryCount
+// (how many wrong attempts came before it) deciding hard vs again — see
+// deriveCorrectRating.
 router.post('/knowledge-map-v2/node-review/integration/submit', requireAuth, costlyEndpointLimiter, async (req: Request, res: Response) => {
-  const { fromNodeId, toNodeId, answer, hadRetry } = (req.body ?? {}) as {
-    fromNodeId?: string; toNodeId?: string; answer?: string; hadRetry?: boolean;
+  const { fromNodeId, toNodeId, answer, retryCount } = (req.body ?? {}) as {
+    fromNodeId?: string; toNodeId?: string; answer?: string; retryCount?: number;
   };
   if (!fromNodeId || !toNodeId || typeof answer !== 'string' || !answer.trim()) {
     return res.status(400).json({ error: 'fromNodeId, toNodeId and answer are required' });
@@ -886,7 +893,7 @@ router.post('/knowledge-map-v2/node-review/integration/submit', requireAuth, cos
     }
 
     const conceptId = linkIntegrationConceptId(fromNode.concept_id as string, toNode.concept_id as string);
-    const result = await gradeCorrectness(userId, conceptId, true, !!hadRetry);
+    const result = await gradeCorrectness(userId, conceptId, true, Number(retryCount) || 0);
     const { paid: keysEarned } = await payLessonCredits(userId, false, result, 1.0, 'node_review_integration');
     res.json({ correct: true, feedback: graded.feedback, schedule: scheduleWithMastery(conceptId, result), keysEarned });
   } catch (err) {

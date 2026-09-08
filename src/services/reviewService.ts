@@ -191,18 +191,28 @@ export async function gradeAndRecordReview(
 }
 
 // Reserved for the CORRECT side of a correctness-driven grade — an
-// incorrect answer must always grade 'again' (FSRS's own definition of a
-// failed recall); softening it toward 'hard' because of a good history
-// would tell FSRS this was a difficult-but-successful recall and schedule
-// a longer interval than a real lapse has earned. The enrichment
-// opportunity is entirely on a correct answer: a recall that needed a
-// reword/retry this same attempt is shaky, not clean ('hard'); a recall
-// riding an already-proven durable streak (spaced_success_count, which
-// resets to 0 on any lapse — see computeSpacedSuccessUpdate) is a
-// genuinely comfortable pass, not a guess ('easy'); anything else is a
-// plain clean pass ('good').
-export function deriveCorrectRating(opts: { hadRetry: boolean; spacedSuccessCount: number }): FsrsRatingKey {
-  if (opts.hadRetry) return 'hard';
+// incorrect final answer must always grade 'again' (FSRS's own definition
+// of a failed recall); softening it toward 'hard' because of a good
+// history would tell FSRS this was a difficult-but-successful recall and
+// schedule a longer interval than a real lapse has earned. The enrichment
+// opportunity is entirely on a correct answer, keyed off how many wrong
+// attempts it took to get there THIS session (retryCount) — not a plain
+// boolean, per explicit product decision: two or more misses before the
+// eventual correct answer is real evidence the concept wasn't actually
+// known yet, not a shaky-but-genuine recall, so it grades exactly like a
+// flat miss ('again') despite the student eventually landing on the right
+// answer. Exactly one miss-then-right is the one case treated as a real,
+// if effortful, recall ('hard') — deliberately stretching standard
+// Anki/FSRS convention (where Hard means "recalled, but with difficulty,"
+// never "wrong then corrected") because this app can directly observe the
+// retry, unlike a self-graded reviewer. A clean first-try pass riding an
+// already-proven durable streak (spaced_success_count, which resets to 0
+// on any lapse — see computeSpacedSuccessUpdate) is a genuinely
+// comfortable pass, not a guess ('easy'); any other clean first-try pass
+// is a plain clean pass ('good').
+export function deriveCorrectRating(opts: { retryCount: number; spacedSuccessCount: number }): FsrsRatingKey {
+  if (opts.retryCount >= 2) return 'again';
+  if (opts.retryCount === 1) return 'hard';
   if (opts.spacedSuccessCount >= DURABLE_RELEARNING_CRITERION) return 'easy';
   return 'good';
 }
@@ -214,23 +224,23 @@ export function deriveCorrectRating(opts: { hadRetry: boolean; spacedSuccessCoun
  * re-check, a chain edge, an interleaved sibling) — as opposed to a
  * first-time encoding pass, which has its own bespoke, deliberately
  * easy-excluding rating logic elsewhere and should NOT be routed through
- * this. See deriveCorrectRating for why 'again' is never softened. One
- * extra read beyond what gradeAndRecordReview needs internally for its
- * own FSRS transition — an acceptable cost at grading time, never a hot
- * path.
+ * this. See deriveCorrectRating for why 'again' is never softened, and
+ * for what retryCount actually does once correct=true. One extra read
+ * beyond what gradeAndRecordReview needs internally for its own FSRS
+ * transition — an acceptable cost at grading time, never a hot path.
  */
 export async function gradeCorrectness(
   userId: string,
   conceptId: string,
   correct: boolean,
-  hadRetry = false
+  retryCount = 0
 ): Promise<{ rating: FsrsRatingKey; previousRow: ConceptReviewRow | null; newState: ReturnType<typeof cardToRowFields>; spacedSuccessCount: number }> {
   if (!correct) {
     const result = await gradeAndRecordReview(userId, conceptId, 'again');
     return { rating: 'again', ...result };
   }
   const status = await getMasteryStatus(userId, conceptId);
-  const rating = deriveCorrectRating({ hadRetry, spacedSuccessCount: status.spacedSuccessCount });
+  const rating = deriveCorrectRating({ retryCount, spacedSuccessCount: status.spacedSuccessCount });
   const result = await gradeAndRecordReview(userId, conceptId, rating);
   return { rating, ...result };
 }

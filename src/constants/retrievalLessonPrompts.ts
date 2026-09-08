@@ -93,6 +93,7 @@ Rules:
 3. CRITICAL — the "prompt" you're given is the FULL text the student saw, which may already establish part of the answer in its own setup. Before marking an answer wrong, re-read the prompt text itself for whether it already establishes the answer directly — if the student's answer matches what the prompt itself states or implies, it is correct, full stop.
 4. If "correct" is false, set "feedback" to a short, encouraging, specific pointer at the core gap — name the specific missing dimension without stating the answer outright.
 5. If "correct" is true, set "feedback" to null.
+6. The student types on a standard English keyboard, which cannot produce accented/diacritic characters (é, è, à, ñ, ü, ç, etc.) without extra effort most students won't know how to do. Never mark an answer wrong purely because a word is missing an accent it would otherwise carry.
 
 Worked examples:
 - Prompt asks the student to recall why a firm's profit falls when a competitor enters its market. Student answers: "because now customers have another option, so the firm either drops its price or sells less, and either way profit falls." Informal, but the actual mechanism is there — mark "correct": true.
@@ -118,6 +119,7 @@ Rules:
 6. CRITICAL — the "prompt" you're given is the FULL text the student saw. Never penalize the student for correctly using information the prompt itself handed them.
 7. If "correct" is false, set "feedback" to a short, specific pointer naming whichever of (a) a skipped reasoning link, (b) an unexplained term, or (c) an under-used sibling concept, is actually missing. Do not state the answer outright.
 8. If "correct" is true, set "feedback" to null.
+9. The student types on a standard English keyboard, which cannot produce accented/diacritic characters (é, è, à, ñ, ü, ç, etc.) without extra effort most students won't know how to do. Never mark an answer wrong purely because a word is missing an accent it would otherwise carry.
 
 Worked examples:
 - A student who was taught price elasticity of demand months ago is asked, from an unfamiliar angle, to explain why a transport company raising fares would see revenue fall even though each remaining fare is now higher — without ever using the words "elastic" or "elasticity". An answer that says "because they'll lose passengers" restates the conclusion without the actual mechanism (the percentage drop in passengers exceeding the percentage rise in fare) — mark "correct": false. An answer that reconstructs the percentage-comparison reasoning itself, even informally and even without the term "elastic", correctly demonstrates the mechanism — mark "correct": true; the specific vocabulary isn't what's being tested here, the reasoning is.

@@ -32,6 +32,7 @@ import {
 import { compileNodeNotes, getNodeNotes, compileEdgeNotes, compileEdgeNotesContent, getEdgeNotes, getNotesIndexForUser, getPersonalNote, savePersonalNote, checkWorkedExampleStep } from '../services/knowledgeMapNotesService';
 import { generateAndCacheNodeLesson, generateAndCacheEdgeLesson } from '../services/lessonGenerationService';
 import { answerKnowledgeMapQuestion } from '../services/knowledgeMapAskService';
+import { assertFreshGenerationWithinCap, recordFreshGenerationEvent, GenerationCapExceededError } from '../services/generationCapService';
 
 const router = Router();
 
@@ -128,10 +129,22 @@ router.get('/knowledge-map-v2/node/:nodeId/lesson', requireAuth, syncEndpointLim
     if (error) throw error;
     if (data) return res.json(data.encoding_content);
 
+    // Cache miss - a real Sonnet generation is about to happen. Capped
+    // (Premium only) BEFORE generating, not after - see
+    // generationCapService.ts for the actual windows/limits and why a
+    // cache hit above never reaches this check at all.
+    const userId = req.userId as string;
+    if (await isUserPaid(userId)) {
+      await assertFreshGenerationWithinCap(userId);
+    }
     const generated = await generateAndCacheNodeLesson(nodeId);
     if (!generated) return res.status(404).json({ error: 'concept not found' });
+    await recordFreshGenerationEvent(userId);
     res.json(generated);
   } catch (err) {
+    if (err instanceof GenerationCapExceededError) {
+      return res.status(429).json({ error: `You've generated a lot of new lessons recently — try again later.`, window: err.window, limit: err.limit });
+    }
     console.error('Node lesson lookup/generation failed:', err);
     res.status(500).json({ error: 'could not load this lesson' });
   }
@@ -193,10 +206,18 @@ router.get('/knowledge-map-v2/edge/:fromNodeId/:toNodeId/lesson', requireAuth, s
       });
     }
 
+    const userId = req.userId as string;
+    if (await isUserPaid(userId)) {
+      await assertFreshGenerationWithinCap(userId);
+    }
     const generated = await generateAndCacheEdgeLesson(fromNodeId, toNodeId);
     if (!generated) return res.status(404).json({ error: 'connection not found or not ready yet' });
+    await recordFreshGenerationEvent(userId);
     res.json(generated);
   } catch (err) {
+    if (err instanceof GenerationCapExceededError) {
+      return res.status(429).json({ error: `You've generated a lot of new lessons recently — try again later.`, window: err.window, limit: err.limit });
+    }
     console.error('Edge lesson lookup/generation failed:', err);
     res.status(500).json({ error: 'could not load this lesson' });
   }

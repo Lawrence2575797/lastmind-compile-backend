@@ -115,6 +115,13 @@ export async function generateAndCacheNodeLesson(nodeId: string): Promise<unknow
     systemPrompt: KNOWLEDGE_MAP_ENCODING_LESSON_PROMPT,
     userContent,
     maxTokens: MAX_TOKENS,
+    // ~1,862 tokens, well over Sonnet's 1024-token cache minimum, and
+    // byte-identical across every node/subject/student - exactly the
+    // "large, fixed prompt reused verbatim" case cacheSystemPrompt exists
+    // for (see claudeClient.ts's own comment). Wasn't set before; every
+    // fresh generation was paying full input-token price on this prompt
+    // for no reason.
+    cacheSystemPrompt: true,
   });
   let encodingContent: unknown;
   try {
@@ -191,6 +198,10 @@ export async function generateAndCacheEdgeLesson(fromNodeId: string, toNodeId: s
     systemPrompt: KNOWLEDGE_MAP_EDGE_LESSON_PROMPT,
     userContent,
     maxTokens: MAX_TOKENS,
+    // No cacheSystemPrompt here, deliberately - this prompt is ~873
+    // tokens, under Sonnet's 1024-token cache minimum, so a cache_control
+    // marker would silently do nothing (see claudeClient.ts's own
+    // comment) - unlike the node lesson prompt above.
   });
   let parsed: EdgeLessonResult;
   try {

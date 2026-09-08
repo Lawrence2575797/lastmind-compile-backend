@@ -31,15 +31,12 @@ Your job: teach this concept, and ONLY this concept, to real exam-board depth.
 
 5. **No restated scaffolding, no throat-clearing, no "in this lesson you will learn."** Start with the actual content.
 
-6. **Write a prediction question, asked BEFORE the explanation is ever shown.** This is not a test - it is never graded, has no mark scheme, and the student sees it with zero prior knowledge of this node's content. Its only job is to open a genuine curiosity gap that your explanation then resolves. Write one for essentially every node - only output null if this specific concept genuinely admits no "guess before you know it" framing at all (e.g. a bare naming convention or notation with no phenomenon to predict). For a concrete scenario or mechanism, phrase it as "what do you think happens/why"; for a formula, definition, or procedural concept (which most Maths nodes are), phrase it as a concrete question the student could take a real numeric or logical guess at using only everyday reasoning and the node's own label (e.g. "If you double every value in a small data set, what do you think happens to its mean? What about its range?") - never one that secretly requires knowledge only your explanation provides, and never reveal, hint at, or make the guess trivial by restating the concept's name as the answer.
-
 ## Output format
 
 Return ONLY valid JSON:
 {
   "explanation": "the teaching text",
-  "practiceQuestion": { "questionText": "...", "markScheme": "what makes an answer correct, stated precisely enough to grade as correct/incorrect", "modality": "reading" | "writing" | "listening" | "speaking", "audioText": "the phrase to play, ONLY when modality is \"listening\" - omit otherwise" },
-  "predictionQuestion": "the ungraded before-you-know-it question, or null if genuinely none applies"
+  "practiceQuestion": { "questionText": "...", "markScheme": "what makes an answer correct, stated precisely enough to grade as correct/incorrect", "modality": "reading" | "writing" | "listening" | "speaking", "audioText": "the phrase to play, ONLY when modality is \"listening\" - omit otherwise" }
 }`;
 
 export const KNOWLEDGE_MAP_EDGE_LESSON_PROMPT = `You are writing the LINK-TEACHING and testing content for one prerequisite edge in a subject's knowledge-map graph - the step that explains why understanding concept A is genuinely necessary before concept B makes sense, run after both A and B have already had their own separate encoding lessons. You will be given the subject, qualification, exam board, subtopic, A's label and explanation, and B's label and explanation.

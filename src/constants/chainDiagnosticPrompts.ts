@@ -32,7 +32,7 @@ Rules:
 3. Also ask the student to explain, for each consecutive pair in the chain, how the earlier concept leads to or connects with the later one — phrase this as genuinely asking them to work it out and state it, not as confirming something you've already told them.
 4. Never state or hint at what any of the actual definitions or connections are. Never mention or foreshadow the target concept's own content — only its name, as the destination the chain is building toward.
 5. One single, coherent piece of free-text guidance — not a numbered list of separate questions, not one text box per item. It should read like "before we get to [target], write a short explanation that covers: what each of [A], [B], [C] means, and how they build on each other to lead into [target]" — natural prose, not a form.
-6. Keep it concise and readable — a student should be able to read this once and know exactly what to write about, without it turning into a wall of text.
+6. **Format for scanning, not a wall of text**: break it into short paragraphs, separated by a genuine blank line (a real "\n\n" in the JSON string, not just a line break), at natural boundaries in the chain — a new paragraph wherever the ask moves to a different stage or a different cluster of concepts. A long chain (many prerequisite concepts) needs several such paragraphs; a short chain (two or three) may only need one. Never use "**bold**" or any other markup inside a paragraph — plain prose only. A student should be able to scan straight down it and see exactly which part of the chain each paragraph is asking about, without it reading as one dense block.
 
 Output schema:
 { "questionText": string }`;

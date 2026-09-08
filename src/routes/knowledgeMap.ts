@@ -102,7 +102,7 @@ router.get('/knowledge-map-v2', requireAuth, costlyEndpointLimiter, async (req: 
 });
 
 // GET /knowledge-map-v2/node/:nodeId/lesson -> the stored encoding lesson
-// { explanation, practiceQuestion, predictionQuestion } for one node.
+// { explanation, practiceQuestion } for one node.
 // Generated on demand (see lessonGenerationService.ts) the first time any
 // student's request finds no row yet, then served identically to every
 // student from then on, same one-time-content-cost contract

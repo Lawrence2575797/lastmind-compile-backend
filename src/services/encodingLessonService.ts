@@ -1,6 +1,7 @@
 import { callClaudeJSON, callClaudeJSONWithImages, MODELS } from './claudeClient';
 import { getOrGenerateChain, customContextDigest, normalizeConceptKey } from './chainService';
 import { gradeAndRecordReview, gradeCorrectness, getReviewedConceptIds, hasAnySubjectHistory, FsrsRatingKey } from './reviewService';
+import { linkIntegrationConceptId } from './nodeReviewService';
 import { searchWikimediaImages, fetchImageAsBase64 } from './wikimediaService';
 import { adjustCredits, ENCODING_LESSON_COMPLETION_KEYS } from './creditService';
 import { supabaseAdmin } from './supabaseAdmin';
@@ -85,12 +86,19 @@ export interface ChainEdge { node_id: string; relationship: 'definitional' | 're
 export interface ChainNode { id: string; label: string; derivable?: boolean; technique?: boolean; generalMechanism?: boolean; depends_on: ChainEdge[]; }
 export interface Chain { concept_id: string; subject: string; nodes: ChainNode[]; }
 
-// 'mechanistic_check' replaces a single-node 'check' when the prerequisite
-// being verified is the tip of a genuine multi-node chain (see
-// buildPrerequisiteChains) — one question spanning the whole chain's
-// reasoning in a single answer, graded more strictly (see
-// MECHANISTIC_CHECK_ANSWER_PROMPT) than an ordinary 'check'.
-export type EncodingStepType = 'check' | 'mechanistic_check' | 'scene' | 'derive' | 'explain' | 'implication';
+// 'mechanistic_check' is legacy — generation no longer produces it (see
+// ENCODING_LESSON_CONTINUATION_PROMPT's coverage rule), replaced by
+// individual 'check' steps per node plus a distinct 'integration' step
+// between each consecutive pair (and one final one bridging into the
+// target) — but the type stays valid so an in-flight lesson whose steps
+// were cached just before a deploy still grades correctly.
+// 'integration' asks specifically about the LINK between two named
+// prerequisite concepts (or the last prerequisite and the target itself,
+// for the final one) — graded more strictly (see
+// MECHANISTIC_CHECK_ANSWER_PROMPT, reused for this too) than an ordinary
+// 'check', and FSRS-graded on its own linkIntegrationConceptId key (see
+// submitEncodingAnswer), never folded into either endpoint's own grade.
+export type EncodingStepType = 'check' | 'mechanistic_check' | 'integration' | 'scene' | 'derive' | 'explain' | 'implication';
 
 export interface EncodingDiagram {
   diagramUrl: string;
@@ -118,11 +126,13 @@ export interface EncodingStep {
   // required (nodeId !== conceptKey means there's no independently-cached
   // chain for it).
   diagnosisConceptKey: string;
-  // Only ever set on a mechanistic_check step — the FULL ordered chain
-  // (foundational-first, ending at this step's own nodeId/tip) it traces,
-  // not just the tip. Lets submitEncodingAnswer grade the CONSECUTIVE
-  // EDGES in that chain, not just the tip node itself, once this step
-  // resolves — see attachChainNodes.
+  // Set on a (legacy) mechanistic_check step — its FULL ordered chain
+  // (foundational-first, ending at this step's own nodeId/tip), see
+  // attachChainNodes — or on an 'integration' step, where it's always
+  // exactly [{from node}, {to node}] (this step's own two-concept link),
+  // set directly at generation-mapping time from the model's own
+  // "fromNodeId" field, not via attachChainNodes. submitEncodingAnswer
+  // reads this to know which concept(s) an answer is actually about.
   chainNodes?: { id: string; label: string }[];
   diagram?: EncodingDiagram;
   // True when this step is a genuine calculation (numeric/algebraic, with
@@ -309,6 +319,30 @@ function clean(s: string): string {
 // the first place) keyed by each chain's own tip id, which the
 // generation-prompt rules guarantee IS the mechanistic_check step's
 // nodeId (a chain's LAST entry, per buildPrerequisiteChains' ordering).
+// For an 'integration' step: builds its diagnosisConceptKey (a raw,
+// pre-sibling-resolution placeholder that just needs to (a) never equal
+// conceptKey, so isCoreStep reads false, and (b) never collide with
+// either endpoint's own check-step key — the REAL, sibling-resolved
+// linkIntegrationConceptId this becomes once graded is computed later, in
+// submitEncodingAnswer, the same place mechanistic_check's own edge keys
+// always were) and its chainNodes ([{from},{to}] — reusing the same field
+// mechanistic_check's whole-chain tracing already uses for "which
+// concept(s) is this step actually about").
+function integrationStepFields(
+  fromNodeId: string | undefined,
+  toNodeId: string,
+  getLabel: (id: string) => string
+): { diagnosisConceptKey: string; chainNodes: { id: string; label: string }[] } | null {
+  if (!fromNodeId) return null;
+  return {
+    diagnosisConceptKey: `${fromNodeId}->${toNodeId}::integration`,
+    chainNodes: [
+      { id: fromNodeId, label: getLabel(fromNodeId) },
+      { id: toNodeId, label: getLabel(toNodeId) },
+    ],
+  };
+}
+
 function attachChainNodes(steps: DraftStep[], groundingChains: ChainNode[][]): void {
   const chainByTipId = new Map<string, ChainNode[]>();
   groundingChains
@@ -714,7 +748,7 @@ async function repairUncertainSteps(
       // if the model calls it redundant, would silently drop that node's
       // FSRS grading entirely rather than just trim a genuinely repeated
       // question.
-      const canBeRedundant = step.type !== 'check' && step.type !== 'mechanistic_check';
+      const canBeRedundant = step.type !== 'check' && step.type !== 'mechanistic_check' && step.type !== 'integration';
       if (result.redundant && canBeRedundant) {
         redundantIndices.push(stepIndex);
         continue; // never established anything new — nothing to push below
@@ -1245,6 +1279,10 @@ async function generateFirstStep(
       confident?: boolean;
       requiresCalculation?: boolean;
       expectedSolution?: string;
+      // Only for type 'integration' — the OTHER end of the link (nodeId
+      // is the 'to' end) — see ENCODING_LESSON_FIRST_STEP_PROMPT's own
+      // "fromNodeId" rule.
+      fromNodeId?: string;
     };
   }>(
     ENCODING_LESSON_FIRST_STEP_PROMPT,
@@ -1279,16 +1317,20 @@ async function generateFirstStep(
 
   const nodesById = new Map(chain.nodes.map((n) => [n.id, n]));
   const s = result.step;
+  const integrationFields = s.type === 'integration'
+    ? integrationStepFields(s.fromNodeId, s.nodeId, (id) => nodesById.get(id)?.label || id)
+    : null;
   const draftStep: DraftStep = {
     nodeId: s.nodeId,
     label: nodesById.get(s.nodeId)?.label || s.nodeId,
     type: s.type,
     text: s.text,
     checkQuestion: s.checkQuestion,
-    diagnosisConceptKey: s.nodeId === target.id ? conceptKey : s.nodeId,
+    diagnosisConceptKey: integrationFields ? integrationFields.diagnosisConceptKey : s.nodeId === target.id ? conceptKey : s.nodeId,
     confident: s.confident,
     requiresCalculation: !!s.requiresCalculation,
     expectedSolution: s.requiresCalculation ? s.expectedSolution : undefined,
+    chainNodes: integrationFields?.chainNodes,
   };
   attachChainNodes([draftStep], groundingChains);
 
@@ -1333,6 +1375,11 @@ async function generateLessonContinuation(
       confident?: boolean;
       requiresCalculation?: boolean;
       expectedSolution?: string;
+      // Only for type 'integration' — the OTHER end of the link (nodeId
+      // is the 'to' end, which for the one FINAL integration step is the
+      // target concept's own id) — see ENCODING_LESSON_CONTINUATION_PROMPT's
+      // own "fromNodeId" rule.
+      fromNodeId?: string;
     }[];
     diagram?: { needed: boolean; searchQuery: string | null; forNodeId?: string | null };
   }>(
@@ -1365,17 +1412,29 @@ async function generateLessonContinuation(
   );
 
   const nodesById = new Map(chain.nodes.map((n) => [n.id, n]));
-  const draftSteps: DraftStep[] = (batch.steps || []).map((s) => ({
-    nodeId: s.nodeId,
-    label: nodesById.get(s.nodeId)?.label || (s.type === 'implication' ? `${target.label} — implications` : s.nodeId),
-    type: s.type,
-    text: s.text,
-    checkQuestion: s.checkQuestion,
-    diagnosisConceptKey: s.nodeId === target.id || s.type === 'implication' ? conceptKey : s.nodeId,
-    confident: s.confident,
-    requiresCalculation: !!s.requiresCalculation,
-    expectedSolution: s.requiresCalculation ? s.expectedSolution : undefined,
-  }));
+  // The one final integration step bridges the last prerequisite into the
+  // TARGET itself, so its "to" node is target.id, not a chain node —
+  // nodesById alone (built from `chain.nodes`) won't resolve that label.
+  const labelFor = (id: string) => (id === target.id ? target.label : nodesById.get(id)?.label) || id;
+  const draftSteps: DraftStep[] = (batch.steps || []).map((s) => {
+    const integrationFields = s.type === 'integration'
+      ? integrationStepFields(s.fromNodeId, s.nodeId, labelFor)
+      : null;
+    return {
+      nodeId: s.nodeId,
+      label: nodesById.get(s.nodeId)?.label || (s.type === 'implication' ? `${target.label} — implications` : s.nodeId),
+      type: s.type,
+      text: s.text,
+      checkQuestion: s.checkQuestion,
+      diagnosisConceptKey: integrationFields
+        ? integrationFields.diagnosisConceptKey
+        : s.nodeId === target.id || s.type === 'implication' ? conceptKey : s.nodeId,
+      confident: s.confident,
+      requiresCalculation: !!s.requiresCalculation,
+      expectedSolution: s.requiresCalculation ? s.expectedSolution : undefined,
+      chainNodes: integrationFields?.chainNodes,
+    };
+  });
   attachChainNodes(draftSteps, groundingChains);
 
   // "forNodeId" lets the diagram ground a STRUCTURAL/GROUNDING prerequisite
@@ -1559,13 +1618,17 @@ export async function submitEncodingAnswer(userId: string, state: EncodingLesson
       correct = check.correct;
       feedback = check.feedback;
     }
-  } else if (currentStep.type === 'mechanistic_check') {
+  } else if (currentStep.type === 'mechanistic_check' || currentStep.type === 'integration') {
     // Deliberately pedantic (see MECHANISTIC_CHECK_ANSWER_PROMPT) — this
     // step exists specifically to catch pattern-matched/memorized answers
     // an ordinary generous check would let through, and to require jargon
-    // be explained relative to the qualification level. diagnosticTree,
-    // not simpleQuestion, here — that calibration judgment call is worth
-    // the step up, same reasoning as the calculation-grading path above.
+    // be explained relative to the qualification level. Reused for
+    // 'integration' too — the same failure mode (pattern-matching each
+    // concept's own standard phrasing without genuinely tracing the LINK
+    // between them) applies just as much to a two-node link as it did to
+    // a whole legacy mechanistic_check chain. diagnosticTree, not
+    // simpleQuestion, here — that calibration judgment call is worth the
+    // step up, same reasoning as the calculation-grading path above.
     const check = await callJSON<{ correct: boolean; misread?: boolean; partiallyUnderstood?: boolean; feedback: string | null }>(
       MECHANISTIC_CHECK_ANSWER_PROMPT,
       `Qualification: ${state.qualification || 'unspecified'}\nExam board: ${state.examBoard || 'unspecified'}\nConcept/step: ${currentStep.label}\nPrompt: ${gradingPrompt}\nStudent's answer: ${answer}`,
@@ -1653,19 +1716,37 @@ export async function submitEncodingAnswer(userId: string, state: EncodingLesson
   // (not a flat correct?good:again) so a shaky retried pass reads as
   // 'hard' and a pass on an already-durable streak reads as 'easy',
   // rather than every correct answer looking identical to FSRS.
-  if (!isCoreStep && !bypass) {
+  if (!isCoreStep && !bypass && currentStep.type !== 'integration') {
     await gradeCorrectness(userId, currentStep.diagnosisConceptKey, correct, hadRetry ? 1 : 0);
   }
 
-  // A mechanistic_check step's whole point is tracing through a chain of
-  // 2-3 nodes, not just landing on the tip — so alongside the tip's own
-  // grade above, also grade each CONSECUTIVE EDGE in that traced chain.
-  // Each node resolves to the student's own page for that concept when one
-  // exists (Phase 0's resolveSiblingConceptId), same canonical id-space
-  // Phase B's interleaving edges resolve into — so the SAME real link
-  // tested either way accumulates in the SAME concept_reviews row. v1
-  // grades every edge the same way as the overall verdict — no attempt to
-  // localize which specific link broke on a wrong answer.
+  // An 'integration' step's own FSRS grade — deliberately excluded from
+  // the generic block above (its diagnosisConceptKey is only a
+  // collision-safe placeholder, see integrationStepFields) so it never
+  // gets graded under that placeholder key by mistake. Resolves both
+  // endpoints to the student's own page for that concept when one exists
+  // (Phase 0's resolveSiblingConceptId), same canonical id-space
+  // nodeReviewService.ts's OWN later spaced-review integration step
+  // resolves into — so a link tested either way (first encounter here, or
+  // later spaced review) accumulates in the exact SAME concept_reviews
+  // row, via linkIntegrationConceptId (the one canonical key format for
+  // "this edge's integration", used everywhere it's ever graded).
+  if (!bypass && currentStep.type === 'integration' && currentStep.chainNodes && currentStep.chainNodes.length === 2) {
+    const [from, to] = currentStep.chainNodes;
+    const fromConceptId = resolveSiblingConceptId(from.label, state.subject, state.topic, state.siblingConcepts) || from.id;
+    const toConceptId = resolveSiblingConceptId(to.label, state.subject, state.topic, state.siblingConcepts) || to.id;
+    await gradeCorrectness(userId, linkIntegrationConceptId(fromConceptId, toConceptId), correct, hadRetry ? 1 : 0);
+  }
+
+  // Legacy — a mechanistic_check step's whole point was tracing through a
+  // chain of 2-3 nodes, not just landing on the tip, so alongside the
+  // tip's own grade above, it also grades each CONSECUTIVE EDGE in that
+  // traced chain. Generation no longer produces this step type (see
+  // EncodingStepType's own comment) - kept only so an in-flight lesson
+  // whose steps were cached just before this changed still grades
+  // correctly. v1 grades every edge the same way as the overall verdict -
+  // no attempt to localize which specific link broke on a wrong answer
+  // (the new 'integration' step above exists specifically to fix that).
   if (!bypass && currentStep.type === 'mechanistic_check' && currentStep.chainNodes && currentStep.chainNodes.length >= 2) {
     const resolvedIds = currentStep.chainNodes.map(
       (n) => resolveSiblingConceptId(n.label, state.subject, state.topic, state.siblingConcepts) || n.id

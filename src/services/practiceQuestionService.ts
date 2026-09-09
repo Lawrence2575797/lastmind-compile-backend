@@ -19,7 +19,7 @@ const MARKING_STRUCTURE_NOTES: Record<string, string> = {
   'economics|alevel|aqa': `AQA A-Level Economics marks against four assessment objectives blended together — AO1 (knowledge), AO2 (application), AO3 (analysis), and AO4 (evaluation) — but, unlike some other exam boards, AQA's own mark schemes never split a question's marks into separate named AO amounts; every level descriptor is written as ONE holistic paragraph judged as a whole, with more weight given to analysis and evaluation than to knowledge and application at every tariff. Short "calculate/identify" questions (2 marks) are simple points-based marking. "Explain, using the data" questions (4 marks) use a small banded scale rather than added-up points. "Explain how/why" questions (9 and 15 marks) are levels-based but require NO evaluation at all — a good answer stops at well-developed analysis. Only the biggest essays (25 marks) require genuine evaluation and a supported judgement, and only then does it become the dominant skill being rewarded. Multiple choice (1 mark) questions are simply right or wrong.`,
 };
 
-function getMarkingStructureNotes(subject: string, qualification: string, examBoard: string): string | null {
+export function getMarkingStructureNotes(subject: string, qualification: string, examBoard: string): string | null {
   const key = `${normalizeForPlanMatch(subject)}|${normalizeForPlanMatch(qualification)}|${normalizeForPlanMatch(examBoard)}`;
   return MARKING_STRUCTURE_NOTES[key] ?? null;
 }
@@ -68,7 +68,7 @@ function extractJsonObject(text: string): string {
   return text.slice(start, end + 1);
 }
 
-async function callJSON<T>(systemPrompt: string, userContent: string, model: string, temperature = 0, userId?: string): Promise<T> {
+export async function callJSON<T>(systemPrompt: string, userContent: string, model: string, temperature = 0, userId?: string): Promise<T> {
   const raw = await callClaudeJSON({ model, systemPrompt, userContent, temperature, userId });
   const cleaned = stripCodeFences(raw);
   try {

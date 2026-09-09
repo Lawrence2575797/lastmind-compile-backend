@@ -15,3 +15,32 @@ Output schema:
 { "mark": number, "feedback": string, "conceptualMistakes": string | null, "examTechniqueTips": string | null }
 
 "feedback" should be 2-4 sentences: what the answer did well, and what specifically it needs to add or fix to gain more marks — referencing the actual mark scheme criteria or level descriptor it fell short of, written directly to the student.`;
+
+// Generates ONE live exam-style question for a real spec-lesson, for the
+// standalone spec-hierarchy Practice Questions page (see
+// specLessonPracticeService.ts) — distinct from the hand-authored bank
+// practice_questions was originally built for (create_practice_questions.sql),
+// this runs live per student pick. Grounded in the real spec-lesson's own
+// name/subtopic/theme plus (when available) the cached microtopic content
+// points for that subtopic, so the question is real-spec-shaped rather
+// than generically invented.
+export const PRACTICE_QUESTION_GENERATION_PROMPT = `You write real exam-style practice questions for A-Level/GCSE students, grounded in the exact spec-lesson given to you. Never invent content outside the real subject/qualification/exam board's actual syllabus.
+
+You will be given: the subject/qualification/exam board, the real spec theme/subtopic/spec-lesson this question must be about, optionally a list of real syllabus content points for that subtopic (ground the question in these where relevant — don't invent unrelated content), the exact question type to write (its command word, mark tariff, and mark-scheme style), and general marking-structure notes for how this subject/board marks questions at this tariff.
+
+Rules:
+1. Write ONE question, worth EXACTLY the given mark tariff, using the given command word (or a natural equivalent for that command word/tariff combination), genuinely about the given spec-lesson concept — not a different concept from the same subtopic.
+2. If markSchemeType is "multiple_choice": markSchemeJson must be exactly { "options": string[4], "correctIndex": number, "explanation": string } — 4 plausible options (one correct), a 0-indexed correctIndex, and a short explanation of why the correct answer is correct and why a strong distractor is wrong.
+3. If markSchemeStyle is "ao_additive" and a componentSplit is given: build a mark_scheme_json whose criteria/levels structure adds up EXACTLY to the given group totals — a "points" question gets one named criterion per component group with that group's exact mark value (e.g. a group {"key":"KAA","marks":9} becomes one criterion worth 9 marks covering knowledge+application+analysis together, since this exam board marks those three together below essay scale — never split a group into per-AO sub-criteria unless the group itself only names one component); a "levels" question gets a small number of holistic bands whose top band's mark range tops out at the tariff, with each group's own component names (e.g. KAA vs AO4/Evaluation) reflected in what that band's descriptor actually asks for.
+4. If markSchemeStyle is "mab" (Method/Accuracy/independent-fact marks — always a maths-style question): decide the real M/A/B allocation for the actual working steps THIS question requires (this is inherently per-question, not a fixed table) and return it as the componentSplit groups yourself, plus a "points" mark_scheme_json with one criterion per real working step naming which mark type it is.
+5. answerStructureAdvice: 1-2 sentences of real exam-technique guidance for structuring an answer to THIS specific question (not generic advice) — null only if the tariff is too low for this to be meaningful (e.g. a 1-2 mark question).
+6. Output ONLY valid JSON, nothing else.
+
+Output schema:
+{
+  "questionText": string,
+  "markSchemeType": "points" | "levels" | "multiple_choice",
+  "markSchemeJson": object,
+  "answerStructureAdvice": string | null,
+  "componentSplit": { "groups": [{ "key": string, "components": string[], "marks": number }] } | null
+}`;

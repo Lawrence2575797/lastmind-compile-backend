@@ -104,7 +104,7 @@ function cachedSystem(promptText) {
 // currency) with a deliberate safety margin below the ~$6.35 straight
 // conversion at current rates, both for exchange-rate drift and because a
 // cap should hold with room to spare, not sit exactly on the line.
-const SPEND_CAP_USD = 6.0;
+const SPEND_CAP_USD = 3.0;
 const PRICING_PER_MTOK = {
   'claude-sonnet-5': { in: 3, out: 15 },
   'claude-opus-5': { in: 5, out: 25 },
@@ -133,7 +133,7 @@ function assertUnderCap() {
   }
 }
 
-const SUBJECT = 'Italian';
+const SUBJECT = 'Spanish';
 const QUALIFICATION = 'Other';
 const EXAM_BOARD = '';
 
@@ -147,238 +147,239 @@ const SUBTOPICS = [
     specContent: `A1.1 Greetings, introductions and register
 
 Content - what students need to learn:
-- Formal and informal greetings: buongiorno, buonasera, buonanotte, ciao, salve, arrivederci, a presto, a domani.
-- Introducing yourself and others: mi chiamo..., come ti chiami? (informal) / come si chiama? (formal), piacere.
-- Subject pronouns: io, tu, lui/lei, noi, voi, loro; the formal "Lei" as a distinct, capitalised form of address for a stranger/elder, contrasted with informal "tu".
-- Basic courtesy expressions: per favore, grazie, prego, scusa/scusi, di niente.
-- Asking and saying where someone is from: di dove sei? / di dov'e? sono di...
-- Nationalities and their masculine/feminine/plural agreement (italiano/italiana/italiani/italiane, inglese/inglesi).
-- Basic yes/no and question words: si, no, come, dove, quando, perche, chi, cosa, quanto.`
+- Formal and informal greetings: buenos dias, buenas tardes, buenas noches, hola, adios, hasta luego, hasta manana.
+- Introducing yourself and others: me llamo..., ¿como te llamas? (informal) / ¿como se llama? (formal), mucho gusto / encantado(a).
+- Subject pronouns: yo, tu, el/ella/usted, nosotros(as), vosotros(as) (Spain) / ustedes, ellos/ellas; the formal "usted" as a distinct form of address for a stranger/elder, contrasted with informal "tu".
+- Basic courtesy expressions: por favor, gracias, de nada, perdon, disculpe.
+- Asking and saying where someone is from: ¿de donde eres? / ¿de donde es usted? soy de...
+- Nationalities and their masculine/feminine/plural agreement (espanol/espanola/espanoles/espanolas, ingles/inglesa/ingleses/inglesas).
+- Basic yes/no and question words: si, no, que, donde, cuando, por que, quien, como, cuanto.`
   },
   {
     subtopic: "A1.2 Numbers, time and dates",
     specContent: `A1.2 Numbers, time and dates
 
 Content - what students need to learn:
-- Cardinal numbers 0-100, and the pattern for numbers above 100 (cento, duecento, mille).
-- Telling the time: che ore sono? sono le..., e mezzogiorno/mezzanotte, using "e" and "meno" for quarter/half past/to.
-- Days of the week (lunedi-domenica) and asking/stating what day it is.
-- Months of the year and stating a date (il + number + month), including the exception "il primo" for the 1st.
-- Seasons (primavera, estate, autunno, inverno).
-- Asking and giving simple ages: quanti anni hai? ho ... anni (using avere, not essere, for age - a common English-speaker error point).`
+- Cardinal numbers 0-100, and the pattern for numbers above 100 (cien, doscientos, mil).
+- Telling the time: ¿que hora es? son las..., es la una, y cuarto/media, menos cuarto.
+- Days of the week (lunes-domingo) and asking/stating what day it is.
+- Months of the year and stating a date (el + number + de + month) - unlike English, Spanish uses the plain CARDINAL number even for the 1st (el uno de mayo), though "el primero" is common in Latin America.
+- Seasons (la primavera, el verano, el otono, el invierno).
+- Asking and giving simple ages: ¿cuantos anos tienes? tengo ... anos (using tener, not ser, for age - a common English-speaker error point).`
   },
   {
     subtopic: "A1.3 Articles, gender, plurals and agreement",
     specContent: `A1.3 Articles, gender, plurals and agreement
 
 Content - what students need to learn:
-- Noun gender: regular -o (masculine) and -a (feminine) endings, and the -e ending nouns that can be either gender (must be learned individually).
-- Plural formation: -o to -i, -a to -e, -e to -i; irregular/invariable plurals (e.g. citta, foto, re).
-- Definite articles (il, lo, la, l', i, gli, le) and the rules governing which form to use based on the following noun's gender/initial sound (vowel, s+consonant, z, gn, x, y, ps).
-- Indefinite articles (un, uno, una, un') and the same initial-sound rule.
-- Adjective agreement with the noun in gender and number, including adjectives ending in -e (same form for masculine/feminine, only number changes).
-- Position of common adjectives (generally after the noun; a small set of high-frequency adjectives like bello, buono, grande, giovane commonly precede it).`
+- Noun gender: regular -o (masculine) and -a (feminine) endings, common exceptions (el dia, la mano), and -e/consonant-ending nouns that must be learned individually.
+- Plural formation: add -s after a vowel, -es after a consonant, -z changes to -ces (lapiz -> lapices).
+- Definite articles (el, la, los, las) and the neuter article "lo" used with adjectives to name an abstract quality (lo bueno = "the good thing/part").
+- Indefinite articles (un, una, unos, unas).
+- Adjective agreement with the noun in gender and number.
+- Position of adjectives (generally after the noun; a small set can precede it, sometimes changing meaning - un hombre grande "a big man" vs un gran hombre "a great man").`
   },
   {
-    subtopic: "A1.4 Present tense: essere, avere and regular verbs",
-    specContent: `A1.4 Present tense: essere, avere and regular verbs
+    subtopic: "A1.4 Present tense: ser, estar and regular verbs",
+    specContent: `A1.4 Present tense: ser, estar and regular verbs
 
 Content - what students need to learn:
-- Present tense conjugation of essere (sono, sei, e, siamo, siete, sono) and its core uses: identity, nationality, characteristics, location with "essere a/in".
-- Present tense conjugation of avere (ho, hai, ha, abbiamo, avete, hanno) and its core uses: possession, age, and fixed expressions (avere fame, sete, freddo, caldo, paura, ragione, torto, bisogno di).
-- Present tense of regular -are verbs (e.g. parlare: parlo, parli, parla, parliamo, parlate, parlano).
-- Present tense of regular -ere verbs (e.g. prendere: prendo, prendi, prende, prendiamo, prendete, prendono).
-- Present tense of regular -ire verbs, both types: normal (e.g. dormire: dormo, dormi, dorme...) and -isc- pattern (e.g. capire: capisco, capisci, capisce, capiamo, capite, capiscono).
-- Negation with "non" placed before the conjugated verb.`
+- Present tense conjugation of ser (soy, eres, es, somos, sois, son) and its core uses: identity, nationality, characteristics, profession, time, and where an event takes place.
+- Present tense conjugation of estar (estoy, estas, esta, estamos, estais, estan) and its core uses: location of people/things, temporary states/conditions (estoy cansado), and forming the progressive tense (estoy comiendo).
+- THE ser/estar distinction: both translate English "to be", but ser is for permanent/defining characteristics and estar for location and temporary states - the single most important grammar contrast at this level (e.g. "es alto" = he's tall (permanent trait) vs "esta cansado" = he's tired (temporary state)).
+- Present tense of regular -ar verbs (e.g. hablar: hablo, hablas, habla, hablamos, hablais, hablan).
+- Present tense of regular -er verbs (e.g. comer: como, comes, come, comemos, comeis, comen).
+- Present tense of regular -ir verbs (e.g. vivir: vivo, vives, vive, vivimos, vivis, viven).
+- Negation with "no" placed before the conjugated verb.`
   },
   {
     subtopic: "A1.5 Family, description and common irregular verbs",
     specContent: `A1.5 Family, description and common irregular verbs
 
 Content - what students need to learn:
-- Family vocabulary (madre, padre, fratello, sorella, nonno, nonna, figlio, figlia, marito, moglie, zio, zia, cugino/a) and possessive adjectives (il mio, la mia, i miei, le mie, etc.), including the exception that possessives with singular family-member nouns drop the article (mia madre, not *la mia madre).
-- Describing physical appearance and personality with adjectives (alto/basso, giovane/vecchio, simpatico/antipatico, etc.).
-- Present tense of the key irregular verbs: andare (vado, vai, va, andiamo, andate, vanno), fare (faccio, fai, fa, facciamo, fate, fanno), potere (posso, puoi, puo, possiamo, potete, possono), dovere (devo, devi, deve, dobbiamo, dovete, devono), volere (voglio, vuoi, vuole, vogliamo, volete, vogliono), dare and stare.
-- Modal verb construction: modal verb (potere/dovere/volere) + infinitive.`
+- Family vocabulary (madre, padre, hermano, hermana, abuelo, abuela, hijo, hija, marido, esposa, tio, tia, primo/a) and possessive adjectives (mi/mis, tu/tus, su/sus, nuestro/a/os/as, vuestro/a/os/as).
+- Describing physical appearance and personality with adjectives (alto/bajo, joven/viejo, simpatico/antipatico, etc.), always agreeing in gender/number.
+- Present tense of key irregular verbs: ir (voy, vas, va, vamos, vais, van), tener (tengo, tienes, tiene, tenemos, teneis, tienen), hacer (hago, haces, hace, hacemos, haceis, hacen), poder (puedo, puedes, puede... - an o-to-ue stem change), querer (quiero, quieres, quiere... - an e-to-ie stem change), decir (digo, dices, dice...).
+- Stem-changing verbs as a genuine category of their own in Spanish (e->ie: querer, pensar; o->ue: poder, dormir; e->i: pedir, servir) - the stem changes in every form except nosotros/vosotros.
+- "Ir a" + infinitive for the near future (voy a comer = "I'm going to eat").
+- Modal verb construction: modal verb (poder/querer/deber) + infinitive.`
   },
   {
     subtopic: "A1.6 Food, shopping and everyday requests",
     specContent: `A1.6 Food, shopping and everyday requests
 
 Content - what students need to learn:
-- Food and drink vocabulary for ordering at a bar/restaurant (un caffe, un cappuccino, un panino, l'acqua, il vino, etc.) and the phrase vorrei + noun/infinitive for polite requests.
-- Partitive article "del/dello/della/dei/degli/delle" for "some".
-- Shopping vocabulary and asking prices: quanto costa? / quanto costano? and understanding numbers used with currency (euro, centesimi).
-- Ordinal numbers (primo, secondo, terzo...) used in shop/menu/floor contexts.
-- Direct object nouns with common verbs (comprare, prendere, volere) in simple sentences.
-- Common containers/quantities (un chilo di, una bottiglia di, un etto di) used with "di" before the noun.`
+- Food and drink vocabulary for ordering at a cafe/restaurant (un cafe, un bocadillo, el agua, el vino, etc.) and quiero/me gustaria + noun/infinitive for polite requests.
+- Quantity expressions with "de" (un poco de, un kilo de, una botella de, un vaso de).
+- Shopping vocabulary and asking prices: ¿cuanto cuesta? / ¿cuanto es?
+- Ordinal numbers (primero, segundo, tercero...) used in shop/menu/floor contexts, including the apocope rule where primero and tercero drop the final -o before a masculine singular noun (primer piso, tercer dia).
+- Direct object nouns with common verbs (comprar, tomar, querer) in simple sentences.
+- Understanding numbers used with prices/currency (euros, centimos, pesos, depending on country).`
   },
   {
-    subtopic: "A2.1 Passato prossimo",
-    specContent: `A2.1 Passato prossimo (present perfect)
+    subtopic: "A2.1 Preterito indefinido (simple past)",
+    specContent: `A2.1 Preterito indefinido (simple past)
 
 Content - what students need to learn:
-- Formation: present tense of avere or essere (the auxiliary) + past participle.
-- Regular past participle formation: -are to -ato, -ere to -uto, -ire to -ito.
-- The most common irregular past participles (fatto, detto, visto, letto, scritto, aperto, chiuso, preso, messo, venuto, rimasto, nato, morto, successo).
-- Which verbs take essere as auxiliary (a defined set: verbs of motion/state-change like andare, venire, partire, arrivare, uscire, entrare, nascere, morire, stare, diventare, plus all reflexive verbs) versus avere (the large majority, mainly transitive verbs).
-- Past participle agreement with the subject in gender/number when the auxiliary is essere (e.g. "e andata" for a female subject), and non-agreement when the auxiliary is avere (unless a preceding direct object pronoun applies).
-- Placement of "non" and of time expressions (ieri, la settimana scorsa, gia, non...ancora) with the passato prossimo.`
+- Regular formation: -ar verbs (-e, -aste, -o, -amos, -asteis, -aron); -er/-ir verbs share one pattern (-i, -iste, -io, -imos, -isteis, -ieron).
+- Common irregular preterites: ser and ir share the exact same forms (fui, fuiste, fue, fuimos, fuisteis, fueron) - context alone distinguishes them; tener (tuve...), hacer (hice, hiciste, hizo...), estar (estuve...), poder (pude...), decir (dije... dijeron), venir (vine...).
+- Spelling-change preterites in the "yo" form only, to preserve pronunciation: -car verbs change c to qu (buscar -> busque), -gar verbs change g to gu (llegar -> llegue), -zar verbs change z to c (empezar -> empece).
+- Use: a single completed action, a sequence of completed actions, or an action with a clear, defined start and end point in the past.
+- Time expressions that signal preterito indefinido (ayer, la semana pasada, anoche, hace dos dias).`
   },
   {
-    subtopic: "A2.2 Imperfetto and its contrast with passato prossimo",
-    specContent: `A2.2 Imperfetto and its contrast with passato prossimo
+    subtopic: "A2.2 Preterito imperfecto and its contrast with indefinido",
+    specContent: `A2.2 Preterito imperfecto and its contrast with indefinido
 
 Content - what students need to learn:
-- Imperfetto formation for -are, -ere, -ire verbs (regular stem + -avo/-avi/-ava/-avamo/-avate/-avano, -evo/-evi/-eva..., -ivo/-ivi/-iva...).
-- Irregular imperfetto stems: essere (ero, eri, era...), fare (facevo...), dire (dicevo...), bere (bevevo...).
-- Core uses of imperfetto: habitual/repeated past actions, ongoing background description, describing past states (age, weather, feelings, physical description) with no defined endpoint.
-- Core uses of passato prossimo: a single completed action, a sequence of completed actions, an action with a defined start/end.
-- Direct contrast: using imperfetto for the background/scene-setting and passato prossimo for the single interrupting event within the same sentence (e.g. "mentre dormivo, ha telefonato Marco").`
+- Imperfecto formation for -ar verbs (-aba, -abas, -aba, -abamos, -abais, -aban) and -er/-ir verbs (-ia, -ias, -ia, -iamos, -iais, -ian).
+- Only THREE irregular verbs in the imperfecto in the whole language: ser (era, eras, era...), ir (iba, ibas, iba...), ver (veia, veias, veia...).
+- Core uses of imperfecto: habitual/repeated past actions ("used to"), ongoing background description, and describing past states (age, weather, feelings, physical description) with no defined endpoint.
+- Core uses of preterito indefinido: a single completed action, a sequence of completed actions, an action with a defined start/end.
+- Direct contrast: using imperfecto for the background/scene-setting and preterito indefinido for the single interrupting event within the same sentence (e.g. "mientras dormia, sono el telefono").`
   },
   {
     subtopic: "A2.3 Object pronouns and reflexive verbs",
     specContent: `A2.3 Object pronouns and reflexive verbs
 
 Content - what students need to learn:
-- Direct object pronouns (mi, ti, lo, la, ci, vi, li, le) and their placement immediately before a conjugated verb.
-- Indirect object pronouns (mi, ti, gli, le, ci, vi, gli/loro) and the verbs that require them (piacere, dare, dire, scrivere, telefonare - i.e. verbs taking "a + person").
-- The construction of piacere as an impersonal/inverted verb (mi piace il caffe / mi piacciono i libri - the THING liked is the grammatical subject, not the person).
-- Reflexive verbs: formation with reflexive pronouns (mi, ti, si, ci, vi, si) and common examples (svegliarsi, alzarsi, lavarsi, vestirsi, chiamarsi).
-- Reflexive verbs in the passato prossimo (always with essere as auxiliary, with participle agreement).
-- Object pronoun placement with modal verb + infinitive constructions (can attach to the infinitive or precede the modal verb).`
+- Direct object pronouns (me, te, lo, la, nos, os, los, las) and their placement immediately before a conjugated verb.
+- Indirect object pronouns (me, te, le, nos, os, les) and the verbs that require them (gustar, dar, decir, escribir - i.e. verbs taking "a + person").
+- The construction of gustar as an inverted verb (me gusta el cafe / me gustan los libros - the THING liked is the grammatical subject, not the person who likes it).
+- Reflexive verbs: formation with reflexive pronouns (me, te, se, nos, os, se) and common examples (levantarse, despertarse, lavarse, vestirse, llamarse).
+- Object/reflexive pronoun placement: before a conjugated verb, or attached to the end of an infinitive, gerund, or affirmative imperative (levantarme / voy a levantarme / levantandome / ¡levantate!).
+- Reflexive verbs in the preterito indefinido, conjugated normally with the reflexive pronoun still placed before the verb.`
   },
   {
     subtopic: "A2.4 Comparatives, superlatives and the future tense",
     specContent: `A2.4 Comparatives, superlatives and the future tense
 
 Content - what students need to learn:
-- Comparative of majority/minority/equality: piu...di/che, meno...di/che, cosi...come / tanto...quanto.
-- The rule for choosing "di" versus "che" in comparisons (di before a noun/pronoun being compared, che before an adjective, another comparative, a preposition, or when comparing two qualities of the same subject).
-- Irregular comparatives: migliore/peggiore (better/worse), maggiore/minore (bigger/smaller, older/younger).
-- Relative superlative (il/la piu... di) and absolute superlative (-issimo/a/i/e ending, or molto + adjective).
-- Future tense formation: regular -are/-ere verbs share one pattern of endings (-o, -ai, -a, -emo, -ete, -anno) with an -er- stem; -ire verbs use the same endings with an -ir- stem.
-- Key irregular future stems (essere: saro, avere: avro, andare: andro, fare: faro, potere: potro, dovere: dovro, volere: vorro, venire: verro).
-- Future used for prediction/planning, and its use to express probability/conjecture about the present (futuro di probabilita, e.g. "avra trent'anni" = "he's probably thirty").`
+- Comparative of majority/minority/equality: mas...que, menos...que, tan...como (with adjectives/adverbs), tanto/a/os/as...como (with nouns).
+- Irregular comparatives: mejor/peor (better/worse), mayor/menor (older/younger, or bigger/smaller).
+- Relative superlative (el/la mas... de) and absolute superlative (-isimo/a/os/as ending, or muy + adjective).
+- Future tense formation: ALL THREE conjugations (-ar, -er, -ir) share the exact same endings (-e, -as, -a, -emos, -eis, -an) added to the full infinitive - a genuine simplification compared to some other Romance languages, which split by conjugation.
+- Key irregular future stems, formed by modifying the infinitive rather than changing the endings (tener -> tendre, poder -> podre, hacer -> hare, decir -> dire, salir -> saldre, poner -> pondre, venir -> vendre, querer -> querre, saber -> sabre).
+- Future used for prediction/planning, and its use to express probability/conjecture about the present (futuro de probabilidad, e.g. "tendra treinta anos" = "he's probably thirty").`
   },
   {
     subtopic: "A2.5 Directions, travel, health and making plans",
     specContent: `A2.5 Directions, travel, health and making plans
 
 Content - what students need to learn:
-- Asking for and giving directions: dov'e...?, come arrivo a...?, sempre dritto, a destra, a sinistra, all'angolo, di fronte a, vicino a.
-- Imperative mood (informal tu-form and formal Lei-form) for giving instructions/directions (gira, prenda, continui).
-- Travel and transport vocabulary (il treno, l'aereo, la stazione, il biglietto, la prenotazione) and prepositions of place/movement (a, in, da, per, su, con used with means of transport and destinations).
-- Parts of the body and common health expressions (mi fa male..., ho mal di testa/stomaco, sto bene/male).
-- Making plans and invitations: vuoi/vorresti + infinitive, ti va di...?, andiamo a..., proposing and responding to a suggestion (va bene, mi dispiace ma...).
-- Time expressions for future plans (domani, la prossima settimana, tra due giorni).`
+- Asking for and giving directions: ¿donde esta...?, ¿como llego a...?, todo recto, a la derecha, a la izquierda, en la esquina, enfrente de, al lado de.
+- Imperative mood (informal tu-form and formal usted-form) for giving instructions/directions (gira, siga, tome).
+- Travel and transport vocabulary (el tren, el avion, la estacion, el billete/boleto, la reserva) and prepositions of place/movement (a, en, de, para, por used with means of transport and destinations).
+- Parts of the body and common health expressions (me duele..., tengo dolor de cabeza/estomago, me siento bien/mal).
+- Making plans and invitations: ¿quieres/querrias + infinitive?, ¿te apetece...?, vamos a..., proposing and responding to a suggestion (de acuerdo, lo siento pero...).
+- Time expressions for future plans (manana, la proxima semana, dentro de dos dias).`
   },
   {
     subtopic: "B1.1 Conditional mood and modal verbs in context",
     specContent: `B1.1 Conditional mood and modal verbs in context
 
 Content - what students need to learn:
-- Present conditional formation (same irregular stems as the future tense, with endings -ei, -esti, -ebbe, -emmo, -este, -ebbero).
-- Uses of the present conditional: polite requests (vorrei, potrebbe), giving advice (dovresti), expressing a wish, hedging an opinion (direi che...).
-- Past conditional formation: present conditional of avere/essere + past participle (avrei fatto, sarei andato/a).
-- Use of the past conditional to express an unfulfilled past wish/intention, or reported speech about a future-in-the-past event.
-- Modal verbs (potere, dovere, volere) in the conditional to soften requests/obligations/suggestions compared to their present-tense equivalents.
-- Distinguishing when to use present conditional versus past conditional based on whether the reference point is now or a moment already in the past.`
+- Present conditional formation (the same irregular stems as the future tense, with endings -ia, -ias, -ia, -iamos, -iais, -ian added to the infinitive/irregular stem).
+- Uses of the present conditional: polite requests (querria, podria), giving advice (deberias), expressing a wish, hedging an opinion (diria que...).
+- Perfect (past) conditional formation: present conditional of haber + past participle (habria hecho, habria ido).
+- Use of the perfect conditional to express an unfulfilled past wish/intention, or reported speech about a future-in-the-past event.
+- Modal verbs (poder, deber, querer) in the conditional to soften requests/obligations/suggestions compared to their present-tense equivalents.
+- Distinguishing when to use the present conditional versus the perfect conditional based on whether the reference point is now or a moment already in the past.`
   },
   {
     subtopic: "B1.2 Combined and complex pronouns",
     specContent: `B1.2 Combined and complex pronouns
 
 Content - what students need to learn:
-- The pronoun "ci" used for location (ci vado, ci sono stato) and to replace "a/in/su + a thing already mentioned" (non ci penso).
-- The pronoun "ne" used to replace "di + noun" for quantity/topic (quanti ne vuoi? ne prendo due; ne parliamo domani).
-- Combining indirect object pronouns with direct object pronouns (mi lo -> me lo, ti la -> te la, gli lo/gli la -> glielo/gliela, ce lo, ve la), including the spelling changes this triggers.
-- Order of combined pronouns (indirect before direct) and their placement rules, matching single-pronoun placement (before a conjugated verb, or attached to an infinitive/gerund/imperative).
-- Agreement of the past participle with a preceding DIRECT object pronoun (lo, la, li, le) in the passato prossimo, including with combined pronouns.
-- Double-checking which combined form is required based on the underlying indirect + direct pronoun pairing, rather than memorising the surface forms alone.`
+- Combining indirect object pronouns with direct object pronouns, placing the indirect one first (me lo, te la, nos los, os las).
+- The special rule that third-person indirect pronouns (le, les) become "se" when combined with a third-person direct pronoun (le lo -> se lo, les la -> se la) - never "le lo"/"les la".
+- Placement rules for combined pronouns: before a conjugated verb, or attached to the end of an infinitive, gerund, or affirmative imperative (se lo doy / voy a darselo / dandoselo / ¡dimelo!), with a written accent added when attaching shifts the natural stress.
+- Unlike some other Romance languages, the Spanish past participle in a compound tense (with haber) NEVER changes for gender or number, regardless of any preceding object pronoun (se lo he dado - "dado" never agrees).
+- "Lo" used as a neuter pronoun referring back to a whole idea or previous statement, not a specific noun (no lo se, lo entiendo).
+- Working out which combined form is required from the underlying indirect + direct pairing, rather than memorising the surface forms alone.`
   },
   {
     subtopic: "B1.3 Relative pronouns and complex sentences",
     specContent: `B1.3 Relative pronouns and complex sentences
 
 Content - what students need to learn:
-- "Che" as the all-purpose relative pronoun for subject and direct object (both people and things), with no preposition.
-- "Cui" used after a preposition (a cui, di cui, con cui, per cui) to refer back to a person or thing already mentioned.
-- "Il quale / la quale / i quali / le quali" as a more formal alternative to cui, agreeing in gender/number with its antecedent, especially useful for disambiguating which noun is being referred to.
-- "Chi" used as an indefinite relative meaning "the person who / whoever" (chi arriva prima vince).
+- "Que" as the all-purpose relative pronoun for subject and direct object (both people and things), used with no preposition.
+- "Quien/quienes" used after a preposition to refer back to a person already mentioned (la persona con quien hable).
+- "El que / la que / los que / las que" and "el cual" etc. as more formal alternatives, agreeing in gender/number with their antecedent, especially useful for disambiguating which noun is being referred to.
+- "Lo que" as a neuter relative meaning "what/that which", referring to an idea rather than a specific noun (no entiendo lo que dices).
 - Forming complex sentences by joining two clauses with a relative pronoun, avoiding the common learner error of restating the noun instead of using the relative.
 - Distinguishing restrictive relative clauses (no comma, essential information) from non-restrictive ones (comma-separated, extra information).`
   },
   {
-    subtopic: "B1.4 Congiuntivo presente: formation and core triggers",
-    specContent: `B1.4 Congiuntivo presente: formation and core triggers
+    subtopic: "B1.4 Subjuntivo presente: formation and core triggers",
+    specContent: `B1.4 Subjuntivo presente: formation and core triggers
 
 Content - what students need to learn:
-- Present subjunctive formation for regular -are, -ere, -ire verbs (distinct endings from the indicative, notably the same ending across io/tu/lui-lei forms).
-- Common irregular present subjunctive stems (essere: sia, avere: abbia, andare: vada, fare: faccia, potere: possa, dovere: debba, volere: voglia, venire: venga, dire: dica).
-- The core rule: subjunctive is used in a dependent clause introduced by "che" after a main clause expressing opinion, doubt, emotion, desire, or necessity (credo che, penso che, spero che, e importante che, ho paura che), when the subject of the two clauses differs.
-- Contrast with the indicative: verbs of certainty/fact (so che, e vero che) take the indicative, not the subjunctive.
-- Impersonal expressions that trigger the subjunctive (bisogna che, e possibile che, sembra che).
-- Recognising when NO subjunctive is needed because the subject is the same across both clauses (in which case "di + infinitive" replaces "che + subjunctive", e.g. "credo di avere ragione").`
+- Present subjunctive formation: -ar verbs take "opposite vowel" endings (-e, -es, -e, -emos, -eis, -en); -er/-ir verbs take -a endings (-a, -as, -a, -amos, -ais, -an).
+- Common irregular present subjunctive stems (ser: sea, estar: este, ir: vaya, saber: sepa, dar: de, haber: haya), plus stem-changing verbs carrying their stem change into the subjunctive (querer -> quiera, poder -> pueda).
+- The core rule: subjunctive is used in a dependent clause introduced by "que" after a main clause expressing wish, emotion, doubt, or necessity (quiero que, espero que, es importante que, dudo que), when the subject of the two clauses differs.
+- Contrast with the indicative: "creo que" takes the indicative (creo que viene), but its negative "no creo que" triggers the subjunctive (no creo que venga) - a classic, genuinely important exception.
+- Impersonal expressions that trigger the subjunctive (es necesario que, es posible que, ojala que).
+- Recognising when NO subjunctive is needed because the subject is the same across both clauses (in which case the infinitive replaces "que + subjunctive": quiero comer, not quiero que coma, when the same person wants and eats).`
   },
   {
-    subtopic: "B1.5 Passive voice and impersonal si",
-    specContent: `B1.5 Passive voice and impersonal si
+    subtopic: "B1.5 Passive voice and impersonal se",
+    specContent: `B1.5 Passive voice and impersonal se
 
 Content - what students need to learn:
-- Passive voice formation with essere + past participle (agreeing with the subject), and the use of "da" to introduce the agent (il libro e stato scritto da Dante).
-- The alternative passive formation with "venire" + past participle, used only in simple tenses, as a common substitute for essere-passive.
-- The "si passivante" (passivating si) construction, used when the agent is unknown/unimportant, with the verb agreeing in number with the following noun (si vendono libri qui).
-- The "si impersonale" (impersonal si) construction for general statements equivalent to English "one/people/you" (in Italia si mangia bene), including its behaviour with reflexive verbs (ci si alza presto).
-- Distinguishing si passivante from si impersonale based on whether a direct object noun is present.
-- When each passive form (essere vs venire vs si) is stylistically preferred in Italian.`
+- Passive voice formation with ser + past participle (agreeing with the subject), and the use of "por" to introduce the agent (el libro fue escrito por Cervantes).
+- The "se pasiva" (passive se) construction, used when the agent is unknown/unimportant, with the verb agreeing in number with the following noun (se venden libros aqui).
+- The "se impersonal" (impersonal se) construction for general statements equivalent to English "one/people/you" (en Espana se cena tarde).
+- Distinguishing se pasiva from se impersonal based on whether the following noun is the grammatical subject (pasiva, always third person, agrees in number) or the construction stays fixed singular (impersonal, often with a person-referring verb).
+- When the "se" construction is stylistically preferred over the ser-passive in everyday spoken/written Spanish (se pasiva/impersonal are far more common than the ser-passive, which can sound formal or translated from English).`
   },
   {
-    subtopic: "B2.1 Congiuntivo passato, imperfetto and trapassato",
-    specContent: `B2.1 Congiuntivo passato, imperfetto and trapassato
+    subtopic: "B2.1 Subjuntivo pasado (imperfecto and pluscuamperfecto), and secuencia de tiempos",
+    specContent: `B2.1 Subjuntivo pasado (imperfecto and pluscuamperfecto), and secuencia de tiempos
 
 Content - what students need to learn:
-- Congiuntivo passato formation: present subjunctive of avere/essere + past participle, used when the subjunctive-triggering main clause is in the present but the dependent action happened before it (credo che abbia gia mangiato).
-- Congiuntivo imperfetto formation (regular -assi/-assi/-asse/-assimo/-aste/-assero for -are verbs, with equivalent patterns for -ere/-ire), used when the main clause is in a past tense or conditional and the dependent action is simultaneous/ongoing (volevo che tu venissi).
-- Congiuntivo trapassato formation: imperfect subjunctive of avere/essere + past participle, used for an action prior to a past-tense main clause (pensavo che fosse gia partito).
-- The concept of "concordanza dei tempi" (sequence of tenses): which subjunctive tense is required based on the tense of the main clause AND the relative timing of the dependent action.
-- Recognising the same core triggers from present-subjunctive (opinion, doubt, emotion, desire, necessity) still apply - only the TENSE of the subjunctive changes based on time reference.`
+- Perfect subjunctive formation: present subjunctive of haber + past participle (haya hecho), used when the subjunctive-triggering main clause is present-tense but the dependent action happened before it (creo que ya haya llegado).
+- Imperfect subjunctive formation: Spanish has TWO equally correct sets of endings, -ra (hablara, hablaras, hablara...) and -se (hablase, hablases, hablase...), with -ra more common in everyday speech - used when the main clause is past-tense or conditional and the dependent action is simultaneous/ongoing (queria que vinieras).
+- Pluperfect subjunctive formation: imperfect subjunctive of haber + past participle (hubiera/hubiese hecho), used for an action prior to a past-tense main clause (pensaba que ya hubiera salido).
+- "Secuencia de tiempos" (sequence of tenses): which subjunctive tense is required based on the tense of the main clause and the relative timing of the dependent action.
+- Recognising that the same core triggers from the present subjunctive (wish, emotion, doubt, necessity) still apply here - only the TENSE of the subjunctive changes based on time reference.`
   },
   {
-    subtopic: "B2.2 Periodo ipotetico (if-clauses)",
-    specContent: `B2.2 Periodo ipotetico (if-clauses)
+    subtopic: "B2.2 Oraciones condicionales (if-clauses)",
+    specContent: `B2.2 Oraciones condicionales (if-clauses)
 
 Content - what students need to learn:
-- Periodo ipotetico della realta (type 1, real/likely condition): se + present indicative, present or future indicative in the result clause (se piove, resto a casa / se piove, restero a casa).
-- Periodo ipotetico della possibilita (type 2, hypothetical/unlikely present-future condition): se + imperfect subjunctive, present conditional in the result clause (se avessi tempo, verrei).
-- Periodo ipotetico dell'irrealta (type 3, contrary-to-fact past condition): se + trapassato congiuntivo (pluperfect subjunctive), past conditional in the result clause (se avessi studiato, avrei passato l'esame).
-- Correct sequencing: the "se" clause and the result clause must use matching pairs of tenses/moods; mixing a type-2 "se" clause with a type-3 result clause (a common error) is incorrect.
-- Mixed hypotheticals in real usage: a past condition with a present-time consequence (se avessi studiato di piu, ora saprei rispondere), using trapassato congiuntivo with a present conditional.
-- Contrasting periodo ipotetico with the simpler "se" + indicative used for general truths/habits (se piove, l'erba cresce).`
+- Type 1 (real/likely condition): si + present indicative, present/future/imperative in the result clause (si llueve, me quedo en casa / si llueve, me quedare en casa).
+- Type 2 (hypothetical/unlikely present-future condition): si + imperfect subjunctive, present conditional in the result clause (si tuviera tiempo, vendria) - never the conditional inside the "si" clause itself, a very common learner error.
+- Type 3 (contrary-to-fact past condition): si + pluperfect subjunctive, perfect conditional in the result clause (si hubiera estudiado, habria aprobado).
+- Correct pairing of clauses: the "si" clause and the result clause must use matching pairs of tenses/moods; mixing a type-2 "si" clause with a type-3 result clause is incorrect.
+- Mixed hypotheticals in real usage: a past condition with a present-time consequence (si hubiera estudiado mas, ahora sabria responder), pairing pluperfect subjunctive with a present conditional.
+- Contrasting these hypothetical structures with the simple "si" + indicative used for general truths/habits (si llueve, crece la hierba).`
   },
   {
-    subtopic: "B2.3 Discorso indiretto (reported speech)",
-    specContent: `B2.3 Discorso indiretto (reported speech)
+    subtopic: "B2.3 Estilo indirecto (reported speech)",
+    specContent: `B2.3 Estilo indirecto (reported speech)
 
 Content - what students need to learn:
-- Introducing reported speech with ha detto che, ha spiegato che, ha chiesto se.
-- Tense shifts (backshifting) when the reporting verb is in a past tense: present becomes imperfetto, passato prossimo becomes trapassato prossimo, future becomes present conditional.
-- No backshift required when the reporting verb is in the present tense (dice che viene).
-- Pronoun and possessive changes required when reporting speech from a different person's perspective (io -> lui/lei, il mio -> il suo).
-- Adverb/time-expression changes required in reported speech (oggi -> quel giorno, domani -> il giorno dopo, ieri -> il giorno prima, qui -> li).
-- Reporting yes/no questions with "se" and reporting wh-questions by keeping the question word but switching to statement word order (mi ha chiesto dove abitavo, not dove abitavo io).`
+- Introducing reported speech with dijo que, explico que, pregunto si.
+- Tense shifts (backshifting) when the reporting verb is in a past tense: present becomes imperfecto, preterito indefinido becomes pluscuamperfecto, future becomes present conditional.
+- No backshift required when the reporting verb is in the present tense (dice que viene).
+- Pronoun and possessive changes required when reporting speech from a different person's perspective (yo -> el/ella, mi -> su).
+- Adverb/time-expression changes required in reported speech (hoy -> ese dia, manana -> al dia siguiente, ayer -> el dia anterior, aqui -> alli).
+- Reporting yes/no questions with "si" and reporting wh-questions by keeping the question word but switching to statement word order (me pregunto donde vivia, not donde vivia yo).`
   },
   {
-    subtopic: "B2.4 Gerund, advanced connectors and register",
-    specContent: `B2.4 Gerund, advanced connectors and register
+    subtopic: "B2.4 Gerundio, advanced connectors and register",
+    specContent: `B2.4 Gerundio, advanced connectors and register
 
 Content - what students need to learn:
-- Gerund formation (-are to -ando, -ere/-ire to -endo) and its use with stare to form the present/past progressive (sto mangiando, stavo mangiando).
-- Gerund used adverbially to express manner, cause, or a simultaneous action, without a subordinating conjunction (uscendo di casa, ho visto Marco = "on leaving the house...").
-- Gerund with a preceding pronoun attached (vedendolo, alzandosi).
-- Advanced argumentative connectors: tuttavia, nonostante, sebbene, malgrado (the latter three requiring the subjunctive), quindi, dunque, percio, d'altra parte.
-- Formal written register versus spoken/informal register: choice of vocabulary (comprendere vs capire), avoidance of contractions and colloquialisms, and preference for "si impersonale" or passive constructions over "tu"-directed phrasing in formal writing.
-- Structuring a short argumentative paragraph in Italian: stating a thesis, connecting supporting points with the connectors above, and a concluding connector (in conclusione, in sintesi).`
+- Gerundio formation (-ar to -ando, -er/-ir to -iendo), including the spelling/stem-change irregularities that carry over from the preterite (dormir -> durmiendo, leer -> leyendo, decir -> diciendo).
+- Gerundio used with estar to form the present/past progressive (estoy comiendo, estaba comiendo).
+- Gerundio used adverbially to express manner, cause, or a simultaneous action, without a subordinating conjunction (saliendo de casa, vi a Juan = "on leaving the house...").
+- Gerundio with a pronoun attached to the end, adding a written accent (viendolo, levantandose).
+- Advanced argumentative connectors: sin embargo, a pesar de que, aunque (indicative for a known fact, subjunctive for a hypothetical), por lo tanto, ademas.
+- Formal written register versus spoken/informal register: preference for "usted" over "tu" in formal writing, avoidance of colloquialisms, and preference for impersonal "se" or passive constructions over direct "tu"-directed phrasing.
+- Structuring a short argumentative paragraph in Spanish: stating a thesis, connecting supporting points with the connectors above, and a concluding connector (en conclusion, en resumen).`
   },
 ];
 

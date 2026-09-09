@@ -27,6 +27,11 @@ export type NodeNoteVisual =
   | { type: 'comparison'; otherLabel: string; thisPoints: string[]; otherPoints: string[] }
   | { type: 'workedExample'; steps: string[] }
   | { type: 'example'; text: string }
+  // Language-learning subjects only - a genuine English cognate/mnemonic
+  // anchor (see NODE_NOTES_COMPILE_PROMPT's own "englishAnchor" rule),
+  // distinct from 'example' (a fresh illustration vs. a link to something
+  // the student already knows in English).
+  | { type: 'englishAnchor'; text: string }
   | { type: 'none' };
 
 export interface NodeNotesResult {
@@ -100,10 +105,11 @@ async function getSiblingCandidates(nodeId: string, subtopic: string, subject: s
 interface NodeNotesModelResponse {
   heading: string;
   paragraphs: string[];
-  visualType: 'comparison' | 'workedExample' | 'example' | 'none';
+  visualType: 'comparison' | 'workedExample' | 'example' | 'englishAnchor' | 'none';
   comparison?: { otherLabel: string; thisPoints: string[]; otherPoints: string[] };
   workedExample?: { steps: string[] };
   example?: string;
+  englishAnchor?: string;
 }
 
 export async function compileNodeNotes(nodeId: string, userId: string): Promise<NodeNotesResult | null> {
@@ -132,6 +138,7 @@ export async function compileNodeNotes(nodeId: string, userId: string): Promise<
     : await getSiblingCandidates(nodeId, node.subtopic as string, node.subject as string, node.qualification as string, node.exam_board as string);
 
   const userContent = [
+    `Subject: ${node.subject} | Qualification: ${node.qualification}${node.exam_board ? ` | Exam board: ${node.exam_board}` : ''}`,
     `Concept: ${node.label}`,
     `Explanation: ${explanation}`,
     siblings.length
@@ -158,6 +165,8 @@ export async function compileNodeNotes(nodeId: string, userId: string): Promise<
     visual = { type: 'workedExample', steps: modelResult.workedExample.steps };
   } else if (modelResult.visualType === 'example' && modelResult.example) {
     visual = { type: 'example', text: modelResult.example };
+  } else if (modelResult.visualType === 'englishAnchor' && modelResult.englishAnchor) {
+    visual = { type: 'englishAnchor', text: modelResult.englishAnchor };
   }
 
   const result: NodeNotesResult = { heading: modelResult.heading || node.label, paragraphs: modelResult.paragraphs || [], visual };

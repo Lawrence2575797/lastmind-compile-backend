@@ -9,7 +9,8 @@ Rules:
 4. Identify any genuine conceptual mistake — a misunderstanding of the underlying subject matter itself, not just a missing point — and name specifically what was misunderstood and what the correct idea actually is. Leave this null if the answer shows no real conceptual error, even if it's simply incomplete.
 5. Separately, note anything about exam technique or wording that held the answer back even where the underlying understanding was fine — not following the command word's expected structure, vague phrasing, a chain of reasoning the mark scheme expects spelled out but which was only implied, imprecise terminology. Leave this null if there's nothing worth flagging.
 6. You will also be told which concepts this student has actually covered in their LastMind lessons for this subject so far. This mark scheme reflects the real exam specification, which is often broader than that — if a point the answer missed corresponds to something NOT in the covered list, never present it as something the student should already know or as a gap in their preparation. Say so explicitly instead (e.g. "you could also mention X — this hasn't come up in your lessons yet, so don't worry that you missed it, but it's worth knowing for the real exam").
-7. Output ONLY valid JSON, nothing else.
+7. Any mathematical notation in your feedback must be plain-text-typeable (real unicode symbols like √/π/×, "^(...)" for a multi-character exponent or a bare superscript like x² for a simple one, "_(...)" for a subscript, a plain "/" for a fraction) — NEVER LaTeX or a backslash command, since this is displayed as-is with no LaTeX renderer.
+8. Output ONLY valid JSON, nothing else.
 
 Output schema:
 { "mark": number, "feedback": string, "conceptualMistakes": string | null, "examTechniqueTips": string | null }
@@ -33,7 +34,8 @@ Rules:
 2. Work through each named criterion/level exactly as usual (never invent criteria not in the mark scheme; a "points" scheme sums named criteria, a "levels" scheme places the answer in a best-fit band as a whole) - the ONLY difference from normal marking is reporting which group each part of the awarded total belongs to.
 3. Identify any genuine conceptual mistake (name specifically what was misunderstood and the correct idea) - null if none. Separately note any exam-technique issue (structure, vague phrasing, imprecise terminology) - null if none.
 4. You will also be told which concepts this student has actually covered in their LastMind lessons for this subject - never present a missed point outside that coverage as something they should already know; say so explicitly instead.
-5. Output ONLY valid JSON, nothing else.
+5. Any mathematical notation in your feedback must be plain-text-typeable (real unicode symbols like √/π/×, "^(...)" for a multi-character exponent or a bare superscript like x² for a simple one, "_(...)" for a subscript, a plain "/" for a fraction) — NEVER LaTeX or a backslash command, since this is displayed as-is with no LaTeX renderer.
+6. Output ONLY valid JSON, nothing else.
 
 Output schema:
 { "mark": number, "componentMarks": { "<group key>": number, ... }, "feedback": string, "conceptualMistakes": string | null, "examTechniqueTips": string | null }
@@ -58,7 +60,8 @@ Rules:
 3. If markSchemeStyle is "ao_additive" and a componentSplit is given: build a mark_scheme_json whose criteria/levels structure adds up EXACTLY to the given group totals — a "points" question gets one named criterion per component group with that group's exact mark value (e.g. a group {"key":"KAA","marks":9} becomes one criterion worth 9 marks covering knowledge+application+analysis together, since this exam board marks those three together below essay scale — never split a group into per-AO sub-criteria unless the group itself only names one component); a "levels" question gets a small number of holistic bands whose top band's mark range tops out at the tariff, with each group's own component names (e.g. KAA vs AO4/Evaluation) reflected in what that band's descriptor actually asks for.
 4. If markSchemeStyle is "mab" (Method/Accuracy/independent-fact marks — always a maths-style question): decide the real M/A/B allocation for the actual working steps THIS question requires (this is inherently per-question, not a fixed table) and return it as the componentSplit groups yourself, plus a "points" mark_scheme_json with one criterion per real working step naming which mark type it is.
 5. answerStructureAdvice: 1-2 sentences of real exam-technique guidance for structuring an answer to THIS specific question (not generic advice) — null only if the tariff is too low for this to be meaningful (e.g. a 1-2 mark question).
-6. Output ONLY valid JSON, nothing else.
+6. CRITICAL — any mathematical notation in questionText or answerStructureAdvice (for ANY subject, not just Maths — e.g. an Economics calculation) must be written in PLAIN TEXT the way someone would type it on an ordinary keyboard, NEVER LaTeX and NEVER a backslash command (no \\frac, \\sqrt, \\int, \\times, $ delimiters, etc — this text is displayed as-is, with no LaTeX renderer). Use: real unicode symbols directly where natural (√, π, ×, ÷, °, ≤, ≥, Greek letters like α/β/θ); "^(...)" for a power/exponent whose content is more than one character (e.g. "x^(2x+1)"), or a bare unicode superscript for a simple one (x²); "_(...)" for a subscript the same way; a plain "/" for a fraction or ratio (e.g. "dy/dx", "1/2"). This is the exact convention this app's own maths-keyboard input tool produces, so it renders correctly without any further processing.
+7. Output ONLY valid JSON, nothing else.
 
 Output schema:
 {

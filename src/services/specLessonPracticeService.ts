@@ -105,8 +105,76 @@ export interface AvailableTypesResult {
     requiresDiagram: boolean;
     requiresMathsKeyboard: boolean;
   }>;
+  // Already-picked questions for THIS student+spec-lesson, in the order
+  // they were picked (index 0 = "Question 1 of 3") - persisted, not
+  // transient, so navigating away mid-question and back still shows it
+  // instead of it looking like a used-up, now-inaccessible pick.
+  pickedQuestions: PracticeQuestionSummary[];
   picksUsed: number;
   picksRemaining: number;
+}
+
+// Scoped through spec_lesson_practice_picks (user_id + concept_id), NOT a
+// plain concept_id lookup on practice_questions - a generated_live row's
+// concept_id is shared with every other student practicing the same
+// spec-lesson, so filtering by concept_id alone (the way the existing
+// authored-bank listPracticeQuestions does) would leak other students'
+// own generated questions into this list. picked_at ordering is what
+// "Question N of 3" numbering is based on.
+async function getPickedQuestions(userId: string, conceptId: string): Promise<PracticeQuestionSummary[]> {
+  const { data: picks, error: picksError } = await supabaseAdmin
+    .from('spec_lesson_practice_picks')
+    .select('question_id')
+    .eq('user_id', userId)
+    .eq('concept_id', conceptId)
+    .order('picked_at', { ascending: true });
+  if (picksError) throw picksError;
+  const questionIds = (picks || []).map((p) => p.question_id as string).filter(Boolean);
+  if (!questionIds.length) return [];
+
+  const { data: questions, error: questionsError } = await supabaseAdmin
+    .from('practice_questions')
+    .select('id, question_text, mark_tariff, requires_diagram, requires_maths_keyboard, answer_structure_advice, mark_scheme_type, mark_scheme_json, ao_component_split')
+    .in('id', questionIds);
+  if (questionsError) throw questionsError;
+  const questionById = new Map((questions || []).map((q) => [q.id as string, q]));
+
+  const { data: attempts, error: attemptsError } = await supabaseAdmin
+    .from('practice_question_attempts')
+    .select('question_id, answer_text, mark_awarded, mark_tariff, feedback, conceptual_mistakes, exam_technique_tips, ao_component_marks')
+    .eq('user_id', userId)
+    .in('question_id', questionIds);
+  if (attemptsError) throw attemptsError;
+  const attemptByQuestionId = new Map((attempts || []).map((a) => [a.question_id as string, a]));
+
+  // Preserves pick order (questionIds is already picked_at-ordered) - a
+  // .select().in() response is not guaranteed to come back in that order.
+  return questionIds
+    .map((id) => questionById.get(id))
+    .filter((row): row is NonNullable<typeof row> => !!row)
+    .map((row) => {
+      const attempt = attemptByQuestionId.get(row.id as string);
+      return {
+        id: row.id as string,
+        questionText: row.question_text as string,
+        markTariff: row.mark_tariff as number,
+        requiresDiagram: row.requires_diagram as boolean,
+        requiresMathsKeyboard: (row.requires_maths_keyboard as boolean) ?? false,
+        answerStructureAdvice: (row.answer_structure_advice as string | null) ?? null,
+        isMultipleChoice: row.mark_scheme_type === 'multiple_choice',
+        options: row.mark_scheme_type === 'multiple_choice' ? ((row.mark_scheme_json as { options: string[] }).options ?? null) : null,
+        aoComponentSplit: (row.ao_component_split as unknown) ?? null,
+        priorAttempt: attempt ? {
+          answerText: attempt.answer_text as string,
+          markAwarded: attempt.mark_awarded as number,
+          markTariff: attempt.mark_tariff as number,
+          feedback: attempt.feedback as string,
+          conceptualMistakes: (attempt.conceptual_mistakes as string | null) ?? null,
+          examTechniqueTips: (attempt.exam_technique_tips as string | null) ?? null,
+          componentMarks: (attempt.ao_component_marks as Record<string, number> | null) ?? null,
+        } : null,
+      };
+    });
 }
 
 export async function getAvailableTypes(userId: string, conceptId: string): Promise<AvailableTypesResult> {
@@ -114,10 +182,11 @@ export async function getAvailableTypes(userId: string, conceptId: string): Prom
   if (!specLesson) throw new SpecLessonNotFoundError();
 
   const examBoard = specLesson.exam_board || '';
-  const [allTypes, styleRow, picksResult] = await Promise.all([
+  const [allTypes, styleRow, picksResult, pickedQuestions] = await Promise.all([
     getQuestionTypes(specLesson.subject, specLesson.qualification, examBoard),
     getMarkSchemeStyle(specLesson.subject, specLesson.qualification, examBoard),
     supabaseAdmin.from('spec_lesson_practice_picks').select('type_key').eq('user_id', userId).eq('concept_id', conceptId),
+    getPickedQuestions(userId, conceptId),
   ]);
   if (picksResult.error) throw picksResult.error;
 
@@ -142,6 +211,7 @@ export async function getAvailableTypes(userId: string, conceptId: string): Prom
     markSchemeStyle: styleRow?.mark_scheme_style ?? null,
     componentDefinitions: styleRow?.component_definitions ?? null,
     availableTypes,
+    pickedQuestions,
     picksUsed,
     picksRemaining,
   };

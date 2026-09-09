@@ -1,33 +1,35 @@
 // Usage caps on FRESH knowledge-map-v2 generation (a genuine cache miss -
-// generateAndCacheNodeLesson/generateAndCacheEdgeLesson, real Sonnet cost)
-// - Premium only, per explicit product decision. Enforced as its own
-// simple count-based limiter (fresh_generation_events), separate from the
-// Locks currency (lock_balances) - a heavy user can hit this window cap
-// before ever running short on Locks, and vice versa. The two ARE sized
-// off each other though: locks.ts's own MONTHLY_LOCK_ALLOTMENT is
-// FRESH_GENERATION_CAP_MONTH x the Locks cost of a first-time encoding
-// lesson, so the two ceilings agree on what "a month's worth of usage"
-// means even though nothing here reads or writes lock_balances directly.
-// Every fresh generation counts as exactly one unit against every window
-// below, deliberately NOT distinguishing cache-hit vs cache-miss cost (there is
-// no cache-hit case here by definition - a cache hit never reaches
-// generateAndCache*, see routes/knowledgeMap.ts's own lesson routes).
+// generateAndCacheNodeLesson/generateAndCacheEdgeLesson, real Sonnet cost).
+// Both tiers are capped (see generationCapService.ts) - previously only
+// Premium was, which left free accounts completely uncapped on real
+// generation spend; that's the actual bug this two-tier split fixes, per
+// explicit product decision. Sized off a real, measured cost: a first-time
+// node-lesson generation + its grading call costs ~$0.0128 today (Sonnet 5
+// generation + Haiku grading, current API pricing).
 //
-// Sized off a real, measured cost: a first-time node-lesson generation +
-// its grading call costs ~$0.0128 today (Sonnet 5 generation + Haiku
-// grading, current API pricing). The tiered numbers below (13/25/40) are
-// small multiples of each other, not the same number repeated, so each
-// window is a genuinely tighter ceiling than "just stack the shorter
-// one" - two full 2-hour bursts would be 26, but the day cap stops that
-// at 25; two full days would be 50, but the week cap stops that at 40.
-// WEEK is the real gate for a sustained heavy user - by design, it's
-// reachable only after ~1.5-2 genuinely heavy days, not casual use, and
-// hitting it is the intended trigger to offer buying more usage (not yet
-// built - see chainLesson.ts's own comment on this being the missing
-// piece). MONTH resets on the calendar month boundary (matching the
-// existing lock_balances pattern's own currentMonthStart), a real but
-// looser backstop above the weekly figure.
+// PREMIUM: 2h/day unchanged from the original single-tier figures; week
+// and month raised (40->100, 150->300) so a genuinely heavy premium month
+// is 300 lessons - exactly 3x the free monthly figure below (a real,
+// deliberate 200%-higher-than-free ceiling, expressed in lessons, not
+// Locks - the two systems are unrelated, see lockService.ts). Resets:
+// 2h/day/week are ROLLING windows (exact lookback from now - a calendar-
+// boundary reset would let a student burn the cap right before midnight
+// and again right after); MONTH resets on the calendar boundary, same
+// convention as lockService.ts's own currentMonthStart.
 export const FRESH_GENERATION_CAP_2H = 13;
 export const FRESH_GENERATION_CAP_DAY = 25;
-export const FRESH_GENERATION_CAP_WEEK = 40;
-export const FRESH_GENERATION_CAP_MONTH = 150;
+export const FRESH_GENERATION_CAP_WEEK = 100;
+export const FRESH_GENERATION_CAP_MONTH = 300;
+
+// FREE: hour/day/week are rolling windows, same philosophy as Premium's
+// 2h/day/week above. MONTH is the one deliberate difference in shape, not
+// just number - it resets on the student's own signup-anniversary day
+// each month (see generationCapService.ts's currentAnchorMonthStartIso),
+// not the calendar month boundary, so a free account's usage always
+// resets on the same day-of-month they joined on. 100/month is exactly
+// 1/3 of Premium's 300 - the "200% higher" ratio the product decision is
+// stated in.
+export const FREE_GENERATION_CAP_HOUR = 4;
+export const FREE_GENERATION_CAP_DAY = 8;
+export const FREE_GENERATION_CAP_WEEK = 25;
+export const FREE_GENERATION_CAP_MONTH = 100;

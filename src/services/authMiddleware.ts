@@ -8,6 +8,7 @@ declare global {
     interface Request {
       userId?: string;
       userEmail?: string | null;
+      userCreatedAt?: string | null;
     }
   }
 }
@@ -34,6 +35,7 @@ export async function requireAuth(req: Request, res: Response, next: NextFunctio
 
   req.userId = user.id;
   req.userEmail = user.email;
+  req.userCreatedAt = user.createdAt;
   next();
 }
 

@@ -18,6 +18,7 @@ export const supabaseAdmin = createClient(SUPABASE_URL || '', SUPABASE_SERVICE_R
 export interface VerifiedUser {
   id: string;
   email: string | null;
+  createdAt: string | null;
 }
 
 // Verifies a Supabase access token cryptographically against Supabase
@@ -27,9 +28,12 @@ export interface VerifiedUser {
 // authMiddleware.ts can gate the admin overdue-queue behind an
 // ADMIN_EMAILS allowlist — there's no role/permissions table anywhere in
 // this codebase, and email is the one piece of real identity Supabase Auth
-// already verifies for us.
+// already verifies for us. createdAt (the real Supabase Auth signup
+// timestamp, already present on this same response - no extra lookup) is
+// what generationCapService.ts's free-tier anchor-day monthly reset is
+// computed from.
 export async function verifyUser(accessToken: string): Promise<VerifiedUser | null> {
   const { data, error } = await supabaseAdmin.auth.getUser(accessToken);
   if (error || !data?.user) return null;
-  return { id: data.user.id, email: data.user.email || null };
+  return { id: data.user.id, email: data.user.email || null, createdAt: data.user.created_at || null };
 }

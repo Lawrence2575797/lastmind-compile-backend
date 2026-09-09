@@ -130,13 +130,11 @@ router.get('/knowledge-map-v2/node/:nodeId/lesson', requireAuth, syncEndpointLim
     if (data) return res.json(data.encoding_content);
 
     // Cache miss - a real Sonnet generation is about to happen. Capped
-    // (Premium only) BEFORE generating, not after - see
-    // generationCapService.ts for the actual windows/limits and why a
-    // cache hit above never reaches this check at all.
+    // BEFORE generating, not after, for BOTH tiers (free used to bypass
+    // this entirely - see generationCapService.ts's own comment on why
+    // that changed) - a cache hit above never reaches this check at all.
     const userId = req.userId as string;
-    if (await isUserPaid(userId)) {
-      await assertFreshGenerationWithinCap(userId);
-    }
+    await assertFreshGenerationWithinCap(userId, await isUserPaid(userId), req.userCreatedAt ?? null);
     const generated = await generateAndCacheNodeLesson(nodeId, userId);
     if (!generated) return res.status(404).json({ error: 'concept not found' });
     await recordFreshGenerationEvent(userId);
@@ -210,9 +208,7 @@ router.get('/knowledge-map-v2/edge/:fromNodeId/:toNodeId/lesson', requireAuth, s
     }
 
     const userId = req.userId as string;
-    if (await isUserPaid(userId)) {
-      await assertFreshGenerationWithinCap(userId);
-    }
+    await assertFreshGenerationWithinCap(userId, await isUserPaid(userId), req.userCreatedAt ?? null);
     const generated = await generateAndCacheEdgeLesson(fromNodeId, toNodeId, userId);
     if (!generated) return res.status(404).json({ error: 'connection not found or not ready yet' });
     await recordFreshGenerationEvent(userId);
@@ -940,8 +936,15 @@ router.post('/knowledge-map-v2/node-review/integration/submit', requireAuth, cos
 // Compiled straight from a node's/edge's own ground truth (never a
 // student's own answer), cached once and shared across every student who's
 // earned it - see knowledgeMapNotesService.ts's own top comment.
+// Premium-only (all four routes below, not just the two that actually
+// generate) - per the free/premium product decision, this whole feature
+// is a Premium perk, not just its live-generation cost; a free student
+// reading a copy someone else already paid to generate is still "note
+// generation after lessons" from the product's own framing. Free students
+// keep their own PERSONAL notes (personal-notes routes further down -
+// never gated, never calls Claude) unaffected.
 
-router.post('/knowledge-map-v2/node/:nodeId/notes/compile', requireAuth, costlyEndpointLimiter, async (req: Request, res: Response) => {
+router.post('/knowledge-map-v2/node/:nodeId/notes/compile', requireAuth, requirePaidTier, costlyEndpointLimiter, async (req: Request, res: Response) => {
   try {
     const notes = await compileNodeNotes(req.params.nodeId, req.userId as string);
     if (!notes) return res.status(404).json({ error: 'no lesson generated for this concept yet' });
@@ -952,7 +955,7 @@ router.post('/knowledge-map-v2/node/:nodeId/notes/compile', requireAuth, costlyE
   }
 });
 
-router.get('/knowledge-map-v2/node/:nodeId/notes', requireAuth, async (req: Request, res: Response) => {
+router.get('/knowledge-map-v2/node/:nodeId/notes', requireAuth, requirePaidTier, async (req: Request, res: Response) => {
   try {
     const notes = await getNodeNotes(req.params.nodeId);
     if (!notes) return res.status(404).json({ error: 'no notes compiled for this concept yet' });
@@ -963,7 +966,7 @@ router.get('/knowledge-map-v2/node/:nodeId/notes', requireAuth, async (req: Requ
   }
 });
 
-router.post('/knowledge-map-v2/edge/:fromNodeId/:toNodeId/notes/compile', requireAuth, costlyEndpointLimiter, async (req: Request, res: Response) => {
+router.post('/knowledge-map-v2/edge/:fromNodeId/:toNodeId/notes/compile', requireAuth, requirePaidTier, costlyEndpointLimiter, async (req: Request, res: Response) => {
   try {
     const notes = await compileEdgeNotes(req.userId as string, req.params.fromNodeId, req.params.toNodeId);
     if (!notes) return res.status(404).json({ error: 'connection not found' });
@@ -974,7 +977,7 @@ router.post('/knowledge-map-v2/edge/:fromNodeId/:toNodeId/notes/compile', requir
   }
 });
 
-router.get('/knowledge-map-v2/edge/:fromNodeId/:toNodeId/notes', requireAuth, async (req: Request, res: Response) => {
+router.get('/knowledge-map-v2/edge/:fromNodeId/:toNodeId/notes', requireAuth, requirePaidTier, async (req: Request, res: Response) => {
   try {
     const notes = await getEdgeNotes(req.params.fromNodeId, req.params.toNodeId);
     if (!notes) return res.status(404).json({ error: 'no notes compiled for this connection yet' });

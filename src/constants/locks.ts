@@ -1,5 +1,3 @@
-import { FRESH_GENERATION_CAP_MONTH } from './generationCaps';
-
 // Locks — a monthly usage cap on every Claude-cost-incurring action in
 // the app (encoding + spaced retrieval lessons here, plus every other
 // metered action charged via chargeLocksForUsage elsewhere), deliberately
@@ -17,17 +15,22 @@ import { FRESH_GENERATION_CAP_MONTH } from './generationCaps';
 // (~128 Locks); a retrieval/spaced-review grading call costs ~$0.0013
 // (~13 Locks).
 //
-// MONTHLY_LOCK_ALLOTMENT is sized directly off the fresh-generation usage
-// cap already agreed (generationCaps.ts's FRESH_GENERATION_CAP_MONTH) —
-// assuming every one of a month's worth of lessons cost as much as the
-// most expensive lesson type, first-time encoding generation. It's a
-// ceiling on total spend across EVERY metered action in the app, not
-// fresh generation alone — fresh generation itself is separately, and
-// more tightly, rate-limited by generationCapService.ts's own rolling
-// 2h/day/week windows regardless of Lock balance.
+// MONTHLY_LOCK_ALLOTMENT was originally sized off generationCaps.ts's
+// FRESH_GENERATION_CAP_MONTH (150 at the time) x this file's own
+// ENCODING_LESSON_LOCK_COST - assuming every one of a month's worth of
+// lessons cost as much as the most expensive lesson type. That constant
+// has since been raised (see generationCaps.ts's own comment - a separate,
+// deliberate free/premium generation-cap redesign), so the multiplication
+// is now spelled out as a literal (150, the ORIGINAL fresh-generation
+// month figure) rather than importing the now-changed constant - Locks
+// itself is explicitly out of scope for that redesign and must not move
+// as a side effect of it. It's a ceiling on total spend across EVERY
+// metered action in the app, not fresh generation alone - fresh
+// generation itself is separately, and more tightly, rate-limited by
+// generationCapService.ts's own windows regardless of Lock balance.
 export const ENCODING_LESSON_LOCK_COST = 128;
 export const RETRIEVAL_LESSON_LOCK_COST = 13;
-export const MONTHLY_LOCK_ALLOTMENT = FRESH_GENERATION_CAP_MONTH * ENCODING_LESSON_LOCK_COST;
+export const MONTHLY_LOCK_ALLOTMENT = 150 * ENCODING_LESSON_LOCK_COST;
 
 // Held when booking a weekly calendar lesson slot (src/routes/locks.ts),
 // refunded if a qualifying lesson is started inside the booked window,

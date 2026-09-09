@@ -238,6 +238,75 @@ export async function getStoredLessonPlan(rawSubject: string, qualification: str
   return Array.from(bySubtopic.entries()).map(([subtopic, concepts]) => ({ subtopic, concepts }));
 }
 
+export interface SpecLessonTreeLesson {
+  concept: string;
+  conceptId: string;
+  lessonOrder: number;
+}
+export interface SpecLessonTreeSubtopic {
+  subtopic: string;
+  lessons: SpecLessonTreeLesson[];
+}
+export interface SpecLessonTreeTheme {
+  theme: string;
+  branch: string;
+  subtopics: SpecLessonTreeSubtopic[];
+}
+
+/**
+ * The Theme -> Subtopic -> spec-lesson tree for the standalone Practice
+ * Questions page - one level deeper than getStoredLessonPlan above
+ * (which flattens straight to Subtopic -> concepts for folder-creation
+ * use). Returns null when nothing's seeded yet for this subject/board
+ * (e.g. Maths/Italian before their own spec_lesson_plans seed exists) so
+ * the frontend can show an honest "not set up yet" state instead of an
+ * empty tree.
+ */
+export async function getSpecLessonTree(rawSubject: string, qualification: string, examBoard: string): Promise<SpecLessonTreeTheme[] | null> {
+  if (!qualification) return null;
+  const { subject } = await resolveSubjectTriple(rawSubject, qualification, examBoard);
+  const { data, error } = await supabaseAdmin
+    .from('spec_lesson_plans')
+    .select('subject, qualification, exam_board, theme, branch, subtopic, concept, concept_id, lesson_order')
+    .ilike('subject', subject)
+    .order('theme', { ascending: true })
+    .order('subtopic', { ascending: true })
+    .order('lesson_order', { ascending: true });
+  if (error) {
+    console.error('LastMind: spec lesson tree lookup failed, proceeding without one.', error);
+    return null;
+  }
+  if (!data || !data.length) return null;
+
+  const wantQualification = normalizeForPlanMatch(stripGcseTierForPlanMatch(qualification));
+  const wantExamBoard = normalizeForPlanMatch(examBoard || '');
+  const matched = data.filter((row) =>
+    normalizeForPlanMatch(row.qualification as string) === wantQualification &&
+    normalizeForPlanMatch((row.exam_board as string) || '') === wantExamBoard
+  );
+  if (!matched.length) return null;
+
+  const byTheme = new Map<string, { branch: string; subtopics: Map<string, SpecLessonTreeLesson[]> }>();
+  for (const row of matched) {
+    const theme = row.theme as string;
+    const subtopic = row.subtopic as string;
+    if (!byTheme.has(theme)) byTheme.set(theme, { branch: (row.branch as string) || '', subtopics: new Map() });
+    const themeEntry = byTheme.get(theme)!;
+    if (!themeEntry.subtopics.has(subtopic)) themeEntry.subtopics.set(subtopic, []);
+    themeEntry.subtopics.get(subtopic)!.push({
+      concept: row.concept as string,
+      conceptId: row.concept_id as string,
+      lessonOrder: row.lesson_order as number,
+    });
+  }
+
+  return Array.from(byTheme.entries()).map(([theme, { branch, subtopics }]) => ({
+    theme,
+    branch,
+    subtopics: Array.from(subtopics.entries()).map(([subtopic, lessons]) => ({ subtopic, lessons })),
+  }));
+}
+
 /**
  * One-time admin step (see scripts/seedSpecOutline.ts) — never runs in the
  * live student-facing request path. Takes RAW, mechanically-extracted text

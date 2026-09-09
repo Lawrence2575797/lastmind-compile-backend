@@ -226,6 +226,7 @@ export async function generateSpecLessonPracticeQuestion(userId: string, concept
       mark_scheme_type: result.markSchemeType,
       mark_scheme_json: result.markSchemeJson,
       answer_structure_advice: result.answerStructureAdvice,
+      requires_maths_keyboard: questionType.requires_maths_keyboard,
       source: 'generated_live',
       generated_for_user_id: userId,
       type_key: typeKey,
@@ -260,9 +261,11 @@ export async function generateSpecLessonPracticeQuestion(userId: string, concept
     questionText: result.questionText,
     markTariff: questionType.mark_tariff,
     requiresDiagram: questionType.requires_diagram,
+    requiresMathsKeyboard: questionType.requires_maths_keyboard,
     answerStructureAdvice: result.answerStructureAdvice,
     isMultipleChoice: result.markSchemeType === 'multiple_choice',
     options: result.markSchemeType === 'multiple_choice' ? ((result.markSchemeJson as { options: string[] }).options ?? null) : null,
+    aoComponentSplit: componentSplit,
     priorAttempt: null,
   };
 }

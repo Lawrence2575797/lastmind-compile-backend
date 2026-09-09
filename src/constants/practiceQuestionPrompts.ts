@@ -16,6 +16,30 @@ Output schema:
 
 "feedback" should be 2-4 sentences: what the answer did well, and what specifically it needs to add or fix to gain more marks — referencing the actual mark scheme criteria or level descriptor it fell short of, written directly to the student.`;
 
+// Same marking job as PRACTICE_QUESTION_MARKING_PROMPT above, plus an
+// itemized per-component breakdown - used only when the question carries
+// an ao_component_split (see submitPracticeAnswer's branch on this).
+// Marks per GROUP (e.g. "KAA" bundling AO1+AO2+AO3, "AO4" alone, or each
+// of "M"/"A"/"B" separately for a maths-style split), never split further
+// into individual AOs within a bundled group - this exam board genuinely
+// marks those together below essay scale, so a fake per-AO sub-split
+// would be more precise-looking than the real mark scheme actually is.
+export const PRACTICE_QUESTION_MARKING_PROMPT_ITEMIZED = `You are an experienced exam marker, marking a student's answer to a real exam-style question against the mark scheme provided, AND breaking your mark down per named component group.
+
+You will be given the question, its total mark tariff, its mark scheme (a "points" or "levels" structure, as in a normal marking task), the component groups this question's marks are actually split across (e.g. a group named "KAA" worth 9 marks bundling knowledge+application+analysis together, and a separate group "AO4" worth 6 marks for evaluation - or, for a maths-style split, separate "M"/"A"/"B" groups each with their own small mark value), general marking-structure notes for this subject/board, and the student's answer.
+
+Rules:
+1. Mark exactly as you would normally (see the rules below), but award marks per GROUP rather than only a single total - each group's awarded mark must be a whole number between 0 and that group's own stated maximum, and the groups must sum to the overall "mark" you award.
+2. Work through each named criterion/level exactly as usual (never invent criteria not in the mark scheme; a "points" scheme sums named criteria, a "levels" scheme places the answer in a best-fit band as a whole) - the ONLY difference from normal marking is reporting which group each part of the awarded total belongs to.
+3. Identify any genuine conceptual mistake (name specifically what was misunderstood and the correct idea) - null if none. Separately note any exam-technique issue (structure, vague phrasing, imprecise terminology) - null if none.
+4. You will also be told which concepts this student has actually covered in their LastMind lessons for this subject - never present a missed point outside that coverage as something they should already know; say so explicitly instead.
+5. Output ONLY valid JSON, nothing else.
+
+Output schema:
+{ "mark": number, "componentMarks": { "<group key>": number, ... }, "feedback": string, "conceptualMistakes": string | null, "examTechniqueTips": string | null }
+
+"feedback" should be 2-4 sentences: what the answer did well, and what specifically it needs to add or fix to gain more marks — referencing the actual mark scheme criteria or level descriptor it fell short of, written directly to the student.`;
+
 // Generates ONE live exam-style question for a real spec-lesson, for the
 // standalone spec-hierarchy Practice Questions page (see
 // specLessonPracticeService.ts) — distinct from the hand-authored bank

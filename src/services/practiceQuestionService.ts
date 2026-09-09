@@ -1,6 +1,6 @@
 import { supabaseAdmin } from './supabaseAdmin';
 import { callClaudeJSON, MODELS } from './claudeClient';
-import { PRACTICE_QUESTION_MARKING_PROMPT } from '../constants/practiceQuestionPrompts';
+import { PRACTICE_QUESTION_MARKING_PROMPT, PRACTICE_QUESTION_MARKING_PROMPT_ITEMIZED } from '../constants/practiceQuestionPrompts';
 import { normalizeForPlanMatch } from './chainService';
 import { gradeAndRecordReview, ratingFromMarkRatio } from './reviewService';
 import { resolveSubjectTriple } from './subjectResolution';
@@ -89,6 +89,10 @@ export interface PracticeQuestionMarkingResult {
   feedback: string;
   conceptualMistakes: string | null;
   examTechniqueTips: string | null;
+  // Only populated when the question carried an ao_component_split (see
+  // submitPracticeAnswer's branch on this) - keyed by that split's own
+  // group keys (e.g. "KAA"/"AO4", or "M"/"A"/"B"), summing to markAwarded.
+  componentMarks: Record<string, number> | null;
 }
 
 export interface PracticeQuestionSummary {
@@ -96,12 +100,18 @@ export interface PracticeQuestionSummary {
   questionText: string;
   markTariff: number;
   requiresDiagram: boolean;
+  requiresMathsKeyboard: boolean;
   answerStructureAdvice: string | null;
   isMultipleChoice: boolean;
   // Only ever populated for a multiple-choice question — the correct
   // option's index is deliberately never included here, only in the
   // full row submitPracticeAnswer reads server-side.
   options: string[] | null;
+  // Null for the existing authored bank; the fixed (ao_additive) or
+  // model-decided (mab) component breakdown for a generated_live question
+  // — see specLessonPracticeService.ts. Passed through so the frontend can
+  // render an itemized breakdown after marking without a second fetch.
+  aoComponentSplit: unknown | null;
   // Set once this student has already submitted an answer to this
   // question — the frontend renders it read-only (their stored answer,
   // mark, and feedback) instead of a fresh form, since a question can
@@ -113,7 +123,7 @@ export interface PracticeQuestionSummary {
 export async function listPracticeQuestions(conceptId: string, userId: string): Promise<PracticeQuestionSummary[]> {
   const { data, error } = await supabaseAdmin
     .from('practice_questions')
-    .select('id, question_text, mark_tariff, requires_diagram, answer_structure_advice, mark_scheme_type, mark_scheme_json')
+    .select('id, question_text, mark_tariff, requires_diagram, requires_maths_keyboard, answer_structure_advice, mark_scheme_type, mark_scheme_json, ao_component_split')
     .eq('concept_id', conceptId)
     .order('created_at', { ascending: true });
   if (error) throw error;
@@ -122,7 +132,7 @@ export async function listPracticeQuestions(conceptId: string, userId: string): 
 
   const { data: attempts, error: attemptsError } = await supabaseAdmin
     .from('practice_question_attempts')
-    .select('question_id, answer_text, mark_awarded, mark_tariff, feedback, conceptual_mistakes, exam_technique_tips')
+    .select('question_id, answer_text, mark_awarded, mark_tariff, feedback, conceptual_mistakes, exam_technique_tips, ao_component_marks')
     .eq('user_id', userId)
     .in('question_id', questions.map((q) => q.id));
   if (attemptsError) throw attemptsError;
@@ -137,7 +147,9 @@ export async function listPracticeQuestions(conceptId: string, userId: string): 
       isMultipleChoice: row.mark_scheme_type === 'multiple_choice',
       options: row.mark_scheme_type === 'multiple_choice' ? ((row.mark_scheme_json as { options: string[] }).options ?? null) : null,
       requiresDiagram: row.requires_diagram as boolean,
+      requiresMathsKeyboard: (row.requires_maths_keyboard as boolean) ?? false,
       answerStructureAdvice: (row.answer_structure_advice as string | null) ?? null,
+      aoComponentSplit: (row.ao_component_split as unknown) ?? null,
       priorAttempt: attempt ? {
         answerText: attempt.answer_text as string,
         markAwarded: attempt.mark_awarded as number,
@@ -145,6 +157,7 @@ export async function listPracticeQuestions(conceptId: string, userId: string): 
         feedback: attempt.feedback as string,
         conceptualMistakes: (attempt.conceptual_mistakes as string | null) ?? null,
         examTechniqueTips: (attempt.exam_technique_tips as string | null) ?? null,
+        componentMarks: (attempt.ao_component_marks as Record<string, number> | null) ?? null,
       } : null,
     };
   });
@@ -175,6 +188,33 @@ interface MarkingResult {
   examTechniqueTips: string | null;
 }
 
+interface ItemizedMarkingResult extends MarkingResult {
+  componentMarks: Record<string, number>;
+}
+
+interface ComponentSplitGroup {
+  key: string;
+  components: string[];
+  marks: number;
+}
+
+// Clamps each group's awarded mark to its own declared maximum, then
+// derives the authoritative total as their sum - rather than trusting the
+// model's separately-reported "mark" field, which could in principle
+// disagree with its own per-group breakdown. Any group the model omitted
+// is treated as 0, not dropped from the split.
+function reconcileComponentMarks(split: { groups: ComponentSplitGroup[] }, rawComponentMarks: Record<string, number>): { markAwarded: number; componentMarks: Record<string, number> } {
+  const componentMarks: Record<string, number> = {};
+  let markAwarded = 0;
+  for (const group of split.groups) {
+    const raw = Number(rawComponentMarks[group.key]) || 0;
+    const clamped = Math.max(0, Math.min(group.marks, Math.round(raw)));
+    componentMarks[group.key] = clamped;
+    markAwarded += clamped;
+  }
+  return { markAwarded, componentMarks };
+}
+
 // Marks against whatever mark_scheme_json this specific question was
 // batch-generated with (see create_practice_questions.sql) - the AI call
 // here only ever applies an already-correct rubric to one answer, never
@@ -195,7 +235,7 @@ export async function submitPracticeAnswer(userId: string, questionId: string, a
   // paying for a second marking call.
   const { data: existing, error: existingError } = await supabaseAdmin
     .from('practice_question_attempts')
-    .select('answer_text, mark_awarded, mark_tariff, feedback, conceptual_mistakes, exam_technique_tips')
+    .select('answer_text, mark_awarded, mark_tariff, feedback, conceptual_mistakes, exam_technique_tips, ao_component_marks')
     .eq('user_id', userId)
     .eq('question_id', questionId)
     .maybeSingle();
@@ -208,14 +248,17 @@ export async function submitPracticeAnswer(userId: string, questionId: string, a
       feedback: existing.feedback as string,
       conceptualMistakes: (existing.conceptual_mistakes as string | null) ?? null,
       examTechniqueTips: (existing.exam_technique_tips as string | null) ?? null,
+      componentMarks: (existing.ao_component_marks as Record<string, number> | null) ?? null,
     });
   }
 
   const markTariff = question.mark_tariff as number;
+  const componentSplit = question.ao_component_split as { groups: ComponentSplitGroup[] } | null;
   let markAwarded: number;
   let feedback: string;
   let conceptualMistakes: string | null = null;
   let examTechniqueTips: string | null = null;
+  let componentMarks: Record<string, number> | null = null;
 
   // A multiple-choice question has one definitively correct option — no
   // AI call needed (or wanted) to grade a lookup. mark_scheme_json for
@@ -234,17 +277,29 @@ export async function submitPracticeAnswer(userId: string, questionId: string, a
       `Question (worth ${markTariff} marks): ${question.question_text}`,
       `Mark scheme type: ${question.mark_scheme_type}`,
       `Mark scheme: ${JSON.stringify(question.mark_scheme_json)}`,
+      componentSplit ? `This question's marks are split across these component groups (see rule on itemizing your award per group): ${JSON.stringify(componentSplit.groups)}` : '',
       structureNotes ? `General marking structure for this subject/qualification/exam board (background context — apply it, don't recite it back): ${structureNotes}` : '',
       coveredLabels.length
         ? `Concepts this student has already covered in their LastMind lessons for this subject (see rule on this — anything else in the mark scheme is real syllabus content they haven't reached here yet): ${JSON.stringify(coveredLabels)}`
         : `This student has not covered any concepts for this subject in LastMind's lessons yet — treat every mark scheme point they missed as not-yet-covered, not as a gap in their preparation.`,
       `Student's answer: ${answerText}`,
     ].filter(Boolean).join('\n\n');
-    const result = await callJSON<MarkingResult>(PRACTICE_QUESTION_MARKING_PROMPT, userContent, MODELS.simpleQuestion, 0, userId);
-    markAwarded = Math.max(0, Math.min(markTariff, Math.round(result.mark)));
-    feedback = result.feedback;
-    conceptualMistakes = result.conceptualMistakes || null;
-    examTechniqueTips = result.examTechniqueTips || null;
+
+    if (componentSplit) {
+      const result = await callJSON<ItemizedMarkingResult>(PRACTICE_QUESTION_MARKING_PROMPT_ITEMIZED, userContent, MODELS.simpleQuestion, 0, userId);
+      const reconciled = reconcileComponentMarks(componentSplit, result.componentMarks || {});
+      markAwarded = reconciled.markAwarded;
+      componentMarks = reconciled.componentMarks;
+      feedback = result.feedback;
+      conceptualMistakes = result.conceptualMistakes || null;
+      examTechniqueTips = result.examTechniqueTips || null;
+    } else {
+      const result = await callJSON<MarkingResult>(PRACTICE_QUESTION_MARKING_PROMPT, userContent, MODELS.simpleQuestion, 0, userId);
+      markAwarded = Math.max(0, Math.min(markTariff, Math.round(result.mark)));
+      feedback = result.feedback;
+      conceptualMistakes = result.conceptualMistakes || null;
+      examTechniqueTips = result.examTechniqueTips || null;
+    }
   }
 
   const { error: insertError } = await supabaseAdmin.from('practice_question_attempts').insert({
@@ -256,6 +311,7 @@ export async function submitPracticeAnswer(userId: string, questionId: string, a
     feedback,
     conceptual_mistakes: conceptualMistakes,
     exam_technique_tips: examTechniqueTips,
+    ao_component_marks: componentMarks,
   });
   if (insertError) {
     // 23505 = unique_violation - two near-simultaneous submits (e.g. a
@@ -266,7 +322,7 @@ export async function submitPracticeAnswer(userId: string, questionId: string, a
     if ((insertError as { code?: string }).code === '23505') {
       const { data: existingAfterRace, error: raceLookupError } = await supabaseAdmin
         .from('practice_question_attempts')
-        .select('answer_text, mark_awarded, mark_tariff, feedback, conceptual_mistakes, exam_technique_tips')
+        .select('answer_text, mark_awarded, mark_tariff, feedback, conceptual_mistakes, exam_technique_tips, ao_component_marks')
         .eq('user_id', userId)
         .eq('question_id', questionId)
         .maybeSingle();
@@ -279,6 +335,7 @@ export async function submitPracticeAnswer(userId: string, questionId: string, a
           feedback: existingAfterRace.feedback as string,
           conceptualMistakes: (existingAfterRace.conceptual_mistakes as string | null) ?? null,
           examTechniqueTips: (existingAfterRace.exam_technique_tips as string | null) ?? null,
+          componentMarks: (existingAfterRace.ao_component_marks as Record<string, number> | null) ?? null,
         });
       }
     }
@@ -292,5 +349,5 @@ export async function submitPracticeAnswer(userId: string, questionId: string, a
   // PracticeQuestionAlreadyAnsweredError above never double-grades this.
   await gradeAndRecordReview(userId, question.concept_id as string, ratingFromMarkRatio(markAwarded, markTariff));
 
-  return { markAwarded, markTariff, feedback, conceptualMistakes, examTechniqueTips };
+  return { markAwarded, markTariff, feedback, conceptualMistakes, examTechniqueTips, componentMarks };
 }

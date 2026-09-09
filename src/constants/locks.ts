@@ -1,27 +1,37 @@
-// Locks — a monthly usage cap on the Claude-cost-incurring lesson types
-// (encoding + spaced retrieval, both already premium-only), deliberately
+import { FRESH_GENERATION_CAP_MONTH } from './generationCaps';
+
+// Locks — a monthly usage cap on every Claude-cost-incurring action in
+// the app (encoding + spaced retrieval lessons here, plus every other
+// metered action charged via chargeLocksForUsage elsewhere), deliberately
 // separate from Keys (earned by learning, spent on real-world rewards —
 // the opposite direction). Locks are granted at the start of each
 // calendar month, like a subscription allotment, and only ever spent.
 //
-// The numbers below are calibrated against a rough internal budget of
-// ~£10/month of Claude spend per user, at roughly 10 cents/encoding
-// lesson (the founder's own figure) — NEVER surface this £/lesson
-// reasoning, or any exact cents-per-Lock figure, anywhere user-facing.
-// The exchange rate (120 Locks ≈ £10 → ~8.3p/Lock) is intentionally not a
-// round number, and the 2:1 encoding:retrieval ratio only roughly tracks
-// real relative cost (Opus-heavy chain generation + fact-checking for
-// encoding vs Sonnet/Haiku-only grading for retrieval) rather than
-// reproducing it exactly — the whole point is that a user staring at
-// these numbers can't cleanly back-calculate what a lesson actually
-// costs to generate.
-export const MONTHLY_LOCK_ALLOTMENT = 120;
-export const ENCODING_LESSON_LOCK_COST = 2;
-export const RETRIEVAL_LESSON_LOCK_COST = 1;
+// Exchange rate: 1 Lock = $0.0001 (1/100th of a cent) of real Claude API
+// cost — see modelPricing.ts's USD_PER_LOCK, the one rate every Lock
+// charge in this app is priced against.
+//
+// ENCODING_LESSON_LOCK_COST/RETRIEVAL_LESSON_LOCK_COST below are real
+// measured costs at that rate, not an obscured round number: a
+// first-time encoding lesson's generate+grade call costs ~$0.0128
+// (~128 Locks); a retrieval/spaced-review grading call costs ~$0.0013
+// (~13 Locks).
+//
+// MONTHLY_LOCK_ALLOTMENT is sized directly off the fresh-generation usage
+// cap already agreed (generationCaps.ts's FRESH_GENERATION_CAP_MONTH) —
+// assuming every one of a month's worth of lessons cost as much as the
+// most expensive lesson type, first-time encoding generation. It's a
+// ceiling on total spend across EVERY metered action in the app, not
+// fresh generation alone — fresh generation itself is separately, and
+// more tightly, rate-limited by generationCapService.ts's own rolling
+// 2h/day/week windows regardless of Lock balance.
+export const ENCODING_LESSON_LOCK_COST = 128;
+export const RETRIEVAL_LESSON_LOCK_COST = 13;
+export const MONTHLY_LOCK_ALLOTMENT = FRESH_GENERATION_CAP_MONTH * ENCODING_LESSON_LOCK_COST;
 
 // Held when booking a weekly calendar lesson slot (src/routes/locks.ts),
 // refunded if a qualifying lesson is started inside the booked window,
-// forfeited if not. Deliberately a real stake relative to the monthly
-// allotment (120) — losing a booking should actually sting, not be a
-// token deduction.
-export const LESSON_DEPOSIT_LOCK_AMOUNT = 10;
+// forfeited if not. Kept at the same ~8.3% share of the monthly
+// allotment this had before the allotment itself was recalibrated — a
+// real stake, not a token deduction.
+export const LESSON_DEPOSIT_LOCK_AMOUNT = Math.round((MONTHLY_LOCK_ALLOTMENT * 10) / 120);

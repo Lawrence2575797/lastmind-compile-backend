@@ -51,7 +51,7 @@ router.post('/locks/deposit', actionEndpointLimiter, async (req: Request, res: R
     res.json(result);
   } catch (err) {
     if (err instanceof InsufficientLocksError) {
-      return res.status(402).json({ error: "You don't have enough Locks left this month to book this." });
+      return res.status(402).json({ error: 'Lock limit reached', code: 'LOCK_LIMIT_REACHED', detail: "You don't have enough Locks left this month to book this." });
     }
     console.error('Lock deposit failed:', err);
     res.status(500).json({ error: 'could not book this lesson slot' });

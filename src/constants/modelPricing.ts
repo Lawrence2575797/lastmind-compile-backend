@@ -41,10 +41,9 @@ export function resolveModelPricing(model: string): ModelPricing {
   return base ? MODEL_PRICING_PER_MTOK[base] : FALLBACK_PRICING;
 }
 
-// Derived from the existing lock economy's own calibration
-// (MONTHLY_LOCK_ALLOTMENT=120 locks ~= £10/month of Claude spend, per
-// constants/locks.ts's own comment) - kept as the same real-world exchange
-// rate every OTHER lock cost in this app is priced against, not a second,
-// inconsistent one invented for this. £10 / 120 locks ~= £0.0833/lock;
-// converted to USD at ~1.26 GBP/USD.
-export const USD_PER_LOCK = 0.105;
+// The exchange rate itself: 1 Lock = $0.0001 (1/100th of a cent) of real
+// Claude API cost. This is the app's ONE real economy - constants/locks.ts's
+// flat per-lesson costs and its monthly allotment are both derived FROM
+// this rate (see that file's own comment), not a second, independently
+// calibrated number.
+export const USD_PER_LOCK = 0.0001;

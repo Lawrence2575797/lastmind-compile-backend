@@ -98,7 +98,7 @@ router.post('/encoding-lesson/start', costlyEndpointLimiter, async (req: Request
     res.json(result);
   } catch (err) {
     if (err instanceof InsufficientLocksError) {
-      return res.status(402).json({ error: "You're out of Locks for this month — they reset at the start of next month." });
+      return res.status(402).json({ error: 'Lock limit reached', code: 'LOCK_LIMIT_REACHED', detail: "You're out of Locks for this month — they reset at the start of next month." });
     }
     console.error('Encoding lesson start failed:', err);
     res.status(500).json({ error: 'could not start the lesson' });

@@ -1,12 +1,15 @@
 // Usage caps on FRESH knowledge-map-v2 generation (a genuine cache miss -
 // generateAndCacheNodeLesson/generateAndCacheEdgeLesson, real Sonnet cost)
-// - Premium only, per explicit product decision. Deliberately NOT the
-// existing Locks currency (lock_balances/MONTHLY_LOCK_ALLOTMENT in
-// locks.ts) - that system is untouched and keeps governing its own,
-// older lesson pipeline (encodingLessonService.ts/spacedLessonEngine.ts).
-// This is a separate, simpler count-based limiter: every fresh
-// generation counts as exactly one unit against every window below,
-// deliberately NOT distinguishing cache-hit vs cache-miss cost (there is
+// - Premium only, per explicit product decision. Enforced as its own
+// simple count-based limiter (fresh_generation_events), separate from the
+// Locks currency (lock_balances) - a heavy user can hit this window cap
+// before ever running short on Locks, and vice versa. The two ARE sized
+// off each other though: locks.ts's own MONTHLY_LOCK_ALLOTMENT is
+// FRESH_GENERATION_CAP_MONTH x the Locks cost of a first-time encoding
+// lesson, so the two ceilings agree on what "a month's worth of usage"
+// means even though nothing here reads or writes lock_balances directly.
+// Every fresh generation counts as exactly one unit against every window
+// below, deliberately NOT distinguishing cache-hit vs cache-miss cost (there is
 // no cache-hit case here by definition - a cache hit never reaches
 // generateAndCache*, see routes/knowledgeMap.ts's own lesson routes).
 //

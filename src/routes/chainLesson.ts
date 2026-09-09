@@ -59,7 +59,7 @@ router.post('/chain-lesson/start', async (req: Request, res: Response) => {
       return res.status(403).json({ error: 'This review isn\'t due yet.', dueDate: err.dueDate });
     }
     if (err instanceof InsufficientLocksError) {
-      return res.status(402).json({ error: "You're out of Locks for this month — they reset at the start of next month." });
+      return res.status(402).json({ error: 'Lock limit reached', code: 'LOCK_LIMIT_REACHED', detail: "You're out of Locks for this month — they reset at the start of next month." });
     }
     console.error('Retrieval lesson start failed:', err);
     res.status(500).json({ error: 'could not start this review' });

@@ -2,7 +2,7 @@ import { supabaseAdmin } from './supabaseAdmin';
 import { callClaudeJSON, MODELS } from './claudeClient';
 import { parseModelJson, parseCorrectFeedbackJson } from './jsonParsing';
 import { KNOWLEDGE_MAP_ANSWER_CHECK_PROMPT } from '../constants/knowledgeMapAnswerCheckPrompt';
-import { AO1_REWORD_QUESTION_PROMPT, AO1_SLIP_CHECK_PROMPT } from '../constants/nodeReviewPrompts';
+import { AO1_REWORD_QUESTION_PROMPT, AO1_SLIP_CHECK_PROMPT, INTEGRATION_REWORD_QUESTION_PROMPT } from '../constants/nodeReviewPrompts';
 import { isDueByCalendarDay, ReviewNotDueError } from './reviewService';
 
 type NodeEncodingContent = {
@@ -227,7 +227,7 @@ export interface ResolvedEdge {
   fromNode: NodeRow;
   toNode: NodeRow;
   linkTeaching: string;
-  integrationQuestion: { questionText?: string; markScheme?: string; diagramSpec?: unknown; answerInputType?: 'words' | 'math'; modality?: 'reading' | 'writing' | 'listening' | 'speaking'; audioText?: string } | null;
+  integrationQuestion: { questionText?: string; markScheme?: string; diagramSpec?: unknown; answerInputType?: 'words' | 'math'; modality?: 'reading' | 'writing' | 'listening' | 'speaking'; audioText?: string; rewordedIntegrationQuestions?: string[] } | null;
 }
 
 // Keyed off the endpoint node ids, same convention every other edge
@@ -282,6 +282,52 @@ export interface IntegrationStepData {
   audioText?: string;
 }
 
+// Same pool-generate-and-cache pattern as getRewordedAo1Question above,
+// for an edge's integration question - see INTEGRATION_REWORD_QUESTION_PROMPT's
+// own comment. Grounded on the link's own teaching content rather than a
+// node's explanation, and cached inside knowledge_map_edge_lessons'
+// integration_question blob (rewordedIntegrationQuestions) rather than a
+// node lesson's encoding_content - same idea, different table, since an
+// edge's own question data already lives there. Called unconditionally
+// on every review (first attempt included), same as AO1's own reword -
+// isFirstAttempt only ever decided whether linkTeaching is ALSO shown
+// alongside it, never which question gets asked.
+export async function getRewordedIntegrationQuestion(fromNodeId: string, toNodeId: string, userId: string): Promise<{ questionText: string; modality?: 'reading' | 'writing' | 'listening' | 'speaking'; audioText?: string } | null> {
+  const edge = await resolveEdgeForReview(fromNodeId, toNodeId);
+  if (!edge?.integrationQuestion?.questionText || edge.integrationQuestion.diagramSpec) return null;
+
+  let pool = Array.isArray(edge.integrationQuestion.rewordedIntegrationQuestions) ? edge.integrationQuestion.rewordedIntegrationQuestions : [];
+  if (!pool.length) {
+    const raw = await callClaudeJSON({
+      model: MODELS.simpleQuestion,
+      systemPrompt: INTEGRATION_REWORD_QUESTION_PROMPT,
+      userContent: `Link teaching: ${edge.linkTeaching}\n\nOriginal question: ${edge.integrationQuestion.questionText}`,
+      temperature: 0.4,
+      userId,
+    });
+    const generated = parseModelJson<{ questionTexts: string[] }>(raw);
+    pool = generated?.questionTexts?.filter(Boolean) || [];
+    if (!pool.length) return null;
+    const { data: lesson } = await supabaseAdmin
+      .from('knowledge_map_edge_lessons')
+      .select('integration_question')
+      .eq('edge_id', edge.id)
+      .maybeSingle();
+    const question = (lesson?.integration_question as ResolvedEdge['integrationQuestion']) || {};
+    question.rewordedIntegrationQuestions = pool;
+    await supabaseAdmin.from('knowledge_map_edge_lessons').update({ integration_question: question }).eq('edge_id', edge.id);
+  }
+  // Same reasoning as getRewordedAo1Question's own comment - the reword
+  // pool only ever varies question TEXT, never the audio phrase or
+  // modality, both of which are properties of how the link is tested,
+  // not of the specific wording a reword happens to use.
+  return {
+    questionText: pool[Math.floor(Math.random() * pool.length)],
+    modality: edge.integrationQuestion.modality,
+    audioText: edge.integrationQuestion.modality === 'listening' ? edge.integrationQuestion.audioText : undefined,
+  };
+}
+
 export async function getIntegrationStepData(userId: string, fromNodeId: string, toNodeId: string): Promise<IntegrationStepData | null> {
   const edge = await resolveEdgeForReview(fromNodeId, toNodeId);
   if (!edge?.integrationQuestion?.questionText || edge.integrationQuestion.diagramSpec) return null;
@@ -294,8 +340,10 @@ export async function getIntegrationStepData(userId: string, fromNodeId: string,
     .eq('concept_id', conceptId)
     .maybeSingle();
 
+  const reworded = await getRewordedIntegrationQuestion(fromNodeId, toNodeId, userId);
+
   return {
-    questionText: edge.integrationQuestion.questionText,
+    questionText: reworded?.questionText || edge.integrationQuestion.questionText,
     markScheme: edge.integrationQuestion.markScheme || '',
     linkTeaching: edge.linkTeaching,
     isFirstAttempt: !existing,
@@ -305,13 +353,18 @@ export async function getIntegrationStepData(userId: string, fromNodeId: string,
   };
 }
 
-export async function gradeIntegrationAnswer(fromNodeId: string, toNodeId: string, answer: string, userId: string): Promise<{ correct: boolean; feedback: string } | null> {
+// `questionText` is the exact reworded question the student was actually
+// shown (see ao1/submit's own identical pattern with gradeRewordedAo1Answer) -
+// grading always runs against the edge's own stored mark scheme (the
+// ground truth for the link), never against the original question text,
+// so a reworded phrasing grades exactly as accurately as the original did.
+export async function gradeIntegrationAnswer(fromNodeId: string, toNodeId: string, questionText: string, answer: string, userId: string): Promise<{ correct: boolean; feedback: string } | null> {
   const edge = await resolveEdgeForReview(fromNodeId, toNodeId);
   if (!edge?.integrationQuestion?.questionText || edge.integrationQuestion.diagramSpec) return null;
   const raw = await callClaudeJSON({
     model: MODELS.simpleQuestion,
     systemPrompt: KNOWLEDGE_MAP_ANSWER_CHECK_PROMPT,
-    userContent: `Question: ${edge.integrationQuestion.questionText}\nMark scheme: ${edge.integrationQuestion.markScheme || ''}\nStudent's answer: ${answer}`,
+    userContent: `Question: ${questionText}\nMark scheme: ${edge.integrationQuestion.markScheme || ''}\nStudent's answer: ${answer}`,
     temperature: 0.1,
     userId,
   });

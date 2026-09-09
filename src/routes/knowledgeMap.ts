@@ -143,7 +143,10 @@ router.get('/knowledge-map-v2/node/:nodeId/lesson', requireAuth, syncEndpointLim
     res.json(generated);
   } catch (err) {
     if (err instanceof GenerationCapExceededError) {
-      return res.status(429).json({ error: `You've generated a lot of new lessons recently — try again later.`, window: err.window, limit: err.limit });
+      // code: 'LOCK_LIMIT_REACHED' - a stable field the frontend keys off
+      // to show the "Buy more Locks" action, rather than string-matching
+      // the human-readable message (which is free to reword later).
+      return res.status(429).json({ error: 'Lock limit reached', code: 'LOCK_LIMIT_REACHED', window: err.window, limit: err.limit });
     }
     console.error('Node lesson lookup/generation failed:', err);
     res.status(500).json({ error: 'could not load this lesson' });
@@ -216,7 +219,10 @@ router.get('/knowledge-map-v2/edge/:fromNodeId/:toNodeId/lesson', requireAuth, s
     res.json(generated);
   } catch (err) {
     if (err instanceof GenerationCapExceededError) {
-      return res.status(429).json({ error: `You've generated a lot of new lessons recently — try again later.`, window: err.window, limit: err.limit });
+      // code: 'LOCK_LIMIT_REACHED' - a stable field the frontend keys off
+      // to show the "Buy more Locks" action, rather than string-matching
+      // the human-readable message (which is free to reword later).
+      return res.status(429).json({ error: 'Lock limit reached', code: 'LOCK_LIMIT_REACHED', window: err.window, limit: err.limit });
     }
     console.error('Edge lesson lookup/generation failed:', err);
     res.status(500).json({ error: 'could not load this lesson' });
@@ -894,11 +900,11 @@ router.post('/knowledge-map-v2/node-review/integration/start', requireAuth, cost
 // (how many wrong attempts came before it) deciding hard vs again — see
 // deriveCorrectRating.
 router.post('/knowledge-map-v2/node-review/integration/submit', requireAuth, costlyEndpointLimiter, async (req: Request, res: Response) => {
-  const { fromNodeId, toNodeId, answer, retryCount } = (req.body ?? {}) as {
-    fromNodeId?: string; toNodeId?: string; answer?: string; retryCount?: number;
+  const { fromNodeId, toNodeId, questionText, answer, retryCount } = (req.body ?? {}) as {
+    fromNodeId?: string; toNodeId?: string; questionText?: string; answer?: string; retryCount?: number;
   };
-  if (!fromNodeId || !toNodeId || typeof answer !== 'string' || !answer.trim()) {
-    return res.status(400).json({ error: 'fromNodeId, toNodeId and answer are required' });
+  if (!fromNodeId || !toNodeId || !questionText || typeof answer !== 'string' || !answer.trim()) {
+    return res.status(400).json({ error: 'fromNodeId, toNodeId, questionText and answer are required' });
   }
   try {
     const userId = req.userId as string;
@@ -908,7 +914,12 @@ router.post('/knowledge-map-v2/node-review/integration/submit', requireAuth, cos
     ]);
     if (!fromNode || !toNode) return res.status(404).json({ error: 'connection not found' });
 
-    const graded = await gradeIntegrationAnswer(fromNodeId, toNodeId, answer, userId);
+    // questionText is the exact reworded question the student was shown
+    // (see getIntegrationStepData/getRewordedIntegrationQuestion) - grading
+    // itself always runs against the edge's own stored mark scheme, never
+    // the original question text, so this only affects what's shown back
+    // to the grading model as context.
+    const graded = await gradeIntegrationAnswer(fromNodeId, toNodeId, questionText, answer, userId);
     if (!graded) return res.status(404).json({ error: 'no integration question available for this connection' });
 
     if (!graded.correct) {

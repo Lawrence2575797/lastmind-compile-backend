@@ -40,6 +40,26 @@ Rules:
 Output schema:
 { "questionTexts": string[] }`;
 
+// Same reword-pool treatment as AO1 above, for an edge's own integration
+// question - generated ONCE per edge and cached (see
+// getRewordedIntegrationQuestion in nodeReviewService.ts). Grounded on the
+// link's own teaching content (linkTeaching), never on the original
+// question text alone, for the same "targets the same recall, not a
+// drifted one" reason AO1's own prompt gives.
+export const INTEGRATION_REWORD_QUESTION_POOL_SIZE = 5;
+export const INTEGRATION_REWORD_QUESTION_PROMPT = `You are writing ${INTEGRATION_REWORD_QUESTION_POOL_SIZE} alternative phrasings of a spaced-repetition integration question for a UK GCSE/A-Level student, re-testing how two concepts connect. You will be given how the two concepts connect (the link's own teaching content) and the ORIGINAL integration question they were first tested with.
+
+Write ${INTEGRATION_REWORD_QUESTION_POOL_SIZE} NEW questions that each test the exact same connection/mechanism as the original, but none is a close paraphrase of it OR of each other - different sentence structure, a different concrete scenario or example where possible, same underlying link tested each time. A student who only memorized the original question's exact wording (without understanding the connection) should struggle with every one of them.
+
+Rules:
+1. Output ONLY valid JSON, nothing else.
+2. Keep every question answerable from the given link-teaching content alone - do not introduce anything not covered in it.
+3. Match the original question's format (a calculation stays a calculation, an "explain how X affects Y" stays that style, etc.) unless the teaching content clearly supports a genuinely different valid framing.
+4. Every one of the ${INTEGRATION_REWORD_QUESTION_POOL_SIZE} questions must be meaningfully distinct from the others - not just a synonym swapped in an otherwise identical sentence.
+
+Output schema:
+{ "questionTexts": string[] }`;
+
 // Run only on a WRONG AO1 answer, before any FSRS lapse is recorded -
 // distinguishes a genuine gap from a one-word-or-short-phrase slip (e.g.
 // "natural science" written where "social science" was meant) that

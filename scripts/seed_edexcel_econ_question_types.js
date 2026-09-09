@@ -167,11 +167,14 @@ const QUESTION_TYPES = [
 
 async function main() {
   console.log('Upserting mark scheme style...');
-  const { error: styleError } = await supabase
-    .from('exam_mark_scheme_styles')
-    .upsert([MARK_SCHEME_STYLE], { onConflict: 'subject,qualification,exam_board' });
+  // The unique indexes use coalesce(exam_board, '') (an expression, not a
+  // plain column list), which supabase-js's upsert(onConflict:) can't
+  // target directly - delete-then-insert instead, safe since this is a
+  // from-scratch seed re-run, not a live table with unrelated rows.
+  await supabase.from('exam_mark_scheme_styles').delete().match({ subject: SUBJECT, qualification: QUALIFICATION, exam_board: EXAM_BOARD });
+  const { error: styleError } = await supabase.from('exam_mark_scheme_styles').insert([MARK_SCHEME_STYLE]);
   if (styleError) {
-    console.error('Mark scheme style upsert failed:', JSON.stringify(styleError));
+    console.error('Mark scheme style insert failed:', JSON.stringify(styleError));
     process.exit(1);
   }
 
@@ -184,12 +187,11 @@ async function main() {
     ...t,
   }));
 
-  console.log(`Upserting ${rows.length} question type rows...`);
-  const { error } = await supabase
-    .from('exam_question_types')
-    .upsert(rows, { onConflict: 'subject,qualification,exam_board,type_key' });
+  await supabase.from('exam_question_types').delete().match({ subject: SUBJECT, qualification: QUALIFICATION, exam_board: EXAM_BOARD });
+  console.log(`Inserting ${rows.length} question type rows...`);
+  const { error } = await supabase.from('exam_question_types').insert(rows);
   if (error) {
-    console.error('Question types upsert failed:', JSON.stringify(error));
+    console.error('Question types insert failed:', JSON.stringify(error));
     process.exit(1);
   }
   console.log('Done.');

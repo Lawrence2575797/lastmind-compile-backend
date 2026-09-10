@@ -31,6 +31,8 @@ Your job: teach this concept, and ONLY this concept, to real exam-board depth.
 
 4b. **If this node's own label names a GROUP of closely related discrete items taught together (e.g. a set of vocabulary words, a family of forms/conjugations, a list of terms) rather than one single unified idea, the practice question must test EVERY item in the group, not just one.** A single item within a taught group (one pronoun out of "io/tu/lui/lei/noi/voi/loro", one verb form out of a conjugation set) is too small a thing to test alone - a student who only got asked about "noi" could be missing "loro" entirely and still pass. Phrase it as one fill-in-the-gaps question with a blank for every item in the group (e.g. "Fill in the missing subject pronoun for each: ___ mangio, ___ mangia, ___ mangiamo..." adapted to whatever the group actually is), never a word bank or multiple-choice list of options to fill the blanks from - the point is genuine recall of each item, and a word bank lets a student find the last blank or two by elimination rather than actually knowing them. The mark scheme must state the exact correct answer for every blank. This almost never applies outside a language-learning subject's vocabulary/grammar-form groups; a node that already names one single concept (true of most nodes, in every subject) has nothing to group and this rule simply doesn't apply to it.
 
+4c. **Whenever rule 4b applies, ALSO populate "blanks" as an ordered array, one entry per blank, in the same order they appear in the question** - each entry is an object with "prompt" and "answer" string fields, where "prompt" is the short cue for that one blank alone (e.g. "___ mangio" or "I = ___", not the whole question) and "answer" is the single exact correct answer for that blank alone, matching the mark scheme exactly. This lets the app show one small answer box per blank instead of one big text box - never invent a "blanks" array for a question rule 4b doesn't apply to (a single free-text or calculation answer has nothing to split); omit the field entirely in that case.
+
 5. **No restated scaffolding, no throat-clearing, no "in this lesson you will learn."** Start with the actual content.
 
 ## Output format
@@ -38,8 +40,9 @@ Your job: teach this concept, and ONLY this concept, to real exam-board depth.
 Return ONLY valid JSON:
 {
   "explanation": "the teaching text",
-  "practiceQuestion": { "questionText": "...", "markScheme": "what makes an answer correct, stated precisely enough to grade as correct/incorrect", "modality": "reading" | "writing" | "listening" | "speaking", "audioText": "the phrase to play, ONLY when modality is \"listening\" - omit otherwise" }
-}`;
+  "practiceQuestion": { "questionText": "...", "markScheme": "what makes an answer correct, stated precisely enough to grade as correct/incorrect", "modality": "reading" | "writing" | "listening" | "speaking", "audioText": "the phrase to play, ONLY when modality is \"listening\" - omit otherwise", "blanks": [{ "prompt": "...", "answer": "..." }] }
+}
+"blanks" ONLY when rule 4b applies - omit the field entirely otherwise.`;
 
 export const KNOWLEDGE_MAP_EDGE_LESSON_PROMPT = `You are writing the LINK-TEACHING and testing content for one prerequisite edge in a subject's knowledge-map graph, run after both A and B have already had their own separate encoding lessons. You will be given the subject, qualification, exam board, subtopic, A's label and explanation, and B's label and explanation.
 

@@ -558,20 +558,35 @@ function scheduleWithMastery(conceptId: string, graded: Awaited<ReturnType<typeo
 // The question text and mark scheme are always re-fetched here, never
 // trusted from the client, same discipline as every other grading route
 // in this file.
+// Strips accents/diacritics before comparing a submitted blank answer
+// against its stored one - the same leniency KNOWLEDGE_MAP_ANSWER_CHECK_PROMPT
+// applies for the AI-graded path (a student typing "tu" for "tú" on a
+// standard English keyboard shouldn't be marked wrong), safe to apply
+// unconditionally here since each blank is checked against ONE known,
+// specific expected answer - unlike the free-text AI grader, there's no
+// risk of confusing it with an unrelated different-meaning word.
+function normalizeForBlankComparison(text: string): string {
+  return text.normalize('NFD').replace(/[̀-ͯ]/g, '').trim().toLowerCase();
+}
+
 router.post('/knowledge-map-v2/text-question/submit', requireAuth, costlyEndpointLimiter, async (req: Request, res: Response) => {
-  const { nodeId, fromNodeId, toNodeId, questionType, answer, retryCount } = (req.body ?? {}) as {
+  const { nodeId, fromNodeId, toNodeId, questionType, answer, answers, retryCount } = (req.body ?? {}) as {
     nodeId?: string;
     fromNodeId?: string;
     toNodeId?: string;
     questionType?: 'practice' | 'transfer' | 'integration';
     answer?: string;
+    answers?: string[];
     retryCount?: number;
   };
-  if (!questionType || typeof answer !== 'string' || !answer.trim()) return res.status(400).json({ error: 'questionType and answer are required' });
+  const isBlanksSubmission = Array.isArray(answers);
+  if (!questionType || (isBlanksSubmission ? !answers!.length : (typeof answer !== 'string' || !answer.trim()))) {
+    return res.status(400).json({ error: 'questionType and answer(s) are required' });
+  }
 
   try {
     const userId = req.userId as string;
-    let question: { questionText?: string; markScheme?: string } | undefined;
+    let question: { questionText?: string; markScheme?: string; blanks?: { prompt: string; answer: string }[] } | undefined;
     let conceptId: string | undefined;
 
     if (questionType === 'practice') {
@@ -582,7 +597,7 @@ router.post('/knowledge-map-v2/text-question/submit', requireAuth, costlyEndpoin
       ]);
       if (!node) return res.status(404).json({ error: 'concept not found' });
       conceptId = node.concept_id as string;
-      question = (lesson?.encoding_content as { practiceQuestion?: { questionText?: string; markScheme?: string } } | null)?.practiceQuestion;
+      question = (lesson?.encoding_content as { practiceQuestion?: { questionText?: string; markScheme?: string; blanks?: { prompt: string; answer: string }[] } } | null)?.practiceQuestion;
     } else {
       if (!fromNodeId || !toNodeId) return res.status(400).json({ error: 'fromNodeId and toNodeId are required for a transfer/integration question' });
       const [{ data: fromNode }, { data: toNode }, { data: edgeRow }] = await Promise.all([
@@ -605,6 +620,28 @@ router.post('/knowledge-map-v2/text-question/submit', requireAuth, costlyEndpoin
     }
 
     if (!question || !question.questionText) return res.status(404).json({ error: 'question not found' });
+
+    // Grouped fill-in-the-gaps questions (rule 4b/4c in
+    // lessonGenerationPrompts.ts) are graded locally, per blank, against
+    // the exact answer generated for each one - never routed through the
+    // AI grader, since each blank already has ONE known correct string to
+    // compare against (no free-text judgment call needed). Blanks are
+    // re-fetched from the stored lesson here, same "never trust the
+    // client" discipline as question/markScheme above.
+    if (isBlanksSubmission) {
+      if (questionType !== 'practice' || !question.blanks || !question.blanks.length) {
+        return res.status(400).json({ error: 'this question has no separately-gradable blanks' });
+      }
+      const perBlankCorrect = question.blanks.map((b, i) => normalizeForBlankComparison(answers![i] || '') === normalizeForBlankComparison(b.answer));
+      const correct = perBlankCorrect.every(Boolean);
+      const feedback = correct ? 'All correct!' : 'Check the highlighted box(es) and try again.';
+      if (!correct) {
+        return res.json({ correct, feedback, perBlankCorrect, retryable: true });
+      }
+      const graded = await gradeCorrectness(userId, conceptId!, correct, Number(retryCount) || 0);
+      const { paid: keysEarned } = await payLessonCredits(userId, true, graded, 1.0, 'knowledge_map_lesson');
+      return res.json({ correct, feedback, perBlankCorrect, schedule: scheduleWithMastery(conceptId!, graded), keysEarned });
+    }
 
     const raw = await callClaudeJSON({
       model: MODELS.simpleQuestion,

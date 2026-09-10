@@ -1,17 +1,18 @@
 -- Founder tutoring booking calendar - see src/services/tutoringSlotsService.ts.
--- One shared table: the founder creates 'open' slots (and can mark any of
--- them 'blocked' when busy, e.g. with uni work), students claim an 'open'
--- one after paying. No external calendar sync - the founder is the only
--- supplier, so he manages his own availability directly here rather than
--- through a synced Google/Outlook calendar.
-create table if not exists tutoring_slots (
-  id uuid primary key default gen_random_uuid(),
-  start_time timestamptz not null,
+-- Every day is OPEN by default within the fixed daily working-hours
+-- template (see DAY_START_HOUR/DAY_END_HOUR in that file) - this table
+-- only stores EXCEPTIONS (a slot the founder has blocked, or one a
+-- student has booked), keyed by its exact start_time. A given calendar
+-- date/time with no row here is simply open. This is what makes "every
+-- day free by default, block the odd one out" and "this can differ every
+-- week" both true with no extra bookkeeping - blocking one Tuesday never
+-- touches any other Tuesday.
+create table if not exists tutoring_slot_overrides (
+  start_time timestamptz primary key,
   end_time timestamptz not null,
-  status text not null default 'open' check (status in ('open', 'blocked', 'booked')),
+  status text not null check (status in ('blocked', 'booked')),
   booked_name text,
   booked_email text,
   booked_at timestamptz,
   created_at timestamptz not null default now()
 );
-create index if not exists tutoring_slots_start_time_idx on tutoring_slots (start_time);

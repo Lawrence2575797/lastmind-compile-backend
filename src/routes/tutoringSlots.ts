@@ -1,27 +1,42 @@
 import { Router, Request, Response } from 'express';
 import { requireAuth, requireAdmin } from '../services/authMiddleware';
 import { actionEndpointLimiter, syncEndpointLimiter } from '../services/rateLimiters';
-import {
-  listAdminSlots,
-  listPublicSlots,
-  createSlot,
-  setSlotStatus,
-  deleteSlot,
-  claimSlot,
-  SlotAlreadyTakenError,
-} from '../services/tutoringSlotsService';
+import { getWeekSlots, toggleSlot, claimSlot, SlotAlreadyTakenError } from '../services/tutoringSlotsService';
 
 const router = Router();
 
-// GET /tutoring-slots -> PublicSlot[] (open/unavailable only, no names) -
-// any signed-in user can browse this BEFORE paying, so they know a slot
-// they want is likely to exist. Booking itself only happens after payment
-// (see /tutoring-slots/:id/claim below).
-router.get('/tutoring-slots', requireAuth, syncEndpointLimiter, async (req: Request, res: Response) => {
+function parseWeekStart(raw: unknown): Date | null {
+  if (typeof raw !== 'string' || !raw) return null;
+  const d = new Date(raw);
+  return Number.isNaN(d.getTime()) ? null : d;
+}
+
+// GET /tutoring-slots/week?weekStart=ISO -> WeekSlot[] (open/unavailable
+// only, no names) - any signed-in user can browse this BEFORE paying.
+// weekStart is that week's local Monday midnight, computed client-side
+// (see learn/index.html's getMondayOfWeek) - the backend just adds fixed
+// hour offsets to it, so it never needs its own timezone logic.
+router.get('/tutoring-slots/week', requireAuth, syncEndpointLimiter, async (req: Request, res: Response) => {
+  const weekStart = parseWeekStart(req.query.weekStart);
+  if (!weekStart) return res.status(400).json({ error: 'weekStart is required' });
   try {
-    res.json(await listPublicSlots());
+    const slots = await getWeekSlots(weekStart, false);
+    res.json(slots.map((s) => ({ startTime: s.startTime, endTime: s.endTime, status: s.status === 'open' ? 'open' : 'unavailable' })));
   } catch (err) {
-    console.error('LastMind: failed to list tutoring slots.', err);
+    console.error('LastMind: failed to load the tutoring calendar.', err);
+    res.status(500).json({ error: 'Could not load the tutoring calendar.' });
+  }
+});
+
+// GET /tutoring-slots/week/admin?weekStart=ISO -> WeekSlot[] (full detail,
+// incl. who booked what) - founder only.
+router.get('/tutoring-slots/week/admin', requireAuth, requireAdmin, async (req: Request, res: Response) => {
+  const weekStart = parseWeekStart(req.query.weekStart);
+  if (!weekStart) return res.status(400).json({ error: 'weekStart is required' });
+  try {
+    res.json(await getWeekSlots(weekStart, true));
+  } catch (err) {
+    console.error('LastMind: failed to load the admin tutoring calendar.', err);
     res.status(500).json({ error: 'Could not load the tutoring calendar.' });
   }
 });
@@ -33,77 +48,37 @@ router.get('/tutoring-slots/am-i-admin', requireAuth, requireAdmin, (_req: Reque
   res.json({ isAdmin: true });
 });
 
-// GET /tutoring-slots/admin -> AdminSlot[] (full detail, incl. who booked
-// what) - founder only.
-router.get('/tutoring-slots/admin', requireAuth, requireAdmin, async (req: Request, res: Response) => {
-  try {
-    res.json(await listAdminSlots());
-  } catch (err) {
-    console.error('LastMind: failed to list admin tutoring slots.', err);
-    res.status(500).json({ error: 'Could not load the tutoring calendar.' });
-  }
-});
-
-// POST /tutoring-slots { startTime, endTime } -> AdminSlot - founder adds
-// a new open slot to their own availability.
-router.post('/tutoring-slots', requireAuth, requireAdmin, actionEndpointLimiter, async (req: Request, res: Response) => {
+// POST /tutoring-slots/toggle { startTime, endTime } -> {status} - founder
+// clicks a calendar cell: open->blocked, blocked->open, or booked->open
+// (freeing a cancelled booking - the frontend confirms with the founder
+// first since this discards the booking's name/email for good).
+router.post('/tutoring-slots/toggle', requireAuth, requireAdmin, actionEndpointLimiter, async (req: Request, res: Response) => {
   const { startTime, endTime } = req.body ?? {};
   if (typeof startTime !== 'string' || typeof endTime !== 'string') {
     return res.status(400).json({ error: 'startTime and endTime are required' });
   }
-  if (!(new Date(startTime).getTime() < new Date(endTime).getTime())) {
-    return res.status(400).json({ error: 'endTime must be after startTime' });
-  }
   try {
-    res.json(await createSlot(startTime, endTime));
+    const status = await toggleSlot(startTime, endTime);
+    res.json({ status });
   } catch (err) {
-    console.error('LastMind: failed to create a tutoring slot.', err);
-    res.status(500).json({ error: 'Could not create this slot.' });
-  }
-});
-
-// PATCH /tutoring-slots/:id { status: 'open' | 'blocked' } - founder
-// blocks a slot (busy with uni work etc), reopens one, or frees a booked
-// slot back to open (e.g. a cancellation).
-router.patch('/tutoring-slots/:id', requireAuth, requireAdmin, actionEndpointLimiter, async (req: Request, res: Response) => {
-  const { status } = req.body ?? {};
-  if (status !== 'open' && status !== 'blocked') {
-    return res.status(400).json({ error: "status must be 'open' or 'blocked'" });
-  }
-  try {
-    res.json(await setSlotStatus(req.params.id, status));
-  } catch (err) {
-    console.error('LastMind: failed to update a tutoring slot.', err);
+    console.error('LastMind: failed to toggle a tutoring slot.', err);
     res.status(500).json({ error: 'Could not update this slot.' });
   }
 });
 
-router.delete('/tutoring-slots/:id', requireAuth, requireAdmin, actionEndpointLimiter, async (req: Request, res: Response) => {
-  try {
-    await deleteSlot(req.params.id);
-    res.json({ ok: true });
-  } catch (err) {
-    console.error('LastMind: failed to delete a tutoring slot.', err);
-    res.status(500).json({ error: 'Could not delete this slot.' });
-  }
-});
-
-// POST /tutoring-slots/:id/claim { name, email } -> AdminSlot
+// POST /tutoring-slots/claim { startTime, endTime, name, email } -> WeekSlot
 //
 // Deliberately trusts that the student reaching this page already paid
 // (it's only linked from the Stripe Payment Link's own post-payment
 // redirect - see learn/index.html's claimSlot deep link) rather than
-// verifying a Stripe webhook first. This is a real, accepted trade-off
-// for a v1: a Payment Link (not a Checkout Session our backend creates)
-// has no session id to correlate here without also standing up a webhook
-// endpoint for it. Impact if abused is low (a signed-in student manually
-// navigating straight to the claim URL could book a slot without paying)
-// and self-correcting (the founder sees every booking against their own
-// Stripe payments and can free a slot with no matching payment) - worth
-// hardening with a real webhook later if abuse actually shows up, not
-// worth blocking this feature on now.
-router.post('/tutoring-slots/:id/claim', requireAuth, actionEndpointLimiter, async (req: Request, res: Response) => {
-  const { name, email } = req.body ?? {};
+// verifying a Stripe webhook first - a real, accepted trade-off for v1
+// (see tutoringSlotsService.ts's own comment on claimSlot's atomicity for
+// the part that IS enforced: two students can never win the same slot).
+router.post('/tutoring-slots/claim', requireAuth, actionEndpointLimiter, async (req: Request, res: Response) => {
+  const { startTime, endTime, name, email } = req.body ?? {};
+  if (typeof startTime !== 'string' || typeof endTime !== 'string') {
+    return res.status(400).json({ error: 'startTime and endTime are required' });
+  }
   if (typeof name !== 'string' || !name.trim()) {
     return res.status(400).json({ error: 'name is required' });
   }
@@ -111,7 +86,7 @@ router.post('/tutoring-slots/:id/claim', requireAuth, actionEndpointLimiter, asy
     return res.status(400).json({ error: 'email is required' });
   }
   try {
-    res.json(await claimSlot(req.params.id, name.trim(), email.trim()));
+    res.json(await claimSlot(startTime, endTime, name.trim(), email.trim()));
   } catch (err) {
     if (err instanceof SlotAlreadyTakenError) {
       return res.status(409).json({ error: err.message });

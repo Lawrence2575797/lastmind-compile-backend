@@ -15,26 +15,31 @@
 // (~128 Locks); a retrieval/spaced-review grading call costs ~$0.0013
 // (~13 Locks).
 //
-// MONTHLY_LOCK_ALLOTMENT was originally sized off generationCaps.ts's
-// FRESH_GENERATION_CAP_MONTH (150 at the time) x this file's own
-// ENCODING_LESSON_LOCK_COST - assuming every one of a month's worth of
-// lessons cost as much as the most expensive lesson type. That constant
-// has since been raised (see generationCaps.ts's own comment - a separate,
-// deliberate free/premium generation-cap redesign), so the multiplication
-// is now spelled out as a literal (150, the ORIGINAL fresh-generation
-// month figure) rather than importing the now-changed constant - Locks
-// itself is explicitly out of scope for that redesign and must not move
-// as a side effect of it. It's a ceiling on total spend across EVERY
-// metered action in the app, not fresh generation alone - fresh
-// generation itself is separately, and more tightly, rate-limited by
-// generationCapService.ts's own windows regardless of Lock balance.
+import { FRESH_GENERATION_CAP_MONTH, FREE_GENERATION_CAP_MONTH } from './generationCaps';
+
 export const ENCODING_LESSON_LOCK_COST = 128;
 export const RETRIEVAL_LESSON_LOCK_COST = 13;
-export const MONTHLY_LOCK_ALLOTMENT = 150 * ENCODING_LESSON_LOCK_COST;
+
+// Deliberately coupled to each tier's own fresh-generation MONTHLY cap -
+// "however many lessons this tier can fresh-generate in a month, priced
+// at the most expensive lesson type (encoding)". This was previously a
+// single flat allotment shared by both tiers, explicitly decoupled from
+// generationCaps.ts at the time so Locks wouldn't move as an ACCIDENTAL
+// side effect of an unrelated generation-cap change - this re-coupling is
+// a deliberate, explicit product decision (Premium and Free should have
+// their own Lock ceilings matching their own generation caps), not a
+// reversion of that earlier caution.
+export const PREMIUM_MONTHLY_LOCK_ALLOTMENT = FRESH_GENERATION_CAP_MONTH * ENCODING_LESSON_LOCK_COST; // 300 * 128 = 38,400
+export const FREE_MONTHLY_LOCK_ALLOTMENT = FREE_GENERATION_CAP_MONTH * ENCODING_LESSON_LOCK_COST; // 100 * 128 = 12,800
+
+export function monthlyLockAllotmentForTier(isPaid: boolean): number {
+  return isPaid ? PREMIUM_MONTHLY_LOCK_ALLOTMENT : FREE_MONTHLY_LOCK_ALLOTMENT;
+}
 
 // Held when booking a weekly calendar lesson slot (src/routes/locks.ts),
 // refunded if a qualifying lesson is started inside the booked window,
-// forfeited if not. Kept at the same ~8.3% share of the monthly
-// allotment this had before the allotment itself was recalibrated — a
-// real stake, not a token deduction.
-export const LESSON_DEPOSIT_LOCK_AMOUNT = Math.round((MONTHLY_LOCK_ALLOTMENT * 10) / 120);
+// forfeited if not. Kept at its previous absolute value (was ~8.3% of the
+// old flat 19,200 allotment) rather than re-derived from either new
+// tier-specific figure - booking-deposit sizing isn't part of this
+// per-tier recalibration.
+export const LESSON_DEPOSIT_LOCK_AMOUNT = 1600;

@@ -1,8 +1,8 @@
 import { Router, Request, Response } from 'express';
-import { requireAuth } from '../services/authMiddleware';
+import { requireAuth, isUserPaid } from '../services/authMiddleware';
 import { syncEndpointLimiter, actionEndpointLimiter } from '../services/rateLimiters';
 import { getOrCreateLockBalance, sweepExpiredLockHolds, depositForLessonBooking, InsufficientLocksError } from '../services/lockService';
-import { LESSON_DEPOSIT_LOCK_AMOUNT, MONTHLY_LOCK_ALLOTMENT } from '../constants/locks';
+import { LESSON_DEPOSIT_LOCK_AMOUNT, monthlyLockAllotmentForTier } from '../constants/locks';
 
 const router = Router();
 
@@ -21,8 +21,11 @@ router.use('/locks', requireAuth);
 router.get('/locks/balance', syncEndpointLimiter, async (req: Request, res: Response) => {
   try {
     await sweepExpiredLockHolds(req.userId as string);
-    const balance = await getOrCreateLockBalance(req.userId as string);
-    res.json({ ...balance, allotment: MONTHLY_LOCK_ALLOTMENT });
+    const [balance, isPaid] = await Promise.all([
+      getOrCreateLockBalance(req.userId as string),
+      isUserPaid(req.userId as string),
+    ]);
+    res.json({ ...balance, allotment: monthlyLockAllotmentForTier(isPaid) });
   } catch (err) {
     console.error('Lock balance fetch failed:', err);
     res.status(500).json({ error: 'could not load your Locks balance' });

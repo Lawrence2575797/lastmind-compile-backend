@@ -1,5 +1,6 @@
 import { supabaseAdmin } from './supabaseAdmin';
-import { MONTHLY_LOCK_ALLOTMENT } from '../constants/locks';
+import { monthlyLockAllotmentForTier } from '../constants/locks';
+import { isUserPaid } from './authMiddleware';
 
 export interface LockBalance {
   balance: number;
@@ -38,10 +39,17 @@ export async function getOrCreateLockBalance(userId: string): Promise<LockBalanc
     .maybeSingle();
   if (fetchError) throw fetchError;
 
+  // Tier lookup only happens on the two branches that actually GRANT a
+  // fresh allotment (brand-new user, or a new calendar month) - never on
+  // the common "existing, still-current-month" path below, so this never
+  // adds a subscriptions-table round trip to the hot metering calls
+  // (chargeLocksForUsage runs on every Claude call) that just need the
+  // already-stored balance.
   if (!existing) {
+    const allotment = monthlyLockAllotmentForTier(await isUserPaid(userId));
     const { data: created, error: insertError } = await supabaseAdmin
       .from('lock_balances')
-      .insert({ user_id: userId, balance: MONTHLY_LOCK_ALLOTMENT, period_start: monthStart })
+      .insert({ user_id: userId, balance: allotment, period_start: monthStart })
       .select('balance')
       .single();
     if (insertError) throw insertError;
@@ -49,9 +57,10 @@ export async function getOrCreateLockBalance(userId: string): Promise<LockBalanc
   }
 
   if (existing.period_start < monthStart) {
+    const allotment = monthlyLockAllotmentForTier(await isUserPaid(userId));
     const { data: reset, error: resetError } = await supabaseAdmin
       .from('lock_balances')
-      .update({ balance: MONTHLY_LOCK_ALLOTMENT, period_start: monthStart, updated_at: new Date().toISOString() })
+      .update({ balance: allotment, period_start: monthStart, updated_at: new Date().toISOString() })
       .eq('user_id', userId)
       .select('balance')
       .single();

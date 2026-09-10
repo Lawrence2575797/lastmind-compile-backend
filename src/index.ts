@@ -33,6 +33,7 @@ import personalNotesRouter from './routes/personalNotes';
 import themeSettingsRouter from './routes/themeSettings';
 import objectiveCourseRouter from './routes/objectiveCourse';
 import ttsRouter from './routes/tts';
+import tutoringSlotsRouter from './routes/tutoringSlots';
 import { globalRateLimiter } from './services/rateLimiters';
 
 const PORT = process.env.PORT || 4100;
@@ -89,6 +90,7 @@ app.use('/', personalNotesRouter);
 app.use('/', themeSettingsRouter);
 app.use('/', objectiveCourseRouter);
 app.use('/', ttsRouter);
+app.use('/', tutoringSlotsRouter);
 
 app.get('/health', (_req, res) => res.send('ok'));
 

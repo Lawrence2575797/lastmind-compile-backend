@@ -77,7 +77,7 @@ export async function processNotes(safeText: string, userId: string): Promise<st
     // Same raw-SDK-call reasoning as the thinking opt-out above - this
     // doesn't go through callClaudeJSON, so it doesn't get metered for
     // free either; charged explicitly here instead.
-    await chargeForClaudeCall(userId, MODELS.compile, response.usage as ClaudeCallUsage);
+    await chargeForClaudeCall(userId, MODELS.compile, response.usage as ClaudeCallUsage, 'compile-notes');
 
     const textBlock = response.content.find((block) => block.type === 'text');
     if (textBlock && textBlock.type === 'text') {
@@ -303,6 +303,12 @@ export async function callClaudeJSON(params: {
   // turns metering on for a given call site - everything else about this
   // function is unchanged either way.
   userId?: string;
+  // Short, stable label for the lock_transactions ledger (e.g.
+  // 'knowledge-map-v2-node-lesson') - optional so existing call sites
+  // don't all need updating at once, but every call site worth
+  // distinguishing later should set one. Falls back to 'unlabeled' rather
+  // than silently omitting the reason column.
+  meteredReason?: string;
 }): Promise<string> {
   const { text, usage } = await sendWithTemperatureRetry(params.model, params.systemPrompt, params.userContent, params.maxTokens, params.temperature, params.cacheSystemPrompt);
   if (params.userId) {
@@ -311,7 +317,7 @@ export async function callClaudeJSON(params: {
     // why it never throws, but it IS awaited (not fire-and-forget) so a
     // charge is never silently skipped by the process exiting before it
     // lands.
-    await chargeForClaudeCall(params.userId, params.model, usage);
+    await chargeForClaudeCall(params.userId, params.model, usage, params.meteredReason || 'unlabeled');
   }
   return text;
 }
@@ -337,6 +343,8 @@ export async function callClaudeJSONWithImages(params: {
   temperature?: number;
   // Same metering opt-in as callClaudeJSON's own userId param.
   userId?: string;
+  // Same ledger label as callClaudeJSON's own meteredReason.
+  meteredReason?: string;
 }): Promise<string> {
   const content: Array<Anthropic.Messages.TextBlockParam | Anthropic.Messages.ImageBlockParam> = [{ type: 'text', text: params.userText }];
   for (const image of params.images) {
@@ -348,7 +356,7 @@ export async function callClaudeJSONWithImages(params: {
   }
   const { text, usage } = await sendWithTemperatureRetry(params.model, params.systemPrompt, content, params.maxTokens, params.temperature);
   if (params.userId) {
-    await chargeForClaudeCall(params.userId, params.model, usage);
+    await chargeForClaudeCall(params.userId, params.model, usage, params.meteredReason || 'unlabeled');
   }
   return text;
 }

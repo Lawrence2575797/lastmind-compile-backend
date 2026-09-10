@@ -79,7 +79,7 @@ router.post('/encoding-lesson/start', costlyEndpointLimiter, async (req: Request
     // Spend BEFORE generating anything — this is the one commit point for
     // a genuinely new encoding lesson (/continue is the async second half
     // of this same call, not a new one, so it must never spend again).
-    await spendLocks(req.userId as string, ENCODING_LESSON_LOCK_COST);
+    await spendLocks(req.userId as string, ENCODING_LESSON_LOCK_COST, 'encoding-lesson-start');
 
     const conceptKey = normalizeConceptKey(subject, topic, concept);
     const result = await startEncodingLesson(

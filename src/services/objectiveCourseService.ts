@@ -18,6 +18,7 @@ export async function classifySubjectTitle(title: string, userId: string): Promi
     userContent: title,
     temperature: 0,
     userId,
+    meteredReason: 'classify-subject-title',
   });
   const { isLanguage } = parseModelJson<{ isLanguage: boolean }>(raw);
   return !!isLanguage;
@@ -92,20 +93,36 @@ export async function planObjectiveCourse(userId: string, rawSubject: string, go
   );
   const edges = rawEdgeRows.filter((e) => nodeIdSet.has(e.to_node_id));
 
-  const nodeListText = nodeRows.map((n) => `${n.id} | ${n.subtopic} | ${n.label}`).join('\n');
+  // Referenced by index, not real id (see the prompt's own comment) -
+  // this is the single biggest lever on this call's cost: a knowledge-map
+  // node id is a UUID, ~15-20 tokens on its own, spelled out once per
+  // node in a list that can run to several hundred nodes for a subject
+  // like Spanish. The node list also lives in the CACHED system prompt
+  // below rather than userContent - it's byte-identical for every
+  // student planning a crash course in this same subject, so only the
+  // first call per subject (per the cache's 1h TTL) pays full input
+  // price for it; every call after that reads it at ~10% of the price.
+  const idByIndex = nodeRows.map((r) => r.id);
+  const nodeListText = nodeRows.map((n, i) => `${i} | ${n.subtopic} | ${n.label}`).join('\n');
   const raw = await callClaudeJSON({
     model: MODELS.diagnosticTree,
-    systemPrompt: OBJECTIVE_COURSE_PLAN_PROMPT,
-    userContent: `Subject: ${subject}\n\nStudent's stated goal and pace: ${goalAndPace}\n\nAvailable nodes (id | subtopic | label):\n${nodeListText}`,
+    systemPrompt: `${OBJECTIVE_COURSE_PLAN_PROMPT}\n\nSubject: ${subject}\n\nAvailable nodes for this subject (index | subtopic | label):\n${nodeListText}`,
+    userContent: `Student's stated goal and pace: ${goalAndPace}`,
     temperature: 0.2,
+    cacheSystemPrompt: true,
     userId,
+    meteredReason: 'objective-course-plan',
   });
-  const parsed = parseModelJson<{ goal: string; minutesPerDay: number; nodeIds: string[] }>(raw);
+  const parsed = parseModelJson<{ goal: string; minutesPerDay: number; nodeIndices: number[] }>(raw);
 
-  // Never trust an id the model invented - only ids genuinely present in
-  // this subject's own node list are eligible, same discipline every
-  // other id-returning model call in this codebase already follows.
-  const modelSelected = new Set((parsed.nodeIds || []).filter((id) => nodeIdSet.has(id)));
+  // Never trust an index the model invented - only indices genuinely
+  // within this subject's own node list are eligible, same discipline
+  // every other id-returning model call in this codebase already follows.
+  const modelSelected = new Set(
+    (parsed.nodeIndices || [])
+      .filter((i) => Number.isInteger(i) && i >= 0 && i < idByIndex.length)
+      .map((i) => idByIndex[i])
+  );
   const closure = closeOverPrerequisites(modelSelected, edges);
 
   const minutesPerDay = Number.isFinite(parsed.minutesPerDay) && parsed.minutesPerDay > 0 ? Math.round(parsed.minutesPerDay) : DEFAULT_MINUTES_PER_DAY;

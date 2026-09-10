@@ -123,6 +123,7 @@ export async function generateAndCacheNodeLesson(nodeId: string, userId: string)
     // for no reason.
     cacheSystemPrompt: true,
     userId,
+    meteredReason: 'knowledge-map-v2-node-lesson',
   });
   let encodingContent: unknown;
   try {
@@ -204,6 +205,7 @@ export async function generateAndCacheEdgeLesson(fromNodeId: string, toNodeId: s
     // marker would silently do nothing (see claudeClient.ts's own
     // comment) - unlike the node lesson prompt above.
     userId,
+    meteredReason: 'knowledge-map-v2-edge-lesson',
   });
   let parsed: EdgeLessonResult;
   try {

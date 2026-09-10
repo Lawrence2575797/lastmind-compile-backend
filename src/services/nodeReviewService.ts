@@ -196,6 +196,7 @@ export async function getRewordedAo1Question(nodeId: string, userId: string): Pr
       userContent: `Explanation: ${source.explanation}\n\nOriginal question: ${source.questionText}`,
       temperature: 0.4,
       userId,
+      meteredReason: 'node-review-ao1-reword',
     });
     const generated = parseModelJson<{ questionTexts: string[] }>(raw);
     pool = generated?.questionTexts?.filter(Boolean) || [];
@@ -231,6 +232,7 @@ export async function gradeRewordedAo1Answer(nodeId: string, questionText: strin
     userContent: `Question: ${questionText}\nMark scheme: ${source.explanation}\nStudent's answer: ${answer}`,
     temperature: 0.1,
     userId,
+    meteredReason: 'node-review-ao1-grade',
   });
   return parseCorrectFeedbackJson(raw);
 }
@@ -250,6 +252,7 @@ export async function checkAo1SlipCandidate(nodeId: string, questionText: string
     userContent: `Question: ${questionText}\nExplanation (ground truth): ${source.explanation}\nStudent's wrong answer: ${answer}`,
     temperature: 0.1,
     userId,
+    meteredReason: 'node-review-ao1-slip-check',
   });
   return parseModelJson<{ isSlip: boolean; wrongPhrase: string }>(raw);
 }
@@ -336,6 +339,7 @@ export async function getRewordedIntegrationQuestion(fromNodeId: string, toNodeI
       userContent: `Link teaching: ${edge.linkTeaching}\n\nOriginal question: ${edge.integrationQuestion.questionText}`,
       temperature: 0.4,
       userId,
+      meteredReason: 'node-review-integration-reword',
     });
     const generated = parseModelJson<{ questionTexts: string[] }>(raw);
     pool = generated?.questionTexts?.filter(Boolean) || [];
@@ -399,6 +403,7 @@ export async function gradeIntegrationAnswer(fromNodeId: string, toNodeId: strin
     userContent: `Question: ${questionText}\nMark scheme: ${edge.integrationQuestion.markScheme || ''}\nStudent's answer: ${answer}`,
     temperature: 0.1,
     userId,
+    meteredReason: 'node-review-integration-grade',
   });
   return parseCorrectFeedbackJson(raw);
 }

@@ -42,7 +42,7 @@ router.post('/chain-lesson/start', async (req: Request, res: Response) => {
     // Same reasoning as encoding lessons' own /start: spend before
     // generating anything, and only here — /continue is the async second
     // half of this same call, not a new commitment.
-    await spendLocks(req.userId as string, RETRIEVAL_LESSON_LOCK_COST);
+    await spendLocks(req.userId as string, RETRIEVAL_LESSON_LOCK_COST, 'chain-lesson-retrieval-start');
 
     const result = await startRetrievalLesson(
       req.userId as string,

@@ -3,6 +3,7 @@ import { supabaseAdmin } from '../services/supabaseAdmin';
 import { requireAuth, requirePaidTier } from '../services/authMiddleware';
 import { costlyEndpointLimiter } from '../services/rateLimiters';
 import { gradeAndRecordReview } from '../services/reviewService';
+import { selectAllRows } from '../services/supabasePagination';
 
 const router = Router();
 
@@ -66,15 +67,32 @@ router.get('/schedule', requireAuth, costlyEndpointLimiter, async (req: Request,
     // concept_id/due, so this is additive, not a behavior change for it.
     // spaced_success_count is additive too — the free-tier verification
     // flow reads it to show progress toward DURABLE_RELEARNING_CRITERION.
-    const { data, error } = await supabaseAdmin
-      .from('concept_reviews')
-      .select('concept_id, due, stability, difficulty, reps, lapses, state, spaced_success_count')
-      .eq('user_id', req.userId as string)
-      .order('due', { ascending: true });
+    // Paginated (selectAllRows) - a plain .select() silently caps at 1000
+    // rows via PostgREST's default, the same landmine already found and
+    // fixed elsewhere in this app (ingest_knowledge_map.js,
+    // knowledgeMapService.ts's getKnowledgeMapForSubject). An active
+    // student across a few subjects can genuinely exceed 1000
+    // concept_reviews rows - beyond that cap, this route was silently
+    // dropping concepts entirely from the schedule, which
+    // computeNextRecommendation (learn/index.html) reads as "never
+    // encoded" and re-recommends as a fresh lesson, even though it was
+    // genuinely completed - a real reported bug.
+    const data = await selectAllRows<{
+      concept_id: string;
+      due: string;
+      stability: number;
+      difficulty: number;
+      reps: number;
+      lapses: number;
+      state: string;
+      spaced_success_count: number;
+    }>(
+      'concept_reviews',
+      'concept_id, due, stability, difficulty, reps, lapses, state, spaced_success_count',
+      (q) => q.eq('user_id', req.userId as string).order('due', { ascending: true })
+    );
 
-    if (error) throw error;
-
-    res.json({ schedule: data || [] });
+    res.json({ schedule: data });
   } catch (err) {
     console.error('Fetching schedule failed:', err);
     res.status(500).json({ error: 'could not fetch schedule' });

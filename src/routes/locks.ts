@@ -3,6 +3,7 @@ import { requireAuth, isUserPaid } from '../services/authMiddleware';
 import { syncEndpointLimiter, actionEndpointLimiter } from '../services/rateLimiters';
 import { getOrCreateLockBalance, sweepExpiredLockHolds, depositForLessonBooking, InsufficientLocksError } from '../services/lockService';
 import { LESSON_DEPOSIT_LOCK_AMOUNT, monthlyLockAllotmentForTier } from '../constants/locks';
+import { supabaseAdmin } from '../services/supabaseAdmin';
 
 const router = Router();
 
@@ -58,6 +59,29 @@ router.post('/locks/deposit', actionEndpointLimiter, async (req: Request, res: R
     }
     console.error('Lock deposit failed:', err);
     res.status(500).json({ error: 'could not book this lesson slot' });
+  }
+});
+
+// GET /locks/transactions?limit=50 -> { transactions: [...] }
+// Real audit trail for "where did my Locks go" - every spend/charge/
+// credit since lock_transactions existed (see lockService.ts's
+// recordTransaction), newest first. reason/model let a specific charge be
+// traced back to the feature/route/Claude call that caused it, something
+// this app previously had no way to answer after the fact at all.
+router.get('/locks/transactions', syncEndpointLimiter, async (req: Request, res: Response) => {
+  const limit = Math.min(200, Math.max(1, Number(req.query.limit) || 50));
+  try {
+    const { data, error } = await supabaseAdmin
+      .from('lock_transactions')
+      .select('amount, reason, model, balance_after, created_at')
+      .eq('user_id', req.userId as string)
+      .order('created_at', { ascending: false })
+      .limit(limit);
+    if (error) throw error;
+    res.json({ transactions: data || [] });
+  } catch (err) {
+    console.error('Lock transactions fetch failed:', err);
+    res.status(500).json({ error: 'could not load your Locks transaction history' });
   }
 });
 

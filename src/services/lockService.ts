@@ -15,6 +15,24 @@ export class InsufficientLocksError extends Error {
   }
 }
 
+// One row per balance change, alongside the lock_balances update itself -
+// previously every spend/charge/credit just silently adjusted a running
+// number with no record of why, making "where did my Locks go" impossible
+// to answer with certainty after the fact. Never allowed to fail the
+// caller: the real balance change already happened (or is about to,
+// depending on call order below), and losing the audit trail for one
+// transaction is far better than losing the transaction's actual effect.
+async function recordTransaction(userId: string, amount: number, reason: string, balanceAfter: number, model?: string): Promise<void> {
+  try {
+    const { error } = await supabaseAdmin
+      .from('lock_transactions')
+      .insert({ user_id: userId, amount, reason, model: model ?? null, balance_after: balanceAfter });
+    if (error) throw error;
+  } catch (err) {
+    console.error('LastMind: failed to record a Locks transaction (non-fatal - the balance change itself already happened).', { userId, amount, reason }, err);
+  }
+}
+
 function currentMonthStart(): string {
   const now = new Date();
   return new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), 1)).toISOString().slice(0, 10);
@@ -79,7 +97,7 @@ export async function getOrCreateLockBalance(userId: string): Promise<LockBalanc
  * negative; the caller (a route) is expected to turn that into a 402
  * before any lesson generation happens.
  */
-export async function spendLocks(userId: string, amount: number): Promise<LockBalance> {
+export async function spendLocks(userId: string, amount: number, reason: string): Promise<LockBalance> {
   const current = await getOrCreateLockBalance(userId);
   if (current.balance < amount) throw new InsufficientLocksError();
 
@@ -90,6 +108,7 @@ export async function spendLocks(userId: string, amount: number): Promise<LockBa
     .select('balance')
     .single();
   if (error) throw error;
+  await recordTransaction(userId, -amount, reason, data.balance);
   return { balance: data.balance };
 }
 
@@ -104,7 +123,7 @@ export async function spendLocks(userId: string, amount: number): Promise<LockBa
  * negative instead, same as any real-world usage-based bill can run over
  * a prepaid credit right up until the next reset.
  */
-export async function chargeLocksForUsage(userId: string, amount: number): Promise<LockBalance> {
+export async function chargeLocksForUsage(userId: string, amount: number, reason: string, model?: string): Promise<LockBalance> {
   const current = await getOrCreateLockBalance(userId);
   const { data, error } = await supabaseAdmin
     .from('lock_balances')
@@ -113,6 +132,7 @@ export async function chargeLocksForUsage(userId: string, amount: number): Promi
     .select('balance')
     .single();
   if (error) throw error;
+  await recordTransaction(userId, -amount, reason, data.balance, model);
   return { balance: data.balance };
 }
 
@@ -121,7 +141,7 @@ export async function chargeLocksForUsage(userId: string, amount: number): Promi
  * spendLocks (that's a debit-only path with its own insufficient-balance
  * check, which doesn't apply here).
  */
-export async function creditLocks(userId: string, amount: number): Promise<LockBalance> {
+export async function creditLocks(userId: string, amount: number, reason: string): Promise<LockBalance> {
   const current = await getOrCreateLockBalance(userId);
   const { data, error } = await supabaseAdmin
     .from('lock_balances')
@@ -130,6 +150,7 @@ export async function creditLocks(userId: string, amount: number): Promise<LockB
     .select('balance')
     .single();
   if (error) throw error;
+  await recordTransaction(userId, amount, reason, data.balance);
   return { balance: data.balance };
 }
 
@@ -150,7 +171,7 @@ export async function depositForLessonBooking(
   startTime: string | null,
   depositAmount: number
 ): Promise<{ balance: number; calendarEventId: string; holdId: string }> {
-  const { balance } = await spendLocks(userId, depositAmount);
+  const { balance } = await spendLocks(userId, depositAmount, 'lesson-booking-deposit');
 
   const { data: event, error: eventError } = await supabaseAdmin
     .from('calendar_events')
@@ -208,7 +229,7 @@ export async function refundTodaysHeldDepositIfAny(userId: string): Promise<void
       .eq('id', hold.id)
       .eq('status', 'held'); // guards against a double-refund race
     if (updateError) throw updateError;
-    await creditLocks(userId, hold.amount as number);
+    await creditLocks(userId, hold.amount as number, 'lesson-booking-deposit-refund');
   }
 }
 

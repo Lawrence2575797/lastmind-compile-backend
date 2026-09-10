@@ -30,10 +30,10 @@ export function computeLocksForUsage(model: string, usage: ClaudeCallUsage | und
 // already been delivered - unlike the pre-flight spendLocks check the two
 // /start routes use, there is no "before" moment here to refuse at; the
 // cost is only known once the response is already in hand.
-export async function chargeForClaudeCall(userId: string, model: string, usage: ClaudeCallUsage | undefined): Promise<void> {
+export async function chargeForClaudeCall(userId: string, model: string, usage: ClaudeCallUsage | undefined, reason: string): Promise<void> {
   try {
     const locks = computeLocksForUsage(model, usage);
-    await chargeLocksForUsage(userId, locks);
+    await chargeLocksForUsage(userId, locks, reason, model);
   } catch (err) {
     console.error('LastMind: failed to charge Locks for a Claude call (non-fatal, the call itself already succeeded).', { userId, model }, err);
   }

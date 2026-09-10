@@ -15,7 +15,7 @@ Rules:
 3. Mark "correct": true if the core idea is right and there's no significant misconception, even if the explanation is short, informal, or misses minor detail.
 4. Mark "correct": false only if the student shows a genuine misunderstanding, answers a different question, or the answer is too vague/empty to demonstrate they actually know it.
 5. "feedback" is one or two short, encouraging sentences written directly to the student — if incorrect, briefly say what's missing or wrong.
-6. The student types on a standard English keyboard, which cannot produce accented/diacritic characters (é, è, à, ñ, ü, ç, etc.) without extra effort most students won't know how to do. Never mark an answer wrong purely because a word is missing an accent it would otherwise carry.
+6. The student types on a standard English keyboard, which cannot produce accented/diacritic characters (é, è, à, ñ, ü, ç, etc.) without extra effort most students won't know how to do. Never mark an answer wrong purely because a word is missing an accent it would otherwise carry. This still applies when dropping the accent happens to spell a different real word (Spanish "si"/"sí" - "if"/"yes", "tu"/"tú" - "your"/"you", "el"/"él" - "the"/"he") - if the intended word is unambiguous from context, credit it as the accented word the student meant.
 
 Output schema:
 { "correct": boolean, "feedback": string }`;

@@ -84,6 +84,36 @@ export async function getQualifyingReviewLinks(userId: string, nodeId: string): 
   return links;
 }
 
+// Node's own AO1 recall specifically - deliberately narrower than
+// assertNodeReviewDue below (which bundles AO1 with every qualifying
+// link). A brand-new qualifying link with no integration attempt yet
+// counts as "due" in that bundle check (correct - it genuinely does need
+// testing once), but that used to also unlock re-asking AO1 itself, even
+// days before AO1's OWN schedule said it was due - a real reported bug
+// (the review flow re-tested a base concept's recall on nothing but an
+// unrelated link becoming newly qualifying). This keeps AO1 locked to its
+// own due date regardless of what else about this node's review just
+// became due.
+export async function assertAo1ReviewDue(userId: string, nodeId: string): Promise<void> {
+  const { data: node, error: nodeErr } = await supabaseAdmin
+    .from('knowledge_map_nodes')
+    .select('id, concept_id')
+    .eq('id', nodeId)
+    .maybeSingle<{ id: string; concept_id: string }>();
+  if (nodeErr) throw nodeErr;
+  if (!node) return; // the route's own 404 check handles a missing node
+
+  const { data: row, error: rowErr } = await supabaseAdmin
+    .from('concept_reviews')
+    .select('due')
+    .eq('user_id', userId)
+    .eq('concept_id', node.concept_id)
+    .maybeSingle();
+  if (rowErr) throw rowErr;
+  const due = (row?.due as string | undefined) ?? null;
+  if (due && !isDueByCalendarDay(due)) throw new ReviewNotDueError(due);
+}
+
 // Server-side mirror of learn/index.html's own isNodeReviewDue — the
 // client already disables its "Start review" button until this is true,
 // but that's UX only, not enforcement: ao1/start and integration/start
@@ -95,7 +125,9 @@ export async function getQualifyingReviewLinks(userId: string, nodeId: string): 
 // qualifying link's integration are one combined review (see this file's
 // own top-of-section comment in knowledgeMap.ts) - starting the session
 // early because one component happens to be due defeats the point of
-// gating it at all.
+// gating it at all. AO1 ITSELF is gated more narrowly - see
+// assertAo1ReviewDue above - this bundle check is now only used to admit
+// a session into integration/start.
 export async function assertNodeReviewDue(userId: string, nodeId: string): Promise<void> {
   const { data: node, error: nodeErr } = await supabaseAdmin
     .from('knowledge_map_nodes')

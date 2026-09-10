@@ -28,6 +28,7 @@ import {
   getIntegrationStepData,
   gradeIntegrationAnswer,
   assertNodeReviewDue,
+  assertAo1ReviewDue,
 } from '../services/nodeReviewService';
 import { compileNodeNotes, getNodeNotes, compileEdgeNotes, compileEdgeNotesContent, getEdgeNotes, getNotesIndexForUser, getPersonalNote, savePersonalNote, checkWorkedExampleStep } from '../services/knowledgeMapNotesService';
 import { generateAndCacheNodeLesson, generateAndCacheEdgeLesson } from '../services/lessonGenerationService';
@@ -781,7 +782,7 @@ router.post('/knowledge-map-v2/node-review/ao1/start', requireAuth, costlyEndpoi
   const { nodeId } = (req.body ?? {}) as { nodeId?: string };
   if (!nodeId) return res.status(400).json({ error: 'nodeId is required' });
   try {
-    await assertNodeReviewDue(req.userId as string, nodeId);
+    await assertAo1ReviewDue(req.userId as string, nodeId);
     const question = await getRewordedAo1Question(nodeId, req.userId as string);
     if (!question) return res.status(404).json({ error: 'no lesson generated for this concept yet' });
     res.json(question);

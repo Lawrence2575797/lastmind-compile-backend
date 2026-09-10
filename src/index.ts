@@ -32,6 +32,7 @@ import mathHelpRouter from './routes/mathHelp';
 import personalNotesRouter from './routes/personalNotes';
 import themeSettingsRouter from './routes/themeSettings';
 import objectiveCourseRouter from './routes/objectiveCourse';
+import ttsRouter from './routes/tts';
 import { globalRateLimiter } from './services/rateLimiters';
 
 const PORT = process.env.PORT || 4100;
@@ -87,6 +88,7 @@ app.use('/', mathHelpRouter);
 app.use('/', personalNotesRouter);
 app.use('/', themeSettingsRouter);
 app.use('/', objectiveCourseRouter);
+app.use('/', ttsRouter);
 
 app.get('/health', (_req, res) => res.send('ok'));
 

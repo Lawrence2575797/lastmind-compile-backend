@@ -1,7 +1,7 @@
 import { Router, Request, Response } from 'express';
 import { requireAuth, requireAdmin } from '../services/authMiddleware';
 import { actionEndpointLimiter, syncEndpointLimiter } from '../services/rateLimiters';
-import { getWeekSlots, toggleSlot, claimSlot, SlotAlreadyTakenError } from '../services/tutoringSlotsService';
+import { getWeekSlots, toggleSlot, setDayStatus, claimSlot, SlotAlreadyTakenError } from '../services/tutoringSlotsService';
 
 const router = Router();
 
@@ -63,6 +63,27 @@ router.post('/tutoring-slots/toggle', requireAuth, requireAdmin, actionEndpointL
   } catch (err) {
     console.error('LastMind: failed to toggle a tutoring slot.', err);
     res.status(500).json({ error: 'Could not update this slot.' });
+  }
+});
+
+// POST /tutoring-slots/day { dayStart, targetStatus } - bulk block/reopen
+// a WHOLE day in one call (e.g. "busy all day with uni work"), instead of
+// toggling each of that day's ~12 hourly cells one at a time. Never
+// touches a booked slot either way - freeing an actual booking stays a
+// deliberate single-slot /toggle action with its own confirmation.
+router.post('/tutoring-slots/day', requireAuth, requireAdmin, actionEndpointLimiter, async (req: Request, res: Response) => {
+  const dayStart = parseWeekStart(req.body?.dayStart);
+  const { targetStatus } = req.body ?? {};
+  if (!dayStart) return res.status(400).json({ error: 'dayStart is required' });
+  if (targetStatus !== 'open' && targetStatus !== 'blocked') {
+    return res.status(400).json({ error: "targetStatus must be 'open' or 'blocked'" });
+  }
+  try {
+    await setDayStatus(dayStart, targetStatus);
+    res.json({ ok: true });
+  } catch (err) {
+    console.error('LastMind: failed to bulk-update a tutoring day.', err);
+    res.status(500).json({ error: 'Could not update this day.' });
   }
 });
 

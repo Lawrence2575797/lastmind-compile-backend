@@ -124,6 +124,40 @@ export async function toggleSlot(startTime: string, endTime: string): Promise<Sl
 }
 
 /**
+ * Bulk day action - "block this whole day" or "reopen this whole day" in
+ * one call, so the founder doesn't have to click every one of a busy
+ * day's ~12 hourly cells individually. Deliberately never touches a
+ * BOOKED slot either way - freeing an actual booking stays a deliberate
+ * single-slot action (toggleSlot) with its own confirmation, never swept
+ * up in a bulk sweep. dayStart is that day's local midnight, same
+ * client-computed-instant convention as weekStart.
+ */
+export async function setDayStatus(dayStart: Date, targetStatus: 'open' | 'blocked'): Promise<void> {
+  const dayEnd = new Date(dayStart.getTime() + 86400000);
+  const template = computeWeekTemplate(dayStart).filter((slot) => slot.start.getTime() < dayEnd.getTime());
+  const overrides = await getOverridesInRange(dayStart, dayEnd);
+  const now = Date.now();
+  const futureTemplate = template.filter((slot) => slot.start.getTime() > now);
+
+  if (targetStatus === 'blocked') {
+    const toInsert = futureTemplate
+      .filter((slot) => !overrides.has(slot.start.toISOString()))
+      .map((slot) => ({ start_time: slot.start.toISOString(), end_time: slot.end.toISOString(), status: 'blocked' as const }));
+    if (!toInsert.length) return;
+    const { error } = await supabaseAdmin.from('tutoring_slot_overrides').insert(toInsert);
+    if (error) throw error;
+    return;
+  }
+
+  const toDelete = futureTemplate
+    .filter((slot) => overrides.get(slot.start.toISOString())?.status === 'blocked')
+    .map((slot) => slot.start.toISOString());
+  if (!toDelete.length) return;
+  const { error } = await supabaseAdmin.from('tutoring_slot_overrides').delete().in('start_time', toDelete);
+  if (error) throw error;
+}
+
+/**
  * Claims a still-open slot for a student. Relies on start_time being the
  * table's own primary key for atomicity - a plain insert fails with a
  * unique-violation if another request already claimed (or blocked) this

@@ -1,6 +1,6 @@
 import { Router, Request, Response } from 'express';
 import { requireAuth, requirePaidTier } from '../services/authMiddleware';
-import { costlyEndpointLimiter } from '../services/rateLimiters';
+import { costlyEndpointLimiter, syncEndpointLimiter } from '../services/rateLimiters';
 import { supabaseAdmin } from '../services/supabaseAdmin';
 import { callClaudeJSON, MODELS } from '../services/claudeClient';
 import { MATH_HELP_ADVICE_PROMPT, MATH_HELP_ANSWER_PROMPT, MATH_HELP_ANSWER_INTRO_MESSAGE } from '../constants/mathHelpPrompts';
@@ -35,7 +35,7 @@ function buildTranscript(originalQuestion: string, history: { role: string; cont
 }
 
 // GET /math-help/threads -> [{id, title, mode, updatedAt}] for the sidebar list.
-router.get('/math-help/threads', async (req: Request, res: Response) => {
+router.get('/math-help/threads', syncEndpointLimiter, async (req: Request, res: Response) => {
   try {
     const { data, error } = await supabaseAdmin
       .from('math_help_threads')
@@ -51,7 +51,7 @@ router.get('/math-help/threads', async (req: Request, res: Response) => {
 });
 
 // GET /math-help/threads/:id -> { id, title, mode, messages: [{role, content}] }
-router.get('/math-help/threads/:id', async (req: Request, res: Response) => {
+router.get('/math-help/threads/:id', syncEndpointLimiter, async (req: Request, res: Response) => {
   try {
     const { data: thread } = await supabaseAdmin
       .from('math_help_threads')

@@ -44,7 +44,7 @@ router.get('/tutoring-slots/week/admin', requireAuth, requireAdmin, async (req: 
 // GET /tutoring-slots/am-i-admin -> {isAdmin:true} or 403 - lets the
 // frontend decide whether to show the founder's own availability-
 // management controls, without hardcoding an email client-side.
-router.get('/tutoring-slots/am-i-admin', requireAuth, requireAdmin, (_req: Request, res: Response) => {
+router.get('/tutoring-slots/am-i-admin', requireAuth, requireAdmin, syncEndpointLimiter, (_req: Request, res: Response) => {
   res.json({ isAdmin: true });
 });
 

@@ -77,6 +77,7 @@ async function main() {
     label: n.label,
     subtopic: n.subtopic || '',
     theme: (n.subtopic || '').split(' ')[0]?.split('.')[0] || null,
+    difficulty: typeof n.difficulty === 'number' ? n.difficulty : null,
   }));
   await insertInChunks('knowledge_map_nodes', nodeRows);
 
@@ -84,13 +85,17 @@ async function main() {
   const insertedNodes = await selectAll('knowledge_map_nodes', 'id, node_key', { subject: SUBJECT, qualification: QUALIFICATION, exam_board: EXAM_BOARD });
   const idByNodeKey = new Map(insertedNodes.map(r => [r.node_key, r.id]));
 
+  // Edges moved from plain [from, to] tuples to {from, to, difficulty}
+  // objects once difficulty scoring was added - accept either shape so
+  // older already-generated map files (pre-difficulty) still ingest fine.
   const edgeRows = edges
-    .map(([from, to]) => ({ from_node_id: idByNodeKey.get(from), to_node_id: idByNodeKey.get(to), fromKey: from, toKey: to }))
+    .map(e => Array.isArray(e) ? { from: e[0], to: e[1], difficulty: null } : e)
+    .map(e => ({ from_node_id: idByNodeKey.get(e.from), to_node_id: idByNodeKey.get(e.to), difficulty: typeof e.difficulty === 'number' ? e.difficulty : null, fromKey: e.from, toKey: e.to }))
     .filter(e => {
       if (!e.from_node_id || !e.to_node_id) { console.warn(`  -> skipping edge ${e.fromKey}->${e.toKey}: node id not found`); return false; }
       return true;
     })
-    .map(({ from_node_id, to_node_id }) => ({ from_node_id, to_node_id }));
+    .map(({ from_node_id, to_node_id, difficulty }) => ({ from_node_id, to_node_id, difficulty }));
   await insertInChunks('knowledge_map_edges', edgeRows);
 
   // ---- Lesson content, if the batch generation has already completed ----

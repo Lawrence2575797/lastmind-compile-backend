@@ -69,6 +69,10 @@ function costFromUsage(usage, inRate, outRate) {
 
 async function main() {
   const map = JSON.parse(fs.readFileSync(MAP_PATH, 'utf8'));
+  // Edges moved from plain [from, to] tuples to {from, to, difficulty}
+  // objects once difficulty scoring was added to generation - normalize
+  // back to tuples here since this script doesn't need difficulty.
+  map.edges = map.edges.map(e => Array.isArray(e) ? e : [e.from, e.to]);
   const nodeLessons = JSON.parse(fs.readFileSync(NODE_LESSONS_PATH, 'utf8')).nodeLessons;
   const nodeById = new Map(map.nodes.map(n => [n.id, n]));
   const explanationById = new Map(nodeLessons.map(l => [l.nodeId, l.explanation]));

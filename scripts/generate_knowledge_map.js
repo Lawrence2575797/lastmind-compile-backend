@@ -609,20 +609,36 @@ async function verifyBatch(allNodes, allEdges) {
   }
 }
 
+// Edges moved from plain [from, to] tuples to {from, to, difficulty}
+// objects once difficulty scoring was added to the generation prompt -
+// this normalizer accepts either shape so a verification fix's
+// new_edges/remove_edges (still authored as plain [a, b] pairs in the
+// verification prompt's output format, since verification only ever adds
+// missing STRUCTURE, not a fresh difficulty judgment) work the same as a
+// generation pass's own {from, to, difficulty} edges. A fix-added edge
+// gets difficulty: null - a real value can only come from a judgment call
+// against the full subtopic content, which a structural-fix pass never
+// re-does; null is a valid, honest "not yet estimated" state, not a bug.
+function normalizeEdge(e) {
+  return Array.isArray(e) ? { from: e[0], to: e[1], difficulty: null } : e;
+}
+
 function applyFixes(nodes, edges, issues) {
+  edges = edges.map(normalizeEdge);
   const nodeIds = new Set(nodes.map(n => n.id));
-  const edgeKey = ([a, b]) => a + '->' + b;
+  const edgeKey = (e) => e.from + '->' + e.to;
   const edgeSet = new Set(edges.map(edgeKey));
 
   issues.forEach(issue => {
     (issue.fix?.new_nodes || []).forEach(n => {
       if (!nodeIds.has(n.id)) { nodes.push(n); nodeIds.add(n.id); }
     });
-    (issue.fix?.new_edges || []).forEach(e => {
+    (issue.fix?.new_edges || []).forEach(raw => {
+      const e = normalizeEdge(raw);
       if (!edgeSet.has(edgeKey(e))) { edges.push(e); edgeSet.add(edgeKey(e)); }
     });
-    (issue.fix?.remove_edges || []).forEach(e => {
-      const k = edgeKey(e);
+    (issue.fix?.remove_edges || []).forEach(raw => {
+      const k = edgeKey(normalizeEdge(raw));
       const idx = edges.findIndex(x => edgeKey(x) === k);
       if (idx !== -1) edges.splice(idx, 1);
     });
@@ -634,17 +650,18 @@ function applyFixes(nodes, edges, issues) {
 // replacing - a DAG with no orphaned edges, run automatically rather than
 // by hand every time.
 function validate(nodes, edges) {
+  edges = edges.map(normalizeEdge);
   const nodeIds = new Set(nodes.map(n => n.id));
   const dupes = {};
   nodes.forEach(n => dupes[n.id] = (dupes[n.id] || 0) + 1);
   Object.entries(dupes).forEach(([id, c]) => { if (c > 1) console.warn('DUPLICATE ID:', id); });
 
-  const bad = edges.filter(([a, b]) => !nodeIds.has(a) || !nodeIds.has(b));
-  bad.forEach(([a, b]) => console.warn('ORPHANED EDGE:', a, '->', b));
+  const bad = edges.filter(({ from, to }) => !nodeIds.has(from) || !nodeIds.has(to));
+  bad.forEach(({ from, to }) => console.warn('ORPHANED EDGE:', from, '->', to));
 
   const adj = {};
   nodes.forEach(n => adj[n.id] = []);
-  edges.forEach(([a, b]) => { if (adj[a]) adj[a].push(b); });
+  edges.forEach(({ from, to }) => { if (adj[from]) adj[from].push(to); });
   const WHITE = 0, GRAY = 1, BLACK = 2;
   const color = {};
   nodes.forEach(n => color[n.id] = WHITE);
@@ -735,7 +752,7 @@ async function processSubtopic(subtopic, specContent) {
   }
 
   nodes.forEach(n => n.subtopic = subtopic);
-  return { subtopic, nodes, edges };
+  return { subtopic, nodes, edges: edges.map(normalizeEdge) };
 }
 
 // Concurrency limited (not all 19 at once) to stay well clear of the

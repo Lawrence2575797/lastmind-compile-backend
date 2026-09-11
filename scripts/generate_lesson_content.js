@@ -128,7 +128,12 @@ async function runBatch(requests, label) {
 
 async function main() {
   const map = JSON.parse(fs.readFileSync(MAP_PATH, 'utf8'));
-  const { nodes, edges } = map;
+  const { nodes } = map;
+  // Edges moved from plain [from, to] tuples to {from, to, difficulty}
+  // objects once difficulty scoring was added to generation - normalize
+  // back to tuples here since lesson content generation doesn't need
+  // difficulty at all, and every destructure below already assumes it.
+  const edges = map.edges.map(e => Array.isArray(e) ? e : [e.from, e.to]);
   const nodeById = new Map(nodes.map(n => [n.id, n]));
 
   // ---- Phase 1: encoding lessons, one request per node ----

@@ -87,7 +87,17 @@ router.post('/knowledge-map', requireAuth, costlyEndpointLimiter, async (req: Re
 // replacing the old "Your Progress" overlay for any subject this pipeline
 // has actually been run for; a subject with no rows yet just returns an
 // empty graph, which the frontend renders as an empty state.
-router.get('/knowledge-map-v2', requireAuth, costlyEndpointLimiter, async (req: Request, res: Response) => {
+//
+// syncEndpointLimiter, not costlyEndpointLimiter - this is a plain
+// database read (getKnowledgeMapForSubject makes no Claude/AI call at
+// all), same reasoning the sibling node-lesson route below already
+// documents for why it isn't rate-limited like a real generation call.
+// This matters more now than it used to: the short-form feed
+// (sfComputeGlobalNextLesson) calls this once per subject on EVERY
+// login, not just on a rare manual folder click - a student with a
+// handful of subjects refreshing a couple of times could genuinely have
+// hit the old 10/min "costly" cap on a route that never touches Claude.
+router.get('/knowledge-map-v2', requireAuth, syncEndpointLimiter, async (req: Request, res: Response) => {
   const { subject, qualification, examBoard } = req.query;
   if (typeof subject !== 'string' || !subject.trim()) {
     return res.status(400).json({ error: 'subject is required' });

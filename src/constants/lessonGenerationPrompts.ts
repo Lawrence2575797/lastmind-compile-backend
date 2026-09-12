@@ -15,7 +15,7 @@ Your job: teach this concept, and ONLY this concept, to real exam-board depth.
 
 ## Rules
 
-1. **Explain the concept itself, completely, in as few words as that genuinely takes.** Target 90-130 words. If the concept is small enough to explain correctly in 60, use 60 - do not pad to hit a target. Real exam-relevant depth means: the actual definition/mechanism, not a restatement of the label, and not a simplified version that would mislead at exam standard.
+1. **Explain the concept itself, completely, in as few words as that genuinely takes.** Target 50-80 words. HARD CAP 100 words - if you are about to exceed it, cut a sentence rather than let it run over, even if that means leaving out a nice-to-have elaboration. If the concept is small enough to explain correctly in 30, use 30 - do not pad to hit a target. Real exam-relevant depth means: the actual definition/mechanism, not a restatement of the label, and not a simplified version that would mislead at exam standard - depth comes from PRECISION (the exact mechanism, in the fewest words that state it correctly), never from adding a second example, a restated rephrasing of the same point, or a "to put it another way". State the point once, correctly, and stop.
 
 1a. **Nod to a prerequisite for orientation - never derive this concept FROM one, or from several together.** A single short opening reference to this node's own most immediately relevant prerequisite, by name, is fine purely to orient the student ("Building on X, ..."). But do not construct this concept's actual justification by chaining or synthesizing prerequisites together ("because X, and because Y, therefore Z") - that is integration-level reasoning across concepts, and belongs in the edge lesson between this node and each of those prerequisites, not here. This node's explanation must still stand entirely on its own as the atomic definition/mechanism its own label names (rule 2) - a student who never saw the prerequisite at all should still come away with a complete, correct understanding of THIS concept from this text alone. Grounding is one sentence of orientation, not the argument itself.
 
@@ -55,13 +55,13 @@ FIRST decide which of two genuinely different jobs this edge actually has, based
 
 ## Rules — CONCEPTUAL edges
 
-1. **Teach only the bridge.** Target 70-100 words. Do not re-explain A or B's own definitions - the student already has both from their own encoding lessons. State specifically why A is required for B: what would break, or fail to make sense, about B without A.
+1. **Teach only the bridge.** Target 40-60 words, HARD CAP 80. Do not re-explain A or B's own definitions - the student already has both from their own encoding lessons. State specifically why A is required for B: what would break, or fail to make sense, about B without A. One clear sentence stating the bridge is often enough - do not add a second sentence restating it or illustrating it again unless it adds a genuinely new point.
 
 2. **The transfer question tests whether the student can apply A in a new situation involving B - not recall your link-teaching text back.** It must require genuinely using both concepts together to answer, phrased with different specifics than the link-teaching explanation used (a new example, a new number, a new context) so a student who only memorised your wording cannot pattern-match their way to a correct answer. Write a precise mark scheme (correct/incorrect only, no partial credit).
 
 ## Rules — COMBINATORIAL edges (language-learning only)
 
-1c. **Teach how A and B combine in real use.** Target 70-100 words. Do not re-explain A or B's own individual meanings - the student already has both. Show, with at least one genuine example, how they actually go together (word order, agreement, a grammatical pattern) - what a correct combination looks like and what commonly goes wrong (a typical agreement/order mistake) if that's genuinely relevant.
+1c. **Teach how A and B combine in real use.** Target 40-60 words, HARD CAP 80. Do not re-explain A or B's own individual meanings - the student already has both. Show, with at least one genuine example, how they actually go together (word order, agreement, a grammatical pattern) - what a correct combination looks like and what commonly goes wrong (a typical agreement/order mistake) if that's genuinely relevant.
 
 2c. **The transfer question asks the student to construct a natural phrase or sentence that correctly uses BOTH A and B together** - not to explain a relationship, and not to recall the link-teaching example verbatim (use a different concrete scenario/subject/object than the link-teaching text did). Grade it on correct combination (word order, agreement, the specific pattern this edge teaches), not on prose reasoning. Write a precise mark scheme naming exactly what a correct combination must contain.
 

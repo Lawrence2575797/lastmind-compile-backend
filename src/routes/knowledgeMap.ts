@@ -950,10 +950,16 @@ router.get('/day1-checks/due', requireAuth, syncEndpointLimiter, async (req: Req
     if (error) throw error;
     if (!rows || !rows.length) return res.json({ checks: [] });
 
+    // Includes the actual question text up front (never the mark scheme)
+    // so the feed can build the slide directly from this one response,
+    // same pattern as GET /immediate-recalls/due.
     const withDisplay = await Promise.all(rows.map(async (r) => {
-      const info = await getConceptDisplayInfo(r.concept_id as string);
-      if (!info) return null;
-      return { checkId: r.id, conceptId: r.concept_id, label: info.label, subject: info.subject, dueDate: r.due_date };
+      const [info, question] = await Promise.all([
+        getConceptDisplayInfo(r.concept_id as string),
+        getQuestionForConceptId(r.concept_id as string),
+      ]);
+      if (!info || !question) return null;
+      return { checkId: r.id, conceptId: r.concept_id, label: info.label, subject: info.subject, dueDate: r.due_date, questionText: question.questionText };
     }));
     res.json({ checks: withDisplay.filter(Boolean) });
   } catch (err) {

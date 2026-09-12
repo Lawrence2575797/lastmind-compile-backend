@@ -100,11 +100,8 @@ function cachedSystem(promptText) {
 // rates are used for the running total on purpose: if intro pricing
 // applies, real spend comes in under what this tracker reports, which is
 // the safe direction to be wrong in for a cap - never the other way.
-// User's cap is £5 - converted to USD (this account's own billing
-// currency) with a deliberate safety margin below the ~$6.35 straight
-// conversion at current rates, both for exchange-rate drift and because a
-// cap should hold with room to spare, not sit exactly on the line.
-const SPEND_CAP_USD = 3.0;
+// User's explicit cap for this run: $5.
+const SPEND_CAP_USD = 5.0;
 const PRICING_PER_MTOK = {
   'claude-sonnet-5': { in: 3, out: 15 },
   'claude-opus-5': { in: 5, out: 25 },
@@ -133,9 +130,9 @@ function assertUnderCap() {
   }
 }
 
-const SUBJECT = 'Spanish';
-const QUALIFICATION = 'Other';
-const EXAM_BOARD = '';
+const SUBJECT = 'Economics';
+const QUALIFICATION = 'A-Level';
+const EXAM_BOARD = 'Edexcel';
 
 // Fill in with the REAL specification content for each subtopic - the
 // actual named theories/concepts from the syllabus. Generation quality is
@@ -143,243 +140,423 @@ const EXAM_BOARD = '';
 // possibly-stale recall of the spec.
 const SUBTOPICS = [
   {
-    subtopic: "A1.1 Greetings, introductions and register",
-    specContent: `A1.1 Greetings, introductions and register
+    subtopic: "1.1 Nature of economics",
+    specContent: `1.1 Nature of economics
 
 Content - what students need to learn:
-- Formal and informal greetings: buenos dias, buenas tardes, buenas noches, hola, adios, hasta luego, hasta manana.
-- Introducing yourself and others: me llamo..., ¿como te llamas? (informal) / ¿como se llama? (formal), mucho gusto / encantado(a).
-- Subject pronouns: yo, tu, el/ella/usted, nosotros(as), vosotros(as) (Spain) / ustedes, ellos/ellas; the formal "usted" as a distinct form of address for a stranger/elder, contrasted with informal "tu".
-- Basic courtesy expressions: por favor, gracias, de nada, perdon, disculpe.
-- Asking and saying where someone is from: ¿de donde eres? / ¿de donde es usted? soy de...
-- Nationalities and their masculine/feminine/plural agreement (espanol/espanola/espanoles/espanolas, ingles/inglesa/ingleses/inglesas).
-- Basic yes/no and question words: si, no, que, donde, cuando, por que, quien, como, cuanto.`
+- Thinking like an economist: the process of developing models in economics, including the need to make assumptions.
+- The use of the ceteris paribus assumption in building models.
+- The inability in economics to make scientific experiments.
+- The distinction between positive and normative economic statements.
+- The role of value judgements in influencing economic decision making and policy.
+- The problem of scarcity, where there are unlimited wants and finite resources.
+- The distinction between renewable and non-renewable resources.
+- The importance of opportunity costs to economic agents (consumers, producers and government).
+- The use of production possibility frontiers (PPFs) to depict the maximum productive potential of an economy, opportunity cost (through marginal analysis), economic growth or decline, efficient or inefficient allocation of resources, and possible and unobtainable production.
+- The distinction between movements along and shifts in production possibility curves, considering the possible causes for such changes.
+- The distinction between capital and consumer goods.
+- Specialisation and the division of labour: reference to Adam Smith.
+- The advantages and disadvantages of specialisation and the division of labour in organising production.
+- The advantages and disadvantages of specialising in the production of goods and services to trade.
+- The functions of money (as a medium of exchange, a measure of value, a store of value, a method of deferred payment).
+- The distinction between free market, mixed and command economies: reference to Adam Smith, Friedrich Hayek and Karl Marx.
+- The advantages and disadvantages of a free market economy and a command economy.
+- The role of the state in a mixed economy.
+`
   },
   {
-    subtopic: "A1.2 Numbers, time and dates",
-    specContent: `A1.2 Numbers, time and dates
+    subtopic: "1.2 How markets work",
+    specContent: `1.2 How markets work
 
 Content - what students need to learn:
-- Cardinal numbers 0-100, and the pattern for numbers above 100 (cien, doscientos, mil).
-- Telling the time: ¿que hora es? son las..., es la una, y cuarto/media, menos cuarto.
-- Days of the week (lunes-domingo) and asking/stating what day it is.
-- Months of the year and stating a date (el + number + de + month) - unlike English, Spanish uses the plain CARDINAL number even for the 1st (el uno de mayo), though "el primero" is common in Latin America.
-- Seasons (la primavera, el verano, el otono, el invierno).
-- Asking and giving simple ages: ¿cuantos anos tienes? tengo ... anos (using tener, not ser, for age - a common English-speaker error point).`
+- The underlying assumptions of rational economic decision making: consumers aim to maximise utility, and firms aim to maximise profits.
+- The distinction between movements along a demand curve and shifts of a demand curve.
+- The factors that may cause a shift in the demand curve (the conditions of demand).
+- The concept of diminishing marginal utility and how this influences the shape of the demand curve.
+- Understanding of price, income and cross elasticities of demand.
+- Use of formulae to calculate price, income and cross elasticities of demand.
+- Interpretation of numerical values of price elasticity of demand (unitary elastic, perfectly and relatively elastic, and perfectly and relatively inelastic), income elasticity of demand (inferior, normal and luxury goods; relatively elastic and relatively inelastic), and cross elasticity of demand (substitutes, complementary and unrelated goods).
+- The factors influencing elasticities of demand.
+- The significance of elasticities of demand to firms and government in terms of the imposition of indirect taxes and subsidies, changes in real income, and changes in the prices of substitute and complementary goods.
+- The relationship between price elasticity of demand and total revenue (including calculation).
+- The distinction between movements along a supply curve and shifts of a supply curve.
+- The factors that may cause a shift in the supply curve (the conditions of supply).
+- Understanding of price elasticity of supply.
+- Use of formula to calculate price elasticity of supply.
+- Interpretation of numerical values of price elasticity of supply: perfectly and relatively elastic, and perfectly and relatively inelastic.
+- Factors that influence price elasticity of supply.
+- The distinction between short run and long run in economics and its significance for elasticity of supply.
+- Equilibrium price and quantity and how they are determined.
+- The use of supply and demand diagrams to depict excess supply and excess demand.
+- The operation of market forces to eliminate excess demand and excess supply.
+- The use of supply and demand diagrams to show how shifts in demand and supply curves cause the equilibrium price and quantity to change in real-world situations.
+- Functions of the price mechanism to allocate resources: rationing, incentive, and signalling.
+- The price mechanism in the context of different types of markets, including local, national and global markets.
+- The distinction between consumer and producer surplus.
+- The use of supply and demand diagrams to illustrate consumer and producer surplus.
+- How changes in supply and demand might affect consumer and producer surplus.
+- Supply and demand analysis and elasticities applied to: the impact of indirect taxes on consumers, producers and government; the incidence of indirect taxes on consumers and producers; the impact of subsidies on consumers, producers and government; and the area that represents the producer subsidy and consumer subsidy.
+- The reasons why consumers may not behave rationally: consideration of the influence of other people's behaviour, the importance of habitual behaviour, and consumer weakness at computation.
+`
   },
   {
-    subtopic: "A1.3 Articles, gender, plurals and agreement",
-    specContent: `A1.3 Articles, gender, plurals and agreement
+    subtopic: "1.3 Market failure",
+    specContent: `1.3 Market failure
 
 Content - what students need to learn:
-- Noun gender: regular -o (masculine) and -a (feminine) endings, common exceptions (el dia, la mano), and -e/consonant-ending nouns that must be learned individually.
-- Plural formation: add -s after a vowel, -es after a consonant, -z changes to -ces (lapiz -> lapices).
-- Definite articles (el, la, los, las) and the neuter article "lo" used with adjectives to name an abstract quality (lo bueno = "the good thing/part").
-- Indefinite articles (un, una, unos, unas).
-- Adjective agreement with the noun in gender and number.
-- Position of adjectives (generally after the noun; a small set can precede it, sometimes changing meaning - un hombre grande "a big man" vs un gran hombre "a great man").`
+- Understanding of market failure.
+- Types of market failure: externalities, under-provision of public goods, and information gaps.
+- Distinction between private costs, external costs and social costs.
+- Distinction between private benefits, external benefits and social benefits.
+- Use of a diagram to illustrate the external costs of production using marginal analysis, the distinction between market equilibrium and social optimum position, and identification of the welfare loss area.
+- Use of a diagram to illustrate the external benefits of consumption using marginal analysis, the distinction between market equilibrium and social optimum position, and identification of the welfare gain area.
+- The impact on economic agents of externalities and government intervention in various markets.
+- Distinction between public and private goods using the concepts of non-rivalry and non-excludability.
+- Why public goods may not be provided by the private sector: the free rider problem.
+- The distinction between symmetric and asymmetric information.
+- How imperfect market information may lead to a misallocation of resources.
+`
   },
   {
-    subtopic: "A1.4 Present tense: ser, estar and regular verbs",
-    specContent: `A1.4 Present tense: ser, estar and regular verbs
+    subtopic: "1.4 Government intervention",
+    specContent: `1.4 Government intervention
 
 Content - what students need to learn:
-- Present tense conjugation of ser (soy, eres, es, somos, sois, son) and its core uses: identity, nationality, characteristics, profession, time, and where an event takes place.
-- Present tense conjugation of estar (estoy, estas, esta, estamos, estais, estan) and its core uses: location of people/things, temporary states/conditions (estoy cansado), and forming the progressive tense (estoy comiendo).
-- THE ser/estar distinction: both translate English "to be", but ser is for permanent/defining characteristics and estar for location and temporary states - the single most important grammar contrast at this level (e.g. "es alto" = he's tall (permanent trait) vs "esta cansado" = he's tired (temporary state)).
-- Present tense of regular -ar verbs (e.g. hablar: hablo, hablas, habla, hablamos, hablais, hablan).
-- Present tense of regular -er verbs (e.g. comer: como, comes, come, comemos, comeis, comen).
-- Present tense of regular -ir verbs (e.g. vivir: vivo, vives, vive, vivimos, vivis, viven).
-- Negation with "no" placed before the conjugated verb.`
+- Purpose of intervention with reference to market failure, using diagrams in various contexts: indirect taxation (ad valorem and specific), subsidies, and maximum and minimum prices.
+- Other methods of government intervention: trade pollution permits, state provision of public goods, provision of information, and regulation.
+- Understanding of government failure as intervention that results in a net welfare loss.
+- Causes of government failure: distortion of price signals, unintended consequences, excessive administrative costs, and information gaps.
+- Government failure in various markets.
+`
   },
   {
-    subtopic: "A1.5 Family, description and common irregular verbs",
-    specContent: `A1.5 Family, description and common irregular verbs
+    subtopic: "2.1 Measures of economic performance",
+    specContent: `2.1 Measures of economic performance
 
 Content - what students need to learn:
-- Family vocabulary (madre, padre, hermano, hermana, abuelo, abuela, hijo, hija, marido, esposa, tio, tia, primo/a) and possessive adjectives (mi/mis, tu/tus, su/sus, nuestro/a/os/as, vuestro/a/os/as).
-- Describing physical appearance and personality with adjectives (alto/bajo, joven/viejo, simpatico/antipatico, etc.), always agreeing in gender/number.
-- Present tense of key irregular verbs: ir (voy, vas, va, vamos, vais, van), tener (tengo, tienes, tiene, tenemos, teneis, tienen), hacer (hago, haces, hace, hacemos, haceis, hacen), poder (puedo, puedes, puede... - an o-to-ue stem change), querer (quiero, quieres, quiere... - an e-to-ie stem change), decir (digo, dices, dice...).
-- Stem-changing verbs as a genuine category of their own in Spanish (e->ie: querer, pensar; o->ue: poder, dormir; e->i: pedir, servir) - the stem changes in every form except nosotros/vosotros.
-- "Ir a" + infinitive for the near future (voy a comer = "I'm going to eat").
-- Modal verb construction: modal verb (poder/querer/deber) + infinitive.`
+- Rates of change of real Gross Domestic Product (GDP) as a measure of economic growth.
+- Distinction between real and nominal, total and per capita, and value and volume.
+- Other national income measures: Gross National Income (GNI).
+- Comparison of rates of growth between countries and over time.
+- Understanding of Purchasing Power Parities (PPPs) and the use of PPP-adjusted figures in international comparisons.
+- The limitations of using GDP to compare living standards between countries and over time.
+- National happiness: UK national wellbeing, and the relationship between real incomes and subjective happiness.
+- Understanding of inflation, deflation and disinflation.
+- The process of calculating the rate of inflation in the UK using the Consumer Prices Index (CPI).
+- The limitations of CPI in measuring the rate of inflation.
+- The Retail Prices Index (RPI) as an alternative measure of the rate of inflation.
+- Causes of inflation: demand pull, cost push, and growth of the money supply.
+- The effects of inflation on consumers, firms, the government and workers.
+- Measures of unemployment: the claimant count, and the International Labour Organisation (ILO) measure via the UK Labour Force Survey.
+- The distinction between unemployment and under-employment.
+- The significance of changes in the rates of employment, unemployment and inactivity.
+- The causes of unemployment: structural unemployment, frictional unemployment, seasonal unemployment, demand deficiency and cyclical unemployment, and real wage inflexibility.
+- The significance of migration and skills for employment and unemployment.
+- The effects of unemployment on consumers, firms, workers, the government and society.
+- Components of the balance of payments, with particular reference to the current account and the balance of trade in goods and services.
+- Current account deficits and surpluses.
+- The relationship between current account imbalances and other macroeconomic objectives.
+- The interconnectedness of economies through international trade.
+`
   },
   {
-    subtopic: "A1.6 Food, shopping and everyday requests",
-    specContent: `A1.6 Food, shopping and everyday requests
+    subtopic: "2.2 Aggregate demand (AD)",
+    specContent: `2.2 Aggregate demand (AD)
 
 Content - what students need to learn:
-- Food and drink vocabulary for ordering at a cafe/restaurant (un cafe, un bocadillo, el agua, el vino, etc.) and quiero/me gustaria + noun/infinitive for polite requests.
-- Quantity expressions with "de" (un poco de, un kilo de, una botella de, un vaso de).
-- Shopping vocabulary and asking prices: ¿cuanto cuesta? / ¿cuanto es?
-- Ordinal numbers (primero, segundo, tercero...) used in shop/menu/floor contexts, including the apocope rule where primero and tercero drop the final -o before a masculine singular noun (primer piso, tercer dia).
-- Direct object nouns with common verbs (comprar, tomar, querer) in simple sentences.
-- Understanding numbers used with prices/currency (euros, centimos, pesos, depending on country).`
+- Components of AD: C+I+G+(X-M).
+- The relative importance of the components of AD.
+- The AD curve.
+- The distinction between a movement along, and a shift of, the AD curve.
+- Disposable income and its influence on consumer spending.
+- An understanding of the relationship between savings and consumption.
+- Other influences on consumer spending: interest rates, consumer confidence, and wealth effects.
+- Distinction between gross and net investment.
+- Influences on investment: the rate of economic growth, business expectations and confidence, Keynes and 'animal spirits', demand for exports, interest rates, access to credit, and the influence of government and regulations.
+- The main influences on government expenditure: the trade cycle and fiscal policy.
+- The main influences on the (net) trade balance: real income, exchange rates, state of the world economy, degree of protectionism, and non-price factors.
+`
   },
   {
-    subtopic: "A2.1 Preterito indefinido (simple past)",
-    specContent: `A2.1 Preterito indefinido (simple past)
+    subtopic: "2.3 Aggregate supply (AS)",
+    specContent: `2.3 Aggregate supply (AS)
 
 Content - what students need to learn:
-- Regular formation: -ar verbs (-e, -aste, -o, -amos, -asteis, -aron); -er/-ir verbs share one pattern (-i, -iste, -io, -imos, -isteis, -ieron).
-- Common irregular preterites: ser and ir share the exact same forms (fui, fuiste, fue, fuimos, fuisteis, fueron) - context alone distinguishes them; tener (tuve...), hacer (hice, hiciste, hizo...), estar (estuve...), poder (pude...), decir (dije... dijeron), venir (vine...).
-- Spelling-change preterites in the "yo" form only, to preserve pronunciation: -car verbs change c to qu (buscar -> busque), -gar verbs change g to gu (llegar -> llegue), -zar verbs change z to c (empezar -> empece).
-- Use: a single completed action, a sequence of completed actions, or an action with a clear, defined start and end point in the past.
-- Time expressions that signal preterito indefinido (ayer, la semana pasada, anoche, hace dos dias).`
+- The AS curve.
+- The distinction between movement along, and a shift of, the AS curve.
+- The relationship between short-run AS and long-run AS.
+- Factors influencing short-run AS: changes in costs of raw materials and energy, changes in exchange rates, and changes in tax rates.
+- Different shapes of the long-run AS curve: Keynesian and classical.
+- Factors influencing long-run AS: technological advances, changes in relative productivity, changes in education and skills, changes in government regulations, demographic changes and migration, and competition policy.
+`
   },
   {
-    subtopic: "A2.2 Preterito imperfecto and its contrast with indefinido",
-    specContent: `A2.2 Preterito imperfecto and its contrast with indefinido
+    subtopic: "2.4 National income",
+    specContent: `2.4 National income
 
 Content - what students need to learn:
-- Imperfecto formation for -ar verbs (-aba, -abas, -aba, -abamos, -abais, -aban) and -er/-ir verbs (-ia, -ias, -ia, -iamos, -iais, -ian).
-- Only THREE irregular verbs in the imperfecto in the whole language: ser (era, eras, era...), ir (iba, ibas, iba...), ver (veia, veias, veia...).
-- Core uses of imperfecto: habitual/repeated past actions ("used to"), ongoing background description, and describing past states (age, weather, feelings, physical description) with no defined endpoint.
-- Core uses of preterito indefinido: a single completed action, a sequence of completed actions, an action with a defined start/end.
-- Direct contrast: using imperfecto for the background/scene-setting and preterito indefinido for the single interrupting event within the same sentence (e.g. "mientras dormia, sono el telefono").`
+- The circular flow of income.
+- The distinction between income and wealth.
+- The impact of injections into, and withdrawals from, the circular flow of income.
+- The concept of equilibrium real national output.
+- The use of AD/AS diagrams to show how shifts in AD or AS cause changes in the equilibrium price level and real national output.
+- The multiplier ratio.
+- The multiplier process.
+- Effects of the multiplier on the economy.
+- Understanding of marginal propensities and their effects on the multiplier: the marginal propensity to consume (MPC), the marginal propensity to save (MPS), the marginal propensity to tax (MPT), and the marginal propensity to import (MPM).
+- Calculations of the multiplier using the formulae 1/(1-MPC) and 1/MPW, where MPW=MPS+MPT+MPM.
+- The significance of the multiplier for shifts in AD.
+`
   },
   {
-    subtopic: "A2.3 Object pronouns and reflexive verbs",
-    specContent: `A2.3 Object pronouns and reflexive verbs
+    subtopic: "2.5 Economic growth",
+    specContent: `2.5 Economic growth
 
 Content - what students need to learn:
-- Direct object pronouns (me, te, lo, la, nos, os, los, las) and their placement immediately before a conjugated verb.
-- Indirect object pronouns (me, te, le, nos, os, les) and the verbs that require them (gustar, dar, decir, escribir - i.e. verbs taking "a + person").
-- The construction of gustar as an inverted verb (me gusta el cafe / me gustan los libros - the THING liked is the grammatical subject, not the person who likes it).
-- Reflexive verbs: formation with reflexive pronouns (me, te, se, nos, os, se) and common examples (levantarse, despertarse, lavarse, vestirse, llamarse).
-- Object/reflexive pronoun placement: before a conjugated verb, or attached to the end of an infinitive, gerund, or affirmative imperative (levantarme / voy a levantarme / levantandome / ¡levantate!).
-- Reflexive verbs in the preterito indefinido, conjugated normally with the reflexive pronoun still placed before the verb.`
+- Factors which could cause economic growth.
+- The distinction between actual and potential growth.
+- The importance of international trade for (export-led) economic growth.
+- Distinction between actual growth rates and long-term trends in growth rates.
+- Understanding of positive and negative output gaps and the difficulties of measurement.
+- Use of an AD/AS diagram to illustrate an output gap (level of spare capacity) in an economy.
+- Understanding of the trade (business) cycle.
+- Characteristics of a boom.
+- Characteristics of a recession.
+- The benefits and costs of economic growth and the impact on consumers, firms, the government, and current and future living standards.
+`
   },
   {
-    subtopic: "A2.4 Comparatives, superlatives and the future tense",
-    specContent: `A2.4 Comparatives, superlatives and the future tense
+    subtopic: "2.6 Macroeconomic objectives and policies",
+    specContent: `2.6 Macroeconomic objectives and policies
 
 Content - what students need to learn:
-- Comparative of majority/minority/equality: mas...que, menos...que, tan...como (with adjectives/adverbs), tanto/a/os/as...como (with nouns).
-- Irregular comparatives: mejor/peor (better/worse), mayor/menor (older/younger, or bigger/smaller).
-- Relative superlative (el/la mas... de) and absolute superlative (-isimo/a/os/as ending, or muy + adjective).
-- Future tense formation: ALL THREE conjugations (-ar, -er, -ir) share the exact same endings (-e, -as, -a, -emos, -eis, -an) added to the full infinitive - a genuine simplification compared to some other Romance languages, which split by conjugation.
-- Key irregular future stems, formed by modifying the infinitive rather than changing the endings (tener -> tendre, poder -> podre, hacer -> hare, decir -> dire, salir -> saldre, poner -> pondre, venir -> vendre, querer -> querre, saber -> sabre).
-- Future used for prediction/planning, and its use to express probability/conjecture about the present (futuro de probabilidad, e.g. "tendra treinta anos" = "he's probably thirty").`
+- Possible macroeconomic objectives: economic growth, low unemployment, low and stable rate of inflation, balance of payments equilibrium on current account, balanced government budget, protection of the environment, and greater income equality.
+- Distinction between monetary and fiscal policy.
+- Monetary policy instruments: interest rates, and asset purchases to increase the money supply (quantitative easing).
+- Fiscal policy instruments: government spending and taxation.
+- Distinction between government budget (fiscal) deficit and surplus.
+- Distinction between, and examples of, direct and indirect taxation.
+- Use of AD/AS diagrams to illustrate demand-side policies.
+- The role of the Bank of England, including the role and operation of the Bank of England's Monetary Policy Committee.
+- Awareness of demand-side policies in the Great Depression and the Global Financial Crisis of 2008, including different interpretations and policy responses in the US and UK.
+- Strengths and weaknesses of demand-side policies.
+- Distinction between market-based and interventionist methods.
+- Market-based and interventionist supply-side policies: to increase incentives, to promote competition, to reform the labour market, to improve skills and quality of the labour force, and to improve infrastructure.
+- Use of AD/AS diagrams to illustrate supply-side policies.
+- Strengths and weaknesses of supply-side policies.
+- Potential conflicts and trade-offs between the macroeconomic objectives.
+- The short-run Phillips curve.
+- Potential policy conflicts and trade-offs.
+`
   },
   {
-    subtopic: "A2.5 Directions, travel, health and making plans",
-    specContent: `A2.5 Directions, travel, health and making plans
+    subtopic: "3.1 Business growth",
+    specContent: `3.1 Business growth
 
 Content - what students need to learn:
-- Asking for and giving directions: ¿donde esta...?, ¿como llego a...?, todo recto, a la derecha, a la izquierda, en la esquina, enfrente de, al lado de.
-- Imperative mood (informal tu-form and formal usted-form) for giving instructions/directions (gira, siga, tome).
-- Travel and transport vocabulary (el tren, el avion, la estacion, el billete/boleto, la reserva) and prepositions of place/movement (a, en, de, para, por used with means of transport and destinations).
-- Parts of the body and common health expressions (me duele..., tengo dolor de cabeza/estomago, me siento bien/mal).
-- Making plans and invitations: ¿quieres/querrias + infinitive?, ¿te apetece...?, vamos a..., proposing and responding to a suggestion (de acuerdo, lo siento pero...).
-- Time expressions for future plans (manana, la proxima semana, dentro de dos dias).`
+- Reasons why some firms tend to remain small and why others grow.
+- Significance of the divorce of ownership from control: the principal-agent problem.
+- Distinction between public and private sector organisations.
+- Distinction between profit and not-for-profit organisations.
+- How businesses grow: organic growth, forward and backward vertical integration, horizontal integration, and conglomerate integration.
+- Advantages and disadvantages of organic growth, vertical integration, horizontal integration, and conglomerate integration.
+- Constraints on business growth: size of the market, access to finance, owner objectives, and regulation.
+- Reasons for demergers.
+- Impact of demergers on businesses, workers and consumers.
+`
   },
   {
-    subtopic: "B1.1 Conditional mood and modal verbs in context",
-    specContent: `B1.1 Conditional mood and modal verbs in context
+    subtopic: "3.2 Business objectives",
+    specContent: `3.2 Business objectives
 
 Content - what students need to learn:
-- Present conditional formation (the same irregular stems as the future tense, with endings -ia, -ias, -ia, -iamos, -iais, -ian added to the infinitive/irregular stem).
-- Uses of the present conditional: polite requests (querria, podria), giving advice (deberias), expressing a wish, hedging an opinion (diria que...).
-- Perfect (past) conditional formation: present conditional of haber + past participle (habria hecho, habria ido).
-- Use of the perfect conditional to express an unfulfilled past wish/intention, or reported speech about a future-in-the-past event.
-- Modal verbs (poder, deber, querer) in the conditional to soften requests/obligations/suggestions compared to their present-tense equivalents.
-- Distinguishing when to use the present conditional versus the perfect conditional based on whether the reference point is now or a moment already in the past.`
+- Different business objectives and reasons for them: profit maximisation, revenue maximisation, sales maximisation, and satisficing.
+- Diagrams and formulae to illustrate the different business objectives: profit maximisation, revenue maximisation, and sales maximisation.
+`
   },
   {
-    subtopic: "B1.2 Combined and complex pronouns",
-    specContent: `B1.2 Combined and complex pronouns
+    subtopic: "3.3 Revenues, costs and profits",
+    specContent: `3.3 Revenues, costs and profits
 
 Content - what students need to learn:
-- Combining indirect object pronouns with direct object pronouns, placing the indirect one first (me lo, te la, nos los, os las).
-- The special rule that third-person indirect pronouns (le, les) become "se" when combined with a third-person direct pronoun (le lo -> se lo, les la -> se la) - never "le lo"/"les la".
-- Placement rules for combined pronouns: before a conjugated verb, or attached to the end of an infinitive, gerund, or affirmative imperative (se lo doy / voy a darselo / dandoselo / ¡dimelo!), with a written accent added when attaching shifts the natural stress.
-- Unlike some other Romance languages, the Spanish past participle in a compound tense (with haber) NEVER changes for gender or number, regardless of any preceding object pronoun (se lo he dado - "dado" never agrees).
-- "Lo" used as a neuter pronoun referring back to a whole idea or previous statement, not a specific noun (no lo se, lo entiendo).
-- Working out which combined form is required from the underlying indirect + direct pairing, rather than memorising the surface forms alone.`
+- Formulae to calculate and understand the relationship between total revenue, average revenue, and marginal revenue.
+- Price elasticity of demand and its relationship to revenue concepts (calculation required).
+- Formulae to calculate and understand the relationship between total cost, total fixed cost, total variable cost, average (total) cost, average fixed cost, average variable cost, and marginal cost.
+- Derivation of short-run cost curves from the assumption of diminishing marginal productivity.
+- Relationship between short-run and long-run average cost curves.
+- Types of economies and diseconomies of scale.
+- Minimum efficient scale.
+- Distinction between internal and external economies of scale.
+- Condition for profit maximisation.
+- Normal profit, supernormal profit and losses.
+- Short-run and long-run shut-down points: diagrammatic analysis.
+`
   },
   {
-    subtopic: "B1.3 Relative pronouns and complex sentences",
-    specContent: `B1.3 Relative pronouns and complex sentences
+    subtopic: "3.4 Market structures",
+    specContent: `3.4 Market structures
 
 Content - what students need to learn:
-- "Que" as the all-purpose relative pronoun for subject and direct object (both people and things), used with no preposition.
-- "Quien/quienes" used after a preposition to refer back to a person already mentioned (la persona con quien hable).
-- "El que / la que / los que / las que" and "el cual" etc. as more formal alternatives, agreeing in gender/number with their antecedent, especially useful for disambiguating which noun is being referred to.
-- "Lo que" as a neuter relative meaning "what/that which", referring to an idea rather than a specific noun (no entiendo lo que dices).
-- Forming complex sentences by joining two clauses with a relative pronoun, avoiding the common learner error of restating the noun instead of using the relative.
-- Distinguishing restrictive relative clauses (no comma, essential information) from non-restrictive ones (comma-separated, extra information).`
+- Allocative efficiency.
+- Productive efficiency.
+- Dynamic efficiency.
+- X-inefficiency.
+- Efficiency/inefficiency in different market structures.
+- Characteristics of perfect competition.
+- Profit maximising equilibrium in the short run and long run under perfect competition, with diagrammatic analysis.
+- Characteristics of monopolistically competitive markets.
+- Profit maximising equilibrium in the short run and long run under monopolistic competition, with diagrammatic analysis.
+- Characteristics of oligopoly: high barriers to entry and exit, high concentration ratio, interdependence of firms, and product differentiation.
+- Calculation of n-firm concentration ratios and their significance.
+- Reasons for collusive and non-collusive behaviour.
+- Overt and tacit collusion; cartels and price leadership.
+- Simple game theory: the prisoner's dilemma in a simple two firm/two outcome model.
+- Types of price competition: price wars, predatory pricing, and limit pricing.
+- Types of non-price competition.
+- Characteristics of monopoly.
+- Profit maximising equilibrium under monopoly, with diagrammatic analysis.
+- Third degree price discrimination: necessary conditions, diagrammatic analysis, and costs and benefits to consumers and producers.
+- Costs and benefits of monopoly to firms, consumers, employees and suppliers.
+- Natural monopoly.
+- Characteristics and conditions for a monopsony to operate.
+- Costs and benefits of a monopsony to firms, consumers, employees and suppliers.
+- Characteristics of contestable markets.
+- Implications of contestable markets for the behaviour of firms.
+- Types of barrier to entry and exit.
+- Sunk costs and the degree of contestability.
+`
   },
   {
-    subtopic: "B1.4 Subjuntivo presente: formation and core triggers",
-    specContent: `B1.4 Subjuntivo presente: formation and core triggers
+    subtopic: "3.5 Labour market",
+    specContent: `3.5 Labour market
 
 Content - what students need to learn:
-- Present subjunctive formation: -ar verbs take "opposite vowel" endings (-e, -es, -e, -emos, -eis, -en); -er/-ir verbs take -a endings (-a, -as, -a, -amos, -ais, -an).
-- Common irregular present subjunctive stems (ser: sea, estar: este, ir: vaya, saber: sepa, dar: de, haber: haya), plus stem-changing verbs carrying their stem change into the subjunctive (querer -> quiera, poder -> pueda).
-- The core rule: subjunctive is used in a dependent clause introduced by "que" after a main clause expressing wish, emotion, doubt, or necessity (quiero que, espero que, es importante que, dudo que), when the subject of the two clauses differs.
-- Contrast with the indicative: "creo que" takes the indicative (creo que viene), but its negative "no creo que" triggers the subjunctive (no creo que venga) - a classic, genuinely important exception.
-- Impersonal expressions that trigger the subjunctive (es necesario que, es posible que, ojala que).
-- Recognising when NO subjunctive is needed because the subject is the same across both clauses (in which case the infinitive replaces "que + subjunctive": quiero comer, not quiero que coma, when the same person wants and eats).`
+- Factors that influence the demand for labour.
+- Demand for labour as a derived demand.
+- Factors that influence the supply of labour to a particular occupation.
+- Market failure in labour markets: the geographical and occupational mobility and immobility of labour.
+- Diagrammatic analysis of labour market equilibrium.
+- Understanding of current labour market issues.
+- Government intervention in the labour market: maximum and minimum wages, public sector wage setting, and policies to tackle labour market immobility.
+- The significance of the elasticity of demand for labour and the elasticity of supply of labour.
+`
   },
   {
-    subtopic: "B1.5 Passive voice and impersonal se",
-    specContent: `B1.5 Passive voice and impersonal se
+    subtopic: "3.6 Government intervention",
+    specContent: `3.6 Government intervention
 
 Content - what students need to learn:
-- Passive voice formation with ser + past participle (agreeing with the subject), and the use of "por" to introduce the agent (el libro fue escrito por Cervantes).
-- The "se pasiva" (passive se) construction, used when the agent is unknown/unimportant, with the verb agreeing in number with the following noun (se venden libros aqui).
-- The "se impersonal" (impersonal se) construction for general statements equivalent to English "one/people/you" (en Espana se cena tarde).
-- Distinguishing se pasiva from se impersonal based on whether the following noun is the grammatical subject (pasiva, always third person, agrees in number) or the construction stays fixed singular (impersonal, often with a person-referring verb).
-- When the "se" construction is stylistically preferred over the ser-passive in everyday spoken/written Spanish (se pasiva/impersonal are far more common than the ser-passive, which can sound formal or translated from English).`
+- Government intervention to control mergers.
+- Government intervention to control monopolies: price regulation, profit regulation, quality standards, and performance targets.
+- Government intervention to promote competition and contestability: enhancing competition between firms through promotion of small business, deregulation, competitive tendering for government contracts, and privatisation.
+- Government intervention to protect suppliers and employees: restrictions on monopsony power of firms, and nationalisation.
+- The impact of government intervention on prices, profit, efficiency, quality and choice.
+- Limits to government intervention: regulatory capture and asymmetric information.
+`
   },
   {
-    subtopic: "B2.1 Subjuntivo pasado (imperfecto and pluscuamperfecto), and secuencia de tiempos",
-    specContent: `B2.1 Subjuntivo pasado (imperfecto and pluscuamperfecto), and secuencia de tiempos
+    subtopic: "4.1 International economics",
+    specContent: `4.1 International economics
 
 Content - what students need to learn:
-- Perfect subjunctive formation: present subjunctive of haber + past participle (haya hecho), used when the subjunctive-triggering main clause is present-tense but the dependent action happened before it (creo que ya haya llegado).
-- Imperfect subjunctive formation: Spanish has TWO equally correct sets of endings, -ra (hablara, hablaras, hablara...) and -se (hablase, hablases, hablase...), with -ra more common in everyday speech - used when the main clause is past-tense or conditional and the dependent action is simultaneous/ongoing (queria que vinieras).
-- Pluperfect subjunctive formation: imperfect subjunctive of haber + past participle (hubiera/hubiese hecho), used for an action prior to a past-tense main clause (pensaba que ya hubiera salido).
-- "Secuencia de tiempos" (sequence of tenses): which subjunctive tense is required based on the tense of the main clause and the relative timing of the dependent action.
-- Recognising that the same core triggers from the present subjunctive (wish, emotion, doubt, necessity) still apply here - only the TENSE of the subjunctive changes based on time reference.`
+- Characteristics of globalisation.
+- Factors contributing to globalisation in the last 50 years.
+- Impacts of globalisation and global companies on individual countries, governments, producers and consumers, workers and the environment.
+- Absolute and comparative advantage (numerical and diagrammatic): assumptions and limitations relating to the theory of comparative advantage.
+- Advantages and disadvantages of specialisation and trade in an international context.
+- Factors influencing the pattern of trade between countries and changes in trade flows between countries: comparative advantage, impact of emerging economies, growth of trading blocs and bilateral trading agreements, and changes in relative exchange rates.
+- Calculation of terms of trade.
+- Factors influencing a country's terms of trade.
+- Impact of changes in a country's terms of trade.
+- Types of trading blocs (regional trade agreements and bilateral trade agreements): free trade areas, customs unions, common markets, and monetary unions, including the conditions necessary for their success with particular reference to the Eurozone.
+- Costs and benefits of regional trade agreements.
+- Role of the WTO in trade liberalisation.
+- Possible conflicts between regional trade agreements and the WTO.
+- Reasons for restrictions on free trade.
+- Types of restrictions on trade: tariffs, quotas, subsidies to domestic producers, and non-tariff barriers.
+- Impact of protectionist policies on consumers, producers, governments, living standards, and equality.
+- Components of the balance of payments: the current account, and the capital and financial accounts.
+- Causes of deficits and surpluses on the current account.
+- Measures to reduce a country's imbalance on the current account.
+- Significance of global trade imbalances.
+- Exchange rate systems: floating, fixed, and managed.
+- Distinction between revaluation and appreciation of a currency.
+- Distinction between devaluation and depreciation of a currency.
+- Factors influencing floating exchange rates.
+- Government intervention in currency markets through foreign currency transactions and the use of interest rates.
+- Competitive devaluation/depreciation and its consequences.
+- Impact of changes in exchange rates on: the current account of the balance of payments (reference to the Marshall-Lerner condition and J curve effect), economic growth and employment/unemployment, the rate of inflation, and foreign direct investment (FDI) flows.
+- Measures of international competitiveness: relative unit labour costs and relative export prices.
+- Factors influencing international competitiveness.
+- Significance of international competitiveness: benefits of being internationally competitive, and problems of being internationally uncompetitive.
+`
   },
   {
-    subtopic: "B2.2 Oraciones condicionales (if-clauses)",
-    specContent: `B2.2 Oraciones condicionales (if-clauses)
+    subtopic: "4.2 Poverty and inequality",
+    specContent: `4.2 Poverty and inequality
 
 Content - what students need to learn:
-- Type 1 (real/likely condition): si + present indicative, present/future/imperative in the result clause (si llueve, me quedo en casa / si llueve, me quedare en casa).
-- Type 2 (hypothetical/unlikely present-future condition): si + imperfect subjunctive, present conditional in the result clause (si tuviera tiempo, vendria) - never the conditional inside the "si" clause itself, a very common learner error.
-- Type 3 (contrary-to-fact past condition): si + pluperfect subjunctive, perfect conditional in the result clause (si hubiera estudiado, habria aprobado).
-- Correct pairing of clauses: the "si" clause and the result clause must use matching pairs of tenses/moods; mixing a type-2 "si" clause with a type-3 result clause is incorrect.
-- Mixed hypotheticals in real usage: a past condition with a present-time consequence (si hubiera estudiado mas, ahora sabria responder), pairing pluperfect subjunctive with a present conditional.
-- Contrasting these hypothetical structures with the simple "si" + indicative used for general truths/habits (si llueve, crece la hierba).`
+- Distinction between absolute poverty and relative poverty.
+- Measures of absolute poverty and relative poverty.
+- Causes of changes in absolute poverty and relative poverty.
+- Distinction between wealth and income inequality.
+- Measurements of income inequality: the Lorenz curve (diagrammatic analysis) and the Gini coefficient.
+- Causes of income and wealth inequality within countries and between countries.
+- Impact of economic change and development on inequality.
+- Significance of capitalism for inequality.
+`
   },
   {
-    subtopic: "B2.3 Estilo indirecto (reported speech)",
-    specContent: `B2.3 Estilo indirecto (reported speech)
+    subtopic: "4.3 Emerging and developing economies",
+    specContent: `4.3 Emerging and developing economies
 
 Content - what students need to learn:
-- Introducing reported speech with dijo que, explico que, pregunto si.
-- Tense shifts (backshifting) when the reporting verb is in a past tense: present becomes imperfecto, preterito indefinido becomes pluscuamperfecto, future becomes present conditional.
-- No backshift required when the reporting verb is in the present tense (dice que viene).
-- Pronoun and possessive changes required when reporting speech from a different person's perspective (yo -> el/ella, mi -> su).
-- Adverb/time-expression changes required in reported speech (hoy -> ese dia, manana -> al dia siguiente, ayer -> el dia anterior, aqui -> alli).
-- Reporting yes/no questions with "si" and reporting wh-questions by keeping the question word but switching to statement word order (me pregunto donde vivia, not donde vivia yo).`
+- The three dimensions of the Human Development Index (HDI) - education, health and living standards - and how they are measured and combined.
+- The advantages and limitations of using the HDI to compare levels of development between countries and over time.
+- Other indicators of development.
+- Impact of economic factors in different countries: primary product dependency, volatility of commodity prices, savings gap (the Harrod-Domar model), foreign currency gap, capital flight, demographic factors, debt, access to credit and banking, infrastructure, education/skills, and absence of property rights.
+- Impact of non-economic factors in different countries.
+- Market-orientated strategies for growth and development: trade liberalisation, promotion of FDI, removal of government subsidies, floating exchange rate systems, microfinance schemes, and privatisation.
+- Interventionist strategies for growth and development: development of human capital, protectionism, managed exchange rates, infrastructure development, promoting joint ventures with global companies, and buffer stock schemes.
+- Other strategies for growth and development: industrialisation (the Lewis model), development of tourism, development of primary industries, Fairtrade schemes, aid, and debt relief.
+- Awareness of the role of international institutions and non-government organisations (NGOs): the World Bank, the International Monetary Fund (IMF), and NGOs.
+`
   },
   {
-    subtopic: "B2.4 Gerundio, advanced connectors and register",
-    specContent: `B2.4 Gerundio, advanced connectors and register
+    subtopic: "4.4 The financial sector",
+    specContent: `4.4 The financial sector
 
 Content - what students need to learn:
-- Gerundio formation (-ar to -ando, -er/-ir to -iendo), including the spelling/stem-change irregularities that carry over from the preterite (dormir -> durmiendo, leer -> leyendo, decir -> diciendo).
-- Gerundio used with estar to form the present/past progressive (estoy comiendo, estaba comiendo).
-- Gerundio used adverbially to express manner, cause, or a simultaneous action, without a subordinating conjunction (saliendo de casa, vi a Juan = "on leaving the house...").
-- Gerundio with a pronoun attached to the end, adding a written accent (viendolo, levantandose).
-- Advanced argumentative connectors: sin embargo, a pesar de que, aunque (indicative for a known fact, subjunctive for a hypothetical), por lo tanto, ademas.
-- Formal written register versus spoken/informal register: preference for "usted" over "tu" in formal writing, avoidance of colloquialisms, and preference for impersonal "se" or passive constructions over direct "tu"-directed phrasing.
-- Structuring a short argumentative paragraph in Spanish: stating a thesis, connecting supporting points with the connectors above, and a concluding connector (en conclusion, en resumen).`
+- The role of financial markets to facilitate saving.
+- The role of financial markets to lend to businesses and individuals.
+- The role of financial markets to facilitate the exchange of goods and services.
+- The role of financial markets to provide forward markets in currencies and commodities.
+- The role of financial markets to provide a market for equities.
+- Market failure in the financial sector: consideration of asymmetric information, externalities, moral hazard, speculation and market bubbles, and market rigging.
+- Key functions of central banks: implementation of monetary policy, banker to the government, banker to the banks (lender of last resort), and role in regulation of the banking industry.
+`
+  },
+  {
+    subtopic: "4.5 Role of the state in the macroeconomy",
+    specContent: `4.5 Role of the state in the macroeconomy
+
+Content - what students need to learn:
+- Distinction between capital expenditure, current expenditure and transfer payments.
+- Reasons for the changing size and composition of public expenditure in a global context.
+- The significance of differing levels of public expenditure as a proportion of GDP on productivity and growth, living standards, crowding out, level of taxation, and equality.
+- Distinction between progressive, proportional and regressive taxes.
+- The economic effects of changes in direct and indirect tax rates on other variables: incentives to work, tax revenues (the Laffer curve), income distribution, real output and employment, the price level, the trade balance, and FDI flows.
+- Distinction between automatic stabilisers and discretionary fiscal policy.
+- Distinction between a fiscal deficit and the national debt.
+- Distinction between structural and cyclical deficits.
+- Factors influencing the size of fiscal deficits.
+- Factors influencing the size of national debts.
+- The significance of the size of fiscal deficits and national debts.
+- Use of fiscal policy, monetary policy, exchange rate policy, supply-side policies and direct controls in different countries, with specific reference to the impact of measures to reduce fiscal deficits and national debts, measures to reduce poverty and inequality, changes in interest rates and the supply of money, and measures to increase international competitiveness.
+- Use and impact of macroeconomic policies to respond to external shocks to the global economy.
+- Measures to control global companies' (transnationals') operations: the regulation of transfer pricing, and limits to government ability to control global companies.
+- Problems facing policymakers when applying policies: inaccurate information, risks and uncertainties, and inability to control external shocks.
+`
   },
 ];
 

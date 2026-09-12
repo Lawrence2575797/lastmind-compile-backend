@@ -35,7 +35,7 @@ import { generateAndCacheNodeLesson, generateAndCacheEdgeLesson } from '../servi
 import { answerKnowledgeMapQuestion } from '../services/knowledgeMapAskService';
 import { assertFreshGenerationWithinCap, recordFreshGenerationEvent, GenerationCapExceededError } from '../services/generationCapService';
 import { recordPairwiseIntegrationOutcome } from '../services/chainMasteryService';
-import { getOrCreateUserRecallTuning, computeCapability, nextRecallDelayMinutes, updateGammaAfterRecall, bumpBaseRecalls } from '../services/recallTuningService';
+import { getOrCreateUserRecallTuning, getDifficultyAndCapability, nextRecallDelayMinutes, updateGammaAfterRecall, bumpBaseRecalls } from '../services/recallTuningService';
 import { getQuestionForConceptId, getConceptDisplayInfo } from '../services/day1CheckService';
 
 const router = Router();
@@ -704,15 +704,17 @@ interface RecallCheck {
 }
 
 // A missed recall is given up on permanently, not shown later - "if a
-// student misses the window, we wait for the real (day-1-ish) FSRS
-// review" is an explicit product decision, not just a UX nicety, so it
-// has to be enforced here (server-side, permanent) rather than only as
-// a client-side timer - otherwise reopening the feed after missing the
-// window would just re-fetch the same still-unresolved row and offer it
-// again. Tighter than the gap to the next base-schedule interval
-// (2/5/10/15 minutes apart) so a missed check is never confused with
-// the next one becoming due.
-const RECALL_GRACE_MS = 3 * 60 * 1000;
+// student misses the window, we wait for the real Day-1 check" is an
+// explicit product decision, not just a UX nicety, so it has to be
+// enforced here (server-side, permanent) rather than only as a client-
+// side timer - otherwise reopening the feed after missing the window
+// would just re-fetch the same still-unresolved row and offer it again.
+// Deliberately short (15 seconds) - a recall is only ever meant to fire
+// right at its own due moment; missing that narrow window means giving
+// up on the WHOLE cascade, not just this one step (see the correct
+// branch below, which never schedules a next recall for a missed one -
+// there's nothing to continue since this row never resolves).
+const RECALL_GRACE_MS = 15 * 1000;
 
 // GET /immediate-recalls/due
 // Lists this user's still-catchable rows from immediate_recall_schedule
@@ -902,20 +904,19 @@ router.post('/immediate-recalls/:id/submit', requireAuth, costlyEndpointLimiter,
       if (updateError) throw updateError;
 
       // Continue the cascade if this concept's own Rs hasn't been
-      // reached yet - total successes so far = 1 (the original encoding
-      // pass) + every scheduled recall completed up to and including
-      // this one. An edge/integration concept (target_recalls left at
-      // the fixed fallback of 2) or a node with no difficulty score just
-      // stops here, same as the original single-recall behaviour always
-      // did.
+      // reached yet - total successes so far = 1 (the original encoding/
+      // first-integration pass) + every scheduled recall completed up to
+      // and including this one. Works identically for a node's own
+      // encoding concept or an edge's integration concept - a concept
+      // with no difficulty score generated yet just stops here, same as
+      // the original single-recall behaviour always did.
       const recallNumber = (row.recall_number as number) || 1;
       const targetRecalls = (row.target_recalls as number) || 2;
       if (1 + recallNumber < targetRecalls) {
-        const { data: node } = await supabaseAdmin.from('knowledge_map_nodes').select('id, difficulty').eq('concept_id', row.concept_id).maybeSingle();
-        if (node && typeof node.difficulty === 'number') {
+        const dc = await getDifficultyAndCapability(row.concept_id as string, userId);
+        if (dc) {
           const tuning = await getOrCreateUserRecallTuning(userId);
-          const capability = await computeCapability(node.id as string, userId);
-          const delayMinutes = nextRecallDelayMinutes(recallNumber + 1, node.difficulty as number, capability, tuning);
+          const delayMinutes = nextRecallDelayMinutes(recallNumber + 1, dc.difficulty, dc.capability, tuning);
           const dueAt = new Date(Date.now() + delayMinutes * 60 * 1000).toISOString();
           const { error: nextError } = await supabaseAdmin.from('immediate_recall_schedule').insert({
             user_id: userId, concept_id: row.concept_id, due_at: dueAt, recall_number: recallNumber + 1, target_recalls: targetRecalls,
@@ -965,6 +966,30 @@ router.get('/day1-checks/due', requireAuth, syncEndpointLimiter, async (req: Req
   } catch (err) {
     console.error('Fetching due Day-1 checks failed:', err);
     res.status(500).json({ error: 'could not load Day-1 checks' });
+  }
+});
+
+// GET /day1-checks/pending
+// Every concept_id (node OR edge/integration) with a not-yet-resolved
+// Day-1 check, regardless of due_date - "integration must be after
+// passing a Day-1 check" means the real AO1/qualifying-link spaced-
+// review system should never offer a concept that hasn't cleared its
+// Day-1 check yet, even if that check isn't due for another day. The
+// feed's own recommendation logic (sfComputeFolderRecommendation) uses
+// this to exclude such concepts from ever counting as "due for review".
+router.get('/day1-checks/pending', requireAuth, syncEndpointLimiter, async (req: Request, res: Response) => {
+  try {
+    const userId = req.userId as string;
+    const { data: rows, error } = await supabaseAdmin
+      .from('day1_checks')
+      .select('concept_id')
+      .eq('user_id', userId)
+      .eq('resolved', false);
+    if (error) throw error;
+    res.json({ conceptIds: (rows || []).map((r) => r.concept_id) });
+  } catch (err) {
+    console.error('Fetching pending Day-1 checks failed:', err);
+    res.status(500).json({ error: 'could not load pending Day-1 checks' });
   }
 });
 

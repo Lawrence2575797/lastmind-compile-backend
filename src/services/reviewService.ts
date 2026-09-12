@@ -1,7 +1,7 @@
 import { supabaseAdmin } from './supabaseAdmin';
 import { selectRowsByIdChunked } from './supabasePagination';
 import { newCard, gradeReview, rowToCard, cardToRowFields, Rating, Grade, ConceptReviewRow } from './fsrsService';
-import { getOrCreateUserRecallTuning, computeCapability, computeRequiredRecalls, nextRecallDelayMinutes } from './recallTuningService';
+import { getOrCreateUserRecallTuning, getDifficultyAndCapability, computeRequiredRecalls, nextRecallDelayMinutes } from './recallTuningService';
 import { scheduleDay1Check } from './day1CheckService';
 
 export type { ConceptReviewRow };
@@ -210,26 +210,24 @@ export async function gradeAndRecordReview(
 // the same +2-minute check this always was) - continuing the cascade
 // past that point (recall_number 2, 3, ...) happens in the
 // /immediate-recalls/:id/submit route each time one is answered
-// correctly, up to target_recalls (Rs). Rs and the first interval both
-// need this concept's own difficulty (D) and the student's current
-// capability from its prerequisites (C) - see recallTuningService.ts.
-// Only a NODE concept has a well-defined D/C under this model (an edge/
-// integration concept_id's own "difficulty" and "prerequisites" aren't
-// addressed by the spec this model is built from) - an edge concept, or
-// a node with no difficulty score generated yet, falls back to the
-// original fixed Rb,o=2/+2-minute behaviour rather than guessing at an
-// undefined calculation. Fire-and-forget: never blocks or fails the
-// actual grading response a student is waiting on.
+// correctly, up to target_recalls (Rs). Works identically for a NODE's
+// own encoding concept OR an edge's integration concept - per explicit
+// instruction, integration uses the exact same Rs cascade as encoding,
+// not a separate fixed schedule (see getDifficultyAndCapability's own
+// comment for how D/C are computed for each). A concept with no
+// difficulty score generated yet falls back to the original fixed
+// Rb,o=2/+2-minute behaviour rather than guessing at an undefined
+// calculation. Fire-and-forget: never blocks or fails the actual
+// grading response a student is waiting on.
 async function scheduleImmediateRecall(userId: string, conceptId: string): Promise<void> {
   try {
-    const { data: node } = await supabaseAdmin.from('knowledge_map_nodes').select('id, difficulty').eq('concept_id', conceptId).maybeSingle();
+    const dc = await getDifficultyAndCapability(conceptId, userId);
     let targetRecalls = 2;
     let delayMinutes = 2;
-    if (node && typeof node.difficulty === 'number') {
+    if (dc) {
       const tuning = await getOrCreateUserRecallTuning(userId);
-      const capability = await computeCapability(node.id as string, userId);
-      targetRecalls = computeRequiredRecalls(node.difficulty as number, capability, tuning);
-      delayMinutes = nextRecallDelayMinutes(1, node.difficulty as number, capability, tuning);
+      targetRecalls = computeRequiredRecalls(dc.difficulty, dc.capability, tuning);
+      delayMinutes = nextRecallDelayMinutes(1, dc.difficulty, dc.capability, tuning);
     }
     const dueAt = new Date(Date.now() + delayMinutes * 60 * 1000).toISOString();
     const { error } = await supabaseAdmin

@@ -57,17 +57,51 @@ export async function getOrCreateUserRecallTuning(userId: string): Promise<UserR
   return fresh;
 }
 
-// C = (1/n) * sum(Di * Ri) across this node's direct prerequisites.
-// Ri is real FSRS retrievability where a prerequisite has been reviewed
-// at least once; per explicit instruction, when NONE of the prerequisites
+interface CapabilityInput {
+  concept_id: string;
+  difficulty: number;
+}
+
+// Shared core: C = (1/n) * sum(Di * Ri) across a list of "prerequisite-
+// like" items. Ri is real FSRS retrievability where that item has been
+// reviewed at least once; per explicit instruction, when NONE of them
 // have any FSRS state yet (every one was only just encoded, never
 // reviewed), C falls back to the SIMPLEST possible proxy - the highest
-// difficulty among those prerequisites - rather than trying to average
-// in a placeholder retrievability value for content there's genuinely no
-// real signal on yet. A node with no prerequisites at all (a true root
-// concept) has no meaningful "capability from prerequisites" signal -
-// C defaults to 0, which reads as "assume nothing yet demonstrated",
-// the conservative (more-recalls-required) direction.
+// difficulty among them - rather than averaging in a placeholder
+// retrievability value for content there's genuinely no real signal on
+// yet. An empty list has no meaningful "capability" signal - C defaults
+// to 0, the conservative (more-recalls-required) direction.
+async function computeCapabilityFrom(items: CapabilityInput[], userId: string): Promise<number> {
+  if (!items.length) return 0;
+  const conceptIds = items.map((n) => n.concept_id);
+  const { data: reviewRows, error: reviewError } = await supabaseAdmin
+    .from('concept_reviews')
+    .select('*')
+    .eq('user_id', userId)
+    .in('concept_id', conceptIds);
+  if (reviewError) throw reviewError;
+  const reviewByConceptId = new Map((reviewRows || []).map((r) => [r.concept_id as string, r]));
+
+  const now = new Date();
+  const withRetrievability = items.map((p) => {
+    const row = reviewByConceptId.get(p.concept_id);
+    if (!row) return null; // never reviewed at all - no real Ri
+    return { difficulty: p.difficulty, r: retrievability(rowToCard(row as unknown as ConceptReviewRow), now) };
+  });
+  const known = withRetrievability.filter(Boolean) as { difficulty: number; r: number }[];
+
+  if (known.length === items.length) {
+    // Every item has real FSRS state - the full weighted average.
+    const sum = known.reduce((acc, p) => acc + p.difficulty * p.r, 0);
+    return sum / known.length;
+  }
+  // At least one item has never been reviewed at all - fall back to the
+  // simplest proxy across ALL of them rather than a partial average,
+  // per explicit instruction.
+  return Math.max(...items.map((p) => p.difficulty));
+}
+
+// C for a NODE concept - its direct prerequisites (incoming edges).
 export async function computeCapability(nodeId: string, userId: string): Promise<number> {
   const { data: incomingEdges, error: edgeError } = await supabaseAdmin
     .from('knowledge_map_edges')
@@ -79,38 +113,70 @@ export async function computeCapability(nodeId: string, userId: string): Promise
 
   const { data: prereqNodes, error: nodeError } = await supabaseAdmin
     .from('knowledge_map_nodes')
-    .select('id, concept_id, difficulty')
+    .select('concept_id, difficulty')
     .in('id', prereqIds);
   if (nodeError) throw nodeError;
-  const prereqs = (prereqNodes || []).filter((n) => typeof n.difficulty === 'number') as { id: string; concept_id: string; difficulty: number }[];
-  if (!prereqs.length) return 0;
+  const prereqs = (prereqNodes || []).filter((n) => typeof n.difficulty === 'number') as CapabilityInput[];
+  return computeCapabilityFrom(prereqs, userId);
+}
 
-  const conceptIds = prereqs.map((n) => n.concept_id);
-  const { data: reviewRows, error: reviewError } = await supabaseAdmin
-    .from('concept_reviews')
-    .select('*')
-    .eq('user_id', userId)
-    .in('concept_id', conceptIds);
-  if (reviewError) throw reviewError;
-  const reviewByConceptId = new Map((reviewRows || []).map((r) => [r.concept_id as string, r]));
+// C for an EDGE/integration concept - "the same way as encoding", per
+// explicit instruction, using the edge's own two endpoint nodes as its
+// "direct prerequisites" (understanding the link genuinely depends on
+// how well-retained BOTH endpoints currently are - not something the
+// spec addressed explicitly for edges, this is my own reading of
+// "calculated from the direct prerequisites" applied to a link rather
+// than a node).
+export async function computeCapabilityForEdge(fromNodeId: string, toNodeId: string, userId: string): Promise<number> {
+  const { data: endpoints, error } = await supabaseAdmin
+    .from('knowledge_map_nodes')
+    .select('concept_id, difficulty')
+    .in('id', [fromNodeId, toNodeId]);
+  if (error) throw error;
+  const items = (endpoints || []).filter((n) => typeof n.difficulty === 'number') as CapabilityInput[];
+  return computeCapabilityFrom(items, userId);
+}
 
-  const now = new Date();
-  const withRetrievability = prereqs.map((p) => {
-    const row = reviewByConceptId.get(p.concept_id);
-    if (!row) return null; // never reviewed at all - no real Ri
-    return { difficulty: p.difficulty, r: retrievability(rowToCard(row as unknown as ConceptReviewRow), now) };
-  });
-  const known = withRetrievability.filter(Boolean) as { difficulty: number; r: number }[];
+export interface ConceptDifficultyAndCapability {
+  difficulty: number;
+  capability: number;
+}
 
-  if (known.length === prereqs.length) {
-    // Every prerequisite has real FSRS state - the full weighted average.
-    const sum = known.reduce((acc, p) => acc + p.difficulty * p.r, 0);
-    return sum / known.length;
+// Unified entry point used by both the recall-cascade scheduler and its
+// continuation route - detects a node vs. an edge/integration concept_id
+// (the fromConceptId->toConceptId::integration format from
+// nodeReviewService.ts's linkIntegrationConceptId) and computes D/C the
+// right way for whichever it is. Returns null when there's genuinely no
+// difficulty score to work with yet (an edge/node generated before
+// difficulty scoring existed) - callers fall back to the fixed
+// Rb,o-only behaviour in that case.
+export async function getDifficultyAndCapability(conceptId: string, userId: string): Promise<ConceptDifficultyAndCapability | null> {
+  if (conceptId.endsWith('::integration')) {
+    const withoutSuffix = conceptId.slice(0, -':integration'.length - 1);
+    const arrowIndex = withoutSuffix.indexOf('->');
+    if (arrowIndex === -1) return null;
+    const fromConceptId = withoutSuffix.slice(0, arrowIndex);
+    const toConceptId = withoutSuffix.slice(arrowIndex + 2);
+    const [{ data: fromNode }, { data: toNode }] = await Promise.all([
+      supabaseAdmin.from('knowledge_map_nodes').select('id').eq('concept_id', fromConceptId).maybeSingle(),
+      supabaseAdmin.from('knowledge_map_nodes').select('id').eq('concept_id', toConceptId).maybeSingle(),
+    ]);
+    if (!fromNode || !toNode) return null;
+    const { data: edge } = await supabaseAdmin
+      .from('knowledge_map_edges')
+      .select('difficulty')
+      .eq('from_node_id', fromNode.id)
+      .eq('to_node_id', toNode.id)
+      .maybeSingle();
+    if (!edge || typeof edge.difficulty !== 'number') return null;
+    const capability = await computeCapabilityForEdge(fromNode.id as string, toNode.id as string, userId);
+    return { difficulty: edge.difficulty, capability };
   }
-  // At least one prerequisite has never been reviewed at all - fall back
-  // to the simplest proxy across ALL prerequisites rather than a partial
-  // average, per explicit instruction.
-  return Math.max(...prereqs.map((p) => p.difficulty));
+
+  const { data: node } = await supabaseAdmin.from('knowledge_map_nodes').select('id, difficulty').eq('concept_id', conceptId).maybeSingle();
+  if (!node || typeof node.difficulty !== 'number') return null;
+  const capability = await computeCapability(node.id as string, userId);
+  return { difficulty: node.difficulty, capability };
 }
 
 // Rs = Rb,o + beta(D - C), floored at 1 (a concept always needs at

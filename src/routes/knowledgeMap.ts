@@ -16,8 +16,8 @@ import { gradeDiagramAnswer, DiagramSpec, DiagramAnswerSubmission } from '../ser
 import { gradeCorrectness, DURABLE_RELEARNING_CRITERION, ReviewNotDueError } from '../services/reviewService';
 import { payLessonCredits, KM_VERIFY_COEFFICIENT_FREE, KM_VERIFY_COEFFICIENT_PREMIUM } from '../services/creditService';
 import { callClaudeJSON, MODELS } from '../services/claudeClient';
-import { parseCorrectFeedbackJson } from '../services/jsonParsing';
-import { KNOWLEDGE_MAP_ANSWER_CHECK_PROMPT } from '../constants/knowledgeMapAnswerCheckPrompt';
+import { parseCorrectFeedbackJson, parseModelJson } from '../services/jsonParsing';
+import { KNOWLEDGE_MAP_ANSWER_CHECK_PROMPT, DAY1_CHECK_ANSWER_PROMPT } from '../constants/knowledgeMapAnswerCheckPrompt';
 import { VERIFY_LEARNING_PROMPT, buildVerifyQuestionText } from '../constants/verifyLearningPrompts';
 import {
   getQualifyingReviewLinks,
@@ -35,6 +35,8 @@ import { generateAndCacheNodeLesson, generateAndCacheEdgeLesson } from '../servi
 import { answerKnowledgeMapQuestion } from '../services/knowledgeMapAskService';
 import { assertFreshGenerationWithinCap, recordFreshGenerationEvent, GenerationCapExceededError } from '../services/generationCapService';
 import { recordPairwiseIntegrationOutcome } from '../services/chainMasteryService';
+import { getOrCreateUserRecallTuning, computeCapability, nextRecallDelayMinutes, updateGammaAfterRecall, bumpBaseRecalls } from '../services/recallTuningService';
+import { getQuestionForConceptId, getConceptDisplayInfo } from '../services/day1CheckService';
 
 const router = Router();
 
@@ -826,10 +828,11 @@ router.get('/immediate-recalls/due', requireAuth, syncEndpointLimiter, async (re
 // feature didn't exist.
 router.post('/immediate-recalls/:id/submit', requireAuth, costlyEndpointLimiter, async (req: Request, res: Response) => {
   const { id } = req.params;
-  const { recallCheckIndex, answer, selectedOptionIndex } = (req.body ?? {}) as {
+  const { recallCheckIndex, answer, selectedOptionIndex, retryCount } = (req.body ?? {}) as {
     recallCheckIndex?: number;
     answer?: string;
     selectedOptionIndex?: number;
+    retryCount?: number;
   };
   if (typeof recallCheckIndex !== 'number') return res.status(400).json({ error: 'recallCheckIndex is required' });
 
@@ -837,7 +840,7 @@ router.post('/immediate-recalls/:id/submit', requireAuth, costlyEndpointLimiter,
     const userId = req.userId as string;
     const { data: row } = await supabaseAdmin
       .from('immediate_recall_schedule')
-      .select('id, concept_id, resolved')
+      .select('id, concept_id, resolved, recall_number, target_recalls')
       .eq('id', id)
       .eq('user_id', userId)
       .maybeSingle();
@@ -886,13 +889,137 @@ router.post('/immediate-recalls/:id/submit', requireAuth, costlyEndpointLimiter,
       ({ correct, feedback } = parseCorrectFeedbackJson(raw));
     }
 
+    // Gamma tunes off the FIRST attempt's own result only - a retry on
+    // the same recall is the same underlying event, not a second data
+    // point (see updateGammaAfterRecall's own comment on the exact
+    // update rule this reproduces).
+    if ((Number(retryCount) || 0) === 0) {
+      await updateGammaAfterRecall(userId, correct);
+    }
+
     if (correct) {
       const { error: updateError } = await supabaseAdmin.from('immediate_recall_schedule').update({ resolved: true }).eq('id', id);
       if (updateError) throw updateError;
+
+      // Continue the cascade if this concept's own Rs hasn't been
+      // reached yet - total successes so far = 1 (the original encoding
+      // pass) + every scheduled recall completed up to and including
+      // this one. An edge/integration concept (target_recalls left at
+      // the fixed fallback of 2) or a node with no difficulty score just
+      // stops here, same as the original single-recall behaviour always
+      // did.
+      const recallNumber = (row.recall_number as number) || 1;
+      const targetRecalls = (row.target_recalls as number) || 2;
+      if (1 + recallNumber < targetRecalls) {
+        const { data: node } = await supabaseAdmin.from('knowledge_map_nodes').select('id, difficulty').eq('concept_id', row.concept_id).maybeSingle();
+        if (node && typeof node.difficulty === 'number') {
+          const tuning = await getOrCreateUserRecallTuning(userId);
+          const capability = await computeCapability(node.id as string, userId);
+          const delayMinutes = nextRecallDelayMinutes(recallNumber + 1, node.difficulty as number, capability, tuning);
+          const dueAt = new Date(Date.now() + delayMinutes * 60 * 1000).toISOString();
+          const { error: nextError } = await supabaseAdmin.from('immediate_recall_schedule').insert({
+            user_id: userId, concept_id: row.concept_id, due_at: dueAt, recall_number: recallNumber + 1, target_recalls: targetRecalls,
+          });
+          if (nextError) console.error('Scheduling next recall in cascade failed (non-fatal):', nextError);
+        }
+      }
     }
     res.json({ correct, feedback });
   } catch (err) {
     console.error('Immediate recall grading failed:', err);
+    res.status(500).json({ error: 'could not grade this answer' });
+  }
+});
+
+// GET /day1-checks/due
+// Lists this user's due (or overdue - see day1CheckService.ts's own
+// comment on why a missed one just stays due rather than expiring)
+// Day-1 checks. Prioritised the same way a real spaced review is - see
+// the frontend's own due-review priority computation, which this feeds
+// into identically.
+router.get('/day1-checks/due', requireAuth, syncEndpointLimiter, async (req: Request, res: Response) => {
+  try {
+    const userId = req.userId as string;
+    const today = new Date().toISOString().slice(0, 10);
+    const { data: rows, error } = await supabaseAdmin
+      .from('day1_checks')
+      .select('id, concept_id, due_date')
+      .eq('user_id', userId)
+      .eq('resolved', false)
+      .lte('due_date', today);
+    if (error) throw error;
+    if (!rows || !rows.length) return res.json({ checks: [] });
+
+    const withDisplay = await Promise.all(rows.map(async (r) => {
+      const info = await getConceptDisplayInfo(r.concept_id as string);
+      if (!info) return null;
+      return { checkId: r.id, conceptId: r.concept_id, label: info.label, subject: info.subject, dueDate: r.due_date };
+    }));
+    res.json({ checks: withDisplay.filter(Boolean) });
+  } catch (err) {
+    console.error('Fetching due Day-1 checks failed:', err);
+    res.status(500).json({ error: 'could not load Day-1 checks' });
+  }
+});
+
+// POST /day1-checks/:id/submit
+// A genuine Day-1 failure bumps the student's base recall count (Rb,o)
+// up by one for every future concept - the simpler operational rule
+// chosen over estimating alpha from Ra/Rs directly (see
+// recallTuningService.ts's bumpBaseRecalls). "Genuine" excludes a
+// careless slip: the FIRST wrong answer is classified by
+// DAY1_CHECK_ANSWER_PROMPT, and if it's flagged as a silly mistake, the
+// student gets exactly one re-ask of the SAME question
+// (retryAfterSillyMistake:true on the resubmit) - that retry's own
+// result is final either way, correct or not, silly or not.
+router.post('/day1-checks/:id/submit', requireAuth, costlyEndpointLimiter, async (req: Request, res: Response) => {
+  const { id } = req.params;
+  const { answer, retryAfterSillyMistake } = (req.body ?? {}) as { answer?: string; retryAfterSillyMistake?: boolean };
+  if (typeof answer !== 'string' || !answer.trim()) return res.status(400).json({ error: 'answer is required' });
+
+  try {
+    const userId = req.userId as string;
+    const { data: row } = await supabaseAdmin
+      .from('day1_checks')
+      .select('id, concept_id, resolved')
+      .eq('id', id)
+      .eq('user_id', userId)
+      .maybeSingle();
+    if (!row) return res.status(404).json({ error: 'check not found' });
+    if (row.resolved) return res.json({ correct: true, feedback: 'Already done.' });
+
+    const question = await getQuestionForConceptId(row.concept_id as string);
+    if (!question) return res.status(404).json({ error: 'question not found' });
+
+    const raw = await callClaudeJSON({
+      model: MODELS.simpleQuestion,
+      systemPrompt: DAY1_CHECK_ANSWER_PROMPT,
+      userContent: `Question: ${question.questionText}\nMark scheme: ${question.markScheme}\nStudent's answer: ${answer}`,
+      temperature: 0.1,
+      userId,
+    });
+    const { correct, feedback, sillyMistake } = parseModelJson<{ correct: boolean; feedback: string; sillyMistake?: boolean }>(raw);
+
+    if (correct) {
+      const { error: updateError } = await supabaseAdmin.from('day1_checks').update({ resolved: true }).eq('id', id);
+      if (updateError) throw updateError;
+      return res.json({ correct: true, feedback });
+    }
+
+    if (!retryAfterSillyMistake && sillyMistake) {
+      // Deferred - not resolved, no Rb bump yet. The student gets one
+      // more attempt at the exact same question.
+      return res.json({ correct: false, sillyMistake: true, feedback });
+    }
+
+    // A genuine failure (or a still-wrong/second attempt after the one
+    // reask already given) - resolve it and bump the base recall count.
+    const { error: updateError } = await supabaseAdmin.from('day1_checks').update({ resolved: true }).eq('id', id);
+    if (updateError) throw updateError;
+    await bumpBaseRecalls(userId);
+    res.json({ correct: false, sillyMistake: false, feedback });
+  } catch (err) {
+    console.error('Day-1 check grading failed:', err);
     res.status(500).json({ error: 'could not grade this answer' });
   }
 });

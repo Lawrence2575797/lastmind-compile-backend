@@ -1,6 +1,8 @@
 import { supabaseAdmin } from './supabaseAdmin';
 import { selectRowsByIdChunked } from './supabasePagination';
 import { newCard, gradeReview, rowToCard, cardToRowFields, Rating, Grade, ConceptReviewRow } from './fsrsService';
+import { getOrCreateUserRecallTuning, computeCapability, computeRequiredRecalls, nextRecallDelayMinutes } from './recallTuningService';
+import { scheduleDay1Check } from './day1CheckService';
 
 export type { ConceptReviewRow };
 
@@ -187,37 +189,52 @@ export async function gradeAndRecordReview(
     console.error('LastMind: failed to write review_log row (non-fatal, grading itself still succeeded).', logError);
   }
 
-  // Groundwork for the overnight spec's recall-timing model - see
-  // scheduleImmediateRecall's own comment for exactly what this does and
-  // does not do yet. Only fires on a concept's genuinely first-ever grade
-  // (existingRow was null before this upsert) - every later review is a
-  // real spaced-repetition event already covered by concept_reviews'
-  // normal FSRS due date, not a same-session immediate recall.
+  // The Bayesian recall model's two entry points - both fire only on a
+  // concept's genuinely first-ever grade (existingRow was null before
+  // this upsert), for EITHER a node's own encoding OR an edge's first
+  // integration session (this function is the shared hook for both -
+  // conceptId is either a plain node concept_id or a
+  // fromConceptId->toConceptId::integration one). Every later review is
+  // a real spaced-repetition event already covered by concept_reviews'
+  // normal FSRS due date, not a same-session immediate recall or a
+  // fresh Day-1 check.
   if (!existingRow) {
     await scheduleImmediateRecall(userId, conceptId);
+    await scheduleDay1Check(userId, conceptId);
   }
 
   return { previousRow: existingRow, newState: rowFields, spacedSuccessCount: spacedSuccess.spaced_success_count };
 }
 
-// Records that this concept's first-ever encoding pass should be followed
-// by one more immediate recall check at +2 minutes (the spec's fixed base
-// schedule's first interval, Rb,o=2 total recalls as the starting
-// baseline - see create_immediate_recall_schedule.sql for why the fuller
-// personalized/multi-step version isn't built yet). Deliberately NOT
-// wired into anything that reads or acts on it yet - no feed/UI currently
-// checks this table, and answering it correctly must NOT be routed
-// through gradeAndRecordReview again (that would incorrectly re-advance
-// the real FSRS due date a second time for the same encoding). Building
-// that distinct, non-FSRS-advancing grading path plus the feed-side
-// "a recall is due, show it before new content" priority check is the
-// next real increment on top of this - recorded honestly as not done,
-// not silently skipped. Fire-and-forget: never blocks or fails the actual
-// grading response a student is waiting on.
+// Schedules this concept's FIRST recall in its cascade (recall_number 1,
+// the same +2-minute check this always was) - continuing the cascade
+// past that point (recall_number 2, 3, ...) happens in the
+// /immediate-recalls/:id/submit route each time one is answered
+// correctly, up to target_recalls (Rs). Rs and the first interval both
+// need this concept's own difficulty (D) and the student's current
+// capability from its prerequisites (C) - see recallTuningService.ts.
+// Only a NODE concept has a well-defined D/C under this model (an edge/
+// integration concept_id's own "difficulty" and "prerequisites" aren't
+// addressed by the spec this model is built from) - an edge concept, or
+// a node with no difficulty score generated yet, falls back to the
+// original fixed Rb,o=2/+2-minute behaviour rather than guessing at an
+// undefined calculation. Fire-and-forget: never blocks or fails the
+// actual grading response a student is waiting on.
 async function scheduleImmediateRecall(userId: string, conceptId: string): Promise<void> {
   try {
-    const dueAt = new Date(Date.now() + 2 * 60 * 1000).toISOString();
-    const { error } = await supabaseAdmin.from('immediate_recall_schedule').insert({ user_id: userId, concept_id: conceptId, due_at: dueAt });
+    const { data: node } = await supabaseAdmin.from('knowledge_map_nodes').select('id, difficulty').eq('concept_id', conceptId).maybeSingle();
+    let targetRecalls = 2;
+    let delayMinutes = 2;
+    if (node && typeof node.difficulty === 'number') {
+      const tuning = await getOrCreateUserRecallTuning(userId);
+      const capability = await computeCapability(node.id as string, userId);
+      targetRecalls = computeRequiredRecalls(node.difficulty as number, capability, tuning);
+      delayMinutes = nextRecallDelayMinutes(1, node.difficulty as number, capability, tuning);
+    }
+    const dueAt = new Date(Date.now() + delayMinutes * 60 * 1000).toISOString();
+    const { error } = await supabaseAdmin
+      .from('immediate_recall_schedule')
+      .insert({ user_id: userId, concept_id: conceptId, due_at: dueAt, recall_number: 1, target_recalls: targetRecalls });
     if (error) throw error;
   } catch (err) {
     console.error('Immediate recall scheduling failed (non-fatal):', err);

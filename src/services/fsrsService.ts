@@ -49,6 +49,18 @@ export function gradeReview(card: Card, rating: Grade, now: Date = new Date()) {
   return scheduler.next(card, now, rating); // { card: <new state>, log: <review log> }
 }
 
+/**
+ * Real FSRS retrievability (0-1) - the probability this card is still
+ * recallable right now, decayed from its stability by elapsed time since
+ * last_review. Uses ts-fsrs's own built-in calculation (same decay curve
+ * and parameters this app's scheduler already runs on) rather than
+ * re-deriving the forgetting-curve formula by hand. Used by the Bayesian
+ * recall model's capability calculation (C) - see recallTuningService.ts.
+ */
+export function retrievability(card: Card, now: Date = new Date()): number {
+  return scheduler.get_retrievability(card, now, false);
+}
+
 // The shape a concept_reviews row takes in Supabase — timestamps as ISO
 // strings (how Postgres/Supabase hands them back), everything else a
 // direct mirror of ts-fsrs's own Card fields. Kept as an explicit type

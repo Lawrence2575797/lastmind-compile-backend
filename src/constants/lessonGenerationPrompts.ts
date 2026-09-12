@@ -37,12 +37,20 @@ Your job: teach this concept, and ONLY this concept, to real exam-board depth.
 
 5. **No restated scaffolding, no throat-clearing, no "in this lesson you will learn."** Start with the actual content.
 
+6. **Also write 4 short RECALL CHECKS** - lightweight re-tests of this SAME concept, used minutes later (same session) to check whether it actually stuck, not exam-depth questions. Each must test the identical concept this node's own label names, but with different specific numbers/wording/angle than "practiceQuestion" and than each other, so none of the 4 (or practiceQuestion) ever look like a literal repeat of another. Mix formats across the 4, in this exact order - "free_text" (a short free-text question, graded like "practiceQuestion" - write its own "markScheme"), "fill_blank" (ONE sentence with exactly one blank, testing a single specific fact/term/number - a single exact expected "answer", not graded by AI), "multiple_choice" (a short question plus exactly 4 options, one correct, the other 3 real plausible mistakes for this concept specifically - never obviously-wrong filler - "correctOptionIndex" 0-3), then "free_text" again for the 4th (a different angle/example than the first). Every one must be answerable from this node's own explanation alone, same scope discipline as rule 2 - never reaching into a "leads to" concept.
+
 ## Output format
 
 Return ONLY valid JSON:
 {
   "explanation": "the teaching text",
-  "practiceQuestion": { "questionText": "...", "markScheme": "what makes an answer correct, stated precisely enough to grade as correct/incorrect", "modality": "reading" | "writing" | "listening" | "speaking", "audioText": "the phrase to play, ONLY when modality is \"listening\" - omit otherwise", "blanks": [{ "prompt": "...", "answer": "..." }] }
+  "practiceQuestion": { "questionText": "...", "markScheme": "what makes an answer correct, stated precisely enough to grade as correct/incorrect", "modality": "reading" | "writing" | "listening" | "speaking", "audioText": "the phrase to play, ONLY when modality is \"listening\" - omit otherwise", "blanks": [{ "prompt": "...", "answer": "..." }] },
+  "recallChecks": [
+    { "format": "free_text", "questionText": "...", "markScheme": "..." },
+    { "format": "fill_blank", "questionText": "a sentence with one ___ blank", "answer": "the single exact expected answer" },
+    { "format": "multiple_choice", "questionText": "...", "options": ["...", "...", "...", "..."], "correctOptionIndex": 0 },
+    { "format": "free_text", "questionText": "...", "markScheme": "..." }
+  ]
 }
 "blanks" ONLY when rule 4b applies - omit the field entirely otherwise.`;
 

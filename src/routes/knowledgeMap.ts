@@ -688,6 +688,19 @@ router.post('/knowledge-map-v2/text-question/submit', requireAuth, costlyEndpoin
   }
 });
 
+// Shape of one entry in encoding_content.recallChecks (see the
+// "recallChecks" output field added to KNOWLEDGE_MAP_ENCODING_LESSON_PROMPT
+// in lessonGenerationPrompts.ts) - generated once alongside the lesson
+// itself, cached forever, never regenerated per recall.
+interface RecallCheck {
+  format: 'free_text' | 'fill_blank' | 'multiple_choice';
+  questionText: string;
+  markScheme?: string; // free_text only
+  answer?: string; // fill_blank only
+  options?: string[]; // multiple_choice only
+  correctOptionIndex?: number; // multiple_choice only
+}
+
 // A missed recall is given up on permanently, not shown later - "if a
 // student misses the window, we wait for the real (day-1-ish) FSRS
 // review" is an explicit product decision, not just a UX nicety, so it
@@ -744,11 +757,43 @@ router.get('/immediate-recalls/due', requireAuth, syncEndpointLimiter, async (re
     if (nodeError) throw nodeError;
     const nodeByConceptId = new Map((nodes || []).map((n) => [n.concept_id as string, n]));
 
+    const nodeIds = (nodes || []).map((n) => n.id as string);
+    const { data: lessons, error: lessonError } = nodeIds.length
+      ? await supabaseAdmin.from('knowledge_map_node_lessons').select('node_id, encoding_content').in('node_id', nodeIds)
+      : { data: [] as { node_id: string; encoding_content: unknown }[], error: null };
+    if (lessonError) throw lessonError;
+    const lessonByNodeId = new Map((lessons || []).map((l) => [l.node_id as string, l.encoding_content]));
+
     const recalls = stillCatchable
       .map((r) => {
         const node = nodeByConceptId.get(r.concept_id as string);
         if (!node) return null; // concept since deleted/regenerated - nothing left to recall
-        return { recallId: r.id, nodeId: node.id, label: node.label, subject: node.subject, dueAt: r.due_at };
+        // Picks one of the node's own cached recall-check questions
+        // (generated alongside the lesson itself - see recallChecks in
+        // lessonGenerationPrompts.ts) rather than re-asking the main
+        // practiceQuestion verbatim minutes later. Picked fresh at random
+        // each time a recall is served, so the format/wording isn't
+        // predictable across repeats. A node generated before this field
+        // existed has no recallChecks yet - fall back to the main
+        // practiceQuestion rather than offering nothing.
+        const content = lessonByNodeId.get(node.id) as { recallChecks?: RecallCheck[]; practiceQuestion?: { questionText?: string; markScheme?: string } } | undefined;
+        const checks = content?.recallChecks;
+        let recallCheckIndex: number;
+        let check: RecallCheck;
+        if (checks && checks.length) {
+          recallCheckIndex = Math.floor(Math.random() * checks.length);
+          check = checks[recallCheckIndex];
+        } else if (content?.practiceQuestion?.questionText) {
+          recallCheckIndex = -1; // signals "the main practiceQuestion, not a cached recallCheck" to the submit route
+          check = { format: 'free_text', questionText: content.practiceQuestion.questionText };
+        } else {
+          return null; // nothing generated yet for this node at all
+        }
+        return {
+          recallId: r.id, nodeId: node.id, label: node.label, subject: node.subject, dueAt: r.due_at,
+          recallCheckIndex, format: check.format, questionText: check.questionText,
+          options: check.format === 'multiple_choice' ? check.options : undefined,
+        };
       })
       .filter(Boolean);
     res.json({ recalls });
@@ -759,23 +804,34 @@ router.get('/immediate-recalls/due', requireAuth, syncEndpointLimiter, async (re
 });
 
 // POST /immediate-recalls/:id/submit
-// Grades a same-session immediate recall's answer using the EXACT SAME
-// AI correctness check as a normal practice question, but deliberately
-// does NOT call gradeCorrectness/gradeAndRecordReview - this is a light,
-// non-punitive retention check, not a real FSRS event, and must never
-// advance or lapse the concept's actual spaced-review due date a second
-// time (see scheduleImmediateRecall's own comment on exactly this). A
-// wrong answer just returns correct:false with no state change at all -
-// the student fixes it and the feed lets them try again (same shake-
-// until-right UX as any other question slide); the schedule row is only
-// marked resolved once genuinely answered correctly. If missed/ignored
-// entirely, it just stays unresolved forever with zero side effects -
-// whatever happens is left to the concept's own already-scheduled real
-// review, exactly as if this feature didn't exist.
+// Grades a same-session immediate recall's answer against ONE of the
+// node's own cached recallChecks (recallCheckIndex, from the GET /due
+// response above - re-fetched here server-side, never trusted from the
+// client, same discipline as every other grading route in this file).
+// "free_text" is graded by the EXACT SAME AI correctness check as a
+// normal practice question; "fill_blank" and "multiple_choice" are
+// graded locally with no AI call at all, since each has exactly one
+// known correct answer to compare against. Deliberately does NOT call
+// gradeCorrectness/gradeAndRecordReview regardless of format - this is
+// a light, non-punitive retention check, not a real FSRS event, and
+// must never advance or lapse the concept's actual spaced-review due
+// date a second time (see scheduleImmediateRecall's own comment on
+// exactly this). A wrong answer just returns correct:false with no
+// state change at all - the student fixes it and the feed lets them
+// try again (same shake-until-right UX as any other question slide);
+// the schedule row is only marked resolved once genuinely answered
+// correctly. If missed/ignored entirely, it just stays unresolved
+// forever with zero side effects - whatever happens is left to the
+// concept's own already-scheduled real review, exactly as if this
+// feature didn't exist.
 router.post('/immediate-recalls/:id/submit', requireAuth, costlyEndpointLimiter, async (req: Request, res: Response) => {
   const { id } = req.params;
-  const { answer } = (req.body ?? {}) as { answer?: string };
-  if (typeof answer !== 'string' || !answer.trim()) return res.status(400).json({ error: 'answer is required' });
+  const { recallCheckIndex, answer, selectedOptionIndex } = (req.body ?? {}) as {
+    recallCheckIndex?: number;
+    answer?: string;
+    selectedOptionIndex?: number;
+  };
+  if (typeof recallCheckIndex !== 'number') return res.status(400).json({ error: 'recallCheckIndex is required' });
 
   try {
     const userId = req.userId as string;
@@ -799,17 +855,37 @@ router.post('/immediate-recalls/:id/submit', requireAuth, costlyEndpointLimiter,
       .select('encoding_content')
       .eq('node_id', node.id)
       .maybeSingle();
-    const question = (lesson?.encoding_content as { practiceQuestion?: { questionText?: string; markScheme?: string } } | null)?.practiceQuestion;
-    if (!question || !question.questionText) return res.status(404).json({ error: 'question not found' });
+    const content = lesson?.encoding_content as { recallChecks?: RecallCheck[]; practiceQuestion?: { questionText?: string; markScheme?: string } } | null;
+    // recallCheckIndex -1 is GET /due's own fallback for a node with no
+    // recallChecks generated yet - re-derive the exact same fallback
+    // here rather than trusting the client's copy of it.
+    const check: RecallCheck | undefined = recallCheckIndex === -1
+      ? (content?.practiceQuestion?.questionText ? { format: 'free_text', questionText: content.practiceQuestion.questionText, markScheme: content.practiceQuestion.markScheme } : undefined)
+      : content?.recallChecks?.[recallCheckIndex];
+    if (!check || !check.questionText) return res.status(404).json({ error: 'question not found' });
 
-    const raw = await callClaudeJSON({
-      model: MODELS.simpleQuestion,
-      systemPrompt: KNOWLEDGE_MAP_ANSWER_CHECK_PROMPT,
-      userContent: `Question: ${question.questionText}\nMark scheme: ${question.markScheme || ''}\nStudent's answer: ${answer}`,
-      temperature: 0.1,
-      userId,
-    });
-    const { correct, feedback } = parseCorrectFeedbackJson(raw);
+    let correct: boolean;
+    let feedback: string | null = null;
+    if (check.format === 'multiple_choice') {
+      if (typeof selectedOptionIndex !== 'number') return res.status(400).json({ error: 'selectedOptionIndex is required' });
+      correct = selectedOptionIndex === check.correctOptionIndex;
+      feedback = correct ? null : 'Not quite - check the other options again.';
+    } else if (check.format === 'fill_blank') {
+      if (typeof answer !== 'string' || !answer.trim()) return res.status(400).json({ error: 'answer is required' });
+      correct = normalizeForBlankComparison(answer) === normalizeForBlankComparison(check.answer || '');
+      feedback = correct ? null : 'Not quite - try again.';
+    } else {
+      if (typeof answer !== 'string' || !answer.trim()) return res.status(400).json({ error: 'answer is required' });
+      const raw = await callClaudeJSON({
+        model: MODELS.simpleQuestion,
+        systemPrompt: KNOWLEDGE_MAP_ANSWER_CHECK_PROMPT,
+        userContent: `Question: ${check.questionText}\nMark scheme: ${check.markScheme || ''}\nStudent's answer: ${answer}`,
+        temperature: 0.1,
+        userId,
+      });
+      ({ correct, feedback } = parseCorrectFeedbackJson(raw));
+    }
+
     if (correct) {
       const { error: updateError } = await supabaseAdmin.from('immediate_recall_schedule').update({ resolved: true }).eq('id', id);
       if (updateError) throw updateError;

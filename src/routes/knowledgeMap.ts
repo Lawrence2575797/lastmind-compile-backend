@@ -17,7 +17,7 @@ import { gradeCorrectness, DURABLE_RELEARNING_CRITERION, ReviewNotDueError } fro
 import { payLessonCredits, KM_VERIFY_COEFFICIENT_FREE, KM_VERIFY_COEFFICIENT_PREMIUM } from '../services/creditService';
 import { callClaudeJSON, MODELS } from '../services/claudeClient';
 import { parseCorrectFeedbackJson, parseModelJson } from '../services/jsonParsing';
-import { KNOWLEDGE_MAP_ANSWER_CHECK_PROMPT, DAY1_CHECK_ANSWER_PROMPT } from '../constants/knowledgeMapAnswerCheckPrompt';
+import { KNOWLEDGE_MAP_ANSWER_CHECK_PROMPT, DAY1_CHECK_ANSWER_PROMPT, FILL_BLANK_LENIENCY_PROMPT } from '../constants/knowledgeMapAnswerCheckPrompt';
 import { VERIFY_LEARNING_PROMPT, buildVerifyQuestionText } from '../constants/verifyLearningPrompts';
 import {
   getQualifyingReviewLinks,
@@ -882,7 +882,22 @@ router.post('/immediate-recalls/:id/submit', requireAuth, costlyEndpointLimiter,
     } else if (check.format === 'fill_blank') {
       if (typeof answer !== 'string' || !answer.trim()) return res.status(400).json({ error: 'answer is required' });
       correct = normalizeForBlankComparison(answer) === normalizeForBlankComparison(check.answer || '');
-      feedback = correct ? null : 'Not quite - try again.';
+      if (correct) {
+        feedback = null;
+      } else {
+        // Not an exact match - genuinely different wording could still be
+        // an acceptable synonym (see FILL_BLANK_LENIENCY_PROMPT's own
+        // comment), so ask before giving up and calling it wrong with no
+        // real guidance.
+        const raw = await callClaudeJSON({
+          model: MODELS.simpleQuestion,
+          systemPrompt: FILL_BLANK_LENIENCY_PROMPT,
+          userContent: `Sentence: ${check.questionText}\nExpected answer: ${check.answer || ''}\nStudent's answer: ${answer}`,
+          temperature: 0.1,
+          userId,
+        });
+        ({ correct, feedback } = parseCorrectFeedbackJson(raw));
+      }
     } else {
       if (typeof answer !== 'string' || !answer.trim()) return res.status(400).json({ error: 'answer is required' });
       const raw = await callClaudeJSON({

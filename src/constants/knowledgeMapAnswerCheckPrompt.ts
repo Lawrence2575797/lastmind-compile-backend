@@ -18,6 +18,26 @@ Rules:
 Output schema:
 { "correct": boolean, "feedback": string }`;
 
+// fill_blank recall checks are graded by exact string match first (free,
+// no AI call, correct on the common case) - this only fires on a MISS,
+// to catch a genuine synonym exact-match would wrongly reject (e.g.
+// expected "supply", student wrote "quantity" or "amount" - same
+// meaning, different word) before giving up and calling it wrong. Real
+// reported failure this exists to fix: a student who clearly understood
+// the concept kept getting "Not quite - try again" with zero guidance
+// for trying a different but equally correct word.
+export const FILL_BLANK_LENIENCY_PROMPT = `You are grading a UK GCSE/A-Level student's answer to a single fill-in-the-blank recall question, AFTER it already failed an exact-string match against the one expected answer - your job is to decide whether the student's DIFFERENT wording still correctly completes the sentence with the same meaning, not to re-check the exact match.
+
+You will be given the full sentence with its blank shown as ___, the expected answer the question was originally written with, and the student's own answer for that blank.
+
+Rules:
+1. Output ONLY valid JSON, nothing else.
+2. Mark "correct": true if the student's word/phrase means the same specific thing as the expected answer in this sentence - a genuine synonym or equally precise equivalent (e.g. expected "supply" vs student "quantity" or "amount" - same meaning, mark correct). Mark "correct": false if it's a different, wrong concept, OR a vaguer/more general term that loses the specific meaning the blank is actually testing (e.g. expected "elastic" vs student "sensitive" - not precise enough) - when genuinely unsure, prefer false, since the exact match already gave the student credit for the one unambiguous case.
+3. "feedback" - a short, plain-language note. If correct, a brief genuine confirmation (their exact wording differs from the model answer, so don't reference "the expected answer" as if it were the only right one). If wrong, a clue pointing at the RIGHT KIND or category of word (e.g. "Think about what limits how much of something physically exists, not its price.") - never state, spell out, or closely paraphrase the actual expected answer.
+
+Output schema:
+{ "correct": boolean, "feedback": string }`;
+
 // Day-1 checks are the only place in this app that needs to distinguish
 // WHY an answer was wrong - the Bayesian recall model's base-recall-count
 // (Rb) only bumps up on a GENUINE gap in understanding, never on a

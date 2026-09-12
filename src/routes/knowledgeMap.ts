@@ -30,7 +30,7 @@ import {
   assertNodeReviewDue,
   assertAo1ReviewDue,
 } from '../services/nodeReviewService';
-import { compileNodeNotes, getNodeNotes, compileEdgeNotes, compileEdgeNotesContent, getEdgeNotes, getNotesIndexForUser, getPersonalNote, savePersonalNote, checkWorkedExampleStep } from '../services/knowledgeMapNotesService';
+import { getNodeNoteBaseline, getNodeNoteForUser, saveNodeNoteEdit, getNodeNotes, getEdgeNoteBaseline, getEdgeNoteForUser, saveEdgeNoteEdit, getEdgeNotes, getNotesIndexForUser, getPersonalNote, savePersonalNote, checkWorkedExampleStep } from '../services/knowledgeMapNotesService';
 import { generateAndCacheNodeLesson, generateAndCacheEdgeLesson } from '../services/lessonGenerationService';
 import { answerKnowledgeMapQuestion } from '../services/knowledgeMapAskService';
 import { assertFreshGenerationWithinCap, recordFreshGenerationEvent, GenerationCapExceededError } from '../services/generationCapService';
@@ -1345,10 +1345,11 @@ router.post('/knowledge-map-v2/node-review/integration/start', requireAuth, cost
     // The dual-coding visual is only ever relevant alongside linkTeaching
     // itself - shown once, on a genuine first attempt, never on a later
     // spaced review (see IntegrationStepData's own comment on why
-    // linkTeaching is withheld then too). compileEdgeNotesContent has no
-    // per-user unlock side effect - the separate Notes page's "earned"
-    // unlock still only happens on an actual pass (renderNodeReviewSummary).
-    const notes = step.isFirstAttempt ? await compileEdgeNotesContent(fromNodeId, toNodeId, userId) : null;
+    // linkTeaching is withheld then too). getEdgeNoteBaseline has no
+    // per-user side effect (no AI call, nothing to unlock) - the separate
+    // Notes page's own "earned" unlock still only happens on an actual
+    // pass, via getEdgeNoteForUser.
+    const notes = step.isFirstAttempt ? await getEdgeNoteBaseline(fromNodeId, toNodeId) : null;
     res.json({
       questionText: step.questionText,
       isFirstAttempt: step.isFirstAttempt,
@@ -1420,31 +1421,30 @@ router.post('/knowledge-map-v2/node-review/integration/submit', requireAuth, cos
 
 // ---- Knowledge-map Notes page (see learn/index.html's openNotesPage) ----
 // Compiled straight from a node's/edge's own ground truth (never a
-// student's own answer), cached once and shared across every student who's
-// earned it - see knowledgeMapNotesService.ts's own top comment.
-// Premium-only (all four routes below, not just the two that actually
-// generate) - per the free/premium product decision, this whole feature
-// is a Premium perk, not just its live-generation cost; a free student
-// reading a copy someone else already paid to generate is still "note
-// generation after lessons" from the product's own framing. Free students
-// keep their own PERSONAL notes (personal-notes routes further down -
-// never gated, never calls Claude) unaffected.
+// student's own answer, and never an AI call any more - see
+// knowledgeMapNotesService.ts's own top comment), automatically, the
+// moment a note is shown - there's no separate "compile" trigger left to
+// gate. Premium-only still, per the existing free/premium product
+// decision - unrelated to generation cost (there isn't any left), this
+// stays a Premium perk on its own product terms. Free students keep their
+// own PERSONAL notes (personal-notes routes further down - never gated,
+// never calls Claude) unaffected.
 
-router.post('/knowledge-map-v2/node/:nodeId/notes/compile', requireAuth, requirePaidTier, costlyEndpointLimiter, async (req: Request, res: Response) => {
+router.post('/knowledge-map-v2/node/:nodeId/notes/compile', requireAuth, requirePaidTier, async (req: Request, res: Response) => {
   try {
-    const notes = await compileNodeNotes(req.params.nodeId, req.userId as string);
+    const notes = await getNodeNoteForUser(req.params.nodeId, req.userId as string);
     if (!notes) return res.status(404).json({ error: 'no lesson generated for this concept yet' });
     res.json(notes);
   } catch (err) {
-    console.error('Node notes compile failed:', err);
-    res.status(500).json({ error: 'could not compile notes for this concept' });
+    console.error('Node notes lookup failed:', err);
+    res.status(500).json({ error: 'could not load notes for this concept' });
   }
 });
 
 router.get('/knowledge-map-v2/node/:nodeId/notes', requireAuth, requirePaidTier, async (req: Request, res: Response) => {
   try {
-    const notes = await getNodeNotes(req.params.nodeId);
-    if (!notes) return res.status(404).json({ error: 'no notes compiled for this concept yet' });
+    const notes = await getNodeNoteForUser(req.params.nodeId, req.userId as string);
+    if (!notes) return res.status(404).json({ error: 'no notes available for this concept yet' });
     res.json(notes);
   } catch (err) {
     console.error('Node notes lookup failed:', err);
@@ -1452,25 +1452,58 @@ router.get('/knowledge-map-v2/node/:nodeId/notes', requireAuth, requirePaidTier,
   }
 });
 
-router.post('/knowledge-map-v2/edge/:fromNodeId/:toNodeId/notes/compile', requireAuth, requirePaidTier, costlyEndpointLimiter, async (req: Request, res: Response) => {
+// A student's own edit to their compiled note - overwrites the live-
+// filtered baseline entirely from then on (see saveNodeNoteEdit's own
+// comment). Not gated behind requirePaidTier's sibling routes' generation
+// cost (there is none), but the note being edited is still only ever
+// shown on the Premium Notes page in the first place.
+router.put('/knowledge-map-v2/node/:nodeId/notes', requireAuth, requirePaidTier, async (req: Request, res: Response) => {
+  const { paragraphs } = (req.body ?? {}) as { paragraphs?: string[] };
+  if (!Array.isArray(paragraphs) || !paragraphs.every((p) => typeof p === 'string')) {
+    return res.status(400).json({ error: 'paragraphs (string[]) is required' });
+  }
   try {
-    const notes = await compileEdgeNotes(req.userId as string, req.params.fromNodeId, req.params.toNodeId);
+    await saveNodeNoteEdit(req.userId as string, req.params.nodeId, paragraphs);
+    res.json({ ok: true });
+  } catch (err) {
+    console.error('Node notes edit save failed:', err);
+    res.status(500).json({ error: 'could not save this edit' });
+  }
+});
+
+router.post('/knowledge-map-v2/edge/:fromNodeId/:toNodeId/notes/compile', requireAuth, requirePaidTier, async (req: Request, res: Response) => {
+  try {
+    const notes = await getEdgeNoteForUser(req.userId as string, req.params.fromNodeId, req.params.toNodeId);
     if (!notes) return res.status(404).json({ error: 'connection not found' });
     res.json(notes);
   } catch (err) {
-    console.error('Edge notes compile failed:', err);
-    res.status(500).json({ error: 'could not compile notes for this connection' });
+    console.error('Edge notes lookup failed:', err);
+    res.status(500).json({ error: 'could not load notes for this connection' });
   }
 });
 
 router.get('/knowledge-map-v2/edge/:fromNodeId/:toNodeId/notes', requireAuth, requirePaidTier, async (req: Request, res: Response) => {
   try {
-    const notes = await getEdgeNotes(req.params.fromNodeId, req.params.toNodeId);
-    if (!notes) return res.status(404).json({ error: 'no notes compiled for this connection yet' });
+    const notes = await getEdgeNoteForUser(req.userId as string, req.params.fromNodeId, req.params.toNodeId);
+    if (!notes) return res.status(404).json({ error: 'no notes available for this connection yet' });
     res.json(notes);
   } catch (err) {
     console.error('Edge notes lookup failed:', err);
     res.status(500).json({ error: 'could not load these notes' });
+  }
+});
+
+router.put('/knowledge-map-v2/edge/:fromNodeId/:toNodeId/notes', requireAuth, requirePaidTier, async (req: Request, res: Response) => {
+  const { paragraphs } = (req.body ?? {}) as { paragraphs?: string[] };
+  if (!Array.isArray(paragraphs) || !paragraphs.every((p) => typeof p === 'string')) {
+    return res.status(400).json({ error: 'paragraphs (string[]) is required' });
+  }
+  try {
+    await saveEdgeNoteEdit(req.userId as string, req.params.fromNodeId, req.params.toNodeId, paragraphs);
+    res.json({ ok: true });
+  } catch (err) {
+    console.error('Edge notes edit save failed:', err);
+    res.status(500).json({ error: 'could not save this edit' });
   }
 });
 

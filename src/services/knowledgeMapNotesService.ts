@@ -20,7 +20,8 @@ import { getSpecMicrotopics, getSubtopicThemeMap, fallbackThemeName } from './ch
 import { listUserFolders } from './folderSyncService';
 import { resolveSubjectTriple } from './subjectResolution';
 import { topologicalNodeOrder } from './nodeOrdering';
-import { NODE_NOTES_COMPILE_PROMPT, EDGE_NOTES_COMPILE_PROMPT, SUBTOPIC_NODE_ORDER_PROMPT, WORKED_EXAMPLE_STEP_CHECK_PROMPT } from '../constants/knowledgeMapNotesPrompts';
+import { SUBTOPIC_NODE_ORDER_PROMPT, WORKED_EXAMPLE_STEP_CHECK_PROMPT } from '../constants/knowledgeMapNotesPrompts';
+import { filterTeachingLanguage } from './noteFilter';
 
 export type NodeNoteVisual =
   | { type: 'diagram'; spec: unknown }
@@ -65,59 +66,21 @@ export async function getNodeNotes(nodeId: string): Promise<NodeNotesResult | nu
   return parseStoredNodeNotes(data.notes_content as string, node?.label || '');
 }
 
-interface SiblingCandidate {
-  label: string;
-  explanation: string;
-}
-
-// Up to 6 other nodes in the same subtopic, each with their own
-// explanation - candidates the compile prompt can pick a genuine
-// comparison from (see NODE_NOTES_COMPILE_PROMPT's visualType rules).
-// Capped since this is a per-compile-call cost, not a one-time index
-// build, and a subtopic can have far more than 6 nodes.
-async function getSiblingCandidates(nodeId: string, subtopic: string, subject: string, qualification: string, examBoard: string): Promise<SiblingCandidate[]> {
-  if (!subtopic) return [];
-  const { data: siblingNodes } = await supabaseAdmin
-    .from('knowledge_map_nodes')
-    .select('id, label')
-    .eq('subtopic', subtopic)
-    .ilike('subject', subject.trim())
-    .ilike('qualification', qualification.trim())
-    .ilike('exam_board', examBoard.trim())
-    .neq('id', nodeId)
-    .limit(6);
-  if (!siblingNodes?.length) return [];
-
-  const siblingIds = siblingNodes.map((n) => n.id as string);
-  const { data: lessons } = await supabaseAdmin
-    .from('knowledge_map_node_lessons')
-    .select('node_id, encoding_content')
-    .in('node_id', siblingIds);
-  const explanationByNodeId = new Map(
-    (lessons || []).map((l) => [l.node_id as string, (l.encoding_content as { explanation?: string } | null)?.explanation])
-  );
-
-  return siblingNodes
-    .map((n) => ({ label: n.label as string, explanation: explanationByNodeId.get(n.id as string) }))
-    .filter((c): c is SiblingCandidate => !!c.explanation);
-}
-
-interface NodeNotesModelResponse {
-  heading: string;
-  paragraphs: string[];
-  visualType: 'comparison' | 'workedExample' | 'example' | 'englishAnchor' | 'none';
-  comparison?: { otherLabel: string; thisPoints: string[]; otherPoints: string[] };
-  workedExample?: { steps: string[] };
-  example?: string;
-  englishAnchor?: string;
-}
-
-export async function compileNodeNotes(nodeId: string, userId: string): Promise<NodeNotesResult | null> {
+// The live-computed baseline for one node's note - never an AI call, just
+// this node's own already-cached explanation with filterTeachingLanguage
+// applied. A previously AI-compiled note (from before this moved off the
+// Claude API) is preferred when one still exists purely so real, already-
+// paid-for content (a genuine comparison/worked example) isn't thrown
+// away - going forward, nothing writes a new row into knowledge_map_node_notes
+// at all, so every node encoded from here on gets the deterministic
+// version. "heading" has nothing left to be clever about without a model
+// choosing a question-framing, so it's just the node's own label.
+export async function getNodeNoteBaseline(nodeId: string): Promise<NodeNotesResult | null> {
   const cached = await getNodeNotes(nodeId);
   if (cached) return cached;
 
   const [{ data: node }, { data: lesson }] = await Promise.all([
-    supabaseAdmin.from('knowledge_map_nodes').select('label, subtopic, subject, qualification, exam_board').eq('id', nodeId).maybeSingle(),
+    supabaseAdmin.from('knowledge_map_nodes').select('label').eq('id', nodeId).maybeSingle(),
     supabaseAdmin.from('knowledge_map_node_lessons').select('encoding_content').eq('node_id', nodeId).maybeSingle(),
   ]);
   const encodingContent = lesson?.encoding_content as { explanation?: string; practiceQuestion?: { diagramSpec?: { notDiagrammatic?: boolean } } } | null;
@@ -126,71 +89,66 @@ export async function compileNodeNotes(nodeId: string, userId: string): Promise<
 
   // The diagram check already ran once, offline, for every diagrammatic
   // node (see generate_diagram_specs.js / MECHANISTIC_DIAGRAM_SPEC_PROMPT)
-  // - reuse that verdict rather than asking the model to re-decide
-  // diagram-appropriateness here. Dual coding's payoff is real diagram
-  // content, so a genuine diagramSpec always wins over the model's own
-  // comparison/example choice below.
+  // - reusing that verdict costs nothing (no model call needed to show
+  // it), so a genuine diagramSpec still comes through on the note.
   const diagramSpec = encodingContent?.practiceQuestion?.diagramSpec;
   const hasDiagram = !!diagramSpec && !diagramSpec.notDiagrammatic;
 
-  const siblings = hasDiagram
-    ? []
-    : await getSiblingCandidates(nodeId, node.subtopic as string, node.subject as string, node.qualification as string, node.exam_board as string);
+  return {
+    heading: node.label as string,
+    paragraphs: filterTeachingLanguage(explanation),
+    visual: hasDiagram ? { type: 'diagram', spec: diagramSpec } : { type: 'none' },
+  };
+}
 
-  const userContent = [
-    `Subject: ${node.subject} | Qualification: ${node.qualification}${node.exam_board ? ` | Exam board: ${node.exam_board}` : ''}`,
-    `Concept: ${node.label}`,
-    `Explanation: ${explanation}`,
-    siblings.length
-      ? `Sibling concepts from the same lesson (possible comparison candidates):\n${siblings.map((s) => `- ${s.label}: ${s.explanation}`).join('\n')}`
-      : null,
-  ].filter(Boolean).join('\n\n');
+// A student's own edit to their compiled note - see
+// knowledge_map_node_note_edits' own comment. Overrides the live baseline
+// entirely once it exists; there's nothing left in the baseline worth
+// merging back in once a student has started rewriting it in their own
+// words.
+export async function getNodeNoteEdit(userId: string, nodeId: string): Promise<string[] | null> {
+  const { data } = await supabaseAdmin
+    .from('knowledge_map_node_note_edits')
+    .select('paragraphs')
+    .eq('user_id', userId)
+    .eq('node_id', nodeId)
+    .maybeSingle();
+  return (data?.paragraphs as string[] | undefined) ?? null;
+}
 
-  const raw = await callClaudeJSON({
-    model: MODELS.simpleQuestion,
-    systemPrompt: NODE_NOTES_COMPILE_PROMPT,
-    userContent,
-    temperature: 0.2,
-    userId,
-  });
-  const modelResult = parseModelJson<NodeNotesModelResponse>(raw);
-
-  let visual: NodeNoteVisual = { type: 'none' };
-  if (hasDiagram) {
-    visual = { type: 'diagram', spec: diagramSpec };
-  } else if (modelResult.visualType === 'comparison' && modelResult.comparison) {
-    const matchedSibling = siblings.find((s) => s.label === modelResult.comparison!.otherLabel);
-    if (matchedSibling) visual = { type: 'comparison', ...modelResult.comparison };
-  } else if (modelResult.visualType === 'workedExample' && modelResult.workedExample?.steps?.length) {
-    visual = { type: 'workedExample', steps: modelResult.workedExample.steps };
-  } else if (modelResult.visualType === 'example' && modelResult.example) {
-    visual = { type: 'example', text: modelResult.example };
-  } else if (modelResult.visualType === 'englishAnchor' && modelResult.englishAnchor) {
-    visual = { type: 'englishAnchor', text: modelResult.englishAnchor };
-  }
-
-  const result: NodeNotesResult = { heading: modelResult.heading || node.label, paragraphs: modelResult.paragraphs || [], visual };
-
+export async function saveNodeNoteEdit(userId: string, nodeId: string, paragraphs: string[]): Promise<void> {
   const { error } = await supabaseAdmin
-    .from('knowledge_map_node_notes')
-    .upsert({ node_id: nodeId, notes_content: JSON.stringify(result) }, { onConflict: 'node_id' });
+    .from('knowledge_map_node_note_edits')
+    .upsert({ user_id: userId, node_id: nodeId, paragraphs, updated_at: new Date().toISOString() }, { onConflict: 'user_id,node_id' });
   if (error) throw error;
+}
 
-  return result;
+// What the Notes page (and every other note-showing surface) actually
+// renders: the baseline, with this student's own edit swapped in over the
+// paragraph text if they've made one. Automatic - there is no separate
+// "compile" step to trigger; this is called the moment a note is shown,
+// and returns null only when the underlying node genuinely has no
+// explanation yet (not yet encoded by anyone).
+export async function getNodeNoteForUser(nodeId: string, userId: string): Promise<NodeNotesResult | null> {
+  const baseline = await getNodeNoteBaseline(nodeId);
+  if (!baseline) return null;
+  const edit = await getNodeNoteEdit(userId, nodeId);
+  return edit ? { ...baseline, paragraphs: edit } : baseline;
 }
 
 export interface EdgeNotesResult {
-  transferSummary: string;
   heading: string;
   paragraphs: string[];
   visual: NodeNoteVisual;
 }
 
-// integration_summary stays a plain `text` column but now carries a
-// JSON-encoded {heading, paragraphs, visual} instead of one text blob -
-// same no-migration reasoning as parseStoredNodeNotes above. A
-// pre-existing plain-string OR pre-visual {heading, paragraphs} row
-// degrades to a fallback heading/no-visual, rather than breaking.
+// integration_summary stays a plain `text` column carrying a JSON-encoded
+// {heading, paragraphs, visual} - see parseStoredNodeNotes' own comment on
+// this same no-migration reasoning. A pre-existing plain-string row
+// degrades to a fallback heading/no-visual, rather than breaking. Older
+// rows may also carry a "transferSummary" field this app no longer reads
+// (dropped along with the AI compile step that produced it - see this
+// file's own top comment) - simply ignored here, not an error.
 function parseStoredIntegrationSummary(raw: string, fallbackHeading: string): { heading: string; paragraphs: string[]; visual: NodeNoteVisual } {
   try {
     const parsed = JSON.parse(raw);
@@ -208,84 +166,71 @@ export async function getEdgeNotes(fromNodeId: string, toNodeId: string): Promis
   if (!edge) return null;
   const { data } = await supabaseAdmin
     .from('knowledge_map_edge_notes')
-    .select('transfer_summary, integration_summary')
+    .select('integration_summary')
     .eq('edge_id', edge.id)
     .maybeSingle();
   if (!data) return null;
-  const { heading, paragraphs, visual } = parseStoredIntegrationSummary(data.integration_summary as string, `${edge.fromNode.label} → ${edge.toNode.label}`);
-  return { transferSummary: data.transfer_summary as string, heading, paragraphs, visual };
+  return parseStoredIntegrationSummary(data.integration_summary as string, `${edge.fromNode.label} → ${edge.toNode.label}`);
 }
 
-// Fetch-or-generate ONLY - no per-user unlock side effect. Split out of
-// compileEdgeNotes (below) so the integration REVIEW step (see
-// routes/knowledgeMap.ts's node-review/integration/start) can show this
-// same compiled visual on a student's first attempt - exactly when
-// linkTeaching itself is already shown raw, before they've answered
-// anything - without prematurely marking these notes "earned" on the
-// separate Notes page, which stays gated on an actual pass (see this
-// file's own top comment). The generated content is shared/global either
-// way; only the unlock flag is per-student.
-export async function compileEdgeNotesContent(fromNodeId: string, toNodeId: string, userId: string): Promise<EdgeNotesResult | null> {
+// Live-computed baseline for one link's note, same reasoning as
+// getNodeNoteBaseline: a previously AI-compiled row wins if one exists
+// (real content already generated), otherwise this is just linkTeaching
+// with filterTeachingLanguage applied - no model call, so there's no
+// longer any reason to gate this behind "only on first attempt" or a
+// separate per-student unlock write purely to avoid paying for it twice.
+export async function getEdgeNoteBaseline(fromNodeId: string, toNodeId: string): Promise<EdgeNotesResult | null> {
   const edge = await resolveEdgeForReview(fromNodeId, toNodeId);
   if (!edge || !edge.linkTeaching) return null;
 
   const cached = await getEdgeNotes(fromNodeId, toNodeId);
   if (cached) return cached;
 
-  const raw = await callClaudeJSON({
-    model: MODELS.simpleQuestion,
-    systemPrompt: EDGE_NOTES_COMPILE_PROMPT,
-    userContent: `Concept A: ${edge.fromNode.label}\nConcept B: ${edge.toNode.label}\nReference material: ${edge.linkTeaching}`,
-    temperature: 0.2,
-    userId,
-  });
-  const modelResult = parseModelJson<{
-    transferSummary: string;
-    heading: string;
-    paragraphs: string[];
-    visualType: 'workedExample' | 'example' | 'none';
-    workedExample?: { steps: string[] };
-    example?: string;
-  }>(raw);
-  const visual: NodeNoteVisual =
-    modelResult.visualType === 'workedExample' && modelResult.workedExample
-      ? { type: 'workedExample', steps: modelResult.workedExample.steps }
-      : modelResult.visualType === 'example' && modelResult.example
-      ? { type: 'example', text: modelResult.example }
-      : { type: 'none' };
-  const notes: EdgeNotesResult = { transferSummary: modelResult.transferSummary, heading: modelResult.heading, paragraphs: modelResult.paragraphs, visual };
-
-  const { error } = await supabaseAdmin
-    .from('knowledge_map_edge_notes')
-    .upsert(
-      { edge_id: edge.id, transfer_summary: notes.transferSummary, integration_summary: JSON.stringify({ heading: notes.heading, paragraphs: notes.paragraphs, visual: notes.visual }) },
-      { onConflict: 'edge_id' }
-    );
-  if (error) throw error;
-
-  return notes;
+  return {
+    heading: `${edge.fromNode.label} → ${edge.toNode.label}`,
+    paragraphs: filterTeachingLanguage(edge.linkTeaching),
+    visual: { type: 'none' },
+  };
 }
 
-// Also unlocks these notes for `userId` (see knowledge_map_edge_notes_unlocked's
-// own comment) regardless of whether the note text itself already existed
-// from another student passing this same link first - the generation is
-// shared, but "does this show up on MY notes page" is per student.
-export async function compileEdgeNotes(
-  userId: string,
-  fromNodeId: string,
-  toNodeId: string
-): Promise<EdgeNotesResult | null> {
-  const notes = await compileEdgeNotesContent(fromNodeId, toNodeId, userId);
-  if (!notes) return null;
+export async function getEdgeNoteEdit(userId: string, edgeId: string): Promise<string[] | null> {
+  const { data } = await supabaseAdmin
+    .from('knowledge_map_edge_note_edits')
+    .select('paragraphs')
+    .eq('user_id', userId)
+    .eq('edge_id', edgeId)
+    .maybeSingle();
+  return (data?.paragraphs as string[] | undefined) ?? null;
+}
+
+export async function saveEdgeNoteEdit(userId: string, fromNodeId: string, toNodeId: string, paragraphs: string[]): Promise<void> {
+  const edge = await resolveEdgeForReview(fromNodeId, toNodeId);
+  if (!edge) throw new Error('edge not found');
+  const { error } = await supabaseAdmin
+    .from('knowledge_map_edge_note_edits')
+    .upsert({ user_id: userId, edge_id: edge.id, paragraphs, updated_at: new Date().toISOString() }, { onConflict: 'user_id,edge_id' });
+  if (error) throw error;
+}
+
+// Also upserts this link into knowledge_map_edge_notes_unlocked - a
+// secondary, faster-available signal on top of getNotesIndexForUser's own
+// durablyUnlockedEdgeIds fallback (which already covers this via
+// concept_reviews existing at all), harmless to keep writing since some
+// already-integration-tested rows predate that fallback.
+export async function getEdgeNoteForUser(userId: string, fromNodeId: string, toNodeId: string): Promise<EdgeNotesResult | null> {
+  const baseline = await getEdgeNoteBaseline(fromNodeId, toNodeId);
+  if (!baseline) return null;
 
   const edge = await resolveEdgeForReview(fromNodeId, toNodeId);
-  if (!edge) return null;
-  const { error: unlockError } = await supabaseAdmin
-    .from('knowledge_map_edge_notes_unlocked')
-    .upsert({ user_id: userId, edge_id: edge.id }, { onConflict: 'user_id,edge_id' });
-  if (unlockError) throw unlockError;
+  if (edge) {
+    const { error: unlockError } = await supabaseAdmin
+      .from('knowledge_map_edge_notes_unlocked')
+      .upsert({ user_id: userId, edge_id: edge.id }, { onConflict: 'user_id,edge_id' });
+    if (unlockError) throw unlockError;
+  }
 
-  return notes;
+  const edit = edge ? await getEdgeNoteEdit(userId, edge.id) : null;
+  return edit ? { ...baseline, paragraphs: edit } : baseline;
 }
 
 // Checks one line of a student's own attempt at an interactive worked-
@@ -577,11 +522,10 @@ export async function getNotesIndexForUser(userId: string): Promise<{ subjects: 
         edgesByFromNode.set(e.from_node_id, list);
       });
 
-    const nodeIds = allNodes.map((n) => n.id);
-    const noteRows = nodeIds.length
-      ? await selectRowsByIdChunked<{ node_id: string }>('knowledge_map_node_notes', 'node_id', 'node_id', nodeIds)
-      : [];
-    const nodesWithNotes = new Set(noteRows.map((r) => r.node_id));
+    // `hasNotes` on a node is just "has this student encoded it" now - a
+    // note is always available the moment the underlying lesson content
+    // is (see getNodeNoteBaseline), with no separate compiled-notes
+    // existence to track any more.
 
     // `knowledge_map_edge_notes_unlocked` only ever gets written live, at
     // the exact moment renderNodeReviewSummary sees a fresh pass within
@@ -650,7 +594,7 @@ export async function getNotesIndexForUser(userId: string): Promise<{ subjects: 
       nodeId: n.id,
       label: n.label,
       encoded: encodedConceptIds.has(n.concept_id),
-      hasNotes: nodesWithNotes.has(n.id),
+      hasNotes: encodedConceptIds.has(n.concept_id),
       links: (edgesByFromNode.get(n.id) || [])
         .filter((e) => {
           const toNode = nodeById.get(e.to_node_id);

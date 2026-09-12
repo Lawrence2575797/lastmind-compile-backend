@@ -1,7 +1,7 @@
 import { Router, Request, Response } from 'express';
 import { requireAuth } from '../services/authMiddleware';
 import { syncEndpointLimiter, actionEndpointLimiter } from '../services/rateLimiters';
-import { getOnboardingStatus, markTourSeen, OnboardingTier } from '../services/onboardingService';
+import { getOnboardingStatus, markTourSeen, markSubjectPickerCompleted, OnboardingTier } from '../services/onboardingService';
 
 const router = Router();
 
@@ -29,6 +29,17 @@ router.post('/onboarding/tour-seen', actionEndpointLimiter, async (req: Request,
     res.json({ ok: true });
   } catch (err) {
     console.error('Onboarding tour-seen update failed:', err);
+    res.status(500).json({ error: 'could not update onboarding status' });
+  }
+});
+
+// POST /onboarding/subject-picker-seen -> { ok: true }
+router.post('/onboarding/subject-picker-seen', actionEndpointLimiter, async (req: Request, res: Response) => {
+  try {
+    await markSubjectPickerCompleted(req.userId as string);
+    res.json({ ok: true });
+  } catch (err) {
+    console.error('Onboarding subject-picker-seen update failed:', err);
     res.status(500).json({ error: 'could not update onboarding status' });
   }
 });

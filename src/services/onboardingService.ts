@@ -3,6 +3,7 @@ import { supabaseAdmin } from './supabaseAdmin';
 export interface OnboardingStatus {
   seenFreeTour: boolean;
   seenPremiumTour: boolean;
+  completedSubjectPicker: boolean;
 }
 
 export type OnboardingTier = 'free' | 'premium';
@@ -16,12 +17,28 @@ export type OnboardingTier = 'free' | 'premium';
 export async function getOnboardingStatus(userId: string): Promise<OnboardingStatus> {
   const { data, error } = await supabaseAdmin
     .from('user_onboarding')
-    .select('seen_free_tour, seen_premium_tour')
+    .select('seen_free_tour, seen_premium_tour, completed_subject_picker')
     .eq('user_id', userId)
     .maybeSingle();
   if (error) throw error;
-  if (!data) return { seenFreeTour: false, seenPremiumTour: false };
-  return { seenFreeTour: data.seen_free_tour, seenPremiumTour: data.seen_premium_tour };
+  if (!data) return { seenFreeTour: false, seenPremiumTour: false, completedSubjectPicker: false };
+  return {
+    seenFreeTour: data.seen_free_tour,
+    seenPremiumTour: data.seen_premium_tour,
+    completedSubjectPicker: data.completed_subject_picker,
+  };
+}
+
+/**
+ * Marks the first-time subject-picker wizard as done - a separate flag
+ * from the free/premium tour flags above (see add_onboarding_wizard_flag.sql
+ * for why this can't just be inferred from "has zero folders").
+ */
+export async function markSubjectPickerCompleted(userId: string): Promise<void> {
+  const { error } = await supabaseAdmin
+    .from('user_onboarding')
+    .upsert({ user_id: userId, completed_subject_picker: true, updated_at: new Date().toISOString() }, { onConflict: 'user_id' });
+  if (error) throw error;
 }
 
 /**

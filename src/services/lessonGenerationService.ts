@@ -10,6 +10,7 @@ import { supabaseAdmin } from './supabaseAdmin';
 import { callClaudeJSON } from './claudeClient';
 import { parseModelJson, stripCodeFences, escapeRawControlCharsInStrings } from './jsonParsing';
 import { KNOWLEDGE_MAP_ENCODING_LESSON_PROMPT, KNOWLEDGE_MAP_EDGE_LESSON_PROMPT } from '../constants/lessonGenerationPrompts';
+import { getNodeNoteBaseline, getEdgeNoteBaseline } from './knowledgeMapNotesService';
 
 // Same model choice as the offline pipeline (generate_lesson_content.js's
 // LESSON_MODEL) - a structured writing task against an explicit spec, not
@@ -145,6 +146,13 @@ export async function generateAndCacheNodeLesson(nodeId: string, userId: string)
     .upsert({ node_id: nodeId, encoding_content: encodingContent }, { onConflict: 'node_id' });
   if (upsertError) throw upsertError;
 
+  // Pre-warms the compiled note (a free text filter, not an AI call - see
+  // knowledgeMapNotesService.ts's own top comment) the moment this lesson
+  // exists, rather than waiting for a student to first open the Notes
+  // page. Fire-and-forget: this must never add latency to the lesson the
+  // student generating it is actually waiting on.
+  getNodeNoteBaseline(nodeId).catch((err) => console.error(`LastMind: failed to pre-warm the compiled note for node ${nodeId}.`, err));
+
   return encodingContent;
 }
 
@@ -227,6 +235,9 @@ export async function generateAndCacheEdgeLesson(fromNodeId: string, toNodeId: s
       { onConflict: 'edge_id' }
     );
   if (upsertError) throw upsertError;
+
+  // Same pre-warm as generateAndCacheNodeLesson - fire-and-forget.
+  getEdgeNoteBaseline(fromNodeId, toNodeId).catch((err) => console.error(`LastMind: failed to pre-warm the compiled note for edge ${fromNodeId}->${toNodeId}.`, err));
 
   return parsed;
 }

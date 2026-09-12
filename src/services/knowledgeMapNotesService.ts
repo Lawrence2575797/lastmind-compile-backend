@@ -94,11 +94,24 @@ export async function getNodeNoteBaseline(nodeId: string): Promise<NodeNotesResu
   const diagramSpec = encodingContent?.practiceQuestion?.diagramSpec;
   const hasDiagram = !!diagramSpec && !diagramSpec.notDiagrammatic;
 
-  return {
+  const result: NodeNotesResult = {
     heading: node.label as string,
     paragraphs: filterTeachingLanguage(explanation),
     visual: hasDiagram ? { type: 'diagram', spec: diagramSpec } : { type: 'none' },
   };
+
+  // Written through to the shared cache the first time this is computed
+  // for a node - genuinely free to compute (no AI call either way), but
+  // this still saves every later reader a live DB fetch of encoding_content
+  // plus the filter pass. Also lets lessonGenerationService.ts warm this
+  // the moment a lesson is first generated, before any student has ever
+  // opened the Notes page for it - see its own call to this function.
+  const { error } = await supabaseAdmin
+    .from('knowledge_map_node_notes')
+    .upsert({ node_id: nodeId, notes_content: JSON.stringify(result) }, { onConflict: 'node_id' });
+  if (error) console.error(`LastMind: failed to cache the compiled note for node ${nodeId} (non-fatal - it'll just be recomputed next time).`, error);
+
+  return result;
 }
 
 // A student's own edit to their compiled note - see
@@ -186,11 +199,24 @@ export async function getEdgeNoteBaseline(fromNodeId: string, toNodeId: string):
   const cached = await getEdgeNotes(fromNodeId, toNodeId);
   if (cached) return cached;
 
-  return {
+  const result: EdgeNotesResult = {
     heading: `${edge.fromNode.label} → ${edge.toNode.label}`,
     paragraphs: filterTeachingLanguage(edge.linkTeaching),
     visual: { type: 'none' },
   };
+
+  // Same write-through cache as getNodeNoteBaseline - see its own comment.
+  // transfer_summary is a `not null` column left over from the old
+  // AI-compile design (a one-sentence causal claim a model used to write)
+  // - nothing reads it any more (see renderEdgeNoteBlock's own comment),
+  // but the column itself still requires a value, so it's set to the
+  // heading rather than leaving this insert failing outright.
+  const { error } = await supabaseAdmin
+    .from('knowledge_map_edge_notes')
+    .upsert({ edge_id: edge.id, transfer_summary: result.heading, integration_summary: JSON.stringify(result) }, { onConflict: 'edge_id' });
+  if (error) console.error(`LastMind: failed to cache the compiled note for edge ${edge.id} (non-fatal - it'll just be recomputed next time).`, error);
+
+  return result;
 }
 
 export async function getEdgeNoteEdit(userId: string, edgeId: string): Promise<string[] | null> {

@@ -688,6 +688,111 @@ router.post('/knowledge-map-v2/text-question/submit', requireAuth, costlyEndpoin
   }
 });
 
+// GET /immediate-recalls/due
+// Lists this user's not-yet-resolved rows from immediate_recall_schedule
+// (see scheduleImmediateRecall in reviewService.ts - a same-session "did
+// you actually retain this" check fired 2 minutes after a concept's
+// first-ever encoding, deliberately separate from real FSRS spaced
+// review). Plain DB read, no AI call - the feed fetches this once on
+// mount and again after each correctly-answered lesson (a fresh encoding
+// schedules a new row), then times each one client-side against its own
+// due_at rather than polling this endpoint.
+router.get('/immediate-recalls/due', requireAuth, syncEndpointLimiter, async (req: Request, res: Response) => {
+  try {
+    const userId = req.userId as string;
+    const { data: rows, error } = await supabaseAdmin
+      .from('immediate_recall_schedule')
+      .select('id, concept_id, due_at')
+      .eq('user_id', userId)
+      .eq('resolved', false);
+    if (error) throw error;
+    if (!rows || !rows.length) return res.json({ recalls: [] });
+
+    const conceptIds = rows.map((r) => r.concept_id as string);
+    const { data: nodes, error: nodeError } = await supabaseAdmin
+      .from('knowledge_map_nodes')
+      .select('id, concept_id, label, subject')
+      .in('concept_id', conceptIds);
+    if (nodeError) throw nodeError;
+    const nodeByConceptId = new Map((nodes || []).map((n) => [n.concept_id as string, n]));
+
+    const recalls = rows
+      .map((r) => {
+        const node = nodeByConceptId.get(r.concept_id as string);
+        if (!node) return null; // concept since deleted/regenerated - nothing left to recall
+        return { recallId: r.id, nodeId: node.id, label: node.label, subject: node.subject, dueAt: r.due_at };
+      })
+      .filter(Boolean);
+    res.json({ recalls });
+  } catch (err) {
+    console.error('Fetching due immediate recalls failed:', err);
+    res.status(500).json({ error: 'could not load recalls' });
+  }
+});
+
+// POST /immediate-recalls/:id/submit
+// Grades a same-session immediate recall's answer using the EXACT SAME
+// AI correctness check as a normal practice question, but deliberately
+// does NOT call gradeCorrectness/gradeAndRecordReview - this is a light,
+// non-punitive retention check, not a real FSRS event, and must never
+// advance or lapse the concept's actual spaced-review due date a second
+// time (see scheduleImmediateRecall's own comment on exactly this). A
+// wrong answer just returns correct:false with no state change at all -
+// the student fixes it and the feed lets them try again (same shake-
+// until-right UX as any other question slide); the schedule row is only
+// marked resolved once genuinely answered correctly. If missed/ignored
+// entirely, it just stays unresolved forever with zero side effects -
+// whatever happens is left to the concept's own already-scheduled real
+// review, exactly as if this feature didn't exist.
+router.post('/immediate-recalls/:id/submit', requireAuth, costlyEndpointLimiter, async (req: Request, res: Response) => {
+  const { id } = req.params;
+  const { answer } = (req.body ?? {}) as { answer?: string };
+  if (typeof answer !== 'string' || !answer.trim()) return res.status(400).json({ error: 'answer is required' });
+
+  try {
+    const userId = req.userId as string;
+    const { data: row } = await supabaseAdmin
+      .from('immediate_recall_schedule')
+      .select('id, concept_id, resolved')
+      .eq('id', id)
+      .eq('user_id', userId)
+      .maybeSingle();
+    if (!row) return res.status(404).json({ error: 'recall not found' });
+    if (row.resolved) return res.json({ correct: true, feedback: 'Already done.' });
+
+    const { data: node } = await supabaseAdmin
+      .from('knowledge_map_nodes')
+      .select('id')
+      .eq('concept_id', row.concept_id)
+      .maybeSingle();
+    if (!node) return res.status(404).json({ error: 'concept not found' });
+    const { data: lesson } = await supabaseAdmin
+      .from('knowledge_map_node_lessons')
+      .select('encoding_content')
+      .eq('node_id', node.id)
+      .maybeSingle();
+    const question = (lesson?.encoding_content as { practiceQuestion?: { questionText?: string; markScheme?: string } } | null)?.practiceQuestion;
+    if (!question || !question.questionText) return res.status(404).json({ error: 'question not found' });
+
+    const raw = await callClaudeJSON({
+      model: MODELS.simpleQuestion,
+      systemPrompt: KNOWLEDGE_MAP_ANSWER_CHECK_PROMPT,
+      userContent: `Question: ${question.questionText}\nMark scheme: ${question.markScheme || ''}\nStudent's answer: ${answer}`,
+      temperature: 0.1,
+      userId,
+    });
+    const { correct, feedback } = parseCorrectFeedbackJson(raw);
+    if (correct) {
+      const { error: updateError } = await supabaseAdmin.from('immediate_recall_schedule').update({ resolved: true }).eq('id', id);
+      if (updateError) throw updateError;
+    }
+    res.json({ correct, feedback });
+  } catch (err) {
+    console.error('Immediate recall grading failed:', err);
+    res.status(500).json({ error: 'could not grade this answer' });
+  }
+});
+
 // POST /knowledge-map-v2/verify/submit
 // "Test out" shortcut, available on both tiers, offered alongside Start
 // lesson (a node's own AO1) and Review connection (an edge's transfer/

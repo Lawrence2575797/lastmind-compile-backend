@@ -805,10 +805,27 @@ function applyFixes(nodes, edges, issues) {
   const nodeIds = new Set(nodes.map(n => n.id));
   const edgeKey = (e) => e.from + '->' + e.to;
   const edgeSet = new Set(edges.map(edgeKey));
+  const nodeById = new Map(nodes.map(n => [n.id, n]));
 
+  // Real bug found live: verification's own new_nodes never carry a
+  // subtopic field (the prompt only asks for id/label - see
+  // KNOWLEDGE_MAP_VERIFICATION_PROMPT's fix schema), so a node added here
+  // used to be ingested with an empty subtopic - grouping every such node
+  // across the whole batch into one fake shared "subtopic", which then
+  // needed its own expensive one-time AI teaching-order call, and showed
+  // wrong/blank in the sidebar tree's subtopic grouping. Inheriting the
+  // affected_node's own subtopic is the direct, reliable fix: a fix is
+  // always raised ABOUT a specific existing node, so that node's own
+  // subtopic is a real, correct home for whatever's being added alongside it.
   issues.forEach(issue => {
+    const inheritedSubtopic = nodeById.get(issue.affected_node)?.subtopic;
     (issue.fix?.new_nodes || []).forEach(n => {
-      if (!nodeIds.has(n.id)) { nodes.push(n); nodeIds.add(n.id); }
+      if (!nodeIds.has(n.id)) {
+        if (!n.subtopic && inheritedSubtopic) n.subtopic = inheritedSubtopic;
+        nodes.push(n);
+        nodeIds.add(n.id);
+        nodeById.set(n.id, n);
+      }
     });
     (issue.fix?.new_edges || []).forEach(raw => {
       const e = normalizeEdge(raw);

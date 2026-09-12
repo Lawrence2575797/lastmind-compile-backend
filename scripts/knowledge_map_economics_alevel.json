@@ -6989,367 +6989,458 @@
     },
     {
       "id": "min_wage_adv_poverty",
-      "label": "Minimum wage advantage: reduces in-work poverty by raising low pay"
+      "label": "Minimum wage advantage: reduces in-work poverty by raising low pay",
+      "subtopic": "3.5 Labour market"
     },
     {
       "id": "min_wage_adv_incentive",
-      "label": "Minimum wage advantage: increases the incentive to work rather than claim benefits"
+      "label": "Minimum wage advantage: increases the incentive to work rather than claim benefits",
+      "subtopic": "3.5 Labour market"
     },
     {
       "id": "min_wage_adv_monopsony",
-      "label": "Minimum wage advantage: counters monopsony exploitation, raising both wages and employment"
+      "label": "Minimum wage advantage: counters monopsony exploitation, raising both wages and employment",
+      "subtopic": "3.5 Labour market"
     },
     {
       "id": "min_wage_adv_productivity",
-      "label": "Minimum wage advantage: higher pay raises worker motivation and productivity (efficiency wage)"
+      "label": "Minimum wage advantage: higher pay raises worker motivation and productivity (efficiency wage)",
+      "subtopic": "3.5 Labour market"
     },
     {
       "id": "max_wage_adv_paybill",
-      "label": "Maximum wage advantage: controls the public sector pay bill/government spending"
+      "label": "Maximum wage advantage: controls the public sector pay bill/government spending",
+      "subtopic": "3.5 Labour market"
     },
     {
       "id": "max_wage_adv_excess",
-      "label": "Maximum wage advantage: limits pay unjustified by productivity (e.g. executive pay)"
+      "label": "Maximum wage advantage: limits pay unjustified by productivity (e.g. executive pay)",
+      "subtopic": "3.5 Labour market"
     },
     {
       "id": "max_wage_adv_inequality",
-      "label": "Maximum wage advantage: narrows wage inequality across the income distribution"
+      "label": "Maximum wage advantage: narrows wage inequality across the income distribution",
+      "subtopic": "3.5 Labour market"
     },
     {
       "id": "public_sector_adv_consistency",
-      "label": "Public sector wage setting advantage: national pay consistency/equity across regions and roles"
+      "label": "Public sector wage setting advantage: national pay consistency/equity across regions and roles",
+      "subtopic": "3.5 Labour market"
     },
     {
       "id": "public_sector_adv_budget",
-      "label": "Public sector wage setting advantage: allows government control of the wage bill"
+      "label": "Public sector wage setting advantage: allows government control of the wage bill",
+      "subtopic": "3.5 Labour market"
     },
     {
       "id": "public_sector_adv_monopsony",
-      "label": "Public sector wage setting advantage: avoids exploitation where the state is the sole employer"
+      "label": "Public sector wage setting advantage: avoids exploitation where the state is the sole employer",
+      "subtopic": "3.5 Labour market"
     },
     {
       "id": "public_sector_disadv_retention",
-      "label": "Public sector wage setting disadvantage: recruitment/retention problems if pay lags the private sector"
+      "label": "Public sector wage setting disadvantage: recruitment/retention problems if pay lags the private sector",
+      "subtopic": "3.5 Labour market"
     },
     {
       "id": "public_sector_disadv_action",
-      "label": "Public sector wage setting disadvantage: industrial action/strikes over pay awards"
+      "label": "Public sector wage setting disadvantage: industrial action/strikes over pay awards",
+      "subtopic": "3.5 Labour market"
     },
     {
       "id": "public_sector_disadv_inflexible",
-      "label": "Public sector wage setting disadvantage: inflexibility to regional/local labour market conditions"
+      "label": "Public sector wage setting disadvantage: inflexibility to regional/local labour market conditions",
+      "subtopic": "3.5 Labour market"
     },
     {
       "id": "hdi_adv_multidim",
-      "label": "HDI advantage: captures health and education alongside income, unlike GDP alone"
+      "label": "HDI advantage: captures health and education alongside income, unlike GDP alone",
+      "subtopic": "4.3 Emerging and developing economies"
     },
     {
       "id": "hdi_adv_comparable",
-      "label": "HDI advantage: single 0–1 index allows easy ranking/comparison across countries"
+      "label": "HDI advantage: single 0–1 index allows easy ranking/comparison across countries",
+      "subtopic": "4.3 Emerging and developing economies"
     },
     {
       "id": "hdi_adv_data",
-      "label": "HDI advantage: uses widely available, regularly published data"
+      "label": "HDI advantage: uses widely available, regularly published data",
+      "subtopic": "4.3 Emerging and developing economies"
     },
     {
       "id": "hdi_limit_inequality",
-      "label": "HDI limitation: averages hide inequality in income, health and education"
+      "label": "HDI limitation: averages hide inequality in income, health and education",
+      "subtopic": "4.3 Emerging and developing economies"
     },
     {
       "id": "hdi_limit_omitted",
-      "label": "HDI limitation: omits environment, political freedom and human rights"
+      "label": "HDI limitation: omits environment, political freedom and human rights",
+      "subtopic": "4.3 Emerging and developing economies"
     },
     {
       "id": "hdi_limit_quality",
-      "label": "HDI limitation: years of schooling measures quantity, not quality, of education"
+      "label": "HDI limitation: years of schooling measures quantity, not quality, of education",
+      "subtopic": "4.3 Emerging and developing economies"
     },
     {
       "id": "hdi_limit_weighting",
-      "label": "HDI limitation: equal weighting of the three dimensions is arbitrary"
+      "label": "HDI limitation: equal weighting of the three dimensions is arbitrary",
+      "subtopic": "4.3 Emerging and developing economies"
     },
     {
       "id": "trade_lib_adv_compadv",
-      "label": "Trade liberalisation advantage: specialisation along comparative advantage raises output/efficiency"
+      "label": "Trade liberalisation advantage: specialisation along comparative advantage raises output/efficiency",
+      "subtopic": "4.3 Emerging and developing economies"
     },
     {
       "id": "trade_lib_adv_scale",
-      "label": "Trade liberalisation advantage: access to larger export markets allows economies of scale"
+      "label": "Trade liberalisation advantage: access to larger export markets allows economies of scale",
+      "subtopic": "4.3 Emerging and developing economies"
     },
     {
       "id": "trade_lib_adv_prices",
-      "label": "Trade liberalisation advantage: cheaper imports raise consumer real incomes"
+      "label": "Trade liberalisation advantage: cheaper imports raise consumer real incomes",
+      "subtopic": "4.3 Emerging and developing economies"
     },
     {
       "id": "trade_lib_adv_fdi",
-      "label": "Trade liberalisation advantage: attracts FDI and technology transfer"
+      "label": "Trade liberalisation advantage: attracts FDI and technology transfer",
+      "subtopic": "4.3 Emerging and developing economies"
     },
     {
       "id": "trade_lib_dis_infant",
-      "label": "Trade liberalisation disadvantage: infant industries cannot survive foreign competition"
+      "label": "Trade liberalisation disadvantage: infant industries cannot survive foreign competition",
+      "subtopic": "4.3 Emerging and developing economies"
     },
     {
       "id": "trade_lib_dis_structural",
-      "label": "Trade liberalisation disadvantage: structural unemployment in uncompetitive sectors"
+      "label": "Trade liberalisation disadvantage: structural unemployment in uncompetitive sectors",
+      "subtopic": "4.3 Emerging and developing economies"
     },
     {
       "id": "trade_lib_dis_dependency",
-      "label": "Trade liberalisation disadvantage: deepens primary product dependency and exposure to price volatility"
+      "label": "Trade liberalisation disadvantage: deepens primary product dependency and exposure to price volatility",
+      "subtopic": "4.3 Emerging and developing economies"
     },
     {
       "id": "trade_lib_dis_ca",
-      "label": "Trade liberalisation disadvantage: import surge can worsen the current account"
+      "label": "Trade liberalisation disadvantage: import surge can worsen the current account",
+      "subtopic": "4.3 Emerging and developing economies"
     },
     {
       "id": "profit_max_adv_shareholders",
-      "label": "Advantage: maximises returns/dividends to shareholders (the firm's owners)"
+      "label": "Advantage: maximises returns/dividends to shareholders (the firm's owners)",
+      "subtopic": "3.2 Business objectives"
     },
     {
       "id": "profit_max_adv_investment",
-      "label": "Advantage: retained supernormal profit funds investment and R&D (dynamic efficiency)"
+      "label": "Advantage: retained supernormal profit funds investment and R&D (dynamic efficiency)",
+      "subtopic": "3.2 Business objectives"
     },
     {
       "id": "profit_max_adv_signal",
-      "label": "Advantage: profit signals attract resources into the market, aiding allocative efficiency"
+      "label": "Advantage: profit signals attract resources into the market, aiding allocative efficiency",
+      "subtopic": "3.2 Business objectives"
     },
     {
       "id": "profit_max_adv_buffer",
-      "label": "Advantage: profit provides a buffer against downturns, improving survival prospects"
+      "label": "Advantage: profit provides a buffer against downturns, improving survival prospects",
+      "subtopic": "3.2 Business objectives"
     },
     {
       "id": "externality_impact_consumers_producers",
-      "label": "Impact of externalities on the consumers and producers in the transaction (over/under-consumption relative to social optimum)"
+      "label": "Impact of externalities on the consumers and producers in the transaction (over/under-consumption relative to social optimum)",
+      "subtopic": "1.3 Market failure"
     },
     {
       "id": "externality_impact_third_parties",
-      "label": "Impact of externalities on third parties (uncompensated external costs/benefits)"
+      "label": "Impact of externalities on third parties (uncompensated external costs/benefits)",
+      "subtopic": "1.3 Market failure"
     },
     {
       "id": "externality_impact_government_taxpayers",
-      "label": "Impact of externalities and correcting intervention on government and taxpayers (revenue, spending, administration)"
+      "label": "Impact of externalities and correcting intervention on government and taxpayers (revenue, spending, administration)",
+      "subtopic": "1.3 Market failure"
     },
     {
       "id": "pd_costs_benefits_consumers",
-      "label": "Third degree price discrimination: costs/benefits to consumers (loss of consumer surplus for inelastic buyers, lower prices/access for elastic buyers)"
+      "label": "Third degree price discrimination: costs/benefits to consumers (loss of consumer surplus for inelastic buyers, lower prices/access for elastic buyers)",
+      "subtopic": "3.4 Market structures"
     },
     {
       "id": "pd_costs_benefits_producers",
-      "label": "Third degree price discrimination: costs/benefits to producers (higher profit, funds for investment, administration/enforcement costs)"
+      "label": "Third degree price discrimination: costs/benefits to producers (higher profit, funds for investment, administration/enforcement costs)",
+      "subtopic": "3.4 Market structures"
     },
     {
       "id": "monopsony_costs_benefits_workers",
-      "label": "Monopsony: costs/benefits to employees (wage below MRP, reduced quantity employed)"
+      "label": "Monopsony: costs/benefits to employees (wage below MRP, reduced quantity employed)",
+      "subtopic": "3.4 Market structures"
     },
     {
       "id": "monopsony_costs_benefits_suppliers",
-      "label": "Monopsony: costs/benefits to suppliers (prices squeezed below competitive level, contract insecurity)"
+      "label": "Monopsony: costs/benefits to suppliers (prices squeezed below competitive level, contract insecurity)",
+      "subtopic": "3.4 Market structures"
     },
     {
       "id": "WELLBEING_DIM_PERSONAL",
-      "label": "ONS wellbeing dimensions (1): subjective wellbeing, personal wellbeing, relationships, health"
+      "label": "ONS wellbeing dimensions (1): subjective wellbeing, personal wellbeing, relationships, health",
+      "subtopic": "2.1 Measures of economic performance"
     },
     {
       "id": "WELLBEING_DIM_SOCIETAL",
-      "label": "ONS wellbeing dimensions (2): what we do, where we live, personal finance, economy, education/skills, environment"
+      "label": "ONS wellbeing dimensions (2): what we do, where we live, personal finance, economy, education/skills, environment",
+      "subtopic": "2.1 Measures of economic performance"
     },
     {
       "id": "non_econ_governance",
-      "label": "Non-economic factors (1): corruption, weak institutions and political instability"
+      "label": "Non-economic factors (1): corruption, weak institutions and political instability",
+      "subtopic": "4.3 Emerging and developing economies"
     },
     {
       "id": "non_econ_conflict_geography",
-      "label": "Non-economic factors (2): conflict/war, geography/climate and natural disasters"
+      "label": "Non-economic factors (2): conflict/war, geography/climate and natural disasters",
+      "subtopic": "4.3 Emerging and developing economies"
     },
     {
       "id": "non_econ_social",
-      "label": "Non-economic factors (3): social factors, notably education of women and gender inequality"
+      "label": "Non-economic factors (3): social factors, notably education of women and gender inequality",
+      "subtopic": "4.3 Emerging and developing economies"
     },
     {
       "id": "issue_flexible_work",
-      "label": "Current issue: the gig economy and zero-hours contracts (flexibility vs insecurity)"
+      "label": "Current issue: the gig economy and zero-hours contracts (flexibility vs insecurity)",
+      "subtopic": "3.5 Labour market"
     },
     {
       "id": "issue_demographics_migration",
-      "label": "Current issue: ageing workforce and migration affecting labour supply"
+      "label": "Current issue: ageing workforce and migration affecting labour supply",
+      "subtopic": "3.5 Labour market"
     },
     {
       "id": "issue_automation",
-      "label": "Current issue: automation substituting capital for labour"
+      "label": "Current issue: automation substituting capital for labour",
+      "subtopic": "3.5 Labour market"
     },
     {
       "id": "MAXP_ADV3",
-      "label": "Maximum price advantage: improves equity by making essentials affordable to low-income households"
+      "label": "Maximum price advantage: improves equity by making essentials affordable to low-income households",
+      "subtopic": "1.4 Government intervention"
     },
     {
       "id": "MAXP_ADV4",
-      "label": "Maximum price advantage: raises consumption of a merit good towards the social optimum"
+      "label": "Maximum price advantage: raises consumption of a merit good towards the social optimum",
+      "subtopic": "1.4 Government intervention"
     },
     {
       "id": "MINP_ADV3",
-      "label": "Minimum price advantage: internalises the external cost of a demerit good towards the social optimum"
+      "label": "Minimum price advantage: internalises the external cost of a demerit good towards the social optimum",
+      "subtopic": "1.4 Government intervention"
     },
     {
       "id": "MINP_ADV4",
-      "label": "Minimum price advantage: stabilises producer incomes, encouraging investment and future supply"
+      "label": "Minimum price advantage: stabilises producer incomes, encouraging investment and future supply",
+      "subtopic": "1.4 Government intervention"
     },
     {
       "id": "PROD_EFFICIENCY_CONCEPT",
-      "label": "Productive efficiency: producing at the lowest possible cost / on the production frontier"
+      "label": "Productive efficiency: producing at the lowest possible cost / on the production frontier",
+      "subtopic": "1.1 Nature of economics"
     },
     {
       "id": "cs_change",
-      "label": "How shifts in supply and demand change consumer surplus"
+      "label": "How shifts in supply and demand change consumer surplus",
+      "subtopic": "1.2 How markets work"
     },
     {
       "id": "ps_change",
-      "label": "How shifts in supply and demand change producer surplus"
+      "label": "How shifts in supply and demand change producer surplus",
+      "subtopic": "1.2 How markets work"
     },
     {
       "id": "total_revenue_concept",
-      "label": "Total revenue: price multiplied by quantity sold"
+      "label": "Total revenue: price multiplied by quantity sold",
+      "subtopic": "1.2 How markets work"
     },
     {
       "id": "FISHER_EQUATION",
-      "label": "The Fisher equation of exchange (MV = PQ) and its assumptions about V and Q"
+      "label": "The Fisher equation of exchange (MV = PQ) and its assumptions about V and Q",
+      "subtopic": "2.1 Measures of economic performance"
     },
     {
       "id": "max_wage_disadv_incentive",
-      "label": "Disadvantage of a maximum wage: reduces the incentive to acquire skills/take on responsibility"
+      "label": "Disadvantage of a maximum wage: reduces the incentive to acquire skills/take on responsibility",
+      "subtopic": "3.5 Labour market"
     },
     {
       "id": "max_wage_disadv_avoidance",
-      "label": "Disadvantage of a maximum wage: firms circumvent the cap via bonuses, share options and non-wage benefits"
+      "label": "Disadvantage of a maximum wage: firms circumvent the cap via bonuses, share options and non-wage benefits",
+      "subtopic": "3.5 Labour market"
     },
     {
       "id": "max_wage_disadv_enforcement",
-      "label": "Disadvantage of a maximum wage: difficult and costly to set, monitor and enforce the correct cap"
+      "label": "Disadvantage of a maximum wage: difficult and costly to set, monitor and enforce the correct cap",
+      "subtopic": "3.5 Labour market"
     },
     {
       "id": "STATEPROV_ADV3",
-      "label": "State provision advantage: captures positive externalities/merit good benefits the market ignores"
+      "label": "State provision advantage: captures positive externalities/merit good benefits the market ignores",
+      "subtopic": "1.4 Government intervention"
     },
     {
       "id": "STATEPROV_ADV4",
-      "label": "State provision advantage: avoids wasteful duplication where the good is a natural monopoly"
+      "label": "State provision advantage: avoids wasteful duplication where the good is a natural monopoly",
+      "subtopic": "1.4 Government intervention"
     },
     {
       "id": "STATEPROV_DIS3",
-      "label": "State provision disadvantage: opportunity cost of the tax revenue used to fund it"
+      "label": "State provision disadvantage: opportunity cost of the tax revenue used to fund it",
+      "subtopic": "1.4 Government intervention"
     },
     {
       "id": "STATEPROV_DIS4",
-      "label": "State provision disadvantage: excess demand/rationing by waiting when the good is free at the point of use"
+      "label": "State provision disadvantage: excess demand/rationing by waiting when the good is free at the point of use",
+      "subtopic": "1.4 Government intervention"
     },
     {
       "id": "INFOPROV_ADV3",
-      "label": "Information provision advantage: preserves consumer choice/freedom compared with bans or taxes"
+      "label": "Information provision advantage: preserves consumer choice/freedom compared with bans or taxes",
+      "subtopic": "1.4 Government intervention"
     },
     {
       "id": "INFOPROV_ADV4",
-      "label": "Information provision advantage: long-lasting effect once preferences and social norms shift"
+      "label": "Information provision advantage: long-lasting effect once preferences and social norms shift",
+      "subtopic": "1.4 Government intervention"
     },
     {
       "id": "INFOPROV_DIS3",
-      "label": "Information provision disadvantage: consumers may distrust, ignore or misinterpret the information"
+      "label": "Information provision disadvantage: consumers may distrust, ignore or misinterpret the information",
+      "subtopic": "1.4 Government intervention"
     },
     {
       "id": "INFOPROV_DIS4",
-      "label": "Information provision disadvantage: firms' counter-advertising can offset the campaign"
+      "label": "Information provision disadvantage: firms' counter-advertising can offset the campaign",
+      "subtopic": "1.4 Government intervention"
     },
     {
       "id": "PERMIT_ADV3",
-      "label": "Permit advantage: government can raise revenue by auctioning permits"
+      "label": "Permit advantage: government can raise revenue by auctioning permits",
+      "subtopic": "1.4 Government intervention"
     },
     {
       "id": "PERMIT_ADV4",
-      "label": "Permit advantage: cap can be tightened over time to deliver progressive emission cuts"
+      "label": "Permit advantage: cap can be tightened over time to deliver progressive emission cuts",
+      "subtopic": "1.4 Government intervention"
     },
     {
       "id": "PERMIT_ADV5",
-      "label": "Permit advantage: permit price creates a dynamic incentive to invest in clean technology"
+      "label": "Permit advantage: permit price creates a dynamic incentive to invest in clean technology",
+      "subtopic": "1.4 Government intervention"
     },
     {
       "id": "PRICE_REG_ADV2",
-      "label": "Advantage: RPI-X caps create an incentive for the regulated firm to cut costs to keep the difference"
+      "label": "Advantage: RPI-X caps create an incentive for the regulated firm to cut costs to keep the difference",
+      "subtopic": "3.6 Government intervention"
     },
     {
       "id": "SMALL_BIZ_ADV2",
-      "label": "Advantage: promoting small business supports innovation and employment growth"
+      "label": "Advantage: promoting small business supports innovation and employment growth",
+      "subtopic": "3.6 Government intervention"
     },
     {
       "id": "DEREG_ADV2",
-      "label": "Advantage: deregulation reduces compliance costs for firms, lowering prices"
+      "label": "Advantage: deregulation reduces compliance costs for firms, lowering prices",
+      "subtopic": "3.6 Government intervention"
     },
     {
       "id": "COMP_TENDER_ADV2",
-      "label": "Advantage: competitive tendering allows government to access private sector expertise/efficiency"
+      "label": "Advantage: competitive tendering allows government to access private sector expertise/efficiency",
+      "subtopic": "3.6 Government intervention"
     },
     {
       "id": "MONOPSONY_RESTRICT_ADV2",
-      "label": "Advantage: restricting monopsony power raises employment/quantity supplied towards the competitive level"
+      "label": "Advantage: restricting monopsony power raises employment/quantity supplied towards the competitive level",
+      "subtopic": "3.6 Government intervention"
     },
     {
       "id": "forward_adv_margin",
-      "label": "Forward vertical integration advantage: captures the retailer's profit margin, raising total profit"
+      "label": "Forward vertical integration advantage: captures the retailer's profit margin, raising total profit",
+      "subtopic": "3.1 Business growth"
     },
     {
       "id": "forward_adv_branding",
-      "label": "Forward vertical integration advantage: control of customer experience/branding at point of sale"
+      "label": "Forward vertical integration advantage: control of customer experience/branding at point of sale",
+      "subtopic": "3.1 Business growth"
     },
     {
       "id": "forward_dis_cost",
-      "label": "Forward vertical integration disadvantage: high acquisition cost and integration risk"
+      "label": "Forward vertical integration disadvantage: high acquisition cost and integration risk",
+      "subtopic": "3.1 Business growth"
     },
     {
       "id": "conglomerate_dis_focus",
-      "label": "Conglomerate integration disadvantage: loss of strategic focus on the core business"
+      "label": "Conglomerate integration disadvantage: loss of strategic focus on the core business",
+      "subtopic": "3.1 Business growth"
     },
     {
       "id": "ADV_MIXED_BALANCE",
-      "label": "Advantage of mixed economy: combines market efficiency with state correction of market failure"
+      "label": "Advantage of mixed economy: combines market efficiency with state correction of market failure",
+      "subtopic": "1.1 Nature of economics"
     },
     {
       "id": "ADV_MIXED_SAFETY_NET",
-      "label": "Advantage of mixed economy: welfare state provides a safety net limiting inequality"
+      "label": "Advantage of mixed economy: welfare state provides a safety net limiting inequality",
+      "subtopic": "1.1 Nature of economics"
     },
     {
       "id": "DIS_MIXED_GOVFAIL",
-      "label": "Disadvantage of mixed economy: state intervention risks government failure/inefficiency"
+      "label": "Disadvantage of mixed economy: state intervention risks government failure/inefficiency",
+      "subtopic": "1.1 Nature of economics"
     },
     {
       "id": "DIS_MIXED_TAX_BURDEN",
-      "label": "Disadvantage of mixed economy: taxation needed to fund state activity can blunt incentives"
+      "label": "Disadvantage of mixed economy: taxation needed to fund state activity can blunt incentives",
+      "subtopic": "1.1 Nature of economics"
     },
     {
       "id": "stay_small_adv_flexibility",
-      "label": "Advantage of remaining small: flexibility and responsiveness to niche customer needs"
+      "label": "Advantage of remaining small: flexibility and responsiveness to niche customer needs",
+      "subtopic": "3.1 Business growth"
     },
     {
       "id": "stay_small_adv_control",
-      "label": "Advantage of remaining small: owner retains full control and avoids agency problems"
+      "label": "Advantage of remaining small: owner retains full control and avoids agency problems",
+      "subtopic": "3.1 Business growth"
     },
     {
       "id": "stay_small_dis_scale",
-      "label": "Disadvantage of remaining small: cannot exploit economies of scale, higher average costs"
+      "label": "Disadvantage of remaining small: cannot exploit economies of scale, higher average costs",
+      "subtopic": "3.1 Business growth"
     },
     {
       "id": "stay_small_dis_finance",
-      "label": "Disadvantage of remaining small: limited access to external finance and bargaining power"
+      "label": "Disadvantage of remaining small: limited access to external finance and bargaining power",
+      "subtopic": "3.1 Business growth"
     },
     {
       "id": "reason_wages_poverty",
-      "label": "Reason for wage intervention: tackling low pay and in-work poverty"
+      "label": "Reason for wage intervention: tackling low pay and in-work poverty",
+      "subtopic": "3.5 Labour market"
     },
     {
       "id": "reason_wages_monopsony",
-      "label": "Reason for wage intervention: countering employer monopsony power"
+      "label": "Reason for wage intervention: countering employer monopsony power",
+      "subtopic": "3.5 Labour market"
     },
     {
       "id": "reason_wages_equity",
-      "label": "Reason for wage intervention: equity/reducing wage inequality"
+      "label": "Reason for wage intervention: equity/reducing wage inequality",
+      "subtopic": "3.5 Labour market"
     },
     {
       "id": "reason_wages_public_spending",
-      "label": "Reason for wage intervention: controlling the public sector wage bill"
+      "label": "Reason for wage intervention: controlling the public sector wage bill",
+      "subtopic": "3.5 Labour market"
     }
   ],
   "edges": [

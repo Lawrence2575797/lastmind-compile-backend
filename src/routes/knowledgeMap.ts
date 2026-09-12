@@ -34,6 +34,7 @@ import { compileNodeNotes, getNodeNotes, compileEdgeNotes, compileEdgeNotesConte
 import { generateAndCacheNodeLesson, generateAndCacheEdgeLesson } from '../services/lessonGenerationService';
 import { answerKnowledgeMapQuestion } from '../services/knowledgeMapAskService';
 import { assertFreshGenerationWithinCap, recordFreshGenerationEvent, GenerationCapExceededError } from '../services/generationCapService';
+import { recordPairwiseIntegrationOutcome } from '../services/chainMasteryService';
 
 const router = Router();
 
@@ -957,12 +958,14 @@ router.post('/knowledge-map-v2/node-review/integration/submit', requireAuth, cos
     if (!graded) return res.status(404).json({ error: 'no integration question available for this connection' });
 
     if (!graded.correct) {
+      await recordPairwiseIntegrationOutcome(userId, fromNode.concept_id as string, toNode.concept_id as string, false);
       return res.json({ correct: false, feedback: graded.feedback, retryable: true });
     }
 
     const conceptId = linkIntegrationConceptId(fromNode.concept_id as string, toNode.concept_id as string);
     const result = await gradeCorrectness(userId, conceptId, true, Number(retryCount) || 0);
     const { paid: keysEarned } = await payLessonCredits(userId, false, result, 1.0, 'node_review_integration');
+    await recordPairwiseIntegrationOutcome(userId, fromNode.concept_id as string, toNode.concept_id as string, (Number(retryCount) || 0) === 0);
     res.json({ correct: true, feedback: graded.feedback, schedule: scheduleWithMastery(conceptId, result), keysEarned });
   } catch (err) {
     console.error('Integration grading failed:', err);

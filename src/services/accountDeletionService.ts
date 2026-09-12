@@ -9,17 +9,13 @@ import { supabaseAdmin } from './supabaseAdmin';
 // route/UI calling this must tell the student to cancel any active
 // subscription separately first.
 //
-// Order matters: the two financial ledgers are anonymized FIRST (blank
-// user_id, keep the transaction row - an audit trail isn't supposed to
-// disappear just because the account did), then the two tables that
-// predate this repo's migration-script convention (and whose real
-// foreign-key status couldn't be verified from code - see
-// PRIVACY_DATA_HANDLING.md) are explicitly, defensively deleted, and
-// ONLY THEN is the actual auth user deleted - which cascades to every
-// other user-owned table via the `on delete cascade` foreign keys added
-// in scripts/add_cascade_delete_fks.sql. Deleting the auth user first
-// would risk a FK violation prematurely aborting this function partway
-// through if any of the manual steps below turned out to still be needed.
+// Order: the two financial ledgers are anonymized FIRST (blank user_id,
+// keep the transaction row - an audit trail isn't supposed to disappear
+// just because the account did) - resilient to a single table failing
+// (see anonymize's own comment), then every table needing an explicit
+// delete is handled, and ONLY THEN is the actual auth user deleted -
+// which cascades to every other user-owned table via the `on delete
+// cascade` foreign keys added in scripts/add_cascade_delete_fks.sql.
 //
 // This is NOT wrapped in a single database transaction (Supabase's admin
 // deleteUser call goes through the Auth API, not raw SQL, so it can't
@@ -29,9 +25,20 @@ import { supabaseAdmin } from './supabaseAdmin';
 // so calling this again after any failure just picks up where it left off
 // rather than erroring or double-acting.
 export async function deleteOwnAccount(userId: string): Promise<void> {
+  // Deliberately non-fatal, same "never let this step abort the real
+  // operation" convention as lockService.ts's own recordTransaction -
+  // anonymizing a financial ledger is a nice-to-have privacy improvement
+  // on top of erasure, not the erasure itself. A REAL, previously-hidden
+  // bug found by live-testing this function: lock_transactions doesn't
+  // actually exist in production (scripts/create_lock_transactions.sql
+  // was apparently never run) - anonymize() used to throw on that missing
+  // table, which aborted this ENTIRE function before it deleted anything
+  // at all, including the auth user itself. A missing/erroring ledger
+  // table must never be able to block a student's actual right to
+  // erasure again.
   const anonymize = async (table: string) => {
     const { error } = await supabaseAdmin.from(table).update({ user_id: null }).eq('user_id', userId);
-    if (error) throw new Error(`Failed to anonymize ${table}: ${error.message}`);
+    if (error) console.error(`LastMind: failed to anonymize ${table} during account deletion (non-fatal, deletion continues).`, error);
   };
   await anonymize('lock_transactions');
   await anonymize('credit_transactions');

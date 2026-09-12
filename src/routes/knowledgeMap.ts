@@ -709,12 +709,16 @@ interface RecallCheck {
 // enforced here (server-side, permanent) rather than only as a client-
 // side timer - otherwise reopening the feed after missing the window
 // would just re-fetch the same still-unresolved row and offer it again.
-// Deliberately short (15 seconds) - a recall is only ever meant to fire
-// right at its own due moment; missing that narrow window means giving
-// up on the WHOLE cascade, not just this one step (see the correct
-// branch below, which never schedules a next recall for a missed one -
-// there's nothing to continue since this row never resolves).
-const RECALL_GRACE_MS = 15 * 1000;
+// Deliberately short (30 seconds total, 15 either side of the nominal
+// due moment) - a recall is only ever meant to fire right around its
+// own due moment; missing that narrow window means giving up on the
+// WHOLE cascade, not just this one step (see the correct branch below,
+// which never schedules a next recall for a missed one - there's
+// nothing to continue since this row never resolves). Only the AFTER
+// side is enforced here as an expiry (a recall isn't surfaced before
+// its due_at at all - see sfScheduleRecallTimer - so a "before" grace
+// period has nothing to apply to server-side).
+const RECALL_GRACE_MS = 30 * 1000;
 
 // GET /immediate-recalls/due
 // Lists this user's still-catchable rows from immediate_recall_schedule

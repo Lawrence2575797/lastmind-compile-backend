@@ -12,10 +12,16 @@ import encodingLessonRouter from './routes/encodingLesson';
 import syncRouter from './routes/sync';
 import calendarEventsRouter from './routes/calendarEvents';
 import knowledgeMapRouter from './routes/knowledgeMap';
-import tutoringProfileRouter from './routes/tutoringProfile';
-import peerTutoringRouter from './routes/peerTutoring';
-import tutoringSessionsRouter from './routes/tutoringSessions';
-import tutoringResponsesRouter from './routes/tutoringResponses';
+// Peer-to-peer student tutoring (opt-in, matching, request/response,
+// ratings) is not currently offered - these four routers are deliberately
+// unmounted below rather than deleted, so the feature can be turned back
+// on later by uncommenting these lines and the matching app.use() calls,
+// without rebuilding it from scratch. Not touching tutoringSlots - that's
+// the separate "book 1:1 time with the founder" feature, still live.
+// import tutoringProfileRouter from './routes/tutoringProfile';
+// import peerTutoringRouter from './routes/peerTutoring';
+// import tutoringSessionsRouter from './routes/tutoringSessions';
+// import tutoringResponsesRouter from './routes/tutoringResponses';
 import studySettingsRouter from './routes/studySettings';
 import revisionPlanRouter from './routes/revisionPlan';
 import creditsRouter from './routes/credits';
@@ -71,10 +77,9 @@ app.use('/', encodingLessonRouter);
 app.use('/', syncRouter);
 app.use('/', calendarEventsRouter);
 app.use('/', knowledgeMapRouter);
-app.use('/', tutoringProfileRouter);
-app.use('/', peerTutoringRouter);
-app.use('/', tutoringSessionsRouter);
-app.use('/', tutoringResponsesRouter);
+// tutoringProfileRouter / peerTutoringRouter / tutoringSessionsRouter /
+// tutoringResponsesRouter deliberately not mounted - see their commented-
+// out imports above.
 app.use('/', studySettingsRouter);
 app.use('/', revisionPlanRouter);
 app.use('/', creditsRouter);

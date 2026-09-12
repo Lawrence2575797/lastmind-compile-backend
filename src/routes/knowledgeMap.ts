@@ -1117,7 +1117,39 @@ router.post('/knowledge-map-v2/node-review/integration/start', requireAuth, cost
     // client could reach this route directly (resuming a session,
     // stepping through links) without re-hitting ao1/start first.
     await assertNodeReviewDue(userId, fromNodeId);
-    const step = await getIntegrationStepData(userId, fromNodeId, toNodeId);
+    let step = await getIntegrationStepData(userId, fromNodeId, toNodeId);
+    if (!step) {
+      // getIntegrationStepData returns null for two very different
+      // reasons - a genuinely diagram-typed/unteachable link (real
+      // "unavailable"), or an edge lesson that was simply never
+      // generated yet at all. The short-form feed's own review path
+      // (unlike the graph view's separate edge-notes viewer, which
+      // triggers generation when a student opens that specific link
+      // directly) had no prior reason to ever generate one before a
+      // review actually needed it - so a link an already-encoded node
+      // qualifies for could sit permanently "due" with nothing behind
+      // it to actually show, blocking new lessons from ever being
+      // recommended instead (reviews outrank lessons in priority).
+      // Distinguish the two cases and generate on demand for the second,
+      // same on-demand contract as GET /knowledge-map-v2/edge/:from/:to/lesson
+      // above, then retry once.
+      const { data: edgeRow } = await supabaseAdmin
+        .from('knowledge_map_edges')
+        .select('id, knowledge_map_edge_lessons(edge_id)')
+        .eq('from_node_id', fromNodeId)
+        .eq('to_node_id', toNodeId)
+        .maybeSingle();
+      const lessonRows = edgeRow?.knowledge_map_edge_lessons;
+      const hasLessonRow = Array.isArray(lessonRows) ? lessonRows.length > 0 : !!lessonRows;
+      if (edgeRow && !hasLessonRow) {
+        await assertFreshGenerationWithinCap(userId, await isUserPaid(userId), req.userCreatedAt ?? null);
+        const generated = await generateAndCacheEdgeLesson(fromNodeId, toNodeId, userId);
+        if (generated) {
+          await recordFreshGenerationEvent(userId);
+          step = await getIntegrationStepData(userId, fromNodeId, toNodeId);
+        }
+      }
+    }
     if (!step) return res.json({ unavailable: true });
     // The dual-coding visual is only ever relevant alongside linkTeaching
     // itself - shown once, on a genuine first attempt, never on a later
@@ -1138,6 +1170,9 @@ router.post('/knowledge-map-v2/node-review/integration/start', requireAuth, cost
   } catch (err) {
     if (err instanceof ReviewNotDueError) {
       return res.status(403).json({ error: 'This review isn\'t due yet.', dueDate: err.dueDate });
+    }
+    if (err instanceof GenerationCapExceededError) {
+      return res.status(429).json({ error: 'Lock limit reached', code: 'LOCK_LIMIT_REACHED', window: err.window, limit: err.limit });
     }
     console.error('Integration question lookup failed:', err);
     res.status(500).json({ error: 'could not load this question' });

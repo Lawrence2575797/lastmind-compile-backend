@@ -688,8 +688,19 @@ router.post('/knowledge-map-v2/text-question/submit', requireAuth, costlyEndpoin
   }
 });
 
+// A missed recall is given up on permanently, not shown later - "if a
+// student misses the window, we wait for the real (day-1-ish) FSRS
+// review" is an explicit product decision, not just a UX nicety, so it
+// has to be enforced here (server-side, permanent) rather than only as
+// a client-side timer - otherwise reopening the feed after missing the
+// window would just re-fetch the same still-unresolved row and offer it
+// again. Tighter than the gap to the next base-schedule interval
+// (2/5/10/15 minutes apart) so a missed check is never confused with
+// the next one becoming due.
+const RECALL_GRACE_MS = 3 * 60 * 1000;
+
 // GET /immediate-recalls/due
-// Lists this user's not-yet-resolved rows from immediate_recall_schedule
+// Lists this user's still-catchable rows from immediate_recall_schedule
 // (see scheduleImmediateRecall in reviewService.ts - a same-session "did
 // you actually retain this" check fired 2 minutes after a concept's
 // first-ever encoding, deliberately separate from real FSRS spaced
@@ -708,7 +719,24 @@ router.get('/immediate-recalls/due', requireAuth, syncEndpointLimiter, async (re
     if (error) throw error;
     if (!rows || !rows.length) return res.json({ recalls: [] });
 
-    const conceptIds = rows.map((r) => r.concept_id as string);
+    const now = Date.now();
+    const missed = rows.filter((r) => now - new Date(r.due_at as string).getTime() > RECALL_GRACE_MS);
+    const stillCatchable = rows.filter((r) => now - new Date(r.due_at as string).getTime() <= RECALL_GRACE_MS);
+    if (missed.length) {
+      // Fire-and-forget - never block this response on cleaning up ones
+      // the student already missed, and never let a failure here surface
+      // as an error for a request that otherwise succeeded.
+      supabaseAdmin
+        .from('immediate_recall_schedule')
+        .update({ resolved: true })
+        .in('id', missed.map((r) => r.id))
+        .then(({ error: expireError }) => {
+          if (expireError) console.error('Expiring missed immediate recalls failed (non-fatal):', expireError);
+        });
+    }
+    if (!stillCatchable.length) return res.json({ recalls: [] });
+
+    const conceptIds = stillCatchable.map((r) => r.concept_id as string);
     const { data: nodes, error: nodeError } = await supabaseAdmin
       .from('knowledge_map_nodes')
       .select('id, concept_id, label, subject')
@@ -716,7 +744,7 @@ router.get('/immediate-recalls/due', requireAuth, syncEndpointLimiter, async (re
     if (nodeError) throw nodeError;
     const nodeByConceptId = new Map((nodes || []).map((n) => [n.concept_id as string, n]));
 
-    const recalls = rows
+    const recalls = stillCatchable
       .map((r) => {
         const node = nodeByConceptId.get(r.concept_id as string);
         if (!node) return null; // concept since deleted/regenerated - nothing left to recall

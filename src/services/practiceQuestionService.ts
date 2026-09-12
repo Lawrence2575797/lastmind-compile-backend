@@ -4,6 +4,7 @@ import { PRACTICE_QUESTION_MARKING_PROMPT, PRACTICE_QUESTION_MARKING_PROMPT_ITEM
 import { normalizeForPlanMatch } from './chainService';
 import { gradeAndRecordReview, ratingFromMarkRatio } from './reviewService';
 import { resolveSubjectTriple } from './subjectResolution';
+import { generateCorrectionForAttempt } from './examPrepCorrectionService';
 
 // The same general "how marks are awarded" explanation shown to the
 // student on the practice-questions page (see MARK_BREAKDOWN_EXPLAINERS
@@ -302,7 +303,7 @@ export async function submitPracticeAnswer(userId: string, questionId: string, a
     }
   }
 
-  const { error: insertError } = await supabaseAdmin.from('practice_question_attempts').insert({
+  const { data: insertedAttempt, error: insertError } = await supabaseAdmin.from('practice_question_attempts').insert({
     user_id: userId,
     question_id: questionId,
     answer_text: answerText,
@@ -312,7 +313,7 @@ export async function submitPracticeAnswer(userId: string, questionId: string, a
     conceptual_mistakes: conceptualMistakes,
     exam_technique_tips: examTechniqueTips,
     ao_component_marks: componentMarks,
-  });
+  }).select('id').single();
   if (insertError) {
     // 23505 = unique_violation - two near-simultaneous submits (e.g. a
     // double-click, or two open tabs) both passed the check above; the
@@ -348,6 +349,18 @@ export async function submitPracticeAnswer(userId: string, questionId: string, a
   // after the attempt is safely stored, so a race that turns into
   // PracticeQuestionAlreadyAnsweredError above never double-grades this.
   await gradeAndRecordReview(userId, question.concept_id as string, ratingFromMarkRatio(markAwarded, markTariff));
+
+  // Fire-and-forget, never awaited by this request - a genuine conceptual
+  // mistake (not just a technique-only deduction, which already stands on
+  // its own via examTechniqueTips) gets turned into a personalized
+  // explanation + one immediate follow-up question, queued for Exam
+  // Preparation's own Corrections feed. A failure here is logged and
+  // simply means no correction shows up for this attempt - it must never
+  // affect the grading response the student is actually waiting on.
+  if (conceptualMistakes && insertedAttempt) {
+    generateCorrectionForAttempt(userId, insertedAttempt.id as string, question.subject as string, question.question_text as string, answerText, conceptualMistakes)
+      .catch((err) => console.error('Exam Prep correction generation failed:', err));
+  }
 
   return { markAwarded, markTariff, feedback, conceptualMistakes, examTechniqueTips, componentMarks };
 }

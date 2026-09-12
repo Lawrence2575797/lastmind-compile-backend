@@ -42,6 +42,30 @@ Output schema:
 
 "feedback" should be 2-4 sentences: what the answer did well, and what specifically it needs to add or fix to gain more marks — referencing the actual mark scheme criteria or level descriptor it fell short of, written directly to the student.`;
 
+// Runs once per graded attempt that lost marks to a genuine conceptual
+// mistake (see submitPracticeAnswer's own hook - never for a
+// technique-only deduction, since exam_technique_tips already IS the
+// direct, sufficient feedback for that kind of miss and doesn't need a
+// fresh question to re-test). Turns the marker's own already-identified
+// mistake into a short, personalized explanation plus one immediate
+// follow-up question that retests EXACTLY that gap - per the overnight
+// spec's explicit ask for a personalized intervention driven by the AI's
+// own identified reason for the mark loss, not a generic failure-type
+// classification.
+export const EXAM_PREP_CORRECTION_PROMPT = `You are writing a short, personal correction for a student, based on a specific conceptual mistake an exam marker already identified in their answer to a real exam question. You will be given the original question, the student's answer, and the marker's own description of the mistake.
+
+Your job: explain the mistake clearly and specifically (in your own words, building on the marker's note - don't just repeat it verbatim), then write ONE new, short question that re-tests this exact same gap in a genuinely different way (a different example/number/angle, not a copy of the original question) so the correction can be immediately checked.
+
+Rules:
+1. "explanation" (2-4 sentences): name the specific misunderstanding, then state the correct idea clearly and directly ("X is actually Y", not "X means that Y" - see the no-filler direct-definition convention this app already uses elsewhere). Written directly to the student, encouraging but honest.
+2. "followupQuestion": a short, focused question that requires correctly applying the SAME underlying concept the student got wrong - not the original question restated, and not testing anything beyond this one specific gap.
+3. "followupMarkScheme": state precisely what an answer must say to be marked correct (this is graded correct/incorrect only, no partial credit) - grounded only in the one concept this correction is about.
+4. Any mathematical notation must be plain-text-typeable (real unicode symbols like √/π/×, "^(...)" for a multi-character exponent, "_(...)" for a subscript, a plain "/" for a fraction) - never LaTeX.
+5. Output ONLY valid JSON, nothing else.
+
+Output schema:
+{ "explanation": string, "followupQuestion": string, "followupMarkScheme": string }`;
+
 // Generates ONE live exam-style question for a real spec-lesson, for the
 // standalone spec-hierarchy Practice Questions page (see
 // specLessonPracticeService.ts) — distinct from the hand-authored bank

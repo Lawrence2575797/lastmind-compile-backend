@@ -981,6 +981,20 @@ router.get('/day1-checks/due', requireAuth, syncEndpointLimiter, async (req: Req
 // Day-1 check yet, even if that check isn't due for another day. The
 // feed's own recommendation logic (sfComputeFolderRecommendation) uses
 // this to exclude such concepts from ever counting as "due for review".
+//
+// Concepts encoded before this system existed have no day1_checks row
+// at all (scheduleDay1Check only ever fires on a concept's first-ever
+// grade, which already happened for them) - deliberately NOT auto-
+// backfilled here. A concept_reviews row already IS the "was this
+// genuinely encoded" stamp (it's only ever written on a CORRECT answer
+// to the encoding lesson's own practice question - see
+// text-question/submit's practice branch, which returns early on a
+// wrong answer without calling gradeAndRecordReview at all), so there's
+// no need for a second, separate stamp - but a one-time manual fix is
+// still needed per already-affected concept (see
+// scripts/backfill_day1_checks_for_known_concepts.js) rather than
+// silently backfilling every legacy concept across every subject on
+// every fetch.
 router.get('/day1-checks/pending', requireAuth, syncEndpointLimiter, async (req: Request, res: Response) => {
   try {
     const userId = req.userId as string;

@@ -187,7 +187,41 @@ export async function gradeAndRecordReview(
     console.error('LastMind: failed to write review_log row (non-fatal, grading itself still succeeded).', logError);
   }
 
+  // Groundwork for the overnight spec's recall-timing model - see
+  // scheduleImmediateRecall's own comment for exactly what this does and
+  // does not do yet. Only fires on a concept's genuinely first-ever grade
+  // (existingRow was null before this upsert) - every later review is a
+  // real spaced-repetition event already covered by concept_reviews'
+  // normal FSRS due date, not a same-session immediate recall.
+  if (!existingRow) {
+    await scheduleImmediateRecall(userId, conceptId);
+  }
+
   return { previousRow: existingRow, newState: rowFields, spacedSuccessCount: spacedSuccess.spaced_success_count };
+}
+
+// Records that this concept's first-ever encoding pass should be followed
+// by one more immediate recall check at +2 minutes (the spec's fixed base
+// schedule's first interval, Rb,o=2 total recalls as the starting
+// baseline - see create_immediate_recall_schedule.sql for why the fuller
+// personalized/multi-step version isn't built yet). Deliberately NOT
+// wired into anything that reads or acts on it yet - no feed/UI currently
+// checks this table, and answering it correctly must NOT be routed
+// through gradeAndRecordReview again (that would incorrectly re-advance
+// the real FSRS due date a second time for the same encoding). Building
+// that distinct, non-FSRS-advancing grading path plus the feed-side
+// "a recall is due, show it before new content" priority check is the
+// next real increment on top of this - recorded honestly as not done,
+// not silently skipped. Fire-and-forget: never blocks or fails the actual
+// grading response a student is waiting on.
+async function scheduleImmediateRecall(userId: string, conceptId: string): Promise<void> {
+  try {
+    const dueAt = new Date(Date.now() + 2 * 60 * 1000).toISOString();
+    const { error } = await supabaseAdmin.from('immediate_recall_schedule').insert({ user_id: userId, concept_id: conceptId, due_at: dueAt });
+    if (error) throw error;
+  } catch (err) {
+    console.error('Immediate recall scheduling failed (non-fatal):', err);
+  }
 }
 
 // Reserved for the CORRECT side of a correctness-driven grade — an

@@ -12,7 +12,7 @@ router.use('/account', requireAuth);
 // Irreversible - requires the caller to re-type their own account email
 // as a real confirmation step (checked server-side, not just a client-side
 // UI gate), on top of the already-verified JWT requireAuth enforces. Never
-// touches any Stripe/PayPal subscription - the frontend must tell the
+// touches any Stripe subscription - the frontend must tell the
 // student to cancel an active subscription separately first.
 router.post('/account/delete', actionEndpointLimiter, async (req: Request, res: Response) => {
   const { confirmEmail } = req.body ?? {};

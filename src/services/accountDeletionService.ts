@@ -3,7 +3,7 @@ import { supabaseAdmin } from './supabaseAdmin';
 // Real account deletion, not just a subscription cancellation (that's a
 // separate, already-existing flow via Stripe's billing portal - see
 // lastmind-stripe-backend's /api/portal-for-user). Deliberately does NOT
-// touch any Stripe/PayPal subscription itself - cancelling a live paid
+// touch any Stripe subscription itself - cancelling a live paid
 // subscription is a distinct billing decision (immediate vs end-of-period,
 // refund or not) this route has no business making unilaterally. The
 // route/UI calling this must tell the student to cancel any active

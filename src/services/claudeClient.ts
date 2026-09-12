@@ -1,5 +1,23 @@
 import Anthropic from '@anthropic-ai/sdk';
 import { chargeForClaudeCall } from './generationCostService';
+import { applyStructuredPIIFilter } from '../safety/piiFilterStructured';
+import { applyContextualPIIFilter } from '../safety/piiFilterContextual';
+
+// Applied here, centrally, rather than left to each route to remember to
+// call - a route that forgot this (as /math-help, /diagnostics and every
+// knowledge-map-v2 grading route previously did) sent a student's raw
+// free-text answer straight to Anthropic with no filtering at all. Every
+// text call in this app goes through callClaudeJSON/callClaudeJSONWithImages
+// below, so filtering there covers every current AND future call site with
+// nothing left for a route to opt into or forget. /compile is the one
+// exception worth naming: it already runs both filters itself (plus a
+// harmful-content filter this function doesn't apply) before calling the
+// separate processNotes() below, so filtering again here would just be a
+// harmless no-op on text that's already clean - not a reason to skip
+// filtering everywhere else.
+function sanitizeForClaude(text: string): string {
+  return applyContextualPIIFilter(applyStructuredPIIFilter(text));
+}
 
 const CLAUDE_API_KEY = process.env.CLAUDE_API_KEY;
 
@@ -310,7 +328,7 @@ export async function callClaudeJSON(params: {
   // than silently omitting the reason column.
   meteredReason?: string;
 }): Promise<string> {
-  const { text, usage } = await sendWithTemperatureRetry(params.model, params.systemPrompt, params.userContent, params.maxTokens, params.temperature, params.cacheSystemPrompt);
+  const { text, usage } = await sendWithTemperatureRetry(params.model, params.systemPrompt, sanitizeForClaude(params.userContent), params.maxTokens, params.temperature, params.cacheSystemPrompt);
   if (params.userId) {
     // Deliberately not awaited into the request's critical path beyond
     // this point being reached — see chargeForClaudeCall's own comment on
@@ -346,7 +364,7 @@ export async function callClaudeJSONWithImages(params: {
   // Same ledger label as callClaudeJSON's own meteredReason.
   meteredReason?: string;
 }): Promise<string> {
-  const content: Array<Anthropic.Messages.TextBlockParam | Anthropic.Messages.ImageBlockParam> = [{ type: 'text', text: params.userText }];
+  const content: Array<Anthropic.Messages.TextBlockParam | Anthropic.Messages.ImageBlockParam> = [{ type: 'text', text: sanitizeForClaude(params.userText) }];
   for (const image of params.images) {
     content.push({ type: 'text', text: image.label });
     content.push({

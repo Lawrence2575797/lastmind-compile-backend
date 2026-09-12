@@ -40,12 +40,22 @@ export async function deleteOwnAccount(userId: string): Promise<void> {
     const { error } = await supabaseAdmin.from(table).delete().eq('user_id', userId);
     if (error) throw new Error(`Failed to delete rows from ${table}: ${error.message}`);
   };
-  // concept_reviews (FSRS history) and user_folders (folder sync) predate
-  // the create_*.sql convention every other table's cascade FK was added
-  // through - explicit deletes here make this function correct regardless
-  // of whatever their real, unverified FK status turns out to be.
+  // concept_reviews (FSRS history), user_folders (folder sync),
+  // chain_lesson_progress (older per-chain lesson progress) and review_log
+  // (FSRS grading audit trail) predate the create_*.sql convention every
+  // other table's cascade FK was added through - explicit deletes here
+  // make this function correct regardless of whatever their real,
+  // unverified FK status turns out to be. knowledge_map_node_note_edits/
+  // knowledge_map_edge_note_edits (a student's own edits to a compiled
+  // note) were added with no FK at all - same treatment. Privacy policy
+  // claim this exists to make true: no row-level personal learning data
+  // survives account deletion, only what's explicitly anonymized above.
   await deleteRows('concept_reviews');
   await deleteRows('user_folders');
+  await deleteRows('chain_lesson_progress');
+  await deleteRows('review_log');
+  await deleteRows('knowledge_map_node_note_edits');
+  await deleteRows('knowledge_map_edge_note_edits');
 
   const { error: deleteUserError } = await supabaseAdmin.auth.admin.deleteUser(userId);
   if (deleteUserError) throw new Error(`Failed to delete auth user: ${deleteUserError.message}`);

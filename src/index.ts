@@ -43,6 +43,7 @@ import objectiveCourseRouter from './routes/objectiveCourse';
 import ttsRouter from './routes/tts';
 import tutoringSlotsRouter from './routes/tutoringSlots';
 import { globalRateLimiter } from './services/rateLimiters';
+import { startRetentionScheduler } from './services/retentionService';
 
 const PORT = process.env.PORT || 4100;
 const FRONTEND_ORIGIN = process.env.FRONTEND_ORIGIN || 'https://your-domain.example';
@@ -102,6 +103,8 @@ app.use('/', ttsRouter);
 app.use('/', tutoringSlotsRouter);
 
 app.get('/health', (_req, res) => res.send('ok'));
+
+startRetentionScheduler();
 
 app.listen(PORT, () => {
   console.log(`LastMind compile backend listening on :${PORT}, commit ${process.env.RENDER_GIT_COMMIT || 'unknown'}`);

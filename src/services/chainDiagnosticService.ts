@@ -18,6 +18,7 @@
 import { supabaseAdmin } from './supabaseAdmin';
 import { selectAllRows } from './supabasePagination';
 import { callClaudeJSON, MODELS } from './claudeClient';
+import { parseModelJson } from './jsonParsing';
 import { resolveSubjectTriple } from './subjectResolution';
 import { getMasteryDetailsForConcepts, gradeCorrectness } from './reviewService';
 import { payLessonCredits } from './creditService';
@@ -28,29 +29,27 @@ import {
   CHAIN_DIAGNOSTIC_SLIP_RETRY_GRADE_PROMPT,
 } from '../constants/chainDiagnosticPrompts';
 
-function stripCodeFences(text: string): string {
-  return text.trim().replace(/^```(?:json)?\s*/i, '').replace(/```\s*$/, '').trim();
-}
-function extractJsonValue(text: string): string {
-  const objStart = text.indexOf('{');
-  const arrStart = text.indexOf('[');
-  const start = objStart === -1 ? arrStart : arrStart === -1 ? objStart : Math.min(objStart, arrStart);
-  const end = Math.max(text.lastIndexOf('}'), text.lastIndexOf(']'));
-  if (start === -1 || end === -1 || end <= start) return text;
-  return text.slice(start, end + 1);
-}
+// Real bug found live: this file used to parse with a plain JSON.parse +
+// one bracket-span fallback of its own, instead of the shared
+// parseModelJson (jsonParsing.ts) every other Claude-JSON call site in
+// this app already uses - broke the very first time a chain diagnostic's
+// generated questionText was long enough to contain a literal newline
+// between paragraphs (completely ordinary for a genuinely long combined
+// question - e.g. a 47-component gap on a brand-new subject with nothing
+// encoded yet), which JSON.parse rejects outright as a "bad control
+// character" with no fallback able to fix it. The chain diagnostic route
+// swallows any thrown error into a 500, and the frontend's own gate check
+// fails OPEN on that (a deliberate choice - a network hiccup here
+// shouldn't trap a student), so the actual symptom was never a visible
+// error at all - just no prerequisite check ever firing, for any target
+// with a long enough gap to trigger it.
 async function callJSON<T>(systemPrompt: string, userContent: string, model: string, temperature = 0.2, maxTokens?: number, userId?: string): Promise<T> {
   const raw = await callClaudeJSON({ model, systemPrompt, userContent, temperature, maxTokens, userId });
-  const cleaned = stripCodeFences(raw);
   try {
-    return JSON.parse(cleaned) as T;
-  } catch {
-    try {
-      return JSON.parse(extractJsonValue(cleaned)) as T;
-    } catch (err) {
-      console.error('LastMind: chain diagnostic call returned invalid JSON.', { raw });
-      throw err;
-    }
+    return parseModelJson<T>(raw);
+  } catch (err) {
+    console.error('LastMind: chain diagnostic call returned invalid JSON.', { raw });
+    throw err;
   }
 }
 

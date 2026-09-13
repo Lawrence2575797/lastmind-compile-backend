@@ -6,10 +6,11 @@
 // concept). Rather than maintain an ever-incomplete keyword list forever,
 // this runs the SAME classification prompt as part of ordinary lesson
 // generation itself (see lessonGenerationService.ts's own call site) - the
-// model decides per-concept whether a diagram genuinely applies
-// (notDiagrammatic), so nothing needs to guess from the label in advance
-// ever again. Economics-only (see its own call site) - the curve palette
-// this grades against (CURVE_TYPE_LIST) is Economics-specific.
+// model decides per-question whether a diagram genuinely fits (see
+// generateDiagramSpecForQuestion's own comment on why it needs the actual
+// question, not just the concept label), so nothing needs to guess from the
+// label in advance ever again. Economics-only (see its own call site) - the
+// curve palette this grades against (CURVE_TYPE_LIST) is Economics-specific.
 import { callClaudeJSON } from './claudeClient';
 import { stripCodeFences } from './jsonParsing';
 import { MECHANISTIC_DIAGRAM_SPEC_PROMPT, CURVE_TYPE_LIST } from '../constants/diagramSpecPrompts';
@@ -46,16 +47,32 @@ function validateSpec(spec: unknown): { ok: boolean; errors: string[] } {
   return { ok: errors.length === 0, errors };
 }
 
-// Returns a real DiagramSpec, null if this concept genuinely isn't
+// Returns a real DiagramSpec, null if this question genuinely isn't
 // diagrammatic, or null (logged, non-fatal) on a generation failure after
 // retrying once - never throws, since a missing diagram must never block
-// the lesson content it's meant to accompany. callClaudeJSON is single-shot
-// (no conversation history), so a retry re-sends the concept plus the prior
+// the lesson content it's meant to accompany. Needs the ACTUAL practice
+// question (not just the concept label) - a real bug found live: the
+// standalone batch script (generate_diagram_specs.js) only ever sent the
+// bare label, so it happily attached a curve-drawing diagram to "a rise in
+// price from £10 to £11 causes quantity supplied to rise from 100 to 200 -
+// calculate the PES value", a plain numeric-calculation question with no
+// diagram answer at all - swapping its text answer box for a drawing
+// canvas left it genuinely unanswerable. See this prompt's own opening
+// paragraph: diagrammatic-ness is a property of the QUESTION being
+// answered, not the concept in the abstract. callClaudeJSON is single-shot
+// (no conversation history), so a retry re-sends everything plus the prior
 // attempt's own errors inline in one fresh userContent, rather than the
-// multi-turn repair generate_diagram_specs.js's standalone script does with
-// the raw Anthropic SDK directly.
-export async function generateDiagramSpecForConcept(label: string, userId: string): Promise<DiagramSpec | null> {
-  let userContent = `Concept: ${label}`;
+// multi-turn repair the standalone script does with the raw Anthropic SDK
+// directly.
+export async function generateDiagramSpecForQuestion(
+  label: string,
+  explanation: string,
+  questionText: string,
+  markScheme: string,
+  userId: string
+): Promise<DiagramSpec | null> {
+  const context = `Concept: ${label}\n\nExplanation: ${explanation}\n\nPractice question: ${questionText}\n\nMark scheme: ${markScheme}`;
+  let userContent = context;
   for (let attempt = 0; attempt < 2; attempt++) {
     let raw: string;
     try {
@@ -75,7 +92,7 @@ export async function generateDiagramSpecForConcept(label: string, userId: strin
     try {
       spec = JSON.parse(stripCodeFences(raw));
     } catch {
-      userContent = `Concept: ${label}\n\nYour previous response was not valid JSON:\n${raw}\n\nResend the complete corrected JSON, nothing else.`;
+      userContent = `${context}\n\nYour previous response was not valid JSON:\n${raw}\n\nResend the complete corrected JSON, nothing else.`;
       continue;
     }
     const validation = validateSpec(spec);
@@ -83,7 +100,7 @@ export async function generateDiagramSpecForConcept(label: string, userId: strin
       const typed = spec as { notDiagrammatic?: boolean };
       return typed.notDiagrammatic ? null : (spec as DiagramSpec);
     }
-    userContent = `Concept: ${label}\n\nYour previous response had real errors:\n${JSON.stringify(spec)}\n\nErrors:\n${validation.errors.join('\n')}\n\nResend the complete corrected JSON, nothing else.`;
+    userContent = `${context}\n\nYour previous response had real errors:\n${JSON.stringify(spec)}\n\nErrors:\n${validation.errors.join('\n')}\n\nResend the complete corrected JSON, nothing else.`;
   }
   console.error(`LastMind: diagram spec generation gave up after retry for "${label}".`);
   return null;

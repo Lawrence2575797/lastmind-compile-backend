@@ -61,8 +61,18 @@ function validateSpec(spec) {
   return { ok: errors.length === 0, errors };
 }
 
-async function generateOne(label) {
-  const messages = [{ role: 'user', content: `Concept: ${label}` }];
+// Needs the ACTUAL practice question, not just the concept label - a real
+// bug found live: the first run of this script sent only the bare label,
+// so it happily attached a curve-drawing diagram to "a rise in price from
+// £10 to £11 causes quantity supplied to rise from 100 to 200 - calculate
+// the PES value", a plain numeric-calculation question with no diagram
+// answer at all - swapping its text answer box for a drawing canvas left
+// it genuinely unanswerable. See MECHANISTIC_DIAGRAM_SPEC_PROMPT's own
+// opening paragraph: diagrammatic-ness is a property of the QUESTION, not
+// the concept in the abstract.
+async function generateOne(label, explanation, questionText, markScheme) {
+  const context = `Concept: ${label}\n\nExplanation: ${explanation}\n\nPractice question: ${questionText}\n\nMark scheme: ${markScheme}`;
+  const messages = [{ role: 'user', content: context }];
   let spec, validation, attempt = 0, cost = 0;
   while (attempt < 2) {
     attempt++;
@@ -106,25 +116,51 @@ async function main() {
   const candidates = all.filter((n) => kw.test(n.label) || idKw.test(n.id));
   console.log(`Generating diagram specs for ${candidates.length} candidate nodes...`);
 
-  let totalCost = 0, diagrammatic = 0, notDiagrammatic = 0, failed = 0;
+  let totalCost = 0, diagrammatic = 0, notDiagrammatic = 0, failed = 0, skipped = 0;
   const failures = [];
   for (const node of candidates) {
-    const { spec, validation, cost } = await generateOne(node.label);
+    // Fetched BEFORE calling the model now (used to be discovered only
+    // after spending the call) - also the source of the real question
+    // context generateOne needs, not just a lesson-row existence check.
+    const { data: lessonRow } = await supabase.from('knowledge_map_node_lessons').select('encoding_content').eq('node_id', node.id).maybeSingle();
+    const pq = lessonRow?.encoding_content?.practiceQuestion;
+    if (!lessonRow || !pq?.questionText) { skipped++; process.stdout.write('_'); continue; }
+
+    const { spec, validation, cost } = await generateOne(node.label, lessonRow.encoding_content.explanation || '', pq.questionText, pq.markScheme || '');
     totalCost += cost;
     if (!validation.ok) { failed++; failures.push({ id: node.id, label: node.label }); process.stdout.write('x'); continue; }
-    if (spec.notDiagrammatic) { notDiagrammatic++; process.stdout.write('.'); continue; }
+    if (spec.notDiagrammatic) {
+      notDiagrammatic++;
+      // Explicitly CLEARS a previously-written diagramSpec, not just skips -
+      // a real bug found live: an earlier run of this script (before it took
+      // the actual question into account) wrote a real diagram onto a
+      // question that's actually a numeric calculation with no diagram
+      // answer; without this, re-running with corrected logic would
+      // correctly recompute "notDiagrammatic" but never touch the stale
+      // wrong entry already sitting in the DB, since nothing here used to
+      // write anything on this branch at all.
+      if (pq.diagramSpec) {
+        const content = lessonRow.encoding_content;
+        const { diagramSpec: _drop, ...pqWithoutDiagram } = pq;
+        content.practiceQuestion = pqWithoutDiagram;
+        const { error } = await supabase.from('knowledge_map_node_lessons').update({ encoding_content: content }).eq('node_id', node.id);
+        if (error) console.error(`Failed to clear stale diagramSpec for ${node.id}:`, error.message);
+        else process.stdout.write('C');
+      } else {
+        process.stdout.write('.');
+      }
+      continue;
+    }
 
-    const { data: lessonRow } = await supabase.from('knowledge_map_node_lessons').select('encoding_content').eq('node_id', node.id).maybeSingle();
-    if (!lessonRow) { failed++; failures.push({ id: node.id, label: node.label, reason: 'no lesson row' }); process.stdout.write('!'); continue; }
-    const content = lessonRow.encoding_content || {};
-    content.practiceQuestion = { ...(content.practiceQuestion || {}), diagramSpec: spec };
+    const content = lessonRow.encoding_content;
+    content.practiceQuestion = { ...pq, diagramSpec: spec };
     const { error } = await supabase.from('knowledge_map_node_lessons').update({ encoding_content: content }).eq('node_id', node.id);
     if (error) { failed++; failures.push({ id: node.id, label: node.label, reason: error.message }); process.stdout.write('!'); continue; }
     diagrammatic++;
     process.stdout.write('o');
   }
   console.log('');
-  console.log(`\nDone. ${diagrammatic} written with a real diagram, ${notDiagrammatic} correctly identified as not diagrammatic, ${failed} failed.`);
+  console.log(`\nDone. ${diagrammatic} written with a real diagram, ${notDiagrammatic} correctly identified as not diagrammatic, ${failed} failed, ${skipped} skipped (no lesson generated yet, or no practice question).`);
   console.log(`Real cost: $${totalCost.toFixed(3)}`);
   if (failures.length) console.log('Failures:', JSON.stringify(failures, null, 2));
 }

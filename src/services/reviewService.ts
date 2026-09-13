@@ -119,14 +119,12 @@ function computeSpacedSuccessUpdate(
  * skip re-testing) and the "was the schedule actually followed" check
  * (comparing when a review was due against when it actually happened).
  *
- * Also returns the freshly-computed `spacedSuccessCount` — needed by
- * callers paying a Keys reward for reaching lesson 1/2/3 of durable
- * mastery (see creditService.ts's payMasteryInstallment): a caller
- * comparing this to `previousRow`'s own `spaced_success_count` (present at
+ * Also returns the freshly-computed `spacedSuccessCount` — lets a caller
+ * compare it to `previousRow`'s own `spaced_success_count` (present at
  * runtime, just not on the narrower declared ConceptReviewRow type — cast
- * it) can tell whether this grading event genuinely just crossed into a
- * new milestone, versus merely re-confirming one already reached or not
- * landing as a genuinely spaced pass at all.
+ * it) to tell whether this grading event genuinely just crossed into a new
+ * durable-mastery milestone, versus merely re-confirming one already
+ * reached or not landing as a genuinely spaced pass at all.
  */
 export async function gradeAndRecordReview(
   userId: string,

@@ -14,7 +14,6 @@ import {
 } from '../services/chainDiagnosticService';
 import { gradeDiagramAnswer, DiagramSpec, DiagramAnswerSubmission } from '../services/diagramGradingService';
 import { gradeCorrectness, DURABLE_RELEARNING_CRITERION, ReviewNotDueError } from '../services/reviewService';
-import { payLessonCredits, KM_VERIFY_COEFFICIENT_FREE, KM_VERIFY_COEFFICIENT_PREMIUM } from '../services/creditService';
 import { callClaudeJSON, MODELS } from '../services/claudeClient';
 import { parseCorrectFeedbackJson, parseModelJson } from '../services/jsonParsing';
 import { KNOWLEDGE_MAP_ANSWER_CHECK_PROMPT, DAY1_CHECK_ANSWER_PROMPT, FILL_BLANK_LENIENCY_PROMPT } from '../constants/knowledgeMapAnswerCheckPrompt';
@@ -255,27 +254,16 @@ interface ChainDiagnosticState {
   failureFeedback?: Record<string, string>;
   genuineGapIds?: string[];
   retryQuestionText?: string;
-  // Locked in once at /submit (the first point anything is actually
-  // graded) rather than recomputed from isUserPaid on every later
-  // round-trip - keeps the whole walk paying at one consistent rate even
-  // if the student's tier changes mid-flow, and avoids an extra DB lookup
-  // on every step.
-  coefficient?: number;
-  keysEarnedSoFar?: number;
 }
 
 async function finalizeChainDiagnostic(state: ChainDiagnosticState) {
   const genuineGapIds = state.genuineGapIds || [];
-  const keysEarned = state.keysEarnedSoFar || 0;
-  if (!genuineGapIds.length) return { passed: true as const, keysEarned };
+  if (!genuineGapIds.length) return { passed: true as const };
   // First in chain order — pendingFailureIds/componentIds are already
   // topologically ordered, and genuineGapIds is appended in the same walk
   // order, so the earliest entry is the earliest real gap in the chain.
   const redirect = await redirectForComponent(genuineGapIds[0]);
-  // Whatever was earned from the OTHER components that genuinely passed
-  // still stands even though the chain as a whole is denied - a real gap
-  // in one component doesn't undo a real pass on another.
-  return { passed: false as const, denied: true as const, redirect, keysEarned };
+  return { passed: false as const, denied: true as const, redirect };
 }
 
 // POST /knowledge-map-v2/chain-diagnostic/start  { targetNodeId, subject, qualification, examBoard }
@@ -319,18 +307,12 @@ router.post('/knowledge-map-v2/chain-diagnostic/submit', requireAuth, costlyEndp
   }
   try {
     const userId = req.userId as string;
-    // Locked in for the whole walk - see ChainDiagnosticState's own
-    // comment on why this isn't recomputed on every later step.
-    const coefficient = (await isUserPaid(userId)) ? KM_VERIFY_COEFFICIENT_PREMIUM : KM_VERIFY_COEFFICIENT_FREE;
     const outcomes = await gradeChainDiagnosticAnswer(state.componentIds, state.questionText, answer, userId);
     const failures = outcomes.filter((o) => !o.correct);
-    const paidAmounts = await Promise.all(
-      outcomes.filter((o) => o.correct).map((o) => gradeComponentOutcome(userId, o.componentId, 'correct', coefficient))
-    );
-    const keysEarned = paidAmounts.reduce((sum, paid) => sum + paid, 0);
+    await Promise.all(outcomes.filter((o) => o.correct).map((o) => gradeComponentOutcome(userId, o.componentId, 'correct')));
 
     if (!failures.length) {
-      return res.json({ passed: true, keysEarned });
+      return res.json({ passed: true });
     }
 
     const nextState: ChainDiagnosticState = {
@@ -340,15 +322,12 @@ router.post('/knowledge-map-v2/chain-diagnostic/submit', requireAuth, costlyEndp
       currentIndex: 0,
       failureFeedback: Object.fromEntries(failures.map((f) => [f.componentId, f.feedback])),
       genuineGapIds: [],
-      coefficient,
-      keysEarnedSoFar: keysEarned,
     };
     const first = failures[0];
     res.json({
       passed: false,
       currentFailure: { componentId: first.componentId, type: first.type, label: first.label, feedback: first.feedback },
       remaining: failures.length,
-      keysEarned,
       state: nextState,
     });
   } catch (err) {
@@ -373,13 +352,10 @@ router.post('/knowledge-map-v2/chain-diagnostic/resolve-slip', requireAuth, cost
 
     if (wasSlip) {
       const retryQuestionText = await generateSlipRetryQuestion(componentId, state.answer || '', state.failureFeedback?.[componentId] || '', userId);
-      return res.json({ needsRetry: true, retryQuestionText, keysEarned: state.keysEarnedSoFar || 0, state: { ...state, retryQuestionText } });
+      return res.json({ needsRetry: true, retryQuestionText, state: { ...state, retryQuestionText } });
     }
 
-    // A genuine gap never pays (see gradeComponentOutcome) - coefficient
-    // is irrelevant on this branch, just threaded through for signature
-    // consistency.
-    await gradeComponentOutcome(userId, componentId, 'genuine_gap', state.coefficient || 0);
+    await gradeComponentOutcome(userId, componentId, 'genuine_gap');
     const genuineGapIds = [...(state.genuineGapIds || []), componentId];
     const nextIndex = idx + 1;
     if (nextIndex < pending.length) {
@@ -391,7 +367,6 @@ router.post('/knowledge-map-v2/chain-diagnostic/resolve-slip', requireAuth, cost
           feedback: state.failureFeedback?.[nextComponentId] || '',
         },
         remaining: pending.length - nextIndex,
-        keysEarned: state.keysEarnedSoFar || 0,
         state: nextState,
       });
     }
@@ -417,23 +392,21 @@ router.post('/knowledge-map-v2/chain-diagnostic/submit-retry', requireAuth, cost
   try {
     const userId = req.userId as string;
     const { correct, feedback } = await gradeSlipRetryAnswer(componentId, state.retryQuestionText, answer, userId);
-    const paidNow = await gradeComponentOutcome(userId, componentId, correct ? 'slip_confirmed' : 'genuine_gap', state.coefficient || 0);
+    await gradeComponentOutcome(userId, componentId, correct ? 'slip_confirmed' : 'genuine_gap');
     const genuineGapIds = correct ? state.genuineGapIds || [] : [...(state.genuineGapIds || []), componentId];
-    const keysEarnedSoFar = (state.keysEarnedSoFar || 0) + paidNow;
 
     const nextIndex = idx + 1;
     if (nextIndex < pending.length) {
       const nextComponentId = pending[nextIndex];
-      const nextState: ChainDiagnosticState = { ...state, currentIndex: nextIndex, genuineGapIds, retryQuestionText: undefined, keysEarnedSoFar };
+      const nextState: ChainDiagnosticState = { ...state, currentIndex: nextIndex, genuineGapIds, retryQuestionText: undefined };
       return res.json({
         retryFeedback: feedback,
         currentFailure: { componentId: nextComponentId, feedback: state.failureFeedback?.[nextComponentId] || '' },
         remaining: pending.length - nextIndex,
-        keysEarned: keysEarnedSoFar,
         state: nextState,
       });
     }
-    const result = await finalizeChainDiagnostic({ ...state, genuineGapIds, keysEarnedSoFar });
+    const result = await finalizeChainDiagnostic({ ...state, genuineGapIds });
     res.json({ ...result, retryFeedback: feedback });
   } catch (err) {
     console.error('Chain diagnostic retry grading failed:', err);
@@ -512,11 +485,10 @@ router.post('/knowledge-map-v2/diagram-question/submit', requireAuth, costlyEndp
       return res.json({ ...result, retryable: true });
     }
     const graded = await gradeCorrectness(userId, conceptId!, result.correct, questionType === 'practice' ? (Number(retryCount) || 0) : 0);
-    const { paid: keysEarned } = await payLessonCredits(userId, questionType === 'practice', graded, 1.0, 'knowledge_map_lesson');
     // The frontend needs the fresh due date the moment this grades, not
     // only after a later /schedule refetch (e.g. on returning to the
     // dashboard) — see reviewService.ts's cardToRowFields for the fields.
-    res.json({ ...result, schedule: scheduleWithMastery(conceptId!, graded), keysEarned });
+    res.json({ ...result, schedule: scheduleWithMastery(conceptId!, graded) });
   } catch (err) {
     console.error('Diagram question grading failed:', err);
     res.status(500).json({ error: 'could not grade this diagram' });
@@ -653,8 +625,7 @@ router.post('/knowledge-map-v2/text-question/submit', requireAuth, costlyEndpoin
         return res.json({ correct, feedback, perBlankCorrect, retryable: true });
       }
       const graded = await gradeCorrectness(userId, conceptId!, correct, Number(retryCount) || 0);
-      const { paid: keysEarned } = await payLessonCredits(userId, true, graded, 1.0, 'knowledge_map_lesson');
-      return res.json({ correct, feedback, perBlankCorrect, schedule: scheduleWithMastery(conceptId!, graded), keysEarned });
+      return res.json({ correct, feedback, perBlankCorrect, schedule: scheduleWithMastery(conceptId!, graded) });
     }
 
     const raw = await callClaudeJSON({
@@ -681,9 +652,8 @@ router.post('/knowledge-map-v2/text-question/submit', requireAuth, costlyEndpoin
       return res.json({ correct, feedback, retryable: true });
     }
     const graded = await gradeCorrectness(userId, conceptId!, correct, questionType === 'practice' ? (Number(retryCount) || 0) : 0);
-    const { paid: keysEarned } = await payLessonCredits(userId, questionType === 'practice', graded, 1.0, 'knowledge_map_lesson');
     // See the identical comment on diagram-question/submit above.
-    res.json({ correct, feedback, schedule: scheduleWithMastery(conceptId!, graded), keysEarned });
+    res.json({ correct, feedback, schedule: scheduleWithMastery(conceptId!, graded) });
   } catch (err) {
     console.error('Text question grading failed:', err);
     res.status(500).json({ error: 'could not grade this answer' });
@@ -1119,82 +1089,6 @@ router.post('/day1-checks/:id/submit', requireAuth, costlyEndpointLimiter, async
   }
 });
 
-// POST /knowledge-map-v2/verify/submit
-// "Test out" shortcut, available on both tiers, offered alongside Start
-// lesson (a node's own AO1) and Review connection (an edge's transfer/
-// integration): one weakly-prompted free-text answer instead of the full
-// lesson/question. Graded through the EXACT SAME gradeCorrectness path a
-// real lesson uses (no artificial rating cap) — a pass genuinely
-// progresses spaced_success_count toward durable mastery and gets a real
-// FSRS due date scheduled, same concept_id row a full lesson/review would
-// update. The only difference from a real lesson is economic, not
-// mechanical: credits are paid at a coefficient (see above) rather than in
-// full, since this learning didn't happen on LastMind. Question text is
-// generated from re-fetched labels, never trusted from the client, same
-// discipline as every other grading route in this file.
-router.post('/knowledge-map-v2/verify/submit', requireAuth, costlyEndpointLimiter, async (req: Request, res: Response) => {
-  const { nodeId, fromNodeId, toNodeId, questionType, answer } = (req.body ?? {}) as {
-    nodeId?: string;
-    fromNodeId?: string;
-    toNodeId?: string;
-    questionType?: 'ao1' | 'transfer' | 'integration';
-    answer?: string;
-  };
-  if (!questionType || typeof answer !== 'string' || !answer.trim()) return res.status(400).json({ error: 'questionType and answer are required' });
-
-  try {
-    const userId = req.userId as string;
-    let conceptId: string;
-    let questionText: string;
-
-    if (questionType === 'ao1') {
-      if (!nodeId) return res.status(400).json({ error: 'nodeId is required for an ao1 verify' });
-      const { data: node } = await supabaseAdmin.from('knowledge_map_nodes').select('concept_id, label').eq('id', nodeId).maybeSingle();
-      if (!node) return res.status(404).json({ error: 'concept not found' });
-      conceptId = node.concept_id as string;
-      questionText = buildVerifyQuestionText('ao1', node.label as string);
-    } else {
-      if (!fromNodeId || !toNodeId) return res.status(400).json({ error: 'fromNodeId and toNodeId are required for a transfer/integration verify' });
-      const [{ data: fromNode }, { data: toNode }] = await Promise.all([
-        supabaseAdmin.from('knowledge_map_nodes').select('id, label, concept_id').eq('id', fromNodeId).maybeSingle(),
-        supabaseAdmin.from('knowledge_map_nodes').select('id, label, concept_id').eq('id', toNodeId).maybeSingle(),
-      ]);
-      if (!fromNode || !toNode) return res.status(404).json({ error: 'connection not found' });
-
-      const missing = await findMissingEncoding(userId, [fromNode, toNode]);
-      if (missing) return res.json({ requiresEncoding: true, redirect: missing });
-
-      conceptId = `${fromNode.concept_id}->${toNode.concept_id}`;
-      questionText = buildVerifyQuestionText(questionType, fromNode.label as string, toNode.label as string);
-    }
-
-    const raw = await callClaudeJSON({
-      model: MODELS.simpleQuestion,
-      systemPrompt: VERIFY_LEARNING_PROMPT,
-      userContent: `Question: ${questionText}\nStudent's answer: ${answer}`,
-      temperature: 0.1,
-      userId,
-    });
-    // See the identical comment on text-question/submit above.
-    const { correct, feedback } = parseCorrectFeedbackJson(raw);
-
-    // retryCount=0 — Verify uses the SAME rating derivation a real lesson
-    // does (deriveCorrectRating in reviewService.ts), so a clean pass can
-    // genuinely earn 'good'/'easy' and progress spaced_success_count,
-    // rather than always being forced to 'hard' (which would reset that
-    // counter to 0 every time and make durable mastery via Verify alone
-    // impossible — found while wiring up its credit payout).
-    const graded = await gradeCorrectness(userId, conceptId, correct, 0);
-    const coefficient = (await isUserPaid(userId)) ? KM_VERIFY_COEFFICIENT_PREMIUM : KM_VERIFY_COEFFICIENT_FREE;
-    const { paid: keysEarned, base: keysBase } = correct
-      ? await payLessonCredits(userId, questionType === 'ao1', graded, coefficient, 'knowledge_map_verify')
-      : { paid: 0, base: 0 };
-    res.json({ correct, feedback, keysEarned, keysBase, verifyCoefficient: coefficient });
-  } catch (err) {
-    console.error('Verify grading failed:', err);
-    res.status(500).json({ error: 'could not grade this answer' });
-  }
-});
 
 // ---- Node-level spaced review ----
 // Only nodes are ever launchable, never a link on its own (see
@@ -1245,8 +1139,7 @@ router.post('/knowledge-map-v2/node-review/ao1/start', requireAuth, costlyEndpoi
 // deriveCorrectRating for the exact 0/1/2+ thresholds.
 async function finalizeAo1Grade(userId: string, conceptId: string, feedback: string, retryCount: number) {
   const result = await gradeCorrectness(userId, conceptId, true, retryCount);
-  const { paid: keysEarned } = await payLessonCredits(userId, false, result, 1.0, 'node_review_ao1');
-  return { correct: true, feedback, schedule: scheduleWithMastery(conceptId, result), keysEarned };
+  return { correct: true, feedback, schedule: scheduleWithMastery(conceptId, result) };
 }
 
 router.post('/knowledge-map-v2/node-review/ao1/submit', requireAuth, costlyEndpointLimiter, async (req: Request, res: Response) => {
@@ -1443,9 +1336,8 @@ router.post('/knowledge-map-v2/node-review/integration/submit', requireAuth, cos
 
     const conceptId = linkIntegrationConceptId(fromNode.concept_id as string, toNode.concept_id as string);
     const result = await gradeCorrectness(userId, conceptId, true, Number(retryCount) || 0);
-    const { paid: keysEarned } = await payLessonCredits(userId, false, result, 1.0, 'node_review_integration');
     await recordPairwiseIntegrationOutcome(userId, fromNode.concept_id as string, toNode.concept_id as string, (Number(retryCount) || 0) === 0);
-    res.json({ correct: true, feedback: graded.feedback, schedule: scheduleWithMastery(conceptId, result), keysEarned });
+    res.json({ correct: true, feedback: graded.feedback, schedule: scheduleWithMastery(conceptId, result) });
   } catch (err) {
     console.error('Integration grading failed:', err);
     res.status(500).json({ error: 'could not grade this answer' });

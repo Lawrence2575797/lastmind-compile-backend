@@ -3,8 +3,6 @@ import { applyStructuredPIIFilter } from '../safety/piiFilterStructured';
 import { applyContextualPIIFilter } from '../safety/piiFilterContextual';
 import { applyHarmfulContentFilter } from '../safety/harmfulContentFilter';
 import { markSubmitted, maybeReleaseSession } from './tutoringSessionService';
-import { adjustCredits } from './creditService';
-import { TUTORING_ACTIVITY_KEYS, TutoringActivityType } from '../constants/tutoringActivities';
 
 const MAX_BODY_LENGTH = 4000;
 
@@ -62,14 +60,9 @@ export async function submitResponse(userId: string, sessionId: string, body: st
   if (!trimmed) throw new Error('a response is required');
   if (trimmed.length > MAX_BODY_LENGTH) throw new Error(`response is too long (max ${MAX_BODY_LENGTH} characters)`);
 
-  // Embeds the parent help_requests row via the FK (help_request_id
-  // references help_requests.id) to resolve which activity this session
-  // actually is — cost to the tutee/payout to the tutor depends on it (see
-  // TUTORING_ACTIVITY_KEYS), so it has to be known before the transfer
-  // below.
   const { data: sessionRow, error: sessionError } = await supabaseAdmin
     .from('tutoring_sessions')
-    .select('id, helper_id, requester_id, help_request_id, status, help_requests(activity_type)')
+    .select('id, helper_id, requester_id, help_request_id, status')
     .eq('id', sessionId)
     .maybeSingle<{
       id: string;
@@ -77,7 +70,6 @@ export async function submitResponse(userId: string, sessionId: string, body: st
       requester_id: string;
       help_request_id: string;
       status: string;
-      help_requests: { activity_type: TutoringActivityType } | null;
     }>();
   if (sessionError) throw sessionError;
   if (!sessionRow) throw new Error('session not found');
@@ -120,17 +112,6 @@ export async function submitResponse(userId: string, sessionId: string, body: st
     .eq('status', 'assigned')
     .neq('id', sessionId);
   if (cancelError) throw cancelError;
-
-  // 'misconception' if the join somehow comes back empty (should never
-  // happen given the not-null FK) — the original, cheapest activity is the
-  // safer default than silently paying nothing.
-  const activityType: TutoringActivityType = sessionRow.help_requests?.activity_type || 'misconception';
-  const amount = TUTORING_ACTIVITY_KEYS[activityType];
-
-  await Promise.all([
-    adjustCredits(sessionRow.requester_id, -amount, 'tutoring_help_received'),
-    adjustCredits(userId, amount, 'tutoring_response_given'),
-  ]);
 
   return rowToResponse(inserted);
 }

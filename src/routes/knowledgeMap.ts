@@ -16,7 +16,7 @@ import { gradeDiagramAnswer, DiagramSpec, DiagramAnswerSubmission } from '../ser
 import { gradeCorrectness, DURABLE_RELEARNING_CRITERION, ReviewNotDueError } from '../services/reviewService';
 import { callClaudeJSON, MODELS } from '../services/claudeClient';
 import { parseCorrectFeedbackJson, parseModelJson } from '../services/jsonParsing';
-import { KNOWLEDGE_MAP_ANSWER_CHECK_PROMPT, DAY1_CHECK_ANSWER_PROMPT, FILL_BLANK_LENIENCY_PROMPT } from '../constants/knowledgeMapAnswerCheckPrompt';
+import { KNOWLEDGE_MAP_ANSWER_CHECK_PROMPT, DAY1_CHECK_ANSWER_PROMPT, FILL_BLANK_LENIENCY_PROMPT, UNTRACKED_LESSON_GRADE_PROMPT } from '../constants/knowledgeMapAnswerCheckPrompt';
 import { VERIFY_LEARNING_PROMPT, buildVerifyQuestionText } from '../constants/verifyLearningPrompts';
 import {
   getQualifyingReviewLinks,
@@ -656,6 +656,75 @@ router.post('/knowledge-map-v2/text-question/submit', requireAuth, costlyEndpoin
     res.json({ correct, feedback, schedule: scheduleWithMastery(conceptId!, graded) });
   } catch (err) {
     console.error('Text question grading failed:', err);
+    res.status(500).json({ error: 'could not grade this answer' });
+  }
+});
+
+// POST /knowledge-map-v2/node/:nodeId/untracked-submit  { answer } or { answers: [...] }
+// "LastMind Untracked" - grades this node's own practice question exactly
+// like text-question/submit's 'practice' branch above, but never calls
+// gradeCorrectness/gradeAndRecordReview at all: no concept_reviews row,
+// no immediate-recall or Day-1 scheduling, this node is never marked
+// "encoded" by this route. A student trying a concept this way still sees
+// it as untouched afterward - its real scheduled lesson (whenever they
+// actually start it for real) runs completely fresh. A wrong answer gets
+// a real Socratic hint (see UNTRACKED_LESSON_GRADE_PROMPT) instead of a
+// blunt fail, and is always retryable - there's no retry-count-based FSRS
+// rating to protect here, so the student can simply keep trying.
+router.post('/knowledge-map-v2/node/:nodeId/untracked-submit', requireAuth, costlyEndpointLimiter, async (req: Request, res: Response) => {
+  const { nodeId } = req.params;
+  const body = (req.body ?? {}) as { answer?: string | DiagramAnswerSubmission; answers?: string[] };
+  if (body.answer === undefined && !Array.isArray(body.answers)) {
+    return res.status(400).json({ error: 'answer(s) required' });
+  }
+  try {
+    const { data: lesson, error } = await supabaseAdmin
+      .from('knowledge_map_node_lessons')
+      .select('encoding_content')
+      .eq('node_id', nodeId)
+      .maybeSingle();
+    if (error) throw error;
+    const question = (lesson?.encoding_content as {
+      practiceQuestion?: {
+        questionText?: string;
+        markScheme?: string;
+        blanks?: { prompt: string; answer: string }[];
+        diagramSpec?: DiagramSpec;
+      };
+    } | null)?.practiceQuestion;
+    if (!question || !question.questionText) return res.status(404).json({ error: 'question not found' });
+
+    if (question.diagramSpec) {
+      if (!body.answer) return res.status(400).json({ error: 'answer is required' });
+      const result = gradeDiagramAnswer(question.diagramSpec, body.answer as DiagramAnswerSubmission);
+      return res.json({ ...result, retryable: !result.correct });
+    }
+
+    if (Array.isArray(body.answers)) {
+      if (!question.blanks || !question.blanks.length) {
+        return res.status(400).json({ error: 'this question has no separately-gradable blanks' });
+      }
+      const answers = body.answers;
+      const perBlankCorrect = question.blanks.map((b, i) => normalizeForBlankComparison(answers[i] || '') === normalizeForBlankComparison(b.answer));
+      const correct = perBlankCorrect.every(Boolean);
+      const feedback = correct ? 'All correct!' : 'Check the highlighted box(es) and try again.';
+      return res.json({ correct, feedback, perBlankCorrect, retryable: !correct });
+    }
+
+    if (typeof body.answer !== 'string' || !body.answer.trim()) {
+      return res.status(400).json({ error: 'answer is required' });
+    }
+    const raw = await callClaudeJSON({
+      model: MODELS.simpleQuestion,
+      systemPrompt: UNTRACKED_LESSON_GRADE_PROMPT,
+      userContent: `Question: ${question.questionText}\nMark scheme: ${question.markScheme || ''}\nStudent's answer: ${body.answer}`,
+      temperature: 0.2,
+      userId: req.userId,
+    });
+    const { correct, feedback, hint } = parseModelJson<{ correct: boolean; feedback: string; hint?: string }>(raw);
+    res.json({ correct, feedback, hint: correct ? undefined : hint, retryable: !correct });
+  } catch (err) {
+    console.error('Untracked lesson grading failed:', err);
     res.status(500).json({ error: 'could not grade this answer' });
   }
 });

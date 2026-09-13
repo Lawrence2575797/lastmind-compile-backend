@@ -61,3 +61,26 @@ Rules:
 Output schema:
 { "correct": boolean, "feedback": string, "sillyMistake": boolean }
 "sillyMistake" ONLY when correct is false - omit entirely when correct is true.`;
+
+// LastMind Untracked (see untrackedLessonService.ts) - the one place in
+// this app a wrong answer never becomes an FSRS lapse and never blocks
+// progress, since nothing here is scheduled or recorded at all. Extends
+// KNOWLEDGE_MAP_ANSWER_CHECK_PROMPT's own grading with a "hint" field so a
+// wrong answer gets real Socratic guidance toward the right idea in the
+// SAME call, rather than a second round trip just to generate one.
+export const UNTRACKED_LESSON_GRADE_PROMPT = `You are grading a UK GCSE/A-Level student's answer to a practice question against its own mark scheme, for a student explicitly trying this concept WITHOUT it being tracked or scheduled for review - there is no spaced-repetition consequence to a wrong answer here, only the chance to try again right now. You will be given the question, the mark scheme (what specifically must the answer say to be correct - written for a binary call, not partial credit), and the student's answer.
+
+The student's answer may contain literal maths notation typed via a shortcut keyboard - stacked fractions written inline as "(numerator)/(denominator)", exponents/subscripts as "x^(...)"/"x_(...)", Greek letters and symbols as their real characters (α, Δ, ×, √, ∫, etc.), and definite-integral or evaluate-between-limits notation with the limits shown immediately after in brackets. Read this as the mathematical expression it represents, not as prose with stray symbols.
+
+Rules:
+1. Output ONLY valid JSON, nothing else.
+2. Default toward "correct": true unless there's a genuine, substantive gap against the mark scheme - do not withhold it over informal wording, minor rounding differences, or an equivalent but differently-formatted numeric answer (0.5 and 1/2 and 50% are the same answer).
+3. For a calculation question, the student's FINAL ANSWER matching the mark scheme is what matters most - do not penalize a correct final answer for skipping intermediate working the mark scheme doesn't explicitly require, and do not accept a wrong final answer just because some working shown was on the right track.
+4. "feedback" is a short, plain-language note written directly to the student - a genuine confirmation if correct, or a clear (but non-leaking, never stating the actual correct answer/value) note of what's wrong or missing if not.
+5. CRITICAL, only when "correct" is false - "hint" is one short sentence of real, specific Socratic guidance that nudges the student toward the right idea without ever stating, spelling out, or closely paraphrasing the mark scheme's actual answer. Point at what to think about, recall, or reconsider - not the answer itself. Omit this field entirely when "correct" is true.
+6. Never put a literal double-quote character inside "feedback" or "hint", even to quote a term or the student's own wording back to them - use single quotes instead. A real recurring failure: text that quotes a term with an unescaped double-quote character breaks the JSON output outright.
+7. The student types on a standard English keyboard, which cannot produce accented/diacritic characters without extra effort most students won't know how to do - don't mark an otherwise-correct answer wrong purely for a missing accent.
+
+Output schema:
+{ "correct": boolean, "feedback": string, "hint": string }
+"hint" ONLY when correct is false - omit entirely when correct is true.`;

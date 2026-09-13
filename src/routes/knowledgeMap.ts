@@ -156,10 +156,17 @@ router.get('/knowledge-map-v2/node/:nodeId/lesson', requireAuth, syncEndpointLim
     res.json(generated);
   } catch (err) {
     if (err instanceof GenerationCapExceededError) {
-      // code: 'LOCK_LIMIT_REACHED' - a stable field the frontend keys off
-      // to show the "Buy more Locks" action, rather than string-matching
-      // the human-readable message (which is free to reword later).
-      return res.status(429).json({ error: 'Lock limit reached', code: 'LOCK_LIMIT_REACHED', window: err.window, limit: err.limit });
+      // code: 'GENERATION_RATE_LIMIT' - deliberately distinct from Locks'
+      // own 'LOCK_LIMIT_REACHED' (routes/credits.ts is gone, but
+      // routes/locks.ts's real InsufficientLocksError still uses that
+      // code) - a real, reported bug: this is a completely unrelated
+      // fresh-generation rate limit (generationCapService.ts), not the
+      // Locks balance shown in the topbar at all, but reusing the same
+      // code made the frontend show "Buy more Locks" for it, which
+      // genuinely cannot help (there's nothing to buy - it resets on its
+      // own) and left a student with a huge, untouched Locks balance
+      // confused about why they were blocked at all.
+      return res.status(429).json({ error: 'Generation limit reached', code: 'GENERATION_RATE_LIMIT', window: err.window, limit: err.limit });
     }
     console.error('Node lesson lookup/generation failed:', err);
     res.status(500).json({ error: 'could not load this lesson' });
@@ -230,10 +237,17 @@ router.get('/knowledge-map-v2/edge/:fromNodeId/:toNodeId/lesson', requireAuth, s
     res.json(generated);
   } catch (err) {
     if (err instanceof GenerationCapExceededError) {
-      // code: 'LOCK_LIMIT_REACHED' - a stable field the frontend keys off
-      // to show the "Buy more Locks" action, rather than string-matching
-      // the human-readable message (which is free to reword later).
-      return res.status(429).json({ error: 'Lock limit reached', code: 'LOCK_LIMIT_REACHED', window: err.window, limit: err.limit });
+      // code: 'GENERATION_RATE_LIMIT' - deliberately distinct from Locks'
+      // own 'LOCK_LIMIT_REACHED' (routes/credits.ts is gone, but
+      // routes/locks.ts's real InsufficientLocksError still uses that
+      // code) - a real, reported bug: this is a completely unrelated
+      // fresh-generation rate limit (generationCapService.ts), not the
+      // Locks balance shown in the topbar at all, but reusing the same
+      // code made the frontend show "Buy more Locks" for it, which
+      // genuinely cannot help (there's nothing to buy - it resets on its
+      // own) and left a student with a huge, untouched Locks balance
+      // confused about why they were blocked at all.
+      return res.status(429).json({ error: 'Generation limit reached', code: 'GENERATION_RATE_LIMIT', window: err.window, limit: err.limit });
     }
     console.error('Edge lesson lookup/generation failed:', err);
     res.status(500).json({ error: 'could not load this lesson' });
@@ -1362,7 +1376,10 @@ router.post('/knowledge-map-v2/node-review/integration/start', requireAuth, cost
       return res.status(403).json({ error: 'This review isn\'t due yet.', dueDate: err.dueDate });
     }
     if (err instanceof GenerationCapExceededError) {
-      return res.status(429).json({ error: 'Lock limit reached', code: 'LOCK_LIMIT_REACHED', window: err.window, limit: err.limit });
+      // See the identical comment on the node-lesson route above -
+      // GENERATION_RATE_LIMIT, deliberately distinct from Locks' own
+      // LOCK_LIMIT_REACHED.
+      return res.status(429).json({ error: 'Generation limit reached', code: 'GENERATION_RATE_LIMIT', window: err.window, limit: err.limit });
     }
     console.error('Integration question lookup failed:', err);
     res.status(500).json({ error: 'could not load this question' });

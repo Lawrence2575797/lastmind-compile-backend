@@ -1043,6 +1043,26 @@ router.get('/day1-checks/pending', requireAuth, syncEndpointLimiter, async (req:
 // student gets exactly one re-ask of the SAME question
 // (retryAfterSillyMistake:true on the resubmit) - that retry's own
 // result is final either way, correct or not, silly or not.
+//
+// Also grades this concept's real FSRS card (gradeCorrectness) - a real
+// bug found live: the concept's very first FSRS due date is set back at
+// its FIRST-EVER grade (the original encoding/integration pass, via
+// gradeAndRecordReview's !existingRow branch), which is the SAME event
+// that schedules this Day-1 check for +1 day. FSRS's own minimum first
+// interval (enable_short_term:false forces at least a full day) then
+// lands on that exact same day, so the "real" spaced review was already
+// due the moment the Day-1 check was - passing the check looked like it
+// immediately triggered a same-day review, when really the two were
+// just coincidentally scheduled together from the same origin event.
+// Grading the Day-1 outcome here makes it a genuine SECOND FSRS review
+// (stability already exists from the first grade), so the interval FSRS
+// computes from here is a real spaced gap, not another same-day one -
+// exactly the "shouldn't be on the same day" behaviour asked for. A
+// slip-then-correct retry grades as a clean pass (retryCount 0), not a
+// harder one - "a slip is a statement about execution, not about
+// whether the concept itself is known" (see fsrsService.ts's own
+// gradeReview docstring), the same reasoning the encoding lessons
+// already apply.
 router.post('/day1-checks/:id/submit', requireAuth, costlyEndpointLimiter, async (req: Request, res: Response) => {
   const { id } = req.params;
   const { answer, retryAfterSillyMistake } = (req.body ?? {}) as { answer?: string; retryAfterSillyMistake?: boolean };
@@ -1058,8 +1078,9 @@ router.post('/day1-checks/:id/submit', requireAuth, costlyEndpointLimiter, async
       .maybeSingle();
     if (!row) return res.status(404).json({ error: 'check not found' });
     if (row.resolved) return res.json({ correct: true, feedback: 'Already done.' });
+    const conceptId = row.concept_id as string;
 
-    const question = await getQuestionForConceptId(row.concept_id as string);
+    const question = await getQuestionForConceptId(conceptId);
     if (!question) return res.status(404).json({ error: 'question not found' });
 
     const raw = await callClaudeJSON({
@@ -1072,23 +1093,26 @@ router.post('/day1-checks/:id/submit', requireAuth, costlyEndpointLimiter, async
     const { correct, feedback, sillyMistake } = parseModelJson<{ correct: boolean; feedback: string; sillyMistake?: boolean }>(raw);
 
     if (correct) {
+      const graded = await gradeCorrectness(userId, conceptId, true, 0);
       const { error: updateError } = await supabaseAdmin.from('day1_checks').update({ resolved: true }).eq('id', id);
       if (updateError) throw updateError;
-      return res.json({ correct: true, feedback });
+      return res.json({ correct: true, feedback, schedule: scheduleWithMastery(conceptId, graded) });
     }
 
     if (!retryAfterSillyMistake && sillyMistake) {
-      // Deferred - not resolved, no Rb bump yet. The student gets one
-      // more attempt at the exact same question.
+      // Deferred - not resolved, no Rb bump and no FSRS grade yet. The
+      // student gets one more attempt at the exact same question.
       return res.json({ correct: false, sillyMistake: true, feedback });
     }
 
     // A genuine failure (or a still-wrong/second attempt after the one
-    // reask already given) - resolve it and bump the base recall count.
+    // reask already given) - resolve it, grade the FSRS card as a lapse,
+    // and bump the base recall count.
+    const graded = await gradeCorrectness(userId, conceptId, false, 0);
     const { error: updateError } = await supabaseAdmin.from('day1_checks').update({ resolved: true }).eq('id', id);
     if (updateError) throw updateError;
     await bumpBaseRecalls(userId);
-    res.json({ correct: false, sillyMistake: false, feedback });
+    res.json({ correct: false, sillyMistake: false, feedback, schedule: scheduleWithMastery(conceptId, graded) });
   } catch (err) {
     console.error('Day-1 check grading failed:', err);
     res.status(500).json({ error: 'could not grade this answer' });

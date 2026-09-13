@@ -5,19 +5,21 @@ import { getKnowledgeMapForFolder, getKnowledgeMapForSubject, FolderConcept } fr
 import { supabaseAdmin } from '../services/supabaseAdmin';
 import {
   findPrerequisiteGap,
-  generateChainDiagnosticQuestion,
-  gradeChainDiagnosticAnswer,
-  generateSlipRetryQuestion,
-  gradeSlipRetryAnswer,
-  gradeComponentOutcome,
-  redirectForComponent,
+  buildPrerequisiteChains,
+  generateChainQuestions,
+  gradeChainAnswers,
+  gradeStepCorrect,
+  generateStepRetryQuestion,
+  gradeStepRetryAnswer,
+  buildGapFeedItems,
+  ChainStep,
+  GapResult,
 } from '../services/chainDiagnosticService';
 import { gradeDiagramAnswer, DiagramSpec, DiagramAnswerSubmission } from '../services/diagramGradingService';
 import { gradeCorrectness, DURABLE_RELEARNING_CRITERION, ReviewNotDueError } from '../services/reviewService';
 import { callClaudeJSON, MODELS } from '../services/claudeClient';
 import { parseCorrectFeedbackJson, parseModelJson } from '../services/jsonParsing';
 import { KNOWLEDGE_MAP_ANSWER_CHECK_PROMPT, DAY1_CHECK_ANSWER_PROMPT, FILL_BLANK_LENIENCY_PROMPT, UNTRACKED_LESSON_GRADE_PROMPT } from '../constants/knowledgeMapAnswerCheckPrompt';
-import { VERIFY_LEARNING_PROMPT, buildVerifyQuestionText } from '../constants/verifyLearningPrompts';
 import {
   getQualifyingReviewLinks,
   linkIntegrationConceptId,
@@ -238,179 +240,155 @@ router.get('/knowledge-map-v2/edge/:fromNodeId/:toNodeId/lesson', requireAuth, s
   }
 });
 
-// ---- Chain diagnostic: the "jump ahead" gate ----
+// ---- Prerequisite check: the "jump ahead" gate ----
 // State is round-tripped through the client, same convention as
 // diagnosticOrchestrator.ts's OrchestratorState — but see
 // chainDiagnosticService.ts's own comment on why ground truth (node
-// explanations / edge link-teaching) never travels in it, only ids and
-// the student's own text.
-interface ChainDiagnosticState {
+// explanations / edge link-teaching) never travels in it, only ids.
+interface PrereqCheckState {
   targetNodeId: string;
-  componentIds: string[];
-  questionText: string;
-  answer?: string;
-  pendingFailureIds?: string[];
-  currentIndex?: number;
-  failureFeedback?: Record<string, string>;
-  genuineGapIds?: string[];
-  retryQuestionText?: string;
+  gap: GapResult;
+  chains: ChainStep[][];
 }
 
-async function finalizeChainDiagnostic(state: ChainDiagnosticState) {
-  const genuineGapIds = state.genuineGapIds || [];
-  if (!genuineGapIds.length) return { passed: true as const };
-  // First in chain order — pendingFailureIds/componentIds are already
-  // topologically ordered, and genuineGapIds is appended in the same walk
-  // order, so the earliest entry is the earliest real gap in the chain.
-  const redirect = await redirectForComponent(genuineGapIds[0]);
-  return { passed: false as const, denied: true as const, redirect };
-}
-
-// POST /knowledge-map-v2/chain-diagnostic/start  { targetNodeId, subject, qualification, examBoard }
-// -> { requiresDiagnostic: false } if every prerequisite is already
-//    mastered (straight into the lesson, no gate), or
-//    { requiresDiagnostic: true, questionText, state } otherwise.
-router.post('/knowledge-map-v2/chain-diagnostic/start', requireAuth, costlyEndpointLimiter, async (req: Request, res: Response) => {
+// POST /knowledge-map-v2/prereq-check/start  { targetNodeId, subject, qualification, examBoard }
+// -> { requiresCheck: false } if every prerequisite is already encoded
+//    (straight into the lesson, no gate), or
+//    { requiresCheck: true, targetLabel, chains, state } otherwise —
+//    chains is one array per vertical prerequisite chain, each entry a
+//    { componentId, type, label, fromLabel?, toLabel?, questionText }
+//    step, earliest-prerequisite-first (render bottom-to-top).
+router.post('/knowledge-map-v2/prereq-check/start', requireAuth, costlyEndpointLimiter, async (req: Request, res: Response) => {
   const { targetNodeId, subject, qualification, examBoard } = req.body ?? {};
   if (typeof targetNodeId !== 'string' || !targetNodeId) {
     return res.status(400).json({ error: 'targetNodeId is required' });
   }
   try {
+    const userId = req.userId as string;
     const gap = await findPrerequisiteGap(
-      req.userId as string,
+      userId,
       targetNodeId,
       typeof subject === 'string' ? subject : '',
       typeof qualification === 'string' ? qualification : '',
       typeof examBoard === 'string' ? examBoard : ''
     );
     if (!gap) return res.status(404).json({ error: 'concept not found' });
-    if (!gap.componentIds.length) return res.json({ requiresDiagnostic: false });
+    if (!gap.gapNodeIds.length) return res.json({ requiresCheck: false });
 
-    const { questionText } = await generateChainDiagnosticQuestion(gap.targetLabel, gap.componentIds, req.userId as string);
-    const state: ChainDiagnosticState = { targetNodeId, componentIds: gap.componentIds, questionText };
-    res.json({ requiresDiagnostic: true, questionText, state });
+    const chains = buildPrerequisiteChains(gap);
+    const chainsForClient = await generateChainQuestions(gap.targetLabel, chains, userId);
+    const state: PrereqCheckState = { targetNodeId, gap, chains };
+    res.json({ requiresCheck: true, targetLabel: gap.targetLabel, chains: chainsForClient, state });
   } catch (err) {
-    console.error('Chain diagnostic start failed:', err);
+    console.error('Prerequisite check start failed:', err);
     res.status(500).json({ error: 'could not prepare the prerequisite check' });
   }
 });
 
-// POST /knowledge-map-v2/chain-diagnostic/submit  { state, answer }
-// Grades every component from the ONE combined answer. Anything correct
-// is graded into FSRS right away; anything wrong is queued for the
-// slip-vs-genuine-gap walk below rather than graded yet (its eventual
-// rating depends on how that resolves).
-router.post('/knowledge-map-v2/chain-diagnostic/submit', requireAuth, costlyEndpointLimiter, async (req: Request, res: Response) => {
-  const { state, answer } = (req.body ?? {}) as { state?: ChainDiagnosticState; answer?: string };
-  if (!state || !Array.isArray(state.componentIds) || typeof answer !== 'string' || !answer.trim()) {
-    return res.status(400).json({ error: 'state and answer are required' });
+// POST /knowledge-map-v2/prereq-check/submit  { state, answers: {componentId: answerText} }
+// Grades every step's own separate answer at once. Anything correct is
+// graded into FSRS right away — exactly a first-time-correct answer's
+// usual 'good' rating, which is what schedules its Day-1 check (see
+// gradeChainAnswers). Anything wrong is left completely ungraded — no
+// premature 'again' — since a genuine gap only ever enters FSRS later,
+// via its own fresh lesson once fed into the main feed (see finalize
+// below), never from this check itself.
+router.post('/knowledge-map-v2/prereq-check/submit', requireAuth, costlyEndpointLimiter, async (req: Request, res: Response) => {
+  const { state, answers } = (req.body ?? {}) as { state?: PrereqCheckState; answers?: Record<string, string> };
+  if (!state || !Array.isArray(state.chains) || !answers || typeof answers !== 'object') {
+    return res.status(400).json({ error: 'state and answers are required' });
   }
   try {
     const userId = req.userId as string;
-    const outcomes = await gradeChainDiagnosticAnswer(state.componentIds, state.questionText, answer, userId);
-    const failures = outcomes.filter((o) => !o.correct);
-    await Promise.all(outcomes.filter((o) => o.correct).map((o) => gradeComponentOutcome(userId, o.componentId, 'correct')));
-
-    if (!failures.length) {
-      return res.json({ passed: true });
-    }
-
-    const nextState: ChainDiagnosticState = {
-      ...state,
-      answer,
-      pendingFailureIds: failures.map((f) => f.componentId),
-      currentIndex: 0,
-      failureFeedback: Object.fromEntries(failures.map((f) => [f.componentId, f.feedback])),
-      genuineGapIds: [],
-    };
-    const first = failures[0];
-    res.json({
-      passed: false,
-      currentFailure: { componentId: first.componentId, type: first.type, label: first.label, feedback: first.feedback },
-      remaining: failures.length,
-      state: nextState,
-    });
+    const results = await gradeChainAnswers(state.chains, answers, userId);
+    res.json({ results, allCorrect: results.every((r) => r.correct) });
   } catch (err) {
-    console.error('Chain diagnostic grading failed:', err);
+    console.error('Prerequisite check grading failed:', err);
     res.status(500).json({ error: 'could not grade that answer' });
   }
 });
 
-// POST /knowledge-map-v2/chain-diagnostic/resolve-slip  { state, wasSlip }
-// The self-report step: "was that a silly slip, or do you not know this?"
-// A slip earns one focused retry; anything else is a genuine gap.
-router.post('/knowledge-map-v2/chain-diagnostic/resolve-slip', requireAuth, costlyEndpointLimiter, async (req: Request, res: Response) => {
-  const { state, wasSlip } = (req.body ?? {}) as { state?: ChainDiagnosticState; wasSlip?: boolean };
-  const pending = state?.pendingFailureIds || [];
-  const idx = state?.currentIndex ?? -1;
-  if (!state || idx < 0 || idx >= pending.length) {
-    return res.status(400).json({ error: 'invalid diagnostic state' });
+// POST /knowledge-map-v2/prereq-check/retry-steps  { state, items: [{componentId, originalAnswer, originalFeedback}] }
+// One narrow re-ask per step the student ticked "I think this was a
+// silly mistake" on — batched into one call per request, but each step
+// gets its own genuinely distinct question.
+router.post('/knowledge-map-v2/prereq-check/retry-steps', requireAuth, costlyEndpointLimiter, async (req: Request, res: Response) => {
+  const { state, items } = (req.body ?? {}) as {
+    state?: PrereqCheckState;
+    items?: { componentId: string; originalAnswer: string; originalFeedback: string }[];
+  };
+  if (!state || !Array.isArray(state.chains) || !Array.isArray(items) || !items.length) {
+    return res.status(400).json({ error: 'state and items are required' });
   }
-  const componentId = pending[idx];
   try {
     const userId = req.userId as string;
-
-    if (wasSlip) {
-      const retryQuestionText = await generateSlipRetryQuestion(componentId, state.answer || '', state.failureFeedback?.[componentId] || '', userId);
-      return res.json({ needsRetry: true, retryQuestionText, state: { ...state, retryQuestionText } });
-    }
-
-    await gradeComponentOutcome(userId, componentId, 'genuine_gap');
-    const genuineGapIds = [...(state.genuineGapIds || []), componentId];
-    const nextIndex = idx + 1;
-    if (nextIndex < pending.length) {
-      const nextComponentId = pending[nextIndex];
-      const nextState: ChainDiagnosticState = { ...state, currentIndex: nextIndex, genuineGapIds };
-      return res.json({
-        currentFailure: {
-          componentId: nextComponentId,
-          feedback: state.failureFeedback?.[nextComponentId] || '',
-        },
-        remaining: pending.length - nextIndex,
-        state: nextState,
-      });
-    }
-    res.json(await finalizeChainDiagnostic({ ...state, genuineGapIds }));
+    const flatSteps = state.chains.flat();
+    const retries = await Promise.all(
+      items.map(async (item) => {
+        const step = flatSteps.find((s) => s.componentId === item.componentId);
+        if (!step) return null;
+        const questionText = await generateStepRetryQuestion(step, item.originalAnswer || '', item.originalFeedback || '', userId);
+        return { componentId: item.componentId, questionText };
+      })
+    );
+    res.json({ retries: retries.filter((r): r is { componentId: string; questionText: string } => !!r) });
   } catch (err) {
-    console.error('Chain diagnostic slip resolution failed:', err);
-    res.status(500).json({ error: 'could not process that' });
+    console.error('Prerequisite check retry-question generation failed:', err);
+    res.status(500).json({ error: 'could not prepare that retry' });
   }
 });
 
-// POST /knowledge-map-v2/chain-diagnostic/submit-retry  { state, answer }
-// Grades the one focused retry after a slip claim. Correct -> 'hard' via
-// gradeCorrectness's retry path (see chainDiagnosticService.gradeComponentOutcome);
-// wrong -> genuine gap after all.
-router.post('/knowledge-map-v2/chain-diagnostic/submit-retry', requireAuth, costlyEndpointLimiter, async (req: Request, res: Response) => {
-  const { state, answer } = (req.body ?? {}) as { state?: ChainDiagnosticState; answer?: string };
-  const pending = state?.pendingFailureIds || [];
-  const idx = state?.currentIndex ?? -1;
-  if (!state || idx < 0 || idx >= pending.length || typeof answer !== 'string' || !answer.trim() || !state.retryQuestionText) {
-    return res.status(400).json({ error: 'invalid diagnostic state' });
+// POST /knowledge-map-v2/prereq-check/submit-retry-steps  { state, items: [{componentId, questionText, answer}] }
+// Grades each retry independently. Correct -> 'hard' via gradeStepCorrect's
+// retry path (retryCount=1) — a corrected-then-confirmed pass is still
+// weaker evidence than a clean first-try answer, but still genuine. Wrong
+// -> stays a genuine gap, no grade recorded here either.
+router.post('/knowledge-map-v2/prereq-check/submit-retry-steps', requireAuth, costlyEndpointLimiter, async (req: Request, res: Response) => {
+  const { state, items } = (req.body ?? {}) as {
+    state?: PrereqCheckState;
+    items?: { componentId: string; questionText: string; answer: string }[];
+  };
+  if (!state || !Array.isArray(state.chains) || !Array.isArray(items) || !items.length) {
+    return res.status(400).json({ error: 'state and items are required' });
   }
-  const componentId = pending[idx];
   try {
     const userId = req.userId as string;
-    const { correct, feedback } = await gradeSlipRetryAnswer(componentId, state.retryQuestionText, answer, userId);
-    await gradeComponentOutcome(userId, componentId, correct ? 'slip_confirmed' : 'genuine_gap');
-    const genuineGapIds = correct ? state.genuineGapIds || [] : [...(state.genuineGapIds || []), componentId];
-
-    const nextIndex = idx + 1;
-    if (nextIndex < pending.length) {
-      const nextComponentId = pending[nextIndex];
-      const nextState: ChainDiagnosticState = { ...state, currentIndex: nextIndex, genuineGapIds, retryQuestionText: undefined };
-      return res.json({
-        retryFeedback: feedback,
-        currentFailure: { componentId: nextComponentId, feedback: state.failureFeedback?.[nextComponentId] || '' },
-        remaining: pending.length - nextIndex,
-        state: nextState,
-      });
-    }
-    const result = await finalizeChainDiagnostic({ ...state, genuineGapIds });
-    res.json({ ...result, retryFeedback: feedback });
+    const flatSteps = state.chains.flat();
+    const results = await Promise.all(
+      items.map(async (item) => {
+        const step = flatSteps.find((s) => s.componentId === item.componentId);
+        if (!step) return { componentId: item.componentId, correct: false, feedback: '' };
+        const { correct, feedback } = await gradeStepRetryAnswer(step, item.questionText || '', item.answer || '', userId);
+        if (correct) await gradeStepCorrect(userId, step, 1);
+        return { componentId: item.componentId, correct, feedback };
+      })
+    );
+    res.json({ results });
   } catch (err) {
-    console.error('Chain diagnostic retry grading failed:', err);
+    console.error('Prerequisite check retry grading failed:', err);
     res.status(500).json({ error: 'could not grade that answer' });
+  }
+});
+
+// POST /knowledge-map-v2/prereq-check/finalize  { state, genuineGapComponentIds: string[] }
+// Orders whatever's still a genuine gap (never resolved correct, whether
+// on the first pass or a silly-mistake retry) into real prerequisite
+// order for the main feed — every gap node's own fresh encoding lesson,
+// and every gap edge's own fresh integration lesson, exactly the SAME
+// lesson flows a brand-new concept already goes through, just seeded in
+// one sequence ending at the target the student originally picked. Pure
+// DB read + list ordering, no AI call — see buildGapFeedItems.
+router.post('/knowledge-map-v2/prereq-check/finalize', requireAuth, syncEndpointLimiter, async (req: Request, res: Response) => {
+  const { state, genuineGapComponentIds } = (req.body ?? {}) as { state?: PrereqCheckState; genuineGapComponentIds?: string[] };
+  if (!state || !state.gap) {
+    return res.status(400).json({ error: 'state is required' });
+  }
+  try {
+    const items = await buildGapFeedItems(state.gap, new Set(genuineGapComponentIds || []));
+    res.json({ items });
+  } catch (err) {
+    console.error('Prerequisite check finalize failed:', err);
+    res.status(500).json({ error: 'could not finish that' });
   }
 });
 

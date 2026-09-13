@@ -1,84 +1,81 @@
 // The knowledge-map "jump ahead" gate — a student trying to start a
 // lesson whose prerequisites they haven't covered is tested on the whole
-// unmastered chain via ONE combined free-text question (not a per-node
-// checkbox wizard), then walked through a slip-vs-genuine-gap self-report
-// for anything they got wrong, exactly as designed: encoding checks
-// (definitions), transfer checks (identifying that two concepts connect),
-// and integration checks (explaining the mechanism between them). A
-// genuine gap denies access to the target and redirects to the specific
-// failing lesson instead.
+// unmastered chain via a SEPARATE short question per component (a node's
+// own encoding/AO1, or the link between two consecutive concepts), laid
+// out as one vertical column per prerequisite chain (side by side when
+// the target has more than one), with a single submit button grading
+// every box at once. Anything wrong that looks like a silly slip offers
+// one focused retry; anything else (declined or still wrong after a
+// retry) is a genuine gap — fed into the main feed afterward as a normal,
+// completely fresh encoding/integration lesson (see knowledgeMap.ts's
+// prereq-check/finalize route), never denied or redirected away from.
 //
 // State is round-tripped through the client, same convention as
-// diagnosticOrchestrator.ts — but unlike that engine's client state, this
-// one NEVER embeds ground truth (node explanations / edge link-teaching
-// content) in what goes back to the browser. Only ids travel; ground
-// truth is always re-fetched server-side by id when needed, the same
-// discipline the math diagnostic path already uses for its verified
-// solutions.
+// diagnosticOrchestrator.ts — but this one NEVER embeds ground truth
+// (node explanations / edge link-teaching content) in what goes back to
+// the browser. Only ids/labels travel; ground truth is always re-fetched
+// server-side by id when needed, the same discipline the math diagnostic
+// path already uses for its verified solutions.
 import { supabaseAdmin } from './supabaseAdmin';
 import { selectAllRows } from './supabasePagination';
 import { callClaudeJSON, MODELS } from './claudeClient';
 import { parseModelJson } from './jsonParsing';
 import { resolveSubjectTriple } from './subjectResolution';
 import { getMasteryDetailsForConcepts, gradeCorrectness } from './reviewService';
+import { linkIntegrationConceptId } from './nodeReviewService';
 import {
-  CHAIN_DIAGNOSTIC_QUESTION_PROMPT,
-  CHAIN_DIAGNOSTIC_GRADE_PROMPT,
-  CHAIN_DIAGNOSTIC_SLIP_RETRY_QUESTION_PROMPT,
-  CHAIN_DIAGNOSTIC_SLIP_RETRY_GRADE_PROMPT,
-} from '../constants/chainDiagnosticPrompts';
+  PER_STEP_QUESTION_PROMPT,
+  PER_STEP_GRADE_PROMPT,
+  PER_STEP_RETRY_QUESTION_PROMPT,
+  PER_STEP_RETRY_GRADE_PROMPT,
+  PerStepGradeResult,
+} from '../constants/prerequisiteCheckPrompts';
 
-// Real bug found live: this file used to parse with a plain JSON.parse +
-// one bracket-span fallback of its own, instead of the shared
-// parseModelJson (jsonParsing.ts) every other Claude-JSON call site in
-// this app already uses - broke the very first time a chain diagnostic's
-// generated questionText was long enough to contain a literal newline
-// between paragraphs (completely ordinary for a genuinely long combined
-// question - e.g. a 47-component gap on a brand-new subject with nothing
-// encoded yet), which JSON.parse rejects outright as a "bad control
-// character" with no fallback able to fix it. The chain diagnostic route
-// swallows any thrown error into a 500, and the frontend's own gate check
-// fails OPEN on that (a deliberate choice - a network hiccup here
-// shouldn't trap a student), so the actual symptom was never a visible
-// error at all - just no prerequisite check ever firing, for any target
-// with a long enough gap to trigger it.
+// Real bug found live in the OLD combined-question design: this file used
+// to parse with a plain JSON.parse + one bracket-span fallback of its
+// own, instead of the shared parseModelJson (jsonParsing.ts) every other
+// Claude-JSON call site in this app already uses - broke the very first
+// time a generated question was long enough to contain a literal newline
+// between paragraphs. Kept here even though questions are shorter now -
+// parseModelJson is strictly more robust, never less.
 async function callJSON<T>(systemPrompt: string, userContent: string, model: string, temperature = 0.2, maxTokens?: number, userId?: string): Promise<T> {
   const raw = await callClaudeJSON({ model, systemPrompt, userContent, temperature, maxTokens, userId });
   try {
     return parseModelJson<T>(raw);
   } catch (err) {
-    console.error('LastMind: chain diagnostic call returned invalid JSON.', { raw });
+    console.error('LastMind: prerequisite check call returned invalid JSON.', { raw });
     throw err;
   }
 }
 
-export type ComponentType = 'encoding' | 'transfer' | 'integration';
+export type StepType = 'encoding' | 'link';
 
-// componentId encodes everything needed to re-fetch its own ground truth
-// server-side, so it's the only thing that ever needs to travel — no
-// ground-truth text is ever put in client-held state.
 export function encodingComponentId(nodeId: string): string {
   return `encoding:${nodeId}`;
 }
-export function edgeComponentId(type: 'transfer' | 'integration', edgeId: string): string {
-  return `${type}:${edgeId}`;
-}
-function parseComponentId(componentId: string): { type: ComponentType; refId: string } {
-  const sep = componentId.indexOf(':');
-  return { type: componentId.slice(0, sep) as ComponentType, refId: componentId.slice(sep + 1) };
+export function linkComponentId(edgeId: string): string {
+  return `link:${edgeId}`;
 }
 
-interface ResolvedComponent {
+export interface ChainStep {
   componentId: string;
-  type: ComponentType;
-  label: string; // display label, safe to show
-  groundTruth: string; // NEVER sent to the client
-  conceptId: string; // FSRS grading key
+  type: StepType;
+  nodeId?: string; // encoding
+  edgeId?: string; fromNodeId?: string; toNodeId?: string; // link
 }
 
-interface GapResult {
+interface GapEdge {
+  id: string;
+  from: string;
+  to: string;
+}
+
+export interface GapResult {
+  targetNodeId: string;
   targetLabel: string;
-  componentIds: string[]; // ordered: encoding checks then edge checks, in chain (topological) order
+  gapNodeIds: string[]; // unordered set of ancestor node ids that haven't been encoded at all yet
+  gapEdges: GapEdge[]; // every edge among gapNodeIds ∪ {target}
+  topoOrder: string[]; // gapNodeIds ∪ {target}, earliest-prerequisite-first
 }
 
 /**
@@ -91,10 +88,8 @@ interface GapResult {
  * has still been taught, and gating on mastery here would keep re-testing
  * a chain the student has already legitimately been through, on every
  * lesson downstream of it, for as long as it takes to reach mastery.
- * Returns componentIds only (ids, never ground truth) in topological
- * (earliest-prerequisite-first) order. An empty componentIds list means
- * no gap — the caller should let the student straight into the target
- * lesson, no diagnostic needed.
+ * An empty gapNodeIds means no gap — the caller should let the student
+ * straight into the target lesson, no check needed.
  */
 export async function findPrerequisiteGap(
   userId: string,
@@ -148,7 +143,7 @@ export async function findPrerequisiteGap(
       }
     }
   }
-  if (!ancestorIds.size) return { targetLabel: targetRow.label as string, componentIds: [] };
+  if (!ancestorIds.size) return { targetNodeId, targetLabel: targetRow.label as string, gapNodeIds: [], gapEdges: [], topoOrder: [] };
 
   const ancestorConceptIds = Array.from(ancestorIds).map((id) => nodeById.get(id)!.concept_id as string);
   const masteryByConceptId = await getMasteryDetailsForConcepts(userId, ancestorConceptIds);
@@ -173,17 +168,18 @@ export async function findPrerequisiteGap(
       queue.push(from);
     }
   }
-  if (!gapNodeIds.size) return { targetLabel: targetRow.label as string, componentIds: [] };
+  if (!gapNodeIds.size) return { targetNodeId, targetLabel: targetRow.label as string, gapNodeIds: [], gapEdges: [], topoOrder: [] };
 
   // Topologically order the gap subgraph (earliest prerequisite first) via
-  // Kahn's algorithm restricted to gap nodes + the target, so the combined
-  // question and its component list read in real teaching order.
+  // Kahn's algorithm restricted to gap nodes + the target, so both the
+  // chain-building below and the post-check feed-seeding read in real
+  // teaching order.
   const gapPlusTarget = new Set([...gapNodeIds, targetNodeId]);
-  const gapEdges = edgeRows.filter((e) => gapPlusTarget.has(e.from_node_id) && gapPlusTarget.has(e.to_node_id));
+  const gapEdgeRows = edgeRows.filter((e) => gapPlusTarget.has(e.from_node_id) && gapPlusTarget.has(e.to_node_id));
   const inDegree = new Map<string, number>();
   const outAdj = new Map<string, string[]>();
   gapPlusTarget.forEach((id) => inDegree.set(id, 0));
-  gapEdges.forEach((e) => {
+  gapEdgeRows.forEach((e) => {
     inDegree.set(e.to_node_id, (inDegree.get(e.to_node_id) || 0) + 1);
     outAdj.set(e.from_node_id, [...(outAdj.get(e.from_node_id) || []), e.to_node_id]);
   });
@@ -198,148 +194,274 @@ export async function findPrerequisiteGap(
     }
   }
 
-  const componentIds: string[] = [];
-  topoOrder.forEach((nodeId) => {
-    if (gapNodeIds.has(nodeId)) componentIds.push(encodingComponentId(nodeId));
-  });
-  gapEdges.forEach((e) => {
-    // Both endpoints already known to be in gapPlusTarget by construction.
-    componentIds.push(edgeComponentId('transfer', e.id));
-    componentIds.push(edgeComponentId('integration', e.id));
-  });
-
-  return { targetLabel: targetRow.label as string, componentIds };
+  return {
+    targetNodeId,
+    targetLabel: targetRow.label as string,
+    gapNodeIds: Array.from(gapNodeIds),
+    gapEdges: gapEdgeRows.map((e) => ({ id: e.id, from: e.from_node_id, to: e.to_node_id })),
+    topoOrder,
+  };
 }
 
-/** Re-fetches one component's ground truth + display label + FSRS key by id. Never cached client-side. */
-async function resolveComponent(componentId: string): Promise<ResolvedComponent | null> {
-  const { type, refId } = parseComponentId(componentId);
-  if (type === 'encoding') {
+/**
+ * Decomposes the gap subgraph into one or more vertical chains — each a
+ * root (a gap node with no unencoded gap-parent) walked FORWARD to the
+ * target, alternating an encoding step then the link into the next node.
+ * Every gap node's encoding step, and every gap edge's link step, is
+ * placed in EXACTLY ONE chain — a node reached from more than one
+ * direction (a fan-in) only gets tested once, by whichever chain reaches
+ * it first; a node with more than one forward edge (a fan-out) spawns an
+ * additional chain per extra edge, starting with just that link step
+ * (its OWN encoding already sits in the chain that claimed it) and
+ * continuing forward from there. This is what actually produces "more
+ * than one vertical chain, shown side by side" for a target with
+ * multiple independent prerequisite branches, while never asking the
+ * same question twice for a node/edge reached by more than one path.
+ */
+export function buildPrerequisiteChains(gap: GapResult): ChainStep[][] {
+  const gapNodeIdSet = new Set(gap.gapNodeIds);
+  const outByNode = new Map<string, GapEdge[]>();
+  const inCount = new Map<string, number>();
+  gapNodeIdSet.forEach((id) => inCount.set(id, 0));
+  gap.gapEdges.forEach((e) => {
+    if (!outByNode.has(e.from)) outByNode.set(e.from, []);
+    outByNode.get(e.from)!.push(e);
+    if (gapNodeIdSet.has(e.to)) inCount.set(e.to, (inCount.get(e.to) || 0) + 1);
+  });
+
+  const roots = gap.topoOrder.filter((id) => gapNodeIdSet.has(id) && (inCount.get(id) || 0) === 0);
+
+  const claimedEncoding = new Set<string>();
+  const claimedForward = new Set<string>();
+  const chains: ChainStep[][] = [];
+  type QueueItem = { nodeId: string; entryStep: ChainStep | null };
+  const queue: QueueItem[] = roots.map((nodeId) => ({ nodeId, entryStep: null }));
+
+  while (queue.length) {
+    const { nodeId, entryStep } = queue.shift()!;
+    if (claimedForward.has(nodeId)) {
+      // Forward continuation from this node already belongs to another
+      // chain (reached first via a different edge), but THIS specific
+      // incoming edge still needs its own test — push it as a standalone
+      // one-step feeder chain rather than silently dropping it. Without
+      // this, a node with two genuinely non-primary incoming edges (a
+      // fan-in via extras, not roots) would lose the second edge
+      // entirely: never asked, never gradable, never fed into the
+      // remediation feed even though it's a real untested prerequisite.
+      if (entryStep) chains.push([entryStep]);
+      continue;
+    }
+    claimedForward.add(nodeId);
+
+    const steps: ChainStep[] = [];
+    if (entryStep) steps.push(entryStep);
+    if (!claimedEncoding.has(nodeId)) {
+      steps.push({ componentId: encodingComponentId(nodeId), type: 'encoding', nodeId });
+      claimedEncoding.add(nodeId);
+    }
+
+    let cur: string | null = nodeId;
+    while (cur !== null) {
+      const curId: string = cur;
+      const outs: GapEdge[] = outByNode.get(curId) || [];
+      if (!outs.length) break;
+      const primary: GapEdge = outs[0];
+      const extras: GapEdge[] = outs.slice(1);
+      steps.push({ componentId: linkComponentId(primary.id), type: 'link', edgeId: primary.id, fromNodeId: primary.from, toNodeId: primary.to });
+      for (const extra of extras) {
+        queue.push({
+          nodeId: extra.to,
+          entryStep: { componentId: linkComponentId(extra.id), type: 'link', edgeId: extra.id, fromNodeId: extra.from, toNodeId: extra.to },
+        });
+      }
+      if (primary.to === gap.targetNodeId || claimedForward.has(primary.to)) {
+        cur = null;
+        break;
+      }
+      const next: string = primary.to;
+      claimedForward.add(next);
+      if (!claimedEncoding.has(next)) {
+        steps.push({ componentId: encodingComponentId(next), type: 'encoding', nodeId: next });
+        claimedEncoding.add(next);
+      }
+      cur = next;
+    }
+    if (steps.length) chains.push(steps);
+  }
+
+  return chains;
+}
+
+interface ResolvedStep {
+  componentId: string;
+  type: StepType;
+  label: string; // node label, or "A → B" for a link — display-safe
+  fromLabel?: string;
+  toLabel?: string;
+  groundTruth: string; // NEVER sent to the client
+  conceptId: string; // FSRS grading key
+}
+
+/** Re-fetches one step's ground truth + display label(s) + FSRS key by id. Never cached client-side. */
+async function resolveStep(step: ChainStep): Promise<ResolvedStep | null> {
+  if (step.type === 'encoding') {
     const { data: node, error } = await supabaseAdmin
       .from('knowledge_map_nodes')
       .select('id, concept_id, label')
-      .eq('id', refId)
+      .eq('id', step.nodeId)
       .maybeSingle();
     if (error) throw error;
     if (!node) return null;
     const { data: lesson } = await supabaseAdmin
       .from('knowledge_map_node_lessons')
       .select('encoding_content')
-      .eq('node_id', refId)
+      .eq('node_id', step.nodeId)
       .maybeSingle();
     const explanation = (lesson?.encoding_content as { explanation?: string } | null)?.explanation || '';
-    return { componentId, type, label: node.label as string, groundTruth: explanation, conceptId: node.concept_id as string };
+    return { componentId: step.componentId, type: 'encoding', label: node.label as string, groundTruth: explanation, conceptId: node.concept_id as string };
   }
 
-  // transfer / integration — both keyed off the same edge and the same
-  // linkTeaching ground truth, differing only in what the grading prompt
-  // looks for (see CHAIN_DIAGNOSTIC_GRADE_PROMPT rules 4-5).
   const { data: edge, error } = await supabaseAdmin
     .from('knowledge_map_edges')
     .select('id, from_node_id, to_node_id')
-    .eq('id', refId)
+    .eq('id', step.edgeId)
     .maybeSingle();
   if (error) throw error;
   if (!edge) return null;
   const [{ data: fromNode }, { data: toNode }, { data: lesson }] = await Promise.all([
     supabaseAdmin.from('knowledge_map_nodes').select('label, concept_id').eq('id', edge.from_node_id).maybeSingle(),
     supabaseAdmin.from('knowledge_map_nodes').select('label, concept_id').eq('id', edge.to_node_id).maybeSingle(),
-    supabaseAdmin.from('knowledge_map_edge_lessons').select('link_teaching_content').eq('edge_id', refId).maybeSingle(),
+    supabaseAdmin.from('knowledge_map_edge_lessons').select('link_teaching_content').eq('edge_id', step.edgeId).maybeSingle(),
   ]);
   if (!fromNode || !toNode) return null;
   const linkTeaching = (lesson?.link_teaching_content as string) || '';
   return {
-    componentId,
-    type,
+    componentId: step.componentId,
+    type: 'link',
     label: `${fromNode.label} → ${toNode.label}`,
+    fromLabel: fromNode.label as string,
+    toLabel: toNode.label as string,
     groundTruth: linkTeaching,
-    conceptId: `${fromNode.concept_id}->${toNode.concept_id}`,
+    conceptId: linkIntegrationConceptId(fromNode.concept_id as string, toNode.concept_id as string),
   };
 }
 
-export interface ChainDiagnosticQuestion {
-  componentIds: string[];
+export interface ChainStepForClient {
+  componentId: string;
+  type: StepType;
+  label: string;
+  fromLabel?: string;
+  toLabel?: string;
   questionText: string;
 }
 
-export async function generateChainDiagnosticQuestion(targetLabel: string, componentIds: string[], userId: string): Promise<ChainDiagnosticQuestion> {
-  const components = (await Promise.all(componentIds.map(resolveComponent))).filter((c): c is ResolvedComponent => !!c);
-  // Only the encoding + integration components carry genuinely distinct
-  // ground truth worth showing the question-writer (transfer shares the
-  // same link-teaching text as integration for the same edge) — but every
-  // component still needs to be TESTED, so dedupe only for the prompt's
-  // own input, not the returned componentIds.
-  const chainForPrompt = components
-    .filter((c) => c.type !== 'transfer') // integration's entry already carries the same edge's ground truth
-    .map((c) => `[${c.type}] ${c.label}\nReference (never reveal): ${c.groundTruth}`)
-    .join('\n\n');
+/**
+ * Generates every step's own separate question, across every chain, in
+ * ONE batched call — cheaper than one call per step, and keeps the whole
+ * set contextually non-repetitive since the model sees them together.
+ */
+export async function generateChainQuestions(targetLabel: string, chains: ChainStep[][], userId: string): Promise<ChainStepForClient[][]> {
+  const flatSteps = chains.flat();
+  const resolved = (await Promise.all(flatSteps.map(resolveStep))).filter((r): r is ResolvedStep => !!r);
+  const byComponentId = new Map(resolved.map((r) => [r.componentId, r]));
 
-  const { questionText } = await callJSON<{ questionText: string }>(
-    CHAIN_DIAGNOSTIC_QUESTION_PROMPT,
-    `Target concept (context only, never explain its own content): ${targetLabel}\n\nOrdered chain the student is skipping:\n${chainForPrompt}`,
+  const inputList = resolved
+    .map((r) => `componentId: ${r.componentId}\n[${r.type}] ${r.label}\nReference (never reveal): ${r.groundTruth}`)
+    .join('\n\n');
+  const { questions } = await callJSON<{ questions: { componentId: string; questionText: string }[] }>(
+    PER_STEP_QUESTION_PROMPT,
+    `Target concept (context only, never explain its own content): ${targetLabel}\n\nComponents:\n${inputList}`,
     MODELS.diagnosticTree,
     0.3,
-    undefined,
+    Math.max(2048, flatSteps.length * 220 + 512),
     userId
   );
-  return { componentIds, questionText };
+  const questionByComponentId = new Map(questions.map((q) => [q.componentId, q.questionText]));
+
+  return chains.map((chain) => {
+    const out: ChainStepForClient[] = [];
+    for (const step of chain) {
+      const r = byComponentId.get(step.componentId);
+      if (!r) continue;
+      out.push({
+        componentId: step.componentId,
+        type: step.type,
+        label: r.label,
+        fromLabel: r.fromLabel,
+        toLabel: r.toLabel,
+        questionText: questionByComponentId.get(step.componentId) || (step.type === 'encoding' ? `Explain what "${r.label}" means, in your own words.` : `Explain how "${r.fromLabel}" links to "${r.toLabel}".`),
+      });
+    }
+    return out;
+  });
 }
 
-export interface ChainDiagnosticGradeOutcome {
-  componentId: string;
-  type: ComponentType;
-  label: string;
-  correct: boolean;
-  feedback: string;
-}
-
-export async function gradeChainDiagnosticAnswer(
-  componentIds: string[],
-  questionText: string,
-  answer: string,
+/**
+ * Grades every step's own separate answer in ONE batched call. Anything
+ * correct is graded straight into FSRS here (see gradeStepCorrect) —
+ * exactly as a first-time-correct answer currently does, which is also
+ * what schedules its Day-1 check. Anything wrong is left ungraded
+ * entirely (no premature 'again') — a genuine gap only ever enters FSRS
+ * later, via its own completely fresh encoding/integration lesson once
+ * fed into the main feed (see knowledgeMap.ts's prereq-check/finalize).
+ */
+export async function gradeChainAnswers(
+  chains: ChainStep[][],
+  answers: Record<string, string>,
   userId: string
-): Promise<ChainDiagnosticGradeOutcome[]> {
-  const components = (await Promise.all(componentIds.map(resolveComponent))).filter((c): c is ResolvedComponent => !!c);
-  const numbered = components
-    .map((c, i) => `${i + 1}. [${c.type}] ${c.label}\nReference (never reveal): ${c.groundTruth}`)
+): Promise<PerStepGradeResult[]> {
+  const flatSteps = chains.flat();
+  const resolved = (await Promise.all(flatSteps.map(resolveStep))).filter((r): r is ResolvedStep => !!r);
+
+  const numbered = resolved
+    .map((r, i) => `${i + 1}. componentId: ${r.componentId}\n[${r.type}] ${r.label}\nReference (never reveal): ${r.groundTruth}\nStudent's answer: ${answers[r.componentId] || '(blank)'}`)
     .join('\n\n');
 
-  // Output scales with the number of unmastered components in the chain
-  // (one { correct, feedback } object per component — see rule 7's
-  // "feedback for EVERY component" requirement) as well as how much the
-  // student's own answer gives the model to reference. The 2048-token
-  // default that callClaudeJSON otherwise falls back to is comfortably
-  // enough for one or two components, but a longer chain plus a
-  // several-line combined answer can genuinely exceed it — a truncated,
-  // syntactically-broken JSON response fails to parse, which surfaced to
-  // the student as a flat "something went wrong" while grading a long
-  // answer to a multi-component chain check. Scaling with the component
-  // count directly (rather than one fixed bump) keeps a short chain cheap
-  // while still covering a long one.
-  const { results } = await callJSON<{ results: { correct: boolean; feedback: string }[] }>(
-    CHAIN_DIAGNOSTIC_GRADE_PROMPT,
-    `Question the student was asked:\n${questionText}\n\nStudent's answer:\n${answer}\n\nComponents to check, in order:\n${numbered}`,
+  const { results } = await callJSON<{ results: PerStepGradeResult[] }>(
+    PER_STEP_GRADE_PROMPT,
+    `Components and answers, in order:\n${numbered}`,
     MODELS.diagnosticTree,
     0.1,
-    Math.max(2048, components.length * 600 + 512),
+    Math.max(2048, resolved.length * 350 + 512),
     userId
   );
+  const resultByComponentId = new Map(results.map((r) => [r.componentId, r]));
 
-  return components.map((c, i) => ({
-    componentId: c.componentId,
-    type: c.type,
-    label: c.label,
-    correct: results[i]?.correct ?? false,
-    feedback: results[i]?.feedback || '',
-  }));
+  const finalResults: PerStepGradeResult[] = resolved.map((r) => {
+    const graded = resultByComponentId.get(r.componentId);
+    return {
+      componentId: r.componentId,
+      correct: graded?.correct ?? false,
+      feedback: graded?.feedback || '',
+      sillyMistake: graded?.correct ? undefined : graded?.sillyMistake,
+    };
+  });
+
+  await Promise.all(
+    finalResults
+      .filter((r) => r.correct)
+      .map((r) => {
+        const step = flatSteps.find((s) => s.componentId === r.componentId)!;
+        return gradeStepCorrect(userId, step, 0);
+      })
+  );
+
+  return finalResults;
 }
 
-export async function generateSlipRetryQuestion(componentId: string, originalAnswer: string, originalFeedback: string, userId: string): Promise<string> {
-  const component = await resolveComponent(componentId);
-  if (!component) throw new Error('component not found');
+/** Resolves a step's conceptId and grades it correct — first-try 'good', or 'hard' after one retry (retryCount=1), the exact same rating a normal first-time-correct answer/retry gets elsewhere in this app. */
+export async function gradeStepCorrect(userId: string, step: ChainStep, retryCount: number): Promise<void> {
+  const resolved = await resolveStep(step);
+  if (!resolved) return;
+  await gradeCorrectness(userId, resolved.conceptId, true, retryCount);
+}
+
+export async function generateStepRetryQuestion(step: ChainStep, originalAnswer: string, originalFeedback: string, userId: string): Promise<string> {
+  const resolved = await resolveStep(step);
+  if (!resolved) throw new Error('component not found');
   const { questionText } = await callJSON<{ questionText: string }>(
-    CHAIN_DIAGNOSTIC_SLIP_RETRY_QUESTION_PROMPT,
-    `Check type: ${component.type}\nConcept(s): ${component.label}\nReference (never reveal): ${component.groundTruth}\nStudent's original wrong answer: ${originalAnswer}\nFeedback they were given: ${originalFeedback}`,
+    PER_STEP_RETRY_QUESTION_PROMPT,
+    `Check type: ${resolved.type}\nConcept(s): ${resolved.label}\nReference (never reveal): ${resolved.groundTruth}\nStudent's original wrong answer: ${originalAnswer}\nFeedback they were given: ${originalFeedback}`,
     MODELS.simpleQuestion,
     0.3,
     undefined,
@@ -348,12 +470,12 @@ export async function generateSlipRetryQuestion(componentId: string, originalAns
   return questionText;
 }
 
-export async function gradeSlipRetryAnswer(componentId: string, retryQuestion: string, answer: string, userId: string): Promise<{ correct: boolean; feedback: string }> {
-  const component = await resolveComponent(componentId);
-  if (!component) throw new Error('component not found');
+export async function gradeStepRetryAnswer(step: ChainStep, retryQuestion: string, answer: string, userId: string): Promise<{ correct: boolean; feedback: string }> {
+  const resolved = await resolveStep(step);
+  if (!resolved) throw new Error('component not found');
   return callJSON<{ correct: boolean; feedback: string }>(
-    CHAIN_DIAGNOSTIC_SLIP_RETRY_GRADE_PROMPT,
-    `Check type: ${component.type}\nConcept(s): ${component.label}\nReference (never reveal): ${component.groundTruth}\nQuestion asked: ${retryQuestion}\nStudent's answer: ${answer}`,
+    PER_STEP_RETRY_GRADE_PROMPT,
+    `Check type: ${resolved.type}\nConcept(s): ${resolved.label}\nReference (never reveal): ${resolved.groundTruth}\nQuestion asked: ${retryQuestion}\nStudent's answer: ${answer}`,
     MODELS.simpleQuestion,
     0.1,
     undefined,
@@ -361,44 +483,48 @@ export async function gradeSlipRetryAnswer(componentId: string, retryQuestion: s
   );
 }
 
-/**
- * FSRS-grades one resolved component — 'again' for a genuine gap,
- * otherwise routed through gradeCorrectness (retryCount=1 for a
- * slip-then-correct pass, so it reads 'hard' rather than looking
- * identical to a clean first-try pass).
- */
-export async function gradeComponentOutcome(
-  userId: string,
-  componentId: string,
-  outcome: 'correct' | 'slip_confirmed' | 'genuine_gap'
-): Promise<void> {
-  const component = await resolveComponent(componentId);
-  if (!component) return;
-  if (outcome === 'genuine_gap') {
-    await gradeCorrectness(userId, component.conceptId, false);
-    return;
-  }
-  await gradeCorrectness(userId, component.conceptId, true, outcome === 'slip_confirmed' ? 1 : 0);
+export interface GapFeedItem {
+  type: 'node' | 'link';
+  nodeId?: string;
+  label?: string;
+  fromNodeId?: string;
+  toNodeId?: string;
+  fromLabel?: string;
+  toLabel?: string;
 }
 
-/** Redirect target for a genuine gap — the node's own lesson for an 'encoding' failure, or the edge's from/to pair for a 'transfer'/'integration' failure (the Start Lesson bridge already teaches exactly this link). */
-export async function redirectForComponent(componentId: string): Promise<{ type: 'node'; nodeId: string; label: string } | { type: 'edge'; fromNodeId: string; toNodeId: string; label: string } | null> {
-  const { type, refId } = parseComponentId(componentId);
-  if (type === 'encoding') {
-    const { data: node } = await supabaseAdmin.from('knowledge_map_nodes').select('id, label').eq('id', refId).maybeSingle();
-    if (!node) return null;
-    return { type: 'node', nodeId: node.id as string, label: node.label as string };
+/**
+ * Orders the genuine-gap componentIds (whatever's still wrong once the
+ * check + any silly-mistake retries are done) into the exact sequence
+ * they should be fed into the main feed — every gap node's encoding, and
+ * every gap edge's link, in real prerequisite (topological) order, so a
+ * link step only ever appears once both its endpoints already have a
+ * chance to be encoded (either fed in earlier here, or already encoded
+ * from before this check ever ran).
+ */
+export async function buildGapFeedItems(gap: GapResult, genuineGapComponentIds: Set<string>): Promise<GapFeedItem[]> {
+  const genuineGapNodeIds = new Set(gap.gapNodeIds.filter((id) => genuineGapComponentIds.has(encodingComponentId(id))));
+  const genuineGapEdges = gap.gapEdges.filter((e) => genuineGapComponentIds.has(linkComponentId(e.id)));
+  const edgesByTo = new Map<string, GapEdge[]>();
+  genuineGapEdges.forEach((e) => {
+    if (!edgesByTo.has(e.to)) edgesByTo.set(e.to, []);
+    edgesByTo.get(e.to)!.push(e);
+  });
+
+  const nodeIdsNeeded = new Set<string>();
+  genuineGapNodeIds.forEach((id) => nodeIdsNeeded.add(id));
+  genuineGapEdges.forEach((e) => { nodeIdsNeeded.add(e.from); nodeIdsNeeded.add(e.to); });
+  const { data: nodeRows } = await supabaseAdmin.from('knowledge_map_nodes').select('id, label').in('id', Array.from(nodeIdsNeeded));
+  const labelById = new Map((nodeRows || []).map((n) => [n.id as string, n.label as string]));
+
+  const items: GapFeedItem[] = [];
+  for (const nodeId of gap.topoOrder) {
+    if (genuineGapNodeIds.has(nodeId)) {
+      items.push({ type: 'node', nodeId, label: labelById.get(nodeId) || '' });
+    }
+    for (const e of edgesByTo.get(nodeId) || []) {
+      items.push({ type: 'link', fromNodeId: e.from, toNodeId: e.to, fromLabel: labelById.get(e.from) || '', toLabel: labelById.get(e.to) || '' });
+    }
   }
-  const { data: edge } = await supabaseAdmin.from('knowledge_map_edges').select('from_node_id, to_node_id').eq('id', refId).maybeSingle();
-  if (!edge) return null;
-  const [{ data: fromNode }, { data: toNode }] = await Promise.all([
-    supabaseAdmin.from('knowledge_map_nodes').select('label').eq('id', edge.from_node_id).maybeSingle(),
-    supabaseAdmin.from('knowledge_map_nodes').select('label').eq('id', edge.to_node_id).maybeSingle(),
-  ]);
-  return {
-    type: 'edge',
-    fromNodeId: edge.from_node_id as string,
-    toNodeId: edge.to_node_id as string,
-    label: `${fromNode?.label || '?'} → ${toNode?.label || '?'}`,
-  };
+  return items;
 }

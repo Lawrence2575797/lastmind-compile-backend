@@ -30,7 +30,7 @@ import {
   assertNodeReviewDue,
   assertAo1ReviewDue,
 } from '../services/nodeReviewService';
-import { getNodeNoteBaseline, getNodeNoteForUser, saveNodeNoteEdit, getNodeNotes, getEdgeNoteBaseline, getEdgeNoteForUser, saveEdgeNoteEdit, getEdgeNotes, getNotesIndexForUser, getPersonalNote, savePersonalNote, checkWorkedExampleStep } from '../services/knowledgeMapNotesService';
+import { getNodeNoteBaseline, getNodeNoteForUser, saveNodeNoteEdit, getNodeNotes, getEdgeNoteBaseline, getEdgeNoteForUser, saveEdgeNoteEdit, getEdgeNotes, getNotesIndexForUser, getPersonalNote, savePersonalNote, checkWorkedExampleStep, markEdgeExplanationSeen } from '../services/knowledgeMapNotesService';
 import { generateAndCacheNodeLesson, generateAndCacheEdgeLesson } from '../services/lessonGenerationService';
 import { answerKnowledgeMapQuestion } from '../services/knowledgeMapAskService';
 import { assertFreshGenerationWithinCap, recordFreshGenerationEvent, GenerationCapExceededError } from '../services/generationCapService';
@@ -1352,10 +1352,12 @@ router.post('/knowledge-map-v2/node-review/integration/start', requireAuth, cost
     // The dual-coding visual is only ever relevant alongside linkTeaching
     // itself - shown once, on a genuine first attempt, never on a later
     // spaced review (see IntegrationStepData's own comment on why
-    // linkTeaching is withheld then too). getEdgeNoteBaseline has no
-    // per-user side effect (no AI call, nothing to unlock) - the separate
-    // Notes page's own "earned" unlock still only happens on an actual
-    // pass, via getEdgeNoteForUser.
+    // linkTeaching is withheld then too). This is also the moment the
+    // Notes page unlocks this link's own notes (markEdgeExplanationSeen) -
+    // deliberately not waiting for a correct pass, since the note is
+    // compiled from this same explanation, already shown in full right
+    // here regardless of how the question itself goes.
+    if (step.isFirstAttempt) await markEdgeExplanationSeen(userId, fromNodeId, toNodeId);
     const notes = step.isFirstAttempt ? await getEdgeNoteBaseline(fromNodeId, toNodeId) : null;
     res.json({
       questionText: step.questionText,

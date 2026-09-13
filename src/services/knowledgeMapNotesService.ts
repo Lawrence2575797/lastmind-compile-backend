@@ -259,6 +259,24 @@ export async function getEdgeNoteForUser(userId: string, fromNodeId: string, toN
   return edit ? { ...baseline, paragraphs: edit } : baseline;
 }
 
+// Called from /node-review/integration/start whenever it's about to show
+// this student this link's own bridge explanation for the first time
+// (step.isFirstAttempt) - unlocks the note right then, not on a later
+// correct pass. The explanation is what the note is actually compiled
+// from (see getEdgeNoteBaseline), and it's shown in full before the
+// question either way, so gating the note behind additionally answering
+// correctly was testing something the note itself doesn't depend on -
+// the note isn't a reward for passing, it's the same material already
+// shown, just filtered into a shorter written form.
+export async function markEdgeExplanationSeen(userId: string, fromNodeId: string, toNodeId: string): Promise<void> {
+  const edge = await resolveEdgeForReview(fromNodeId, toNodeId);
+  if (!edge) return;
+  const { error } = await supabaseAdmin
+    .from('knowledge_map_edge_notes_unlocked')
+    .upsert({ user_id: userId, edge_id: edge.id }, { onConflict: 'user_id,edge_id' });
+  if (error) console.error(`LastMind: failed to unlock notes for edge ${edge.id} (non-fatal).`, error);
+}
+
 // Checks one line of a student's own attempt at an interactive worked-
 // example walkthrough (see renderNodeNoteBlock's workedExample branch in
 // learn/index.html) against the corresponding ground-truth line - a
@@ -553,18 +571,17 @@ export async function getNotesIndexForUser(userId: string): Promise<{ subjects: 
     // is (see getNodeNoteBaseline), with no separate compiled-notes
     // existence to track any more.
 
-    // `knowledge_map_edge_notes_unlocked` only ever gets written live, at
-    // the exact moment renderNodeReviewSummary sees a fresh pass within
-    // ONE browser session (see learn/index.html's own comment on that
-    // hook) - it was never backfilled for a link a student had already
-    // covered BEFORE that hook existed, or from a session that ended
-    // before reaching the summary screen. Rather than leave those
-    // permanently "locked" despite being genuinely covered, also treat a
-    // link as unlocked once its integration concept_reviews row exists at
-    // all - integration never fails any more (see node-review/integration/
-    // submit's own comment: wrong answers retry, only a genuine correct
-    // pass ever gets recorded), so the row's mere existence already means
-    // this exact link was genuinely passed, not just attempted.
+    // `knowledge_map_edge_notes_unlocked` is now written the moment a
+    // student is first SHOWN this link's own bridge explanation (see
+    // markEdgeExplanationSeen, called from /node-review/integration/start
+    // on isFirstAttempt) - not gated on ever passing the question, since
+    // the note is compiled from that same explanation, already shown in
+    // full either way. durablyUnlockedEdgeIds below is a fallback for a
+    // link a student passed before this write existed (or from a session
+    // that ended before reaching that step) - integration never fails any
+    // more (wrong answers retry, only a genuine correct pass is recorded),
+    // so the row's mere existence there still safely implies the
+    // explanation was seen too.
     const candidateEdges = allEdges.filter((e) => {
       const from = nodeById.get(e.from_node_id);
       const to = nodeById.get(e.to_node_id);

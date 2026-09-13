@@ -1277,8 +1277,33 @@ router.post('/knowledge-map-v2/node-review/integration/start', requireAuth, cost
     const userId = req.userId as string;
     // Same session-level gate as ao1/start, checked again here since a
     // client could reach this route directly (resuming a session,
-    // stepping through links) without re-hitting ao1/start first.
-    await assertNodeReviewDue(userId, fromNodeId);
+    // stepping through links) without re-hitting ao1/start first - BUT
+    // only when this specific link has actually been tested before. A
+    // link with no concept_reviews row at all yet is always safe to
+    // teach right now regardless of whatever else about the FROM node's
+    // own review bundle is or isn't due today - the due-check exists to
+    // stop RE-testing something too early, not to gate a genuine first
+    // encounter (see this file's own "brand-new qualifying link... counts
+    // as due" reasoning). Real bug this fixes: the knowledge-map
+    // prerequisite check (see prereq-check/finalize) can feed a link
+    // into this exact route the moment its FROM node is freshly encoded
+    // mid-remediation - which schedules a real future due date for that
+    // node's own AO1 immediately, so the old unconditional due-check
+    // rejected a link that had never been taught at all with a 403.
+    const [{ data: fromNodeForGate }, { data: toNodeForGate }] = await Promise.all([
+      supabaseAdmin.from('knowledge_map_nodes').select('concept_id').eq('id', fromNodeId).maybeSingle(),
+      supabaseAdmin.from('knowledge_map_nodes').select('concept_id').eq('id', toNodeId).maybeSingle(),
+    ]);
+    if (fromNodeForGate && toNodeForGate) {
+      const linkConceptId = linkIntegrationConceptId(fromNodeForGate.concept_id as string, toNodeForGate.concept_id as string);
+      const { data: existingLinkReview } = await supabaseAdmin
+        .from('concept_reviews')
+        .select('concept_id')
+        .eq('user_id', userId)
+        .eq('concept_id', linkConceptId)
+        .maybeSingle();
+      if (existingLinkReview) await assertNodeReviewDue(userId, fromNodeId);
+    }
     let step = await getIntegrationStepData(userId, fromNodeId, toNodeId);
     if (!step) {
       // getIntegrationStepData returns null for two very different

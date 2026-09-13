@@ -37,6 +37,7 @@ function stripCodeFences(text) { return text.trim().replace(/^```(?:json)?\s*/i,
 function validateSpec(spec) {
   if (spec.notDiagrammatic) return { ok: true, notDiagrammatic: true };
   const errors = [];
+  if (!spec.questionText || !spec.questionText.trim()) errors.push('missing "questionText" - a diagrammatic spec must reword the question as a drawing instruction (see rule 9)');
   const curveIds = new Set();
   for (const c of spec.curves || []) {
     if (!c.id || !c.type) { errors.push(`curve missing id/type: ${JSON.stringify(c)}`); continue; }
@@ -153,7 +154,14 @@ async function main() {
     }
 
     const content = lessonRow.encoding_content;
-    content.practiceQuestion = { ...pq, diagramSpec: spec };
+    // Overwrites questionText with the reworded drawing instruction, not
+    // just adds diagramSpec alongside the untouched original - a real bug
+    // found live: the original question was written by the main lesson
+    // pass BEFORE this classification ever ran, so it default to a
+    // "describe/explain in words" phrasing, which then sat stapled to an
+    // interactive drawing canvas telling the student to write instead.
+    const { questionText: rewordedQuestionText, ...geometry } = spec;
+    content.practiceQuestion = { ...pq, questionText: rewordedQuestionText, diagramSpec: geometry };
     const { error } = await supabase.from('knowledge_map_node_lessons').update({ encoding_content: content }).eq('node_id', node.id);
     if (error) { failed++; failures.push({ id: node.id, label: node.label, reason: error.message }); process.stdout.write('!'); continue; }
     diagrammatic++;

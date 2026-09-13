@@ -19,9 +19,10 @@ import type { DiagramSpec } from './diagramGradingService';
 const MODEL = 'claude-sonnet-5';
 
 function validateSpec(spec: unknown): { ok: boolean; errors: string[] } {
-  const s = spec as { notDiagrammatic?: boolean; curves?: { id?: string; type?: string; baseCurveId?: string }[]; shades?: { id?: string; boundedBy?: string[] }[]; labels?: { anchor?: string; text?: string }[] };
+  const s = spec as { notDiagrammatic?: boolean; questionText?: string; curves?: { id?: string; type?: string; baseCurveId?: string }[]; shades?: { id?: string; boundedBy?: string[] }[]; labels?: { anchor?: string; text?: string }[] };
   if (s.notDiagrammatic) return { ok: true, errors: [] };
   const errors: string[] = [];
+  if (!s.questionText || !s.questionText.trim()) errors.push('missing "questionText" - a diagrammatic spec must reword the question as a drawing instruction (see rule 9)');
   const curveIds = new Set<string>();
   for (const c of s.curves || []) {
     if (!c.id || !c.type) { errors.push(`curve missing id/type: ${JSON.stringify(c)}`); continue; }
@@ -47,7 +48,7 @@ function validateSpec(spec: unknown): { ok: boolean; errors: string[] } {
   return { ok: errors.length === 0, errors };
 }
 
-// Returns a real DiagramSpec, null if this question genuinely isn't
+// Returns { spec, questionText }, null if this question genuinely isn't
 // diagrammatic, or null (logged, non-fatal) on a generation failure after
 // retrying once - never throws, since a missing diagram must never block
 // the lesson content it's meant to accompany. Needs the ACTUAL practice
@@ -64,13 +65,25 @@ function validateSpec(spec: unknown): { ok: boolean; errors: string[] } {
 // attempt's own errors inline in one fresh userContent, rather than the
 // multi-turn repair the standalone script does with the raw Anthropic SDK
 // directly.
+//
+// The returned questionText is a SECOND real bug fix, found live: the
+// main lesson-generation pass writes its practice question before this
+// classification ever runs, so it has no way to know in advance whether
+// the concept will turn out diagrammatic - it always writes a "describe/
+// explain in words" question by default. Once this DOES classify as
+// diagrammatic, the student ends up looking at an interactive drawing
+// canvas underneath a question that still says "describe how to
+// construct..." - see MECHANISTIC_DIAGRAM_SPEC_PROMPT's own rule 9,
+// which rewords it into an actual drawing instruction. The caller
+// (lessonGenerationService.ts) overwrites the original questionText with
+// this one whenever a real spec comes back.
 export async function generateDiagramSpecForQuestion(
   label: string,
   explanation: string,
   questionText: string,
   markScheme: string,
   userId: string
-): Promise<DiagramSpec | null> {
+): Promise<{ spec: DiagramSpec; questionText: string } | null> {
   const context = `Concept: ${label}\n\nExplanation: ${explanation}\n\nPractice question: ${questionText}\n\nMark scheme: ${markScheme}`;
   let userContent = context;
   for (let attempt = 0; attempt < 2; attempt++) {
@@ -97,8 +110,13 @@ export async function generateDiagramSpecForQuestion(
     }
     const validation = validateSpec(spec);
     if (validation.ok) {
-      const typed = spec as { notDiagrammatic?: boolean };
-      return typed.notDiagrammatic ? null : (spec as DiagramSpec);
+      const typed = spec as { notDiagrammatic?: boolean; questionText?: string };
+      if (typed.notDiagrammatic) return null;
+      // Strip questionText back out of the geometry object itself - it's
+      // returned alongside DiagramSpec for the caller to overwrite the
+      // question with, not part of the grading spec stored under it.
+      const { questionText: rewordedQuestionText, ...geometry } = spec as { questionText: string } & DiagramSpec;
+      return { spec: geometry as DiagramSpec, questionText: rewordedQuestionText };
     }
     userContent = `${context}\n\nYour previous response had real errors:\n${JSON.stringify(spec)}\n\nErrors:\n${validation.errors.join('\n')}\n\nResend the complete corrected JSON, nothing else.`;
   }

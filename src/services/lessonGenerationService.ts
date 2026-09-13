@@ -154,14 +154,25 @@ export async function generateAndCacheNodeLesson(nodeId: string, userId: string)
     const pq = typedContent.practiceQuestion;
     if (pq?.questionText) {
       try {
-        const diagramSpec = await generateDiagramSpecForQuestion(
+        const diagramResult = await generateDiagramSpecForQuestion(
           typedNode.label,
           typedContent.explanation || '',
           pq.questionText,
           pq.markScheme || '',
           userId
         );
-        if (diagramSpec) pq.diagramSpec = diagramSpec;
+        if (diagramResult) {
+          pq.diagramSpec = diagramResult.spec;
+          // The main lesson pass above wrote this as a "describe/explain
+          // in words" question by default, since it has no way to know
+          // in advance whether the concept would turn out diagrammatic -
+          // now that it has, the question itself must actually say
+          // "draw"/"construct"/"label", not "describe", or the student
+          // is left staring at a drawing canvas with instructions that
+          // don't match it (see generateDiagramSpecForQuestion's own
+          // comment - a real bug found live).
+          pq.questionText = diagramResult.questionText;
+        }
       } catch (err) {
         console.error(`LastMind: diagram spec generation failed for "${typedNode.label}" (${nodeId}).`, err);
       }

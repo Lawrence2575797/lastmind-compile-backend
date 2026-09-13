@@ -9,9 +9,14 @@
 // production content generation for LastMind, so it must run through the
 // Commercial/API terms, not a personal session.
 //
-// Usage: node scripts/generate_knowledge_map.js
-// Requires ANTHROPIC_API_KEY in the environment (see .env.example).
-// Edit SUBJECT/QUALIFICATION/EXAM_BOARD and SUBTOPICS below before running.
+// GCSE (9-1) Maths (Edexcel, 1MA1) variant of generate_knowledge_map.js -
+// Foundation and Higher tier as two separate knowledge maps, real spec
+// content pre-extracted into gcse_maths_foundation_subtopics.json /
+// gcse_maths_higher_subtopics.json (see build_gcse_subtopics.js).
+//
+// Usage: GCSE_MATHS_TIER=foundation node scripts/generate_knowledge_map_gcse_maths.js
+//    or: GCSE_MATHS_TIER=higher node scripts/generate_knowledge_map_gcse_maths.js
+// Requires CLAUDE_API_KEY in the environment (see .env.example).
 
 // override:true - a stale CLAUDE_API_KEY/Claude_API_KEY inherited from the
 // parent shell's own process environment (Windows env vars are case-
@@ -101,7 +106,7 @@ function cachedSystem(promptText) {
 // applies, real spend comes in under what this tracker reports, which is
 // the safe direction to be wrong in for a cap - never the other way.
 // User's explicit cap for this run: $5.
-const SPEND_CAP_USD = 5.0;
+const SPEND_CAP_USD = 50.0; // generous safety-net cap, not a target - no fixed budget requested for this run
 const PRICING_PER_MTOK = {
   'claude-sonnet-5': { in: 3, out: 15 },
   'claude-opus-5': { in: 5, out: 25 },
@@ -130,435 +135,25 @@ function assertUnderCap() {
   }
 }
 
-const SUBJECT = 'Economics';
-const QUALIFICATION = 'A-Level';
+// Subject-specific config for GCSE (9-1) Maths (Edexcel, 1MA1), Foundation
+// and Higher tier as two SEPARATE knowledge maps (per explicit instruction).
+// SUBTOPICS content is the REAL spec text extracted from the actual
+// Pearson specification PDF, split at the document's own two explicit
+// tier sections ("Foundation tier knowledge, skills and understanding" /
+// pages 3-9, "Higher tier..." / pages 10-18 - see the spec's own
+// "Foundation tier"/"Higher tier" paragraph) - not inferred from
+// bold/underline typography, and not from this pipeline's own general
+// knowledge of GCSE Maths content (see build_gcse_subtopics.js, kept
+// alongside the two generated *_subtopics.json files for how this was
+// produced and verified against known tier ground truth).
+const GCSE_MATHS_TIER = process.env.GCSE_MATHS_TIER; // 'foundation' | 'higher'
+if (GCSE_MATHS_TIER !== 'foundation' && GCSE_MATHS_TIER !== 'higher') {
+  throw new Error(`GCSE_MATHS_TIER env var must be 'foundation' or 'higher', got: ${GCSE_MATHS_TIER}`);
+}
+const SUBJECT = 'Mathematics';
+const QUALIFICATION = GCSE_MATHS_TIER === 'foundation' ? 'GCSE Foundation' : 'GCSE Higher';
 const EXAM_BOARD = 'Edexcel';
-
-// Fill in with the REAL specification content for each subtopic - the
-// actual named theories/concepts from the syllabus. Generation quality is
-// bounded by what's given here; do not leave this to the model's own
-// possibly-stale recall of the spec.
-const SUBTOPICS = [
-  {
-    subtopic: "1.1 Nature of economics",
-    specContent: `1.1 Nature of economics
-
-Content - what students need to learn:
-- Thinking like an economist: the process of developing models in economics, including the need to make assumptions.
-- The use of the ceteris paribus assumption in building models.
-- The inability in economics to make scientific experiments.
-- The distinction between positive and normative economic statements.
-- The role of value judgements in influencing economic decision making and policy.
-- The problem of scarcity, where there are unlimited wants and finite resources.
-- The distinction between renewable and non-renewable resources.
-- The importance of opportunity costs to economic agents (consumers, producers and government).
-- The use of production possibility frontiers (PPFs) to depict the maximum productive potential of an economy, opportunity cost (through marginal analysis), economic growth or decline, efficient or inefficient allocation of resources, and possible and unobtainable production.
-- The distinction between movements along and shifts in production possibility curves, considering the possible causes for such changes.
-- The distinction between capital and consumer goods.
-- Specialisation and the division of labour: reference to Adam Smith.
-- The advantages and disadvantages of specialisation and the division of labour in organising production.
-- The advantages and disadvantages of specialising in the production of goods and services to trade.
-- The functions of money (as a medium of exchange, a measure of value, a store of value, a method of deferred payment).
-- The distinction between free market, mixed and command economies: reference to Adam Smith, Friedrich Hayek and Karl Marx.
-- The advantages and disadvantages of a free market economy and a command economy.
-- The role of the state in a mixed economy.
-`
-  },
-  {
-    subtopic: "1.2 How markets work",
-    specContent: `1.2 How markets work
-
-Content - what students need to learn:
-- The underlying assumptions of rational economic decision making: consumers aim to maximise utility, and firms aim to maximise profits.
-- The distinction between movements along a demand curve and shifts of a demand curve.
-- The factors that may cause a shift in the demand curve (the conditions of demand).
-- The concept of diminishing marginal utility and how this influences the shape of the demand curve.
-- Understanding of price, income and cross elasticities of demand.
-- Use of formulae to calculate price, income and cross elasticities of demand.
-- Interpretation of numerical values of price elasticity of demand (unitary elastic, perfectly and relatively elastic, and perfectly and relatively inelastic), income elasticity of demand (inferior, normal and luxury goods; relatively elastic and relatively inelastic), and cross elasticity of demand (substitutes, complementary and unrelated goods).
-- The factors influencing elasticities of demand.
-- The significance of elasticities of demand to firms and government in terms of the imposition of indirect taxes and subsidies, changes in real income, and changes in the prices of substitute and complementary goods.
-- The relationship between price elasticity of demand and total revenue (including calculation).
-- The distinction between movements along a supply curve and shifts of a supply curve.
-- The factors that may cause a shift in the supply curve (the conditions of supply).
-- Understanding of price elasticity of supply.
-- Use of formula to calculate price elasticity of supply.
-- Interpretation of numerical values of price elasticity of supply: perfectly and relatively elastic, and perfectly and relatively inelastic.
-- Factors that influence price elasticity of supply.
-- The distinction between short run and long run in economics and its significance for elasticity of supply.
-- Equilibrium price and quantity and how they are determined.
-- The use of supply and demand diagrams to depict excess supply and excess demand.
-- The operation of market forces to eliminate excess demand and excess supply.
-- The use of supply and demand diagrams to show how shifts in demand and supply curves cause the equilibrium price and quantity to change in real-world situations.
-- Functions of the price mechanism to allocate resources: rationing, incentive, and signalling.
-- The price mechanism in the context of different types of markets, including local, national and global markets.
-- The distinction between consumer and producer surplus.
-- The use of supply and demand diagrams to illustrate consumer and producer surplus.
-- How changes in supply and demand might affect consumer and producer surplus.
-- Supply and demand analysis and elasticities applied to: the impact of indirect taxes on consumers, producers and government; the incidence of indirect taxes on consumers and producers; the impact of subsidies on consumers, producers and government; and the area that represents the producer subsidy and consumer subsidy.
-- The reasons why consumers may not behave rationally: consideration of the influence of other people's behaviour, the importance of habitual behaviour, and consumer weakness at computation.
-`
-  },
-  {
-    subtopic: "1.3 Market failure",
-    specContent: `1.3 Market failure
-
-Content - what students need to learn:
-- Understanding of market failure.
-- Types of market failure: externalities, under-provision of public goods, and information gaps.
-- Distinction between private costs, external costs and social costs.
-- Distinction between private benefits, external benefits and social benefits.
-- Use of a diagram to illustrate the external costs of production using marginal analysis, the distinction between market equilibrium and social optimum position, and identification of the welfare loss area.
-- Use of a diagram to illustrate the external benefits of consumption using marginal analysis, the distinction between market equilibrium and social optimum position, and identification of the welfare gain area.
-- The impact on economic agents of externalities and government intervention in various markets.
-- Distinction between public and private goods using the concepts of non-rivalry and non-excludability.
-- Why public goods may not be provided by the private sector: the free rider problem.
-- The distinction between symmetric and asymmetric information.
-- How imperfect market information may lead to a misallocation of resources.
-`
-  },
-  {
-    subtopic: "1.4 Government intervention",
-    specContent: `1.4 Government intervention
-
-Content - what students need to learn:
-- Purpose of intervention with reference to market failure, using diagrams in various contexts: indirect taxation (ad valorem and specific), subsidies, and maximum and minimum prices.
-- Other methods of government intervention: trade pollution permits, state provision of public goods, provision of information, and regulation.
-- Understanding of government failure as intervention that results in a net welfare loss.
-- Causes of government failure: distortion of price signals, unintended consequences, excessive administrative costs, and information gaps.
-- Government failure in various markets.
-`
-  },
-  {
-    subtopic: "2.1 Measures of economic performance",
-    specContent: `2.1 Measures of economic performance
-
-Content - what students need to learn:
-- Rates of change of real Gross Domestic Product (GDP) as a measure of economic growth.
-- Distinction between real and nominal, total and per capita, and value and volume.
-- Other national income measures: Gross National Income (GNI).
-- Comparison of rates of growth between countries and over time.
-- Understanding of Purchasing Power Parities (PPPs) and the use of PPP-adjusted figures in international comparisons.
-- The limitations of using GDP to compare living standards between countries and over time.
-- National happiness: UK national wellbeing, and the relationship between real incomes and subjective happiness.
-- Understanding of inflation, deflation and disinflation.
-- The process of calculating the rate of inflation in the UK using the Consumer Prices Index (CPI).
-- The limitations of CPI in measuring the rate of inflation.
-- The Retail Prices Index (RPI) as an alternative measure of the rate of inflation.
-- Causes of inflation: demand pull, cost push, and growth of the money supply.
-- The effects of inflation on consumers, firms, the government and workers.
-- Measures of unemployment: the claimant count, and the International Labour Organisation (ILO) measure via the UK Labour Force Survey.
-- The distinction between unemployment and under-employment.
-- The significance of changes in the rates of employment, unemployment and inactivity.
-- The causes of unemployment: structural unemployment, frictional unemployment, seasonal unemployment, demand deficiency and cyclical unemployment, and real wage inflexibility.
-- The significance of migration and skills for employment and unemployment.
-- The effects of unemployment on consumers, firms, workers, the government and society.
-- Components of the balance of payments, with particular reference to the current account and the balance of trade in goods and services.
-- Current account deficits and surpluses.
-- The relationship between current account imbalances and other macroeconomic objectives.
-- The interconnectedness of economies through international trade.
-`
-  },
-  {
-    subtopic: "2.2 Aggregate demand (AD)",
-    specContent: `2.2 Aggregate demand (AD)
-
-Content - what students need to learn:
-- Components of AD: C+I+G+(X-M).
-- The relative importance of the components of AD.
-- The AD curve.
-- The distinction between a movement along, and a shift of, the AD curve.
-- Disposable income and its influence on consumer spending.
-- An understanding of the relationship between savings and consumption.
-- Other influences on consumer spending: interest rates, consumer confidence, and wealth effects.
-- Distinction between gross and net investment.
-- Influences on investment: the rate of economic growth, business expectations and confidence, Keynes and 'animal spirits', demand for exports, interest rates, access to credit, and the influence of government and regulations.
-- The main influences on government expenditure: the trade cycle and fiscal policy.
-- The main influences on the (net) trade balance: real income, exchange rates, state of the world economy, degree of protectionism, and non-price factors.
-`
-  },
-  {
-    subtopic: "2.3 Aggregate supply (AS)",
-    specContent: `2.3 Aggregate supply (AS)
-
-Content - what students need to learn:
-- The AS curve.
-- The distinction between movement along, and a shift of, the AS curve.
-- The relationship between short-run AS and long-run AS.
-- Factors influencing short-run AS: changes in costs of raw materials and energy, changes in exchange rates, and changes in tax rates.
-- Different shapes of the long-run AS curve: Keynesian and classical.
-- Factors influencing long-run AS: technological advances, changes in relative productivity, changes in education and skills, changes in government regulations, demographic changes and migration, and competition policy.
-`
-  },
-  {
-    subtopic: "2.4 National income",
-    specContent: `2.4 National income
-
-Content - what students need to learn:
-- The circular flow of income.
-- The distinction between income and wealth.
-- The impact of injections into, and withdrawals from, the circular flow of income.
-- The concept of equilibrium real national output.
-- The use of AD/AS diagrams to show how shifts in AD or AS cause changes in the equilibrium price level and real national output.
-- The multiplier ratio.
-- The multiplier process.
-- Effects of the multiplier on the economy.
-- Understanding of marginal propensities and their effects on the multiplier: the marginal propensity to consume (MPC), the marginal propensity to save (MPS), the marginal propensity to tax (MPT), and the marginal propensity to import (MPM).
-- Calculations of the multiplier using the formulae 1/(1-MPC) and 1/MPW, where MPW=MPS+MPT+MPM.
-- The significance of the multiplier for shifts in AD.
-`
-  },
-  {
-    subtopic: "2.5 Economic growth",
-    specContent: `2.5 Economic growth
-
-Content - what students need to learn:
-- Factors which could cause economic growth.
-- The distinction between actual and potential growth.
-- The importance of international trade for (export-led) economic growth.
-- Distinction between actual growth rates and long-term trends in growth rates.
-- Understanding of positive and negative output gaps and the difficulties of measurement.
-- Use of an AD/AS diagram to illustrate an output gap (level of spare capacity) in an economy.
-- Understanding of the trade (business) cycle.
-- Characteristics of a boom.
-- Characteristics of a recession.
-- The benefits and costs of economic growth and the impact on consumers, firms, the government, and current and future living standards.
-`
-  },
-  {
-    subtopic: "2.6 Macroeconomic objectives and policies",
-    specContent: `2.6 Macroeconomic objectives and policies
-
-Content - what students need to learn:
-- Possible macroeconomic objectives: economic growth, low unemployment, low and stable rate of inflation, balance of payments equilibrium on current account, balanced government budget, protection of the environment, and greater income equality.
-- Distinction between monetary and fiscal policy.
-- Monetary policy instruments: interest rates, and asset purchases to increase the money supply (quantitative easing).
-- Fiscal policy instruments: government spending and taxation.
-- Distinction between government budget (fiscal) deficit and surplus.
-- Distinction between, and examples of, direct and indirect taxation.
-- Use of AD/AS diagrams to illustrate demand-side policies.
-- The role of the Bank of England, including the role and operation of the Bank of England's Monetary Policy Committee.
-- Awareness of demand-side policies in the Great Depression and the Global Financial Crisis of 2008, including different interpretations and policy responses in the US and UK.
-- Strengths and weaknesses of demand-side policies.
-- Distinction between market-based and interventionist methods.
-- Market-based and interventionist supply-side policies: to increase incentives, to promote competition, to reform the labour market, to improve skills and quality of the labour force, and to improve infrastructure.
-- Use of AD/AS diagrams to illustrate supply-side policies.
-- Strengths and weaknesses of supply-side policies.
-- Potential conflicts and trade-offs between the macroeconomic objectives.
-- The short-run Phillips curve.
-- Potential policy conflicts and trade-offs.
-`
-  },
-  {
-    subtopic: "3.1 Business growth",
-    specContent: `3.1 Business growth
-
-Content - what students need to learn:
-- Reasons why some firms tend to remain small and why others grow.
-- Significance of the divorce of ownership from control: the principal-agent problem.
-- Distinction between public and private sector organisations.
-- Distinction between profit and not-for-profit organisations.
-- How businesses grow: organic growth, forward and backward vertical integration, horizontal integration, and conglomerate integration.
-- Advantages and disadvantages of organic growth, vertical integration, horizontal integration, and conglomerate integration.
-- Constraints on business growth: size of the market, access to finance, owner objectives, and regulation.
-- Reasons for demergers.
-- Impact of demergers on businesses, workers and consumers.
-`
-  },
-  {
-    subtopic: "3.2 Business objectives",
-    specContent: `3.2 Business objectives
-
-Content - what students need to learn:
-- Different business objectives and reasons for them: profit maximisation, revenue maximisation, sales maximisation, and satisficing.
-- Diagrams and formulae to illustrate the different business objectives: profit maximisation, revenue maximisation, and sales maximisation.
-`
-  },
-  {
-    subtopic: "3.3 Revenues, costs and profits",
-    specContent: `3.3 Revenues, costs and profits
-
-Content - what students need to learn:
-- Formulae to calculate and understand the relationship between total revenue, average revenue, and marginal revenue.
-- Price elasticity of demand and its relationship to revenue concepts (calculation required).
-- Formulae to calculate and understand the relationship between total cost, total fixed cost, total variable cost, average (total) cost, average fixed cost, average variable cost, and marginal cost.
-- Derivation of short-run cost curves from the assumption of diminishing marginal productivity.
-- Relationship between short-run and long-run average cost curves.
-- Types of economies and diseconomies of scale.
-- Minimum efficient scale.
-- Distinction between internal and external economies of scale.
-- Condition for profit maximisation.
-- Normal profit, supernormal profit and losses.
-- Short-run and long-run shut-down points: diagrammatic analysis.
-`
-  },
-  {
-    subtopic: "3.4 Market structures",
-    specContent: `3.4 Market structures
-
-Content - what students need to learn:
-- Allocative efficiency.
-- Productive efficiency.
-- Dynamic efficiency.
-- X-inefficiency.
-- Efficiency/inefficiency in different market structures.
-- Characteristics of perfect competition.
-- Profit maximising equilibrium in the short run and long run under perfect competition, with diagrammatic analysis.
-- Characteristics of monopolistically competitive markets.
-- Profit maximising equilibrium in the short run and long run under monopolistic competition, with diagrammatic analysis.
-- Characteristics of oligopoly: high barriers to entry and exit, high concentration ratio, interdependence of firms, and product differentiation.
-- Calculation of n-firm concentration ratios and their significance.
-- Reasons for collusive and non-collusive behaviour.
-- Overt and tacit collusion; cartels and price leadership.
-- Simple game theory: the prisoner's dilemma in a simple two firm/two outcome model.
-- Types of price competition: price wars, predatory pricing, and limit pricing.
-- Types of non-price competition.
-- Characteristics of monopoly.
-- Profit maximising equilibrium under monopoly, with diagrammatic analysis.
-- Third degree price discrimination: necessary conditions, diagrammatic analysis, and costs and benefits to consumers and producers.
-- Costs and benefits of monopoly to firms, consumers, employees and suppliers.
-- Natural monopoly.
-- Characteristics and conditions for a monopsony to operate.
-- Costs and benefits of a monopsony to firms, consumers, employees and suppliers.
-- Characteristics of contestable markets.
-- Implications of contestable markets for the behaviour of firms.
-- Types of barrier to entry and exit.
-- Sunk costs and the degree of contestability.
-`
-  },
-  {
-    subtopic: "3.5 Labour market",
-    specContent: `3.5 Labour market
-
-Content - what students need to learn:
-- Factors that influence the demand for labour.
-- Demand for labour as a derived demand.
-- Factors that influence the supply of labour to a particular occupation.
-- Market failure in labour markets: the geographical and occupational mobility and immobility of labour.
-- Diagrammatic analysis of labour market equilibrium.
-- Understanding of current labour market issues.
-- Government intervention in the labour market: maximum and minimum wages, public sector wage setting, and policies to tackle labour market immobility.
-- The significance of the elasticity of demand for labour and the elasticity of supply of labour.
-`
-  },
-  {
-    subtopic: "3.6 Government intervention",
-    specContent: `3.6 Government intervention
-
-Content - what students need to learn:
-- Government intervention to control mergers.
-- Government intervention to control monopolies: price regulation, profit regulation, quality standards, and performance targets.
-- Government intervention to promote competition and contestability: enhancing competition between firms through promotion of small business, deregulation, competitive tendering for government contracts, and privatisation.
-- Government intervention to protect suppliers and employees: restrictions on monopsony power of firms, and nationalisation.
-- The impact of government intervention on prices, profit, efficiency, quality and choice.
-- Limits to government intervention: regulatory capture and asymmetric information.
-`
-  },
-  {
-    subtopic: "4.1 International economics",
-    specContent: `4.1 International economics
-
-Content - what students need to learn:
-- Characteristics of globalisation.
-- Factors contributing to globalisation in the last 50 years.
-- Impacts of globalisation and global companies on individual countries, governments, producers and consumers, workers and the environment.
-- Absolute and comparative advantage (numerical and diagrammatic): assumptions and limitations relating to the theory of comparative advantage.
-- Advantages and disadvantages of specialisation and trade in an international context.
-- Factors influencing the pattern of trade between countries and changes in trade flows between countries: comparative advantage, impact of emerging economies, growth of trading blocs and bilateral trading agreements, and changes in relative exchange rates.
-- Calculation of terms of trade.
-- Factors influencing a country's terms of trade.
-- Impact of changes in a country's terms of trade.
-- Types of trading blocs (regional trade agreements and bilateral trade agreements): free trade areas, customs unions, common markets, and monetary unions, including the conditions necessary for their success with particular reference to the Eurozone.
-- Costs and benefits of regional trade agreements.
-- Role of the WTO in trade liberalisation.
-- Possible conflicts between regional trade agreements and the WTO.
-- Reasons for restrictions on free trade.
-- Types of restrictions on trade: tariffs, quotas, subsidies to domestic producers, and non-tariff barriers.
-- Impact of protectionist policies on consumers, producers, governments, living standards, and equality.
-- Components of the balance of payments: the current account, and the capital and financial accounts.
-- Causes of deficits and surpluses on the current account.
-- Measures to reduce a country's imbalance on the current account.
-- Significance of global trade imbalances.
-- Exchange rate systems: floating, fixed, and managed.
-- Distinction between revaluation and appreciation of a currency.
-- Distinction between devaluation and depreciation of a currency.
-- Factors influencing floating exchange rates.
-- Government intervention in currency markets through foreign currency transactions and the use of interest rates.
-- Competitive devaluation/depreciation and its consequences.
-- Impact of changes in exchange rates on: the current account of the balance of payments (reference to the Marshall-Lerner condition and J curve effect), economic growth and employment/unemployment, the rate of inflation, and foreign direct investment (FDI) flows.
-- Measures of international competitiveness: relative unit labour costs and relative export prices.
-- Factors influencing international competitiveness.
-- Significance of international competitiveness: benefits of being internationally competitive, and problems of being internationally uncompetitive.
-`
-  },
-  {
-    subtopic: "4.2 Poverty and inequality",
-    specContent: `4.2 Poverty and inequality
-
-Content - what students need to learn:
-- Distinction between absolute poverty and relative poverty.
-- Measures of absolute poverty and relative poverty.
-- Causes of changes in absolute poverty and relative poverty.
-- Distinction between wealth and income inequality.
-- Measurements of income inequality: the Lorenz curve (diagrammatic analysis) and the Gini coefficient.
-- Causes of income and wealth inequality within countries and between countries.
-- Impact of economic change and development on inequality.
-- Significance of capitalism for inequality.
-`
-  },
-  {
-    subtopic: "4.3 Emerging and developing economies",
-    specContent: `4.3 Emerging and developing economies
-
-Content - what students need to learn:
-- The three dimensions of the Human Development Index (HDI) - education, health and living standards - and how they are measured and combined.
-- The advantages and limitations of using the HDI to compare levels of development between countries and over time.
-- Other indicators of development.
-- Impact of economic factors in different countries: primary product dependency, volatility of commodity prices, savings gap (the Harrod-Domar model), foreign currency gap, capital flight, demographic factors, debt, access to credit and banking, infrastructure, education/skills, and absence of property rights.
-- Impact of non-economic factors in different countries.
-- Market-orientated strategies for growth and development: trade liberalisation, promotion of FDI, removal of government subsidies, floating exchange rate systems, microfinance schemes, and privatisation.
-- Interventionist strategies for growth and development: development of human capital, protectionism, managed exchange rates, infrastructure development, promoting joint ventures with global companies, and buffer stock schemes.
-- Other strategies for growth and development: industrialisation (the Lewis model), development of tourism, development of primary industries, Fairtrade schemes, aid, and debt relief.
-- Awareness of the role of international institutions and non-government organisations (NGOs): the World Bank, the International Monetary Fund (IMF), and NGOs.
-`
-  },
-  {
-    subtopic: "4.4 The financial sector",
-    specContent: `4.4 The financial sector
-
-Content - what students need to learn:
-- The role of financial markets to facilitate saving.
-- The role of financial markets to lend to businesses and individuals.
-- The role of financial markets to facilitate the exchange of goods and services.
-- The role of financial markets to provide forward markets in currencies and commodities.
-- The role of financial markets to provide a market for equities.
-- Market failure in the financial sector: consideration of asymmetric information, externalities, moral hazard, speculation and market bubbles, and market rigging.
-- Key functions of central banks: implementation of monetary policy, banker to the government, banker to the banks (lender of last resort), and role in regulation of the banking industry.
-`
-  },
-  {
-    subtopic: "4.5 Role of the state in the macroeconomy",
-    specContent: `4.5 Role of the state in the macroeconomy
-
-Content - what students need to learn:
-- Distinction between capital expenditure, current expenditure and transfer payments.
-- Reasons for the changing size and composition of public expenditure in a global context.
-- The significance of differing levels of public expenditure as a proportion of GDP on productivity and growth, living standards, crowding out, level of taxation, and equality.
-- Distinction between progressive, proportional and regressive taxes.
-- The economic effects of changes in direct and indirect tax rates on other variables: incentives to work, tax revenues (the Laffer curve), income distribution, real output and employment, the price level, the trade balance, and FDI flows.
-- Distinction between automatic stabilisers and discretionary fiscal policy.
-- Distinction between a fiscal deficit and the national debt.
-- Distinction between structural and cyclical deficits.
-- Factors influencing the size of fiscal deficits.
-- Factors influencing the size of national debts.
-- The significance of the size of fiscal deficits and national debts.
-- Use of fiscal policy, monetary policy, exchange rate policy, supply-side policies and direct controls in different countries, with specific reference to the impact of measures to reduce fiscal deficits and national debts, measures to reduce poverty and inequality, changes in interest rates and the supply of money, and measures to increase international competitiveness.
-- Use and impact of macroeconomic policies to respond to external shocks to the global economy.
-- Measures to control global companies' (transnationals') operations: the regulation of transfer pricing, and limits to government ability to control global companies.
-- Problems facing policymakers when applying policies: inaccurate information, risks and uncertainties, and inability to control external shocks.
-`
-  },
-];
+const SUBTOPICS = require(path.join(__dirname, `gcse_maths_${GCSE_MATHS_TIER}_subtopics.json`));
 
 
 function stripCodeFences(text) {
@@ -840,19 +435,19 @@ function applyFixes(nodes, edges, issues) {
   return { nodes, edges };
 }
 
-// Real, pre-existing gap found live (on the GCSE Maths run): verifyBatch
-// correctly IDENTIFIES duplicate_concept issues (two subtopic-generation
-// calls each inventing their own node for the same cross-cutting idea,
-// independently created under the identical id by two different subtopics
-// that both needed it), but applyFixes above only ever acts on
-// new_nodes/new_edges/remove_edges - never on a duplicate finding - so a
-// duplicate id used to survive into the final written file even after a
-// "verified: true" run, corrupting ingestion (concept_id collisions) and
-// sometimes registering as a false DAG cycle (two genuinely different
-// intended edges landing on one merged id can loop). Purely structural, no
-// AI call needed: nodes sharing an id ARE the same concept by
-// construction, so this keeps the FIRST occurrence as canonical and
-// remaps every edge referencing a later duplicate's id.
+// Real, pre-existing gap found live: verifyBatch correctly IDENTIFIES
+// duplicate_concept issues (two subtopic-generation calls each inventing
+// their own node for the same cross-cutting idea, e.g. "place_value" or
+// "pythagoras" independently created under the identical id by two
+// different subtopics that both needed it), but applyFixes above only
+// ever acts on new_nodes/new_edges/remove_edges - never on a duplicate
+// finding - so a duplicate id used to survive into the final written file
+// even after a "verified: true" run, corrupting ingestion (concept_id
+// collisions) and sometimes registering as a false DAG cycle (two
+// genuinely different intended edges landing on one merged id can loop).
+// Purely structural, no AI call needed: nodes sharing an id ARE the same
+// concept by construction, so this keeps the FIRST occurrence as
+// canonical and remaps every edge referencing a later duplicate's id.
 function mergeDuplicateNodes(nodes, edges) {
   const canonicalIdByOriginal = new Map();
   const survivorByRawId = new Map();

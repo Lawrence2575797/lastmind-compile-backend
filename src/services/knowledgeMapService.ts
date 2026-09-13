@@ -300,17 +300,27 @@ export interface SubjectMapResult {
 // string for a tiered subject ("GCSE" + "Higher" -> "GCSE Higher" - see
 // learn/index.html's composeQualification/decomposeQualification), because
 // every per-student system needs tier threaded through as part of that one
-// opaque string. This shared subject-wide map has no tier axis at all
-// (one graph per subject, not per tier - the concept dependency structure
-// doesn't change with exam difficulty), so a tiered folder's qualification
-// has to be normalized back to the untiered form before matching against
-// it, or a genuinely-generated map reads back as "not generated yet" for
-// every tiered GCSE folder. Found live, same shape as the case-sensitivity
-// fix below.
-function stripQualificationTier(qualification: string): string {
-  return qualification.trim().replace(/\s+(Foundation|Higher)$/i, '');
-}
-
+// opaque string. This USED to strip the tier back off before matching
+// against knowledge_map_nodes, on the assumption that a tiered subject
+// shares one untiered graph (Foundation/Higher only differing in exam
+// depth, not which concepts exist) - wrong for GCSE Maths (1MA1), found
+// live ingesting its real spec: Higher tier genuinely teaches concepts
+// Foundation never does at all (iteration, circle theorems, the sine/
+// cosine rule, vectors beyond the basics - not the same concepts tested
+// more rigorously, concepts that plain don't exist on the Foundation
+// paper), so Foundation and Higher are two REAL, separately-atomic
+// knowledge maps, ingested as such (see ingest_knowledge_map_gcse_maths.js)
+// - stripping the tier here made every tiered-GCSE-Maths folder's query
+// look for a bare "GCSE" qualification row that was never ingested,
+// reading back as "no knowledge map generated yet" even though 410 real
+// Higher-tier nodes existed. No subject currently ingested relies on the
+// old shared-untiered-graph assumption (nothing under Science/Biology/
+// Chemistry/Physics has been ingested at all yet), so matching on the
+// qualification string AS GIVEN (tier and all) is correct for every real
+// case that exists today; a future subject that genuinely wants one
+// shared graph across tiers should ingest it under the bare qualification
+// and this same match still finds it, since the untiered case is simply
+// qualification === qualification.
 export async function getKnowledgeMapForSubject(
   userId: string,
   rawSubject: string,
@@ -328,7 +338,7 @@ export async function getKnowledgeMapForSubject(
   const nodeRows = await selectAllRows<{ id: string; concept_id: string; label: string; subtopic: string; theme: string | null }>(
     'knowledge_map_nodes',
     'id, concept_id, label, subtopic, theme',
-    (q) => q.ilike('subject', subject.trim()).ilike('qualification', stripQualificationTier(qualification)).ilike('exam_board', examBoard.trim())
+    (q) => q.ilike('subject', subject.trim()).ilike('qualification', qualification.trim()).ilike('exam_board', examBoard.trim())
   );
   if (!nodeRows.length) {
     return { nodes: [], edges: [], mastery: {}, masteryDetail: {} };
@@ -368,9 +378,10 @@ export async function getKnowledgeMapForSubject(
   // stores - same enrichment the Notes sidebar tree already applies (see
   // getSubtopicThemeMap's own comment), so the Subjects sidebar tree
   // shows the same real names instead of a plain number. Passed the
-  // original (possibly tiered) qualification, not stripQualificationTier's
-  // untiered form above - getSubtopicThemeMap does its own GCSE-tier
-  // normalization internally, matching how the Notes lookup already calls it.
+  // qualification exactly as given (possibly tiered) - getSubtopicThemeMap
+  // does its own GCSE-tier normalization internally (against
+  // spec_lesson_plans, a genuinely untiered table - see its own comment),
+  // matching how the Notes lookup already calls it.
   const themeMap = await getSubtopicThemeMap(subject, qualification, examBoard);
 
   // Same real teaching order the Notes sidebar tree already computes (see

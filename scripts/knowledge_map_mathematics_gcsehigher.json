@@ -1,0 +1,5828 @@
+{
+  "subject": "Mathematics",
+  "qualification": "GCSE Higher",
+  "examBoard": "Edexcel",
+  "nodes": [
+    {
+      "id": "place_value",
+      "label": "Place value in integers and decimals",
+      "difficulty": 0.15,
+      "subtopic": "1. Number – Structure and calculation"
+    },
+    {
+      "id": "neg_numbers",
+      "label": "Concept of negative integers",
+      "difficulty": 0.15,
+      "subtopic": "1. Number – Structure and calculation"
+    },
+    {
+      "id": "fractions_concept",
+      "label": "Concept of fractions (proper, improper, mixed numbers)",
+      "difficulty": 0.2,
+      "subtopic": "1. Number – Structure and calculation"
+    },
+    {
+      "id": "decimals_concept",
+      "label": "Concept of decimals",
+      "difficulty": 0.15,
+      "subtopic": "1. Number – Structure and calculation"
+    },
+    {
+      "id": "order_numbers",
+      "label": "Order positive and negative integers, decimals and fractions",
+      "difficulty": 0.25,
+      "subtopic": "1. Number – Structure and calculation"
+    },
+    {
+      "id": "inequality_symbols",
+      "label": "Use symbols =, ≠, <, >, ≤, ≥",
+      "difficulty": 0.15,
+      "subtopic": "1. Number – Structure and calculation"
+    },
+    {
+      "id": "four_ops_integers",
+      "label": "Four operations with positive and negative integers",
+      "difficulty": 0.25,
+      "subtopic": "1. Number – Structure and calculation"
+    },
+    {
+      "id": "four_ops_decimals",
+      "label": "Four operations with decimals (formal written methods)",
+      "difficulty": 0.35,
+      "subtopic": "1. Number – Structure and calculation"
+    },
+    {
+      "id": "four_ops_fractions",
+      "label": "Four operations with fractions and mixed numbers (positive and negative)",
+      "difficulty": 0.45,
+      "subtopic": "1. Number – Structure and calculation"
+    },
+    {
+      "id": "place_value_large_small",
+      "label": "Applying place value to very large/very small numbers and decimal calculations",
+      "difficulty": 0.35,
+      "subtopic": "1. Number – Structure and calculation"
+    },
+    {
+      "id": "inverse_ops",
+      "label": "Recognise and use inverse operations",
+      "difficulty": 0.2,
+      "subtopic": "1. Number – Structure and calculation"
+    },
+    {
+      "id": "cancellation",
+      "label": "Cancellation to simplify calculations/expressions using inverse operations",
+      "difficulty": 0.3,
+      "subtopic": "1. Number – Structure and calculation"
+    },
+    {
+      "id": "powers_roots_notation",
+      "label": "Notation for powers and roots",
+      "difficulty": 0.2,
+      "subtopic": "1. Number – Structure and calculation"
+    },
+    {
+      "id": "reciprocals",
+      "label": "Concept and notation of reciprocals",
+      "difficulty": 0.2,
+      "subtopic": "1. Number – Structure and calculation"
+    },
+    {
+      "id": "brackets_priority",
+      "label": "Conventional order of operations including brackets",
+      "difficulty": 0.25,
+      "subtopic": "1. Number – Structure and calculation"
+    },
+    {
+      "id": "bidmas_full",
+      "label": "Full priority of operations notation (brackets, powers, roots, reciprocals)",
+      "difficulty": 0.35,
+      "subtopic": "1. Number – Structure and calculation"
+    },
+    {
+      "id": "factors_multiples",
+      "label": "Concepts of factors and multiples",
+      "difficulty": 0.2,
+      "subtopic": "1. Number – Structure and calculation"
+    },
+    {
+      "id": "prime_numbers",
+      "label": "Concept and vocabulary of prime numbers",
+      "difficulty": 0.2,
+      "subtopic": "1. Number – Structure and calculation"
+    },
+    {
+      "id": "common_factors_multiples",
+      "label": "Common factors and common multiples",
+      "difficulty": 0.25,
+      "subtopic": "1. Number – Structure and calculation"
+    },
+    {
+      "id": "hcf_lcm",
+      "label": "Highest common factor and lowest common multiple",
+      "difficulty": 0.35,
+      "subtopic": "1. Number – Structure and calculation"
+    },
+    {
+      "id": "prime_factorisation",
+      "label": "Prime factorisation using product notation",
+      "difficulty": 0.35,
+      "subtopic": "1. Number – Structure and calculation"
+    },
+    {
+      "id": "unique_factorisation",
+      "label": "Unique factorisation theorem",
+      "difficulty": 0.4,
+      "subtopic": "1. Number – Structure and calculation"
+    },
+    {
+      "id": "listing_strategies",
+      "label": "Systematic listing strategies",
+      "difficulty": 0.3,
+      "subtopic": "1. Number – Structure and calculation"
+    },
+    {
+      "id": "product_rule_counting",
+      "label": "Product rule for counting (m × n outcomes)",
+      "difficulty": 0.4,
+      "subtopic": "1. Number – Structure and calculation"
+    },
+    {
+      "id": "integer_powers",
+      "label": "Positive integer powers (squares, cubes, higher powers)",
+      "difficulty": 0.25,
+      "subtopic": "1. Number – Structure and calculation"
+    },
+    {
+      "id": "powers_recognition",
+      "label": "Recognise powers of 2, 3, 4, 5",
+      "difficulty": 0.2,
+      "subtopic": "1. Number – Structure and calculation"
+    },
+    {
+      "id": "assoc_roots",
+      "label": "Associated real roots (square, cube, higher roots)",
+      "difficulty": 0.3,
+      "subtopic": "1. Number – Structure and calculation"
+    },
+    {
+      "id": "estimate_powers_roots",
+      "label": "Estimate powers and roots of any given positive number",
+      "difficulty": 0.4,
+      "subtopic": "1. Number – Structure and calculation"
+    },
+    {
+      "id": "fractional_indices",
+      "label": "Calculate with fractional and integer indices",
+      "difficulty": 0.55,
+      "subtopic": "1. Number – Structure and calculation"
+    },
+    {
+      "id": "calc_with_roots",
+      "label": "Calculate with roots (surds arithmetic operations)",
+      "difficulty": 0.45,
+      "subtopic": "1. Number – Structure and calculation"
+    },
+    {
+      "id": "surd_simplify",
+      "label": "Simplify surd expressions involving squares",
+      "difficulty": 0.5,
+      "subtopic": "1. Number – Structure and calculation"
+    },
+    {
+      "id": "rationalise_denom",
+      "label": "Rationalise denominators involving surds",
+      "difficulty": 0.55,
+      "subtopic": "1. Number – Structure and calculation"
+    },
+    {
+      "id": "exact_calc_fractions_surds_pi",
+      "label": "Calculate exactly with fractions, surds, and multiples of π",
+      "difficulty": 0.55,
+      "subtopic": "1. Number – Structure and calculation"
+    },
+    {
+      "id": "standard_form_def",
+      "label": "Standard form definition: A × 10ⁿ, 1 ≤ A < 10",
+      "difficulty": 0.3,
+      "subtopic": "1. Number – Structure and calculation"
+    },
+    {
+      "id": "standard_form_calc",
+      "label": "Calculate with and interpret standard form",
+      "difficulty": 0.45,
+      "subtopic": "1. Number – Structure and calculation"
+    },
+    {
+      "id": "fraction_meaning",
+      "label": "A fraction represents a division / part of a whole (numerator over denominator)",
+      "difficulty": 0.15,
+      "subtopic": "1. Number – Fractions, decimals and percentages"
+    },
+    {
+      "id": "equiv_fractions",
+      "label": "Equivalent fractions and simplifying fractions",
+      "difficulty": 0.2,
+      "subtopic": "1. Number – Fractions, decimals and percentages"
+    },
+    {
+      "id": "convert_frac_to_dec",
+      "label": "Convert a fraction to a decimal by division",
+      "difficulty": 0.25,
+      "subtopic": "1. Number – Fractions, decimals and percentages"
+    },
+    {
+      "id": "convert_term_dec_to_frac",
+      "label": "Convert a terminating decimal to a fraction using place value",
+      "difficulty": 0.3,
+      "subtopic": "1. Number – Fractions, decimals and percentages"
+    },
+    {
+      "id": "interchange_term_dec_frac",
+      "label": "Work interchangeably with terminating decimals and their corresponding fractions",
+      "difficulty": 0.35,
+      "subtopic": "1. Number – Fractions, decimals and percentages"
+    },
+    {
+      "id": "recurring_dec_notation",
+      "label": "Recurring decimal notation (dot notation for repeating digits)",
+      "difficulty": 0.3,
+      "subtopic": "1. Number – Fractions, decimals and percentages"
+    },
+    {
+      "id": "algebraic_manipulation_basic",
+      "label": "Basic algebraic manipulation (multiplying and subtracting equations)",
+      "difficulty": 0.35,
+      "subtopic": "1. Number – Fractions, decimals and percentages"
+    },
+    {
+      "id": "powers_of_ten",
+      "label": "Multiplying decimals by powers of 10",
+      "difficulty": 0.2,
+      "subtopic": "1. Number – Fractions, decimals and percentages"
+    },
+    {
+      "id": "recurring_dec_to_frac",
+      "label": "Convert a recurring decimal to its corresponding fraction (algebraic method)",
+      "difficulty": 0.6,
+      "subtopic": "1. Number – Fractions, decimals and percentages"
+    },
+    {
+      "id": "frac_to_recurring_dec",
+      "label": "Convert a fraction to its corresponding recurring decimal",
+      "difficulty": 0.4,
+      "subtopic": "1. Number – Fractions, decimals and percentages"
+    },
+    {
+      "id": "ratio_notation",
+      "label": "Ratio notation and meaning (a:b)",
+      "difficulty": 0.15,
+      "subtopic": "1. Number – Fractions, decimals and percentages"
+    },
+    {
+      "id": "simplify_ratio",
+      "label": "Simplifying ratios",
+      "difficulty": 0.2,
+      "subtopic": "1. Number – Fractions, decimals and percentages"
+    },
+    {
+      "id": "sharing_in_ratio",
+      "label": "Sharing/dividing an amount in a given ratio",
+      "difficulty": 0.35,
+      "subtopic": "1. Number – Fractions, decimals and percentages"
+    },
+    {
+      "id": "fractions_in_ratio",
+      "label": "Identify and work with fractions in ratio problems (converting between fraction-of-whole and ratio form)",
+      "difficulty": 0.5,
+      "subtopic": "1. Number – Fractions, decimals and percentages"
+    },
+    {
+      "id": "percentage_meaning",
+      "label": "A percentage represents a proportion out of 100",
+      "difficulty": 0.15,
+      "subtopic": "1. Number – Fractions, decimals and percentages"
+    },
+    {
+      "id": "convert_frac_percent_dec",
+      "label": "Convert between fractions, decimals and percentages",
+      "difficulty": 0.3,
+      "subtopic": "1. Number – Fractions, decimals and percentages"
+    },
+    {
+      "id": "multiplying_fractions",
+      "label": "Multiplying fractions together (and by whole numbers)",
+      "difficulty": 0.25,
+      "subtopic": "1. Number – Fractions, decimals and percentages"
+    },
+    {
+      "id": "percent_of_amount",
+      "label": "Finding a percentage of an amount via multiplication",
+      "difficulty": 0.25,
+      "subtopic": "1. Number – Fractions, decimals and percentages"
+    },
+    {
+      "id": "fraction_as_operator",
+      "label": "Interpret a fraction as an operator (acting on a quantity, e.g. finding 3/4 of an amount)",
+      "difficulty": 0.4,
+      "subtopic": "1. Number – Fractions, decimals and percentages"
+    },
+    {
+      "id": "percent_as_operator",
+      "label": "Interpret a percentage as an operator (acting on a quantity via multiplier, e.g. increase/decrease)",
+      "difficulty": 0.4,
+      "subtopic": "1. Number – Fractions, decimals and percentages"
+    },
+    {
+      "id": "percentage_multiplier",
+      "label": "Percentage multipliers for increase and decrease (e.g. x1.15, x0.85)",
+      "difficulty": 0.4,
+      "subtopic": "1. Number – Fractions, decimals and percentages"
+    },
+    {
+      "id": "std_units",
+      "label": "Standard units of mass, length, time and money",
+      "difficulty": 0.15,
+      "subtopic": "1. Number – Measures and accuracy"
+    },
+    {
+      "id": "decimal_quantities",
+      "label": "Using decimal quantities appropriately with units",
+      "difficulty": 0.2,
+      "subtopic": "1. Number – Measures and accuracy"
+    },
+    {
+      "id": "unit_conversion",
+      "label": "Converting between standard units (e.g. mm to km, g to kg, seconds to hours)",
+      "difficulty": 0.3,
+      "subtopic": "1. Number – Measures and accuracy"
+    },
+    {
+      "id": "compound_measures_def",
+      "label": "Definition of a compound measure (combines two or more base units, e.g. speed, density, pressure)",
+      "difficulty": 0.3,
+      "subtopic": "1. Number – Measures and accuracy"
+    },
+    {
+      "id": "compound_measures_calc",
+      "label": "Calculating with standard compound measures (speed, density, pressure) using formulae",
+      "difficulty": 0.4,
+      "subtopic": "1. Number – Measures and accuracy"
+    },
+    {
+      "id": "rounding_dp",
+      "label": "Rounding numbers/measures to a given number of decimal places",
+      "difficulty": 0.2,
+      "subtopic": "1. Number – Measures and accuracy"
+    },
+    {
+      "id": "sig_figs_concept",
+      "label": "Concept of significant figures",
+      "difficulty": 0.3,
+      "subtopic": "1. Number – Measures and accuracy"
+    },
+    {
+      "id": "rounding_sf",
+      "label": "Rounding numbers/measures to a given number of significant figures",
+      "difficulty": 0.3,
+      "subtopic": "1. Number – Measures and accuracy"
+    },
+    {
+      "id": "appropriate_accuracy",
+      "label": "Choosing an appropriate degree of accuracy for a given context",
+      "difficulty": 0.4,
+      "subtopic": "1. Number – Measures and accuracy"
+    },
+    {
+      "id": "estimation_rounding",
+      "label": "Rounding values to one significant figure for estimation purposes",
+      "difficulty": 0.3,
+      "subtopic": "1. Number – Measures and accuracy"
+    },
+    {
+      "id": "estimate_calculations",
+      "label": "Estimating answers to calculations using approximation",
+      "difficulty": 0.4,
+      "subtopic": "1. Number – Measures and accuracy"
+    },
+    {
+      "id": "check_technology",
+      "label": "Checking calculator/technology-obtained answers using estimation",
+      "difficulty": 0.35,
+      "subtopic": "1. Number – Measures and accuracy"
+    },
+    {
+      "id": "inequality_notation",
+      "label": "Inequality notation (<, ≤, >, ≥) for specifying a range of values",
+      "difficulty": 0.25,
+      "subtopic": "1. Number – Measures and accuracy"
+    },
+    {
+      "id": "truncation_concept",
+      "label": "Concept of truncation of a number/measure",
+      "difficulty": 0.3,
+      "subtopic": "1. Number – Measures and accuracy"
+    },
+    {
+      "id": "error_interval_rounding",
+      "label": "Constructing error intervals due to rounding using inequality notation",
+      "difficulty": 0.5,
+      "subtopic": "1. Number – Measures and accuracy"
+    },
+    {
+      "id": "error_interval_truncation",
+      "label": "Constructing error intervals due to truncation using inequality notation",
+      "difficulty": 0.5,
+      "subtopic": "1. Number – Measures and accuracy"
+    },
+    {
+      "id": "upper_lower_bounds",
+      "label": "Concept of upper and lower bounds of a rounded/truncated measurement",
+      "difficulty": 0.45,
+      "subtopic": "1. Number – Measures and accuracy"
+    },
+    {
+      "id": "bounds_from_rounding",
+      "label": "Finding upper and lower bounds given a stated degree of accuracy",
+      "difficulty": 0.5,
+      "subtopic": "1. Number – Measures and accuracy"
+    },
+    {
+      "id": "bounds_calculations",
+      "label": "Applying bounds within calculations (e.g. bounds of a compound measure or of a sum/product/quotient)",
+      "difficulty": 0.65,
+      "subtopic": "1. Number – Measures and accuracy"
+    },
+    {
+      "id": "bounds_interpretation",
+      "label": "Interpreting the limits of accuracy of a final calculated answer in context",
+      "difficulty": 0.6,
+      "subtopic": "1. Number – Measures and accuracy"
+    },
+    {
+      "id": "mult_notation",
+      "label": "Writing multiplication without × (ab means a × b)",
+      "difficulty": 0.1,
+      "subtopic": "2. Algebra – Notation, vocabulary and manipulation"
+    },
+    {
+      "id": "repeated_add_notation",
+      "label": "Writing repeated addition as a multiple (3y for y+y+y)",
+      "difficulty": 0.1,
+      "subtopic": "2. Algebra – Notation, vocabulary and manipulation"
+    },
+    {
+      "id": "index_notation",
+      "label": "Index notation for repeated multiplication (a², a³, a²b)",
+      "difficulty": 0.15,
+      "subtopic": "2. Algebra – Notation, vocabulary and manipulation"
+    },
+    {
+      "id": "div_notation",
+      "label": "Writing division as a fraction (a/b for a ÷ b)",
+      "difficulty": 0.15,
+      "subtopic": "2. Algebra – Notation, vocabulary and manipulation"
+    },
+    {
+      "id": "frac_coeff",
+      "label": "Writing coefficients as fractions rather than decimals",
+      "difficulty": 0.15,
+      "subtopic": "2. Algebra – Notation, vocabulary and manipulation"
+    },
+    {
+      "id": "brackets_notation",
+      "label": "Use of brackets in algebraic notation",
+      "difficulty": 0.15,
+      "subtopic": "2. Algebra – Notation, vocabulary and manipulation"
+    },
+    {
+      "id": "vocab_terms",
+      "label": "Vocabulary: terms and factors",
+      "difficulty": 0.15,
+      "subtopic": "2. Algebra – Notation, vocabulary and manipulation"
+    },
+    {
+      "id": "vocab_expr",
+      "label": "Vocabulary: expressions",
+      "difficulty": 0.15,
+      "subtopic": "2. Algebra – Notation, vocabulary and manipulation"
+    },
+    {
+      "id": "vocab_eq",
+      "label": "Vocabulary: equations",
+      "difficulty": 0.15,
+      "subtopic": "2. Algebra – Notation, vocabulary and manipulation"
+    },
+    {
+      "id": "vocab_formulae",
+      "label": "Vocabulary: formulae",
+      "difficulty": 0.15,
+      "subtopic": "2. Algebra – Notation, vocabulary and manipulation"
+    },
+    {
+      "id": "vocab_identity",
+      "label": "Vocabulary: identities",
+      "difficulty": 0.2,
+      "subtopic": "2. Algebra – Notation, vocabulary and manipulation"
+    },
+    {
+      "id": "vocab_inequal",
+      "label": "Vocabulary: inequalities",
+      "difficulty": 0.15,
+      "subtopic": "2. Algebra – Notation, vocabulary and manipulation"
+    },
+    {
+      "id": "substitution",
+      "label": "Substituting numerical values into expressions and formulae",
+      "difficulty": 0.2,
+      "subtopic": "2. Algebra – Notation, vocabulary and manipulation"
+    },
+    {
+      "id": "sub_scientific",
+      "label": "Substituting into scientific formulae",
+      "difficulty": 0.3,
+      "subtopic": "2. Algebra – Notation, vocabulary and manipulation"
+    },
+    {
+      "id": "collect_like_terms",
+      "label": "Collecting like terms",
+      "difficulty": 0.15,
+      "subtopic": "2. Algebra – Notation, vocabulary and manipulation"
+    },
+    {
+      "id": "expand_single_bracket",
+      "label": "Multiplying a single term over a bracket",
+      "difficulty": 0.25,
+      "subtopic": "2. Algebra – Notation, vocabulary and manipulation"
+    },
+    {
+      "id": "common_factor",
+      "label": "Taking out common factors (factorising single brackets)",
+      "difficulty": 0.3,
+      "subtopic": "2. Algebra – Notation, vocabulary and manipulation"
+    },
+    {
+      "id": "expand_binomials",
+      "label": "Expanding products of two or more binomials",
+      "difficulty": 0.4,
+      "subtopic": "2. Algebra – Notation, vocabulary and manipulation"
+    },
+    {
+      "id": "factorise_simple_quad",
+      "label": "Factorising quadratics x² + bx + c",
+      "difficulty": 0.45,
+      "subtopic": "2. Algebra – Notation, vocabulary and manipulation"
+    },
+    {
+      "id": "diff_two_squares",
+      "label": "Factorising the difference of two squares",
+      "difficulty": 0.45,
+      "subtopic": "2. Algebra – Notation, vocabulary and manipulation"
+    },
+    {
+      "id": "factorise_general_quad",
+      "label": "Factorising quadratics ax² + bx + c",
+      "difficulty": 0.6,
+      "subtopic": "2. Algebra – Notation, vocabulary and manipulation"
+    },
+    {
+      "id": "laws_of_indices",
+      "label": "Laws of indices for simplifying expressions",
+      "difficulty": 0.4,
+      "subtopic": "2. Algebra – Notation, vocabulary and manipulation"
+    },
+    {
+      "id": "surd_manipulation",
+      "label": "Simplifying and manipulating expressions involving surds",
+      "difficulty": 0.55,
+      "subtopic": "2. Algebra – Notation, vocabulary and manipulation"
+    },
+    {
+      "id": "algebraic_fractions",
+      "label": "Simplifying and manipulating algebraic fractions",
+      "difficulty": 0.6,
+      "subtopic": "2. Algebra – Notation, vocabulary and manipulation"
+    },
+    {
+      "id": "standard_formulae",
+      "label": "Understanding and using standard mathematical formulae",
+      "difficulty": 0.3,
+      "subtopic": "2. Algebra – Notation, vocabulary and manipulation"
+    },
+    {
+      "id": "rearrange_formulae",
+      "label": "Rearranging formulae to change the subject",
+      "difficulty": 0.5,
+      "subtopic": "2. Algebra – Notation, vocabulary and manipulation"
+    },
+    {
+      "id": "eq_vs_identity",
+      "label": "Distinguishing an equation from an identity",
+      "difficulty": 0.35,
+      "subtopic": "2. Algebra – Notation, vocabulary and manipulation"
+    },
+    {
+      "id": "algebraic_proof",
+      "label": "Using algebra to construct and support mathematical arguments and proofs",
+      "difficulty": 0.65,
+      "subtopic": "2. Algebra – Notation, vocabulary and manipulation"
+    },
+    {
+      "id": "function_notation",
+      "label": "Interpreting expressions as functions with inputs and outputs (function notation)",
+      "difficulty": 0.4,
+      "subtopic": "2. Algebra – Notation, vocabulary and manipulation"
+    },
+    {
+      "id": "inverse_function",
+      "label": "Interpreting the reverse process as the inverse function",
+      "difficulty": 0.55,
+      "subtopic": "2. Algebra – Notation, vocabulary and manipulation"
+    },
+    {
+      "id": "composite_function",
+      "label": "Interpreting the succession of two functions as a composite function",
+      "difficulty": 0.55,
+      "subtopic": "2. Algebra – Notation, vocabulary and manipulation"
+    },
+    {
+      "id": "coords4q",
+      "label": "Plotting and reading coordinates in all four quadrants",
+      "difficulty": 0.1,
+      "subtopic": "2. Algebra – Graphs"
+    },
+    {
+      "id": "linear_eq_form",
+      "label": "Straight-line equations in the form y = mx + c",
+      "difficulty": 0.2,
+      "subtopic": "2. Algebra – Graphs"
+    },
+    {
+      "id": "plot_straight_line",
+      "label": "Plotting straight-line graphs from an equation using a table of values",
+      "difficulty": 0.25,
+      "subtopic": "2. Algebra – Graphs"
+    },
+    {
+      "id": "gradient_concept",
+      "label": "Gradient of a line: definition (rate of change, rise/run)",
+      "difficulty": 0.25,
+      "subtopic": "2. Algebra – Graphs"
+    },
+    {
+      "id": "intercept_concept",
+      "label": "Intercept of a line: definition (where a graph crosses an axis)",
+      "difficulty": 0.15,
+      "subtopic": "2. Algebra – Graphs"
+    },
+    {
+      "id": "identify_gradient_intercept_graph",
+      "label": "Identify gradient and intercept from a graph",
+      "difficulty": 0.3,
+      "subtopic": "2. Algebra – Graphs"
+    },
+    {
+      "id": "identify_gradient_intercept_algebra",
+      "label": "Identify gradient and intercept from an equation y = mx + c",
+      "difficulty": 0.3,
+      "subtopic": "2. Algebra – Graphs"
+    },
+    {
+      "id": "parallel_lines",
+      "label": "Parallel lines have equal gradients",
+      "difficulty": 0.3,
+      "subtopic": "2. Algebra – Graphs"
+    },
+    {
+      "id": "perpendicular_lines",
+      "label": "Perpendicular lines: gradients multiply to give -1",
+      "difficulty": 0.4,
+      "subtopic": "2. Algebra – Graphs"
+    },
+    {
+      "id": "eq_line_two_points",
+      "label": "Find the equation of a line through two given points",
+      "difficulty": 0.45,
+      "subtopic": "2. Algebra – Graphs"
+    },
+    {
+      "id": "eq_line_point_gradient",
+      "label": "Find the equation of a line through one point with a given gradient",
+      "difficulty": 0.4,
+      "subtopic": "2. Algebra – Graphs"
+    },
+    {
+      "id": "quadratic_function",
+      "label": "Quadratic functions: definition and standard form",
+      "difficulty": 0.25,
+      "subtopic": "2. Algebra – Graphs"
+    },
+    {
+      "id": "factorising_quadratics",
+      "label": "Factorising quadratic expressions",
+      "difficulty": 0.45,
+      "subtopic": "2. Algebra – Graphs"
+    },
+    {
+      "id": "completing_square",
+      "label": "Completing the square for a quadratic expression",
+      "difficulty": 0.5,
+      "subtopic": "2. Algebra – Graphs"
+    },
+    {
+      "id": "quadratic_roots_algebraic",
+      "label": "Deduce roots of a quadratic algebraically (factorising/formula)",
+      "difficulty": 0.4,
+      "subtopic": "2. Algebra – Graphs"
+    },
+    {
+      "id": "quadratic_turning_point_algebraic",
+      "label": "Deduce turning point of a quadratic by completing the square",
+      "difficulty": 0.55,
+      "subtopic": "2. Algebra – Graphs"
+    },
+    {
+      "id": "sketch_quadratic_graph",
+      "label": "Sketching a quadratic graph (parabola shape)",
+      "difficulty": 0.35,
+      "subtopic": "2. Algebra – Graphs"
+    },
+    {
+      "id": "quadratic_roots_graphical",
+      "label": "Identify roots of a quadratic graphically",
+      "difficulty": 0.3,
+      "subtopic": "2. Algebra – Graphs"
+    },
+    {
+      "id": "quadratic_intercepts_graphical",
+      "label": "Identify intercepts of a quadratic graphically",
+      "difficulty": 0.25,
+      "subtopic": "2. Algebra – Graphs"
+    },
+    {
+      "id": "quadratic_turning_point_graphical",
+      "label": "Identify turning point of a quadratic graphically",
+      "difficulty": 0.3,
+      "subtopic": "2. Algebra – Graphs"
+    },
+    {
+      "id": "cubic_function",
+      "label": "Simple cubic functions: recognising y = x³-type equations",
+      "difficulty": 0.3,
+      "subtopic": "2. Algebra – Graphs"
+    },
+    {
+      "id": "sketch_cubic_graph",
+      "label": "Sketching simple cubic graphs",
+      "difficulty": 0.4,
+      "subtopic": "2. Algebra – Graphs"
+    },
+    {
+      "id": "reciprocal_function",
+      "label": "Reciprocal function y = k/x (x ≠ 0): recognising the equation",
+      "difficulty": 0.3,
+      "subtopic": "2. Algebra – Graphs"
+    },
+    {
+      "id": "sketch_reciprocal_graph",
+      "label": "Sketching reciprocal graphs (asymptotic behaviour)",
+      "difficulty": 0.45,
+      "subtopic": "2. Algebra – Graphs"
+    },
+    {
+      "id": "exponential_function",
+      "label": "Exponential functions y = kˣ for positive k: recognising the equation",
+      "difficulty": 0.35,
+      "subtopic": "2. Algebra – Graphs"
+    },
+    {
+      "id": "sketch_exponential_graph",
+      "label": "Sketching exponential graphs",
+      "difficulty": 0.4,
+      "subtopic": "2. Algebra – Graphs"
+    },
+    {
+      "id": "trig_ratios_definitions",
+      "label": "Definitions of sin, cos, tan for angles",
+      "difficulty": 0.35,
+      "subtopic": "2. Algebra – Graphs"
+    },
+    {
+      "id": "sketch_trig_graphs",
+      "label": "Sketching y = sin x, y = cos x, y = tan x for angles of any size",
+      "difficulty": 0.5,
+      "subtopic": "2. Algebra – Graphs"
+    },
+    {
+      "id": "function_notation_transform",
+      "label": "Function notation for translations/reflections (e.g. f(x)+a, f(x-a), -f(x), f(-x))",
+      "difficulty": 0.4,
+      "subtopic": "2. Algebra – Graphs"
+    },
+    {
+      "id": "sketch_translations",
+      "label": "Sketching translations of a given function's graph",
+      "difficulty": 0.5,
+      "subtopic": "2. Algebra – Graphs"
+    },
+    {
+      "id": "sketch_reflections",
+      "label": "Sketching reflections of a given function's graph",
+      "difficulty": 0.5,
+      "subtopic": "2. Algebra – Graphs"
+    },
+    {
+      "id": "real_context_graphs",
+      "label": "Plotting and interpreting graphs of non-standard/real-context functions (reciprocal, exponential, kinematic)",
+      "difficulty": 0.5,
+      "subtopic": "2. Algebra – Graphs"
+    },
+    {
+      "id": "kinematics_context",
+      "label": "Interpreting graphs in kinematic contexts (distance, speed, acceleration)",
+      "difficulty": 0.55,
+      "subtopic": "2. Algebra – Graphs"
+    },
+    {
+      "id": "gradient_straight_line_calc",
+      "label": "Calculating the gradient of a straight-line graph from two points",
+      "difficulty": 0.3,
+      "subtopic": "2. Algebra – Graphs"
+    },
+    {
+      "id": "gradient_curve_estimate",
+      "label": "Estimating the gradient of a curve at a point using a tangent",
+      "difficulty": 0.55,
+      "subtopic": "2. Algebra – Graphs"
+    },
+    {
+      "id": "area_under_graph_estimate",
+      "label": "Estimating area under a graph (including non-linear) using geometric shapes/trapezia",
+      "difficulty": 0.55,
+      "subtopic": "2. Algebra – Graphs"
+    },
+    {
+      "id": "distance_time_graphs",
+      "label": "Interpreting gradients on distance-time graphs as speed",
+      "difficulty": 0.4,
+      "subtopic": "2. Algebra – Graphs"
+    },
+    {
+      "id": "velocity_time_graphs",
+      "label": "Interpreting gradients and areas on velocity-time graphs as acceleration and distance",
+      "difficulty": 0.55,
+      "subtopic": "2. Algebra – Graphs"
+    },
+    {
+      "id": "financial_graphs",
+      "label": "Interpreting gradients and areas in financial-context graphs",
+      "difficulty": 0.45,
+      "subtopic": "2. Algebra – Graphs"
+    },
+    {
+      "id": "pythagoras_recall",
+      "label": "Pythagoras' theorem (distance relationship for right-angled triangles)",
+      "difficulty": 0.25,
+      "subtopic": "2. Algebra – Graphs"
+    },
+    {
+      "id": "circle_equation_origin",
+      "label": "Equation of a circle centred at the origin: x² + y² = r²",
+      "difficulty": 0.35,
+      "subtopic": "2. Algebra – Graphs"
+    },
+    {
+      "id": "tangent_perpendicular_radius",
+      "label": "A tangent to a circle is perpendicular to the radius at that point",
+      "difficulty": 0.35,
+      "subtopic": "2. Algebra – Graphs"
+    },
+    {
+      "id": "tangent_to_circle_equation",
+      "label": "Find the equation of a tangent to a circle at a given point",
+      "difficulty": 0.6,
+      "subtopic": "2. Algebra – Graphs"
+    },
+    {
+      "id": "collect_terms",
+      "label": "Collecting like terms and basic algebraic manipulation",
+      "difficulty": 0.15,
+      "subtopic": "2. Algebra – Solving equations and inequalities"
+    },
+    {
+      "id": "solve_linear_1step",
+      "label": "Solving one/two-step linear equations",
+      "difficulty": 0.15,
+      "subtopic": "2. Algebra – Solving equations and inequalities"
+    },
+    {
+      "id": "expand_brackets",
+      "label": "Expanding single brackets",
+      "difficulty": 0.2,
+      "subtopic": "2. Algebra – Solving equations and inequalities"
+    },
+    {
+      "id": "solve_linear_brackets",
+      "label": "Solving linear equations involving brackets",
+      "difficulty": 0.25,
+      "subtopic": "2. Algebra – Solving equations and inequalities"
+    },
+    {
+      "id": "solve_linear_both_sides",
+      "label": "Solving linear equations with the unknown on both sides",
+      "difficulty": 0.35,
+      "subtopic": "2. Algebra – Solving equations and inequalities"
+    },
+    {
+      "id": "plot_linear_graph",
+      "label": "Drawing/plotting a linear graph from an equation",
+      "difficulty": 0.3,
+      "subtopic": "2. Algebra – Solving equations and inequalities"
+    },
+    {
+      "id": "graph_approx_linear",
+      "label": "Finding approximate solutions to linear equations using a graph",
+      "difficulty": 0.4,
+      "subtopic": "2. Algebra – Solving equations and inequalities"
+    },
+    {
+      "id": "factorising_quad",
+      "label": "Factorising quadratic expressions",
+      "difficulty": 0.4,
+      "subtopic": "2. Algebra – Solving equations and inequalities"
+    },
+    {
+      "id": "quad_std_form",
+      "label": "Standard form of a quadratic equation (ax²+bx+c=0)",
+      "difficulty": 0.2,
+      "subtopic": "2. Algebra – Solving equations and inequalities"
+    },
+    {
+      "id": "rearrange_to_quad",
+      "label": "Rearranging an equation into quadratic form before solving",
+      "difficulty": 0.4,
+      "subtopic": "2. Algebra – Solving equations and inequalities"
+    },
+    {
+      "id": "solve_quad_factorising",
+      "label": "Solving quadratic equations by factorising",
+      "difficulty": 0.4,
+      "subtopic": "2. Algebra – Solving equations and inequalities"
+    },
+    {
+      "id": "completing_square_expr",
+      "label": "Completing the square for a quadratic expression",
+      "difficulty": 0.5,
+      "subtopic": "2. Algebra – Solving equations and inequalities"
+    },
+    {
+      "id": "solve_quad_completing_square",
+      "label": "Solving quadratic equations by completing the square",
+      "difficulty": 0.55,
+      "subtopic": "2. Algebra – Solving equations and inequalities"
+    },
+    {
+      "id": "quadratic_formula",
+      "label": "The quadratic formula",
+      "difficulty": 0.4,
+      "subtopic": "2. Algebra – Solving equations and inequalities"
+    },
+    {
+      "id": "solve_quad_formula",
+      "label": "Solving quadratic equations using the quadratic formula",
+      "difficulty": 0.5,
+      "subtopic": "2. Algebra – Solving equations and inequalities"
+    },
+    {
+      "id": "plot_quad_graph",
+      "label": "Drawing/plotting a quadratic graph from an equation",
+      "difficulty": 0.4,
+      "subtopic": "2. Algebra – Solving equations and inequalities"
+    },
+    {
+      "id": "graph_approx_quad",
+      "label": "Finding approximate solutions to quadratic equations using a graph",
+      "difficulty": 0.45,
+      "subtopic": "2. Algebra – Solving equations and inequalities"
+    },
+    {
+      "id": "simul_elim_sub_linear",
+      "label": "Elimination and substitution methods for solving equations",
+      "difficulty": 0.3,
+      "subtopic": "2. Algebra – Solving equations and inequalities"
+    },
+    {
+      "id": "solve_simul_linear_linear",
+      "label": "Solving simultaneous linear/linear equations algebraically",
+      "difficulty": 0.45,
+      "subtopic": "2. Algebra – Solving equations and inequalities"
+    },
+    {
+      "id": "solve_simul_linear_quad",
+      "label": "Solving simultaneous linear/quadratic equations algebraically",
+      "difficulty": 0.6,
+      "subtopic": "2. Algebra – Solving equations and inequalities"
+    },
+    {
+      "id": "plot_two_graphs",
+      "label": "Plotting two graphs (lines/curves) on the same axes",
+      "difficulty": 0.35,
+      "subtopic": "2. Algebra – Solving equations and inequalities"
+    },
+    {
+      "id": "graph_approx_simul",
+      "label": "Finding approximate solutions to simultaneous equations using a graph (intersection points)",
+      "difficulty": 0.45,
+      "subtopic": "2. Algebra – Solving equations and inequalities"
+    },
+    {
+      "id": "iteration_concept",
+      "label": "The concept of iteration (repeated substitution converging to a solution)",
+      "difficulty": 0.45,
+      "subtopic": "2. Algebra – Solving equations and inequalities"
+    },
+    {
+      "id": "iterative_formula_rearrange",
+      "label": "Rearranging an equation into an iterative formula x_(n+1) = g(x_n)",
+      "difficulty": 0.55,
+      "subtopic": "2. Algebra – Solving equations and inequalities"
+    },
+    {
+      "id": "iteration_numerical",
+      "label": "Finding approximate solutions to equations numerically using iteration",
+      "difficulty": 0.55,
+      "subtopic": "2. Algebra – Solving equations and inequalities"
+    },
+    {
+      "id": "translate_to_expr",
+      "label": "Translating a situation/procedure into an algebraic expression or formula",
+      "difficulty": 0.4,
+      "subtopic": "2. Algebra – Solving equations and inequalities"
+    },
+    {
+      "id": "derive_equation_context",
+      "label": "Deriving an equation from a described situation",
+      "difficulty": 0.5,
+      "subtopic": "2. Algebra – Solving equations and inequalities"
+    },
+    {
+      "id": "derive_simul_context",
+      "label": "Deriving two simultaneous equations from a described situation",
+      "difficulty": 0.55,
+      "subtopic": "2. Algebra – Solving equations and inequalities"
+    },
+    {
+      "id": "interpret_solution_context",
+      "label": "Interpreting an algebraic solution in the original context",
+      "difficulty": 0.4,
+      "subtopic": "2. Algebra – Solving equations and inequalities"
+    },
+    {
+      "id": "solve_linear_inequality_1var",
+      "label": "Solving linear inequalities in one variable",
+      "difficulty": 0.3,
+      "subtopic": "2. Algebra – Solving equations and inequalities"
+    },
+    {
+      "id": "number_line_rep",
+      "label": "Representing a solution set on a number line",
+      "difficulty": 0.2,
+      "subtopic": "2. Algebra – Solving equations and inequalities"
+    },
+    {
+      "id": "set_notation",
+      "label": "Representing a solution set using set notation",
+      "difficulty": 0.3,
+      "subtopic": "2. Algebra – Solving equations and inequalities"
+    },
+    {
+      "id": "solve_quad_inequality",
+      "label": "Solving quadratic inequalities in one variable",
+      "difficulty": 0.6,
+      "subtopic": "2. Algebra – Solving equations and inequalities"
+    },
+    {
+      "id": "coord_plane_regions",
+      "label": "Identifying regions on a coordinate plane bounded by a line/curve",
+      "difficulty": 0.35,
+      "subtopic": "2. Algebra – Solving equations and inequalities"
+    },
+    {
+      "id": "solve_linear_inequality_2var_graph",
+      "label": "Solving linear inequalities in two variables and representing the region on a graph",
+      "difficulty": 0.55,
+      "subtopic": "2. Algebra – Solving equations and inequalities"
+    },
+    {
+      "id": "term_to_term",
+      "label": "Term-to-term rule: generating a sequence from a recurrence relation",
+      "difficulty": 0.2,
+      "subtopic": "2. Algebra – Sequences"
+    },
+    {
+      "id": "position_to_term",
+      "label": "Position-to-term rule: generating a sequence from a formula for the nth term",
+      "difficulty": 0.25,
+      "subtopic": "2. Algebra – Sequences"
+    },
+    {
+      "id": "triangular_numbers",
+      "label": "Triangular number sequence: 1, 3, 6, 10, ...",
+      "difficulty": 0.2,
+      "subtopic": "2. Algebra – Sequences"
+    },
+    {
+      "id": "square_numbers",
+      "label": "Square number sequence: 1, 4, 9, 16, ...",
+      "difficulty": 0.15,
+      "subtopic": "2. Algebra – Sequences"
+    },
+    {
+      "id": "cube_numbers",
+      "label": "Cube number sequence: 1, 8, 27, 64, ...",
+      "difficulty": 0.15,
+      "subtopic": "2. Algebra – Sequences"
+    },
+    {
+      "id": "arithmetic_progressions",
+      "label": "Simple arithmetic progressions (constant common difference)",
+      "difficulty": 0.2,
+      "subtopic": "2. Algebra – Sequences"
+    },
+    {
+      "id": "fibonacci_sequences",
+      "label": "Fibonacci-type sequences (each term from sum of previous two)",
+      "difficulty": 0.25,
+      "subtopic": "2. Algebra – Sequences"
+    },
+    {
+      "id": "quadratic_sequences",
+      "label": "Quadratic sequences (constant second difference)",
+      "difficulty": 0.4,
+      "subtopic": "2. Algebra – Sequences"
+    },
+    {
+      "id": "surds",
+      "label": "Surds: definition and manipulation of irrational roots",
+      "difficulty": 0.45,
+      "subtopic": "2. Algebra – Sequences"
+    },
+    {
+      "id": "rational_numbers",
+      "label": "Rational numbers: definition",
+      "difficulty": 0.15,
+      "subtopic": "2. Algebra – Sequences"
+    },
+    {
+      "id": "geometric_progressions",
+      "label": "Geometric progressions with integer term position and rational/surd common ratio r > 0",
+      "difficulty": 0.5,
+      "subtopic": "2. Algebra – Sequences"
+    },
+    {
+      "id": "other_sequences",
+      "label": "Other sequences not fitting standard named types",
+      "difficulty": 0.3,
+      "subtopic": "2. Algebra – Sequences"
+    },
+    {
+      "id": "linear_nth_term",
+      "label": "Deducing the nth term expression for a linear sequence",
+      "difficulty": 0.35,
+      "subtopic": "2. Algebra – Sequences"
+    },
+    {
+      "id": "quadratic_nth_term",
+      "label": "Deducing the nth term expression for a quadratic sequence",
+      "difficulty": 0.6,
+      "subtopic": "2. Algebra – Sequences"
+    },
+    {
+      "id": "N_FRACTIONS",
+      "label": "Fractions as operators and equivalence (prerequisite background)",
+      "difficulty": 0.15,
+      "subtopic": "3. Ratio, proportion and rates of change"
+    },
+    {
+      "id": "N_ALGEBRA_BASIC",
+      "label": "Basic algebraic manipulation (expressions, substitution)",
+      "difficulty": 0.2,
+      "subtopic": "3. Ratio, proportion and rates of change"
+    },
+    {
+      "id": "N_LINEAR_GRAPHS",
+      "label": "Plotting and reading straight-line graphs (y = mx + c)",
+      "difficulty": 0.25,
+      "subtopic": "3. Ratio, proportion and rates of change"
+    },
+    {
+      "id": "N_GRADIENT_DEF",
+      "label": "Definition of gradient of a straight line",
+      "difficulty": 0.2,
+      "subtopic": "3. Ratio, proportion and rates of change"
+    },
+    {
+      "id": "N_CURVES_GRAPH",
+      "label": "Plotting and reading graphs of curves",
+      "difficulty": 0.25,
+      "subtopic": "3. Ratio, proportion and rates of change"
+    },
+    {
+      "id": "N_SIMILARITY",
+      "label": "Similar shapes: equal angles, proportional sides",
+      "difficulty": 0.3,
+      "subtopic": "3. Ratio, proportion and rates of change"
+    },
+    {
+      "id": "N_TRIG_RATIOS",
+      "label": "Trigonometric ratios (sine, cosine, tangent) in right-angled triangles",
+      "difficulty": 0.35,
+      "subtopic": "3. Ratio, proportion and rates of change"
+    },
+    {
+      "id": "R1",
+      "label": "Convert between related standard units and compound units (numerical and algebraic contexts)",
+      "difficulty": 0.4,
+      "subtopic": "3. Ratio, proportion and rates of change"
+    },
+    {
+      "id": "R2a",
+      "label": "Use scale factors for enlargement/reduction",
+      "difficulty": 0.3,
+      "subtopic": "3. Ratio, proportion and rates of change"
+    },
+    {
+      "id": "R2b",
+      "label": "Use scale diagrams and maps",
+      "difficulty": 0.3,
+      "subtopic": "3. Ratio, proportion and rates of change"
+    },
+    {
+      "id": "R3",
+      "label": "Express one quantity as a fraction of another (fraction <1 or >1)",
+      "difficulty": 0.3,
+      "subtopic": "3. Ratio, proportion and rates of change"
+    },
+    {
+      "id": "R4",
+      "label": "Ratio notation, including reduction to simplest form",
+      "difficulty": 0.2,
+      "subtopic": "3. Ratio, proportion and rates of change"
+    },
+    {
+      "id": "R5a",
+      "label": "Divide a quantity into two parts in a given part:part or part:whole ratio",
+      "difficulty": 0.35,
+      "subtopic": "3. Ratio, proportion and rates of change"
+    },
+    {
+      "id": "R5b",
+      "label": "Express the division of a quantity into two parts as a ratio",
+      "difficulty": 0.3,
+      "subtopic": "3. Ratio, proportion and rates of change"
+    },
+    {
+      "id": "R5c",
+      "label": "Apply ratio to real contexts (conversion, comparison, scaling, mixing, concentrations)",
+      "difficulty": 0.45,
+      "subtopic": "3. Ratio, proportion and rates of change"
+    },
+    {
+      "id": "R6",
+      "label": "Express a multiplicative relationship between two quantities as a ratio or fraction",
+      "difficulty": 0.4,
+      "subtopic": "3. Ratio, proportion and rates of change"
+    },
+    {
+      "id": "R7",
+      "label": "Proportion as equality of ratios",
+      "difficulty": 0.4,
+      "subtopic": "3. Ratio, proportion and rates of change"
+    },
+    {
+      "id": "R8",
+      "label": "Relate ratios to fractions and to linear functions",
+      "difficulty": 0.5,
+      "subtopic": "3. Ratio, proportion and rates of change"
+    },
+    {
+      "id": "R9_DEF",
+      "label": "Definition of percentage as parts per hundred",
+      "difficulty": 0.15,
+      "subtopic": "3. Ratio, proportion and rates of change"
+    },
+    {
+      "id": "R9_INTERP",
+      "label": "Interpret percentages/percentage changes as fractions or decimals (multiplicative interpretation)",
+      "difficulty": 0.35,
+      "subtopic": "3. Ratio, proportion and rates of change"
+    },
+    {
+      "id": "R9_EXPRESS",
+      "label": "Express one quantity as a percentage of another; compare quantities using percentages",
+      "difficulty": 0.3,
+      "subtopic": "3. Ratio, proportion and rates of change"
+    },
+    {
+      "id": "R9_OVER100",
+      "label": "Work with percentages greater than 100%",
+      "difficulty": 0.3,
+      "subtopic": "3. Ratio, proportion and rates of change"
+    },
+    {
+      "id": "R9_CHANGE",
+      "label": "Solve percentage change problems (increase/decrease, original value/reverse percentage)",
+      "difficulty": 0.55,
+      "subtopic": "3. Ratio, proportion and rates of change"
+    },
+    {
+      "id": "R9_INTEREST",
+      "label": "Solve simple interest problems, including financial mathematics",
+      "difficulty": 0.4,
+      "subtopic": "3. Ratio, proportion and rates of change"
+    },
+    {
+      "id": "R10",
+      "label": "Solve direct and inverse proportion problems (graphical and algebraic)",
+      "difficulty": 0.55,
+      "subtopic": "3. Ratio, proportion and rates of change"
+    },
+    {
+      "id": "R11",
+      "label": "Use compound units: speed, rates of pay, unit pricing, density, pressure",
+      "difficulty": 0.4,
+      "subtopic": "3. Ratio, proportion and rates of change"
+    },
+    {
+      "id": "R12",
+      "label": "Compare lengths, areas and volumes using ratio notation; link to similarity and scale factors",
+      "difficulty": 0.55,
+      "subtopic": "3. Ratio, proportion and rates of change"
+    },
+    {
+      "id": "R13",
+      "label": "Direct proportion (Y=kX) and inverse proportion (Y=k/X): construct and interpret equations",
+      "difficulty": 0.6,
+      "subtopic": "3. Ratio, proportion and rates of change"
+    },
+    {
+      "id": "R14a",
+      "label": "Interpret gradient of a straight line as a rate of change",
+      "difficulty": 0.4,
+      "subtopic": "3. Ratio, proportion and rates of change"
+    },
+    {
+      "id": "R14b",
+      "label": "Recognise and interpret graphs of direct and inverse proportion",
+      "difficulty": 0.45,
+      "subtopic": "3. Ratio, proportion and rates of change"
+    },
+    {
+      "id": "R15a",
+      "label": "Average rate of change: gradient of a chord",
+      "difficulty": 0.55,
+      "subtopic": "3. Ratio, proportion and rates of change"
+    },
+    {
+      "id": "R15b",
+      "label": "Instantaneous rate of change: gradient of a tangent at a point on a curve",
+      "difficulty": 0.6,
+      "subtopic": "3. Ratio, proportion and rates of change"
+    },
+    {
+      "id": "R16a",
+      "label": "Set up and solve growth and decay problems including compound interest",
+      "difficulty": 0.55,
+      "subtopic": "3. Ratio, proportion and rates of change"
+    },
+    {
+      "id": "R16b",
+      "label": "Work with general iterative processes",
+      "difficulty": 0.6,
+      "subtopic": "3. Ratio, proportion and rates of change"
+    },
+    {
+      "id": "G1_terms_points_lines",
+      "label": "Terms and notation: points, lines, vertices, edges, planes",
+      "difficulty": 0.1,
+      "subtopic": "4. Geometry and measures – Properties and constructions"
+    },
+    {
+      "id": "G1_parallel_perp",
+      "label": "Parallel and perpendicular lines; right angles",
+      "difficulty": 0.1,
+      "subtopic": "4. Geometry and measures – Properties and constructions"
+    },
+    {
+      "id": "G1_polygons",
+      "label": "Polygons and regular polygons defined",
+      "difficulty": 0.15,
+      "subtopic": "4. Geometry and measures – Properties and constructions"
+    },
+    {
+      "id": "G1_symmetry",
+      "label": "Reflection and rotation symmetry of polygons",
+      "difficulty": 0.2,
+      "subtopic": "4. Geometry and measures – Properties and constructions"
+    },
+    {
+      "id": "G1_triangle_labelling",
+      "label": "Standard conventions for labelling sides/angles of triangles",
+      "difficulty": 0.1,
+      "subtopic": "4. Geometry and measures – Properties and constructions"
+    },
+    {
+      "id": "G1_draw_from_description",
+      "label": "Drawing diagrams from a written description",
+      "difficulty": 0.2,
+      "subtopic": "4. Geometry and measures – Properties and constructions"
+    },
+    {
+      "id": "G2_perp_bisector",
+      "label": "Construct perpendicular bisector of a line segment",
+      "difficulty": 0.25,
+      "subtopic": "4. Geometry and measures – Properties and constructions"
+    },
+    {
+      "id": "G2_perp_from_point",
+      "label": "Construct perpendicular to a line from/at a given point",
+      "difficulty": 0.25,
+      "subtopic": "4. Geometry and measures – Properties and constructions"
+    },
+    {
+      "id": "G2_bisect_angle",
+      "label": "Construct bisector of a given angle",
+      "difficulty": 0.25,
+      "subtopic": "4. Geometry and measures – Properties and constructions"
+    },
+    {
+      "id": "G2_shortest_distance",
+      "label": "Perpendicular distance from a point to a line is the shortest distance",
+      "difficulty": 0.2,
+      "subtopic": "4. Geometry and measures – Properties and constructions"
+    },
+    {
+      "id": "G2_construct_figures",
+      "label": "Use ruler/compass constructions to construct given figures",
+      "difficulty": 0.35,
+      "subtopic": "4. Geometry and measures – Properties and constructions"
+    },
+    {
+      "id": "G2_loci",
+      "label": "Solve loci problems using constructions",
+      "difficulty": 0.5,
+      "subtopic": "4. Geometry and measures – Properties and constructions"
+    },
+    {
+      "id": "G3_angles_point",
+      "label": "Angles at a point sum to 360°",
+      "difficulty": 0.1,
+      "subtopic": "4. Geometry and measures – Properties and constructions"
+    },
+    {
+      "id": "G3_angles_line",
+      "label": "Angles at a point on a straight line sum to 180°",
+      "difficulty": 0.1,
+      "subtopic": "4. Geometry and measures – Properties and constructions"
+    },
+    {
+      "id": "G3_vert_opposite",
+      "label": "Vertically opposite angles are equal",
+      "difficulty": 0.1,
+      "subtopic": "4. Geometry and measures – Properties and constructions"
+    },
+    {
+      "id": "G3_alt_corr_angles",
+      "label": "Alternate and corresponding angles on parallel lines",
+      "difficulty": 0.3,
+      "subtopic": "4. Geometry and measures – Properties and constructions"
+    },
+    {
+      "id": "G3_triangle_sum",
+      "label": "Derive and use the angle sum of a triangle (180°)",
+      "difficulty": 0.3,
+      "subtopic": "4. Geometry and measures – Properties and constructions"
+    },
+    {
+      "id": "G3_polygon_angle_sum",
+      "label": "Derive and use the sum of interior angles of any polygon",
+      "difficulty": 0.4,
+      "subtopic": "4. Geometry and measures – Properties and constructions"
+    },
+    {
+      "id": "G3_regular_polygon_props",
+      "label": "Derive properties of regular polygons (interior/exterior angles)",
+      "difficulty": 0.4,
+      "subtopic": "4. Geometry and measures – Properties and constructions"
+    },
+    {
+      "id": "G4_quad_defs",
+      "label": "Properties and definitions of special quadrilaterals (square, rectangle, parallelogram, trapezium, kite, rhombus)",
+      "difficulty": 0.3,
+      "subtopic": "4. Geometry and measures – Properties and constructions"
+    },
+    {
+      "id": "G4_triangle_defs",
+      "label": "Properties and definitions of triangle types and other plane figures",
+      "difficulty": 0.25,
+      "subtopic": "4. Geometry and measures – Properties and constructions"
+    },
+    {
+      "id": "G5_congruence_criteria",
+      "label": "Congruence criteria for triangles: SSS, SAS, ASA, RHS",
+      "difficulty": 0.3,
+      "subtopic": "4. Geometry and measures – Properties and constructions"
+    },
+    {
+      "id": "G6_isosceles_base_angles",
+      "label": "Base angles of an isosceles triangle are equal (derivation)",
+      "difficulty": 0.3,
+      "subtopic": "4. Geometry and measures – Properties and constructions"
+    },
+    {
+      "id": "G6_pythagoras",
+      "label": "Pythagoras' theorem: derivation and application",
+      "difficulty": 0.4,
+      "subtopic": "4. Geometry and measures – Properties and constructions"
+    },
+    {
+      "id": "G6_similarity",
+      "label": "Properties of similar shapes (equal angles, proportional sides)",
+      "difficulty": 0.35,
+      "subtopic": "4. Geometry and measures – Properties and constructions"
+    },
+    {
+      "id": "G6_simple_proofs",
+      "label": "Constructing simple geometric proofs using angle facts, congruence, similarity and quadrilateral properties",
+      "difficulty": 0.65,
+      "subtopic": "4. Geometry and measures – Properties and constructions"
+    },
+    {
+      "id": "G7_transformations_def",
+      "label": "Define rotation, reflection, translation, enlargement (including fractional/negative scale factors)",
+      "difficulty": 0.35,
+      "subtopic": "4. Geometry and measures – Properties and constructions"
+    },
+    {
+      "id": "G7_congruent_similar_construct",
+      "label": "Identify, describe and construct congruent/similar shapes via transformations, including on coordinate axes",
+      "difficulty": 0.45,
+      "subtopic": "4. Geometry and measures – Properties and constructions"
+    },
+    {
+      "id": "G8_combined_transformations",
+      "label": "Describe changes and invariance under combinations of rotations, reflections and translations",
+      "difficulty": 0.5,
+      "subtopic": "4. Geometry and measures – Properties and constructions"
+    },
+    {
+      "id": "G9_circle_defs",
+      "label": "Circle definitions: centre, radius, chord, diameter, circumference, tangent, arc, sector, segment",
+      "difficulty": 0.2,
+      "subtopic": "4. Geometry and measures – Properties and constructions"
+    },
+    {
+      "id": "G10_circle_theorem_centre",
+      "label": "Circle theorem: angle at centre is twice angle at circumference",
+      "difficulty": 0.4,
+      "subtopic": "4. Geometry and measures – Properties and constructions"
+    },
+    {
+      "id": "G10_circle_theorem_semicircle",
+      "label": "Circle theorem: angle in a semicircle is 90°",
+      "difficulty": 0.3,
+      "subtopic": "4. Geometry and measures – Properties and constructions"
+    },
+    {
+      "id": "G10_circle_theorem_same_segment",
+      "label": "Circle theorem: angles in the same segment are equal",
+      "difficulty": 0.3,
+      "subtopic": "4. Geometry and measures – Properties and constructions"
+    },
+    {
+      "id": "G10_circle_theorem_cyclic_quad",
+      "label": "Circle theorem: opposite angles in a cyclic quadrilateral sum to 180°",
+      "difficulty": 0.4,
+      "subtopic": "4. Geometry and measures – Properties and constructions"
+    },
+    {
+      "id": "G10_circle_theorem_tangent_radius",
+      "label": "Circle theorem: tangent is perpendicular to the radius at the point of contact",
+      "difficulty": 0.3,
+      "subtopic": "4. Geometry and measures – Properties and constructions"
+    },
+    {
+      "id": "G10_circle_theorem_tangents_equal",
+      "label": "Circle theorem: tangents from an external point are equal in length",
+      "difficulty": 0.3,
+      "subtopic": "4. Geometry and measures – Properties and constructions"
+    },
+    {
+      "id": "G10_circle_theorem_alt_segment",
+      "label": "Circle theorem: alternate segment theorem",
+      "difficulty": 0.55,
+      "subtopic": "4. Geometry and measures – Properties and constructions"
+    },
+    {
+      "id": "G10_circle_theorem_chord_bisector",
+      "label": "Circle theorem: perpendicular from centre to a chord bisects the chord",
+      "difficulty": 0.35,
+      "subtopic": "4. Geometry and measures – Properties and constructions"
+    },
+    {
+      "id": "G10_prove_related_results",
+      "label": "Prove related results using circle theorems",
+      "difficulty": 0.65,
+      "subtopic": "4. Geometry and measures – Properties and constructions"
+    },
+    {
+      "id": "G11_coordinate_geometry_problems",
+      "label": "Solve geometrical problems on coordinate axes",
+      "difficulty": 0.5,
+      "subtopic": "4. Geometry and measures – Properties and constructions"
+    },
+    {
+      "id": "G12_3d_shape_properties",
+      "label": "Properties of faces, surfaces, edges and vertices of 3D shapes (cubes, cuboids, prisms, cylinders, pyramids, cones, spheres)",
+      "difficulty": 0.25,
+      "subtopic": "4. Geometry and measures – Properties and constructions"
+    },
+    {
+      "id": "G13_plans_elevations",
+      "label": "Construct and interpret plans and elevations of 3D shapes",
+      "difficulty": 0.4,
+      "subtopic": "4. Geometry and measures – Properties and constructions"
+    },
+    {
+      "id": "units",
+      "label": "Standard units of measure (length, area, volume/capacity, mass, time, money) and conversions",
+      "difficulty": 0.15,
+      "subtopic": "4. Geometry and measures – Mensuration and calculation"
+    },
+    {
+      "id": "measure_lines_angles",
+      "label": "Measuring line segments and angles in geometric figures",
+      "difficulty": 0.15,
+      "subtopic": "4. Geometry and measures – Mensuration and calculation"
+    },
+    {
+      "id": "scale_drawings",
+      "label": "Interpreting maps and scale drawings",
+      "difficulty": 0.3,
+      "subtopic": "4. Geometry and measures – Mensuration and calculation"
+    },
+    {
+      "id": "bearings",
+      "label": "Use of bearings",
+      "difficulty": 0.3,
+      "subtopic": "4. Geometry and measures – Mensuration and calculation"
+    },
+    {
+      "id": "area_triangle",
+      "label": "Area of a triangle formula",
+      "difficulty": 0.15,
+      "subtopic": "4. Geometry and measures – Mensuration and calculation"
+    },
+    {
+      "id": "area_parallelogram",
+      "label": "Area of a parallelogram formula",
+      "difficulty": 0.15,
+      "subtopic": "4. Geometry and measures – Mensuration and calculation"
+    },
+    {
+      "id": "area_trapezium",
+      "label": "Area of a trapezium formula",
+      "difficulty": 0.2,
+      "subtopic": "4. Geometry and measures – Mensuration and calculation"
+    },
+    {
+      "id": "volume_cuboid",
+      "label": "Volume of a cuboid formula",
+      "difficulty": 0.15,
+      "subtopic": "4. Geometry and measures – Mensuration and calculation"
+    },
+    {
+      "id": "volume_prism",
+      "label": "Volume of right prisms (including cylinders)",
+      "difficulty": 0.3,
+      "subtopic": "4. Geometry and measures – Mensuration and calculation"
+    },
+    {
+      "id": "perimeter_2d",
+      "label": "Perimeter of 2D shapes",
+      "difficulty": 0.1,
+      "subtopic": "4. Geometry and measures – Mensuration and calculation"
+    },
+    {
+      "id": "circumference",
+      "label": "Circumference of a circle: C = 2πr = πd",
+      "difficulty": 0.2,
+      "subtopic": "4. Geometry and measures – Mensuration and calculation"
+    },
+    {
+      "id": "area_circle",
+      "label": "Area of a circle: A = πr²",
+      "difficulty": 0.2,
+      "subtopic": "4. Geometry and measures – Mensuration and calculation"
+    },
+    {
+      "id": "perimeter_composite_circles",
+      "label": "Calculating perimeters of composite 2D shapes including circles",
+      "difficulty": 0.35,
+      "subtopic": "4. Geometry and measures – Mensuration and calculation"
+    },
+    {
+      "id": "area_composite",
+      "label": "Areas of circles and composite shapes",
+      "difficulty": 0.35,
+      "subtopic": "4. Geometry and measures – Mensuration and calculation"
+    },
+    {
+      "id": "surface_area_solids",
+      "label": "Surface area of spheres, pyramids, cones and composite solids",
+      "difficulty": 0.55,
+      "subtopic": "4. Geometry and measures – Mensuration and calculation"
+    },
+    {
+      "id": "volume_solids",
+      "label": "Volume of spheres, pyramids, cones and composite solids",
+      "difficulty": 0.55,
+      "subtopic": "4. Geometry and measures – Mensuration and calculation"
+    },
+    {
+      "id": "arc_length",
+      "label": "Calculating arc length of a sector",
+      "difficulty": 0.4,
+      "subtopic": "4. Geometry and measures – Mensuration and calculation"
+    },
+    {
+      "id": "sector_angle",
+      "label": "Calculating unknown angles of a sector",
+      "difficulty": 0.4,
+      "subtopic": "4. Geometry and measures – Mensuration and calculation"
+    },
+    {
+      "id": "sector_area",
+      "label": "Calculating area of a sector",
+      "difficulty": 0.4,
+      "subtopic": "4. Geometry and measures – Mensuration and calculation"
+    },
+    {
+      "id": "congruence",
+      "label": "Concept of congruence between figures",
+      "difficulty": 0.25,
+      "subtopic": "4. Geometry and measures – Mensuration and calculation"
+    },
+    {
+      "id": "similarity",
+      "label": "Concept of similarity between figures",
+      "difficulty": 0.3,
+      "subtopic": "4. Geometry and measures – Mensuration and calculation"
+    },
+    {
+      "id": "similar_lengths",
+      "label": "Relationship between lengths in similar figures (linear scale factor)",
+      "difficulty": 0.35,
+      "subtopic": "4. Geometry and measures – Mensuration and calculation"
+    },
+    {
+      "id": "similar_areas",
+      "label": "Relationship between areas in similar figures (scale factor squared)",
+      "difficulty": 0.5,
+      "subtopic": "4. Geometry and measures – Mensuration and calculation"
+    },
+    {
+      "id": "similar_volumes",
+      "label": "Relationship between volumes in similar figures (scale factor cubed)",
+      "difficulty": 0.5,
+      "subtopic": "4. Geometry and measures – Mensuration and calculation"
+    },
+    {
+      "id": "pythagoras",
+      "label": "Pythagoras' theorem: a² + b² = c²",
+      "difficulty": 0.3,
+      "subtopic": "4. Geometry and measures – Mensuration and calculation"
+    },
+    {
+      "id": "trig_ratios",
+      "label": "Trigonometric ratios: sin θ, cos θ, tan θ defined for right-angled triangles",
+      "difficulty": 0.35,
+      "subtopic": "4. Geometry and measures – Mensuration and calculation"
+    },
+    {
+      "id": "trig_find_sides",
+      "label": "Applying trig ratios to find lengths in right-angled triangles",
+      "difficulty": 0.4,
+      "subtopic": "4. Geometry and measures – Mensuration and calculation"
+    },
+    {
+      "id": "trig_find_angles",
+      "label": "Applying trig ratios to find angles in right-angled triangles",
+      "difficulty": 0.4,
+      "subtopic": "4. Geometry and measures – Mensuration and calculation"
+    },
+    {
+      "id": "pythag_trig_3d",
+      "label": "Applying Pythagoras' theorem and trigonometry in 3D figures",
+      "difficulty": 0.65,
+      "subtopic": "4. Geometry and measures – Mensuration and calculation"
+    },
+    {
+      "id": "exact_trig_values",
+      "label": "Exact values of sin, cos, tan for θ = 0°, 30°, 45°, 60°, 90°",
+      "difficulty": 0.4,
+      "subtopic": "4. Geometry and measures – Mensuration and calculation"
+    },
+    {
+      "id": "sine_rule",
+      "label": "Sine rule: a/sinA = b/sinB = c/sinC",
+      "difficulty": 0.45,
+      "subtopic": "4. Geometry and measures – Mensuration and calculation"
+    },
+    {
+      "id": "cosine_rule",
+      "label": "Cosine rule: a² = b² + c² − 2bc cos A",
+      "difficulty": 0.45,
+      "subtopic": "4. Geometry and measures – Mensuration and calculation"
+    },
+    {
+      "id": "sine_rule_angles",
+      "label": "Applying the sine rule to find unknown angles",
+      "difficulty": 0.5,
+      "subtopic": "4. Geometry and measures – Mensuration and calculation"
+    },
+    {
+      "id": "cosine_rule_angles",
+      "label": "Applying the cosine rule to find unknown angles",
+      "difficulty": 0.5,
+      "subtopic": "4. Geometry and measures – Mensuration and calculation"
+    },
+    {
+      "id": "trig_area_formula",
+      "label": "Area of a triangle = (1/2)ab sin C",
+      "difficulty": 0.45,
+      "subtopic": "4. Geometry and measures – Mensuration and calculation"
+    },
+    {
+      "id": "non_right_triangle_solving",
+      "label": "Solving for unknown sides/angles/area in general (non-right-angled) triangles using sine/cosine rule and area formula together",
+      "difficulty": 0.6,
+      "subtopic": "4. Geometry and measures – Mensuration and calculation"
+    },
+    {
+      "id": "coord_plane",
+      "label": "Cartesian coordinate plane and coordinates of a point",
+      "difficulty": 0.05,
+      "subtopic": "4. Geometry and measures – Vectors"
+    },
+    {
+      "id": "translation",
+      "label": "Translation as a geometric transformation (shifting a shape without rotation/reflection)",
+      "difficulty": 0.15,
+      "subtopic": "4. Geometry and measures – Vectors"
+    },
+    {
+      "id": "column_vector",
+      "label": "Column vector notation (top/bottom number represent horizontal/vertical movement)",
+      "difficulty": 0.2,
+      "subtopic": "4. Geometry and measures – Vectors"
+    },
+    {
+      "id": "vector_as_translation",
+      "label": "Describing a translation as a 2D vector (G24)",
+      "difficulty": 0.25,
+      "subtopic": "4. Geometry and measures – Vectors"
+    },
+    {
+      "id": "vector_diagram_rep",
+      "label": "Diagrammatic representation of a vector (directed line segment, arrow notation)",
+      "difficulty": 0.2,
+      "subtopic": "4. Geometry and measures – Vectors"
+    },
+    {
+      "id": "vector_magnitude_direction",
+      "label": "A vector has both magnitude and direction (distinguishing vectors from scalars)",
+      "difficulty": 0.3,
+      "subtopic": "4. Geometry and measures – Vectors"
+    },
+    {
+      "id": "equal_parallel_vectors",
+      "label": "Equal and parallel vectors (same/opposite direction, scalar multiples represent parallel vectors)",
+      "difficulty": 0.3,
+      "subtopic": "4. Geometry and measures – Vectors"
+    },
+    {
+      "id": "vector_addition",
+      "label": "Addition of vectors (column vectors and diagrammatically, nose-to-tail)",
+      "difficulty": 0.3,
+      "subtopic": "4. Geometry and measures – Vectors"
+    },
+    {
+      "id": "vector_subtraction",
+      "label": "Subtraction of vectors",
+      "difficulty": 0.3,
+      "subtopic": "4. Geometry and measures – Vectors"
+    },
+    {
+      "id": "negative_vector",
+      "label": "Negative of a vector (reversing direction)",
+      "difficulty": 0.2,
+      "subtopic": "4. Geometry and measures – Vectors"
+    },
+    {
+      "id": "scalar_multiplication",
+      "label": "Multiplication of a vector by a scalar",
+      "difficulty": 0.3,
+      "subtopic": "4. Geometry and measures – Vectors"
+    },
+    {
+      "id": "resultant_vector",
+      "label": "Resultant vectors: combining vector paths using addition/subtraction/scalar multiples to find a route between points",
+      "difficulty": 0.45,
+      "subtopic": "4. Geometry and measures – Vectors"
+    },
+    {
+      "id": "vector_geometry_proof",
+      "label": "Using vectors to construct geometric arguments and proofs (e.g. proving lines parallel or collinear using vector relationships)",
+      "difficulty": 0.75,
+      "subtopic": "4. Geometry and measures – Vectors"
+    },
+    {
+      "id": "prob_scale",
+      "label": "The 0-1 probability scale and probability language (impossible, certain, likely, etc.)",
+      "difficulty": 0.15,
+      "subtopic": "5. Probability"
+    },
+    {
+      "id": "freq_tables",
+      "label": "Recording outcomes of probability experiments in frequency tables",
+      "difficulty": 0.15,
+      "subtopic": "5. Probability"
+    },
+    {
+      "id": "freq_trees",
+      "label": "Recording and analysing outcomes using frequency trees",
+      "difficulty": 0.25,
+      "subtopic": "5. Probability"
+    },
+    {
+      "id": "randomness_fairness",
+      "label": "Ideas of randomness, fairness and equally likely events",
+      "difficulty": 0.2,
+      "subtopic": "5. Probability"
+    },
+    {
+      "id": "expected_outcomes",
+      "label": "Calculating expected outcomes of multiple future experiments",
+      "difficulty": 0.3,
+      "subtopic": "5. Probability"
+    },
+    {
+      "id": "relative_freq",
+      "label": "Relative frequency as an estimate of probability",
+      "difficulty": 0.25,
+      "subtopic": "5. Probability"
+    },
+    {
+      "id": "theoretical_prob_link",
+      "label": "Relating relative expected frequency to theoretical probability",
+      "difficulty": 0.35,
+      "subtopic": "5. Probability"
+    },
+    {
+      "id": "exhaustive_sum1",
+      "label": "Probabilities of an exhaustive set of outcomes sum to one",
+      "difficulty": 0.25,
+      "subtopic": "5. Probability"
+    },
+    {
+      "id": "mutually_exclusive_sum1",
+      "label": "Probabilities of an exhaustive set of mutually exclusive events sum to one",
+      "difficulty": 0.3,
+      "subtopic": "5. Probability"
+    },
+    {
+      "id": "law_large_numbers",
+      "label": "Empirical unbiased samples tend towards theoretical probability distributions as sample size increases",
+      "difficulty": 0.4,
+      "subtopic": "5. Probability"
+    },
+    {
+      "id": "systematic_listing",
+      "label": "Systematic listing strategies for enumerating outcomes",
+      "difficulty": 0.25,
+      "subtopic": "5. Probability"
+    },
+    {
+      "id": "sample_space_tables_grids",
+      "label": "Enumerating combined outcomes using tables and grids",
+      "difficulty": 0.3,
+      "subtopic": "5. Probability"
+    },
+    {
+      "id": "venn_diagrams",
+      "label": "Venn diagrams: sets, intersection, union, complement",
+      "difficulty": 0.4,
+      "subtopic": "5. Probability"
+    },
+    {
+      "id": "tree_diagram_construction",
+      "label": "Constructing tree diagrams to represent combined experiments",
+      "difficulty": 0.35,
+      "subtopic": "5. Probability"
+    },
+    {
+      "id": "possibility_space",
+      "label": "Constructing theoretical possibility spaces for single and combined equally-likely experiments",
+      "difficulty": 0.4,
+      "subtopic": "5. Probability"
+    },
+    {
+      "id": "theoretical_prob_calc",
+      "label": "Calculating theoretical probabilities from a possibility space",
+      "difficulty": 0.35,
+      "subtopic": "5. Probability"
+    },
+    {
+      "id": "independent_events",
+      "label": "Independent events and the multiplication rule",
+      "difficulty": 0.4,
+      "subtopic": "5. Probability"
+    },
+    {
+      "id": "dependent_events",
+      "label": "Dependent events and probability without replacement",
+      "difficulty": 0.5,
+      "subtopic": "5. Probability"
+    },
+    {
+      "id": "tree_combined_events",
+      "label": "Calculating probabilities of combined independent/dependent events using tree diagrams",
+      "difficulty": 0.5,
+      "subtopic": "5. Probability"
+    },
+    {
+      "id": "underlying_assumptions",
+      "label": "Knowing and stating underlying assumptions in combined event calculations",
+      "difficulty": 0.45,
+      "subtopic": "5. Probability"
+    },
+    {
+      "id": "conditional_prob",
+      "label": "Conditional probability: concept and notation",
+      "difficulty": 0.6,
+      "subtopic": "5. Probability"
+    },
+    {
+      "id": "conditional_two_way",
+      "label": "Interpreting conditional probability using two-way tables of expected frequencies",
+      "difficulty": 0.55,
+      "subtopic": "5. Probability"
+    },
+    {
+      "id": "conditional_tree",
+      "label": "Interpreting conditional probability using tree diagrams",
+      "difficulty": 0.55,
+      "subtopic": "5. Probability"
+    },
+    {
+      "id": "conditional_venn",
+      "label": "Interpreting conditional probability using Venn diagrams",
+      "difficulty": 0.6,
+      "subtopic": "5. Probability"
+    },
+    {
+      "id": "pop_sample",
+      "label": "Population and sample: definitions",
+      "difficulty": 0.15,
+      "subtopic": "6. Statistics"
+    },
+    {
+      "id": "sample_infer",
+      "label": "Inferring population properties from a sample",
+      "difficulty": 0.4,
+      "subtopic": "6. Statistics"
+    },
+    {
+      "id": "sample_limits",
+      "label": "Limitations of sampling (bias, sample size, representativeness)",
+      "difficulty": 0.4,
+      "subtopic": "6. Statistics"
+    },
+    {
+      "id": "categorical_data",
+      "label": "Categorical vs numerical (discrete/continuous) data",
+      "difficulty": 0.2,
+      "subtopic": "6. Statistics"
+    },
+    {
+      "id": "freq_table",
+      "label": "Frequency tables for categorical/discrete data",
+      "difficulty": 0.15,
+      "subtopic": "6. Statistics"
+    },
+    {
+      "id": "bar_chart",
+      "label": "Bar charts: construction and interpretation",
+      "difficulty": 0.15,
+      "subtopic": "6. Statistics"
+    },
+    {
+      "id": "pie_chart",
+      "label": "Pie charts: construction and interpretation",
+      "difficulty": 0.3,
+      "subtopic": "6. Statistics"
+    },
+    {
+      "id": "pictogram",
+      "label": "Pictograms: construction and interpretation",
+      "difficulty": 0.15,
+      "subtopic": "6. Statistics"
+    },
+    {
+      "id": "chart_choice_categorical",
+      "label": "Choosing appropriate chart for categorical data",
+      "difficulty": 0.3,
+      "subtopic": "6. Statistics"
+    },
+    {
+      "id": "vert_line_chart",
+      "label": "Vertical line charts for ungrouped discrete numerical data",
+      "difficulty": 0.2,
+      "subtopic": "6. Statistics"
+    },
+    {
+      "id": "time_series_table",
+      "label": "Tables for time series data",
+      "difficulty": 0.15,
+      "subtopic": "6. Statistics"
+    },
+    {
+      "id": "time_series_graph",
+      "label": "Line graphs for time series data and trend interpretation",
+      "difficulty": 0.3,
+      "subtopic": "6. Statistics"
+    },
+    {
+      "id": "grouped_data_table",
+      "label": "Grouped frequency tables for discrete/continuous data",
+      "difficulty": 0.3,
+      "subtopic": "6. Statistics"
+    },
+    {
+      "id": "class_width",
+      "label": "Class intervals and class width (equal and unequal)",
+      "difficulty": 0.3,
+      "subtopic": "6. Statistics"
+    },
+    {
+      "id": "freq_density",
+      "label": "Frequency density: definition and calculation",
+      "difficulty": 0.4,
+      "subtopic": "6. Statistics"
+    },
+    {
+      "id": "histogram_equal",
+      "label": "Histograms with equal class intervals",
+      "difficulty": 0.35,
+      "subtopic": "6. Statistics"
+    },
+    {
+      "id": "histogram_unequal",
+      "label": "Histograms with unequal class intervals (using frequency density)",
+      "difficulty": 0.55,
+      "subtopic": "6. Statistics"
+    },
+    {
+      "id": "histogram_interpret",
+      "label": "Interpreting histograms (estimating frequencies from areas)",
+      "difficulty": 0.55,
+      "subtopic": "6. Statistics"
+    },
+    {
+      "id": "cumulative_freq_table",
+      "label": "Cumulative frequency: constructing the running-total table",
+      "difficulty": 0.3,
+      "subtopic": "6. Statistics"
+    },
+    {
+      "id": "cumulative_freq_graph",
+      "label": "Constructing a cumulative frequency graph",
+      "difficulty": 0.4,
+      "subtopic": "6. Statistics"
+    },
+    {
+      "id": "cumulative_freq_interpret",
+      "label": "Reading medians/quartiles/percentiles from a cumulative frequency graph",
+      "difficulty": 0.5,
+      "subtopic": "6. Statistics"
+    },
+    {
+      "id": "chart_choice_grouped",
+      "label": "Choosing appropriate diagram for grouped/continuous data",
+      "difficulty": 0.35,
+      "subtopic": "6. Statistics"
+    },
+    {
+      "id": "mean",
+      "label": "Mean: calculation (including from frequency tables)",
+      "difficulty": 0.2,
+      "subtopic": "6. Statistics"
+    },
+    {
+      "id": "median",
+      "label": "Median: calculation (including from frequency tables)",
+      "difficulty": 0.2,
+      "subtopic": "6. Statistics"
+    },
+    {
+      "id": "mode_modal_class",
+      "label": "Mode and modal class",
+      "difficulty": 0.15,
+      "subtopic": "6. Statistics"
+    },
+    {
+      "id": "range",
+      "label": "Range: calculation",
+      "difficulty": 0.15,
+      "subtopic": "6. Statistics"
+    },
+    {
+      "id": "quartiles",
+      "label": "Quartiles: definition and calculation",
+      "difficulty": 0.35,
+      "subtopic": "6. Statistics"
+    },
+    {
+      "id": "iqr",
+      "label": "Interquartile range: calculation",
+      "difficulty": 0.3,
+      "subtopic": "6. Statistics"
+    },
+    {
+      "id": "outliers",
+      "label": "Identifying outliers using a given rule (e.g. quartile-based)",
+      "difficulty": 0.4,
+      "subtopic": "6. Statistics"
+    },
+    {
+      "id": "box_plot_construct",
+      "label": "Constructing a box plot from quartiles, median, min/max",
+      "difficulty": 0.4,
+      "subtopic": "6. Statistics"
+    },
+    {
+      "id": "box_plot_interpret",
+      "label": "Interpreting and comparing box plots",
+      "difficulty": 0.45,
+      "subtopic": "6. Statistics"
+    },
+    {
+      "id": "compare_distributions",
+      "label": "Comparing distributions using measures of central tendency and spread",
+      "difficulty": 0.5,
+      "subtopic": "6. Statistics"
+    },
+    {
+      "id": "describe_population",
+      "label": "Applying statistics (averages/spread/diagrams) to describe a population",
+      "difficulty": 0.45,
+      "subtopic": "6. Statistics"
+    },
+    {
+      "id": "bivariate_data",
+      "label": "Bivariate data: definition",
+      "difficulty": 0.15,
+      "subtopic": "6. Statistics"
+    },
+    {
+      "id": "scatter_graph",
+      "label": "Constructing and reading a scatter graph",
+      "difficulty": 0.2,
+      "subtopic": "6. Statistics"
+    },
+    {
+      "id": "correlation_types",
+      "label": "Recognising correlation types (positive, negative, none) and strength",
+      "difficulty": 0.3,
+      "subtopic": "6. Statistics"
+    },
+    {
+      "id": "correlation_causation",
+      "label": "Correlation does not indicate causation",
+      "difficulty": 0.35,
+      "subtopic": "6. Statistics"
+    },
+    {
+      "id": "line_of_best_fit",
+      "label": "Drawing an estimated line of best fit",
+      "difficulty": 0.35,
+      "subtopic": "6. Statistics"
+    },
+    {
+      "id": "prediction_lobf",
+      "label": "Making predictions using the line of best fit",
+      "difficulty": 0.3,
+      "subtopic": "6. Statistics"
+    },
+    {
+      "id": "interpolation_extrapolation",
+      "label": "Interpolation and extrapolation of trends",
+      "difficulty": 0.4,
+      "subtopic": "6. Statistics"
+    },
+    {
+      "id": "danger_extrapolation",
+      "label": "Dangers/unreliability of extrapolation and interpolation",
+      "difficulty": 0.45,
+      "subtopic": "6. Statistics"
+    },
+    {
+      "id": "place_value_decimals_fdp",
+      "label": "Place value in decimals (tenths, hundredths, thousandths)",
+      "subtopic": "1. Number – Fractions, decimals and percentages"
+    },
+    {
+      "id": "expand_double_brackets_solving",
+      "label": "Expanding products of two binomials",
+      "subtopic": "2. Algebra – Solving equations and inequalities"
+    },
+    {
+      "id": "G9_circle_defs_basic",
+      "label": "Circle vocabulary: centre, radius, diameter, circumference",
+      "subtopic": "4. Geometry and measures – Properties and constructions"
+    },
+    {
+      "id": "G9_circle_defs_lines",
+      "label": "Circle vocabulary: chord, tangent, arc",
+      "subtopic": "4. Geometry and measures – Properties and constructions"
+    },
+    {
+      "id": "G9_circle_defs_regions",
+      "label": "Circle vocabulary: sector and segment",
+      "subtopic": "4. Geometry and measures – Properties and constructions"
+    },
+    {
+      "id": "G4_quad_defs_parallel",
+      "label": "Properties of square, rectangle and parallelogram",
+      "subtopic": "4. Geometry and measures – Properties and constructions"
+    },
+    {
+      "id": "G4_quad_defs_other",
+      "label": "Properties of rhombus, kite and trapezium",
+      "subtopic": "4. Geometry and measures – Properties and constructions"
+    },
+    {
+      "id": "G12_3d_prisms",
+      "label": "Faces, edges and vertices of cubes, cuboids and prisms",
+      "subtopic": "4. Geometry and measures – Properties and constructions"
+    },
+    {
+      "id": "G12_3d_curved_pyramids",
+      "label": "Surfaces and properties of cylinders, pyramids, cones and spheres",
+      "subtopic": "4. Geometry and measures – Properties and constructions"
+    },
+    {
+      "id": "G7_def_reflection_rotation",
+      "label": "Define reflection (mirror line) and rotation (centre, angle, direction)",
+      "subtopic": "4. Geometry and measures – Properties and constructions"
+    },
+    {
+      "id": "G7_def_translation",
+      "label": "Define translation by a vector",
+      "subtopic": "4. Geometry and measures – Properties and constructions"
+    },
+    {
+      "id": "G7_def_enlargement",
+      "label": "Define enlargement (centre and scale factor, including fractional and negative)",
+      "subtopic": "4. Geometry and measures – Properties and constructions"
+    },
+    {
+      "id": "surface_area_pyramid_cone",
+      "label": "Surface area of pyramids and cones (including curved surface area)",
+      "subtopic": "4. Geometry and measures – Mensuration and calculation"
+    },
+    {
+      "id": "surface_area_sphere",
+      "label": "Surface area of a sphere (4πr²)",
+      "subtopic": "4. Geometry and measures – Mensuration and calculation"
+    },
+    {
+      "id": "volume_pyramid_cone",
+      "label": "Volume of pyramids and cones (1/3 × base area × height)",
+      "subtopic": "4. Geometry and measures – Mensuration and calculation"
+    },
+    {
+      "id": "volume_sphere",
+      "label": "Volume of a sphere (4/3 πr³)",
+      "subtopic": "4. Geometry and measures – Mensuration and calculation"
+    },
+    {
+      "id": "sector_fraction_of_circle",
+      "label": "A sector is the fraction θ/360 of the whole circle",
+      "subtopic": "4. Geometry and measures – Mensuration and calculation"
+    },
+    {
+      "id": "inverse_trig_notation",
+      "label": "Inverse trigonometric notation (sin⁻¹, cos⁻¹, tan⁻¹) as the reverse process",
+      "subtopic": "4. Geometry and measures – Mensuration and calculation"
+    },
+    {
+      "id": "mean_ungrouped",
+      "label": "Mean of an ungrouped data set (total ÷ number of values)",
+      "subtopic": "6. Statistics"
+    },
+    {
+      "id": "midpoint_estimation",
+      "label": "Using class midpoints to estimate the mean of grouped data",
+      "subtopic": "6. Statistics"
+    },
+    {
+      "id": "independence_definition",
+      "label": "Definition of independent events (one outcome does not affect the other)",
+      "subtopic": "5. Probability"
+    }
+  ],
+  "edges": [
+    {
+      "from": "place_value",
+      "to": "order_numbers",
+      "difficulty": 0.2
+    },
+    {
+      "from": "neg_numbers",
+      "to": "order_numbers",
+      "difficulty": 0.2
+    },
+    {
+      "from": "fractions_concept",
+      "to": "order_numbers",
+      "difficulty": 0.3
+    },
+    {
+      "from": "decimals_concept",
+      "to": "order_numbers",
+      "difficulty": 0.2
+    },
+    {
+      "from": "order_numbers",
+      "to": "inequality_symbols",
+      "difficulty": 0.15
+    },
+    {
+      "from": "neg_numbers",
+      "to": "four_ops_integers",
+      "difficulty": 0.3
+    },
+    {
+      "from": "place_value",
+      "to": "four_ops_decimals",
+      "difficulty": 0.3
+    },
+    {
+      "from": "decimals_concept",
+      "to": "four_ops_decimals",
+      "difficulty": 0.25
+    },
+    {
+      "from": "fractions_concept",
+      "to": "four_ops_fractions",
+      "difficulty": 0.35
+    },
+    {
+      "from": "neg_numbers",
+      "to": "four_ops_fractions",
+      "difficulty": 0.3
+    },
+    {
+      "from": "four_ops_integers",
+      "to": "four_ops_fractions",
+      "difficulty": 0.3
+    },
+    {
+      "from": "place_value",
+      "to": "place_value_large_small",
+      "difficulty": 0.3
+    },
+    {
+      "from": "four_ops_decimals",
+      "to": "place_value_large_small",
+      "difficulty": 0.35
+    },
+    {
+      "from": "four_ops_integers",
+      "to": "inverse_ops",
+      "difficulty": 0.2
+    },
+    {
+      "from": "four_ops_fractions",
+      "to": "inverse_ops",
+      "difficulty": 0.25
+    },
+    {
+      "from": "inverse_ops",
+      "to": "cancellation",
+      "difficulty": 0.3
+    },
+    {
+      "from": "cancellation",
+      "to": "bidmas_full",
+      "difficulty": 0.3
+    },
+    {
+      "from": "powers_roots_notation",
+      "to": "bidmas_full",
+      "difficulty": 0.3
+    },
+    {
+      "from": "reciprocals",
+      "to": "bidmas_full",
+      "difficulty": 0.3
+    },
+    {
+      "from": "brackets_priority",
+      "to": "bidmas_full",
+      "difficulty": 0.25
+    },
+    {
+      "from": "four_ops_integers",
+      "to": "brackets_priority",
+      "difficulty": 0.2
+    },
+    {
+      "from": "factors_multiples",
+      "to": "prime_numbers",
+      "difficulty": 0.2
+    },
+    {
+      "from": "factors_multiples",
+      "to": "common_factors_multiples",
+      "difficulty": 0.25
+    },
+    {
+      "from": "common_factors_multiples",
+      "to": "hcf_lcm",
+      "difficulty": 0.3
+    },
+    {
+      "from": "prime_numbers",
+      "to": "prime_factorisation",
+      "difficulty": 0.3
+    },
+    {
+      "from": "powers_roots_notation",
+      "to": "prime_factorisation",
+      "difficulty": 0.25
+    },
+    {
+      "from": "prime_factorisation",
+      "to": "unique_factorisation",
+      "difficulty": 0.35
+    },
+    {
+      "from": "prime_factorisation",
+      "to": "hcf_lcm",
+      "difficulty": 0.3
+    },
+    {
+      "from": "four_ops_integers",
+      "to": "listing_strategies",
+      "difficulty": 0.25
+    },
+    {
+      "from": "listing_strategies",
+      "to": "product_rule_counting",
+      "difficulty": 0.35
+    },
+    {
+      "from": "bidmas_full",
+      "to": "integer_powers",
+      "difficulty": 0.25
+    },
+    {
+      "from": "integer_powers",
+      "to": "powers_recognition",
+      "difficulty": 0.2
+    },
+    {
+      "from": "powers_recognition",
+      "to": "assoc_roots",
+      "difficulty": 0.3
+    },
+    {
+      "from": "assoc_roots",
+      "to": "estimate_powers_roots",
+      "difficulty": 0.4
+    },
+    {
+      "from": "integer_powers",
+      "to": "estimate_powers_roots",
+      "difficulty": 0.35
+    },
+    {
+      "from": "reciprocals",
+      "to": "fractional_indices",
+      "difficulty": 0.4
+    },
+    {
+      "from": "assoc_roots",
+      "to": "fractional_indices",
+      "difficulty": 0.45
+    },
+    {
+      "from": "integer_powers",
+      "to": "fractional_indices",
+      "difficulty": 0.4
+    },
+    {
+      "from": "assoc_roots",
+      "to": "calc_with_roots",
+      "difficulty": 0.35
+    },
+    {
+      "from": "four_ops_fractions",
+      "to": "calc_with_roots",
+      "difficulty": 0.35
+    },
+    {
+      "from": "calc_with_roots",
+      "to": "surd_simplify",
+      "difficulty": 0.4
+    },
+    {
+      "from": "prime_factorisation",
+      "to": "surd_simplify",
+      "difficulty": 0.4
+    },
+    {
+      "from": "surd_simplify",
+      "to": "rationalise_denom",
+      "difficulty": 0.45
+    },
+    {
+      "from": "four_ops_fractions",
+      "to": "rationalise_denom",
+      "difficulty": 0.4
+    },
+    {
+      "from": "rationalise_denom",
+      "to": "exact_calc_fractions_surds_pi",
+      "difficulty": 0.4
+    },
+    {
+      "from": "four_ops_fractions",
+      "to": "exact_calc_fractions_surds_pi",
+      "difficulty": 0.35
+    },
+    {
+      "from": "fractional_indices",
+      "to": "exact_calc_fractions_surds_pi",
+      "difficulty": 0.35
+    },
+    {
+      "from": "place_value_large_small",
+      "to": "standard_form_def",
+      "difficulty": 0.35
+    },
+    {
+      "from": "integer_powers",
+      "to": "standard_form_def",
+      "difficulty": 0.3
+    },
+    {
+      "from": "standard_form_def",
+      "to": "standard_form_calc",
+      "difficulty": 0.35
+    },
+    {
+      "from": "four_ops_decimals",
+      "to": "standard_form_calc",
+      "difficulty": 0.35
+    },
+    {
+      "from": "fractional_indices",
+      "to": "standard_form_calc",
+      "difficulty": 0.3
+    },
+    {
+      "from": "fraction_meaning",
+      "to": "equiv_fractions",
+      "difficulty": 0.2
+    },
+    {
+      "from": "equiv_fractions",
+      "to": "convert_term_dec_to_frac",
+      "difficulty": 0.3
+    },
+    {
+      "from": "fraction_meaning",
+      "to": "convert_frac_to_dec",
+      "difficulty": 0.25
+    },
+    {
+      "from": "convert_frac_to_dec",
+      "to": "interchange_term_dec_frac",
+      "difficulty": 0.3
+    },
+    {
+      "from": "convert_term_dec_to_frac",
+      "to": "interchange_term_dec_frac",
+      "difficulty": 0.3
+    },
+    {
+      "from": "interchange_term_dec_frac",
+      "to": "recurring_dec_notation",
+      "difficulty": 0.3
+    },
+    {
+      "from": "convert_frac_to_dec",
+      "to": "frac_to_recurring_dec",
+      "difficulty": 0.35
+    },
+    {
+      "from": "recurring_dec_notation",
+      "to": "frac_to_recurring_dec",
+      "difficulty": 0.35
+    },
+    {
+      "from": "recurring_dec_notation",
+      "to": "recurring_dec_to_frac",
+      "difficulty": 0.5
+    },
+    {
+      "from": "powers_of_ten",
+      "to": "recurring_dec_to_frac",
+      "difficulty": 0.5
+    },
+    {
+      "from": "algebraic_manipulation_basic",
+      "to": "recurring_dec_to_frac",
+      "difficulty": 0.6
+    },
+    {
+      "from": "frac_to_recurring_dec",
+      "to": "recurring_dec_to_frac",
+      "difficulty": 0.4
+    },
+    {
+      "from": "ratio_notation",
+      "to": "simplify_ratio",
+      "difficulty": 0.2
+    },
+    {
+      "from": "simplify_ratio",
+      "to": "sharing_in_ratio",
+      "difficulty": 0.3
+    },
+    {
+      "from": "equiv_fractions",
+      "to": "sharing_in_ratio",
+      "difficulty": 0.3
+    },
+    {
+      "from": "sharing_in_ratio",
+      "to": "fractions_in_ratio",
+      "difficulty": 0.45
+    },
+    {
+      "from": "fraction_meaning",
+      "to": "fractions_in_ratio",
+      "difficulty": 0.35
+    },
+    {
+      "from": "percentage_meaning",
+      "to": "convert_frac_percent_dec",
+      "difficulty": 0.25
+    },
+    {
+      "from": "fraction_meaning",
+      "to": "convert_frac_percent_dec",
+      "difficulty": 0.25
+    },
+    {
+      "from": "convert_frac_to_dec",
+      "to": "convert_frac_percent_dec",
+      "difficulty": 0.3
+    },
+    {
+      "from": "fraction_meaning",
+      "to": "multiplying_fractions",
+      "difficulty": 0.25
+    },
+    {
+      "from": "multiplying_fractions",
+      "to": "fraction_as_operator",
+      "difficulty": 0.35
+    },
+    {
+      "from": "equiv_fractions",
+      "to": "fraction_as_operator",
+      "difficulty": 0.3
+    },
+    {
+      "from": "convert_frac_percent_dec",
+      "to": "percent_of_amount",
+      "difficulty": 0.3
+    },
+    {
+      "from": "percent_of_amount",
+      "to": "percent_as_operator",
+      "difficulty": 0.35
+    },
+    {
+      "from": "percent_as_operator",
+      "to": "percentage_multiplier",
+      "difficulty": 0.4
+    },
+    {
+      "from": "std_units",
+      "to": "decimal_quantities",
+      "difficulty": 0.15
+    },
+    {
+      "from": "decimal_quantities",
+      "to": "unit_conversion",
+      "difficulty": 0.2
+    },
+    {
+      "from": "std_units",
+      "to": "compound_measures_def",
+      "difficulty": 0.2
+    },
+    {
+      "from": "unit_conversion",
+      "to": "compound_measures_def",
+      "difficulty": 0.25
+    },
+    {
+      "from": "compound_measures_def",
+      "to": "compound_measures_calc",
+      "difficulty": 0.3
+    },
+    {
+      "from": "decimal_quantities",
+      "to": "rounding_dp",
+      "difficulty": 0.2
+    },
+    {
+      "from": "rounding_dp",
+      "to": "sig_figs_concept",
+      "difficulty": 0.25
+    },
+    {
+      "from": "sig_figs_concept",
+      "to": "rounding_sf",
+      "difficulty": 0.25
+    },
+    {
+      "from": "rounding_dp",
+      "to": "appropriate_accuracy",
+      "difficulty": 0.3
+    },
+    {
+      "from": "rounding_sf",
+      "to": "appropriate_accuracy",
+      "difficulty": 0.3
+    },
+    {
+      "from": "rounding_sf",
+      "to": "estimation_rounding",
+      "difficulty": 0.3
+    },
+    {
+      "from": "estimation_rounding",
+      "to": "estimate_calculations",
+      "difficulty": 0.4
+    },
+    {
+      "from": "estimate_calculations",
+      "to": "check_technology",
+      "difficulty": 0.3
+    },
+    {
+      "from": "compound_measures_calc",
+      "to": "check_technology",
+      "difficulty": 0.3
+    },
+    {
+      "from": "inequality_notation",
+      "to": "error_interval_rounding",
+      "difficulty": 0.4
+    },
+    {
+      "from": "rounding_dp",
+      "to": "error_interval_rounding",
+      "difficulty": 0.45
+    },
+    {
+      "from": "rounding_sf",
+      "to": "error_interval_rounding",
+      "difficulty": 0.45
+    },
+    {
+      "from": "inequality_notation",
+      "to": "error_interval_truncation",
+      "difficulty": 0.4
+    },
+    {
+      "from": "truncation_concept",
+      "to": "error_interval_truncation",
+      "difficulty": 0.45
+    },
+    {
+      "from": "error_interval_rounding",
+      "to": "upper_lower_bounds",
+      "difficulty": 0.45
+    },
+    {
+      "from": "upper_lower_bounds",
+      "to": "bounds_from_rounding",
+      "difficulty": 0.4
+    },
+    {
+      "from": "bounds_from_rounding",
+      "to": "bounds_calculations",
+      "difficulty": 0.55
+    },
+    {
+      "from": "compound_measures_calc",
+      "to": "bounds_calculations",
+      "difficulty": 0.5
+    },
+    {
+      "from": "bounds_calculations",
+      "to": "bounds_interpretation",
+      "difficulty": 0.45
+    },
+    {
+      "from": "mult_notation",
+      "to": "index_notation",
+      "difficulty": 0.15
+    },
+    {
+      "from": "mult_notation",
+      "to": "repeated_add_notation",
+      "difficulty": 0.1
+    },
+    {
+      "from": "mult_notation",
+      "to": "div_notation",
+      "difficulty": 0.15
+    },
+    {
+      "from": "div_notation",
+      "to": "frac_coeff",
+      "difficulty": 0.15
+    },
+    {
+      "from": "mult_notation",
+      "to": "brackets_notation",
+      "difficulty": 0.1
+    },
+    {
+      "from": "mult_notation",
+      "to": "vocab_terms",
+      "difficulty": 0.15
+    },
+    {
+      "from": "repeated_add_notation",
+      "to": "vocab_terms",
+      "difficulty": 0.1
+    },
+    {
+      "from": "vocab_terms",
+      "to": "vocab_expr",
+      "difficulty": 0.15
+    },
+    {
+      "from": "vocab_expr",
+      "to": "vocab_eq",
+      "difficulty": 0.15
+    },
+    {
+      "from": "vocab_expr",
+      "to": "vocab_formulae",
+      "difficulty": 0.15
+    },
+    {
+      "from": "vocab_eq",
+      "to": "vocab_identity",
+      "difficulty": 0.2
+    },
+    {
+      "from": "vocab_expr",
+      "to": "vocab_inequal",
+      "difficulty": 0.15
+    },
+    {
+      "from": "vocab_expr",
+      "to": "substitution",
+      "difficulty": 0.15
+    },
+    {
+      "from": "vocab_formulae",
+      "to": "substitution",
+      "difficulty": 0.15
+    },
+    {
+      "from": "index_notation",
+      "to": "substitution",
+      "difficulty": 0.2
+    },
+    {
+      "from": "substitution",
+      "to": "sub_scientific",
+      "difficulty": 0.3
+    },
+    {
+      "from": "vocab_terms",
+      "to": "collect_like_terms",
+      "difficulty": 0.15
+    },
+    {
+      "from": "collect_like_terms",
+      "to": "expand_single_bracket",
+      "difficulty": 0.25
+    },
+    {
+      "from": "brackets_notation",
+      "to": "expand_single_bracket",
+      "difficulty": 0.2
+    },
+    {
+      "from": "expand_single_bracket",
+      "to": "common_factor",
+      "difficulty": 0.35
+    },
+    {
+      "from": "expand_single_bracket",
+      "to": "expand_binomials",
+      "difficulty": 0.35
+    },
+    {
+      "from": "index_notation",
+      "to": "expand_binomials",
+      "difficulty": 0.25
+    },
+    {
+      "from": "expand_binomials",
+      "to": "factorise_simple_quad",
+      "difficulty": 0.45
+    },
+    {
+      "from": "common_factor",
+      "to": "factorise_simple_quad",
+      "difficulty": 0.35
+    },
+    {
+      "from": "factorise_simple_quad",
+      "to": "diff_two_squares",
+      "difficulty": 0.35
+    },
+    {
+      "from": "factorise_simple_quad",
+      "to": "factorise_general_quad",
+      "difficulty": 0.5
+    },
+    {
+      "from": "index_notation",
+      "to": "laws_of_indices",
+      "difficulty": 0.3
+    },
+    {
+      "from": "laws_of_indices",
+      "to": "surd_manipulation",
+      "difficulty": 0.45
+    },
+    {
+      "from": "div_notation",
+      "to": "algebraic_fractions",
+      "difficulty": 0.3
+    },
+    {
+      "from": "common_factor",
+      "to": "algebraic_fractions",
+      "difficulty": 0.4
+    },
+    {
+      "from": "factorise_simple_quad",
+      "to": "algebraic_fractions",
+      "difficulty": 0.45
+    },
+    {
+      "from": "laws_of_indices",
+      "to": "algebraic_fractions",
+      "difficulty": 0.35
+    },
+    {
+      "from": "vocab_formulae",
+      "to": "standard_formulae",
+      "difficulty": 0.2
+    },
+    {
+      "from": "substitution",
+      "to": "standard_formulae",
+      "difficulty": 0.2
+    },
+    {
+      "from": "standard_formulae",
+      "to": "rearrange_formulae",
+      "difficulty": 0.35
+    },
+    {
+      "from": "collect_like_terms",
+      "to": "rearrange_formulae",
+      "difficulty": 0.3
+    },
+    {
+      "from": "expand_single_bracket",
+      "to": "rearrange_formulae",
+      "difficulty": 0.3
+    },
+    {
+      "from": "common_factor",
+      "to": "rearrange_formulae",
+      "difficulty": 0.35
+    },
+    {
+      "from": "vocab_identity",
+      "to": "eq_vs_identity",
+      "difficulty": 0.3
+    },
+    {
+      "from": "collect_like_terms",
+      "to": "eq_vs_identity",
+      "difficulty": 0.25
+    },
+    {
+      "from": "expand_binomials",
+      "to": "eq_vs_identity",
+      "difficulty": 0.3
+    },
+    {
+      "from": "eq_vs_identity",
+      "to": "algebraic_proof",
+      "difficulty": 0.5
+    },
+    {
+      "from": "factorise_simple_quad",
+      "to": "algebraic_proof",
+      "difficulty": 0.45
+    },
+    {
+      "from": "laws_of_indices",
+      "to": "algebraic_proof",
+      "difficulty": 0.4
+    },
+    {
+      "from": "vocab_expr",
+      "to": "function_notation",
+      "difficulty": 0.3
+    },
+    {
+      "from": "substitution",
+      "to": "function_notation",
+      "difficulty": 0.3
+    },
+    {
+      "from": "function_notation",
+      "to": "inverse_function",
+      "difficulty": 0.45
+    },
+    {
+      "from": "rearrange_formulae",
+      "to": "inverse_function",
+      "difficulty": 0.45
+    },
+    {
+      "from": "function_notation",
+      "to": "composite_function",
+      "difficulty": 0.4
+    },
+    {
+      "from": "substitution",
+      "to": "composite_function",
+      "difficulty": 0.35
+    },
+    {
+      "from": "coords4q",
+      "to": "plot_straight_line",
+      "difficulty": 0.15
+    },
+    {
+      "from": "linear_eq_form",
+      "to": "plot_straight_line",
+      "difficulty": 0.2
+    },
+    {
+      "from": "linear_eq_form",
+      "to": "identify_gradient_intercept_algebra",
+      "difficulty": 0.2
+    },
+    {
+      "from": "gradient_concept",
+      "to": "identify_gradient_intercept_algebra",
+      "difficulty": 0.25
+    },
+    {
+      "from": "intercept_concept",
+      "to": "identify_gradient_intercept_algebra",
+      "difficulty": 0.2
+    },
+    {
+      "from": "plot_straight_line",
+      "to": "identify_gradient_intercept_graph",
+      "difficulty": 0.25
+    },
+    {
+      "from": "gradient_concept",
+      "to": "identify_gradient_intercept_graph",
+      "difficulty": 0.25
+    },
+    {
+      "from": "intercept_concept",
+      "to": "identify_gradient_intercept_graph",
+      "difficulty": 0.2
+    },
+    {
+      "from": "identify_gradient_intercept_algebra",
+      "to": "parallel_lines",
+      "difficulty": 0.25
+    },
+    {
+      "from": "identify_gradient_intercept_algebra",
+      "to": "perpendicular_lines",
+      "difficulty": 0.35
+    },
+    {
+      "from": "parallel_lines",
+      "to": "eq_line_point_gradient",
+      "difficulty": 0.3
+    },
+    {
+      "from": "gradient_concept",
+      "to": "eq_line_point_gradient",
+      "difficulty": 0.3
+    },
+    {
+      "from": "linear_eq_form",
+      "to": "eq_line_point_gradient",
+      "difficulty": 0.3
+    },
+    {
+      "from": "eq_line_point_gradient",
+      "to": "eq_line_two_points",
+      "difficulty": 0.35
+    },
+    {
+      "from": "coords4q",
+      "to": "eq_line_two_points",
+      "difficulty": 0.2
+    },
+    {
+      "from": "quadratic_function",
+      "to": "factorising_quadratics",
+      "difficulty": 0.3
+    },
+    {
+      "from": "factorising_quadratics",
+      "to": "quadratic_roots_algebraic",
+      "difficulty": 0.35
+    },
+    {
+      "from": "quadratic_function",
+      "to": "completing_square",
+      "difficulty": 0.4
+    },
+    {
+      "from": "completing_square",
+      "to": "quadratic_turning_point_algebraic",
+      "difficulty": 0.45
+    },
+    {
+      "from": "quadratic_function",
+      "to": "sketch_quadratic_graph",
+      "difficulty": 0.3
+    },
+    {
+      "from": "coords4q",
+      "to": "sketch_quadratic_graph",
+      "difficulty": 0.15
+    },
+    {
+      "from": "sketch_quadratic_graph",
+      "to": "quadratic_roots_graphical",
+      "difficulty": 0.25
+    },
+    {
+      "from": "sketch_quadratic_graph",
+      "to": "quadratic_intercepts_graphical",
+      "difficulty": 0.2
+    },
+    {
+      "from": "sketch_quadratic_graph",
+      "to": "quadratic_turning_point_graphical",
+      "difficulty": 0.3
+    },
+    {
+      "from": "quadratic_roots_algebraic",
+      "to": "quadratic_roots_graphical",
+      "difficulty": 0.3
+    },
+    {
+      "from": "quadratic_turning_point_algebraic",
+      "to": "quadratic_turning_point_graphical",
+      "difficulty": 0.35
+    },
+    {
+      "from": "coords4q",
+      "to": "cubic_function",
+      "difficulty": 0.15
+    },
+    {
+      "from": "cubic_function",
+      "to": "sketch_cubic_graph",
+      "difficulty": 0.35
+    },
+    {
+      "from": "coords4q",
+      "to": "reciprocal_function",
+      "difficulty": 0.15
+    },
+    {
+      "from": "reciprocal_function",
+      "to": "sketch_reciprocal_graph",
+      "difficulty": 0.4
+    },
+    {
+      "from": "coords4q",
+      "to": "exponential_function",
+      "difficulty": 0.15
+    },
+    {
+      "from": "exponential_function",
+      "to": "sketch_exponential_graph",
+      "difficulty": 0.35
+    },
+    {
+      "from": "trig_ratios_definitions",
+      "to": "sketch_trig_graphs",
+      "difficulty": 0.45
+    },
+    {
+      "from": "coords4q",
+      "to": "sketch_trig_graphs",
+      "difficulty": 0.2
+    },
+    {
+      "from": "sketch_quadratic_graph",
+      "to": "function_notation_transform",
+      "difficulty": 0.3
+    },
+    {
+      "from": "sketch_cubic_graph",
+      "to": "function_notation_transform",
+      "difficulty": 0.25
+    },
+    {
+      "from": "sketch_reciprocal_graph",
+      "to": "function_notation_transform",
+      "difficulty": 0.25
+    },
+    {
+      "from": "sketch_trig_graphs",
+      "to": "function_notation_transform",
+      "difficulty": 0.3
+    },
+    {
+      "from": "function_notation_transform",
+      "to": "sketch_translations",
+      "difficulty": 0.4
+    },
+    {
+      "from": "function_notation_transform",
+      "to": "sketch_reflections",
+      "difficulty": 0.4
+    },
+    {
+      "from": "sketch_reciprocal_graph",
+      "to": "real_context_graphs",
+      "difficulty": 0.4
+    },
+    {
+      "from": "sketch_exponential_graph",
+      "to": "real_context_graphs",
+      "difficulty": 0.4
+    },
+    {
+      "from": "plot_straight_line",
+      "to": "real_context_graphs",
+      "difficulty": 0.3
+    },
+    {
+      "from": "real_context_graphs",
+      "to": "kinematics_context",
+      "difficulty": 0.45
+    },
+    {
+      "from": "gradient_concept",
+      "to": "gradient_straight_line_calc",
+      "difficulty": 0.25
+    },
+    {
+      "from": "coords4q",
+      "to": "gradient_straight_line_calc",
+      "difficulty": 0.15
+    },
+    {
+      "from": "gradient_straight_line_calc",
+      "to": "gradient_curve_estimate",
+      "difficulty": 0.5
+    },
+    {
+      "from": "sketch_quadratic_graph",
+      "to": "gradient_curve_estimate",
+      "difficulty": 0.4
+    },
+    {
+      "from": "gradient_straight_line_calc",
+      "to": "distance_time_graphs",
+      "difficulty": 0.35
+    },
+    {
+      "from": "distance_time_graphs",
+      "to": "velocity_time_graphs",
+      "difficulty": 0.4
+    },
+    {
+      "from": "gradient_curve_estimate",
+      "to": "velocity_time_graphs",
+      "difficulty": 0.45
+    },
+    {
+      "from": "area_under_graph_estimate",
+      "to": "velocity_time_graphs",
+      "difficulty": 0.45
+    },
+    {
+      "from": "gradient_straight_line_calc",
+      "to": "financial_graphs",
+      "difficulty": 0.35
+    },
+    {
+      "from": "area_under_graph_estimate",
+      "to": "financial_graphs",
+      "difficulty": 0.4
+    },
+    {
+      "from": "sketch_quadratic_graph",
+      "to": "area_under_graph_estimate",
+      "difficulty": 0.4
+    },
+    {
+      "from": "coords4q",
+      "to": "circle_equation_origin",
+      "difficulty": 0.2
+    },
+    {
+      "from": "pythagoras_recall",
+      "to": "circle_equation_origin",
+      "difficulty": 0.35
+    },
+    {
+      "from": "gradient_concept",
+      "to": "tangent_perpendicular_radius",
+      "difficulty": 0.3
+    },
+    {
+      "from": "perpendicular_lines",
+      "to": "tangent_perpendicular_radius",
+      "difficulty": 0.4
+    },
+    {
+      "from": "circle_equation_origin",
+      "to": "tangent_to_circle_equation",
+      "difficulty": 0.45
+    },
+    {
+      "from": "tangent_perpendicular_radius",
+      "to": "tangent_to_circle_equation",
+      "difficulty": 0.5
+    },
+    {
+      "from": "eq_line_point_gradient",
+      "to": "tangent_to_circle_equation",
+      "difficulty": 0.4
+    },
+    {
+      "from": "collect_terms",
+      "to": "solve_linear_1step",
+      "difficulty": 0.15
+    },
+    {
+      "from": "expand_brackets",
+      "to": "solve_linear_brackets",
+      "difficulty": 0.2
+    },
+    {
+      "from": "solve_linear_brackets",
+      "to": "solve_linear_both_sides",
+      "difficulty": 0.3
+    },
+    {
+      "from": "plot_linear_graph",
+      "to": "graph_approx_linear",
+      "difficulty": 0.3
+    },
+    {
+      "from": "collect_terms",
+      "to": "factorising_quad",
+      "difficulty": 0.3
+    },
+    {
+      "from": "quad_std_form",
+      "to": "rearrange_to_quad",
+      "difficulty": 0.35
+    },
+    {
+      "from": "quad_std_form",
+      "to": "solve_quad_factorising",
+      "difficulty": 0.3
+    },
+    {
+      "from": "factorising_quad",
+      "to": "solve_quad_factorising",
+      "difficulty": 0.35
+    },
+    {
+      "from": "rearrange_to_quad",
+      "to": "solve_quad_factorising",
+      "difficulty": 0.35
+    },
+    {
+      "from": "quad_std_form",
+      "to": "completing_square_expr",
+      "difficulty": 0.4
+    },
+    {
+      "from": "completing_square_expr",
+      "to": "solve_quad_completing_square",
+      "difficulty": 0.45
+    },
+    {
+      "from": "rearrange_to_quad",
+      "to": "solve_quad_completing_square",
+      "difficulty": 0.3
+    },
+    {
+      "from": "quad_std_form",
+      "to": "quadratic_formula",
+      "difficulty": 0.3
+    },
+    {
+      "from": "quadratic_formula",
+      "to": "solve_quad_formula",
+      "difficulty": 0.4
+    },
+    {
+      "from": "rearrange_to_quad",
+      "to": "solve_quad_formula",
+      "difficulty": 0.3
+    },
+    {
+      "from": "solve_quad_factorising",
+      "to": "plot_quad_graph",
+      "difficulty": 0.25
+    },
+    {
+      "from": "plot_quad_graph",
+      "to": "graph_approx_quad",
+      "difficulty": 0.3
+    },
+    {
+      "from": "solve_linear_both_sides",
+      "to": "simul_elim_sub_linear",
+      "difficulty": 0.3
+    },
+    {
+      "from": "simul_elim_sub_linear",
+      "to": "solve_simul_linear_linear",
+      "difficulty": 0.35
+    },
+    {
+      "from": "solve_simul_linear_linear",
+      "to": "solve_simul_linear_quad",
+      "difficulty": 0.4
+    },
+    {
+      "from": "solve_quad_factorising",
+      "to": "solve_simul_linear_quad",
+      "difficulty": 0.35
+    },
+    {
+      "from": "plot_linear_graph",
+      "to": "plot_two_graphs",
+      "difficulty": 0.2
+    },
+    {
+      "from": "plot_quad_graph",
+      "to": "plot_two_graphs",
+      "difficulty": 0.2
+    },
+    {
+      "from": "plot_two_graphs",
+      "to": "graph_approx_simul",
+      "difficulty": 0.35
+    },
+    {
+      "from": "collect_terms",
+      "to": "rearrange_formulae",
+      "difficulty": 0.25
+    },
+    {
+      "from": "rearrange_formulae",
+      "to": "iterative_formula_rearrange",
+      "difficulty": 0.4
+    },
+    {
+      "from": "rearrange_to_quad",
+      "to": "iterative_formula_rearrange",
+      "difficulty": 0.35
+    },
+    {
+      "from": "iteration_concept",
+      "to": "iteration_numerical",
+      "difficulty": 0.4
+    },
+    {
+      "from": "collect_terms",
+      "to": "translate_to_expr",
+      "difficulty": 0.3
+    },
+    {
+      "from": "translate_to_expr",
+      "to": "derive_equation_context",
+      "difficulty": 0.4
+    },
+    {
+      "from": "solve_linear_both_sides",
+      "to": "derive_equation_context",
+      "difficulty": 0.3
+    },
+    {
+      "from": "solve_quad_factorising",
+      "to": "derive_equation_context",
+      "difficulty": 0.35
+    },
+    {
+      "from": "translate_to_expr",
+      "to": "derive_simul_context",
+      "difficulty": 0.4
+    },
+    {
+      "from": "solve_simul_linear_linear",
+      "to": "derive_simul_context",
+      "difficulty": 0.35
+    },
+    {
+      "from": "derive_equation_context",
+      "to": "interpret_solution_context",
+      "difficulty": 0.3
+    },
+    {
+      "from": "derive_simul_context",
+      "to": "interpret_solution_context",
+      "difficulty": 0.3
+    },
+    {
+      "from": "inequality_notation",
+      "to": "solve_linear_inequality_1var",
+      "difficulty": 0.2
+    },
+    {
+      "from": "solve_linear_both_sides",
+      "to": "solve_linear_inequality_1var",
+      "difficulty": 0.25
+    },
+    {
+      "from": "solve_linear_inequality_1var",
+      "to": "number_line_rep",
+      "difficulty": 0.2
+    },
+    {
+      "from": "solve_linear_inequality_1var",
+      "to": "set_notation",
+      "difficulty": 0.3
+    },
+    {
+      "from": "solve_quad_factorising",
+      "to": "solve_quad_inequality",
+      "difficulty": 0.5
+    },
+    {
+      "from": "solve_linear_inequality_1var",
+      "to": "solve_quad_inequality",
+      "difficulty": 0.45
+    },
+    {
+      "from": "plot_quad_graph",
+      "to": "solve_quad_inequality",
+      "difficulty": 0.45
+    },
+    {
+      "from": "plot_linear_graph",
+      "to": "coord_plane_regions",
+      "difficulty": 0.3
+    },
+    {
+      "from": "coord_plane_regions",
+      "to": "solve_linear_inequality_2var_graph",
+      "difficulty": 0.4
+    },
+    {
+      "from": "solve_linear_inequality_1var",
+      "to": "solve_linear_inequality_2var_graph",
+      "difficulty": 0.35
+    },
+    {
+      "from": "substitution",
+      "to": "position_to_term",
+      "difficulty": 0.2
+    },
+    {
+      "from": "term_to_term",
+      "to": "fibonacci_sequences",
+      "difficulty": 0.25
+    },
+    {
+      "from": "position_to_term",
+      "to": "square_numbers",
+      "difficulty": 0.2
+    },
+    {
+      "from": "position_to_term",
+      "to": "cube_numbers",
+      "difficulty": 0.2
+    },
+    {
+      "from": "position_to_term",
+      "to": "arithmetic_progressions",
+      "difficulty": 0.15
+    },
+    {
+      "from": "term_to_term",
+      "to": "arithmetic_progressions",
+      "difficulty": 0.15
+    },
+    {
+      "from": "arithmetic_progressions",
+      "to": "quadratic_sequences",
+      "difficulty": 0.35
+    },
+    {
+      "from": "square_numbers",
+      "to": "quadratic_sequences",
+      "difficulty": 0.3
+    },
+    {
+      "from": "rational_numbers",
+      "to": "geometric_progressions",
+      "difficulty": 0.2
+    },
+    {
+      "from": "surds",
+      "to": "geometric_progressions",
+      "difficulty": 0.4
+    },
+    {
+      "from": "term_to_term",
+      "to": "geometric_progressions",
+      "difficulty": 0.3
+    },
+    {
+      "from": "position_to_term",
+      "to": "geometric_progressions",
+      "difficulty": 0.3
+    },
+    {
+      "from": "arithmetic_progressions",
+      "to": "other_sequences",
+      "difficulty": 0.2
+    },
+    {
+      "from": "geometric_progressions",
+      "to": "other_sequences",
+      "difficulty": 0.25
+    },
+    {
+      "from": "fibonacci_sequences",
+      "to": "other_sequences",
+      "difficulty": 0.2
+    },
+    {
+      "from": "arithmetic_progressions",
+      "to": "linear_nth_term",
+      "difficulty": 0.35
+    },
+    {
+      "from": "position_to_term",
+      "to": "linear_nth_term",
+      "difficulty": 0.3
+    },
+    {
+      "from": "linear_nth_term",
+      "to": "quadratic_nth_term",
+      "difficulty": 0.5
+    },
+    {
+      "from": "quadratic_sequences",
+      "to": "quadratic_nth_term",
+      "difficulty": 0.55
+    },
+    {
+      "from": "square_numbers",
+      "to": "quadratic_nth_term",
+      "difficulty": 0.4
+    },
+    {
+      "from": "N_FRACTIONS",
+      "to": "R3",
+      "difficulty": 0.2
+    },
+    {
+      "from": "N_FRACTIONS",
+      "to": "R9_INTERP",
+      "difficulty": 0.25
+    },
+    {
+      "from": "R4",
+      "to": "R5a",
+      "difficulty": 0.25
+    },
+    {
+      "from": "R5a",
+      "to": "R5b",
+      "difficulty": 0.2
+    },
+    {
+      "from": "R5b",
+      "to": "R5c",
+      "difficulty": 0.3
+    },
+    {
+      "from": "R3",
+      "to": "R6",
+      "difficulty": 0.3
+    },
+    {
+      "from": "R4",
+      "to": "R6",
+      "difficulty": 0.3
+    },
+    {
+      "from": "R4",
+      "to": "R7",
+      "difficulty": 0.3
+    },
+    {
+      "from": "R7",
+      "to": "R8",
+      "difficulty": 0.4
+    },
+    {
+      "from": "N_ALGEBRA_BASIC",
+      "to": "R8",
+      "difficulty": 0.35
+    },
+    {
+      "from": "N_LINEAR_GRAPHS",
+      "to": "R8",
+      "difficulty": 0.3
+    },
+    {
+      "from": "R9_DEF",
+      "to": "R9_INTERP",
+      "difficulty": 0.2
+    },
+    {
+      "from": "R9_INTERP",
+      "to": "R9_EXPRESS",
+      "difficulty": 0.25
+    },
+    {
+      "from": "R9_EXPRESS",
+      "to": "R9_OVER100",
+      "difficulty": 0.25
+    },
+    {
+      "from": "R9_INTERP",
+      "to": "R9_CHANGE",
+      "difficulty": 0.4
+    },
+    {
+      "from": "R9_OVER100",
+      "to": "R9_CHANGE",
+      "difficulty": 0.35
+    },
+    {
+      "from": "R9_CHANGE",
+      "to": "R9_INTEREST",
+      "difficulty": 0.35
+    },
+    {
+      "from": "N_ALGEBRA_BASIC",
+      "to": "R1",
+      "difficulty": 0.3
+    },
+    {
+      "from": "R1",
+      "to": "R11",
+      "difficulty": 0.35
+    },
+    {
+      "from": "N_SIMILARITY",
+      "to": "R2a",
+      "difficulty": 0.25
+    },
+    {
+      "from": "R2a",
+      "to": "R2b",
+      "difficulty": 0.2
+    },
+    {
+      "from": "R2a",
+      "to": "R12",
+      "difficulty": 0.4
+    },
+    {
+      "from": "R4",
+      "to": "R12",
+      "difficulty": 0.35
+    },
+    {
+      "from": "N_SIMILARITY",
+      "to": "R12",
+      "difficulty": 0.35
+    },
+    {
+      "from": "R7",
+      "to": "R10",
+      "difficulty": 0.4
+    },
+    {
+      "from": "R8",
+      "to": "R10",
+      "difficulty": 0.4
+    },
+    {
+      "from": "R10",
+      "to": "R13",
+      "difficulty": 0.45
+    },
+    {
+      "from": "N_ALGEBRA_BASIC",
+      "to": "R13",
+      "difficulty": 0.4
+    },
+    {
+      "from": "N_GRADIENT_DEF",
+      "to": "R14a",
+      "difficulty": 0.25
+    },
+    {
+      "from": "R1",
+      "to": "R14a",
+      "difficulty": 0.3
+    },
+    {
+      "from": "R13",
+      "to": "R14b",
+      "difficulty": 0.4
+    },
+    {
+      "from": "N_LINEAR_GRAPHS",
+      "to": "R14b",
+      "difficulty": 0.3
+    },
+    {
+      "from": "N_CURVES_GRAPH",
+      "to": "R14b",
+      "difficulty": 0.3
+    },
+    {
+      "from": "N_GRADIENT_DEF",
+      "to": "R15a",
+      "difficulty": 0.35
+    },
+    {
+      "from": "N_CURVES_GRAPH",
+      "to": "R15a",
+      "difficulty": 0.35
+    },
+    {
+      "from": "R15a",
+      "to": "R15b",
+      "difficulty": 0.4
+    },
+    {
+      "from": "R14a",
+      "to": "R15a",
+      "difficulty": 0.3
+    },
+    {
+      "from": "R9_CHANGE",
+      "to": "R16a",
+      "difficulty": 0.4
+    },
+    {
+      "from": "R9_INTEREST",
+      "to": "R16a",
+      "difficulty": 0.4
+    },
+    {
+      "from": "R16a",
+      "to": "R16b",
+      "difficulty": 0.45
+    },
+    {
+      "from": "G1_terms_points_lines",
+      "to": "G1_parallel_perp",
+      "difficulty": 0.1
+    },
+    {
+      "from": "G1_parallel_perp",
+      "to": "G1_polygons",
+      "difficulty": 0.15
+    },
+    {
+      "from": "G1_polygons",
+      "to": "G1_symmetry",
+      "difficulty": 0.2
+    },
+    {
+      "from": "G1_polygons",
+      "to": "G1_triangle_labelling",
+      "difficulty": 0.1
+    },
+    {
+      "from": "G1_terms_points_lines",
+      "to": "G1_draw_from_description",
+      "difficulty": 0.2
+    },
+    {
+      "from": "G1_polygons",
+      "to": "G1_draw_from_description",
+      "difficulty": 0.2
+    },
+    {
+      "from": "G1_terms_points_lines",
+      "to": "G2_perp_bisector",
+      "difficulty": 0.2
+    },
+    {
+      "from": "G1_parallel_perp",
+      "to": "G2_perp_from_point",
+      "difficulty": 0.2
+    },
+    {
+      "from": "G1_parallel_perp",
+      "to": "G2_shortest_distance",
+      "difficulty": 0.2
+    },
+    {
+      "from": "G2_perp_bisector",
+      "to": "G2_shortest_distance",
+      "difficulty": 0.15
+    },
+    {
+      "from": "G1_terms_points_lines",
+      "to": "G2_bisect_angle",
+      "difficulty": 0.2
+    },
+    {
+      "from": "G2_perp_bisector",
+      "to": "G2_construct_figures",
+      "difficulty": 0.3
+    },
+    {
+      "from": "G2_perp_from_point",
+      "to": "G2_construct_figures",
+      "difficulty": 0.3
+    },
+    {
+      "from": "G2_bisect_angle",
+      "to": "G2_construct_figures",
+      "difficulty": 0.3
+    },
+    {
+      "from": "G2_construct_figures",
+      "to": "G2_loci",
+      "difficulty": 0.4
+    },
+    {
+      "from": "G2_shortest_distance",
+      "to": "G2_loci",
+      "difficulty": 0.35
+    },
+    {
+      "from": "G1_terms_points_lines",
+      "to": "G3_angles_point",
+      "difficulty": 0.1
+    },
+    {
+      "from": "G3_angles_point",
+      "to": "G3_angles_line",
+      "difficulty": 0.1
+    },
+    {
+      "from": "G3_angles_line",
+      "to": "G3_vert_opposite",
+      "difficulty": 0.15
+    },
+    {
+      "from": "G1_parallel_perp",
+      "to": "G3_alt_corr_angles",
+      "difficulty": 0.2
+    },
+    {
+      "from": "G3_vert_opposite",
+      "to": "G3_alt_corr_angles",
+      "difficulty": 0.25
+    },
+    {
+      "from": "G3_angles_line",
+      "to": "G3_triangle_sum",
+      "difficulty": 0.25
+    },
+    {
+      "from": "G3_alt_corr_angles",
+      "to": "G3_triangle_sum",
+      "difficulty": 0.3
+    },
+    {
+      "from": "G3_triangle_sum",
+      "to": "G3_polygon_angle_sum",
+      "difficulty": 0.35
+    },
+    {
+      "from": "G1_polygons",
+      "to": "G3_polygon_angle_sum",
+      "difficulty": 0.2
+    },
+    {
+      "from": "G3_polygon_angle_sum",
+      "to": "G3_regular_polygon_props",
+      "difficulty": 0.3
+    },
+    {
+      "from": "G1_symmetry",
+      "to": "G3_regular_polygon_props",
+      "difficulty": 0.25
+    },
+    {
+      "from": "G3_alt_corr_angles",
+      "to": "G4_quad_defs",
+      "difficulty": 0.25
+    },
+    {
+      "from": "G1_parallel_perp",
+      "to": "G4_quad_defs",
+      "difficulty": 0.2
+    },
+    {
+      "from": "G3_triangle_sum",
+      "to": "G4_triangle_defs",
+      "difficulty": 0.2
+    },
+    {
+      "from": "G4_triangle_defs",
+      "to": "G5_congruence_criteria",
+      "difficulty": 0.2
+    },
+    {
+      "from": "G1_triangle_labelling",
+      "to": "G5_congruence_criteria",
+      "difficulty": 0.15
+    },
+    {
+      "from": "G4_triangle_defs",
+      "to": "G6_isosceles_base_angles",
+      "difficulty": 0.25
+    },
+    {
+      "from": "G5_congruence_criteria",
+      "to": "G6_isosceles_base_angles",
+      "difficulty": 0.3
+    },
+    {
+      "from": "G5_congruence_criteria",
+      "to": "G6_pythagoras",
+      "difficulty": 0.3
+    },
+    {
+      "from": "G4_triangle_defs",
+      "to": "G6_similarity",
+      "difficulty": 0.25
+    },
+    {
+      "from": "G5_congruence_criteria",
+      "to": "G6_similarity",
+      "difficulty": 0.25
+    },
+    {
+      "from": "G6_isosceles_base_angles",
+      "to": "G6_simple_proofs",
+      "difficulty": 0.4
+    },
+    {
+      "from": "G6_pythagoras",
+      "to": "G6_simple_proofs",
+      "difficulty": 0.4
+    },
+    {
+      "from": "G6_similarity",
+      "to": "G6_simple_proofs",
+      "difficulty": 0.4
+    },
+    {
+      "from": "G4_quad_defs",
+      "to": "G6_simple_proofs",
+      "difficulty": 0.35
+    },
+    {
+      "from": "G3_polygon_angle_sum",
+      "to": "G6_simple_proofs",
+      "difficulty": 0.35
+    },
+    {
+      "from": "G5_congruence_criteria",
+      "to": "G7_transformations_def",
+      "difficulty": 0.2
+    },
+    {
+      "from": "G6_similarity",
+      "to": "G7_transformations_def",
+      "difficulty": 0.25
+    },
+    {
+      "from": "G7_transformations_def",
+      "to": "G7_congruent_similar_construct",
+      "difficulty": 0.35
+    },
+    {
+      "from": "G7_transformations_def",
+      "to": "G8_combined_transformations",
+      "difficulty": 0.4
+    },
+    {
+      "from": "G7_congruent_similar_construct",
+      "to": "G8_combined_transformations",
+      "difficulty": 0.4
+    },
+    {
+      "from": "G1_terms_points_lines",
+      "to": "G9_circle_defs",
+      "difficulty": 0.15
+    },
+    {
+      "from": "G9_circle_defs",
+      "to": "G10_circle_theorem_centre",
+      "difficulty": 0.3
+    },
+    {
+      "from": "G6_isosceles_base_angles",
+      "to": "G10_circle_theorem_centre",
+      "difficulty": 0.35
+    },
+    {
+      "from": "G10_circle_theorem_centre",
+      "to": "G10_circle_theorem_semicircle",
+      "difficulty": 0.3
+    },
+    {
+      "from": "G10_circle_theorem_centre",
+      "to": "G10_circle_theorem_same_segment",
+      "difficulty": 0.3
+    },
+    {
+      "from": "G9_circle_defs",
+      "to": "G10_circle_theorem_cyclic_quad",
+      "difficulty": 0.3
+    },
+    {
+      "from": "G10_circle_theorem_centre",
+      "to": "G10_circle_theorem_cyclic_quad",
+      "difficulty": 0.35
+    },
+    {
+      "from": "G9_circle_defs",
+      "to": "G10_circle_theorem_tangent_radius",
+      "difficulty": 0.25
+    },
+    {
+      "from": "G10_circle_theorem_tangent_radius",
+      "to": "G10_circle_theorem_tangents_equal",
+      "difficulty": 0.3
+    },
+    {
+      "from": "G5_congruence_criteria",
+      "to": "G10_circle_theorem_tangents_equal",
+      "difficulty": 0.3
+    },
+    {
+      "from": "G10_circle_theorem_tangent_radius",
+      "to": "G10_circle_theorem_alt_segment",
+      "difficulty": 0.45
+    },
+    {
+      "from": "G10_circle_theorem_same_segment",
+      "to": "G10_circle_theorem_alt_segment",
+      "difficulty": 0.45
+    },
+    {
+      "from": "G9_circle_defs",
+      "to": "G10_circle_theorem_chord_bisector",
+      "difficulty": 0.25
+    },
+    {
+      "from": "G5_congruence_criteria",
+      "to": "G10_circle_theorem_chord_bisector",
+      "difficulty": 0.3
+    },
+    {
+      "from": "G10_circle_theorem_semicircle",
+      "to": "G10_prove_related_results",
+      "difficulty": 0.45
+    },
+    {
+      "from": "G10_circle_theorem_same_segment",
+      "to": "G10_prove_related_results",
+      "difficulty": 0.45
+    },
+    {
+      "from": "G10_circle_theorem_cyclic_quad",
+      "to": "G10_prove_related_results",
+      "difficulty": 0.45
+    },
+    {
+      "from": "G10_circle_theorem_tangents_equal",
+      "to": "G10_prove_related_results",
+      "difficulty": 0.45
+    },
+    {
+      "from": "G10_circle_theorem_alt_segment",
+      "to": "G10_prove_related_results",
+      "difficulty": 0.5
+    },
+    {
+      "from": "G10_circle_theorem_chord_bisector",
+      "to": "G10_prove_related_results",
+      "difficulty": 0.45
+    },
+    {
+      "from": "G6_pythagoras",
+      "to": "G11_coordinate_geometry_problems",
+      "difficulty": 0.4
+    },
+    {
+      "from": "G4_quad_defs",
+      "to": "G11_coordinate_geometry_problems",
+      "difficulty": 0.3
+    },
+    {
+      "from": "G3_alt_corr_angles",
+      "to": "G11_coordinate_geometry_problems",
+      "difficulty": 0.3
+    },
+    {
+      "from": "G1_terms_points_lines",
+      "to": "G12_3d_shape_properties",
+      "difficulty": 0.15
+    },
+    {
+      "from": "G1_polygons",
+      "to": "G12_3d_shape_properties",
+      "difficulty": 0.15
+    },
+    {
+      "from": "G12_3d_shape_properties",
+      "to": "G13_plans_elevations",
+      "difficulty": 0.35
+    },
+    {
+      "from": "units",
+      "to": "measure_lines_angles",
+      "difficulty": 0.15
+    },
+    {
+      "from": "measure_lines_angles",
+      "to": "scale_drawings",
+      "difficulty": 0.3
+    },
+    {
+      "from": "measure_lines_angles",
+      "to": "bearings",
+      "difficulty": 0.3
+    },
+    {
+      "from": "units",
+      "to": "area_triangle",
+      "difficulty": 0.1
+    },
+    {
+      "from": "units",
+      "to": "area_parallelogram",
+      "difficulty": 0.1
+    },
+    {
+      "from": "units",
+      "to": "area_trapezium",
+      "difficulty": 0.1
+    },
+    {
+      "from": "units",
+      "to": "volume_cuboid",
+      "difficulty": 0.1
+    },
+    {
+      "from": "area_triangle",
+      "to": "area_trapezium",
+      "difficulty": 0.2
+    },
+    {
+      "from": "volume_cuboid",
+      "to": "volume_prism",
+      "difficulty": 0.3
+    },
+    {
+      "from": "area_triangle",
+      "to": "volume_prism",
+      "difficulty": 0.3
+    },
+    {
+      "from": "units",
+      "to": "perimeter_2d",
+      "difficulty": 0.1
+    },
+    {
+      "from": "units",
+      "to": "circumference",
+      "difficulty": 0.15
+    },
+    {
+      "from": "units",
+      "to": "area_circle",
+      "difficulty": 0.15
+    },
+    {
+      "from": "perimeter_2d",
+      "to": "perimeter_composite_circles",
+      "difficulty": 0.3
+    },
+    {
+      "from": "circumference",
+      "to": "perimeter_composite_circles",
+      "difficulty": 0.3
+    },
+    {
+      "from": "area_circle",
+      "to": "area_composite",
+      "difficulty": 0.3
+    },
+    {
+      "from": "area_triangle",
+      "to": "area_composite",
+      "difficulty": 0.3
+    },
+    {
+      "from": "area_parallelogram",
+      "to": "area_composite",
+      "difficulty": 0.25
+    },
+    {
+      "from": "area_trapezium",
+      "to": "area_composite",
+      "difficulty": 0.25
+    },
+    {
+      "from": "area_circle",
+      "to": "surface_area_solids",
+      "difficulty": 0.5
+    },
+    {
+      "from": "area_composite",
+      "to": "surface_area_solids",
+      "difficulty": 0.5
+    },
+    {
+      "from": "volume_prism",
+      "to": "volume_solids",
+      "difficulty": 0.5
+    },
+    {
+      "from": "area_circle",
+      "to": "volume_solids",
+      "difficulty": 0.45
+    },
+    {
+      "from": "circumference",
+      "to": "arc_length",
+      "difficulty": 0.4
+    },
+    {
+      "from": "area_circle",
+      "to": "sector_area",
+      "difficulty": 0.4
+    },
+    {
+      "from": "arc_length",
+      "to": "sector_angle",
+      "difficulty": 0.4
+    },
+    {
+      "from": "sector_area",
+      "to": "sector_angle",
+      "difficulty": 0.35
+    },
+    {
+      "from": "measure_lines_angles",
+      "to": "congruence",
+      "difficulty": 0.2
+    },
+    {
+      "from": "congruence",
+      "to": "similarity",
+      "difficulty": 0.3
+    },
+    {
+      "from": "similarity",
+      "to": "similar_lengths",
+      "difficulty": 0.3
+    },
+    {
+      "from": "similar_lengths",
+      "to": "similar_areas",
+      "difficulty": 0.45
+    },
+    {
+      "from": "area_composite",
+      "to": "similar_areas",
+      "difficulty": 0.4
+    },
+    {
+      "from": "similar_areas",
+      "to": "similar_volumes",
+      "difficulty": 0.45
+    },
+    {
+      "from": "volume_solids",
+      "to": "similar_volumes",
+      "difficulty": 0.4
+    },
+    {
+      "from": "measure_lines_angles",
+      "to": "pythagoras",
+      "difficulty": 0.25
+    },
+    {
+      "from": "pythagoras",
+      "to": "trig_ratios",
+      "difficulty": 0.3
+    },
+    {
+      "from": "trig_ratios",
+      "to": "trig_find_sides",
+      "difficulty": 0.35
+    },
+    {
+      "from": "trig_ratios",
+      "to": "trig_find_angles",
+      "difficulty": 0.35
+    },
+    {
+      "from": "pythagoras",
+      "to": "pythag_trig_3d",
+      "difficulty": 0.55
+    },
+    {
+      "from": "trig_find_sides",
+      "to": "pythag_trig_3d",
+      "difficulty": 0.55
+    },
+    {
+      "from": "trig_find_angles",
+      "to": "pythag_trig_3d",
+      "difficulty": 0.55
+    },
+    {
+      "from": "trig_ratios",
+      "to": "exact_trig_values",
+      "difficulty": 0.4
+    },
+    {
+      "from": "trig_ratios",
+      "to": "sine_rule",
+      "difficulty": 0.4
+    },
+    {
+      "from": "trig_ratios",
+      "to": "cosine_rule",
+      "difficulty": 0.4
+    },
+    {
+      "from": "pythagoras",
+      "to": "cosine_rule",
+      "difficulty": 0.35
+    },
+    {
+      "from": "sine_rule",
+      "to": "sine_rule_angles",
+      "difficulty": 0.4
+    },
+    {
+      "from": "cosine_rule",
+      "to": "cosine_rule_angles",
+      "difficulty": 0.4
+    },
+    {
+      "from": "area_triangle",
+      "to": "trig_area_formula",
+      "difficulty": 0.3
+    },
+    {
+      "from": "trig_ratios",
+      "to": "trig_area_formula",
+      "difficulty": 0.35
+    },
+    {
+      "from": "sine_rule_angles",
+      "to": "non_right_triangle_solving",
+      "difficulty": 0.4
+    },
+    {
+      "from": "cosine_rule_angles",
+      "to": "non_right_triangle_solving",
+      "difficulty": 0.4
+    },
+    {
+      "from": "trig_area_formula",
+      "to": "non_right_triangle_solving",
+      "difficulty": 0.4
+    },
+    {
+      "from": "coord_plane",
+      "to": "translation",
+      "difficulty": 0.15
+    },
+    {
+      "from": "translation",
+      "to": "column_vector",
+      "difficulty": 0.2
+    },
+    {
+      "from": "column_vector",
+      "to": "vector_as_translation",
+      "difficulty": 0.2
+    },
+    {
+      "from": "translation",
+      "to": "vector_as_translation",
+      "difficulty": 0.2
+    },
+    {
+      "from": "vector_as_translation",
+      "to": "vector_diagram_rep",
+      "difficulty": 0.25
+    },
+    {
+      "from": "vector_diagram_rep",
+      "to": "vector_magnitude_direction",
+      "difficulty": 0.3
+    },
+    {
+      "from": "vector_magnitude_direction",
+      "to": "equal_parallel_vectors",
+      "difficulty": 0.35
+    },
+    {
+      "from": "column_vector",
+      "to": "vector_addition",
+      "difficulty": 0.3
+    },
+    {
+      "from": "vector_diagram_rep",
+      "to": "vector_addition",
+      "difficulty": 0.3
+    },
+    {
+      "from": "vector_addition",
+      "to": "negative_vector",
+      "difficulty": 0.25
+    },
+    {
+      "from": "negative_vector",
+      "to": "vector_subtraction",
+      "difficulty": 0.3
+    },
+    {
+      "from": "vector_addition",
+      "to": "vector_subtraction",
+      "difficulty": 0.3
+    },
+    {
+      "from": "column_vector",
+      "to": "scalar_multiplication",
+      "difficulty": 0.3
+    },
+    {
+      "from": "vector_magnitude_direction",
+      "to": "scalar_multiplication",
+      "difficulty": 0.3
+    },
+    {
+      "from": "scalar_multiplication",
+      "to": "equal_parallel_vectors",
+      "difficulty": 0.35
+    },
+    {
+      "from": "vector_addition",
+      "to": "resultant_vector",
+      "difficulty": 0.4
+    },
+    {
+      "from": "vector_subtraction",
+      "to": "resultant_vector",
+      "difficulty": 0.4
+    },
+    {
+      "from": "scalar_multiplication",
+      "to": "resultant_vector",
+      "difficulty": 0.4
+    },
+    {
+      "from": "resultant_vector",
+      "to": "vector_geometry_proof",
+      "difficulty": 0.6
+    },
+    {
+      "from": "equal_parallel_vectors",
+      "to": "vector_geometry_proof",
+      "difficulty": 0.6
+    },
+    {
+      "from": "prob_scale",
+      "to": "randomness_fairness",
+      "difficulty": 0.15
+    },
+    {
+      "from": "freq_tables",
+      "to": "freq_trees",
+      "difficulty": 0.2
+    },
+    {
+      "from": "randomness_fairness",
+      "to": "expected_outcomes",
+      "difficulty": 0.3
+    },
+    {
+      "from": "freq_trees",
+      "to": "expected_outcomes",
+      "difficulty": 0.25
+    },
+    {
+      "from": "freq_trees",
+      "to": "relative_freq",
+      "difficulty": 0.25
+    },
+    {
+      "from": "relative_freq",
+      "to": "theoretical_prob_link",
+      "difficulty": 0.35
+    },
+    {
+      "from": "prob_scale",
+      "to": "theoretical_prob_link",
+      "difficulty": 0.2
+    },
+    {
+      "from": "prob_scale",
+      "to": "exhaustive_sum1",
+      "difficulty": 0.15
+    },
+    {
+      "from": "exhaustive_sum1",
+      "to": "mutually_exclusive_sum1",
+      "difficulty": 0.25
+    },
+    {
+      "from": "relative_freq",
+      "to": "law_large_numbers",
+      "difficulty": 0.35
+    },
+    {
+      "from": "theoretical_prob_link",
+      "to": "law_large_numbers",
+      "difficulty": 0.4
+    },
+    {
+      "from": "systematic_listing",
+      "to": "sample_space_tables_grids",
+      "difficulty": 0.25
+    },
+    {
+      "from": "systematic_listing",
+      "to": "venn_diagrams",
+      "difficulty": 0.3
+    },
+    {
+      "from": "systematic_listing",
+      "to": "tree_diagram_construction",
+      "difficulty": 0.3
+    },
+    {
+      "from": "sample_space_tables_grids",
+      "to": "possibility_space",
+      "difficulty": 0.3
+    },
+    {
+      "from": "mutually_exclusive_sum1",
+      "to": "possibility_space",
+      "difficulty": 0.3
+    },
+    {
+      "from": "possibility_space",
+      "to": "theoretical_prob_calc",
+      "difficulty": 0.3
+    },
+    {
+      "from": "theoretical_prob_calc",
+      "to": "independent_events",
+      "difficulty": 0.35
+    },
+    {
+      "from": "independent_events",
+      "to": "dependent_events",
+      "difficulty": 0.4
+    },
+    {
+      "from": "tree_diagram_construction",
+      "to": "tree_combined_events",
+      "difficulty": 0.35
+    },
+    {
+      "from": "independent_events",
+      "to": "tree_combined_events",
+      "difficulty": 0.35
+    },
+    {
+      "from": "dependent_events",
+      "to": "tree_combined_events",
+      "difficulty": 0.45
+    },
+    {
+      "from": "tree_combined_events",
+      "to": "underlying_assumptions",
+      "difficulty": 0.4
+    },
+    {
+      "from": "dependent_events",
+      "to": "conditional_prob",
+      "difficulty": 0.5
+    },
+    {
+      "from": "conditional_prob",
+      "to": "conditional_two_way",
+      "difficulty": 0.4
+    },
+    {
+      "from": "conditional_prob",
+      "to": "conditional_tree",
+      "difficulty": 0.4
+    },
+    {
+      "from": "conditional_prob",
+      "to": "conditional_venn",
+      "difficulty": 0.45
+    },
+    {
+      "from": "sample_space_tables_grids",
+      "to": "conditional_two_way",
+      "difficulty": 0.35
+    },
+    {
+      "from": "tree_combined_events",
+      "to": "conditional_tree",
+      "difficulty": 0.4
+    },
+    {
+      "from": "venn_diagrams",
+      "to": "conditional_venn",
+      "difficulty": 0.4
+    },
+    {
+      "from": "pop_sample",
+      "to": "sample_infer",
+      "difficulty": 0.3
+    },
+    {
+      "from": "sample_infer",
+      "to": "sample_limits",
+      "difficulty": 0.35
+    },
+    {
+      "from": "categorical_data",
+      "to": "freq_table",
+      "difficulty": 0.15
+    },
+    {
+      "from": "freq_table",
+      "to": "bar_chart",
+      "difficulty": 0.15
+    },
+    {
+      "from": "freq_table",
+      "to": "pie_chart",
+      "difficulty": 0.25
+    },
+    {
+      "from": "freq_table",
+      "to": "pictogram",
+      "difficulty": 0.15
+    },
+    {
+      "from": "bar_chart",
+      "to": "chart_choice_categorical",
+      "difficulty": 0.25
+    },
+    {
+      "from": "pie_chart",
+      "to": "chart_choice_categorical",
+      "difficulty": 0.25
+    },
+    {
+      "from": "pictogram",
+      "to": "chart_choice_categorical",
+      "difficulty": 0.25
+    },
+    {
+      "from": "categorical_data",
+      "to": "vert_line_chart",
+      "difficulty": 0.2
+    },
+    {
+      "from": "categorical_data",
+      "to": "time_series_table",
+      "difficulty": 0.15
+    },
+    {
+      "from": "time_series_table",
+      "to": "time_series_graph",
+      "difficulty": 0.25
+    },
+    {
+      "from": "categorical_data",
+      "to": "grouped_data_table",
+      "difficulty": 0.25
+    },
+    {
+      "from": "grouped_data_table",
+      "to": "class_width",
+      "difficulty": 0.25
+    },
+    {
+      "from": "class_width",
+      "to": "freq_density",
+      "difficulty": 0.4
+    },
+    {
+      "from": "grouped_data_table",
+      "to": "histogram_equal",
+      "difficulty": 0.35
+    },
+    {
+      "from": "freq_density",
+      "to": "histogram_unequal",
+      "difficulty": 0.5
+    },
+    {
+      "from": "histogram_equal",
+      "to": "histogram_unequal",
+      "difficulty": 0.4
+    },
+    {
+      "from": "histogram_unequal",
+      "to": "histogram_interpret",
+      "difficulty": 0.5
+    },
+    {
+      "from": "grouped_data_table",
+      "to": "cumulative_freq_table",
+      "difficulty": 0.3
+    },
+    {
+      "from": "cumulative_freq_table",
+      "to": "cumulative_freq_graph",
+      "difficulty": 0.35
+    },
+    {
+      "from": "cumulative_freq_graph",
+      "to": "cumulative_freq_interpret",
+      "difficulty": 0.45
+    },
+    {
+      "from": "histogram_unequal",
+      "to": "chart_choice_grouped",
+      "difficulty": 0.35
+    },
+    {
+      "from": "cumulative_freq_graph",
+      "to": "chart_choice_grouped",
+      "difficulty": 0.3
+    },
+    {
+      "from": "grouped_data_table",
+      "to": "mean",
+      "difficulty": 0.35
+    },
+    {
+      "from": "grouped_data_table",
+      "to": "median",
+      "difficulty": 0.35
+    },
+    {
+      "from": "categorical_data",
+      "to": "mode_modal_class",
+      "difficulty": 0.15
+    },
+    {
+      "from": "categorical_data",
+      "to": "range",
+      "difficulty": 0.15
+    },
+    {
+      "from": "median",
+      "to": "quartiles",
+      "difficulty": 0.3
+    },
+    {
+      "from": "cumulative_freq_interpret",
+      "to": "quartiles",
+      "difficulty": 0.4
+    },
+    {
+      "from": "quartiles",
+      "to": "iqr",
+      "difficulty": 0.2
+    },
+    {
+      "from": "iqr",
+      "to": "outliers",
+      "difficulty": 0.4
+    },
+    {
+      "from": "range",
+      "to": "outliers",
+      "difficulty": 0.3
+    },
+    {
+      "from": "quartiles",
+      "to": "box_plot_construct",
+      "difficulty": 0.35
+    },
+    {
+      "from": "median",
+      "to": "box_plot_construct",
+      "difficulty": 0.25
+    },
+    {
+      "from": "range",
+      "to": "box_plot_construct",
+      "difficulty": 0.2
+    },
+    {
+      "from": "box_plot_construct",
+      "to": "box_plot_interpret",
+      "difficulty": 0.35
+    },
+    {
+      "from": "mean",
+      "to": "compare_distributions",
+      "difficulty": 0.35
+    },
+    {
+      "from": "median",
+      "to": "compare_distributions",
+      "difficulty": 0.3
+    },
+    {
+      "from": "mode_modal_class",
+      "to": "compare_distributions",
+      "difficulty": 0.25
+    },
+    {
+      "from": "range",
+      "to": "compare_distributions",
+      "difficulty": 0.25
+    },
+    {
+      "from": "iqr",
+      "to": "compare_distributions",
+      "difficulty": 0.35
+    },
+    {
+      "from": "outliers",
+      "to": "compare_distributions",
+      "difficulty": 0.4
+    },
+    {
+      "from": "box_plot_interpret",
+      "to": "compare_distributions",
+      "difficulty": 0.4
+    },
+    {
+      "from": "compare_distributions",
+      "to": "describe_population",
+      "difficulty": 0.4
+    },
+    {
+      "from": "sample_limits",
+      "to": "describe_population",
+      "difficulty": 0.35
+    },
+    {
+      "from": "chart_choice_grouped",
+      "to": "describe_population",
+      "difficulty": 0.3
+    },
+    {
+      "from": "categorical_data",
+      "to": "bivariate_data",
+      "difficulty": 0.15
+    },
+    {
+      "from": "bivariate_data",
+      "to": "scatter_graph",
+      "difficulty": 0.2
+    },
+    {
+      "from": "scatter_graph",
+      "to": "correlation_types",
+      "difficulty": 0.25
+    },
+    {
+      "from": "correlation_types",
+      "to": "correlation_causation",
+      "difficulty": 0.35
+    },
+    {
+      "from": "correlation_types",
+      "to": "line_of_best_fit",
+      "difficulty": 0.3
+    },
+    {
+      "from": "line_of_best_fit",
+      "to": "prediction_lobf",
+      "difficulty": 0.25
+    },
+    {
+      "from": "prediction_lobf",
+      "to": "interpolation_extrapolation",
+      "difficulty": 0.35
+    },
+    {
+      "from": "interpolation_extrapolation",
+      "to": "danger_extrapolation",
+      "difficulty": 0.4
+    },
+    {
+      "from": "correlation_causation",
+      "to": "danger_extrapolation",
+      "difficulty": 0.3
+    },
+    {
+      "from": "place_value",
+      "to": "place_value_decimals_fdp",
+      "difficulty": null
+    },
+    {
+      "from": "place_value_decimals_fdp",
+      "to": "convert_term_dec_to_frac",
+      "difficulty": null
+    },
+    {
+      "from": "inequality_symbols",
+      "to": "inequality_notation",
+      "difficulty": null
+    },
+    {
+      "from": "factorise_simple_quad",
+      "to": "factorising_quadratics",
+      "difficulty": null
+    },
+    {
+      "from": "factorise_general_quad",
+      "to": "factorising_quad",
+      "difficulty": null
+    },
+    {
+      "from": "completing_square",
+      "to": "completing_square_expr",
+      "difficulty": null
+    },
+    {
+      "from": "G6_pythagoras",
+      "to": "pythagoras",
+      "difficulty": null
+    },
+    {
+      "from": "pythagoras",
+      "to": "pythagoras_recall",
+      "difficulty": null
+    },
+    {
+      "from": "trig_ratios",
+      "to": "trig_ratios_definitions",
+      "difficulty": null
+    },
+    {
+      "from": "trig_ratios",
+      "to": "N_TRIG_RATIOS",
+      "difficulty": null
+    },
+    {
+      "from": "surd_simplify",
+      "to": "surds",
+      "difficulty": null
+    },
+    {
+      "from": "G6_similarity",
+      "to": "similarity",
+      "difficulty": null
+    },
+    {
+      "from": "G6_similarity",
+      "to": "N_SIMILARITY",
+      "difficulty": null
+    },
+    {
+      "from": "G10_circle_theorem_tangent_radius",
+      "to": "tangent_perpendicular_radius",
+      "difficulty": null
+    },
+    {
+      "from": "listing_strategies",
+      "to": "systematic_listing",
+      "difficulty": null
+    },
+    {
+      "from": "iteration_concept",
+      "to": "iterative_formula_rearrange",
+      "difficulty": null
+    },
+    {
+      "from": "iterative_formula_rearrange",
+      "to": "iteration_numerical",
+      "difficulty": null
+    },
+    {
+      "from": "coord_plane",
+      "to": "G7_congruent_similar_construct",
+      "difficulty": null
+    },
+    {
+      "from": "collect_terms",
+      "to": "expand_brackets",
+      "difficulty": null
+    },
+    {
+      "from": "expand_brackets",
+      "to": "expand_double_brackets_solving",
+      "difficulty": null
+    },
+    {
+      "from": "expand_double_brackets_solving",
+      "to": "factorising_quad",
+      "difficulty": null
+    },
+    {
+      "from": "quad_std_form",
+      "to": "factorising_quad",
+      "difficulty": null
+    },
+    {
+      "from": "coords4q",
+      "to": "plot_linear_graph",
+      "difficulty": null
+    },
+    {
+      "from": "linear_eq_form",
+      "to": "plot_linear_graph",
+      "difficulty": null
+    },
+    {
+      "from": "coords4q",
+      "to": "plot_quad_graph",
+      "difficulty": null
+    },
+    {
+      "from": "substitution",
+      "to": "plot_quad_graph",
+      "difficulty": null
+    },
+    {
+      "from": "term_to_term",
+      "to": "triangular_numbers",
+      "difficulty": null
+    },
+    {
+      "from": "integer_powers",
+      "to": "geometric_progressions",
+      "difficulty": null
+    },
+    {
+      "from": "R4",
+      "to": "R2b",
+      "difficulty": null
+    },
+    {
+      "from": "R1",
+      "to": "R2b",
+      "difficulty": null
+    },
+    {
+      "from": "percent_of_amount",
+      "to": "R9_INTEREST",
+      "difficulty": null
+    },
+    {
+      "from": "percentage_multiplier",
+      "to": "R16a",
+      "difficulty": null
+    },
+    {
+      "from": "integer_powers",
+      "to": "R16a",
+      "difficulty": null
+    },
+    {
+      "from": "iteration_concept",
+      "to": "R16b",
+      "difficulty": null
+    },
+    {
+      "from": "similar_areas",
+      "to": "R12",
+      "difficulty": null
+    },
+    {
+      "from": "similar_volumes",
+      "to": "R12",
+      "difficulty": null
+    },
+    {
+      "from": "compound_measures_def",
+      "to": "R11",
+      "difficulty": null
+    },
+    {
+      "from": "compound_measures_calc",
+      "to": "R11",
+      "difficulty": null
+    },
+    {
+      "from": "gradient_curve_estimate",
+      "to": "R15b",
+      "difficulty": null
+    },
+    {
+      "from": "solve_linear_both_sides",
+      "to": "algebraic_manipulation_basic",
+      "difficulty": null
+    },
+    {
+      "from": "place_value_large_small",
+      "to": "sig_figs_concept",
+      "difficulty": null
+    },
+    {
+      "from": "error_interval_truncation",
+      "to": "upper_lower_bounds",
+      "difficulty": null
+    },
+    {
+      "from": "surd_simplify",
+      "to": "surd_manipulation",
+      "difficulty": null
+    },
+    {
+      "from": "rationalise_denom",
+      "to": "surd_manipulation",
+      "difficulty": null
+    },
+    {
+      "from": "fractional_indices",
+      "to": "laws_of_indices",
+      "difficulty": null
+    },
+    {
+      "from": "four_ops_fractions",
+      "to": "algebraic_fractions",
+      "difficulty": null
+    },
+    {
+      "from": "reciprocals",
+      "to": "perpendicular_lines",
+      "difficulty": null
+    },
+    {
+      "from": "G9_circle_defs",
+      "to": "circle_equation_origin",
+      "difficulty": null
+    },
+    {
+      "from": "exact_trig_values",
+      "to": "sketch_trig_graphs",
+      "difficulty": null
+    },
+    {
+      "from": "area_trapezium",
+      "to": "area_under_graph_estimate",
+      "difficulty": null
+    },
+    {
+      "from": "area_triangle",
+      "to": "area_under_graph_estimate",
+      "difficulty": null
+    },
+    {
+      "from": "velocity_time_graphs",
+      "to": "kinematics_context",
+      "difficulty": null
+    },
+    {
+      "from": "R9_INTEREST",
+      "to": "financial_graphs",
+      "difficulty": null
+    },
+    {
+      "from": "G4_triangle_defs",
+      "to": "G6_pythagoras",
+      "difficulty": null
+    },
+    {
+      "from": "G1_terms_points_lines",
+      "to": "G9_circle_defs_basic",
+      "difficulty": null
+    },
+    {
+      "from": "G9_circle_defs_basic",
+      "to": "G9_circle_defs_lines",
+      "difficulty": null
+    },
+    {
+      "from": "G9_circle_defs_lines",
+      "to": "G9_circle_defs_regions",
+      "difficulty": null
+    },
+    {
+      "from": "G9_circle_defs_regions",
+      "to": "G9_circle_defs",
+      "difficulty": null
+    },
+    {
+      "from": "G3_alt_corr_angles",
+      "to": "G4_quad_defs_parallel",
+      "difficulty": null
+    },
+    {
+      "from": "G1_parallel_perp",
+      "to": "G4_quad_defs_parallel",
+      "difficulty": null
+    },
+    {
+      "from": "G4_quad_defs_parallel",
+      "to": "G4_quad_defs_other",
+      "difficulty": null
+    },
+    {
+      "from": "G4_quad_defs_other",
+      "to": "G4_quad_defs",
+      "difficulty": null
+    },
+    {
+      "from": "G1_polygons",
+      "to": "G12_3d_prisms",
+      "difficulty": null
+    },
+    {
+      "from": "G12_3d_prisms",
+      "to": "G12_3d_curved_pyramids",
+      "difficulty": null
+    },
+    {
+      "from": "G12_3d_curved_pyramids",
+      "to": "G12_3d_shape_properties",
+      "difficulty": null
+    },
+    {
+      "from": "G5_congruence_criteria",
+      "to": "G7_def_reflection_rotation",
+      "difficulty": null
+    },
+    {
+      "from": "G7_def_reflection_rotation",
+      "to": "G7_def_translation",
+      "difficulty": null
+    },
+    {
+      "from": "G6_similarity",
+      "to": "G7_def_enlargement",
+      "difficulty": null
+    },
+    {
+      "from": "G7_def_translation",
+      "to": "G7_transformations_def",
+      "difficulty": null
+    },
+    {
+      "from": "G7_def_enlargement",
+      "to": "G7_transformations_def",
+      "difficulty": null
+    },
+    {
+      "from": "area_triangle",
+      "to": "surface_area_pyramid_cone",
+      "difficulty": null
+    },
+    {
+      "from": "area_circle",
+      "to": "surface_area_pyramid_cone",
+      "difficulty": null
+    },
+    {
+      "from": "area_circle",
+      "to": "surface_area_sphere",
+      "difficulty": null
+    },
+    {
+      "from": "surface_area_pyramid_cone",
+      "to": "surface_area_solids",
+      "difficulty": null
+    },
+    {
+      "from": "surface_area_sphere",
+      "to": "surface_area_solids",
+      "difficulty": null
+    },
+    {
+      "from": "volume_prism",
+      "to": "volume_pyramid_cone",
+      "difficulty": null
+    },
+    {
+      "from": "area_circle",
+      "to": "volume_sphere",
+      "difficulty": null
+    },
+    {
+      "from": "volume_pyramid_cone",
+      "to": "volume_solids",
+      "difficulty": null
+    },
+    {
+      "from": "volume_sphere",
+      "to": "volume_solids",
+      "difficulty": null
+    },
+    {
+      "from": "G9_circle_defs",
+      "to": "sector_fraction_of_circle",
+      "difficulty": null
+    },
+    {
+      "from": "sector_fraction_of_circle",
+      "to": "arc_length",
+      "difficulty": null
+    },
+    {
+      "from": "sector_fraction_of_circle",
+      "to": "sector_area",
+      "difficulty": null
+    },
+    {
+      "from": "trig_ratios",
+      "to": "inverse_trig_notation",
+      "difficulty": null
+    },
+    {
+      "from": "inverse_ops",
+      "to": "inverse_trig_notation",
+      "difficulty": null
+    },
+    {
+      "from": "inverse_trig_notation",
+      "to": "trig_find_angles",
+      "difficulty": null
+    },
+    {
+      "from": "rearrange_formulae",
+      "to": "sine_rule_angles",
+      "difficulty": null
+    },
+    {
+      "from": "trig_find_angles",
+      "to": "sine_rule_angles",
+      "difficulty": null
+    },
+    {
+      "from": "rearrange_formulae",
+      "to": "cosine_rule_angles",
+      "difficulty": null
+    },
+    {
+      "from": "trig_find_angles",
+      "to": "cosine_rule_angles",
+      "difficulty": null
+    },
+    {
+      "from": "G3_angles_point",
+      "to": "bearings",
+      "difficulty": null
+    },
+    {
+      "from": "G3_alt_corr_angles",
+      "to": "bearings",
+      "difficulty": null
+    },
+    {
+      "from": "ratio_notation",
+      "to": "scale_drawings",
+      "difficulty": null
+    },
+    {
+      "from": "unit_conversion",
+      "to": "scale_drawings",
+      "difficulty": null
+    },
+    {
+      "from": "G3_angles_point",
+      "to": "pie_chart",
+      "difficulty": null
+    },
+    {
+      "from": "fraction_as_operator",
+      "to": "pie_chart",
+      "difficulty": null
+    },
+    {
+      "from": "grouped_data_table",
+      "to": "freq_density",
+      "difficulty": null
+    },
+    {
+      "from": "compound_measures_def",
+      "to": "freq_density",
+      "difficulty": null
+    },
+    {
+      "from": "freq_table",
+      "to": "mean_ungrouped",
+      "difficulty": null
+    },
+    {
+      "from": "mean_ungrouped",
+      "to": "midpoint_estimation",
+      "difficulty": null
+    },
+    {
+      "from": "class_width",
+      "to": "midpoint_estimation",
+      "difficulty": null
+    },
+    {
+      "from": "midpoint_estimation",
+      "to": "mean",
+      "difficulty": null
+    },
+    {
+      "from": "order_numbers",
+      "to": "quartiles",
+      "difficulty": null
+    },
+    {
+      "from": "theoretical_prob_calc",
+      "to": "expected_outcomes",
+      "difficulty": null
+    },
+    {
+      "from": "fraction_meaning",
+      "to": "theoretical_prob_calc",
+      "difficulty": null
+    },
+    {
+      "from": "prob_scale",
+      "to": "theoretical_prob_calc",
+      "difficulty": null
+    },
+    {
+      "from": "theoretical_prob_calc",
+      "to": "independence_definition",
+      "difficulty": null
+    },
+    {
+      "from": "independence_definition",
+      "to": "independent_events",
+      "difficulty": null
+    },
+    {
+      "from": "multiplying_fractions",
+      "to": "independent_events",
+      "difficulty": null
+    },
+    {
+      "from": "set_notation",
+      "to": "venn_diagrams",
+      "difficulty": null
+    },
+    {
+      "from": "possibility_space",
+      "to": "conditional_prob",
+      "difficulty": null
+    },
+    {
+      "from": "independent_events",
+      "to": "conditional_prob",
+      "difficulty": null
+    },
+    {
+      "from": "reciprocal_function",
+      "to": "R13",
+      "difficulty": null
+    },
+    {
+      "from": "fraction_as_operator",
+      "to": "N_FRACTIONS",
+      "difficulty": null
+    },
+    {
+      "from": "substitution",
+      "to": "N_ALGEBRA_BASIC",
+      "difficulty": null
+    },
+    {
+      "from": "plot_straight_line",
+      "to": "N_LINEAR_GRAPHS",
+      "difficulty": null
+    },
+    {
+      "from": "gradient_concept",
+      "to": "N_GRADIENT_DEF",
+      "difficulty": null
+    },
+    {
+      "from": "plot_quad_graph",
+      "to": "N_CURVES_GRAPH",
+      "difficulty": null
+    },
+    {
+      "from": "similarity",
+      "to": "N_SIMILARITY",
+      "difficulty": null
+    },
+    {
+      "from": "std_units",
+      "to": "sub_scientific",
+      "difficulty": null
+    },
+    {
+      "from": "standard_form_calc",
+      "to": "sub_scientific",
+      "difficulty": null
+    },
+    {
+      "from": "R5a",
+      "to": "vector_geometry_proof",
+      "difficulty": null
+    },
+    {
+      "from": "sample_limits",
+      "to": "danger_extrapolation",
+      "difficulty": null
+    },
+    {
+      "from": "G5_congruence_criteria",
+      "to": "G6_simple_proofs",
+      "difficulty": null
+    },
+    {
+      "from": "coords4q",
+      "to": "G11_coordinate_geometry_problems",
+      "difficulty": null
+    },
+    {
+      "from": "eq_line_two_points",
+      "to": "G11_coordinate_geometry_problems",
+      "difficulty": null
+    }
+  ]
+}

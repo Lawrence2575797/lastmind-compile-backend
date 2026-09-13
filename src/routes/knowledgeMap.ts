@@ -36,7 +36,7 @@ import { answerKnowledgeMapQuestion } from '../services/knowledgeMapAskService';
 import { assertFreshGenerationWithinCap, recordFreshGenerationEvent, GenerationCapExceededError } from '../services/generationCapService';
 import { recordPairwiseIntegrationOutcome } from '../services/chainMasteryService';
 import { getOrCreateUserRecallTuning, getDifficultyAndCapability, nextRecallDelayMinutes, updateGammaAfterRecall, bumpBaseRecalls } from '../services/recallTuningService';
-import { getQuestionForConceptId, getConceptDisplayInfo } from '../services/day1CheckService';
+import { getQuestionForConceptId, getConceptDisplayInfo, orderDay1ChecksByLessonOrder } from '../services/day1CheckService';
 
 const router = Router();
 
@@ -981,7 +981,14 @@ router.get('/day1-checks/due', requireAuth, syncEndpointLimiter, async (req: Req
       if (!info || !question) return null;
       return { checkId: r.id, conceptId: r.concept_id, label: info.label, subject: info.subject, dueDate: r.due_date, questionText: question.questionText };
     }));
-    res.json({ checks: withDisplay.filter(Boolean) });
+    const usable = withDisplay.filter((c): c is NonNullable<typeof c> => c !== null);
+    // Ordered by where each concept sits in its subject's own teaching
+    // sequence, not by due_date (which is usually identical - "today" -
+    // for everything overdue, making it a meaningless tiebreaker) and
+    // never by recall/FSRS priority - a Day-1 check has no recall
+    // cascade of its own to prioritise by.
+    const ordered = await orderDay1ChecksByLessonOrder(usable);
+    res.json({ checks: ordered });
   } catch (err) {
     console.error('Fetching due Day-1 checks failed:', err);
     res.status(500).json({ error: 'could not load Day-1 checks' });

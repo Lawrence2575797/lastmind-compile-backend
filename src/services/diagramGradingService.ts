@@ -73,6 +73,20 @@ const CURVE_SHAPES: Record<string, Point[]> = {
   // Downward-sloping like demand, but its own semantic item so it's
   // graded as the Phillips curve, not demand.
   phillips: [{ x: 0, y: 0 }, { x: 130, y: 80 }, { x: 260, y: 160 }],
+  // Relative-elasticity variants - "perfectly" elastic/inelastic are
+  // already covered by generic_price_line (horizontal, infinite PED/PES)
+  // and generic_quantity_line (vertical, zero PED/PES) respectively (see
+  // diagramSpecPrompts.ts's own mapping guide), but "relatively" elastic/
+  // inelastic need their own distinct slope from the standard demand/
+  // supply shape - grading here is position-based, not slope-based (see
+  // placedPolyline below), so a genuinely different curveTypeId per slope
+  // is what makes "steeper than standard" or "shallower than standard"
+  // actually checkable, rather than something the standard demand/supply
+  // entry could ever represent on its own regardless of how it's resized.
+  demand_relatively_elastic: [{ x: 0, y: 0 }, { x: 130, y: 40 }, { x: 260, y: 80 }],
+  demand_relatively_inelastic: [{ x: 0, y: 0 }, { x: 130, y: 120 }, { x: 260, y: 240 }],
+  supply_relatively_elastic: [{ x: 0, y: 80 }, { x: 130, y: 40 }, { x: 260, y: 0 }],
+  supply_relatively_inelastic: [{ x: 0, y: 240 }, { x: 130, y: 120 }, { x: 260, y: 0 }],
   // Inverted-U: zero revenue at a 0% rate, rising to a peak, falling back
   // toward zero as the rate approaches 100%.
   laffer: [{ x: 0, y: 200 }, { x: 65, y: 60 }, { x: 130, y: 20 }, { x: 195, y: 60 }, { x: 260, y: 200 }],

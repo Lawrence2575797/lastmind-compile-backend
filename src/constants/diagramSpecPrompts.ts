@@ -13,6 +13,8 @@ export const CURVE_TYPE_LIST = [
   'average_revenue', 'marginal_revenue',
   'ad', 'as_curve', 'lras_classical', 'lras_keynesian',
   'phillips', 'laffer', 'lorenz_curve', 'line_of_equality', 'ppf',
+  'demand_relatively_elastic', 'demand_relatively_inelastic',
+  'supply_relatively_elastic', 'supply_relatively_inelastic',
 ];
 
 // MECHANISTIC mode - a node's own diagram question, the first full
@@ -26,6 +28,8 @@ Available curve types - this is the COMPLETE, FIXED list. "type" must be copied 
 ${CURVE_TYPE_LIST.map((t) => `- ${t}`).join('\n')}
 
 Mapping guide for ambiguous cases: an ordinary downward-sloping demand-side curve (a normal demand curve, an AD curve, average revenue, a Phillips curve, a Lorenz curve context) is "demand", "ad", "average_revenue", "phillips", or "lorenz_curve" respectively - NEVER a made-up "downward_sloping". An ordinary upward-sloping supply-side curve (a normal supply curve, an AS curve, world supply) is "supply", "as_curve", or "world_supply" respectively - NEVER a made-up "upward_sloping". A production possibility frontier (PPF) is "ppf" - never a made-up "concave_curve" or "bowed_curve". Long-run aggregate supply (LRAS) is either "lras_classical" (a vertical line - use this whenever the concept doesn't specifically discuss spare capacity/Keynesian shape) or "lras_keynesian" - NEVER a made-up "lras" or "vertical_line". Short-run aggregate supply (SRAS) has no dedicated palette entry - use "as_curve" for it (the same upward-sloping macro supply shape), never a made-up "sras".
+
+Elasticity (PED/PES/YED/XED value-interpretation concepts - e.g. "perfectly/relatively elastic and inelastic"): these ARE genuinely diagrammatic - the whole point is that each elasticity category has a visually distinct curve shape, and a student should be able to place the shape that matches each named category. A PERFECTLY elastic demand/supply curve (elasticity = infinity, a flat line at a fixed price) is "generic_price_line" - never a made-up "perfectly_elastic". A PERFECTLY inelastic demand/supply curve (elasticity = 0, a fixed quantity regardless of price) is "generic_quantity_line" - never a made-up "perfectly_inelastic". A RELATIVELY elastic demand curve (flatter/shallower than an ordinary demand curve) is "demand_relatively_elastic"; a RELATIVELY inelastic demand curve (steeper than ordinary) is "demand_relatively_inelastic". The same pattern for supply: "supply_relatively_elastic" / "supply_relatively_inelastic". Never use the plain "demand"/"supply" type to represent a relatively-elastic-or-inelastic case - grading is by which named curve type was placed where, not by how steeply a generic one was drawn, so the distinct type is what makes the category actually checkable. A concept naming several of these categories together (e.g. "interpreting PES values: perfectly/relatively elastic and inelastic") should place ALL the categories it discusses as separate curves, each labelled with its category name.
 
 Rules:
 1. Output ONLY valid JSON, nothing else.

@@ -79,11 +79,26 @@ async function generateOne(label) {
 }
 
 async function main() {
-  const kw = /diagram|curve|PPF|lorenz|laffer|phillips|draw|AD\/AS|supply and demand/i;
+  // "elastic" added live - a real gap found: "Interpreting PES values:
+  // perfectly/relatively elastic and inelastic" (and its PED/YED/XED
+  // siblings) are genuinely diagrammatic (each named category has its own
+  // distinct curve shape - see diagramSpecPrompts.ts's own elasticity
+  // mapping guide, added alongside this) but matched none of the original
+  // keywords, so the first run of this script silently skipped every
+  // elasticity-interpretation concept in the subject.
+  const kw = /diagram|curve|PPF|lorenz|laffer|phillips|draw|AD\/AS|supply and demand|elastic/i;
   const idKw = /^(DRAW_|PPF_|LORENZ|LAFFER|PHILLIPS|AD_|AS_|LRAS)/;
   const all = [];
   for (let from = 0; ; from += 1000) {
-    const { data } = await supabase.from('knowledge_map_nodes').select('id, label').range(from, from + 999);
+    // Scoped to Economics only, deliberately - the curve palette this
+    // whole system grades against (CURVE_TYPE_LIST) is Economics-specific
+    // (supply/demand/AD-AS/PPF/Phillips/Laffer/Lorenz), so a Maths node
+    // whose label happens to contain "graph" or "curve" (e.g. "Parent
+    // graph shape: y=sin x") has nothing in that palette to correctly
+    // represent - the model would (correctly) mark almost all of them
+    // notDiagrammatic, but there's no reason to spend the calls finding
+    // that out when the subject filter already knows it in advance.
+    const { data } = await supabase.from('knowledge_map_nodes').select('id, label').eq('subject', 'Economics').range(from, from + 999);
     if (!data || !data.length) break;
     all.push(...data);
     if (data.length < 1000) break;

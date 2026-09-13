@@ -11,6 +11,7 @@ import { callClaudeJSON } from './claudeClient';
 import { parseModelJson, stripCodeFences, escapeRawControlCharsInStrings } from './jsonParsing';
 import { KNOWLEDGE_MAP_ENCODING_LESSON_PROMPT, KNOWLEDGE_MAP_EDGE_LESSON_PROMPT } from '../constants/lessonGenerationPrompts';
 import { getNodeNoteBaseline, getEdgeNoteBaseline } from './knowledgeMapNotesService';
+import { generateDiagramSpecForConcept } from './diagramSpecGenerationService';
 
 // Same model choice as the offline pipeline (generate_lesson_content.js's
 // LESSON_MODEL) - a structured writing task against an explicit spec, not
@@ -111,21 +112,43 @@ export async function generateAndCacheNodeLesson(nodeId: string, userId: string)
     `This node's own direct prerequisites, already taught immediately before this one (ground and build forward from these - see rule 1a): ${JSON.stringify(leadsFromLabels)}`,
   ].join('\n');
 
-  const raw = await callClaudeJSON({
-    model: LESSON_MODEL,
-    systemPrompt: KNOWLEDGE_MAP_ENCODING_LESSON_PROMPT,
-    userContent,
-    maxTokens: MAX_TOKENS,
-    // ~1,862 tokens, well over Sonnet's 1024-token cache minimum, and
-    // byte-identical across every node/subject/student - exactly the
-    // "large, fixed prompt reused verbatim" case cacheSystemPrompt exists
-    // for (see claudeClient.ts's own comment). Wasn't set before; every
-    // fresh generation was paying full input-token price on this prompt
-    // for no reason.
-    cacheSystemPrompt: true,
-    userId,
-    meteredReason: 'knowledge-map-v2-node-lesson',
-  });
+  // Diagram-spec classification only needs the concept's own label (see
+  // generateDiagramSpecForConcept's own comment - it doesn't read this
+  // lesson's explanation at all), so it runs alongside the main lesson call
+  // rather than after it - a genuinely independent, much smaller (2000 vs
+  // 16000 max_tokens) call, so this adds no real latency to the lesson the
+  // student is actually waiting on. Economics-only - the curve palette this
+  // grades against is Economics-specific (see diagramSpecGenerationService.ts).
+  // Never lets a diagram failure block the lesson itself: awaited via
+  // Promise.allSettled, not Promise.all.
+  const wantsDiagramSpec = typedNode.subject === 'Economics';
+  const [lessonResult, diagramResult] = await Promise.allSettled([
+    callClaudeJSON({
+      model: LESSON_MODEL,
+      systemPrompt: KNOWLEDGE_MAP_ENCODING_LESSON_PROMPT,
+      userContent,
+      maxTokens: MAX_TOKENS,
+      // ~1,862 tokens, well over Sonnet's 1024-token cache minimum, and
+      // byte-identical across every node/subject/student - exactly the
+      // "large, fixed prompt reused verbatim" case cacheSystemPrompt exists
+      // for (see claudeClient.ts's own comment). Wasn't set before; every
+      // fresh generation was paying full input-token price on this prompt
+      // for no reason.
+      cacheSystemPrompt: true,
+      userId,
+      meteredReason: 'knowledge-map-v2-node-lesson',
+    }),
+    wantsDiagramSpec ? generateDiagramSpecForConcept(typedNode.label, userId) : Promise.resolve(null),
+  ]);
+  if (lessonResult.status === 'rejected') throw lessonResult.reason;
+  const raw = lessonResult.value;
+  // Logged, not thrown - a diagram is additive to a lesson that's otherwise
+  // complete without one, never worth failing the whole generation over.
+  if (diagramResult.status === 'rejected') {
+    console.error(`LastMind: diagram spec generation failed for "${typedNode.label}" (${nodeId}).`, diagramResult.reason);
+  }
+  const diagramSpec = diagramResult.status === 'fulfilled' ? diagramResult.value : null;
+
   let encodingContent: unknown;
   try {
     encodingContent = parseWithClosingBraceRepair<unknown>(raw);
@@ -136,6 +159,10 @@ export async function generateAndCacheNodeLesson(nodeId: string, userId: string)
     // ever putting the raw model output in the student-facing error.
     console.error(`LastMind: node lesson generation failed to parse for "${typedNode.label}" (${nodeId}).`, { rawLength: raw.length, rawSnippet: raw.slice(0, 300) }, err);
     throw err;
+  }
+  if (diagramSpec) {
+    const typedContent = encodingContent as { practiceQuestion?: Record<string, unknown> };
+    if (typedContent.practiceQuestion) typedContent.practiceQuestion.diagramSpec = diagramSpec;
   }
 
   // Upsert (not a plain insert) - node_id is unique-constrained, so two

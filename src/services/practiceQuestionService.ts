@@ -1,6 +1,11 @@
 import { supabaseAdmin } from './supabaseAdmin';
 import { callClaudeJSON, MODELS } from './claudeClient';
-import { PRACTICE_QUESTION_MARKING_PROMPT, PRACTICE_QUESTION_MARKING_PROMPT_ITEMIZED } from '../constants/practiceQuestionPrompts';
+import {
+  PRACTICE_QUESTION_MARKING_PROMPT,
+  PRACTICE_QUESTION_MARKING_PROMPT_ITEMIZED,
+  PRACTICE_QUESTION_MODEL_ANSWER_PROMPT,
+  PRACTICE_QUESTION_ASSISTANCE_PROMPT,
+} from '../constants/practiceQuestionPrompts';
 import { normalizeForPlanMatch } from './chainService';
 import { gradeAndRecordReview, ratingFromMarkRatio } from './reviewService';
 import { resolveSubjectTriple } from './subjectResolution';
@@ -216,43 +221,16 @@ function reconcileComponentMarks(split: { groups: ComponentSplitGroup[] }, rawCo
   return { markAwarded, componentMarks };
 }
 
-// Marks against whatever mark_scheme_json this specific question was
-// batch-generated with (see create_practice_questions.sql) - the AI call
-// here only ever applies an already-correct rubric to one answer, never
-// invents marking criteria of its own. That's what keeps this cheap
-// (Haiku-tier) and reliable compared to generating a rubric from scratch
-// on every attempt.
-export async function submitPracticeAnswer(userId: string, questionId: string, answerText: string): Promise<PracticeQuestionMarkingResult> {
-  const { data: question, error } = await supabaseAdmin
-    .from('practice_questions')
-    .select('*')
-    .eq('id', questionId)
-    .maybeSingle();
-  if (error) throw error;
-  if (!question) throw new PracticeQuestionNotFoundError();
-
-  // A question can only ever be answered once — check first so a normal
-  // double-click just gets handed back what's already stored instead of
-  // paying for a second marking call.
-  const { data: existing, error: existingError } = await supabaseAdmin
-    .from('practice_question_attempts')
-    .select('answer_text, mark_awarded, mark_tariff, feedback, conceptual_mistakes, exam_technique_tips, ao_component_marks')
-    .eq('user_id', userId)
-    .eq('question_id', questionId)
-    .maybeSingle();
-  if (existingError) throw existingError;
-  if (existing) {
-    throw new PracticeQuestionAlreadyAnsweredError({
-      answerText: existing.answer_text as string,
-      markAwarded: existing.mark_awarded as number,
-      markTariff: existing.mark_tariff as number,
-      feedback: existing.feedback as string,
-      conceptualMistakes: (existing.conceptual_mistakes as string | null) ?? null,
-      examTechniqueTips: (existing.exam_technique_tips as string | null) ?? null,
-      componentMarks: (existing.ao_component_marks as Record<string, number> | null) ?? null,
-    });
-  }
-
+// Pure grading computation shared by submitPracticeAnswer (a real,
+// persisted student attempt) and generateModelAnswer's own self-check
+// (grading a freshly-generated model answer, never persisted as an
+// attempt, never touching FSRS) - factored out so both apply the exact
+// same rubric logic rather than two copies that could drift apart.
+async function gradeAnswerAgainstMarkScheme(
+  question: Record<string, unknown>,
+  answerText: string,
+  userId: string
+): Promise<PracticeQuestionMarkingResult> {
   const markTariff = question.mark_tariff as number;
   const componentSplit = question.ao_component_split as { groups: ComponentSplitGroup[] } | null;
   let markAwarded: number;
@@ -302,6 +280,48 @@ export async function submitPracticeAnswer(userId: string, questionId: string, a
       examTechniqueTips = result.examTechniqueTips || null;
     }
   }
+
+  return { markAwarded, markTariff, feedback, conceptualMistakes, examTechniqueTips, componentMarks };
+}
+
+// Marks against whatever mark_scheme_json this specific question was
+// batch-generated with (see create_practice_questions.sql) - the AI call
+// here only ever applies an already-correct rubric to one answer, never
+// invents marking criteria of its own. That's what keeps this cheap
+// (Haiku-tier) and reliable compared to generating a rubric from scratch
+// on every attempt.
+export async function submitPracticeAnswer(userId: string, questionId: string, answerText: string): Promise<PracticeQuestionMarkingResult> {
+  const { data: question, error } = await supabaseAdmin
+    .from('practice_questions')
+    .select('*')
+    .eq('id', questionId)
+    .maybeSingle();
+  if (error) throw error;
+  if (!question) throw new PracticeQuestionNotFoundError();
+
+  // A question can only ever be answered once — check first so a normal
+  // double-click just gets handed back what's already stored instead of
+  // paying for a second marking call.
+  const { data: existing, error: existingError } = await supabaseAdmin
+    .from('practice_question_attempts')
+    .select('answer_text, mark_awarded, mark_tariff, feedback, conceptual_mistakes, exam_technique_tips, ao_component_marks')
+    .eq('user_id', userId)
+    .eq('question_id', questionId)
+    .maybeSingle();
+  if (existingError) throw existingError;
+  if (existing) {
+    throw new PracticeQuestionAlreadyAnsweredError({
+      answerText: existing.answer_text as string,
+      markAwarded: existing.mark_awarded as number,
+      markTariff: existing.mark_tariff as number,
+      feedback: existing.feedback as string,
+      conceptualMistakes: (existing.conceptual_mistakes as string | null) ?? null,
+      examTechniqueTips: (existing.exam_technique_tips as string | null) ?? null,
+      componentMarks: (existing.ao_component_marks as Record<string, number> | null) ?? null,
+    });
+  }
+
+  const { markAwarded, markTariff, feedback, conceptualMistakes, examTechniqueTips, componentMarks } = await gradeAnswerAgainstMarkScheme(question, answerText, userId);
 
   const { data: insertedAttempt, error: insertError } = await supabaseAdmin.from('practice_question_attempts').insert({
     user_id: userId,
@@ -363,4 +383,80 @@ export async function submitPracticeAnswer(userId: string, questionId: string, a
   }
 
   return { markAwarded, markTariff, feedback, conceptualMistakes, examTechniqueTips, componentMarks };
+}
+
+export interface ModelAnswerResult {
+  modelAnswerText: string;
+  // Grading the model answer itself, against the exact same rubric a
+  // real submission faces - the student is never shown an answer this
+  // app hasn't independently verified actually earns full marks, rather
+  // than just trusting the generation prompt's own claim that it does.
+  selfCheck: PracticeQuestionMarkingResult;
+}
+
+// Not persisted anywhere and never touches FSRS - this is a study aid the
+// student can request any time, not a graded attempt of their own. Both
+// this call AND its self-check below are real, separately-metered Claude
+// calls (see chargeForClaudeCall in generationCostService.ts) - deliberately
+// NOT a flat-rate feature, since a genuine model-answer-plus-verification
+// pair costs meaningfully more than an ordinary marking call and the
+// Locks charge should reflect that.
+export async function generateModelAnswer(userId: string, questionId: string): Promise<ModelAnswerResult> {
+  const { data: question, error } = await supabaseAdmin
+    .from('practice_questions')
+    .select('*')
+    .eq('id', questionId)
+    .maybeSingle();
+  if (error) throw error;
+  if (!question) throw new PracticeQuestionNotFoundError();
+
+  const markTariff = question.mark_tariff as number;
+  const componentSplit = question.ao_component_split as { groups: ComponentSplitGroup[] } | null;
+  const structureNotes = getMarkingStructureNotes(question.subject as string, question.qualification as string, (question.exam_board as string) || '');
+
+  const userContent = [
+    `Question (worth ${markTariff} marks): ${question.question_text}`,
+    `Mark scheme type: ${question.mark_scheme_type}`,
+    `Mark scheme: ${JSON.stringify(question.mark_scheme_json)}`,
+    componentSplit ? `This question's marks are split across these component groups - the answer must earn every group's own full allocation: ${JSON.stringify(componentSplit.groups)}` : '',
+    structureNotes ? `General marking structure for this subject/qualification/exam board (background context — apply it, don't recite it back): ${structureNotes}` : '',
+  ].filter(Boolean).join('\n\n');
+
+  const { modelAnswerText } = await callJSON<{ modelAnswerText: string }>(PRACTICE_QUESTION_MODEL_ANSWER_PROMPT, userContent, MODELS.simpleQuestion, 0.3, userId);
+  const selfCheck = await gradeAnswerAgainstMarkScheme(question, modelAnswerText, userId);
+
+  return { modelAnswerText, selfCheck };
+}
+
+// Fixed set of assistance angles offered as multi-select buttons (see
+// learn/index.html's PQ_ASSISTANCE_TYPES, which must stay in sync with
+// these exact keys) - kept here so the prompt sent to Claude always uses
+// the same wording the student actually saw and picked, not a re-derived
+// label that could drift from the UI.
+export const PRACTICE_QUESTION_ASSISTANCE_TYPES: Record<string, string> = {
+  structure: 'How to structure the answer',
+  points: 'What points/content to cover',
+  terminology: 'Unfamiliar terminology in the question',
+  markscheme: 'What the mark scheme is really asking for',
+};
+
+export async function generateAssistance(userId: string, questionId: string, assistanceTypeKeys: string[]): Promise<{ assistance: string }> {
+  const labels = (assistanceTypeKeys || []).map((k) => PRACTICE_QUESTION_ASSISTANCE_TYPES[k]).filter(Boolean);
+  if (!labels.length) throw new Error('at least one valid assistance type is required');
+
+  const { data: question, error } = await supabaseAdmin
+    .from('practice_questions')
+    .select('*')
+    .eq('id', questionId)
+    .maybeSingle();
+  if (error) throw error;
+  if (!question) throw new PracticeQuestionNotFoundError();
+
+  const userContent = [
+    `Question (worth ${question.mark_tariff} marks): ${question.question_text}`,
+    `Mark scheme (background only - never quote or closely paraphrase): ${JSON.stringify(question.mark_scheme_json)}`,
+    `Angles of help the student asked for: ${labels.join('; ')}`,
+  ].join('\n\n');
+
+  return callJSON<{ assistance: string }>(PRACTICE_QUESTION_ASSISTANCE_PROMPT, userContent, MODELS.simpleQuestion, 0.4, userId);
 }

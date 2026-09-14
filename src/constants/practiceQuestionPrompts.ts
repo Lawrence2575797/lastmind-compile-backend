@@ -66,6 +66,49 @@ Rules:
 Output schema:
 { "explanation": string, "followupQuestion": string, "followupMarkScheme": string }`;
 
+// Generates a genuine full-marks model answer for a practice question,
+// then (see practiceQuestionService.ts's generateModelAnswer) that SAME
+// answer is run back through the ordinary marking prompt above as a
+// self-check, so the student is never shown an answer this app hasn't
+// itself verified actually earns full marks against the real mark
+// scheme - a model answer that quietly falls short of its own claim
+// would be worse than not offering one at all.
+export const PRACTICE_QUESTION_MODEL_ANSWER_PROMPT = `You are an experienced exam writer, producing a genuine model answer to a real exam-style question - one that would be awarded FULL MARKS by a strict examiner marking against the mark scheme given to you. This is for a student to study as an example of what a top answer actually looks like, not a meta-commentary about the mark scheme.
+
+You will be given the question, its total mark tariff, its mark scheme (a "points" or "levels" structure), any component groups its marks are split across, and general notes on how this subject/qualification/exam board structures its marking.
+
+Rules:
+1. Write the answer itself, in the voice and format a real student would actually write in an exam - never describe or list the mark scheme's own criteria back, never say things like "to get full marks you would..." or "this answer demonstrates AO2 by...". It must read as a genuine, complete answer a top student produced under exam conditions.
+2. Cover EVERY criterion a "points" mark scheme awards, or fully meet the top band's descriptor for a "levels" mark scheme - if a component split is given, the answer must earn every group's own full allocation.
+3. Match the length and depth an answer actually worth this many marks would realistically have - don't pad a low-tariff question with excess, and don't under-write a high-tariff one.
+4. Any mathematical notation must be plain-text-typeable (real unicode symbols like √/π/×, "^(...)" for a multi-character exponent or a bare superscript like x² for a simple one, "_(...)" for a subscript, a plain "/" for a fraction) — NEVER LaTeX or a backslash command.
+5. Output ONLY valid JSON, nothing else.
+
+Output schema:
+{ "modelAnswerText": string }`;
+
+// Fixed set of assistance angles a student can pick between (see
+// learn/index.html's PQ_ASSISTANCE_TYPES) - deliberately Socratic, same
+// non-leaking principle UNTRACKED_LESSON_GRADE_PROMPT's own "hint" field
+// already uses elsewhere in this app: real, specific guidance toward
+// what a strong answer needs, never the mark scheme's own wording or
+// anything close enough to substitute for actually answering it. This is
+// coaching, not a shortcut to the Model Answer feature sitting right
+// next to it - a student who wants the actual answer already has that
+// button.
+export const PRACTICE_QUESTION_ASSISTANCE_PROMPT = `You are Cortex, coaching a student on how to approach a real exam-style question they are about to answer themselves - NOT answering it for them. You will be given the question, its mark scheme (background only - never quote or closely paraphrase it), and which specific angles of help the student asked for (one or more of: how to structure the answer, what points/content to cover, unfamiliar terminology in the question, or what the mark scheme is really asking for).
+
+Rules:
+1. Address ONLY the angles the student actually selected, each as its own short paragraph - don't volunteer help they didn't ask for.
+2. Real, specific, actionable guidance for THIS question - never generic exam advice that could apply to any question. Point at the shape/category of what's needed (e.g. "you'll want to cover both the demand-side and supply-side effects here" or "structure this as define, apply to the context, then explain the mechanism step by step") without stating the actual content, example, or wording the mark scheme itself contains.
+3. NEVER state, spell out, quote, or closely paraphrase the mark scheme's own criteria, level descriptors, or expected content - that would make the student's own attempt meaningless. Guide toward the shape of a strong answer, not its content.
+4. Warm, direct, coaching tone - like a good teacher looking over your shoulder before you start writing, not a formal report.
+5. Any mathematical notation must be plain-text-typeable (real unicode symbols like √/π/×, "^(...)" for a multi-character exponent, "_(...)" for a subscript, a plain "/" for a fraction) — never LaTeX.
+6. Output ONLY valid JSON, nothing else.
+
+Output schema:
+{ "assistance": string }`;
+
 // Generates ONE live exam-style question for a real spec-lesson, for the
 // standalone spec-hierarchy Practice Questions page (see
 // specLessonPracticeService.ts) — distinct from the hand-authored bank

@@ -20,7 +20,18 @@ import { generateCorrectionForAttempt } from './examPrepCorrectionService';
 // getStoredLessonPlan: free-typed folder fields shouldn't be able to
 // silently miss this by whitespace/hyphen/case alone.
 const MARKING_STRUCTURE_NOTES: Record<string, string> = {
-  'economics|alevel|edexcel': `Edexcel A-Level Economics marks questions in two different ways depending on the mark tariff. Lower-tariff questions (2, 4, and 8 marks) are points-based: separate marks are set aside for accurate knowledge, applying it to the specific context given, building a logical chain of reasoning, and (for 8-markers) weighing it up — each scored on its own and added together. Higher-tariff questions (10, 12, 15, and 25 marks) are levels-based instead: the whole answer is placed into one of several bands based on how well it demonstrates knowledge, application, analysis, and evaluation TOGETHER, not as separately-scored parts — a genuinely strong point on one side does not lift the answer into a higher band if the rest doesn't match it. Multiple choice (1 mark) questions are simply right or wrong.`,
+  // Was wrong until this fix (a real reported bug): claimed 2/4/8-mark
+  // questions were ALL points-based, but this app's own exam_question_types
+  // row for the 8-mark type ("explain_8", command word "Analyse") is
+  // mark_scheme_type "levels", not "points" - the note contradicted the
+  // actual data every 8-mark question in this app is generated/marked
+  // against. Corrected per explicit instruction: a strong Edexcel 8-mark
+  // "Analyse" answer needs two distinct paragraphs - a developed chain of
+  // analysis, THEN a separate short evaluative paragraph (a "however"/
+  // counter-consideration or a brief judgement) - an answer that only
+  // analyses, with no evaluative element at all, caps out below the top
+  // band even with strong AO1/AO2/AO3 content.
+  'economics|alevel|edexcel': `Edexcel A-Level Economics marks questions in two different ways depending on the mark tariff. Lower-tariff questions (2 and 4 marks) are points-based: separate marks are set aside for accurate knowledge, applying it to the specific context given, and building a logical chain of reasoning — each scored on its own and added together. 8-mark and above questions ("Analyse"/"Assess"/"Evaluate") are levels-based instead: the whole answer is placed into one of several bands based on how well it demonstrates knowledge, application, analysis, and evaluation TOGETHER, not as separately-scored parts — a genuinely strong point on one side does not lift the answer into a higher band if the rest doesn't match it. Specifically at 8 marks ("Analyse"): the strongest answers are written as TWO distinct paragraphs - a developed chain of analysis (the mechanism, step by step, in context), followed by a genuinely separate short evaluative paragraph (a counter-consideration, a "however", a judgement on the extent/likelihood/significance of the effect) - an answer that only analyses, with no evaluative element at all, cannot reach the top band regardless of how strong the analysis itself is. Multiple choice (1 mark) questions are simply right or wrong.`,
   'psychology|alevel|edexcel': `Edexcel A-Level Psychology marks every question against three assessment objectives: AO1 (knowledge and understanding of theories, studies and concepts), AO2 (application of that knowledge to a specific scenario or piece of evidence), and AO3 (analysis, evaluation, and judgement, including strengths and limitations). Short questions (1-6 marks) are points-based: each named AO is scored on its own, often as an "identify one mark, then justify/explain for a second mark" pattern. Extended-writing questions (8, 12, 16, and 20 marks) are levels-based instead: the whole answer is placed into one of several bands based on how well it blends the required AOs together, not scored as separately-added parts — and on the biggest essays (16 and 20 marks), the mark scheme explicitly caps how many marks pure knowledge (AO1) can contribute, since evaluation (AO3) carries the larger share and must dominate a top-band answer. Multiple choice (1 mark) questions are simply right or wrong.`,
   'economics|alevel|aqa': `AQA A-Level Economics marks against four assessment objectives blended together — AO1 (knowledge), AO2 (application), AO3 (analysis), and AO4 (evaluation) — but, unlike some other exam boards, AQA's own mark schemes never split a question's marks into separate named AO amounts; every level descriptor is written as ONE holistic paragraph judged as a whole, with more weight given to analysis and evaluation than to knowledge and application at every tariff. Short "calculate/identify" questions (2 marks) are simple points-based marking. "Explain, using the data" questions (4 marks) use a small banded scale rather than added-up points. "Explain how/why" questions (9 and 15 marks) are levels-based but require NO evaluation at all — a good answer stops at well-developed analysis. Only the biggest essays (25 marks) require genuine evaluation and a supported judgement, and only then does it become the dominant skill being rewarded. Multiple choice (1 mark) questions are simply right or wrong.`,
 };
@@ -452,11 +463,19 @@ export async function generateAssistance(userId: string, questionId: string, ass
   if (error) throw error;
   if (!question) throw new PracticeQuestionNotFoundError();
 
+  // Real reported bug: this call was missing getMarkingStructureNotes
+  // entirely (submitPracticeAnswer and generateModelAnswer both already
+  // included it) - "how to structure the answer" advice with no idea
+  // this exam board/tariff even HAS a real structural requirement (e.g.
+  // Edexcel's 8-mark "two paragraphs, analysis then evaluation" bar) had
+  // nothing to draw that from.
+  const structureNotes = getMarkingStructureNotes(question.subject as string, question.qualification as string, (question.exam_board as string) || '');
   const userContent = [
     `Question (worth ${question.mark_tariff} marks): ${question.question_text}`,
     `Mark scheme (background only - never quote or closely paraphrase): ${JSON.stringify(question.mark_scheme_json)}`,
+    structureNotes ? `General marking structure for this subject/qualification/exam board - use this to give REAL structural advice (e.g. how many paragraphs, what each must contain), not generic tips: ${structureNotes}` : '',
     `Angles of help the student asked for: ${labels.join('; ')}`,
-  ].join('\n\n');
+  ].filter(Boolean).join('\n\n');
 
   return callJSON<{ assistance: string }>(PRACTICE_QUESTION_ASSISTANCE_PROMPT, userContent, MODELS.simpleQuestion, 0.4, userId);
 }

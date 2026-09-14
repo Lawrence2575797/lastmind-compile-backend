@@ -15,7 +15,7 @@ import { supabaseAdmin } from './supabaseAdmin';
 import { callClaudeJSON, MODELS } from './claudeClient';
 import { parseModelJson } from './jsonParsing';
 import { selectAllRows, selectRowsByIdChunked } from './supabasePagination';
-import { resolveEdgeForReview, linkIntegrationConceptId } from './nodeReviewService';
+import { resolveEdgeForReview } from './nodeReviewService';
 import { getSpecMicrotopics, getSubtopicThemeMap, fallbackThemeName } from './chainService';
 import { listUserFolders } from './folderSyncService';
 import { resolveSubjectTriple } from './subjectResolution';
@@ -482,8 +482,14 @@ export async function getOrComputeSubtopicOrder(
 // separate subject-level list) - a link to a target that isn't itself
 // encoded yet doesn't appear at all, since nothing could have been tested
 // for it (same qualifying-link rule the node review itself already
-// enforces); an unlocked one is playable, a not-yet-unlocked one still
-// shows locked (see the frontend's own handling).
+// enforces). Every link that DOES appear here is already unlocked - by
+// explicit product decision, a link's notes need only both endpoint
+// concepts having their own lesson encoded (the .filter() below already
+// guarantees that for anything in this list), not the separate,
+// FSRS-scheduled qualifying-link review session ever having been opened.
+// That review can legitimately sit days out; gating notes behind it was
+// real friction for no real benefit, since the note is compiled from the
+// same explanation either lesson already showed in full.
 export async function getNotesIndexForUser(userId: string): Promise<{ subjects: NotesIndexSubject[] }> {
   const { data: reviewRows, error: reviewError } = await supabaseAdmin
     .from('concept_reviews')
@@ -531,13 +537,6 @@ export async function getNotesIndexForUser(userId: string): Promise<{ subjects: 
   }
   if (!subjectTriples.size) return { subjects: [] };
 
-  const { data: unlockedRows, error: unlockedError } = await supabaseAdmin
-    .from('knowledge_map_edge_notes_unlocked')
-    .select('edge_id')
-    .eq('user_id', userId);
-  if (unlockedError) throw unlockedError;
-  const unlockedEdgeIds = new Set((unlockedRows || []).map((r) => r.edge_id as string));
-
   const subjects: NotesIndexSubject[] = [];
   for (const triple of subjectTriples.values()) {
     // Case-insensitive - subject/qualification/examBoard are free text
@@ -569,43 +568,9 @@ export async function getNotesIndexForUser(userId: string): Promise<{ subjects: 
     // `hasNotes` on a node is just "has this student encoded it" now - a
     // note is always available the moment the underlying lesson content
     // is (see getNodeNoteBaseline), with no separate compiled-notes
-    // existence to track any more.
-
-    // `knowledge_map_edge_notes_unlocked` is now written the moment a
-    // student is first SHOWN this link's own bridge explanation (see
-    // markEdgeExplanationSeen, called from /node-review/integration/start
-    // on isFirstAttempt) - not gated on ever passing the question, since
-    // the note is compiled from that same explanation, already shown in
-    // full either way. durablyUnlockedEdgeIds below is a fallback for a
-    // link a student passed before this write existed (or from a session
-    // that ended before reaching that step) - integration never fails any
-    // more (wrong answers retry, only a genuine correct pass is recorded),
-    // so the row's mere existence there still safely implies the
-    // explanation was seen too.
-    const candidateEdges = allEdges.filter((e) => {
-      const from = nodeById.get(e.from_node_id);
-      const to = nodeById.get(e.to_node_id);
-      return from && to && encodedConceptIds.has(to.concept_id);
-    });
-    const edgeConceptIdPairs = candidateEdges.map((e) => {
-      const from = nodeById.get(e.from_node_id)!;
-      const to = nodeById.get(e.to_node_id)!;
-      return { edgeId: e.id, integrationId: linkIntegrationConceptId(from.concept_id, to.concept_id) };
-    });
-    const allLinkConceptIds = Array.from(new Set(edgeConceptIdPairs.map((p) => p.integrationId)));
-    const coveredRows = allLinkConceptIds.length
-      ? await selectRowsByIdChunked<{ concept_id: string }>(
-          'concept_reviews',
-          'concept_id',
-          'concept_id',
-          allLinkConceptIds,
-          (q) => q.eq('user_id', userId)
-        )
-      : [];
-    const everCoveredConceptIds = new Set(coveredRows.map((r) => r.concept_id));
-    const durablyUnlockedEdgeIds = new Set(
-      edgeConceptIdPairs.filter((p) => everCoveredConceptIds.has(p.integrationId)).map((p) => p.edgeId)
-    );
+    // existence to track any more. A link's notes follow the identical
+    // rule - see buildNode's own links mapping below, which is where that
+    // now actually gets decided (both endpoints encoded, nothing else).
 
     const themeMap = await getSubtopicThemeMap(triple.subject, triple.qualification, triple.examBoard);
 
@@ -645,7 +610,12 @@ export async function getNotesIndexForUser(userId: string): Promise<{ subjects: 
         })
         .map((e) => {
           const toNode = nodeById.get(e.to_node_id)!;
-          return { toNodeId: toNode.id, toLabel: toNode.label, unlocked: unlockedEdgeIds.has(e.id) || durablyUnlockedEdgeIds.has(e.id) };
+          // Always true - the .filter() just above already requires the
+          // target to be encoded, and the node this whole list belongs to
+          // is only ever built for an already-encoded source (see
+          // selectNotesNode's own early return in learn/index.html). Both
+          // endpoints encoded is the entire rule now.
+          return { toNodeId: toNode.id, toLabel: toNode.label, unlocked: true };
         }),
     });
 

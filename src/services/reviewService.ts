@@ -214,9 +214,19 @@ async function scheduleImmediateRecall(userId: string, conceptId: string): Promi
       delayMinutes = nextRecallDelayMinutes(1, dc.difficulty, dc.capability, tuning);
     }
     const dueAt = new Date(Date.now() + delayMinutes * 60 * 1000).toISOString();
+    // Upsert on the immediate_recall_schedule_user_concept_recall_unique
+    // constraint (user_id, concept_id, recall_number) - a plain insert
+    // here let two identical rows through on any double-fire (a network
+    // retry, a race between two callers both reading previousRow as null),
+    // a real reported bug: the same recall question showing up twice.
+    // ignoreDuplicates rather than merge - a second call for the same
+    // (user, concept, 1) is the exact same event, nothing to update.
     const { error } = await supabaseAdmin
       .from('immediate_recall_schedule')
-      .insert({ user_id: userId, concept_id: conceptId, due_at: dueAt, recall_number: 1, target_recalls: targetRecalls });
+      .upsert(
+        { user_id: userId, concept_id: conceptId, due_at: dueAt, recall_number: 1, target_recalls: targetRecalls },
+        { onConflict: 'user_id,concept_id,recall_number', ignoreDuplicates: true }
+      );
     if (error) throw error;
   } catch (err) {
     console.error('Immediate recall scheduling failed (non-fatal):', err);

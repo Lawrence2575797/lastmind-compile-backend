@@ -983,9 +983,15 @@ router.post('/immediate-recalls/:id/submit', requireAuth, costlyEndpointLimiter,
           const tuning = await getOrCreateUserRecallTuning(userId);
           const delayMinutes = nextRecallDelayMinutes(recallNumber + 1, dc.difficulty, dc.capability, tuning);
           const dueAt = new Date(Date.now() + delayMinutes * 60 * 1000).toISOString();
-          const { error: nextError } = await supabaseAdmin.from('immediate_recall_schedule').insert({
-            user_id: userId, concept_id: row.concept_id, due_at: dueAt, recall_number: recallNumber + 1, target_recalls: targetRecalls,
-          });
+          // Upsert (see reviewService.ts's scheduleImmediateRecall for the
+          // full reasoning) - a duplicate submit of this same recall
+          // (resolved is checked above, but a genuine race between two
+          // concurrent submits could both pass that check before either
+          // writes) must not schedule two copies of the next cascade step.
+          const { error: nextError } = await supabaseAdmin.from('immediate_recall_schedule').upsert(
+            { user_id: userId, concept_id: row.concept_id, due_at: dueAt, recall_number: recallNumber + 1, target_recalls: targetRecalls },
+            { onConflict: 'user_id,concept_id,recall_number', ignoreDuplicates: true }
+          );
           if (nextError) console.error('Scheduling next recall in cascade failed (non-fatal):', nextError);
         }
       }

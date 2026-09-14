@@ -1,6 +1,6 @@
 import { callClaudeJSON, callClaudeJSONWithImages, MODELS } from './claudeClient';
 import { getOrGenerateChain, customContextDigest, normalizeConceptKey } from './chainService';
-import { gradeAndRecordReview, gradeCorrectness, getReviewedConceptIds, hasAnySubjectHistory, FsrsRatingKey } from './reviewService';
+import { gradeAndRecordReview, gradeCorrectness, getReviewedConceptIds, hasAnySubjectHistory, recordFirstTeachingSignals, FsrsRatingKey } from './reviewService';
 import { linkIntegrationConceptId } from './nodeReviewService';
 import { searchWikimediaImages, fetchImageAsBase64 } from './wikimediaService';
 import { supabaseAdmin } from './supabaseAdmin';
@@ -1788,6 +1788,7 @@ export async function submitEncodingAnswer(userId: string, state: EncodingLesson
       const index = coreStepScores.reduce((sum, s) => sum + s, 0) / coreStepScores.length;
       const rating: FsrsRatingKey = index >= 0.8 ? 'good' : index >= 0.5 ? 'hard' : 'again';
       const { previousRow, newState: fsrsRow } = await gradeAndRecordReview(userId, state.conceptKey, rating);
+      if (!previousRow) await recordFirstTeachingSignals(userId, state.conceptKey);
       fsrsUpdate = {
         rating,
         previous: previousRow

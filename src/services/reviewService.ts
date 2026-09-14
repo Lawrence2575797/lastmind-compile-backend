@@ -187,20 +187,6 @@ export async function gradeAndRecordReview(
     console.error('LastMind: failed to write review_log row (non-fatal, grading itself still succeeded).', logError);
   }
 
-  // The Bayesian recall model's two entry points - both fire only on a
-  // concept's genuinely first-ever grade (existingRow was null before
-  // this upsert), for EITHER a node's own encoding OR an edge's first
-  // integration session (this function is the shared hook for both -
-  // conceptId is either a plain node concept_id or a
-  // fromConceptId->toConceptId::integration one). Every later review is
-  // a real spaced-repetition event already covered by concept_reviews'
-  // normal FSRS due date, not a same-session immediate recall or a
-  // fresh Day-1 check.
-  if (!existingRow) {
-    await scheduleImmediateRecall(userId, conceptId);
-    await scheduleDay1Check(userId, conceptId);
-  }
-
   return { previousRow: existingRow, newState: rowFields, spacedSuccessCount: spacedSuccess.spaced_success_count };
 }
 
@@ -235,6 +221,31 @@ async function scheduleImmediateRecall(userId: string, conceptId: string): Promi
   } catch (err) {
     console.error('Immediate recall scheduling failed (non-fatal):', err);
   }
+}
+
+// The Bayesian recall model's two entry points - a concept's immediate-
+// recall cascade (the same-session +2-minute check onward) and its Day-1
+// check. Deliberately NOT wired into gradeAndRecordReview above, even
+// though both only ever make sense on a concept's genuinely first-ever
+// grade (previousRow === null) - gradeAndRecordReview is the shared
+// low-level FSRS hook for every kind of grading event in the app
+// (diagnostics, "Verify instead", prerequisite re-checks, practice
+// questions, exam-prep corrections, mechanistic-engine drill-downs...),
+// most of which can easily produce a concept's first-ever grade WITHOUT
+// the student ever having sat through a real lesson for it - e.g. a
+// prereq-check silently testing an earlier foundational concept while
+// diagnosing readiness for a different lesson entirely. Auto-firing on
+// every first-ever grade regardless of source was a real bug: a Day-1
+// check would show up next login for a concept the student never
+// consciously encoded. Call this explicitly instead, ONLY from the two
+// genuine "the student was just taught this for the first time" call
+// sites - encodingLessonService's lesson-completion grade, and
+// node-review/integration/submit's first-pass grade - each already
+// guarded by `!previousRow` from gradeAndRecordReview/gradeCorrectness's
+// own return value, so no extra DB read is needed to re-derive it.
+export async function recordFirstTeachingSignals(userId: string, conceptId: string): Promise<void> {
+  await scheduleImmediateRecall(userId, conceptId);
+  await scheduleDay1Check(userId, conceptId);
 }
 
 // Reserved for the CORRECT side of a correctness-driven grade — an

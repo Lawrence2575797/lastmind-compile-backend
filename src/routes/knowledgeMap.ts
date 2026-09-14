@@ -16,7 +16,7 @@ import {
   GapResult,
 } from '../services/chainDiagnosticService';
 import { gradeDiagramAnswer, DiagramSpec, DiagramAnswerSubmission } from '../services/diagramGradingService';
-import { gradeCorrectness, DURABLE_RELEARNING_CRITERION, ReviewNotDueError } from '../services/reviewService';
+import { gradeCorrectness, recordFirstTeachingSignals, DURABLE_RELEARNING_CRITERION, ReviewNotDueError } from '../services/reviewService';
 import { callClaudeJSON, MODELS } from '../services/claudeClient';
 import { parseCorrectFeedbackJson, parseModelJson } from '../services/jsonParsing';
 import { KNOWLEDGE_MAP_ANSWER_CHECK_PROMPT, DAY1_CHECK_ANSWER_PROMPT, FILL_BLANK_LENIENCY_PROMPT, UNTRACKED_LESSON_GRADE_PROMPT } from '../constants/knowledgeMapAnswerCheckPrompt';
@@ -477,6 +477,15 @@ router.post('/knowledge-map-v2/diagram-question/submit', requireAuth, costlyEndp
       return res.json({ ...result, retryable: true });
     }
     const graded = await gradeCorrectness(userId, conceptId!, result.correct, questionType === 'practice' ? (Number(retryCount) || 0) : 0);
+    // A concept's genuinely first-ever grade only means "just taught"
+    // when it came through practice (node encoding) or integration (a
+    // link's first-ever session, prompted with its own teaching content) -
+    // never transfer, which is a softer preliminary check. See
+    // recordFirstTeachingSignals' own comment for why this must be an
+    // explicit call here rather than automatic inside gradeAndRecordReview.
+    if (!graded.previousRow && (questionType === 'practice' || questionType === 'integration')) {
+      await recordFirstTeachingSignals(userId, conceptId!);
+    }
     // The frontend needs the fresh due date the moment this grades, not
     // only after a later /schedule refetch (e.g. on returning to the
     // dashboard) — see reviewService.ts's cardToRowFields for the fields.
@@ -617,6 +626,9 @@ router.post('/knowledge-map-v2/text-question/submit', requireAuth, costlyEndpoin
         return res.json({ correct, feedback, perBlankCorrect, retryable: true });
       }
       const graded = await gradeCorrectness(userId, conceptId!, correct, Number(retryCount) || 0);
+      // Blanks submissions are always questionType 'practice' (see the
+      // guard above) - see the identical comment on diagram-question/submit.
+      if (!graded.previousRow) await recordFirstTeachingSignals(userId, conceptId!);
       return res.json({ correct, feedback, perBlankCorrect, schedule: scheduleWithMastery(conceptId!, graded) });
     }
 
@@ -645,6 +657,9 @@ router.post('/knowledge-map-v2/text-question/submit', requireAuth, costlyEndpoin
     }
     const graded = await gradeCorrectness(userId, conceptId!, correct, questionType === 'practice' ? (Number(retryCount) || 0) : 0);
     // See the identical comment on diagram-question/submit above.
+    if (!graded.previousRow && (questionType === 'practice' || questionType === 'integration')) {
+      await recordFirstTeachingSignals(userId, conceptId!);
+    }
     res.json({ correct, feedback, schedule: scheduleWithMastery(conceptId!, graded) });
   } catch (err) {
     console.error('Text question grading failed:', err);
@@ -1425,6 +1440,10 @@ router.post('/knowledge-map-v2/node-review/integration/submit', requireAuth, cos
 
     const conceptId = linkIntegrationConceptId(fromNode.concept_id as string, toNode.concept_id as string);
     const result = await gradeCorrectness(userId, conceptId, true, Number(retryCount) || 0);
+    // This is the "prompted first attempt" integration session referenced
+    // in the node-review comment above - see recordFirstTeachingSignals'
+    // own comment for why this must be an explicit call here.
+    if (!result.previousRow) await recordFirstTeachingSignals(userId, conceptId);
     await recordPairwiseIntegrationOutcome(userId, fromNode.concept_id as string, toNode.concept_id as string, (Number(retryCount) || 0) === 0);
     res.json({ correct: true, feedback: graded.feedback, schedule: scheduleWithMastery(conceptId, result) });
   } catch (err) {

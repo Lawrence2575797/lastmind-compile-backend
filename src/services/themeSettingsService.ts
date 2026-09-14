@@ -20,7 +20,10 @@ export interface ThemeSettings {
 // here (not just client-side) so a malformed/stale value can't get
 // persisted and then silently render as nothing on the next load -
 // same defensive stance as HEX_RE below for the colour fields.
-const IMAGE_BG_TEXTURES = ['havnstad-village', 'wild-west-town', 'medieval-castle', 'riverside-city', 'space-station'];
+const IMAGE_BG_TEXTURES = [
+  'havnstad-village', 'wild-west-town', 'medieval-castle', 'riverside-city', 'space-station',
+  'tokyo-night', 'cosy-cafe', 'samurai-japan', 'scholars-desk', 'ancient-rome', 'sakura-garden',
+];
 const VALID_BG_TEXTURES = ['plain', 'wood', ...IMAGE_BG_TEXTURES];
 
 const DEFAULTS: ThemeSettings = {

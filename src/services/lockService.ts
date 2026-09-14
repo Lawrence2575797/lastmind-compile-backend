@@ -38,6 +38,15 @@ function currentMonthStart(): string {
   return new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), 1)).toISOString().slice(0, 10);
 }
 
+// The one dev/test account this whole app is built and tested against
+// (austinjwood095@gmail.com) - explicitly granted unlimited Locks. A
+// one-time large balance alone would get silently overwritten back down
+// to a normal tier allotment by the monthly-reset branch below the next
+// time its period_start rolls over; this makes the exemption survive
+// that reset instead of quietly reverting next month.
+const UNLIMITED_LOCKS_USER_IDS = new Set(['1554f85d-95a0-49de-b48a-aa9c8363f7cd']);
+const UNLIMITED_LOCKS_BALANCE = 999_999;
+
 /**
  * Reads a user's current Lock balance, creating their row (with a fresh
  * allotment) on the very first call for a brand-new user, and applying
@@ -64,7 +73,7 @@ export async function getOrCreateLockBalance(userId: string): Promise<LockBalanc
   // (chargeLocksForUsage runs on every Claude call) that just need the
   // already-stored balance.
   if (!existing) {
-    const allotment = monthlyLockAllotmentForTier(await isUserPaid(userId));
+    const allotment = UNLIMITED_LOCKS_USER_IDS.has(userId) ? UNLIMITED_LOCKS_BALANCE : monthlyLockAllotmentForTier(await isUserPaid(userId));
     const { data: created, error: insertError } = await supabaseAdmin
       .from('lock_balances')
       .insert({ user_id: userId, balance: allotment, period_start: monthStart })
@@ -74,8 +83,8 @@ export async function getOrCreateLockBalance(userId: string): Promise<LockBalanc
     return { balance: created.balance };
   }
 
-  if (existing.period_start < monthStart) {
-    const allotment = monthlyLockAllotmentForTier(await isUserPaid(userId));
+  if (existing.period_start < monthStart || (UNLIMITED_LOCKS_USER_IDS.has(userId) && existing.balance < UNLIMITED_LOCKS_BALANCE / 2)) {
+    const allotment = UNLIMITED_LOCKS_USER_IDS.has(userId) ? UNLIMITED_LOCKS_BALANCE : monthlyLockAllotmentForTier(await isUserPaid(userId));
     const { data: reset, error: resetError } = await supabaseAdmin
       .from('lock_balances')
       .update({ balance: allotment, period_start: monthStart, updated_at: new Date().toISOString() })

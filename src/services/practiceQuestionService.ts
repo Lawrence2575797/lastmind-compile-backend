@@ -10,6 +10,7 @@ import { normalizeForPlanMatch } from './chainService';
 import { gradeAndRecordReview, ratingFromMarkRatio } from './reviewService';
 import { resolveSubjectTriple } from './subjectResolution';
 import { generateCorrectionForAttempt } from './examPrepCorrectionService';
+import { gradeDiagramAnswer, DiagramSpec, DiagramAnswerSubmission } from './diagramGradingService';
 
 // The same general "how marks are awarded" explanation shown to the
 // student on the practice-questions page (see MARK_BREAKDOWN_EXPLAINERS
@@ -250,6 +251,34 @@ async function gradeAnswerAgainstMarkScheme(
   let examTechniqueTips: string | null = null;
   let componentMarks: Record<string, number> | null = null;
 
+  // A diagram question is graded deterministically against diagram_spec
+  // (see diagramGradingService.ts's gradeDiagramAnswer) - no AI call, and
+  // no partial credit, same "every element right or it doesn't" reasoning
+  // that file's own DiagramGradingResult comment explains. answerText is
+  // the student's drawn state, JSON-stringified by the frontend exactly
+  // like renderDiagramWidget's own onSubmit already produces it
+  // (curves/shades/labels/arrows with real positions) - the same shape
+  // this function's caller already uses for every other question type's
+  // answerText column, just carrying JSON instead of plain text here.
+  if (question.requires_diagram) {
+    let parsedAnswer: DiagramAnswerSubmission;
+    try {
+      parsedAnswer = JSON.parse(answerText);
+    } catch {
+      return { markAwarded: 0, markTariff, feedback: "That diagram couldn't be read - try submitting again.", conceptualMistakes: null, examTechniqueTips: null, componentMarks: null };
+    }
+    const spec = question.diagram_spec as DiagramSpec;
+    const graded = gradeDiagramAnswer(spec, parsedAnswer);
+    return {
+      markAwarded: graded.correct ? markTariff : 0,
+      markTariff,
+      feedback: graded.feedback,
+      conceptualMistakes: graded.conceptualMistakes,
+      examTechniqueTips: null,
+      componentMarks: null,
+    };
+  }
+
   // A multiple-choice question has one definitively correct option — no
   // AI call needed (or wanted) to grade a lookup. mark_scheme_json for
   // this type is { options: string[], correctIndex: number,
@@ -403,6 +432,15 @@ export interface ModelAnswerResult {
   // app hasn't independently verified actually earns full marks, rather
   // than just trusting the generation prompt's own claim that it does.
   selfCheck: PracticeQuestionMarkingResult;
+  // Only set for a requires_diagram question - the diagram itself IS the
+  // stored diagram_spec (the exact same answer key grading already
+  // checks a real submission against), rendered read-only via the
+  // frontend's renderStaticDiagram. No separate generation/self-check
+  // call needed for this case - the spec is already the verified
+  // correct answer by construction, so "generate a model answer, then
+  // check it's right" would just be checking the answer key against
+  // itself.
+  diagramSpec?: unknown;
 }
 
 // Not persisted anywhere and never touches FSRS - this is a study aid the
@@ -420,6 +458,15 @@ export async function generateModelAnswer(userId: string, questionId: string): P
     .maybeSingle();
   if (error) throw error;
   if (!question) throw new PracticeQuestionNotFoundError();
+
+  if (question.requires_diagram) {
+    const markTariff = question.mark_tariff as number;
+    return {
+      modelAnswerText: (question.answer_structure_advice as string) || 'This diagram, correctly constructed and labelled, earns full marks against the mark scheme.',
+      selfCheck: { markAwarded: markTariff, markTariff, feedback: 'This is the diagram construction the grading key expects.', conceptualMistakes: null, examTechniqueTips: null, componentMarks: null },
+      diagramSpec: question.diagram_spec,
+    };
+  }
 
   const markTariff = question.mark_tariff as number;
   const componentSplit = question.ao_component_split as { groups: ComponentSplitGroup[] } | null;

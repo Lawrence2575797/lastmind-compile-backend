@@ -1,3 +1,37 @@
+import { CURVE_TYPE_LIST } from './diagramSpecPrompts';
+
+// Generates a diagram-drawing practice question from scratch for a spec-
+// lesson concept, for question TYPES that require a diagram (see
+// specLessonPracticeService.ts's generateSpecLessonPracticeQuestion) -
+// distinct from MECHANISTIC_DIAGRAM_SPEC_PROMPT in diagramSpecPrompts.ts,
+// which retrofits a spec onto an ALREADY-WRITTEN question; this one
+// writes the question AND its spec together, since a diagram-type
+// question doesn't exist yet at generation time. Shares the exact same
+// curve vocabulary/contract (CURVE_TYPE_LIST, curves/shades/labels/arrows
+// shape) so both stay interchangeable and gradeDiagramAnswer never needs
+// to know which prompt produced a given spec.
+export const PRACTICE_QUESTION_DIAGRAM_GENERATION_PROMPT = `You write real exam-style DIAGRAM-drawing practice questions for A-Level/GCSE Economics students, grounded in the exact spec-lesson concept given to you - and you decide the diagram's own construction spec (which curves, shifts, shaded region, labels), never actual coordinates - a deterministic geometry engine places and grades those, you only select from a fixed palette.
+
+You will be given: the subject/qualification/exam board, the real spec theme/subtopic/spec-lesson concept this question must be about, the mark tariff, and general marking-structure notes for this subject/board.
+
+Diagrammatic-ness is a property of THIS CONCEPT, not assumed just because the student picked a diagram-type question: some concepts (e.g. scarcity, opportunity cost, the basic economic problem) have no natural single diagram construction task at all. If this concept genuinely has no natural diagram-drawing question, output exactly { "notDiagrammatic": true } and nothing else - do NOT force a contrived diagram onto content that doesn't have one. Only produce a real spec when the concept is naturally tested by constructing/labelling/shading a diagram (e.g. tariffs, a demand/supply shift, elasticity shapes, market failure/externality diagrams, AD/AS).
+
+Available curve types - this is the COMPLETE, FIXED list. "type" must be copied character-for-character from this list (or one of these exact strings with "_shift_left"/"_shift_right" appended for a shifted variant) - NEVER invent a new type string:
+${CURVE_TYPE_LIST.map((t) => `- ${t}`).join('\n')}
+
+Rules:
+1. Output ONLY valid JSON, nothing else.
+2. "questionText": a direct drawing instruction ("Draw a diagram to show...", "On a diagram, illustrate...") - never "describe" or "explain" in words, since the student is shown a drawing canvas, not a text box. Worth exactly the given mark tariff.
+3. "curves": each needs a short id (e.g. "D", "S0", "S1"), a "type" copied EXACTLY from the list above, and — ONLY for a shifted variant — a "baseCurveId" naming which other curve id in THIS SAME list it shifts from.
+4. "shades": at most the shaded regions this question's own construction genuinely calls for (e.g. consumer surplus, deadweight loss) - each needs an id, "boundedBy" as an array of EXACTLY 2 curve ids from "curves" plus exactly ONE of "price-axis"/"quantity-axis", and an "expectedLabel". Omit entirely if none.
+5. "labels": one per curve worth naming (e.g. "D", "S", "S1") - each needs "text" and an "anchor" of the form "curve:<id>", "intersection:<id1>,<id2>", or "price-axis"/"quantity-axis".
+6. "arrows": only where the question specifically calls for marking a directional shift - each needs an id, "near" (same anchor grammar as a label), "direction" ("up"/"down"/"left"/"right"), and a short "description".
+7. Every curve id referenced anywhere (shades/labels/arrows) must actually exist in "curves".
+8. "answerStructureAdvice": 1-2 sentences of real exam-technique guidance for constructing THIS diagram correctly (what to draw first, what the shift/shade actually represents) - null only if there's nothing meaningful to add.
+
+Output schema (when diagrammatic):
+{ "questionText": string, "curves": [ { "id": string, "type": string, "baseCurveId": string | null } ], "shades": [ { "id": string, "boundedBy": [string, string, string], "expectedLabel": string } ], "labels": [ { "text": string, "anchor": string } ], "arrows": [ { "id": string, "near": string, "direction": string, "description": string } ], "answerStructureAdvice": string | null }`;
+
 export const PRACTICE_QUESTION_MARKING_PROMPT = `You are an experienced exam marker, marking a student's answer to a real exam-style question against the mark scheme provided. Mark strictly against what the mark scheme actually rewards — never invent criteria it doesn't contain — but mark fairly and accurately, not harshly or generously. Award full marks without hesitation whenever the answer genuinely merits them, and award low or zero marks just as readily when it doesn't. Your job is accuracy in either direction, not a habitual bias toward caution.
 
 You will be given the question, its total mark tariff, its mark scheme (either a "points" structure — a fixed number of marks per named assessment objective/criterion — or a "levels" structure — a small number of holistic bands, each with a mark range and a descriptor blending multiple objectives, where the mark awarded is a best-fit judgement within the reached level's range, not a sum of separately-scored criteria), general notes on how this subject/qualification/exam board structures its marking (background context to apply, not to recite back), and the student's answer.

@@ -1,7 +1,7 @@
 import { supabaseAdmin } from './supabaseAdmin';
 import { MODELS } from './claudeClient';
 import { getSpecMicrotopics } from './chainService';
-import { PRACTICE_QUESTION_GENERATION_PROMPT } from '../constants/practiceQuestionPrompts';
+import { PRACTICE_QUESTION_GENERATION_PROMPT, PRACTICE_QUESTION_DIAGRAM_GENERATION_PROMPT } from '../constants/practiceQuestionPrompts';
 import { getMarkingStructureNotes, callJSON, PracticeQuestionSummary } from './practiceQuestionService';
 
 const MAX_PICKS_PER_SPEC_LESSON = 3;
@@ -28,6 +28,18 @@ export class TypeAlreadyPickedError extends Error {
   constructor() {
     super('this question type has already been picked for this spec-lesson');
     this.name = 'TypeAlreadyPickedError';
+  }
+}
+// Thrown when a requires_diagram question type was picked for a concept
+// that genuinely has no natural diagram-drawing question (see
+// PRACTICE_QUESTION_DIAGRAM_GENERATION_PROMPT's own "notDiagrammatic"
+// rule) - e.g. scarcity, opportunity cost. The pick is never consumed
+// (see generateSpecLessonPracticeQuestion's own handling) so the student
+// can freely try a different question type instead.
+export class DiagramNotApplicableError extends Error {
+  constructor() {
+    super('this concept has no natural diagram question - try a different question type');
+    this.name = 'DiagramNotApplicableError';
   }
 }
 
@@ -225,6 +237,19 @@ interface GenerationResult {
   componentSplit: unknown;
 }
 
+// PRACTICE_QUESTION_DIAGRAM_GENERATION_PROMPT's own output shape - see
+// its own comment for why this is a separate prompt/call from the plain
+// text-question generation above.
+interface DiagramGenerationResult {
+  notDiagrammatic?: true;
+  questionText?: string;
+  curves?: unknown[];
+  shades?: unknown[];
+  labels?: unknown[];
+  arrows?: unknown[];
+  answerStructureAdvice?: string | null;
+}
+
 function findMicrotopicPoints(microtopics: Awaited<ReturnType<typeof getSpecMicrotopics>>, subtopic: string): string[] | null {
   if (!microtopics) return null;
   const wanted = subtopic.trim().toLowerCase();
@@ -277,9 +302,49 @@ export async function generateSpecLessonPracticeQuestion(userId: string, concept
     structureNotes ? `General marking-structure notes for this subject/board (background context — apply it, don't recite it back): ${structureNotes}` : '',
   ].filter(Boolean).join('\n\n');
 
-  const result = await callJSON<GenerationResult>(PRACTICE_QUESTION_GENERATION_PROMPT, userContent, MODELS.chainGenerationSimple, 0.4, userId);
+  let questionText: string;
+  let markSchemeType: string;
+  let markSchemeJson: Record<string, unknown>;
+  let answerStructureAdvice: string | null;
+  let componentSplit: unknown;
+  let diagramSpec: Record<string, unknown> | null = null;
 
-  const componentSplit = questionType.component_split ?? result.componentSplit ?? null;
+  if (questionType.requires_diagram) {
+    // Own prompt/call - see PRACTICE_QUESTION_DIAGRAM_GENERATION_PROMPT's
+    // own comment. notDiagrammatic is a genuine, expected outcome (e.g.
+    // scarcity has no natural diagram) - thrown BEFORE anything is
+    // inserted, so this pick is never consumed (see
+    // DiagramNotApplicableError's own comment).
+    const diagramUserContent = [
+      `Subject: ${specLesson.subject} | Qualification: ${specLesson.qualification} | Exam board: ${examBoard || 'n/a'}`,
+      `Theme: ${specLesson.theme}`,
+      `Subtopic: ${specLesson.subtopic}`,
+      `Spec-lesson concept this diagram question must be about: ${specLesson.concept}`,
+      `Mark tariff: ${questionType.mark_tariff}`,
+      structureNotes ? `General marking-structure notes for this subject/board: ${structureNotes}` : '',
+    ].filter(Boolean).join('\n\n');
+    const diagramResult = await callJSON<DiagramGenerationResult>(PRACTICE_QUESTION_DIAGRAM_GENERATION_PROMPT, diagramUserContent, MODELS.chainGenerationSimple, 0.4, userId);
+    if (diagramResult.notDiagrammatic || !diagramResult.questionText) throw new DiagramNotApplicableError();
+
+    questionText = diagramResult.questionText;
+    diagramSpec = {
+      curves: diagramResult.curves || [],
+      shades: diagramResult.shades || [],
+      labels: diagramResult.labels || [],
+      arrows: diagramResult.arrows || [],
+    };
+    markSchemeType = questionType.mark_scheme_type;
+    markSchemeJson = diagramSpec; // grading itself never reads this for a diagram question (see gradeAnswerAgainstMarkScheme) - stored for consistency/inspection only
+    answerStructureAdvice = diagramResult.answerStructureAdvice ?? null;
+    componentSplit = questionType.component_split ?? null;
+  } else {
+    const result = await callJSON<GenerationResult>(PRACTICE_QUESTION_GENERATION_PROMPT, userContent, MODELS.chainGenerationSimple, 0.4, userId);
+    questionText = result.questionText;
+    markSchemeType = result.markSchemeType;
+    markSchemeJson = result.markSchemeJson;
+    answerStructureAdvice = result.answerStructureAdvice;
+    componentSplit = questionType.component_split ?? result.componentSplit ?? null;
+  }
 
   const { data: inserted, error: insertError } = await supabaseAdmin
     .from('practice_questions')
@@ -290,12 +355,13 @@ export async function generateSpecLessonPracticeQuestion(userId: string, concept
       concept: specLesson.concept,
       qualification: specLesson.qualification,
       exam_board: examBoard || null,
-      question_text: result.questionText,
+      question_text: questionText,
       mark_tariff: questionType.mark_tariff,
       requires_diagram: questionType.requires_diagram,
-      mark_scheme_type: result.markSchemeType,
-      mark_scheme_json: result.markSchemeJson,
-      answer_structure_advice: result.answerStructureAdvice,
+      mark_scheme_type: markSchemeType,
+      mark_scheme_json: markSchemeJson,
+      diagram_spec: diagramSpec,
+      answer_structure_advice: answerStructureAdvice,
       requires_maths_keyboard: questionType.requires_maths_keyboard,
       source: 'generated_live',
       generated_for_user_id: userId,
@@ -328,13 +394,13 @@ export async function generateSpecLessonPracticeQuestion(userId: string, concept
 
   return {
     id: inserted.id as string,
-    questionText: result.questionText,
+    questionText: questionText,
     markTariff: questionType.mark_tariff,
     requiresDiagram: questionType.requires_diagram,
     requiresMathsKeyboard: questionType.requires_maths_keyboard,
-    answerStructureAdvice: result.answerStructureAdvice,
-    isMultipleChoice: result.markSchemeType === 'multiple_choice',
-    options: result.markSchemeType === 'multiple_choice' ? ((result.markSchemeJson as { options: string[] }).options ?? null) : null,
+    answerStructureAdvice: answerStructureAdvice,
+    isMultipleChoice: markSchemeType === 'multiple_choice',
+    options: markSchemeType === 'multiple_choice' ? ((markSchemeJson as { options: string[] }).options ?? null) : null,
     aoComponentSplit: componentSplit,
     priorAttempt: null,
   };

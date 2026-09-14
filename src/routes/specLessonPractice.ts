@@ -8,6 +8,7 @@ import {
   QuestionTypeNotFoundError,
   PicksExhaustedError,
   TypeAlreadyPickedError,
+  DiagramNotApplicableError,
 } from '../services/specLessonPracticeService';
 
 const router = Router();
@@ -54,6 +55,9 @@ router.post('/spec-lesson-practice/:conceptId/generate', costlyEndpointLimiter, 
     }
     if (err instanceof TypeAlreadyPickedError) {
       return res.status(409).json({ error: 'this question type has already been picked for this lesson', code: 'TYPE_ALREADY_PICKED' });
+    }
+    if (err instanceof DiagramNotApplicableError) {
+      return res.status(422).json({ error: err.message, code: 'DIAGRAM_NOT_APPLICABLE' });
     }
     console.error('Spec lesson practice question generation failed:', err);
     res.status(500).json({ error: 'could not generate this question' });

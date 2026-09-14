@@ -362,8 +362,12 @@ export async function getReviewedConceptIds(userId: string, conceptIds: string[]
 // stability figure AND at least one prior rep — a single lucky first
 // review can get an artificially confident population-default stability
 // estimate, so stability alone isn't trusted on its own.
-const MASTERY_STABILITY_THRESHOLD = 30; // days — a real, deliberately conservative bar
-const MIN_REPS_FOR_TRUST = 2; // guards against a single lucky first review
+// Exported so weeklyProgressReportService.ts's "What You Mastered" section
+// applies the exact same bar this function does, rather than a second
+// copy that could silently drift from what the rest of the app actually
+// means by "mastered".
+export const MASTERY_STABILITY_THRESHOLD = 30; // days — a real, deliberately conservative bar
+export const MIN_REPS_FOR_TRUST = 2; // guards against a single lucky first review
 
 /**
  * Checks whether a concept already has enough real review history to skip

@@ -40,6 +40,7 @@ import objectiveCourseRouter from './routes/objectiveCourse';
 import ttsRouter from './routes/tts';
 import tutoringSlotsRouter from './routes/tutoringSlots';
 import encouragementRouter from './routes/encouragement';
+import weeklyProgressReportRouter from './routes/weeklyProgressReport';
 import { globalRateLimiter } from './services/rateLimiters';
 import { startRetentionScheduler } from './services/retentionService';
 
@@ -97,6 +98,7 @@ app.use('/', objectiveCourseRouter);
 app.use('/', ttsRouter);
 app.use('/', tutoringSlotsRouter);
 app.use('/', encouragementRouter);
+app.use('/', weeklyProgressReportRouter);
 
 app.get('/health', (_req, res) => res.send('ok'));
 

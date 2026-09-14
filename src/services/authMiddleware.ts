@@ -77,17 +77,25 @@ export async function isUserPaid(userId: string): Promise<boolean> {
   return !!data && data.status === 'active';
 }
 
-// Peer tutoring is a paid-tier-only feature — gates a route entirely,
-// unlike isUserPaid above. Must run AFTER requireAuth — depends on
-// req.userId already being set.
+// TEMPORARY: every premium-gated route left open to every account while
+// testers are active, per explicit instruction — no manual per-tester
+// premium grant, without touching the Locks economy at all. Deliberately
+// NOT done by changing isUserPaid() itself (that would also inflate the
+// monthly Locks allotment every route above ultimately meters against —
+// see lockService.ts's monthlyLockAllotmentForTier) - only this gate is
+// bypassed, so a free account still gets the free tier's own Locks
+// amount, exactly as asked. Revert by restoring the body below (kept
+// commented, not deleted, specifically so this is a one-line flip back
+// rather than reconstructing it from memory).
 export async function requirePaidTier(req: Request, res: Response, next: NextFunction) {
-  try {
-    if (!(await isUserPaid(req.userId as string))) {
-      return res.status(403).json({ error: 'this feature requires LastMind Premium' });
-    }
-    next();
-  } catch (err) {
-    console.error('Paid-tier check failed:', err);
-    res.status(500).json({ error: 'could not verify your subscription' });
-  }
+  next();
+  // try {
+  //   if (!(await isUserPaid(req.userId as string))) {
+  //     return res.status(403).json({ error: 'this feature requires LastMind Premium' });
+  //   }
+  //   next();
+  // } catch (err) {
+  //   console.error('Paid-tier check failed:', err);
+  //   res.status(500).json({ error: 'could not verify your subscription' });
+  // }
 }

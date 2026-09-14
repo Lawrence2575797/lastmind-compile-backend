@@ -207,13 +207,17 @@ function baselineIntervalMinutes(recallNumber: number): number {
 
 // t = Tb - gamma(D - C) - harder-than-capability concepts get a SHORTER
 // wait (recalled sooner, while more likely to be forgotten); easier
-// concepts get a LONGER wait. Clamped to a sane floor (30 seconds) so a
-// large gamma/difficulty-gap combination can never schedule a recall in
-// the past or immediately re-fire.
+// concepts get a LONGER wait. Floor raised from 0.5 to 1.5 minutes - a
+// real reported bug: a hard-relative-to-capability concept with a large
+// enough gamma could clamp all the way to 30 seconds, which isn't really
+// testing RECALL any more (memory hasn't had time to leave working
+// memory) - it just felt like the check fired instantly. Still
+// meaningfully shorter than the 2-minute baseline for genuinely hard
+// content, same directional design, just not down at "immediately".
 export function nextRecallDelayMinutes(recallNumber: number, difficulty: number, capability: number, tuning: UserRecallTuning): number {
   const tb = baselineIntervalMinutes(recallNumber);
   const t = tb - tuning.gamma * (difficulty - capability);
-  return Math.max(0.5, t);
+  return Math.max(1.5, t);
 }
 
 // The gamma hill-climbing update, reverse-engineered from the worked

@@ -787,8 +787,18 @@ router.get('/immediate-recalls/due', requireAuth, syncEndpointLimiter, async (re
     if (!rows || !rows.length) return res.json({ recalls: [] });
 
     const now = Date.now();
-    const missed = rows.filter((r) => now - new Date(r.due_at as string).getTime() > RECALL_GRACE_MS);
-    const stillCatchable = rows.filter((r) => now - new Date(r.due_at as string).getTime() <= RECALL_GRACE_MS);
+    // msSinceDue is NEGATIVE for a recall whose due_at hasn't arrived yet
+    // (the common case - most rows in this table at any moment are
+    // scheduled minutes into the future). stillCatchable used to only
+    // check the upper bound (<= RECALL_GRACE_MS), which a large negative
+    // number always satisfies - a real bug that served every not-yet-due
+    // recall as due immediately, the first time this endpoint was polled
+    // after it was scheduled. The >= 0 check is what actually means "its
+    // moment has arrived": not due yet is neither missed nor catchable,
+    // just left alone until a later poll.
+    const msSinceDue = (r: { due_at: unknown }) => now - new Date(r.due_at as string).getTime();
+    const missed = rows.filter((r) => msSinceDue(r) > RECALL_GRACE_MS);
+    const stillCatchable = rows.filter((r) => msSinceDue(r) >= 0 && msSinceDue(r) <= RECALL_GRACE_MS);
     if (missed.length) {
       // Fire-and-forget - never block this response on cleaning up ones
       // the student already missed, and never let a failure here surface

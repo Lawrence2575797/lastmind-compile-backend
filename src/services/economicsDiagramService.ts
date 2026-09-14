@@ -17,18 +17,26 @@ export class EconomicsDiagramNotFoundError extends Error {
   }
 }
 
-// Gallery list - title + when it was last touched, newest first. The
-// actual diagram_state is left out here deliberately (it can be a real
-// amount of JSON per diagram) - only fetched per-diagram via
-// getDiagram, once the student actually opens one.
-export async function listDiagrams(userId: string): Promise<EconomicsDiagramSummary[]> {
+// Gallery list - title, when it was last touched, and the diagram_state
+// itself (now needed to render each card's own preview thumbnail - see
+// learn/index.html's renderMiniDiagramPreview). Used to be left out here
+// deliberately to keep this response small, but a personal gallery of a
+// few dozen simple vector drawings is nowhere near large enough for that
+// to matter in practice, and the gallery is the one place this data
+// actually needs to render without a second round-trip per card.
+export async function listDiagrams(userId: string): Promise<EconomicsDiagram[]> {
   const { data, error } = await supabaseAdmin
     .from('economics_diagrams')
-    .select('id, title, updated_at')
+    .select('id, title, updated_at, diagram_state')
     .eq('user_id', userId)
     .order('updated_at', { ascending: false });
   if (error) throw error;
-  return (data || []).map((row) => ({ id: row.id as string, title: row.title as string, updatedAt: row.updated_at as string }));
+  return (data || []).map((row) => ({
+    id: row.id as string,
+    title: row.title as string,
+    updatedAt: row.updated_at as string,
+    diagramState: row.diagram_state,
+  }));
 }
 
 export async function getDiagram(userId: string, id: string): Promise<EconomicsDiagram> {

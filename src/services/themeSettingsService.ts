@@ -5,14 +5,23 @@ import { supabaseAdmin } from './supabaseAdmin';
 // it follows the account across devices instead of resetting per-browser.
 // Only three levers by design: text (drives both --text and --accent
 // together), panel (the sidebar and every other panel-styled surface),
-// and background (a Plain/Wood-textured base tint - where the birch
-// default lives).
+// and background - either a Plain/Wood-textured base tint (the birch
+// default), or one of the named image presets in IMAGE_BG_TEXTURES (see
+// learn/index.html's THEME_PRESETS/THEME_IMAGE_BACKGROUNDS - 'havnstad-
+// village' is the first one, a blurred-behind-the-sidebar village scene).
 export interface ThemeSettings {
   textColor: string;
   panelColor: string;
   bgColor: string;
-  bgTexture: 'plain' | 'wood';
+  bgTexture: string;
 }
+
+// Every bgTexture value the frontend actually knows how to render. Kept
+// here (not just client-side) so a malformed/stale value can't get
+// persisted and then silently render as nothing on the next load -
+// same defensive stance as HEX_RE below for the colour fields.
+const IMAGE_BG_TEXTURES = ['havnstad-village'];
+const VALID_BG_TEXTURES = ['plain', 'wood', ...IMAGE_BG_TEXTURES];
 
 const DEFAULTS: ThemeSettings = {
   textColor: '#E6D7B0',
@@ -42,7 +51,7 @@ export async function getThemeSettings(userId: string): Promise<ThemeSettings> {
     textColor: data.text_color,
     panelColor: data.panel_color,
     bgColor: data.bg_color,
-    bgTexture: data.bg_texture === 'plain' ? 'plain' : 'wood',
+    bgTexture: VALID_BG_TEXTURES.includes(data.bg_texture) ? data.bg_texture : 'wood',
   };
 }
 
@@ -52,7 +61,7 @@ export async function setThemeSettings(userId: string, incoming: Partial<ThemeSe
     textColor: HEX_RE.test(incoming.textColor || '') ? (incoming.textColor as string) : current.textColor,
     panelColor: HEX_RE.test(incoming.panelColor || '') ? (incoming.panelColor as string) : current.panelColor,
     bgColor: HEX_RE.test(incoming.bgColor || '') ? (incoming.bgColor as string) : current.bgColor,
-    bgTexture: incoming.bgTexture === 'plain' || incoming.bgTexture === 'wood' ? incoming.bgTexture : current.bgTexture,
+    bgTexture: VALID_BG_TEXTURES.includes(incoming.bgTexture || '') ? (incoming.bgTexture as string) : current.bgTexture,
   };
   const { error } = await supabaseAdmin
     .from('theme_settings')

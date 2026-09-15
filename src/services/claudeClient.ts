@@ -29,8 +29,31 @@ if (!CLAUDE_API_KEY) {
   );
 }
 
+// timeout/maxRetries both override real SDK defaults, not just
+// documentation - checked directly against the installed package
+// (node_modules/@anthropic-ai/sdk/core.js): the SDK defaults to a 600
+// SECOND (10 minute) per-attempt timeout and its OWN internal
+// maxRetries:2, neither of which this codebase had ever overridden.
+// That's two full retry layers stacked on top of each other - the SDK's
+// own (silent: it never reaches withTransientRetry's console.warn below,
+// so none of this ever showed up in logs) exponential-backoff retries,
+// THEN this file's own deliberate 3-retry wrapper on whatever the SDK
+// eventually gives up and throws. A single stalled/slow attempt could
+// legitimately sit for up to 10 minutes before even failing over once -
+// real reported symptom: grading an immediate recall "taking forever",
+// which persisted even after ruling out a cold Render backend, exactly
+// what an occasional slow/stalled Anthropic-side response looks like
+// under a 10-minute default. maxRetries:0 here doesn't remove retries,
+// it removes the DUPLICATE, invisible layer - withTransientRetry already
+// retries the same class of transient errors deliberately and visibly.
+// 30s is generous for what these calls actually are (a streamed
+// response starts producing tokens almost immediately; the timeout is
+// how long a single attempt can go with no response starting at all,
+// not how long a large generation is allowed to take once streaming).
 const anthropic = new Anthropic({
   apiKey: CLAUDE_API_KEY,
+  timeout: 30_000,
+  maxRetries: 0,
 });
 
 // One model per task, not one model for everything. Centralized here so a

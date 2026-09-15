@@ -7,16 +7,20 @@
 // node-lesson generation + its grading call costs ~$0.0128 today (Sonnet 5
 // generation + Haiku grading, current API pricing).
 //
-// PREMIUM: 2h/day unchanged from the original single-tier figures; week
+// PREMIUM: day unchanged from the original single-tier figure; week
 // and month raised (40->100, 150->300) so a genuinely heavy premium month
 // is 300 lessons - exactly 3x the free monthly figure below (a real,
 // deliberate 200%-higher-than-free ceiling, expressed in lessons, not
-// Locks - the two systems are unrelated, see lockService.ts). Resets:
-// 2h/day/week are ROLLING windows (exact lookback from now - a calendar-
-// boundary reset would let a student burn the cap right before midnight
-// and again right after); MONTH resets on the calendar boundary, same
-// convention as lockService.ts's own currentMonthStart.
-export const FRESH_GENERATION_CAP_2H = 13;
+// Locks - the two systems are unrelated, see lockService.ts). 2h raised
+// 13->20 per explicit product decision - counts only a genuine fresh
+// ENCODING generation (generateAndCacheNodeLesson/generateAndCacheEdgeLesson),
+// never a recall check or Day-1 check, which are graded through a
+// completely separate call path that never touches this service at all.
+// Resets: 2h/day/week are ROLLING windows (exact lookback from now - a
+// calendar-boundary reset would let a student burn the cap right before
+// midnight and again right after); MONTH resets on the calendar
+// boundary, same convention as lockService.ts's own currentMonthStart.
+export const FRESH_GENERATION_CAP_2H = 20;
 export const FRESH_GENERATION_CAP_DAY = 25;
 export const FRESH_GENERATION_CAP_WEEK = 100;
 export const FRESH_GENERATION_CAP_MONTH = 300;

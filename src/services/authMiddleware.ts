@@ -39,14 +39,17 @@ export async function requireAuth(req: Request, res: Response, next: NextFunctio
   next();
 }
 
-// The one and only admin gate in this codebase — no role/permissions table
-// exists anywhere, so this is a deliberately simple hardcoded allowlist
-// (Render env var, comma-separated) rather than new schema, scoped to
-// exactly the one thing that needs it today: the overdue-help-request
-// queue (see routes/admin.ts) that lets the owner personally fulfil the
-// "if they don't respond, I will step in" guarantee. Must run AFTER
+// No role/permissions table exists anywhere in this codebase, so this is
+// a deliberately simple hardcoded allowlist (Render env var, comma-
+// separated) — originally scoped to just the overdue-help-request queue
+// (see routes/admin.ts), now also reused by generationCapService.ts to
+// exempt the founder's own account from the fresh-generation rate limit
+// (the caps exist to bound real-user cost, not to throttle the person
+// building and testing the product on their own account). Exported so
+// other services can check the same allowlist rather than each defining
+// their own copy of the same one or two emails. Must run AFTER
 // requireAuth — depends on req.userEmail already being set.
-const ADMIN_EMAILS = new Set(
+export const ADMIN_EMAILS = new Set(
   (process.env.ADMIN_EMAILS || '')
     .split(',')
     .map((e) => e.trim().toLowerCase())

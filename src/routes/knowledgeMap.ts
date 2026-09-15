@@ -149,7 +149,7 @@ router.get('/knowledge-map-v2/node/:nodeId/lesson', requireAuth, syncEndpointLim
     // this entirely - see generationCapService.ts's own comment on why
     // that changed) - a cache hit above never reaches this check at all.
     const userId = req.userId as string;
-    await assertFreshGenerationWithinCap(userId, await isUserPaid(userId), req.userCreatedAt ?? null);
+    await assertFreshGenerationWithinCap(userId, await isUserPaid(userId), req.userCreatedAt ?? null, req.userEmail);
     const generated = await generateAndCacheNodeLesson(nodeId, userId);
     if (!generated) return res.status(404).json({ error: 'concept not found' });
     await recordFreshGenerationEvent(userId);
@@ -230,7 +230,7 @@ router.get('/knowledge-map-v2/edge/:fromNodeId/:toNodeId/lesson', requireAuth, s
     }
 
     const userId = req.userId as string;
-    await assertFreshGenerationWithinCap(userId, await isUserPaid(userId), req.userCreatedAt ?? null);
+    await assertFreshGenerationWithinCap(userId, await isUserPaid(userId), req.userCreatedAt ?? null, req.userEmail);
     const generated = await generateAndCacheEdgeLesson(fromNodeId, toNodeId, userId);
     if (!generated) return res.status(404).json({ error: 'connection not found or not ready yet' });
     await recordFreshGenerationEvent(userId);
@@ -1374,7 +1374,7 @@ router.post('/knowledge-map-v2/node-review/integration/start', requireAuth, cost
       const lessonRows = edgeRow?.knowledge_map_edge_lessons;
       const hasLessonRow = Array.isArray(lessonRows) ? lessonRows.length > 0 : !!lessonRows;
       if (edgeRow && !hasLessonRow) {
-        await assertFreshGenerationWithinCap(userId, await isUserPaid(userId), req.userCreatedAt ?? null);
+        await assertFreshGenerationWithinCap(userId, await isUserPaid(userId), req.userCreatedAt ?? null, req.userEmail);
         const generated = await generateAndCacheEdgeLesson(fromNodeId, toNodeId, userId);
         if (generated) {
           await recordFreshGenerationEvent(userId);

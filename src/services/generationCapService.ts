@@ -1,4 +1,5 @@
 import { supabaseAdmin } from './supabaseAdmin';
+import { ADMIN_EMAILS } from './authMiddleware';
 import {
   FRESH_GENERATION_CAP_2H,
   FRESH_GENERATION_CAP_DAY,
@@ -66,8 +67,13 @@ async function countEventsSince(userId: string, sinceIso: string): Promise<numbe
 // through from requireAuth) is only ever read for a free account's
 // anchor-day month window - null falls back to the calendar boundary
 // rather than throwing, since every real authenticated user has one, but
-// a defensive default costs nothing.
-export async function assertFreshGenerationWithinCap(userId: string, isPaid: boolean, accountCreatedAt: string | null): Promise<void> {
+// a defensive default costs nothing. email (also threaded from
+// requireAuth) exempts the founder's own account entirely (see
+// ADMIN_EMAILS's own comment) - these caps exist to bound a real
+// student's runaway generation cost, not to throttle the person actually
+// building and testing the product day to day.
+export async function assertFreshGenerationWithinCap(userId: string, isPaid: boolean, accountCreatedAt: string | null, email?: string | null): Promise<void> {
+  if (email && ADMIN_EMAILS.has(email.toLowerCase())) return;
   const now = Date.now();
 
   if (isPaid) {

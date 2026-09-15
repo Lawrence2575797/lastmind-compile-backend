@@ -90,7 +90,29 @@ export async function getQuestionForConceptId(conceptId: string): Promise<Day1Qu
   const { data: node } = await supabaseAdmin.from('knowledge_map_nodes').select('id').eq('concept_id', conceptId).maybeSingle();
   if (!node) return null;
   const { data: lesson } = await supabaseAdmin.from('knowledge_map_node_lessons').select('encoding_content').eq('node_id', node.id).maybeSingle();
-  const q = (lesson?.encoding_content as { practiceQuestion?: { questionText?: string; markScheme?: string } } | null)?.practiceQuestion;
+  const content = lesson?.encoding_content as {
+    practiceQuestion?: { questionText?: string; markScheme?: string };
+    recallChecks?: { format: string; questionText: string; markScheme?: string }[];
+  } | null;
+  // Prefer a free_text recallCheck (the same pool GET /immediate-recalls/due
+  // picks from, minus fill_blank/multiple_choice - this route's own
+  // grading, POST /day1-checks/:id/submit, only ever sends a questionText+
+  // markScheme pair to DAY1_CHECK_ANSWER_PROMPT, so a check without a real
+  // markScheme isn't usable here) over the main practiceQuestion - a real
+  // reported bug: a Day-1 check always fell straight to practiceQuestion,
+  // the exact same question already asked at encoding time and often the
+  // same one the immediate recall (2 minutes earlier) also fell back to
+  // when IT had no recallChecks either. Picked fresh at random, same as
+  // the immediate recall's own pick from this pool - independent draws
+  // from a 4-item pool rather than tracking exactly which one the
+  // immediate recall already used, which needs no schema change and
+  // still cuts a guaranteed collision down to a 1-in-4 chance.
+  const freeTextChecks = (content?.recallChecks || []).filter((c) => c.format === 'free_text' && c.questionText && c.markScheme);
+  if (freeTextChecks.length) {
+    const pick = freeTextChecks[Math.floor(Math.random() * freeTextChecks.length)];
+    return { questionText: pick.questionText, markScheme: pick.markScheme || '' };
+  }
+  const q = content?.practiceQuestion;
   if (!q?.questionText) return null;
   return { questionText: q.questionText, markScheme: q.markScheme || '' };
 }

@@ -1041,7 +1041,7 @@ router.get('/day1-checks/due', requireAuth, syncEndpointLimiter, async (req: Req
         getQuestionForConceptId(r.concept_id as string),
       ]);
       if (!info || !question) return null;
-      return { checkId: r.id, conceptId: r.concept_id, label: info.label, subject: info.subject, dueDate: r.due_date, questionText: question.questionText };
+      return { checkId: r.id, conceptId: r.concept_id, nodeId: info.nodeId, label: info.label, subject: info.subject, dueDate: r.due_date, questionText: question.questionText };
     }));
     const usable = withDisplay.filter((c): c is NonNullable<typeof c> => c !== null);
     // Ordered by where each concept sits in its subject's own teaching

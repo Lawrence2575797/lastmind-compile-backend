@@ -32,11 +32,20 @@ export interface Day1Question {
 export interface ConceptDisplayInfo {
   label: string;
   subject: string;
+  nodeId: string;
 }
 
 // Same node-vs-edge detection as getQuestionForConceptId, but for the
-// display label/subject GET /day1-checks/due needs to show in the feed
-// rather than the question content itself.
+// display label/subject/nodeId GET /day1-checks/due needs - nodeId
+// specifically so the frontend can tag this slide's own meta.nodeId the
+// same way a real lesson/recall slide already does (see sfCheckDueRecalls'
+// own "don't interrupt the lesson I'm currently on" comment) - without
+// it, a Day-1 check slide was invisible to that same-concept guard, so an
+// immediate recall for the EXACT concept the student was mid-Day-1-check
+// on could still pop its nudge over it. For an ::integration concept,
+// resolves to the TO node's id - same "anchor to the later endpoint"
+// convention resolveSortNode below already uses, since the connection is
+// only ever tested once that node is encoded.
 export async function getConceptDisplayInfo(conceptId: string): Promise<ConceptDisplayInfo | null> {
   if (conceptId.endsWith('::integration')) {
     const withoutSuffix = conceptId.slice(0, -':integration'.length - 1);
@@ -45,15 +54,15 @@ export async function getConceptDisplayInfo(conceptId: string): Promise<ConceptD
     const fromConceptId = withoutSuffix.slice(0, arrowIndex);
     const toConceptId = withoutSuffix.slice(arrowIndex + 2);
     const [{ data: fromNode }, { data: toNode }] = await Promise.all([
-      supabaseAdmin.from('knowledge_map_nodes').select('label, subject').eq('concept_id', fromConceptId).maybeSingle(),
-      supabaseAdmin.from('knowledge_map_nodes').select('label, subject').eq('concept_id', toConceptId).maybeSingle(),
+      supabaseAdmin.from('knowledge_map_nodes').select('id, label, subject').eq('concept_id', fromConceptId).maybeSingle(),
+      supabaseAdmin.from('knowledge_map_nodes').select('id, label, subject').eq('concept_id', toConceptId).maybeSingle(),
     ]);
     if (!fromNode || !toNode) return null;
-    return { label: `${fromNode.label} → ${toNode.label}`, subject: fromNode.subject as string };
+    return { label: `${fromNode.label} → ${toNode.label}`, subject: fromNode.subject as string, nodeId: toNode.id as string };
   }
-  const { data: node } = await supabaseAdmin.from('knowledge_map_nodes').select('label, subject').eq('concept_id', conceptId).maybeSingle();
+  const { data: node } = await supabaseAdmin.from('knowledge_map_nodes').select('id, label, subject').eq('concept_id', conceptId).maybeSingle();
   if (!node) return null;
-  return { label: node.label as string, subject: node.subject as string };
+  return { label: node.label as string, subject: node.subject as string, nodeId: node.id as string };
 }
 
 // A concept_id is either a plain node concept (practiceQuestion) or an

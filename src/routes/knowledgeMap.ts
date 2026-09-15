@@ -638,6 +638,11 @@ router.post('/knowledge-map-v2/text-question/submit', requireAuth, costlyEndpoin
       userContent: `Question: ${question.questionText}\nMark scheme: ${question.markScheme || ''}\nStudent's answer: ${answer}`,
       temperature: 0.1,
       userId,
+      // questionType is 'practice' (initial encoding), 'transfer', or
+      // 'integration' - split by it so the Locks ledger can tell these
+      // three genuinely different grading calls apart instead of
+      // blending them into one bucket.
+      meteredReason: `knowledge-map-v2-${questionType}-grade`,
     });
     // parseCorrectFeedbackJson (not a bare JSON.parse) - see its own
     // comment: a stray sentence around otherwise-valid JSON, or an
@@ -727,6 +732,7 @@ router.post('/knowledge-map-v2/node/:nodeId/untracked-submit', requireAuth, cost
       userContent: `Question: ${question.questionText}\nMark scheme: ${question.markScheme || ''}\nStudent's answer: ${body.answer}`,
       temperature: 0.2,
       userId: req.userId,
+      meteredReason: 'knowledge-map-v2-untracked-grade',
     });
     const { correct, feedback, hint } = parseModelJson<{ correct: boolean; feedback: string; hint?: string }>(raw);
     res.json({ correct, feedback, hint: correct ? undefined : hint, retryable: !correct });
@@ -951,6 +957,7 @@ router.post('/immediate-recalls/:id/submit', requireAuth, costlyEndpointLimiter,
           userContent: `Sentence: ${check.questionText}\nExpected answer: ${check.answer || ''}\nStudent's answer: ${answer}`,
           temperature: 0.1,
           userId,
+          meteredReason: 'immediate-recall-fill-blank-leniency',
         });
         ({ correct, feedback } = parseCorrectFeedbackJson(raw));
       }
@@ -962,6 +969,7 @@ router.post('/immediate-recalls/:id/submit', requireAuth, costlyEndpointLimiter,
         userContent: `Question: ${check.questionText}\nMark scheme: ${check.markScheme || ''}\nStudent's answer: ${answer}`,
         temperature: 0.1,
         userId,
+        meteredReason: 'immediate-recall-grade',
       });
       ({ correct, feedback } = parseCorrectFeedbackJson(raw));
     }
@@ -1151,6 +1159,7 @@ router.post('/day1-checks/:id/submit', requireAuth, costlyEndpointLimiter, async
       userContent: `Question: ${question.questionText}\nMark scheme: ${question.markScheme}\nStudent's answer: ${answer}`,
       temperature: 0.1,
       userId,
+      meteredReason: 'day1-check-grade',
     });
     const { correct, feedback, sillyMistake } = parseModelJson<{ correct: boolean; feedback: string; sillyMistake?: boolean }>(raw);
 

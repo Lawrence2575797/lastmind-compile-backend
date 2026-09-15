@@ -48,6 +48,7 @@ export async function answerKnowledgeMapQuestion(nodeId: string, question: strin
     userContent,
     temperature: 0.4,
     userId,
+    meteredReason: 'knowledge-map-v2-ask-cortex',
   });
   return parseModelJson<KnowledgeMapAskResult>(raw);
 }

@@ -86,8 +86,8 @@ function extractJsonObject(text: string): string {
   return text.slice(start, end + 1);
 }
 
-export async function callJSON<T>(systemPrompt: string, userContent: string, model: string, temperature = 0, userId?: string): Promise<T> {
-  const raw = await callClaudeJSON({ model, systemPrompt, userContent, temperature, userId });
+export async function callJSON<T>(systemPrompt: string, userContent: string, model: string, temperature = 0, userId?: string, meteredReason?: string): Promise<T> {
+  const raw = await callClaudeJSON({ model, systemPrompt, userContent, temperature, userId, meteredReason });
   const cleaned = stripCodeFences(raw);
   try {
     return JSON.parse(cleaned) as T;
@@ -305,7 +305,7 @@ async function gradeAnswerAgainstMarkScheme(
     ].filter(Boolean).join('\n\n');
 
     if (componentSplit) {
-      const result = await callJSON<ItemizedMarkingResult>(PRACTICE_QUESTION_MARKING_PROMPT_ITEMIZED, userContent, MODELS.simpleQuestion, 0, userId);
+      const result = await callJSON<ItemizedMarkingResult>(PRACTICE_QUESTION_MARKING_PROMPT_ITEMIZED, userContent, MODELS.simpleQuestion, 0, userId, 'practice-question-mark-itemized');
       const reconciled = reconcileComponentMarks(componentSplit, result.componentMarks || {});
       markAwarded = reconciled.markAwarded;
       componentMarks = reconciled.componentMarks;
@@ -313,7 +313,7 @@ async function gradeAnswerAgainstMarkScheme(
       conceptualMistakes = result.conceptualMistakes || null;
       examTechniqueTips = result.examTechniqueTips || null;
     } else {
-      const result = await callJSON<MarkingResult>(PRACTICE_QUESTION_MARKING_PROMPT, userContent, MODELS.simpleQuestion, 0, userId);
+      const result = await callJSON<MarkingResult>(PRACTICE_QUESTION_MARKING_PROMPT, userContent, MODELS.simpleQuestion, 0, userId, 'practice-question-mark');
       markAwarded = Math.max(0, Math.min(markTariff, Math.round(result.mark)));
       feedback = result.feedback;
       conceptualMistakes = result.conceptualMistakes || null;
@@ -480,7 +480,7 @@ export async function generateModelAnswer(userId: string, questionId: string): P
     structureNotes ? `General marking structure for this subject/qualification/exam board (background context — apply it, don't recite it back): ${structureNotes}` : '',
   ].filter(Boolean).join('\n\n');
 
-  const { modelAnswerText } = await callJSON<{ modelAnswerText: string }>(PRACTICE_QUESTION_MODEL_ANSWER_PROMPT, userContent, MODELS.simpleQuestion, 0.3, userId);
+  const { modelAnswerText } = await callJSON<{ modelAnswerText: string }>(PRACTICE_QUESTION_MODEL_ANSWER_PROMPT, userContent, MODELS.simpleQuestion, 0.3, userId, 'practice-question-model-answer');
   const selfCheck = await gradeAnswerAgainstMarkScheme(question, modelAnswerText, userId);
 
   return { modelAnswerText, selfCheck };
@@ -524,5 +524,5 @@ export async function generateAssistance(userId: string, questionId: string, ass
     `Angles of help the student asked for: ${labels.join('; ')}`,
   ].filter(Boolean).join('\n\n');
 
-  return callJSON<{ assistance: string }>(PRACTICE_QUESTION_ASSISTANCE_PROMPT, userContent, MODELS.simpleQuestion, 0.4, userId);
+  return callJSON<{ assistance: string }>(PRACTICE_QUESTION_ASSISTANCE_PROMPT, userContent, MODELS.simpleQuestion, 0.4, userId, 'practice-question-assistance');
 }

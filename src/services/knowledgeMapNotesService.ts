@@ -297,6 +297,7 @@ export async function checkWorkedExampleStep(
     userContent,
     temperature: 0.1,
     userId,
+    meteredReason: 'knowledge-map-v2-worked-example-step-check',
   });
   return parseModelJson<{ correct: boolean; feedback: string }>(raw);
 }

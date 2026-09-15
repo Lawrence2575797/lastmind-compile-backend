@@ -323,7 +323,7 @@ export async function generateSpecLessonPracticeQuestion(userId: string, concept
       `Mark tariff: ${questionType.mark_tariff}`,
       structureNotes ? `General marking-structure notes for this subject/board: ${structureNotes}` : '',
     ].filter(Boolean).join('\n\n');
-    const diagramResult = await callJSON<DiagramGenerationResult>(PRACTICE_QUESTION_DIAGRAM_GENERATION_PROMPT, diagramUserContent, MODELS.chainGenerationSimple, 0.4, userId);
+    const diagramResult = await callJSON<DiagramGenerationResult>(PRACTICE_QUESTION_DIAGRAM_GENERATION_PROMPT, diagramUserContent, MODELS.chainGenerationSimple, 0.4, userId, 'spec-lesson-practice-question-diagram-generate');
     if (diagramResult.notDiagrammatic || !diagramResult.questionText) throw new DiagramNotApplicableError();
 
     questionText = diagramResult.questionText;
@@ -338,7 +338,7 @@ export async function generateSpecLessonPracticeQuestion(userId: string, concept
     answerStructureAdvice = diagramResult.answerStructureAdvice ?? null;
     componentSplit = questionType.component_split ?? null;
   } else {
-    const result = await callJSON<GenerationResult>(PRACTICE_QUESTION_GENERATION_PROMPT, userContent, MODELS.chainGenerationSimple, 0.4, userId);
+    const result = await callJSON<GenerationResult>(PRACTICE_QUESTION_GENERATION_PROMPT, userContent, MODELS.chainGenerationSimple, 0.4, userId, 'spec-lesson-practice-question-generate');
     questionText = result.questionText;
     markSchemeType = result.markSchemeType;
     markSchemeJson = result.markSchemeJson;

@@ -38,8 +38,8 @@ import {
 // time a generated question was long enough to contain a literal newline
 // between paragraphs. Kept here even though questions are shorter now -
 // parseModelJson is strictly more robust, never less.
-async function callJSON<T>(systemPrompt: string, userContent: string, model: string, temperature = 0.2, maxTokens?: number, userId?: string): Promise<T> {
-  const raw = await callClaudeJSON({ model, systemPrompt, userContent, temperature, maxTokens, userId });
+async function callJSON<T>(systemPrompt: string, userContent: string, model: string, temperature = 0.2, maxTokens?: number, userId?: string, meteredReason?: string): Promise<T> {
+  const raw = await callClaudeJSON({ model, systemPrompt, userContent, temperature, maxTokens, userId, meteredReason });
   try {
     return parseModelJson<T>(raw);
   } catch (err) {
@@ -374,7 +374,8 @@ export async function generateChainQuestions(targetLabel: string, chains: ChainS
     MODELS.diagnosticTree,
     0.3,
     Math.max(2048, flatSteps.length * 220 + 512),
-    userId
+    userId,
+    'chain-diagnostic-generate-questions'
   );
   const questionByComponentId = new Map(questions.map((q) => [q.componentId, q.questionText]));
 
@@ -423,7 +424,8 @@ export async function gradeChainAnswers(
     MODELS.diagnosticTree,
     0.1,
     Math.max(2048, resolved.length * 350 + 512),
-    userId
+    userId,
+    'chain-diagnostic-grade-answers'
   );
   const resultByComponentId = new Map(results.map((r) => [r.componentId, r]));
 
@@ -465,7 +467,8 @@ export async function generateStepRetryQuestion(step: ChainStep, originalAnswer:
     MODELS.simpleQuestion,
     0.3,
     undefined,
-    userId
+    userId,
+    'chain-diagnostic-retry-question'
   );
   return questionText;
 }
@@ -479,7 +482,8 @@ export async function gradeStepRetryAnswer(step: ChainStep, retryQuestion: strin
     MODELS.simpleQuestion,
     0.1,
     undefined,
-    userId
+    userId,
+    'chain-diagnostic-retry-grade'
   );
 }
 

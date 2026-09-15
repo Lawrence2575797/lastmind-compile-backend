@@ -96,6 +96,7 @@ export async function decideCortexAction(
       maxTokens: 4096,
       cacheSystemPrompt: true,
       userId,
+      meteredReason: 'cortex-chat',
     });
   } catch (err) {
     console.error('LastMind: Cortex reply call produced no usable text (likely max_tokens with no output).', err);

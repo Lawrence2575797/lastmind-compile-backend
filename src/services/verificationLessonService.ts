@@ -22,8 +22,8 @@ function extractJsonObject(text: string): string {
   return text.slice(start, end + 1);
 }
 
-async function callJSON<T>(systemPrompt: string, userContent: string, model: string, temperature = 0, maxTokens?: number, cacheSystemPrompt = false, userId?: string): Promise<T> {
-  const raw = await callClaudeJSON({ model, systemPrompt, userContent, temperature, maxTokens, cacheSystemPrompt, userId });
+async function callJSON<T>(systemPrompt: string, userContent: string, model: string, temperature = 0, maxTokens?: number, cacheSystemPrompt = false, userId?: string, meteredReason?: string): Promise<T> {
+  const raw = await callClaudeJSON({ model, systemPrompt, userContent, temperature, maxTokens, cacheSystemPrompt, userId, meteredReason });
   const cleaned = stripCodeFences(raw);
   try {
     return JSON.parse(cleaned) as T;
@@ -130,7 +130,8 @@ export async function getOrGenerateRubric(
     0.4,
     4096,
     true,
-    userId
+    userId,
+    'verification-rubric-generate'
   );
 
   const { error: upsertError } = await supabaseAdmin
@@ -214,7 +215,7 @@ async function resolveVerificationConceptId(
       `Existing entries:\n${JSON.stringify(candidates.map((c) => ({ id: c.id, topic: c.topic, concept: c.concept })))}`,
     ].join('\n');
     try {
-      const check = await callJSON<DuplicateCheckResult>(VERIFICATION_DUPLICATE_CHECK_PROMPT, userContent, MODELS.simpleQuestion, 0, undefined, false, userId);
+      const check = await callJSON<DuplicateCheckResult>(VERIFICATION_DUPLICATE_CHECK_PROMPT, userContent, MODELS.simpleQuestion, 0, undefined, false, userId, 'verification-duplicate-check');
       if (check.matchedId !== null) {
         const matched = candidates.find((c) => c.id === check.matchedId);
         if (matched) return matched.conceptId;
@@ -273,7 +274,8 @@ async function runFreeTextGrade(rubric: VerificationRubric, scenario: Verificati
     // caching it matters far more than caching the (much rarer) rubric
     // generation call above.
     true,
-    userId
+    userId,
+    'verification-grade'
   );
 }
 
@@ -285,7 +287,8 @@ export async function generateCorrection(concept: string, misconceptionOrGap: st
     0.3,
     undefined,
     false,
-    userId
+    userId,
+    'verification-correction'
   );
   return result.correction;
 }
@@ -325,7 +328,8 @@ export async function getOrGenerateStructuredFollowUp(rubricKey: string, concept
           0.4,
           undefined,
           false,
-          userId
+          userId,
+          'verification-followup-order-words'
         )),
       }
     : {
@@ -337,7 +341,8 @@ export async function getOrGenerateStructuredFollowUp(rubricKey: string, concept
           0.4,
           undefined,
           false,
-          userId
+          userId,
+          'verification-followup-fill-gap'
         )),
       };
 

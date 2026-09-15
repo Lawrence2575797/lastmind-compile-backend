@@ -15,8 +15,8 @@ interface CorrectionGeneration {
 // two. This is the same few lines duplicated, not worth restructuring
 // either file's module boundary just to share one small JSON-parsing
 // wrapper.
-async function callJSON<T>(systemPrompt: string, userContent: string, model: string, temperature: number, userId: string): Promise<T> {
-  const raw = await callClaudeJSON({ model, systemPrompt, userContent, temperature, userId });
+async function callJSON<T>(systemPrompt: string, userContent: string, model: string, temperature: number, userId: string, meteredReason: string): Promise<T> {
+  const raw = await callClaudeJSON({ model, systemPrompt, userContent, temperature, userId, meteredReason });
   const cleaned = raw.trim().replace(/^```(?:json)?\s*/i, '').replace(/```\s*$/, '');
   return JSON.parse(cleaned) as T;
 }
@@ -41,7 +41,7 @@ export async function generateCorrectionForAttempt(
     `The marker's identified conceptual mistake: ${mistakeText}`,
   ].join('\n\n');
 
-  const result = await callJSON<CorrectionGeneration>(EXAM_PREP_CORRECTION_PROMPT, userContent, MODELS.simpleQuestion, 0.2, userId);
+  const result = await callJSON<CorrectionGeneration>(EXAM_PREP_CORRECTION_PROMPT, userContent, MODELS.simpleQuestion, 0.2, userId, 'exam-prep-correction-generate');
 
   const { error } = await supabaseAdmin.from('exam_prep_corrections').insert({
     user_id: userId,
@@ -113,6 +113,7 @@ export async function submitCorrectionAnswer(userId: string, correctionId: strin
     userContent: `Question: ${correction.followup_question_text}\nMark scheme: ${correction.followup_mark_scheme}\nStudent's answer: ${answerText}`,
     temperature: 0.1,
     userId,
+    meteredReason: 'exam-prep-correction-grade',
   });
   const parsed = JSON.parse(raw.trim().replace(/^```(?:json)?\s*/i, '').replace(/```\s*$/, '')) as { correct: boolean; feedback: string };
 

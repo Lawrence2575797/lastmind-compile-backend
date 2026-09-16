@@ -38,8 +38,15 @@ import { assertFreshGenerationWithinCap, recordFreshGenerationEvent, GenerationC
 import { recordPairwiseIntegrationOutcome } from '../services/chainMasteryService';
 import { getOrCreateUserRecallTuning, getDifficultyAndCapability, nextRecallDelayMinutes, updateGammaAfterRecall, bumpBaseRecalls } from '../services/recallTuningService';
 import { getQuestionForConceptId, getConceptDisplayInfo, orderDay1ChecksByLessonOrder } from '../services/day1CheckService';
+import { biologyCurriculumStatus } from '../services/biologyCurriculum';
 
 const router = Router();
+
+// Public curriculum metadata only: no lesson answers or student information.
+// Allows deployment/readiness checks without generating a paid lesson.
+router.get('/knowledge-map-v2/curriculum/aqa-biology-higher', (_req, res) => {
+  res.json(biologyCurriculumStatus());
+});
 
 // POST /knowledge-map  { subject, qualification?, examBoard?, customTitle?, customDescription?, concepts: [{ topic, concept }] }
 // -> { nodes: [{id,name}], edges: [{source,target}], mastery: {[nodeId]: 0|1|2} }

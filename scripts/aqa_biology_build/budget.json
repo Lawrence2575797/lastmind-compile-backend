@@ -1,0 +1,16 @@
+{
+  "capUsd": 4,
+  "entries": [
+    {
+      "name": "interrupted-initial-two-drafts",
+      "reservedUsd": 2.5,
+      "status": "usage-unavailable"
+    },
+    {
+      "name": "source-coverage-audit",
+      "reservedUsd": 1.1936625,
+      "status": "completed",
+      "actualUsd": 0.498714
+    }
+  ]
+}

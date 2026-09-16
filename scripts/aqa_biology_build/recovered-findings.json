@@ -1,0 +1,324 @@
+{
+  "issues": [
+    {
+      "id": "4.1.1.6/4.1.1.1(prokaryote,plasmid)",
+      "type": "scope/labelling",
+      "problem": "binary_fission, culture_medium, aseptic, bacteria_growth nodes tagged only to 4.1.1.6/8.2.2 correctly, but plasmid and prokaryote nodes tagged to 4.1.1.1/4.1.1.2 are fine; however 'a_bacterial_population' bundles HT standard-form expression with the division calculation itself, whereas spec separates 'calculate number after time' (all tiers) from '(HT) express in standard form' as a distinct skill—minor bundling but acceptable as one node since standard form is a MS skill layered on the same calculation.",
+      "fix": "Consider splitting HT standard-form expression of bacterial population into its own node so foundation-tier scope is not conflated with HT requirement."
+    },
+    {
+      "id": "resolution_micro / electron_resolution / electron_magnification",
+      "type": "duplicate/fragmentation",
+      "problem": "Three closely related nodes (resolution_micro, electron_resolution, electron_magnification) all encode the single spec point 'electron microscopes have higher magnification AND resolution than light microscopes, enabling finer detail' which is one testable idea in 4.1.1.5. This is excessive fragmentation of one idea into three nodes with circular-ish dependency structure.",
+      "fix": "Merge electron_resolution and electron_magnification into a single node capturing 'electron microscopes have both higher magnification and higher resolution than light microscopes' or keep resolution_micro generic and have exactly one biology-specific node contrasting light vs electron microscopes."
+    },
+    {
+      "id": "4.6.1.5 dna_helix/nucleotide/dna_backbone/dna_bases/base_at/base_cg/triplet",
+      "type": "fragmentation",
+      "problem": "Complementary base pairing (base_at, base_cg) is split into two nodes for what is one fact ('A-T and C-G pairing'); this is over-fragmentation of a single testable idea beyond the four-detail bundling guidance intention (each node should be one idea, not necessarily one base-pair each).",
+      "fix": "Merge base_at and base_cg into one node 'complementary_base_pairing' since they are two halves of the same non-independently-forgettable fact."
+    },
+    {
+      "id": "4.6.1.6 dominant/recessive/genotype/phenotype/homozygous/heterozygous",
+      "type": "coverage-ok but check bundling",
+      "problem": "These are appropriately separated terms, but 'polydactyly' and 'cystic_fibrosis' and 'carrier' nodes are fine; however node 'recessive' depends on 'dominant' and 'chromosome_pairs' — recessive expression logic (needs two copies) is a distinct fact from dominant (one copy suffices), correctly split. No issue found here on closer look — retract concern.",
+      "fix": "No action needed."
+    },
+    {
+      "id": "4.5.3.6 IVF nodes (p_ivf_stimulate, p_ivf_collect, p_ivf_fertilise, p_ivf_embryo, p_ivf_transfer, e_ivf_ethics, e_ivf_stress, e_ivf_success, e_ivf_multiple)",
+      "type": "appropriate splitting but missing edge",
+      "problem": "e_ivf_stress, e_ivf_success, e_ivf_multiple are evaluation nodes depending only on p_ivf_transfer, but the spec's evaluation point is about IVF as a whole treatment, not just the transfer step; also fertility_drug (4.5.3.6) and the general contraception/hormone nodes are fine.",
+      "fix": "Link e_ivf_stress/e_ivf_success/e_ivf_multiple also to fertility_drug and p_ivf_stimulate so the evaluation properly covers the whole IVF process rather than just embryo transfer."
+    },
+    {
+      "id": "4.4.1.2 limiting_factor / a_photo_graph / e_greenhouse",
+      "type": "HT scope",
+      "problem": "Correctly HT-gated content but limiting_factor node itself (interacting factors, deciding which limits) is HT-only per spec ('(HT only) these factors interact...'), yet the node has no explicit HT tag/label distinguishing it from the foundation-tier single-factor content (photo_light, photo_co2, photo_temperature). This could cause foundation-tier lessons to be built from an HT-only idea.",
+      "fix": "Mark limiting_factor and a_photo_graph explicitly as HT-only in the node label/scope text to prevent foundation-tier lesson generation from HT content."
+    },
+    {
+      "id": "4.7.2.4 impact of environmental change",
+      "type": "missing HT tag",
+      "problem": "environment_distribution, seasonal_distribution, geographic_distribution, human_distribution nodes correspond to 4.7.2.4 which is explicitly '(biology only) (HT only)' in the spec, but none of these nodes' labels indicate HT-only restriction.",
+      "fix": "Add HT-only qualification to environment_distribution and its dependents (seasonal_distribution, geographic_distribution, human_distribution, warming_distribution) since the source explicitly marks this HT only."
+    },
+    {
+      "id": "4.6.1.5 protein synthesis nodes (protein_template, protein_carrier, protein_fold, mutation_shape, mutation_enzyme, mutation_structural, mutation_neutral, noncoding_variant, sequence_protein)",
+      "type": "missing HT tag",
+      "problem": "Much of 4.6.1.5 detailed protein-synthesis/mutation content is explicitly HT-only per spec ('(HT only) Students should be able to: recall a simple description of protein synthesis...'), but nodes like sequence_protein, protein_template, protein_carrier, protein_fold, mutation_shape, mutation_enzyme, mutation_structural, mutation_neutral, noncoding_variant carry no HT flag.",
+      "fix": "Explicitly flag these nodes as HT-only to match spec restriction; foundation tier should stop at 'DNA is a code for amino acid sequence' (triplet, dna_bases) without the mechanism detail."
+    },
+    {
+      "id": "4.5.3.2 glucagon / a_glucose_feedback",
+      "type": "missing HT tag",
+      "problem": "Glucagon and negative-feedback interaction between insulin and glucagon is explicitly '(HT only)' in spec text, but node 'glucagon' and 'a_glucose_feedback' lack HT labelling.",
+      "fix": "Mark glucagon and a_glucose_feedback as HT-only."
+    },
+    {
+      "id": "4.5.3.3 ADH nodes (adh_release, adh_permeability, adh_reabsorb, a_adh_feedback)",
+      "type": "missing HT tag",
+      "problem": "ADH content is explicitly HT-only per spec ('(HT only) Students should be able to describe the effect of ADH...'), but none of adh_release/adh_permeability/adh_reabsorb/a_adh_feedback are flagged HT.",
+      "fix": "Add HT-only flag to all ADH-related nodes."
+    },
+    {
+      "id": "4.5.3.3 deamination/ammonia_urea",
+      "type": "missing HT tag",
+      "problem": "Deamination of amino acids and ammonia-to-urea conversion is explicitly HT-only in spec, but 'deamination' and 'ammonia_urea' nodes are not flagged HT.",
+      "fix": "Add HT-only flag to deamination and ammonia_urea nodes."
+    },
+    {
+      "id": "4.5.2.2 brain HT content",
+      "type": "missing HT tag",
+      "problem": "'(HT only) Students should be able to explain some of the difficulties of investigating brain function...' — nodes e_brain_complex, e_brain_delicate, brain_damage_evidence, brain_stimulation, brain_mri correspond to this HT-restricted evaluative content but are not flagged HT (only cortex/cerebellum/medulla identification is core-tier).",
+      "fix": "Flag e_brain_complex, e_brain_delicate, brain_damage_evidence, brain_stimulation, brain_mri as HT-only."
+    },
+    {
+      "id": "4.5.2.4 body temperature HT explanation",
+      "type": "missing HT tag",
+      "problem": "Spec states '(HT only) Students should be able to explain how these mechanisms lower or raise body temperature in a given context' — the explanatory linking is HT-only although the descriptive vasodilation/vasoconstriction/sweat/shiver facts are core. Nodes vasodilate, sweat, vasoconstrict, shiver appear to be core-tier facts (acceptable), but there's no separate node capturing the HT-only 'explain in a given context' skill.",
+      "fix": "Add a distinct HT-only node for 'explaining thermoregulation mechanisms in an applied context' separate from the descriptive core-tier mechanism nodes."
+    },
+    {
+      "id": "4.3.3.1 plant disease detection/identification HT tag",
+      "type": "missing HT tag",
+      "problem": "Spec explicitly marks 'Plant diseases can be detected by... Identification can be made by...' as '(HT only)', but nodes plant_stunted, plant_spots, plant_rot, plant_growths, plant_malformed, plant_discolour, p_manual_disease, p_lab_disease, a_plant_kit have no HT flag.",
+      "fix": "Add HT-only flag to the plant disease detection/identification symptom and method nodes (not to the ion-deficiency or defence-response nodes which are core tier)."
+    },
+    {
+      "id": "4.6.1.1 asexual/sexual advantages HT/biology-only tag",
+      "type": "missing biology-only tag",
+      "problem": "4.6.1.3 'Advantages and disadvantages of sexual and asexual reproduction' is explicitly '(biology only)' — nodes e_asexual_parent, e_asexual_energy, e_asexual_fast, malaria_asexual, fungal_spores, runner, bulb, e_sexual_breed, e_sexual_change, e_asexual_change are biology-only content but lack explicit biology-only flag in labels.",
+      "fix": "Add biology-only flag to these nodes since combined science does not include this comparison."
+    },
+    {
+      "id": "4.7.4 trophic levels biology-only tag",
+      "type": "missing biology-only tag",
+      "problem": "Section 4.7.4 'Trophic levels in an ecosystem' is explicitly '(biology only)' but trophic_level, biomass_pyramid, biomass_uneaten, biomass_faeces, biomass_respiration, biomass_urine, apex, secondary_consumer, tertiary_consumer, light_efficiency, biomass_efficiency, a_biomass_efficiency, e_trophic_numbers, a_pyramid nodes are unflagged.",
+      "fix": "Add biology-only flag across all 4.7.4 nodes."
+    },
+    {
+      "id": "4.7.5 food production biology-only tag",
+      "type": "missing biology-only tag",
+      "problem": "Section 4.7.5 is entirely '(biology only)' but food_security, farm_movement, farm_temperature, sustainable_fish, fish_mesh, fish_quota, mycoprotein, p_fusarium, p_harvest_fungus, a_fusarium, gm_insulin-related food nodes, golden_rice, food_diet, food_birth, food_pathogen, food_inputs, food_conflict, e_farm_welfare are unflagged as biology-only.",
+      "fix": "Add biology-only flag to all 4.7.5 nodes."
+    },
+    {
+      "id": "4.5.2.2/4.5.2.3/4.5.2.4 brain/eye/temperature biology-only tag",
+      "type": "missing biology-only tag",
+      "problem": "The brain (4.5.2.2), the eye (4.5.2.3), and control of body temperature (4.5.2.4) sections are explicitly '(biology only)'. Numerous nodes (cortex, cerebellum, medulla, retina, sclera, cornea, iris, ciliary, ligament, myopia, hyperopia, lens, thermoregulator, vasodilate, sweat, vasoconstrict, shiver, etc.) are not flagged biology-only, risking inclusion in combined-science-style lessons or ambiguity about scope.",
+      "fix": "Add explicit biology-only flags to all nodes drawn from 4.5.2.2, 4.5.2.3, 4.5.2.4."
+    },
+    {
+      "id": "4.5.3.3/4.5.4 biology-only tags",
+      "type": "missing biology-only tag",
+      "problem": "'Maintaining water and nitrogen balance' (4.5.3.3) and all of 'Plant hormones' (4.5.4) are biology-only sections, but kidney_filter, urine, dialysis, adh_*, deamination, ammonia_urea, auxin, gibberellin, ethene_ripen, phototropism, gravitropism, and related nodes lack biology-only flags.",
+      "fix": "Add biology-only flag to all nodes sourced from 4.5.3.3 and 4.5.4."
+    },
+    {
+      "id": "4.3.2 monoclonal antibodies HT + biology-only tag",
+      "type": "missing dual tag",
+      "problem": "4.3.2 is explicitly '(biology only) (HT only)'. Nodes monoclonal, p_mouse_antibody, p_hybridoma, p_clone_hybridoma, p_purify_antibody, a_pregnancy, a_assay, a_fluorescent, a_target_drug, a_plant_kit, e_monoclonal lack both flags.",
+      "fix": "Add both biology-only and HT-only flags to all 4.3.2 nodes."
+    },
+    {
+      "id": "4.3.3 plant disease biology-only tag",
+      "type": "missing biology-only tag",
+      "problem": "4.3.3 'Plant disease' entire section is biology-only; nitrate_deficient, magnesium_deficient, plant_wall_defence, cuticle_defence, bark_defence, antibacterial_plant, plant_poison, plant_thorn, plant_curl, plant_mimic, aphid lack biology-only flag.",
+      "fix": "Add biology-only flag to all 4.3.3 nodes."
+    },
+    {
+      "id": "4.1.1.6 culturing microorganisms biology-only tag",
+      "type": "missing biology-only tag",
+      "problem": "4.1.1.6 is explicitly biology-only, but binary_fission, culture_medium, aseptic, bacteria_growth, a_bacterial_population, p_sterilise_media, p_loop, p_inoculate, p_tape, p_invert, p_incubate, p_discs, p_zone, e_discs, a_zone_area, a_antimicrobial, e_condensation, e_incubation lack the flag.",
+      "fix": "Add biology-only flag to all 4.1.1.6/practical-2 nodes."
+    },
+    {
+      "id": "4.6.2.5 cloning biology-only tag",
+      "type": "missing biology-only tag",
+      "problem": "4.6.2.5 'Cloning' is explicitly biology-only; tissue_culture, cuttings, embryo_split, p_clone_enucleate, p_clone_nucleus, p_clone_stimulate, p_clone_implant, a_clone_identity, e_clone_welfare, e_clone_rejection, e_rare_clone, e_crop_clone, e_clone_diversity lack the flag.",
+      "fix": "Add biology-only flag to all 4.6.2.5 nodes."
+    },
+    {
+      "id": "4.6.3 development of understanding biology-only tag",
+      "type": "missing biology-only tag",
+      "problem": "Entire 4.6.3 section (evolution theory, speciation, genetics history, fossils, extinction, resistant bacteria) is biology-only; nodes lamarck, darwin, wallace, speciation, mendel, genes_chromosomes, e_mendel, fossil*, extinction*, resistant_bacteria, mrsa, antibiotic_course, e_antibiotic_develop, classification (4.6.4) etc. are not flagged.",
+      "fix": "Add biology-only flag to all 4.6.3 and 4.6.4 nodes (classification/Linnaeus section 4.6.4 is also biology-only per general biology-only sectioning, verify against spec header)."
+    },
+    {
+      "id": "p_ethics_organism generic node",
+      "type": "unclear/overloaded",
+      "problem": "p_ethics_organism ('Minimising harm when investigating living organisms') is attached broadly via generic AT tags to almost every practical (AT1-8, WS2.4) rather than being scoped per-practical; this is a reasonable general procedural skill but risks being taught with no concrete practical exemplar tied to it, contrary to 'lessons based on matching source excerpts' rule.",
+      "fix": "Tie p_ethics_organism explicitly to the practicals that use living organisms (RP2 bacteria, RP3 plant tissue, RP6 pondweed, RP7 humans, RP8 seedlings, RP9 field organisms, RP10 milk/microorganisms) rather than a blanket generic reference list."
+    },
+    {
+      "id": "generic WS/AT/MS reference tagging",
+      "type": "labelling weakness",
+      "problem": "Many foundational WS/MS/AT nodes (observation, model, hazard, variable, measurement, etc.) are tagged with the entire block of WS/MS/AT codes (e.g. all of WS1.1–1.6, or all MS codes) rather than the specific one/two codes that justify that node. This makes the 'generation scope' ambiguous — lessons based on these nodes could pull from unrelated WS statements.",
+      "fix": "Narrow each generic WS/MS/AT node's reference tags to the specific WS/MS statement(s) it actually operationalises, rather than the full block of codes for that WS/MS category."
+    },
+    {
+      "id": "missing node: WS1.1 use of models over time / theory change with example",
+      "type": "coverage",
+      "problem": "theory_revision covers 'new evidence can change scientific explanations' generically but the specific exam skill 'give an example to show how scientific theories have changed over time' (WS1.1) tied to concrete biology examples (evolution theory, classification, genetics) exists via darwin/lamarck/mendel/classification_evidence nodes, which is adequate — retracted, no action."
+    },
+    {
+      "id": "missing edge: mendel -> genes_chromosomes -> chromosome/gene",
+      "type": "missingEdge",
+      "problem": "genes_chromosomes depends on mendel and chromosome but not on 'gene' node directly even though the fact is specifically that Mendel's 'units' were later called genes.",
+      "fix": "Add edge from gene to genes_chromosomes."
+    },
+    {
+      "id": "missing edge: dna_discovery should depend on genome or dna",
+      "type": "missingEdge",
+      "problem": "dna_discovery depends on dna_helix, sequence_protein, genes_chromosomes but the historical narrative in 4.6.3.3 explicitly involves DNA structure being determined mid-20th century — dependency set is acceptable, but missing explicit dependency on 'gene' concept established pre-DNA-structure discovery for a complete prerequisite chain. Minor.",
+      "fix": "Optional: add gene as prerequisite to dna_discovery."
+    },
+    {
+      "id": "missing concept: WS 1.2 'ways a model can be tested by observation'",
+      "type": "missingConcepts",
+      "problem": "Spec WS1.2 example 'Give examples of ways in which a model can be tested by observation or experiment' has no dedicated node distinguishing this from generic model/e_model_limits nodes.",
+      "fix": "Consider adding a node for 'testing a model against experimental observation' as distinct testable WS skill, or confirm e_model_limits covers this adequately (currently it only covers limitation, not testability)."
+    },
+    {
+      "id": "missing concept: WS3.6 comparing which of two hypotheses better explains data",
+      "type": "missingConcepts",
+      "problem": "a_hypothesis node covers judging consistency of data with a given hypothesis but the spec explicitly also requires 'identify which of two or more hypotheses provides a better explanation' — a comparative judgement, not currently a separate distinct node.",
+      "fix": "Add a node for comparing competing hypotheses against the same dataset, separate from single-hypothesis consistency checking."
+    },
+    {
+      "id": "missing concept: WS1.5 voluntary vs imposed / familiar vs unfamiliar risk categories",
+      "type": "missingConcepts",
+      "problem": "e_risk_perception is generic; the spec gives specific reasoning categories (voluntary vs imposed, familiar vs unfamiliar, visible vs invisible) which are examinable distinctions not captured as sub-details.",
+      "fix": "Expand e_risk_perception detail list or add explicit supporting detail nodes for these named risk-perception categories."
+    },
+    {
+      "id": "missing concept: 4.2.2.1 rate calculations for chemical reactions (generic)",
+      "type": "missingConcepts",
+      "problem": "Spec text 'Students should be able to carry out rate calculations for chemical reactions' under digestive enzymes appears reflected only implicitly via 'rate' node and 'a_amylase_rate' but no generic node ties rate calculation explicitly to enzyme content at the point specified (4.2.2.1) beyond the RP5 practical-specific one.",
+      "fix": "Confirm rate/a_amylase_rate coverage is sufficient; if not, add a generic 'enzyme reaction rate calculation' node independent of the RP5 practical context."
+    },
+    {
+      "id": "missing concept: 4.1.1.2 ribosome function location for protein synthesis link",
+      "type": "minor",
+      "problem": "ribosome node exists and correctly links to protein_synthesis via later nodes (protein_template), fine — no issue."
+    },
+    {
+      "id": "e_food_control node placement",
+      "type": "possible inaccuracy",
+      "problem": "e_food_control describes 'a known negative control checks food-test contamination' — reasonable WS2.2 control-variable application, correctly scoped to RP4; acceptable.",
+      "fix": "No action."
+    },
+    {
+      "id": "wrongEdge: single_exchange depends on cell but sa_volume should also connect to multicellular_exchange more directly",
+      "type": "minor",
+      "problem": "multicellular_exchange depends on single_exchange and organ_system — organ_system node itself has no listed detail tying it back to sa_volume directly, creating an indirect chain that is acceptable but slightly awkward; not a genuine error.",
+      "fix": "No action needed, acceptable chain."
+    },
+    {
+      "id": "a_size node dependency",
+      "type": "correct",
+      "problem": "a_size depends on magnification, rearrange, unit_conversion — correctly reflects the magnification formula rearrangement skill (4.1.1.5). No issue.",
+      "fix": "No action."
+    },
+    {
+      "id": "missing edge: amylase_sites/protease_sites/lipase_sites should depend on stomach's acid-neutral distinction",
+      "type": "minor",
+      "problem": "protease_sites correctly links to stomach; fine as is."
+    },
+    {
+      "id": "4.7.2.4 wrong tier scope for 'impact of environmental change' link to biodiversity",
+      "type": "wrongEdge",
+      "problem": "environment_distribution's spec-mandated link is explicitly to biodiversity/human-interaction section — edges from environment_distribution to seasonal/geographic/human_distribution exist, and warming_distribution links to greenhouse_gas, which is fine; but there's no edge from environment_distribution or its children to 'biodiversity' node despite spec's explicit cross-link 'There are links with this content to Biodiversity and the effect of human interaction on ecosystems'.",
+      "fix": "Add edge from environment_distribution (or warming_distribution) to biodiversity to reflect the spec's explicit cross-reference."
+    },
+    {
+      "id": "missing edge: chd (coronary heart disease) should depend on artery",
+      "type": "missingEdge",
+      "problem": "chd depends on coronary and lipid but coronary heart disease is fundamentally about narrowing of the coronary arteries — 'artery' general structure node is not a listed prerequisite even though vessel-structure understanding (artery node) logically precedes disease-specific narrowing.",
+      "fix": "Add edge from artery to chd."
+    },
+    {
+      "id": "missing edge: e_stem_ethics should also depend on ethics node explicitly (already does)",
+      "type": "none",
+      "problem": "Checked — e_stem_ethics depends on embryonic_stem and ethics already. No issue."
+    },
+    {
+      "id": "Practical AT coverage check: RP1 magnification scale node",
+      "type": "coverage-ok",
+      "problem": "p_scale_bar node correctly requires magnification scale per RP1 explicit instruction 'A magnification scale must be included' — good coverage."
+    },
+    {
+      "id": "Practical RP9 AT8 continuous sampling coverage",
+      "type": "missingConcepts",
+      "problem": "RP9's AT8 reference to 'continuous sampling in an investigation' (more complex contexts) is not distinctly represented; existing p_quadrat/p_transect/p_field_factor cover standard sampling but not the AT8-specific continuous-sampling nuance mentioned for RP9.",
+      "fix": "Consider adding a node for continuous/repeated sampling technique specific to RP9's AT8 requirement, distinguishing it from the basic quadrat/transect procedure."
+    },
+    {
+      "id": "missing concept: WS2.5 'suggest and describe an appropriate sampling technique in a given context' generic (non-ecology) application",
+      "type": "missingConcepts",
+      "problem": "p_random_sample covers representative sampling generally, but the spec's WS2.5 general skill of selecting/justifying a sampling technique in an arbitrary given context (not just ecology quadrats) has no standalone generic node beyond the ecology-specific p_quadrat_random.",
+      "fix": "Confirm p_random_sample suffices as the generic node; if the intent is a distinct 'justify choice of sampling method' skill, add it explicitly."
+    }
+  ],
+  "missingConcepts": [
+    {
+      "ref": "4.1.1.2",
+      "concept": "Explicit node for 'estimating relative size/area of sub-cellular structures' beyond p_scale_bar/a_size — spec text separately calls out estimation skill (MS 1d, 3a) as its own examinable ability distinct from the magnification formula calculation."
+    },
+    {
+      "ref": "4.2.2.5",
+      "concept": "No node explicitly covers 'defects in the immune system increase susceptibility to infectious disease' as distinct from general immune_defect -> pathogen link quality; immune_defect exists and seems to cover it — verify sufficiency, otherwise fine."
+    },
+    {
+      "ref": "4.6.1.4",
+      "concept": "No explicit node for 'the whole human genome has been studied' as a standalone factual claim distinct from genome_disease/genome_migration/genome_treatment — currently only the applications are modelled, not the base fact that the genome project was completed."
+    },
+    {
+      "ref": "4.7.3.6",
+      "concept": "No standalone node for the general claim 'many human activities are reducing biodiversity' as the umbrella cause before listing specific human interaction subtypes (deforestation, waste, land use) — biodiversity node covers definition but not this causal claim explicitly."
+    },
+    {
+      "ref": "3.0 WS1.4",
+      "concept": "No node for 'describe/evaluate methods to tackle problems caused by human impact on environment' as a generic evaluative skill distinct from the specific maintaining_biodiversity content nodes."
+    },
+    {
+      "ref": "3.0 MS3a symbols",
+      "concept": "No node for understanding and using mathematical symbols (=, <, <<, >>, >, ∝, ~) as listed explicitly in MS3a."
+    }
+  ],
+  "missingEdges": [
+    {
+      "from": "artery",
+      "to": "chd",
+      "why": "Coronary heart disease is narrowing of coronary arteries; understanding artery structure is a genuine prerequisite for understanding CHD pathology."
+    },
+    {
+      "from": "biodiversity",
+      "to": "warming_distribution",
+      "why": "Spec explicitly cross-references 4.7.2.4 environmental-change impact with the biodiversity/human-interaction section."
+    },
+    {
+      "from": "gene",
+      "to": "genes_chromosomes",
+      "why": "The historical narrative in 4.6.3.3 is specifically that Mendel's inherited 'units' were identified as genes, so the gene concept is a direct prerequisite for that historical claim."
+    },
+    {
+      "from": "p_ivf_stimulate",
+      "to": "e_ivf_stress",
+      "why": "Evaluation of IVF's emotional/physical stress applies to the whole stimulation-to-transfer process, not solely the transfer step."
+    },
+    {
+      "from": "fertility_drug",
+      "to": "e_ivf_success",
+      "why": "Low success rates are a property of the overall fertility-drug/IVF process, and the evaluation node should depend on the core hormone-treatment concept as well as the transfer procedure."
+    }
+  ],
+  "wrongEdges": [
+    {
+      "from": "resolution_micro",
+      "to": "4.1.1.5/8.2.1",
+      "why": "Not a genuine wrongEdge in structure, but resolution_micro, electron_resolution and electron_magnification collectively over-fragment a single spec idea (electron microscopes have higher magnification and resolution enabling finer detail); the layered dependency chain (resolution_micro -> electron_resolution -> [dependents]) implies three independently testable ideas where the spec presents one."
+    }
+  ],
+  "summaryTruncated": true
+}

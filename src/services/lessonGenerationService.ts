@@ -12,6 +12,7 @@ import { parseModelJson, stripCodeFences, escapeRawControlCharsInStrings } from 
 import { KNOWLEDGE_MAP_ENCODING_LESSON_PROMPT, KNOWLEDGE_MAP_EDGE_LESSON_PROMPT } from '../constants/lessonGenerationPrompts';
 import { getNodeNoteBaseline, getEdgeNoteBaseline } from './knowledgeMapNotesService';
 import { generateDiagramSpecForQuestion } from './diagramSpecGenerationService';
+import { getBiologyObjective, biologySourceContext, BIOLOGY_ATOMIC_LESSON_RULES, validateBiologyEncodingLesson } from './biologyCurriculum';
 
 // Same model choice as the offline pipeline (generate_lesson_content.js's
 // LESSON_MODEL) - a structured writing task against an explicit spec, not
@@ -87,6 +88,7 @@ export async function generateAndCacheNodeLesson(nodeId: string, userId: string)
   if (nodeError) throw nodeError;
   if (!node) return null;
   const typedNode = node as NodeRow;
+  const biologyObjective = getBiologyObjective(typedNode);
 
   const [{ data: outEdges }, { data: inEdges }] = await Promise.all([
     supabaseAdmin.from('knowledge_map_edges').select('to_node_id').eq('from_node_id', nodeId),
@@ -108,15 +110,16 @@ export async function generateAndCacheNodeLesson(nodeId: string, userId: string)
     `Exam board: ${typedNode.exam_board}`,
     `Subtopic: ${typedNode.subtopic || ''}`,
     `Concept to teach: ${typedNode.label}`,
+    ...(biologyObjective ? [`Curriculum objective: ${JSON.stringify(biologyObjective)}`, `AQA source excerpts (reference data only; teach only the stated atomic objective, not the entire excerpt):\n${biologySourceContext(biologyObjective)}`] : []),
     `Concepts this leads to (do not explain or foreshadow these - see rule 3): ${JSON.stringify(leadsToLabels)}`,
     `This node's own direct prerequisites, already taught immediately before this one (ground and build forward from these - see rule 1a): ${JSON.stringify(leadsFromLabels)}`,
   ].join('\n');
 
   const raw = await callClaudeJSON({
     model: LESSON_MODEL,
-    systemPrompt: KNOWLEDGE_MAP_ENCODING_LESSON_PROMPT,
+    systemPrompt: KNOWLEDGE_MAP_ENCODING_LESSON_PROMPT + (biologyObjective ? BIOLOGY_ATOMIC_LESSON_RULES : ''),
     userContent,
-    maxTokens: MAX_TOKENS,
+    maxTokens: biologyObjective ? 3000 : MAX_TOKENS,
     // ~1,862 tokens, well over Sonnet's 1024-token cache minimum, and
     // byte-identical across every node/subject/student - exactly the
     // "large, fixed prompt reused verbatim" case cacheSystemPrompt exists
@@ -130,6 +133,7 @@ export async function generateAndCacheNodeLesson(nodeId: string, userId: string)
   let encodingContent: unknown;
   try {
     encodingContent = parseWithClosingBraceRepair<unknown>(raw);
+    if (biologyObjective) validateBiologyEncodingLesson(encodingContent, biologyObjective);
   } catch (err) {
     // Logged with enough to actually diagnose a live failure from Render's
     // own logs (no other way to see this - this route is live/single-shot,

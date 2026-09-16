@@ -3,6 +3,7 @@ import { supabaseAdmin } from './supabaseAdmin';
 import { callClaudeJSON, MODELS } from './claudeClient';
 import { CHAIN_GENERATION_PROMPT, FACT_CHECK_PROMPT, SPEC_OUTLINE_RESTATE_PROMPT, SPEC_MICROTOPICS_EXTRACT_PROMPT } from '../constants/chainPrompts';
 import { resolveSubjectTriple } from './subjectResolution';
+import { isAqaBiologyHigher, biologyThemeMap } from './biologyCurriculum';
 
 function stripCodeFences(text: string): string {
   return text.trim().replace(/^```(?:json)?\s*/i, '').replace(/```\s*$/, '').trim();
@@ -136,6 +137,7 @@ export function stripGcseTierForPlanMatch(qualification: string): string {
 // fallbackThemeName), so a subject without a seeded plan is never worse
 // off than before this feature, just less nicely named.
 export async function getSubtopicThemeMap(subject: string, qualification: string, examBoard: string): Promise<Map<string, string>> {
+  if (isAqaBiologyHigher(subject, qualification, examBoard)) return biologyThemeMap();
   const { data, error } = await supabaseAdmin
     .from('spec_lesson_plans')
     .select('qualification, exam_board, subtopic, theme')

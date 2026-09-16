@@ -22,6 +22,7 @@ import { resolveSubjectTriple } from './subjectResolution';
 import { topologicalNodeOrder } from './nodeOrdering';
 import { SUBTOPIC_NODE_ORDER_PROMPT, WORKED_EXAMPLE_STEP_CHECK_PROMPT } from '../constants/knowledgeMapNotesPrompts';
 import { filterTeachingLanguage } from './noteFilter';
+import { isAqaBiologyHigher, biologyNodeOrder } from './biologyCurriculum';
 
 export type NodeNoteVisual =
   | { type: 'diagram'; spec: unknown }
@@ -440,6 +441,7 @@ export async function getOrComputeSubtopicOrder(
   subtopic: string,
   nodes: { id: string; label: string }[]
 ): Promise<string[]> {
+  if (isAqaBiologyHigher(subject, qualification, examBoard)) return biologyNodeOrder(nodes);
   const cached = await getCachedSubtopicOrder(subject, qualification, examBoard, subtopic);
   if (cached) {
     const nodeIds = new Set(nodes.map((n) => n.id));
@@ -492,11 +494,9 @@ export async function getOrComputeSubtopicOrder(
 // real friction for no real benefit, since the note is compiled from the
 // same explanation either lesson already showed in full.
 export async function getNotesIndexForUser(userId: string): Promise<{ subjects: NotesIndexSubject[] }> {
-  const { data: reviewRows, error: reviewError } = await supabaseAdmin
-    .from('concept_reviews')
-    .select('concept_id')
-    .eq('user_id', userId);
-  if (reviewError) throw reviewError;
+  const reviewRows = await selectAllRows<{ concept_id: string }>(
+    'concept_reviews', 'concept_id', q => q.eq('user_id', userId)
+  );
   const encodedConceptIds = new Set((reviewRows || []).map((r) => r.concept_id as string));
 
   // Only used to discover which (subject, qualification, exam_board)
@@ -549,6 +549,13 @@ export async function getNotesIndexForUser(userId: string): Promise<{ subjects: 
       (q) => q.ilike('subject', triple.subject.trim()).ilike('qualification', triple.qualification.trim()).ilike('exam_board', triple.examBoard.trim())
     );
     const nodeById = new Map(allNodes.map((n) => [n.id, n]));
+    // A generated lesson is readable as a note even when opened Untracked.
+    // Availability is separate from encoding/FSRS progress: browsing notes
+    // must never create a concept_reviews row or unlock a review link.
+    const generatedLessons = await selectRowsByIdChunked<{ node_id: string }>(
+      'knowledge_map_node_lessons', 'node_id', 'node_id', allNodes.map(n => n.id)
+    );
+    const generatedNodeIds = new Set(generatedLessons.map(row => row.node_id));
 
     // Fetched with no id filter then narrowed in JS - a large .in() id
     // list itself risks a "Bad Request" (see supabasePagination.ts),
@@ -603,11 +610,11 @@ export async function getNotesIndexForUser(userId: string): Promise<{ subjects: 
       nodeId: n.id,
       label: n.label,
       encoded: encodedConceptIds.has(n.concept_id),
-      hasNotes: encodedConceptIds.has(n.concept_id),
+      hasNotes: generatedNodeIds.has(n.id),
       links: (edgesByFromNode.get(n.id) || [])
         .filter((e) => {
           const toNode = nodeById.get(e.to_node_id);
-          return toNode && encodedConceptIds.has(toNode.concept_id);
+          return toNode && encodedConceptIds.has(n.concept_id) && encodedConceptIds.has(toNode.concept_id);
         })
         .map((e) => {
           const toNode = nodeById.get(e.to_node_id)!;

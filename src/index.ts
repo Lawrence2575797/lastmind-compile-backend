@@ -42,9 +42,6 @@ import tutoringSlotsRouter from './routes/tutoringSlots';
 import encouragementRouter from './routes/encouragement';
 import weeklyProgressReportRouter from './routes/weeklyProgressReport';
 import economicsDiagramsRouter from './routes/economicsDiagrams';
-import checkoutRouter from './routes/checkout';
-import lockBalanceRouter from './routes/lockBalance';
-import stripeWebhookRouter from './routes/webhooks/stripe';
 import { globalRateLimiter } from './services/rateLimiters';
 import { startRetentionScheduler } from './services/retentionService';
 
@@ -104,9 +101,6 @@ app.use('/', tutoringSlotsRouter);
 app.use('/', encouragementRouter);
 app.use('/', weeklyProgressReportRouter);
 app.use('/', economicsDiagramsRouter);
-app.use('/', checkoutRouter);
-app.use('/', lockBalanceRouter);
-app.use('/webhooks', stripeWebhookRouter);
 
 app.get('/health', (_req, res) => res.send('ok'));
 

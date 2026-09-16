@@ -1,9 +1,11 @@
 import { Router, Request, Response } from 'express';
-import { requireAuth, isUserPaid } from '../services/authMiddleware';
+import { requireAuth } from '../services/authMiddleware';
 import { syncEndpointLimiter, actionEndpointLimiter } from '../services/rateLimiters';
 import { getOrCreateLockBalance, sweepExpiredLockHolds, depositForLessonBooking, InsufficientLocksError } from '../services/lockService';
-import { LESSON_DEPOSIT_LOCK_AMOUNT, monthlyLockAllotmentForTier } from '../constants/locks';
+import { LESSON_DEPOSIT_LOCK_AMOUNT, getMonthlyAllotment } from '../constants/locks';
 import { supabaseAdmin } from '../services/supabaseAdmin';
+
+import { getOrCreateSubscription } from '../services/subscriptionService';
 
 const router = Router();
 
@@ -13,20 +15,23 @@ router.use('/locks', requireAuth);
 // Grants the monthly allotment and creates the user's row on their very
 // first call, applies the lazy monthly reset if a new calendar month has
 // started, and sweeps any held deposit whose booked day has fully passed
-// into 'forfeited' — see lockService.ts's getOrCreateLockBalance and
+// into 'forfeited' â€” see lockService.ts's getOrCreateLockBalance and
 // sweepExpiredLockHolds. Same lazy, read-triggered pattern as the
 // tutoring queue's own overdue sweep; this codebase has no cron.
-// `allotment` added for the sidebar usage bar (learn/index.html) — the
+// `allotment` added for the sidebar usage bar (learn/index.html) â€” the
 // raw monthly figure is fine to expose (it's a lock COUNT, not a $
-// figure), unlike the deliberately-obscured £/Lock exchange rate itself.
+// figure), unlike the deliberately-obscured Â£/Lock exchange rate itself.
 router.get('/locks/balance', syncEndpointLimiter, async (req: Request, res: Response) => {
   try {
     await sweepExpiredLockHolds(req.userId as string);
-    const [balance, isPaid] = await Promise.all([
+    const [balance, subscription] = await Promise.all([
       getOrCreateLockBalance(req.userId as string),
-      isUserPaid(req.userId as string),
+      getOrCreateSubscription(req.userId as string),
     ]);
-    res.json({ ...balance, allotment: monthlyLockAllotmentForTier(isPaid) });
+    const allotment = getMonthlyAllotment(subscription.tier);
+    res.json({ ...balance, allotment, monthlyAllotment: allotment, tier: subscription.tier,
+      periodStart: subscription.period_start, periodEnd: subscription.period_end,
+      percentageUsed: Math.round(Math.max(0, allotment - balance.balance) / allotment * 100) });
   } catch (err) {
     console.error('Lock balance fetch failed:', err);
     res.status(500).json({ error: 'could not load your Locks balance' });

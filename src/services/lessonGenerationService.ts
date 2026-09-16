@@ -117,7 +117,7 @@ export async function generateAndCacheNodeLesson(nodeId: string, userId: string)
 
   const raw = await callClaudeJSON({
     model: LESSON_MODEL,
-    systemPrompt: KNOWLEDGE_MAP_ENCODING_LESSON_PROMPT + (biologyObjective ? BIOLOGY_ATOMIC_LESSON_RULES : ''),
+    systemPrompt: biologyObjective ? BIOLOGY_ATOMIC_LESSON_RULES : KNOWLEDGE_MAP_ENCODING_LESSON_PROMPT,
     userContent,
     maxTokens: biologyObjective ? 3000 : MAX_TOKENS,
     // ~1,862 tokens, well over Sonnet's 1024-token cache minimum, and

@@ -24,6 +24,24 @@ const profiles = [
       ['extended_6', '6-mark extended response', 'Evaluate', 6, 'levels'],
     ],
   },
+  {
+    subject: 'Chemistry', qualification: 'GCSE', examBoard: 'AQA', style: 'points',
+    definitions: [
+      { key: 'AO1', label: 'Knowledge and understanding' },
+      { key: 'AO2', label: 'Application' },
+      { key: 'AO3', label: 'Analysis and evaluation' },
+    ],
+    notes: 'AQA GCSE Chemistry rewards accurate chemical knowledge, application to unfamiliar contexts and practical work, and analysis or evaluation of evidence. Six-mark extended responses are judged by level of response.',
+    types: [
+      ['multiple_choice_1', '1-mark multiple choice', 'Select', 1, 'multiple_choice'],
+      ['state_1', '1-mark state question', 'State', 1, 'points'],
+      ['describe_2', '2-mark describe question', 'Describe', 2, 'points'],
+      ['calculate_3', '3-mark calculation', 'Calculate', 3, 'points'],
+      ['explain_4', '4-mark explain question', 'Explain', 4, 'points'],
+      ['analyse_5', '5-mark analyse question', 'Analyse', 5, 'points'],
+      ['extended_6', '6-mark extended response', 'Evaluate', 6, 'levels'],
+    ],
+  },
   ...['GCSE Foundation', 'GCSE Higher'].map((qualification) => ({
     subject: 'Mathematics', qualification, examBoard: 'Edexcel', style: 'mab',
     definitions: [

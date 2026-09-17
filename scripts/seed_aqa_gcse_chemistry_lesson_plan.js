@@ -364,6 +364,13 @@ async function main() {
     }
   }
 
+  const { error: deleteError } = await supabase.from('spec_lesson_plans').delete().match({
+    subject: SUBJECT,
+    qualification: QUALIFICATION,
+    exam_board: EXAM_BOARD,
+  });
+  if (deleteError) throw deleteError;
+
   console.log(`Inserting ${rows.length} lesson plan rows...`);
   const { error } = await supabase.from('spec_lesson_plans').insert(rows);
   if (error) {

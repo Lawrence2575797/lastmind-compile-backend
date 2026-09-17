@@ -1,0 +1,362 @@
+{
+  "nodes": 512,
+  "edges": 691,
+  "roots": [
+    {
+      "id": "WS_MODEL_DEV",
+      "label": "Scientific models and theories develop over time with new data"
+    },
+    {
+      "id": "WS_VARIABLES",
+      "label": "Independent, dependent and control variables"
+    },
+    {
+      "id": "WS_TABLES_CHARTS",
+      "label": "Constructing and interpreting frequency tables, bar charts and histograms"
+    },
+    {
+      "id": "WS_SCI_VOCAB",
+      "label": "Using scientific vocabulary, terminology and definitions"
+    },
+    {
+      "id": "MS_DECIMALS",
+      "label": "Recognising and using decimal form"
+    },
+    {
+      "id": "MS_RATIO_FRACTION_PERCENT",
+      "label": "Using ratios, fractions and percentages"
+    },
+    {
+      "id": "MS_ALGEBRA_SYMBOLS",
+      "label": "Understanding and using algebraic/mathematical symbols"
+    },
+    {
+      "id": "MS_LINEAR_RELATIONSHIP",
+      "label": "Understanding y = mx + c as a linear relationship"
+    },
+    {
+      "id": "MS_GEOMETRY_VISUALISE",
+      "label": "Visualising and representing 2D and 3D forms"
+    },
+    {
+      "id": "PS_TIMED_READINGS",
+      "label": "Taking timed readings at fixed intervals"
+    },
+    {
+      "id": "ATOMS_ELEMENTS",
+      "label": "Atoms and elements"
+    },
+    {
+      "id": "C2_ELECTRON_SHELLS",
+      "label": "Electron shell arrangement and outer shell electrons"
+    },
+    {
+      "id": "C2_STATES_MODEL",
+      "label": "Simple particle model of solid, liquid and gas states"
+    },
+    {
+      "id": "C2_NANOPARTICLE_SCALE",
+      "label": "Nanoscience size range (1-100 nm) compared to fine (PM2.5) and coarse (PM10) particles"
+    },
+    {
+      "id": "C2_SA_VOLUME_RATIO_SCALING",
+      "label": "Surface area to volume ratio increases by factor of 10 as cube side decreases by factor of 10"
+    },
+    {
+      "id": "MS_REARRANGE",
+      "label": "Changing the subject of an equation"
+    },
+    {
+      "id": "MS_RATIO",
+      "label": "Using ratios, fractions and percentages"
+    },
+    {
+      "id": "AT1_MEASURE",
+      "label": "Using apparatus to measure mass, time, temperature and volume accurately"
+    },
+    {
+      "id": "CONSERVATION_MASS",
+      "label": "Law of conservation of mass"
+    },
+    {
+      "id": "T0_IONS_CHARGE",
+      "label": "Ions form by loss/gain of electrons giving charged particles"
+    },
+    {
+      "id": "T0_FORMULAE_IONIC",
+      "label": "Deriving formulae of ionic compounds from ion charges"
+    },
+    {
+      "id": "T0_BALANCING_EQ",
+      "label": "Balancing symbol equations"
+    },
+    {
+      "id": "T0_MOLE_CONC",
+      "label": "Moles and concentration (mol/dm3)"
+    },
+    {
+      "id": "T0_SIG_FIGS",
+      "label": "Using an appropriate number of significant figures"
+    },
+    {
+      "id": "T0_MEAN",
+      "label": "Calculating arithmetic mean from repeated measurements"
+    },
+    {
+      "id": "T0_BUNSEN",
+      "label": "Safe use of a Bunsen burner and heating devices"
+    },
+    {
+      "id": "T0_FILTRATION",
+      "label": "Filtration technique"
+    },
+    {
+      "id": "T0_EVAPORATION",
+      "label": "Evaporation and crystallisation technique"
+    },
+    {
+      "id": "T0_BURETTE_PIPETTE",
+      "label": "Using a burette and pipette to measure liquid volumes accurately"
+    },
+    {
+      "id": "T0_INDICATOR_ENDPOINT",
+      "label": "Using an indicator to detect a titration endpoint colour change"
+    },
+    {
+      "id": "T0_GAS_COLLECTION",
+      "label": "Collecting and measuring the volume of a gas produced"
+    },
+    {
+      "id": "T0_TEMP_MEASURE",
+      "label": "Using a thermometer to measure temperature accurately"
+    },
+    {
+      "id": "T0_INDEP_DEP_VAR",
+      "label": "Identifying independent, dependent and control variables"
+    },
+    {
+      "id": "T0_MEAN_CALC",
+      "label": "Calculating an arithmetic mean from repeated readings"
+    },
+    {
+      "id": "T0_GRAPH_PLOT",
+      "label": "Plotting two variables from experimental data on a graph"
+    },
+    {
+      "id": "T0_PARTICLE_COLLISION",
+      "label": "Particle collision model of reactions"
+    },
+    {
+      "id": "T0_HALF_EQUATIONS",
+      "label": "Writing half equations for electrode reactions"
+    },
+    {
+      "id": "T0_MOLES_CONC",
+      "label": "Moles and concentration calculations (mol/dm3)"
+    },
+    {
+      "id": "ENERGY_CONSERVED",
+      "label": "Conservation of energy in chemical reactions"
+    },
+    {
+      "id": "BOND_BREAKING_ENERGY",
+      "label": "Bond breaking requires energy input (HT)"
+    },
+    {
+      "id": "BOND_FORMING_ENERGY",
+      "label": "Bond forming releases energy (HT)"
+    },
+    {
+      "id": "SIMPLE_CELL_DEF",
+      "label": "Simple cell: definition and construction"
+    },
+    {
+      "id": "WS_TANGENT",
+      "label": "Drawing a tangent to a curve and finding its gradient"
+    },
+    {
+      "id": "WS_GRAPH_PLOT",
+      "label": "Plotting and interpreting graphs from experimental data"
+    },
+    {
+      "id": "WS_SIGFIG_MEAN",
+      "label": "Using significant figures and calculating arithmetic means"
+    },
+    {
+      "id": "WS_GAS_VOLUME_MEASURE",
+      "label": "Measuring gas volume produced using a gas syringe or displacement of water"
+    },
+    {
+      "id": "WS_TURBIDITY_TIMING",
+      "label": "Timing a colour change or turbidity change (e.g. disappearing cross method)"
+    },
+    {
+      "id": "PARTICLE_MODEL_BASIC",
+      "label": "Particles in motion and collisions between reacting particles"
+    },
+    {
+      "id": "REVERSIBLE_REACTIONS",
+      "label": "Reversible reactions and the reversible arrow notation"
+    },
+    {
+      "id": "EXO_ENDO_DEFINITIONS_EXT",
+      "label": "Exothermic and endothermic reactions (recap for reversible context)"
+    },
+    {
+      "id": "ORG_CARBON_BONDING",
+      "label": "Carbon forms chains and rings via C-C bonds enabling organic diversity"
+    },
+    {
+      "id": "WS_SIGFIG",
+      "label": "Using an appropriate number of significant figures in calculations and answers"
+    },
+    {
+      "id": "WS_RATIO",
+      "label": "Using ratios, fractions, decimals and percentages in calculations"
+    },
+    {
+      "id": "WS_GRAPH",
+      "label": "Plotting and reading data from graphs (axes, scales, line of best fit)"
+    },
+    {
+      "id": "WS_BUNSEN",
+      "label": "Safe use of a Bunsen burner and water bath/electric heater for heating"
+    },
+    {
+      "id": "WS_FILTRATION",
+      "label": "Filtration technique to separate an insoluble solid from a liquid"
+    },
+    {
+      "id": "WS_EVAPCRYST",
+      "label": "Evaporation and crystallisation technique to obtain solid crystals from solution"
+    },
+    {
+      "id": "WS_TITRATION_TECH",
+      "label": "Titration technique: using a burette, pipette and indicator to find an accurate end point"
+    },
+    {
+      "id": "WS_GAS_COLLECT",
+      "label": "Measuring the volume of gas produced using a gas syringe or displacement of water"
+    },
+    {
+      "id": "WS_TEMP_MEASURE",
+      "label": "Measuring temperature change accurately using a thermometer in reacting solutions"
+    },
+    {
+      "id": "WS_DISTILLATION",
+      "label": "Simple distillation technique to separate a solvent from a solution"
+    },
+    {
+      "id": "WS_PH_MEASURE",
+      "label": "Measuring pH using indicators, pH paper or a pH probe"
+    },
+    {
+      "id": "PURE_SUBSTANCE",
+      "label": "Pure substances: definition (single element or compound, not mixed)"
+    },
+    {
+      "id": "CHROM_PRINCIPLE",
+      "label": "Chromatography principle: stationary and mobile phases, separation by distribution"
+    },
+    {
+      "id": "IONIC_EQUATIONS_BG",
+      "label": "Writing balanced symbol equations (background)"
+    },
+    {
+      "id": "METAL_HYDROXIDE_PROC",
+      "label": "Testing metal ions with sodium hydroxide solution: procedure (chemistry only)"
+    },
+    {
+      "id": "HALIDE_TEST_PROC",
+      "label": "Testing for halide ions using silver nitrate and dilute nitric acid: procedure (chemistry only)"
+    },
+    {
+      "id": "SULFATE_TEST_PROC",
+      "label": "Testing for sulfate ions using barium chloride and dilute hydrochloric acid: procedure (chemistry only)"
+    },
+    {
+      "id": "INSTRUMENTAL_METHODS",
+      "label": "Instrumental methods of analysis: accurate, sensitive, rapid (chemistry only)"
+    },
+    {
+      "id": "ATM_EARLY_VOLCANIC",
+      "label": "Early Earth's atmosphere formed by intense volcanic activity"
+    },
+    {
+      "id": "PHOTOSYNTHESIS_EQ",
+      "label": "Photosynthesis equation and its role in producing oxygen"
+    },
+    {
+      "id": "FUEL_COMPOSITION_ELEMENTS",
+      "label": "Fuels contain carbon and/or hydrogen and may contain sulfur"
+    },
+    {
+      "id": "T0_SIGFIG",
+      "label": "Using appropriate significant figures"
+    },
+    {
+      "id": "T0_RATIO",
+      "label": "Using ratios, fractions and percentages"
+    },
+    {
+      "id": "T0_GRAPHNUM",
+      "label": "Translating information between graphical and numeric form"
+    },
+    {
+      "id": "T0_ORDERMAG",
+      "label": "Using orders of magnitude to evaluate data significance"
+    },
+    {
+      "id": "T0_TITRATION",
+      "label": "Titration technique using a burette and pipette"
+    },
+    {
+      "id": "T0_MOLCONC",
+      "label": "Concentration in mol/dm3 and converting to g/dm3"
+    },
+    {
+      "id": "T0_PH",
+      "label": "Measuring pH using indicators and probes"
+    },
+    {
+      "id": "T0_EVAP_CRYST",
+      "label": "Evaporation and crystallisation technique"
+    },
+    {
+      "id": "T0_DISTILLATION",
+      "label": "Simple distillation technique"
+    },
+    {
+      "id": "T0_DYNEQUIL",
+      "label": "Dynamic equilibrium and Le Chatelier's principle"
+    },
+    {
+      "id": "T0_RATEFACTORS",
+      "label": "Factors affecting rate of reaction (temperature, concentration, pressure, catalysts)"
+    },
+    {
+      "id": "T0_REACTIVITY",
+      "label": "Reactivity series of metals"
+    },
+    {
+      "id": "T0_ELECTROLYSIS",
+      "label": "Electrolysis of aqueous solutions"
+    },
+    {
+      "id": "N10_1_1",
+      "label": "Human use of Earth's resources for warmth, shelter, food and transport"
+    },
+    {
+      "id": "N10_2_1",
+      "label": "Definition of potable water vs pure water"
+    },
+    {
+      "id": "N10_9_3",
+      "label": "Polymer properties depend on monomer and production conditions"
+    }
+  ],
+  "usage": {
+    "calls": 16,
+    "estimatedUsd": 6.54040315
+  }
+}

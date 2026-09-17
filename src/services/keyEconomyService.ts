@@ -88,3 +88,38 @@ export async function getKeyBalance(userId: string): Promise<number> {
   if (createError) throw createError;
   return Number(created.balance) || 0;
 }
+
+export async function getOwnedBackgroundRewards(userId: string): Promise<string[]> {
+  const { data, error } = await supabaseAdmin
+    .from('user_theme_rewards')
+    .select('reward_key')
+    .eq('user_id', userId);
+  if (error) throw error;
+  return (data || []).map((row) => row.reward_key as string);
+}
+
+export async function redeemBackgroundReward(userId: string, rewardKey: string, cost: number): Promise<{
+  redeemed: boolean;
+  alreadyOwned: boolean;
+  balance: number;
+}> {
+  const { data, error } = await supabaseAdmin.rpc('redeem_background_reward', {
+    p_user_id: userId,
+    p_reward_key: rewardKey,
+    p_cost: cost,
+  });
+  if (error) {
+    if (error.message?.includes('INSUFFICIENT_KEYS')) {
+      const insufficient = new Error('INSUFFICIENT_KEYS');
+      insufficient.name = 'InsufficientKeysError';
+      throw insufficient;
+    }
+    throw error;
+  }
+  const row = Array.isArray(data) ? data[0] : data;
+  return {
+    redeemed: !!row?.redeemed,
+    alreadyOwned: !!row?.already_owned,
+    balance: Number(row?.balance) || 0,
+  };
+}

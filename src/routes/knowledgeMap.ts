@@ -1111,6 +1111,21 @@ router.get('/day1-checks/pending', requireAuth, syncEndpointLimiter, async (req:
   }
 });
 
+router.get('/day1-checks/completed', requireAuth, syncEndpointLimiter, async (req: Request, res: Response) => {
+  try {
+    const { data: rows, error } = await supabaseAdmin
+      .from('day1_checks')
+      .select('concept_id')
+      .eq('user_id', req.userId as string)
+      .eq('resolved', true);
+    if (error) throw error;
+    res.json({ conceptIds: (rows || []).map((r) => r.concept_id) });
+  } catch (err) {
+    console.error('Fetching completed Day-1 checks failed:', err);
+    res.status(500).json({ error: 'could not load completed Day-1 checks' });
+  }
+});
+
 // POST /day1-checks/:id/submit
 // A genuine Day-1 failure bumps the student's base recall count (Rb,o)
 // up by one for every future concept - the simpler operational rule
@@ -1366,7 +1381,22 @@ router.post('/knowledge-map-v2/node-review/integration/start', requireAuth, cost
         .eq('user_id', userId)
         .eq('concept_id', linkConceptId)
         .maybeSingle();
-      if (existingLinkReview) await assertNodeReviewDue(userId, fromNodeId);
+      if (existingLinkReview) {
+        await assertNodeReviewDue(userId, fromNodeId);
+      } else {
+        const endpointConceptIds = [fromNodeForGate.concept_id as string, toNodeForGate.concept_id as string];
+        const { data: completedChecks, error: completedError } = await supabaseAdmin
+          .from('day1_checks')
+          .select('concept_id')
+          .eq('user_id', userId)
+          .eq('resolved', true)
+          .in('concept_id', endpointConceptIds);
+        if (completedError) throw completedError;
+        const completedIds = new Set((completedChecks || []).map((row) => row.concept_id as string));
+        if (!endpointConceptIds.every((conceptId) => completedIds.has(conceptId))) {
+          return res.status(403).json({ error: 'complete both concept Day-1 checks before starting this integration lesson', code: 'INTEGRATION_DAY1_REQUIRED' });
+        }
+      }
     }
     let step = await getIntegrationStepData(userId, fromNodeId, toNodeId);
     if (!step) {

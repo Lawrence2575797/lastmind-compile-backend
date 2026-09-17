@@ -549,14 +549,9 @@ export async function getNotesIndexForUser(userId: string): Promise<{ subjects: 
       (q) => q.ilike('subject', triple.subject.trim()).ilike('qualification', triple.qualification.trim()).ilike('exam_board', triple.examBoard.trim())
     );
     const nodeById = new Map(allNodes.map((n) => [n.id, n]));
-    // A generated lesson is readable as a note even when opened Untracked.
-    // Availability is separate from encoding/FSRS progress: browsing notes
-    // must never create a concept_reviews row or unlock a review link.
-    const generatedLessons = await selectRowsByIdChunked<{ node_id: string }>(
-      'knowledge_map_node_lessons', 'node_id', 'node_id', allNodes.map(n => n.id)
-    );
-    const generatedNodeIds = new Set(generatedLessons.map(row => row.node_id));
-
+    // Notes availability is derived below from this student's completed
+    // encoding record. Merely generating or opening a lesson untracked must
+    // never create that record or unlock its notes.
     // Fetched with no id filter then narrowed in JS - a large .in() id
     // list itself risks a "Bad Request" (see supabasePagination.ts),
     // same pattern findPrerequisiteGap uses.
@@ -610,7 +605,11 @@ export async function getNotesIndexForUser(userId: string): Promise<{ subjects: 
       nodeId: n.id,
       label: n.label,
       encoded: encodedConceptIds.has(n.concept_id),
-      hasNotes: generatedNodeIds.has(n.id),
+      // Passing the first encoding lesson's immediate check is the only
+      // unlock condition. concept_reviews is written at that exact point;
+      // lesson generation or an integration/link review must not unlock or
+      // block the Notes entry independently.
+      hasNotes: encodedConceptIds.has(n.concept_id),
       links: (edgesByFromNode.get(n.id) || [])
         .filter((e) => {
           const toNode = nodeById.get(e.to_node_id);

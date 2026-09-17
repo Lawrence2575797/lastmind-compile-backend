@@ -42,6 +42,7 @@ import tutoringSlotsRouter from './routes/tutoringSlots';
 import encouragementRouter from './routes/encouragement';
 import weeklyProgressReportRouter from './routes/weeklyProgressReport';
 import economicsDiagramsRouter from './routes/economicsDiagrams';
+import keysRouter from './routes/keys';
 import { globalRateLimiter } from './services/rateLimiters';
 import { startRetentionScheduler } from './services/retentionService';
 
@@ -101,6 +102,7 @@ app.use('/', tutoringSlotsRouter);
 app.use('/', encouragementRouter);
 app.use('/', weeklyProgressReportRouter);
 app.use('/', economicsDiagramsRouter);
+app.use('/', keysRouter);
 
 app.get('/health', (_req, res) => res.send('ok'));
 

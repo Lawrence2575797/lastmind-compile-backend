@@ -39,6 +39,7 @@ import { recordPairwiseIntegrationOutcome } from '../services/chainMasteryServic
 import { getOrCreateUserRecallTuning, getDifficultyAndCapability, nextRecallDelayMinutes, updateGammaAfterRecall, bumpBaseRecalls } from '../services/recallTuningService';
 import { getQuestionForConceptId, getConceptDisplayInfo, orderDay1ChecksByLessonOrder } from '../services/day1CheckService';
 import { biologyCurriculumStatus } from '../services/biologyCurriculum';
+import { awardDay1Keys, awardSpacedReviewKeys } from '../services/keyEconomyService';
 
 const router = Router();
 
@@ -1174,7 +1175,8 @@ router.post('/day1-checks/:id/submit', requireAuth, costlyEndpointLimiter, async
       const graded = await gradeCorrectness(userId, conceptId, true, 0);
       const { error: updateError } = await supabaseAdmin.from('day1_checks').update({ resolved: true }).eq('id', id);
       if (updateError) throw updateError;
-      return res.json({ correct: true, feedback, schedule: scheduleWithMastery(conceptId, graded) });
+      const keys = await awardDay1Keys(userId, conceptId, id, !retryAfterSillyMistake);
+      return res.json({ correct: true, feedback, schedule: scheduleWithMastery(conceptId, graded), keysAwarded: keys.awarded, keyBalance: keys.balance });
     }
 
     if (!retryAfterSillyMistake && sillyMistake) {
@@ -1247,7 +1249,8 @@ router.post('/knowledge-map-v2/node-review/ao1/start', requireAuth, costlyEndpoi
 // deriveCorrectRating for the exact 0/1/2+ thresholds.
 async function finalizeAo1Grade(userId: string, conceptId: string, feedback: string, retryCount: number) {
   const result = await gradeCorrectness(userId, conceptId, true, retryCount);
-  return { correct: true, feedback, schedule: scheduleWithMastery(conceptId, result) };
+  const keys = await awardSpacedReviewKeys(userId, conceptId, result.previousRow?.reps || 0, retryCount);
+  return { correct: true, feedback, schedule: scheduleWithMastery(conceptId, result), keysAwarded: keys.awarded, keyBalance: keys.balance };
 }
 
 router.post('/knowledge-map-v2/node-review/ao1/submit', requireAuth, costlyEndpointLimiter, async (req: Request, res: Response) => {
@@ -1477,7 +1480,8 @@ router.post('/knowledge-map-v2/node-review/integration/submit', requireAuth, cos
     // own comment for why this must be an explicit call here.
     if (!result.previousRow) await recordFirstTeachingSignals(userId, conceptId);
     await recordPairwiseIntegrationOutcome(userId, fromNode.concept_id as string, toNode.concept_id as string, (Number(retryCount) || 0) === 0);
-    res.json({ correct: true, feedback: graded.feedback, schedule: scheduleWithMastery(conceptId, result) });
+    const keys = await awardSpacedReviewKeys(userId, conceptId, result.previousRow?.reps || 0, Number(retryCount) || 0);
+    res.json({ correct: true, feedback: graded.feedback, schedule: scheduleWithMastery(conceptId, result), keysAwarded: keys.awarded, keyBalance: keys.balance });
   } catch (err) {
     console.error('Integration grading failed:', err);
     res.status(500).json({ error: 'could not grade this answer' });

@@ -103,6 +103,25 @@ export async function redeemBackgroundReward(userId: string, rewardKey: string, 
   alreadyOwned: boolean;
   balance: number;
 }> {
+  // Free rewards must not pass through redeem_background_reward: that SQL
+  // function intentionally rejects p_cost <= 0. Grant ownership directly
+  // and leave the Key ledger/balance untouched.
+  if (cost === 0) {
+    const { data: existing, error: existingError } = await supabaseAdmin
+      .from('user_theme_rewards')
+      .select('reward_key')
+      .eq('user_id', userId)
+      .eq('reward_key', rewardKey)
+      .maybeSingle();
+    if (existingError) throw existingError;
+    if (!existing) {
+      const { error: insertError } = await supabaseAdmin
+        .from('user_theme_rewards')
+        .insert({ user_id: userId, reward_key: rewardKey });
+      if (insertError && insertError.code !== '23505') throw insertError;
+    }
+    return { redeemed: !existing, alreadyOwned: !!existing, balance: await getKeyBalance(userId) };
+  }
   const { data, error } = await supabaseAdmin.rpc('redeem_background_reward', {
     p_user_id: userId,
     p_reward_key: rewardKey,

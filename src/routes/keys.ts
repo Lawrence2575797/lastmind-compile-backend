@@ -20,6 +20,8 @@ const BACKGROUND_REWARD_KEYS = new Set([
   'cosycafe', 'samurai', 'scholarsdesk', 'ancientrome', 'sakuragarden',
 ]);
 const BACKGROUND_REWARD_COST = 75;
+const FREE_BACKGROUND_REWARD_KEYS = new Set(['cosycafe']);
+const backgroundRewardCost = (rewardKey: string): number => FREE_BACKGROUND_REWARD_KEYS.has(rewardKey) ? 0 : BACKGROUND_REWARD_COST;
 
 router.get('/keys/background-rewards', requireAuth, syncEndpointLimiter, async (req: Request, res: Response) => {
   try {
@@ -35,12 +37,13 @@ router.get('/keys/background-rewards', requireAuth, syncEndpointLimiter, async (
 router.post('/keys/redeem-background', requireAuth, syncEndpointLimiter, async (req: Request, res: Response) => {
   const rewardKey = typeof req.body?.rewardKey === 'string' ? req.body.rewardKey : '';
   if (!BACKGROUND_REWARD_KEYS.has(rewardKey)) return res.status(400).json({ error: 'unknown background reward' });
+  const cost = backgroundRewardCost(rewardKey);
   try {
-    const result = await redeemBackgroundReward(req.userId as string, rewardKey, BACKGROUND_REWARD_COST);
-    res.json({ ...result, rewardKey, cost: BACKGROUND_REWARD_COST });
+    const result = await redeemBackgroundReward(req.userId as string, rewardKey, cost);
+    res.json({ ...result, rewardKey, cost });
   } catch (err) {
     if (err instanceof Error && err.name === 'InsufficientKeysError') {
-      return res.status(402).json({ error: 'Not enough Keys', code: 'INSUFFICIENT_KEYS', cost: BACKGROUND_REWARD_COST });
+      return res.status(402).json({ error: 'Not enough Keys', code: 'INSUFFICIENT_KEYS', cost });
     }
     console.error('Background reward redemption failed:', err);
     res.status(500).json({ error: 'could not redeem this background' });

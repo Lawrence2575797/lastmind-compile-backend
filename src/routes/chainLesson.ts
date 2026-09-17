@@ -4,9 +4,8 @@ import { costlyEndpointLimiter } from '../services/rateLimiters';
 import { normalizeConceptKey } from '../services/chainService';
 import { startRetrievalLesson, continueRetrievalLesson, submitRetrievalAnswer, answerRetrievalQuestion, RetrievalLessonState } from '../services/spacedLessonEngine';
 import { recordConfidenceRating } from '../services/answerSignalService';
-import { spendLocks, refundTodaysHeldDepositIfAny, InsufficientLocksError } from '../services/lockService';
+import { assertLocksAvailable, refundTodaysHeldDepositIfAny, InsufficientLocksError } from '../services/lockService';
 import { ReviewNotDueError, assertConceptReviewDue } from '../services/reviewService';
-import { RETRIEVAL_LESSON_LOCK_COST } from '../constants/locks';
 
 const router = Router();
 
@@ -39,10 +38,9 @@ router.post('/chain-lesson/start', async (req: Request, res: Response) => {
     // actually protects the student's Locks.
     await assertConceptReviewDue(req.userId as string, conceptKey);
 
-    // Same reasoning as encoding lessons' own /start: spend before
-    // generating anything, and only here — /continue is the async second
-    // half of this same call, not a new commitment.
-    await spendLocks(req.userId as string, RETRIEVAL_LESSON_LOCK_COST, 'chain-lesson-retrieval-start');
+    // Only gate on a positive balance here. Every model call below charges
+    // its own measured token cost once the provider response is available.
+    await assertLocksAvailable(req.userId as string);
 
     const result = await startRetrievalLesson(
       req.userId as string,
@@ -78,7 +76,7 @@ router.post('/chain-lesson/continue', async (req: Request, res: Response) => {
   }
 
   try {
-    const nextState = await continueRetrievalLesson(state as RetrievalLessonState);
+    const nextState = await continueRetrievalLesson(req.userId as string, state as RetrievalLessonState);
     res.json({ state: nextState });
   } catch (err) {
     console.error('Retrieval lesson continuation failed:', err);
@@ -148,7 +146,7 @@ router.post('/chain-lesson/ask', async (req: Request, res: Response) => {
   }
 
   try {
-    const result = await answerRetrievalQuestion(state as RetrievalLessonState, question.trim());
+    const result = await answerRetrievalQuestion(req.userId as string, state as RetrievalLessonState, question.trim());
     res.json(result);
   } catch (err) {
     console.error('Retrieval lesson ask-panel question failed:', err);

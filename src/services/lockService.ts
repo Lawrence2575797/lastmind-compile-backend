@@ -50,6 +50,12 @@ export async function spendLocks(userId: string, amount: number, reason: string)
   if ((await getOrCreateLockBalance(userId)).balance < amount) throw new InsufficientLocksError();
   return recordChange(userId, -amount, reason);
 }
+// Usage-metered calls cannot know their final charge until the provider
+// returns real token counts. This is the pre-flight gate for those calls:
+// require a positive balance without inventing or deducting a flat fee.
+export async function assertLocksAvailable(userId: string): Promise<void> {
+  if ((await getOrCreateLockBalance(userId)).balance <= 0) throw new InsufficientLocksError();
+}
 export async function chargeLocksForUsage(userId: string, amount: number, reason: string, model?: string): Promise<LockBalance> {
   validateAmount(amount);
   return recordChange(userId, -amount, reason, model);

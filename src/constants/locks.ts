@@ -24,7 +24,3 @@ export function getMonthlyAllotment(tier: SubscriptionTier): number {
 // tier-specific figure - booking-deposit sizing isn't part of this
 // per-tier recalibration.
 export const LESSON_DEPOSIT_LOCK_AMOUNT = 1600;
-
-// Existing lesson-start routes still import these measured cost constants.
-export const ENCODING_LESSON_LOCK_COST = 128;
-export const RETRIEVAL_LESSON_LOCK_COST = 13;

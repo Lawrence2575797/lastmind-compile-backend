@@ -3,8 +3,7 @@ import { requireAuth, requirePaidTier } from '../services/authMiddleware';
 import { costlyEndpointLimiter } from '../services/rateLimiters';
 import { normalizeConceptKey } from '../services/chainService';
 import { startEncodingLesson, continueEncodingLesson, submitEncodingAnswer, generateNotesFromLesson, getEncodingLessonOutline, answerLessonQuestion, EncodingLessonState } from '../services/encodingLessonService';
-import { spendLocks, refundTodaysHeldDepositIfAny, InsufficientLocksError } from '../services/lockService';
-import { ENCODING_LESSON_LOCK_COST } from '../constants/locks';
+import { assertLocksAvailable, refundTodaysHeldDepositIfAny, InsufficientLocksError } from '../services/lockService';
 
 const router = Router();
 
@@ -76,10 +75,9 @@ router.post('/encoding-lesson/start', costlyEndpointLimiter, async (req: Request
     : [];
 
   try {
-    // Spend BEFORE generating anything — this is the one commit point for
-    // a genuinely new encoding lesson (/continue is the async second half
-    // of this same call, not a new one, so it must never spend again).
-    await spendLocks(req.userId as string, ENCODING_LESSON_LOCK_COST, 'encoding-lesson-start');
+    // The final price comes from every Claude response's real token usage.
+    // This only prevents starting while already empty; it deducts no flat fee.
+    await assertLocksAvailable(req.userId as string);
 
     const conceptKey = normalizeConceptKey(subject, topic, concept);
     const result = await startEncodingLesson(
@@ -176,7 +174,7 @@ router.post('/encoding-lesson/ask', costlyEndpointLimiter, async (req: Request, 
   }
 
   try {
-    const result = await answerLessonQuestion(state as EncodingLessonState, question.trim());
+    const result = await answerLessonQuestion(req.userId as string, state as EncodingLessonState, question.trim());
     res.json(result);
   } catch (err) {
     console.error('Encoding lesson ask-panel question failed:', err);
@@ -212,7 +210,7 @@ router.post('/encoding-lesson/generate-notes', costlyEndpointLimiter, async (req
   }
 
   try {
-    const notes = await generateNotesFromLesson(subject, pageTitle, lessons);
+    const notes = await generateNotesFromLesson(req.userId as string, subject, pageTitle, lessons);
     res.json({ notes });
   } catch (err) {
     console.error('Encoding lesson notes generation failed:', err);

@@ -47,8 +47,8 @@ function extractJsonObject(text: string): string {
   return text.slice(start, end + 1);
 }
 
-async function callJSON<T>(systemPrompt: string, userContent: string, model: string, temperature = 0, maxTokens?: number, cacheSystemPrompt = false): Promise<T> {
-  const raw = await callClaudeJSON({ model, systemPrompt, userContent, temperature, maxTokens, cacheSystemPrompt });
+async function callJSON<T>(systemPrompt: string, userContent: string, model: string, temperature = 0, maxTokens?: number, cacheSystemPrompt = false, userId?: string, meteredReason?: string): Promise<T> {
+  const raw = await callClaudeJSON({ model, systemPrompt, userContent, temperature, maxTokens, cacheSystemPrompt, userId, meteredReason });
   const cleaned = stripCodeFences(raw);
   try {
     return JSON.parse(cleaned) as T;
@@ -547,6 +547,7 @@ const DIAGRAM_NEGATIVE_RETRY_DAYS = 14;
  * would actively mislead a student.
  */
 async function getOrFetchDiagram(
+  userId: string,
   conceptKey: string,
   qualification: string,
   examBoard: string,
@@ -608,6 +609,8 @@ async function getOrFetchDiagram(
     })),
     temperature: 0.2,
     maxTokens: 512,
+    userId,
+    meteredReason: 'encoding-lesson-diagram-verify',
   });
 
   let parsedVerdict: { chosenIndex: number | null; caption: string | null };
@@ -674,6 +677,7 @@ interface DraftStep {
  * each verifies a specific node nothing else in the lesson tests).
  */
 async function repairUncertainSteps(
+  userId: string,
   steps: DraftStep[],
   subject: string,
   qualification: string,
@@ -735,7 +739,11 @@ async function repairUncertainSteps(
           }${automatedFlag}`,
         ].join('\n'),
         MODELS.diagnosticTree,
-        0.2
+        0.2,
+        undefined,
+        false,
+        userId,
+        'encoding-lesson-step-repair'
       );
       // Defense-in-depth restriction on top of the prompt's own rule: a
       // "check"/"mechanistic_check" step is the ONLY thing in the lesson
@@ -872,7 +880,7 @@ export async function getEncodingLessonOutline(
   customTitle = '',
   customDescription = ''
 ): Promise<EncodingLessonOutline> {
-  const chainResult = await getOrGenerateChain(conceptKey, subject, topic, concept, qualification, examBoard, customTitle, customDescription);
+  const chainResult = await getOrGenerateChain(conceptKey, subject, topic, concept, qualification, examBoard, customTitle, customDescription, userId);
   if (!chainResult.chain) {
     throw new Error('Could not generate a dependency chain for this concept.');
   }
@@ -959,7 +967,7 @@ export async function startEncodingLesson(
   // computes the IDENTICAL forcedNodeIds/contentKey phase 1 already used.
   selfReportedUnsureNodeIds: string[] = []
 ): Promise<EncodingStartResult> {
-  const chainResult = await getOrGenerateChain(conceptKey, subject, topic, concept, qualification, examBoard, customTitle, customDescription);
+  const chainResult = await getOrGenerateChain(conceptKey, subject, topic, concept, qualification, examBoard, customTitle, customDescription, userId);
   if (!chainResult.chain) {
     throw new Error('Could not generate a dependency chain for this concept.');
   }
@@ -1067,7 +1075,7 @@ export async function startEncodingLesson(
     // and cache the complete lesson once phase 2 finishes. Never sent to
     // the client in between (see CachedEncodingStep).
     const generated = await generateFirstStep(
-      conceptKey, subject, topic, concept, qualification, examBoard, chain, target, groundingChains, recruitedMechanismChains, backgroundNodes, forcedNodeIds, customTitle, customDescription
+      userId, conceptKey, subject, topic, concept, qualification, examBoard, chain, target, groundingChains, recruitedMechanismChains, backgroundNodes, forcedNodeIds, customTitle, customDescription
     );
     hookFact = generated.hookFact;
     cachedSteps = [generated.step];
@@ -1164,7 +1172,7 @@ export async function continueEncodingLesson(
   }
   const firstStep = pending.first_step as CachedEncodingStep;
 
-  const chainResult = await getOrGenerateChain(conceptKey, subject, topic, concept, qualification, examBoard, customTitle, customDescription);
+  const chainResult = await getOrGenerateChain(conceptKey, subject, topic, concept, qualification, examBoard, customTitle, customDescription, userId);
   if (!chainResult.chain) {
     throw new Error('Could not generate a dependency chain for this concept.');
   }
@@ -1207,7 +1215,7 @@ export async function continueEncodingLesson(
     .sort();
 
   const rest = await generateLessonContinuation(
-    conceptKey, subject, topic, concept, qualification, examBoard, chain, target, groundingChains, recruitedMechanismChains, backgroundNodes, forcedNodeIds, firstStep, customTitle, customDescription
+    userId, conceptKey, subject, topic, concept, qualification, examBoard, chain, target, groundingChains, recruitedMechanismChains, backgroundNodes, forcedNodeIds, firstStep, customTitle, customDescription
   );
 
   const allSteps: CachedEncodingStep[] = [firstStep, ...rest.steps];
@@ -1244,6 +1252,7 @@ export async function continueEncodingLesson(
 // the rest of the lesson (generated by generateLessonContinuation) is
 // ready.
 async function generateFirstStep(
+  userId: string,
   conceptKey: string,
   subject: string,
   topic: string,
@@ -1307,7 +1316,9 @@ async function generateFirstStep(
     // ENCODING_LESSON_FIRST_STEP_PROMPT is fixed and identical for every
     // concept that ever hits this path — same caching win as the full
     // batch prompt.
-    true
+    true,
+    userId,
+    'encoding-lesson-first-step-generate'
   );
 
   const nodesById = new Map(chain.nodes.map((n) => [n.id, n]));
@@ -1329,7 +1340,7 @@ async function generateFirstStep(
   };
   attachChainNodes([draftStep], groundingChains);
 
-  await repairUncertainSteps([draftStep], subject, qualification, examBoard);
+  await repairUncertainSteps(userId, [draftStep], subject, qualification, examBoard);
 
   const { confident, ...step } = draftStep;
   return { hookFact: result.hookFact, step };
@@ -1339,6 +1350,7 @@ async function generateFirstStep(
 // produced, told exactly what that first step covered so it continues
 // rather than repeats it. Only ever called from continueEncodingLesson.
 async function generateLessonContinuation(
+  userId: string,
   conceptKey: string,
   subject: string,
   topic: string,
@@ -1403,7 +1415,9 @@ async function generateLessonContinuation(
     0.4,
     8192,
     // ENCODING_LESSON_CONTINUATION_PROMPT is fixed too — same caching win.
-    true
+    true,
+    userId,
+    'encoding-lesson-continuation-generate'
   );
 
   const nodesById = new Map(chain.nodes.map((n) => [n.id, n]));
@@ -1447,7 +1461,7 @@ async function generateLessonContinuation(
   const diagramPromise =
     batch.diagram?.needed && batch.diagram.searchQuery
       ? withTimeout(
-          getOrFetchDiagram(conceptKey, qualification, examBoard, subject, diagramLabel, batch.diagram.searchQuery).catch((err) => {
+          getOrFetchDiagram(userId, conceptKey, qualification, examBoard, subject, diagramLabel, batch.diagram.searchQuery).catch((err) => {
             console.error('LastMind: diagram lookup failed, proceeding without one.', err);
             return null;
           }),
@@ -1456,7 +1470,7 @@ async function generateLessonContinuation(
       : Promise.resolve(null);
 
   const [, diagram] = await Promise.all([
-    repairUncertainSteps(draftSteps, subject, qualification, examBoard),
+    repairUncertainSteps(userId, draftSteps, subject, qualification, examBoard),
     diagramPromise,
   ]);
 
@@ -1594,7 +1608,9 @@ export async function submitEncodingAnswer(userId: string, state: EncodingLesson
         // this system prompt is byte-identical across every grading call
         // app-wide, so it stays warm from ANY concurrent student's calls,
         // not just repeats of the same concept.
-        true
+        true,
+        userId,
+        'encoding-lesson-maths-answer-grade'
       );
       correct = check.correct;
       feedback = check.feedback;
@@ -1608,7 +1624,9 @@ export async function submitEncodingAnswer(userId: string, state: EncodingLesson
         MODELS.simpleQuestion,
         0.2,
         4096,
-        true
+        true,
+        userId,
+        'encoding-lesson-answer-grade-fallback'
       );
       correct = check.correct;
       feedback = check.feedback;
@@ -1630,7 +1648,9 @@ export async function submitEncodingAnswer(userId: string, state: EncodingLesson
       MODELS.diagnosticTree,
       0.2,
       undefined,
-      true
+      true,
+      userId,
+      'encoding-lesson-integration-answer-grade'
     );
     correct = check.correct;
     feedback = check.feedback;
@@ -1643,7 +1663,9 @@ export async function submitEncodingAnswer(userId: string, state: EncodingLesson
       MODELS.simpleQuestion,
       0.2,
       undefined,
-      true
+      true,
+      userId,
+      'encoding-lesson-answer-grade'
     );
     correct = check.correct;
     feedback = check.feedback;
@@ -1663,7 +1685,9 @@ export async function submitEncodingAnswer(userId: string, state: EncodingLesson
       MODELS.diagnosticTree,
       0.3,
       undefined,
-      true
+      true,
+      userId,
+      'encoding-lesson-question-reword'
     );
     const rewordedStep: EncodingStep = isExplain
       ? { ...currentStep, checkQuestion: reword.question }
@@ -1829,6 +1853,7 @@ export interface NotesLessonInput {
 }
 
 export async function generateNotesFromLesson(
+  userId: string,
   subject: string,
   pageTitle: string,
   lessons: NotesLessonInput[]
@@ -1852,6 +1877,8 @@ export async function generateNotesFromLesson(
     // page keeps the same headroom as before; a multi-lesson page needs
     // more room to cover every concept without truncating.
     maxTokens: Math.min(1024 * Math.max(1, lessons.length), 8192),
+    userId,
+    meteredReason: 'encoding-lesson-notes-generate',
   });
   return raw.trim();
 }
@@ -1867,7 +1894,7 @@ export async function generateNotesFromLesson(
  * one on screen, not yet answered) — see ASK_PANEL_PROMPT's own handling
  * of that as the sole thing this must avoid giving away.
  */
-export async function answerLessonQuestion(state: EncodingLessonState, question: string): Promise<{ redirected: boolean; answer: string }> {
+export async function answerLessonQuestion(userId: string, state: EncodingLessonState, question: string): Promise<{ redirected: boolean; answer: string }> {
   const currentStep = state.steps[state.currentIndex];
   const currentQuestionText = currentStep
     ? currentStep.type === 'explain'
@@ -1889,6 +1916,8 @@ export async function answerLessonQuestion(state: EncodingLessonState, question:
     MODELS.diagnosticTree,
     0.4,
     undefined,
-    true
+    true,
+    userId,
+    'encoding-lesson-cortex-question'
   );
 }

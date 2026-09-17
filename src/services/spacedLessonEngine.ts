@@ -9,8 +9,8 @@ function stripCodeFences(text: string): string {
   return text.trim().replace(/^```(?:json)?\s*/i, '').replace(/```\s*$/, '').trim();
 }
 
-async function callJSON<T>(systemPrompt: string, userContent: string, model: string, temperature = 0, maxTokens?: number, cacheSystemPrompt = false): Promise<T> {
-  const raw = await callClaudeJSON({ model, systemPrompt, userContent, temperature, maxTokens, cacheSystemPrompt });
+async function callJSON<T>(systemPrompt: string, userContent: string, model: string, temperature = 0, maxTokens?: number, cacheSystemPrompt = false, userId?: string, meteredReason?: string): Promise<T> {
+  const raw = await callClaudeJSON({ model, systemPrompt, userContent, temperature, maxTokens, cacheSystemPrompt, userId, meteredReason });
   return JSON.parse(stripCodeFences(raw)) as T;
 }
 
@@ -143,6 +143,7 @@ interface RawGeneratedStep {
  * tier rather than a separate first-step/continuation pair like encoding.
  */
 async function generateRetrievalSteps(
+  userId: string,
   tier: RetrievalTier,
   subject: string,
   topic: string,
@@ -174,7 +175,9 @@ async function generateRetrievalSteps(
     // lands in that tier — same caching win as encoding's own generation
     // prompts, see retrievalLessonPrompts.ts's own comment on why tiering
     // (not the continuous m value) is what makes this possible at all.
-    true
+    true,
+    userId,
+    'retrieval-lesson-steps-generate'
   );
 
   // The LLM only ever sees/returns sibling LABELS (eligibleSiblingConcepts
@@ -196,6 +199,7 @@ async function generateRetrievalSteps(
 }
 
 async function fetchChainContext(
+  userId: string,
   conceptKey: string,
   subject: string,
   topic: string,
@@ -208,7 +212,7 @@ async function fetchChainContext(
   // rather than throwing, since prerequisites are background material
   // here, not something this session actually depends on to function.
   try {
-    const chainResult = await getOrGenerateChain(conceptKey, subject, topic, concept, qualification, examBoard);
+    const chainResult = await getOrGenerateChain(conceptKey, subject, topic, concept, qualification, examBoard, '', '', userId);
     const chain = chainResult.chain as Chain | null;
     if (!chain || !chain.nodes.length) return [];
     const target = chain.nodes[chain.nodes.length - 1];
@@ -248,11 +252,11 @@ export async function startRetrievalLesson(
   const tier = tierForM(m);
   const totalSteps = STEPS_PER_TIER[tier];
 
-  const closePrerequisiteLabels = await fetchChainContext(conceptKey, subject, topic, concept, qualification, examBoard);
+  const closePrerequisiteLabels = await fetchChainContext(userId, conceptKey, subject, topic, concept, qualification, examBoard);
   const siblings = tier >= 2 ? await listEligibleSiblingConcepts(userId, subject, topic, conceptKey) : [];
 
   const [firstStep] = await generateRetrievalSteps(
-    tier, subject, topic, concept, qualification, examBoard, closePrerequisiteLabels, siblings, [], 1
+    userId, tier, subject, topic, concept, qualification, examBoard, closePrerequisiteLabels, siblings, [], 1
   );
   if (!firstStep) {
     throw new Error('Could not generate retrieval practice for this concept.');
@@ -274,12 +278,12 @@ export async function startRetrievalLesson(
  * session only ever had one step (tier 3), or if a duplicate call somehow
  * arrives after the session is already fully generated.
  */
-export async function continueRetrievalLesson(state: RetrievalLessonState): Promise<RetrievalLessonState> {
+export async function continueRetrievalLesson(userId: string, state: RetrievalLessonState): Promise<RetrievalLessonState> {
   const remaining = state.totalSteps - state.steps.length;
   if (remaining <= 0) return state;
 
   const newSteps = await generateRetrievalSteps(
-    state.tier, state.subject, state.topic, state.concept, state.qualification, state.examBoard,
+    userId, state.tier, state.subject, state.topic, state.concept, state.qualification, state.examBoard,
     state.closePrerequisiteLabels, state.siblings, state.steps, remaining
   );
 
@@ -316,7 +320,9 @@ export async function submitRetrievalAnswer(
       MODELS.diagnosticTree,
       0.2,
       undefined,
-      true
+      true,
+      userId,
+      'retrieval-lesson-mechanistic-answer-grade'
     );
     correct = check.correct;
     feedback = check.feedback;
@@ -327,7 +333,9 @@ export async function submitRetrievalAnswer(
       MODELS.simpleQuestion,
       0.2,
       undefined,
-      true
+      true,
+      userId,
+      'retrieval-lesson-answer-grade'
     );
     correct = check.correct;
     feedback = check.feedback;
@@ -414,7 +422,7 @@ export async function submitRetrievalAnswer(
  * (state.steps[state.currentIndex]) is checked, and nothing about this
  * call touches FSRS or the lesson's own state.
  */
-export async function answerRetrievalQuestion(state: RetrievalLessonState, question: string): Promise<{ redirected: boolean; answer: string }> {
+export async function answerRetrievalQuestion(userId: string, state: RetrievalLessonState, question: string): Promise<{ redirected: boolean; answer: string }> {
   const currentStep = state.steps[state.currentIndex];
 
   return callJSON<{ redirected: boolean; answer: string }>(
@@ -431,6 +439,8 @@ export async function answerRetrievalQuestion(state: RetrievalLessonState, quest
     MODELS.diagnosticTree,
     0.4,
     undefined,
-    true
+    true,
+    userId,
+    'retrieval-lesson-cortex-question'
   );
 }

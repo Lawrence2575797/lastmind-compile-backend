@@ -447,7 +447,8 @@ export async function getOrGenerateChain(
   qualification = '',
   examBoard = '',
   customTitle = '',
-  customDescription = ''
+  customDescription = '',
+  userId?: string
 ): Promise<{ chain: any; source: 'cache' | 'generated'; error?: string }> {
   const customDigest = customContextDigest(customTitle, customDescription);
   const chainCacheKey = `${conceptKey}::${clean(qualification)}::${clean(examBoard)}${customDigest ? `::custom_${customDigest}` : ''}`;
@@ -513,6 +514,8 @@ export async function getOrGenerateChain(
     userContent: generationInput,
     maxTokens: 4096,
     cacheSystemPrompt: true,
+    userId,
+    meteredReason: userId ? 'lesson-dependency-chain-generate' : undefined,
   });
 
   let chain: any;
@@ -550,6 +553,8 @@ export async function getOrGenerateChain(
     systemPrompt: FACT_CHECK_PROMPT,
     userContent: factCheckContext,
     maxTokens: 4096,
+    userId,
+    meteredReason: userId ? 'lesson-dependency-chain-fact-check' : undefined,
   });
 
   let factCheckResult: any;

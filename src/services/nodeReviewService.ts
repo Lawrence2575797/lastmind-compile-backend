@@ -4,6 +4,7 @@ import { parseModelJson, parseCorrectFeedbackJson } from './jsonParsing';
 import { KNOWLEDGE_MAP_ANSWER_CHECK_PROMPT } from '../constants/knowledgeMapAnswerCheckPrompt';
 import { AO1_REWORD_QUESTION_PROMPT, AO1_SLIP_CHECK_PROMPT, INTEGRATION_REWORD_QUESTION_PROMPT } from '../constants/nodeReviewPrompts';
 import { isDueByCalendarDay, ReviewNotDueError } from './reviewService';
+import { getExternalCoveredConceptIds } from './externalCoverageService';
 
 type NodeEncodingContent = {
   explanation?: string;
@@ -73,6 +74,8 @@ export async function getQualifyingReviewLinks(userId: string, nodeId: string): 
     .in('concept_id', targetConceptIds);
   if (reviewErr) throw reviewErr;
   const encodedConceptIds = new Set((reviewedRows || []).map((r) => r.concept_id as string));
+  const externallyCoveredConceptIds = await getExternalCoveredConceptIds(userId);
+  externallyCoveredConceptIds.forEach((conceptId) => encodedConceptIds.add(conceptId));
 
   const links: QualifyingLink[] = [];
   edges.forEach((e) => {

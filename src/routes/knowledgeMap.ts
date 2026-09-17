@@ -40,6 +40,7 @@ import { getOrCreateUserRecallTuning, getDifficultyAndCapability, nextRecallDela
 import { getQuestionForConceptId, getConceptDisplayInfo, orderDay1ChecksByLessonOrder } from '../services/day1CheckService';
 import { biologyCurriculumStatus } from '../services/biologyCurriculum';
 import { awardDay1Keys, awardSpacedReviewKeys } from '../services/keyEconomyService';
+import { getExternalCoveredConceptIds } from '../services/externalCoverageService';
 
 const router = Router();
 
@@ -525,6 +526,8 @@ async function findMissingEncoding(
     .in('concept_id', candidates.map((n) => n.concept_id));
   if (error) throw error;
   const encoded = new Set((data || []).map((r) => r.concept_id as string));
+  const external = await getExternalCoveredConceptIds(userId);
+  external.forEach((conceptId) => encoded.add(conceptId));
   const missing = candidates.find((n) => !encoded.has(n.concept_id));
   return missing ? { nodeId: missing.id, label: missing.label } : null;
 }
@@ -1393,7 +1396,10 @@ router.post('/knowledge-map-v2/node-review/integration/start', requireAuth, cost
           .in('concept_id', endpointConceptIds);
         if (completedError) throw completedError;
         const completedIds = new Set((completedChecks || []).map((row) => row.concept_id as string));
-        if (!endpointConceptIds.every((conceptId) => completedIds.has(conceptId))) {
+        const externalIds = await getExternalCoveredConceptIds(userId);
+        const ready = endpointConceptIds.every((conceptId) => completedIds.has(conceptId) || externalIds.has(conceptId));
+        const learnedOnLastMind = endpointConceptIds.some((conceptId) => completedIds.has(conceptId));
+        if (!ready || !learnedOnLastMind) {
           return res.status(403).json({ error: 'complete both concept Day-1 checks before starting this integration lesson', code: 'INTEGRATION_DAY1_REQUIRED' });
         }
       }

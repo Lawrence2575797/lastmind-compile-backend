@@ -7,6 +7,7 @@ import { selectAllRows, selectRowsByIdChunked } from './supabasePagination';
 import { resolveSubjectTriple } from './subjectResolution';
 import { compareSubtopics, getOrComputeSubtopicOrder } from './knowledgeMapNotesService';
 import { topologicalNodeOrder } from './nodeOrdering';
+import { getExternalCoveredConceptIds } from './externalCoverageService';
 
 // One concept the student has actually added to a folder (a single-lesson
 // page's own title, or one entry of a multi-lesson page's own lessons) —
@@ -283,6 +284,7 @@ export interface SubjectMapResult {
   edges: KnowledgeMapEdge[]; // source/target are node ids (uuid), not concept keys
   mastery: Record<string, 0 | 1 | 2>; // keyed by node id (uuid)
   masteryDetail: Record<string, MasteryDetail>;
+  externallyCoveredNodeIds: string[];
 }
 
 /**
@@ -341,7 +343,7 @@ export async function getKnowledgeMapForSubject(
     (q) => q.ilike('subject', subject.trim()).ilike('qualification', qualification.trim()).ilike('exam_board', examBoard.trim())
   );
   if (!nodeRows.length) {
-    return { nodes: [], edges: [], mastery: {}, masteryDetail: {} };
+    return { nodes: [], edges: [], mastery: {}, masteryDetail: {}, externallyCoveredNodeIds: [] };
   }
 
   // Was fetching the ENTIRE global knowledge_map_edges table on every
@@ -363,7 +365,10 @@ export async function getKnowledgeMapForSubject(
     nodeRows.map((r) => r.id as string)
   );
   const edgeRows = subjectEdgeRows.filter((e) => conceptIdById.has(e.to_node_id));
-  const found = await getMasteryDetailsForConcepts(userId, nodeRows.map((r) => r.concept_id as string));
+  const [found, externalCoveredConceptIds] = await Promise.all([
+    getMasteryDetailsForConcepts(userId, nodeRows.map((r) => r.concept_id as string)),
+    getExternalCoveredConceptIds(userId),
+  ]);
 
   const mastery: Record<string, 0 | 1 | 2> = {};
   const masteryDetail: Record<string, MasteryDetail> = {};
@@ -453,5 +458,8 @@ export async function getKnowledgeMapForSubject(
     edges: edgeRows.map((e) => ({ source: e.from_node_id, target: e.to_node_id })),
     mastery,
     masteryDetail,
+    externallyCoveredNodeIds: finalNodeRows
+      .filter((r) => externalCoveredConceptIds.has(r.concept_id as string))
+      .map((r) => r.id as string),
   };
 }

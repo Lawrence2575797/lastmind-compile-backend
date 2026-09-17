@@ -230,8 +230,14 @@ export async function generateAndCacheEdgeLesson(fromNodeId: string, toNodeId: s
     supabaseAdmin.from('knowledge_map_node_lessons').select('encoding_content').eq('node_id', toNodeId).maybeSingle(),
   ]);
   if (!fromNode || !toNode) return null;
-  const fromExplanation = (fromLesson?.encoding_content as { explanation?: string } | null)?.explanation;
-  const toExplanation = (toLesson?.encoding_content as { explanation?: string } | null)?.explanation;
+  // A prerequisite the student marked as studied outside LastMind has no
+  // FSRS row and may never have opened its own LastMind lesson. Generate
+  // its shared cached explanation here when the first real integration
+  // needs it; this does not create student progress or schedule anything.
+  const fromContent = fromLesson?.encoding_content || await generateAndCacheNodeLesson(fromNodeId, userId);
+  const toContent = toLesson?.encoding_content || await generateAndCacheNodeLesson(toNodeId, userId);
+  const fromExplanation = (fromContent as { explanation?: string } | null)?.explanation;
+  const toExplanation = (toContent as { explanation?: string } | null)?.explanation;
   if (!fromExplanation || !toExplanation) return null;
 
   const typedTo = toNode as NodeRow;

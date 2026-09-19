@@ -858,7 +858,25 @@ router.get('/immediate-recalls/due', requireAuth, syncEndpointLimiter, async (re
     if (lessonError) throw lessonError;
     const lessonByNodeId = new Map((lessons || []).map((l) => [l.node_id as string, l.encoding_content]));
 
-    const recalls = stillCatchable
+    // A link's first integration schedules the same recall cascade as a
+    // concept's first encoding - its "concept" is the ::integration key, not a
+    // node, so it is resolved through the edge's integration question instead.
+    const integrationRecalls = await Promise.all(stillCatchable
+      .filter((r) => (r.concept_id as string).endsWith('::integration'))
+      .map(async (r) => {
+        const [info, question] = await Promise.all([
+          getConceptDisplayInfo(r.concept_id as string),
+          getQuestionForConceptId(r.concept_id as string),
+        ]);
+        if (!info || !question) return null;
+        return {
+          recallId: r.id, nodeId: info.nodeId, label: info.label, subject: info.subject, dueAt: r.due_at,
+          recallCheckIndex: -1, format: 'free_text' as const, questionText: question.questionText, options: undefined,
+        };
+      }));
+
+    const nodeRecalls = stillCatchable
+      .filter((r) => !(r.concept_id as string).endsWith('::integration'))
       .map((r) => {
         const node = nodeByConceptId.get(r.concept_id as string);
         if (!node) return null; // concept since deleted/regenerated - nothing left to recall
@@ -890,6 +908,8 @@ router.get('/immediate-recalls/due', requireAuth, syncEndpointLimiter, async (re
         };
       })
       .filter(Boolean);
+    const recalls = [...nodeRecalls, ...integrationRecalls.filter(Boolean)]
+      .sort((a, b) => new Date((a as { dueAt: string }).dueAt).getTime() - new Date((b as { dueAt: string }).dueAt).getTime());
     res.json({ recalls });
   } catch (err) {
     console.error('Fetching due immediate recalls failed:', err);
@@ -939,24 +959,31 @@ router.post('/immediate-recalls/:id/submit', requireAuth, costlyEndpointLimiter,
     if (!row) return res.status(404).json({ error: 'recall not found' });
     if (row.resolved) return res.json({ correct: true, feedback: 'Already done.' });
 
-    const { data: node } = await supabaseAdmin
-      .from('knowledge_map_nodes')
-      .select('id')
-      .eq('concept_id', row.concept_id)
-      .maybeSingle();
-    if (!node) return res.status(404).json({ error: 'concept not found' });
-    const { data: lesson } = await supabaseAdmin
-      .from('knowledge_map_node_lessons')
-      .select('encoding_content')
-      .eq('node_id', node.id)
-      .maybeSingle();
-    const content = lesson?.encoding_content as { recallChecks?: RecallCheck[]; practiceQuestion?: { questionText?: string; markScheme?: string } } | null;
-    // recallCheckIndex -1 is GET /due's own fallback for a node with no
-    // recallChecks generated yet - re-derive the exact same fallback
-    // here rather than trusting the client's copy of it.
-    const check: RecallCheck | undefined = recallCheckIndex === -1
-      ? (content?.practiceQuestion?.questionText ? { format: 'free_text', questionText: content.practiceQuestion.questionText, markScheme: content.practiceQuestion.markScheme } : undefined)
-      : content?.recallChecks?.[recallCheckIndex];
+    let check: RecallCheck | undefined;
+    if ((row.concept_id as string).endsWith('::integration')) {
+      // A link's own recall: graded against the edge's integration question.
+      const q = await getQuestionForConceptId(row.concept_id as string);
+      check = q ? { format: 'free_text', questionText: q.questionText, markScheme: q.markScheme } : undefined;
+    } else {
+      const { data: node } = await supabaseAdmin
+        .from('knowledge_map_nodes')
+        .select('id')
+        .eq('concept_id', row.concept_id)
+        .maybeSingle();
+      if (!node) return res.status(404).json({ error: 'concept not found' });
+      const { data: lesson } = await supabaseAdmin
+        .from('knowledge_map_node_lessons')
+        .select('encoding_content')
+        .eq('node_id', node.id)
+        .maybeSingle();
+      const content = lesson?.encoding_content as { recallChecks?: RecallCheck[]; practiceQuestion?: { questionText?: string; markScheme?: string } } | null;
+      // recallCheckIndex -1 is GET /due's own fallback for a node with no
+      // recallChecks generated yet - re-derive the exact same fallback
+      // here rather than trusting the client's copy of it.
+      check = recallCheckIndex === -1
+        ? (content?.practiceQuestion?.questionText ? { format: 'free_text', questionText: content.practiceQuestion.questionText, markScheme: content.practiceQuestion.markScheme } : undefined)
+        : content?.recallChecks?.[recallCheckIndex];
+    }
     if (!check || !check.questionText) return res.status(404).json({ error: 'question not found' });
 
     let correct: boolean;

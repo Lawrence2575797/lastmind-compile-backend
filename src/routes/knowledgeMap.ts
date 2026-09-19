@@ -1096,14 +1096,35 @@ router.get('/day1-checks/due', requireAuth, syncEndpointLimiter, async (req: Req
     // Includes the actual question text up front (never the mark scheme)
     // so the feed can build the slide directly from this one response,
     // same pattern as GET /immediate-recalls/due.
-    const withDisplay = await Promise.all(rows.map(async (r) => {
+    const infos = await Promise.all(rows.map(async (r) => {
       const [info, question] = await Promise.all([
         getConceptDisplayInfo(r.concept_id as string),
         getQuestionForConceptId(r.concept_id as string),
       ]);
+      return { r, info, question };
+    }));
+    // A Day-1 check whose lesson isn't stored (its cached lesson was cleared, or
+    // never generated) has no question to ask and used to be skipped silently,
+    // so the queue dried up after the first few. Keep it one step ahead: when
+    // fewer than two are ready, regenerate the lesson for the next one in
+    // teaching order (charged to the student's Locks like any generation).
+    const missing = infos.filter((x) => x.info && !x.question && !(x.r.concept_id as string).endsWith('::integration'));
+    const readyCount = infos.filter((x) => x.info && x.question).length;
+    if (readyCount < 2 && missing.length) {
+      try {
+        const [next] = await orderDay1ChecksByLessonOrder(missing.map((x) => ({ conceptId: x.r.concept_id as string, item: x })));
+        await assertFreshGenerationWithinCap(userId, await isUserPaid(userId), req.userCreatedAt ?? null, req.userEmail);
+        await generateAndCacheNodeLesson(next.item.info!.nodeId, userId);
+        await recordFreshGenerationEvent(userId);
+        next.item.question = await getQuestionForConceptId(next.item.r.concept_id as string);
+      } catch (err) {
+        console.error('Regenerating a lesson for a Day-1 check failed (non-fatal):', err);
+      }
+    }
+    const withDisplay = infos.map(({ r, info, question }) => {
       if (!info || !question) return null;
       return { checkId: r.id, conceptId: r.concept_id, nodeId: info.nodeId, label: info.label, subject: info.subject, dueDate: r.due_date, questionText: question.questionText };
-    }));
+    });
     const usable = withDisplay.filter((c): c is NonNullable<typeof c> => c !== null);
     // Ordered by where each concept sits in its subject's own teaching
     // sequence, not by due_date (which is usually identical - "today" -

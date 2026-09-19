@@ -66,7 +66,7 @@ app.set('trust proxy', 1);
 // rather than fought against.
 app.use(helmet({ contentSecurityPolicy: false }));
 app.use(express.json({ limit: '200kb' }));
-app.use(cors({ origin: FRONTEND_ORIGIN, methods: ['POST', 'GET'] }));
+app.use(cors({ origin: FRONTEND_ORIGIN, methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'] }));
 app.use(globalRateLimiter);
 
 app.use('/', compileRouter);

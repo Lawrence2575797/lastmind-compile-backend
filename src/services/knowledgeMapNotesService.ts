@@ -415,6 +415,7 @@ async function computeSubtopicOrder(
       systemPrompt: SUBTOPIC_NODE_ORDER_PROMPT,
       userContent,
       temperature: 0.1,
+      meteredReason: 'subtopic-order',
     });
     const parsed = parseModelJson<{ order: number[] }>(raw).order;
     const isValidPermutation =

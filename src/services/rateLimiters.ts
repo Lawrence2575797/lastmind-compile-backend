@@ -5,7 +5,12 @@ import { rateLimit } from 'express-rate-limit';
 // hammering the server wholesale, not to police legitimate use.
 export const globalRateLimiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
-  limit: 100,
+  // 100 per 15 minutes was far below what one student's normal use of the app
+  // makes (schedule, recalls, Day-1 checks, prefetching the next lesson, the
+  // practice panel...), and it is keyed by IP - so a school sharing one address
+  // hit it constantly. Every failed request showed up as "couldn't load" or
+  // "something went wrong". Still a wholesale-hammering guard, just a realistic one.
+  limit: 3000,
   standardHeaders: true,
   legacyHeaders: false,
   message: { error: 'Too many requests. Please try again later.' },

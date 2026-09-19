@@ -1,4 +1,5 @@
 import { supabaseAdmin } from './supabaseAdmin';
+import { parseCorrectFeedbackJson } from './jsonParsing';
 import { callClaudeJSON, MODELS } from './claudeClient';
 import { EXAM_PREP_CORRECTION_PROMPT } from '../constants/practiceQuestionPrompts';
 import { gradeAndRecordReview, ratingFromMarkRatio } from './reviewService';
@@ -109,13 +110,15 @@ export async function submitCorrectionAnswer(userId: string, correctionId: strin
 
   const raw = await callClaudeJSON({
     model: MODELS.simpleQuestion,
-    systemPrompt: 'You are checking a UK GCSE/A-Level student\'s free-text answer against a mark scheme. Output ONLY valid JSON: { "correct": boolean, "feedback": "one or two sentences" }. Mark correct only if the answer genuinely satisfies the mark scheme as stated - be precise, not lenient.',
+    systemPrompt: 'You are checking a UK GCSE/A-Level student\'s free-text answer against a mark scheme. Output ONLY valid JSON: { "correct": boolean, "feedback": "one or two sentences" }. Mark correct only if the answer genuinely satisfies the mark scheme as stated - judge the substance strictly against the mark scheme, but spelling and typing mistakes NEVER make an answer wrong (credit the word the student clearly meant and never mention spelling). Never put a double-quote character inside the feedback string - use single quotes.',
     userContent: `Question: ${correction.followup_question_text}\nMark scheme: ${correction.followup_mark_scheme}\nStudent's answer: ${answerText}`,
     temperature: 0.1,
     userId,
     meteredReason: 'exam-prep-correction-grade',
   });
-  const parsed = JSON.parse(raw.trim().replace(/^```(?:json)?\s*/i, '').replace(/```\s*$/, '')) as { correct: boolean; feedback: string };
+  // Tolerant of stray prose or an unescaped quote around the JSON (chemistry answers
+  // are full of formulae and quoted terms) - a bare JSON.parse turned those into a 500.
+  const parsed = parseCorrectFeedbackJson(raw);
 
   if (parsed.correct) {
     const { error: updateError } = await supabaseAdmin

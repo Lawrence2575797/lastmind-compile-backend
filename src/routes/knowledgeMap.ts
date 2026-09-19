@@ -35,7 +35,7 @@ import { getNodeNoteBaseline, getNodeNoteForUser, saveNodeNoteEdit, getNodeNotes
 import { generateAndCacheNodeLesson, generateAndCacheEdgeLesson } from '../services/lessonGenerationService';
 import { answerKnowledgeMapQuestion } from '../services/knowledgeMapAskService';
 import { assertFreshGenerationWithinCap, recordFreshGenerationEvent, GenerationCapExceededError } from '../services/generationCapService';
-import { InsufficientLocksError } from '../services/lockService';
+import { InsufficientLocksError, assertLocksAvailable } from '../services/lockService';
 import { recordPairwiseIntegrationOutcome } from '../services/chainMasteryService';
 import { getOrCreateUserRecallTuning, getDifficultyAndCapability, nextRecallDelayMinutes, updateGammaAfterRecall, bumpBaseRecalls } from '../services/recallTuningService';
 import { getQuestionForConceptId, getConceptDisplayInfo, orderDay1ChecksByLessonOrder } from '../services/day1CheckService';
@@ -1601,9 +1601,26 @@ router.post('/knowledge-map-v2/node-review/integration/submit', requireAuth, cos
 // own PERSONAL notes (personal-notes routes further down - never gated,
 // never calls Claude) unaffected.
 
-router.post('/knowledge-map-v2/node/:nodeId/notes/compile', requireAuth, requirePaidTier, async (req: Request, res: Response) => {
+
+// Notes are built from a concept's stored lesson. A student who has encoded a
+// concept whose stored lesson is gone (cleared or never cached) would otherwise
+// see no notes for something they have learned - so regenerate it on demand,
+// once, charged to their Locks like any other generation. Never for a concept
+// they haven't encoded (Notes lists every concept, and clicking an unstarted one
+// must not spend anything).
+async function regenerateLessonForEncodedNode(nodeId: string, userId: string): Promise<boolean> {
+  const { data: node } = await supabaseAdmin.from('knowledge_map_nodes').select('concept_id').eq('id', nodeId).maybeSingle();
+  if (!node) return false;
+  const { data: review } = await supabaseAdmin.from('concept_reviews').select('concept_id').eq('user_id', userId).eq('concept_id', node.concept_id as string).maybeSingle();
+  if (!review) return false;
+  await assertLocksAvailable(userId);
+  return !!(await generateAndCacheNodeLesson(nodeId, userId));
+}
+
+router.post('/knowledge-map-v2/node/:nodeId/notes/compile', requireAuth, async (req: Request, res: Response) => {
   try {
-    const notes = await getNodeNoteForUser(req.params.nodeId, req.userId as string);
+    let notes = await getNodeNoteForUser(req.params.nodeId, req.userId as string);
+    if (!notes && await regenerateLessonForEncodedNode(req.params.nodeId, req.userId as string)) notes = await getNodeNoteForUser(req.params.nodeId, req.userId as string);
     if (!notes) return res.status(404).json({ error: 'no lesson generated for this concept yet' });
     res.json(notes);
   } catch (err) {
@@ -1612,9 +1629,10 @@ router.post('/knowledge-map-v2/node/:nodeId/notes/compile', requireAuth, require
   }
 });
 
-router.get('/knowledge-map-v2/node/:nodeId/notes', requireAuth, requirePaidTier, async (req: Request, res: Response) => {
+router.get('/knowledge-map-v2/node/:nodeId/notes', requireAuth, async (req: Request, res: Response) => {
   try {
-    const notes = await getNodeNoteForUser(req.params.nodeId, req.userId as string);
+    let notes = await getNodeNoteForUser(req.params.nodeId, req.userId as string);
+    if (!notes && await regenerateLessonForEncodedNode(req.params.nodeId, req.userId as string)) notes = await getNodeNoteForUser(req.params.nodeId, req.userId as string);
     if (!notes) return res.status(404).json({ error: 'no notes available for this concept yet' });
     res.json(notes);
   } catch (err) {
@@ -1628,7 +1646,7 @@ router.get('/knowledge-map-v2/node/:nodeId/notes', requireAuth, requirePaidTier,
 // comment). Not gated behind requirePaidTier's sibling routes' generation
 // cost (there is none), but the note being edited is still only ever
 // shown on the Premium Notes page in the first place.
-router.put('/knowledge-map-v2/node/:nodeId/notes', requireAuth, requirePaidTier, async (req: Request, res: Response) => {
+router.put('/knowledge-map-v2/node/:nodeId/notes', requireAuth, async (req: Request, res: Response) => {
   const { paragraphs } = (req.body ?? {}) as { paragraphs?: string[] };
   if (!Array.isArray(paragraphs) || !paragraphs.every((p) => typeof p === 'string')) {
     return res.status(400).json({ error: 'paragraphs (string[]) is required' });
@@ -1642,7 +1660,7 @@ router.put('/knowledge-map-v2/node/:nodeId/notes', requireAuth, requirePaidTier,
   }
 });
 
-router.post('/knowledge-map-v2/edge/:fromNodeId/:toNodeId/notes/compile', requireAuth, requirePaidTier, async (req: Request, res: Response) => {
+router.post('/knowledge-map-v2/edge/:fromNodeId/:toNodeId/notes/compile', requireAuth, async (req: Request, res: Response) => {
   try {
     const notes = await getEdgeNoteForUser(req.userId as string, req.params.fromNodeId, req.params.toNodeId);
     if (!notes) return res.status(404).json({ error: 'connection not found' });
@@ -1653,7 +1671,7 @@ router.post('/knowledge-map-v2/edge/:fromNodeId/:toNodeId/notes/compile', requir
   }
 });
 
-router.get('/knowledge-map-v2/edge/:fromNodeId/:toNodeId/notes', requireAuth, requirePaidTier, async (req: Request, res: Response) => {
+router.get('/knowledge-map-v2/edge/:fromNodeId/:toNodeId/notes', requireAuth, async (req: Request, res: Response) => {
   try {
     const notes = await getEdgeNoteForUser(req.userId as string, req.params.fromNodeId, req.params.toNodeId);
     if (!notes) return res.status(404).json({ error: 'no notes available for this connection yet' });
@@ -1664,7 +1682,7 @@ router.get('/knowledge-map-v2/edge/:fromNodeId/:toNodeId/notes', requireAuth, re
   }
 });
 
-router.put('/knowledge-map-v2/edge/:fromNodeId/:toNodeId/notes', requireAuth, requirePaidTier, async (req: Request, res: Response) => {
+router.put('/knowledge-map-v2/edge/:fromNodeId/:toNodeId/notes', requireAuth, async (req: Request, res: Response) => {
   const { paragraphs } = (req.body ?? {}) as { paragraphs?: string[] };
   if (!Array.isArray(paragraphs) || !paragraphs.every((p) => typeof p === 'string')) {
     return res.status(400).json({ error: 'paragraphs (string[]) is required' });

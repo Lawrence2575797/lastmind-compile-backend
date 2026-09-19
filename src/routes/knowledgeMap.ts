@@ -789,13 +789,11 @@ interface RecallCheck {
 // its due_at at all - see sfScheduleRecallTimer - so a "before" grace
 // period has nothing to apply to server-side).
 // The 2-minute clock starts when the concept's own immediate check is answered
-// correctly. The pop-up is timed by the feed (and held back while the student
-// is still on that concept's lesson, then shown on any other lesson), so a
-// recall must stay answerable until it is genuinely stale rather than
-// expiring 30 seconds after it falls due. The banner itself stays up 30
-// seconds (SF_RECALL_GRACE_MS on the client). Recalls due in the next few
-// minutes are returned too, so the feed can time each nudge.
-const RECALL_EXPIRY_MS = 30 * 60 * 1000;
+// correctly. A recall can only be taken in the 30 seconds after it falls due -
+// the same window the pop-up nudge stays on screen. Anything later has expired
+// (the concept's real review picks it up). Recalls due in the next few minutes
+// are returned too, so the feed can time each nudge.
+const RECALL_EXPIRY_MS = 30 * 1000;
 const RECALL_LOOKAHEAD_MS = 30 * 60 * 1000;
 
 // GET /immediate-recalls/due

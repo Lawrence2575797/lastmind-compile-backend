@@ -77,6 +77,18 @@ function validateSpec(spec: unknown): { ok: boolean; errors: string[] } {
 // which rewords it into an actual drawing instruction. The caller
 // (lessonGenerationService.ts) overwrites the original questionText with
 // this one whenever a real spec comes back.
+// Cheap gate in front of the model call: the classification call costs real
+// Locks (~70) on every Economics lesson, but most concepts (definitions,
+// scarcity, methodology, macro objectives...) never have a drawable curve
+// diagram. Only concepts whose own text is about something that IS drawn on
+// this tool's palette (supply/demand, costs, market failure, AD/AS, etc.)
+// reach the model, which still makes the final per-question call.
+const DIAGRAM_HINT_PATTERN = /supply|demand|equilibrium|curve|diagram|graph|draw|shift|surplus|shortage|excess|marginal|average (?:total |fixed |variable )?cost|total (?:cost|revenue)|revenue|production possibilit|\bppf\b|\bppc\b|externalit|\btax|subsid|price (?:ceiling|floor)|maximum price|minimum price|monopol|oligopol|competit|aggregate|\bad\/as\b|phillips|lorenz|tariff|quota|exchange rate|deadweight|welfare|elasticit|labour market|wage|loanable|money market|\blras\b|\bsras\b|output gap/i;
+
+export function likelyNeedsDiagram(label: string, explanation: string, questionText: string): boolean {
+  return DIAGRAM_HINT_PATTERN.test(`${label} ${explanation} ${questionText}`);
+}
+
 export async function generateDiagramSpecForQuestion(
   label: string,
   explanation: string,
@@ -84,6 +96,7 @@ export async function generateDiagramSpecForQuestion(
   markScheme: string,
   userId: string
 ): Promise<{ spec: DiagramSpec; questionText: string } | null> {
+  if (!likelyNeedsDiagram(label, explanation, questionText)) return null; // no model call, no Locks
   const context = `Concept: ${label}\n\nExplanation: ${explanation}\n\nPractice question: ${questionText}\n\nMark scheme: ${markScheme}`;
   let userContent = context;
   for (let attempt = 0; attempt < 2; attempt++) {

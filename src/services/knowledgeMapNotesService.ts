@@ -539,6 +539,10 @@ export async function getNotesIndexForUser(userId: string): Promise<{ subjects: 
   }
   if (!subjectTriples.size) return { subjects: [] };
 
+  const allEdges = await selectAllRows<{ id: string; from_node_id: string; to_node_id: string }>(
+    'knowledge_map_edges',
+    'id, from_node_id, to_node_id'
+  );
   const subjects: NotesIndexSubject[] = [];
   for (const triple of subjectTriples.values()) {
     // Case-insensitive - subject/qualification/examBoard are free text
@@ -556,10 +560,8 @@ export async function getNotesIndexForUser(userId: string): Promise<{ subjects: 
     // Fetched with no id filter then narrowed in JS - a large .in() id
     // list itself risks a "Bad Request" (see supabasePagination.ts),
     // same pattern findPrerequisiteGap uses.
-    const allEdges = await selectAllRows<{ id: string; from_node_id: string; to_node_id: string }>(
-      'knowledge_map_edges',
-      'id, from_node_id, to_node_id'
-    );
+    // The edge table is global, so it is read once for all of this student's
+    // subjects (see above) rather than once per subject.
     const edgesByFromNode = new Map<string, { id: string; from_node_id: string; to_node_id: string }[]>();
     allEdges
       .filter((e) => nodeById.has(e.from_node_id) && nodeById.has(e.to_node_id))

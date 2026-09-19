@@ -35,6 +35,7 @@ import { getNodeNoteBaseline, getNodeNoteForUser, saveNodeNoteEdit, getNodeNotes
 import { generateAndCacheNodeLesson, generateAndCacheEdgeLesson } from '../services/lessonGenerationService';
 import { answerKnowledgeMapQuestion } from '../services/knowledgeMapAskService';
 import { assertFreshGenerationWithinCap, recordFreshGenerationEvent, GenerationCapExceededError } from '../services/generationCapService';
+import { InsufficientLocksError } from '../services/lockService';
 import { recordPairwiseIntegrationOutcome } from '../services/chainMasteryService';
 import { getOrCreateUserRecallTuning, getDifficultyAndCapability, nextRecallDelayMinutes, updateGammaAfterRecall, bumpBaseRecalls } from '../services/recallTuningService';
 import { getQuestionForConceptId, getConceptDisplayInfo, orderDay1ChecksByLessonOrder } from '../services/day1CheckService';
@@ -164,6 +165,9 @@ router.get('/knowledge-map-v2/node/:nodeId/lesson', requireAuth, syncEndpointLim
     await recordFreshGenerationEvent(userId);
     res.json(generated);
   } catch (err) {
+    if (err instanceof InsufficientLocksError) {
+      return res.status(402).json({ error: 'Lock limit reached', code: 'LOCK_LIMIT_REACHED', detail: "You're out of Locks for now." });
+    }
     if (err instanceof GenerationCapExceededError) {
       // code: 'GENERATION_RATE_LIMIT' - deliberately distinct from Locks'
       // own 'LOCK_LIMIT_REACHED' (routes/credits.ts is gone, but
@@ -245,6 +249,9 @@ router.get('/knowledge-map-v2/edge/:fromNodeId/:toNodeId/lesson', requireAuth, s
     await recordFreshGenerationEvent(userId);
     res.json(generated);
   } catch (err) {
+    if (err instanceof InsufficientLocksError) {
+      return res.status(402).json({ error: 'Lock limit reached', code: 'LOCK_LIMIT_REACHED', detail: "You're out of Locks for now." });
+    }
     if (err instanceof GenerationCapExceededError) {
       // code: 'GENERATION_RATE_LIMIT' - deliberately distinct from Locks'
       // own 'LOCK_LIMIT_REACHED' (routes/credits.ts is gone, but
@@ -781,7 +788,13 @@ interface RecallCheck {
 // side is enforced here as an expiry (a recall isn't surfaced before
 // its due_at at all - see sfScheduleRecallTimer - so a "before" grace
 // period has nothing to apply to server-side).
-const RECALL_GRACE_MS = 30 * 1000;
+// A recall stays claimable well past its due time (the feed only asks for due
+// recalls at lesson transitions, so a 30-second window meant most were expired
+// before anyone looked). Overdue by more than this and it is stale, since the
+// Day-1 check covers the memory by then. Rows due within the lookahead are
+// returned too, so the client can time the nudge itself.
+const RECALL_EXPIRY_MS = 30 * 60 * 1000;
+const RECALL_LOOKAHEAD_MS = 30 * 60 * 1000;
 
 // GET /immediate-recalls/due
 // Lists this user's still-catchable rows from immediate_recall_schedule
@@ -814,8 +827,8 @@ router.get('/immediate-recalls/due', requireAuth, syncEndpointLimiter, async (re
     // moment has arrived": not due yet is neither missed nor catchable,
     // just left alone until a later poll.
     const msSinceDue = (r: { due_at: unknown }) => now - new Date(r.due_at as string).getTime();
-    const missed = rows.filter((r) => msSinceDue(r) > RECALL_GRACE_MS);
-    const stillCatchable = rows.filter((r) => msSinceDue(r) >= 0 && msSinceDue(r) <= RECALL_GRACE_MS);
+    const missed = rows.filter((r) => msSinceDue(r) > RECALL_EXPIRY_MS);
+    const stillCatchable = rows.filter((r) => msSinceDue(r) >= -RECALL_LOOKAHEAD_MS && msSinceDue(r) <= RECALL_EXPIRY_MS);
     if (missed.length) {
       // Fire-and-forget - never block this response on cleaning up ones
       // the student already missed, and never let a failure here surface
@@ -1460,6 +1473,9 @@ router.post('/knowledge-map-v2/node-review/integration/start', requireAuth, cost
   } catch (err) {
     if (err instanceof ReviewNotDueError) {
       return res.status(403).json({ error: 'This review isn\'t due yet.', dueDate: err.dueDate });
+    }
+    if (err instanceof InsufficientLocksError) {
+      return res.status(402).json({ error: 'Lock limit reached', code: 'LOCK_LIMIT_REACHED', detail: "You're out of Locks for now." });
     }
     if (err instanceof GenerationCapExceededError) {
       // See the identical comment on the node-lesson route above -

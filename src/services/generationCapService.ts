@@ -1,6 +1,6 @@
 import { supabaseAdmin } from './supabaseAdmin';
 import { ADMIN_EMAILS } from './authMiddleware';
-import { FRESH_GENERATION_CAP_MONTH, FREE_GENERATION_CAP_MONTH } from '../constants/generationCaps';
+import { assertLocksAvailable } from './lockService';
 
 // Thrown by assertFreshGenerationWithinCap so the route can tell "you've
 // hit today's real limit" apart from a genuine server error and respond
@@ -63,23 +63,12 @@ async function countEventsSince(userId: string, sinceIso: string): Promise<numbe
 // ADMIN_EMAILS's own comment) - these caps exist to bound a real
 // student's runaway generation cost, not to throttle the person actually
 // building and testing the product day to day.
-export async function assertFreshGenerationWithinCap(userId: string, isPaid: boolean, accountCreatedAt: string | null, email?: string | null): Promise<void> {
+export async function assertFreshGenerationWithinCap(userId: string, _isPaid: boolean, _accountCreatedAt: string | null, email?: string | null): Promise<void> {
   if (email && ADMIN_EMAILS.has(email.toLowerCase())) return;
-  const now = Date.now();
-
-  // Only the monthly cap binds. The hourly, two-hourly, daily and weekly
-  // windows were removed on purpose: spending is bounded by the month.
-  if (isPaid) {
-    if ((await countEventsSince(userId, currentMonthStartIso())) >= FRESH_GENERATION_CAP_MONTH) {
-      throw new GenerationCapExceededError('month', FRESH_GENERATION_CAP_MONTH);
-    }
-    return;
-  }
-
-  const sinceMonth = accountCreatedAt ? currentAnchorMonthStartIso(accountCreatedAt) : currentMonthStartIso();
-  if ((await countEventsSince(userId, sinceMonth)) >= FREE_GENERATION_CAP_MONTH) {
-    throw new GenerationCapExceededError('month', FREE_GENERATION_CAP_MONTH);
-  }
+  // No generation-count caps of any kind (hourly/daily/weekly/monthly) - the
+  // Locks balance is the only limit. Generating fresh content needs a
+  // positive balance; the real API cost is then charged against it.
+  await assertLocksAvailable(userId);
 }
 
 // Logged AFTER a generation actually succeeds (see routes/knowledgeMap.ts)

@@ -1,15 +1,6 @@
 import { supabaseAdmin } from './supabaseAdmin';
 import { ADMIN_EMAILS } from './authMiddleware';
-import {
-  FRESH_GENERATION_CAP_2H,
-  FRESH_GENERATION_CAP_DAY,
-  FRESH_GENERATION_CAP_WEEK,
-  FRESH_GENERATION_CAP_MONTH,
-  FREE_GENERATION_CAP_HOUR,
-  FREE_GENERATION_CAP_DAY,
-  FREE_GENERATION_CAP_WEEK,
-  FREE_GENERATION_CAP_MONTH,
-} from '../constants/generationCaps';
+import { FRESH_GENERATION_CAP_MONTH, FREE_GENERATION_CAP_MONTH } from '../constants/generationCaps';
 
 // Thrown by assertFreshGenerationWithinCap so the route can tell "you've
 // hit today's real limit" apart from a genuine server error and respond
@@ -76,22 +67,11 @@ export async function assertFreshGenerationWithinCap(userId: string, isPaid: boo
   if (email && ADMIN_EMAILS.has(email.toLowerCase())) return;
   const now = Date.now();
 
+  // Only the monthly cap binds. The hourly, two-hourly, daily and weekly
+  // windows were removed on purpose: spending is bounded by the month.
   if (isPaid) {
-    const sinceMonth = currentMonthStartIso();
-    if ((await countEventsSince(userId, sinceMonth)) >= FRESH_GENERATION_CAP_MONTH) {
+    if ((await countEventsSince(userId, currentMonthStartIso())) >= FRESH_GENERATION_CAP_MONTH) {
       throw new GenerationCapExceededError('month', FRESH_GENERATION_CAP_MONTH);
-    }
-    const sinceWeek = new Date(now - 7 * 24 * 60 * 60 * 1000).toISOString();
-    if ((await countEventsSince(userId, sinceWeek)) >= FRESH_GENERATION_CAP_WEEK) {
-      throw new GenerationCapExceededError('week', FRESH_GENERATION_CAP_WEEK);
-    }
-    const sinceDay = new Date(now - 24 * 60 * 60 * 1000).toISOString();
-    if ((await countEventsSince(userId, sinceDay)) >= FRESH_GENERATION_CAP_DAY) {
-      throw new GenerationCapExceededError('day', FRESH_GENERATION_CAP_DAY);
-    }
-    const since2h = new Date(now - 2 * 60 * 60 * 1000).toISOString();
-    if ((await countEventsSince(userId, since2h)) >= FRESH_GENERATION_CAP_2H) {
-      throw new GenerationCapExceededError('2 hours', FRESH_GENERATION_CAP_2H);
     }
     return;
   }
@@ -99,18 +79,6 @@ export async function assertFreshGenerationWithinCap(userId: string, isPaid: boo
   const sinceMonth = accountCreatedAt ? currentAnchorMonthStartIso(accountCreatedAt) : currentMonthStartIso();
   if ((await countEventsSince(userId, sinceMonth)) >= FREE_GENERATION_CAP_MONTH) {
     throw new GenerationCapExceededError('month', FREE_GENERATION_CAP_MONTH);
-  }
-  const sinceWeek = new Date(now - 7 * 24 * 60 * 60 * 1000).toISOString();
-  if ((await countEventsSince(userId, sinceWeek)) >= FREE_GENERATION_CAP_WEEK) {
-    throw new GenerationCapExceededError('week', FREE_GENERATION_CAP_WEEK);
-  }
-  const sinceDay = new Date(now - 24 * 60 * 60 * 1000).toISOString();
-  if ((await countEventsSince(userId, sinceDay)) >= FREE_GENERATION_CAP_DAY) {
-    throw new GenerationCapExceededError('day', FREE_GENERATION_CAP_DAY);
-  }
-  const sinceHour = new Date(now - 60 * 60 * 1000).toISOString();
-  if ((await countEventsSince(userId, sinceHour)) >= FREE_GENERATION_CAP_HOUR) {
-    throw new GenerationCapExceededError('hour', FREE_GENERATION_CAP_HOUR);
   }
 }
 

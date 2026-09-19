@@ -1,3 +1,4 @@
+import { currentUserId } from './requestContext';
 import Anthropic from '@anthropic-ai/sdk';
 import { chargeForClaudeCall } from './generationCostService';
 import { applyStructuredPIIFilter } from '../safety/piiFilterStructured';
@@ -352,13 +353,16 @@ export async function callClaudeJSON(params: {
   meteredReason?: string;
 }): Promise<string> {
   const { text, usage } = await sendWithTemperatureRetry(params.model, params.systemPrompt, sanitizeForClaude(params.userContent), params.maxTokens, params.temperature, params.cacheSystemPrompt);
-  if (params.userId) {
+  // Every AI call is charged to a student's Locks: the explicit userId if the
+  // call site passed one, otherwise whoever's request this call is serving.
+  const chargeUserId = params.userId ?? currentUserId();
+  if (chargeUserId) {
     // Deliberately not awaited into the request's critical path beyond
     // this point being reached — see chargeForClaudeCall's own comment on
     // why it never throws, but it IS awaited (not fire-and-forget) so a
     // charge is never silently skipped by the process exiting before it
     // lands.
-    await chargeForClaudeCall(params.userId, params.model, usage, params.meteredReason || 'unlabeled');
+    await chargeForClaudeCall(chargeUserId, params.model, usage, params.meteredReason || 'unlabeled');
   }
   return text;
 }
@@ -396,8 +400,9 @@ export async function callClaudeJSONWithImages(params: {
     });
   }
   const { text, usage } = await sendWithTemperatureRetry(params.model, params.systemPrompt, content, params.maxTokens, params.temperature);
-  if (params.userId) {
-    await chargeForClaudeCall(params.userId, params.model, usage, params.meteredReason || 'unlabeled');
+  const imageChargeUserId = params.userId ?? currentUserId();
+  if (imageChargeUserId) {
+    await chargeForClaudeCall(imageChargeUserId, params.model, usage, params.meteredReason || 'unlabeled');
   }
   return text;
 }

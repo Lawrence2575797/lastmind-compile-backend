@@ -1,3 +1,4 @@
+import { runWithUser } from './requestContext';
 import { Request, Response, NextFunction } from 'express';
 import { verifyUser, supabaseAdmin } from './supabaseAdmin';
 
@@ -36,7 +37,9 @@ export async function requireAuth(req: Request, res: Response, next: NextFunctio
   req.userId = user.id;
   req.userEmail = user.email;
   req.userCreatedAt = user.createdAt;
-  next();
+  // Everything this request goes on to do (AI calls included) runs inside the
+  // student's own context - see requestContext.ts.
+  runWithUser(user.id, () => next());
 }
 
 // No role/permissions table exists anywhere in this codebase, so this is

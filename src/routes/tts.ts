@@ -2,6 +2,12 @@ import { Router, Request, Response } from 'express';
 import { requireAuth } from '../services/authMiddleware';
 import { syncEndpointLimiter } from '../services/rateLimiters';
 import { synthesizeSpeech } from '../services/elevenLabsService';
+import { chargeLocksForUsage } from '../services/lockService';
+import { USD_PER_LOCK } from '../constants/modelPricing';
+
+// ElevenLabs bills per character (eleven_flash_v2_5). Approximate USD per
+// character - set ELEVENLABS_USD_PER_CHAR to your plan's real rate.
+const ELEVENLABS_USD_PER_CHAR = Number(process.env.ELEVENLABS_USD_PER_CHAR) || 0.00011;
 
 const router = Router();
 
@@ -29,6 +35,13 @@ router.post('/tts', requireAuth, syncEndpointLimiter, async (req: Request, res: 
     const result = await synthesizeSpeech(subject.trim(), text.trim());
     if (!result) {
       return res.status(404).json({ error: 'No text-to-speech voice configured for this subject.' });
+    }
+    // A fresh synthesis costs real money, so it is charged to the student's
+    // Locks like every other API cost; a cached clip is free.
+    if (result.fresh && result.characters) {
+      const locks = Math.max(1, Math.ceil((result.characters * ELEVENLABS_USD_PER_CHAR) / USD_PER_LOCK));
+      try { await chargeLocksForUsage(req.userId as string, locks, 'tts-elevenlabs', 'elevenlabs-flash'); }
+      catch (err) { console.error('LastMind: failed to charge Locks for TTS (non-fatal).', err); }
     }
     res.setHeader('Content-Type', result.contentType);
     res.setHeader('Cache-Control', 'public, max-age=604800');

@@ -30,6 +30,9 @@ function cacheKey(voiceId: string, text: string): string {
 export interface SynthesizedAudio {
   audio: Buffer;
   contentType: string;
+  // True only when this call actually hit ElevenLabs (a cache hit costs nothing).
+  fresh?: boolean;
+  characters?: number;
 }
 
 /**
@@ -90,5 +93,5 @@ export async function synthesizeSpeech(subject: string, text: string): Promise<S
     console.error('LastMind: failed to cache TTS audio (will regenerate next time).', err);
   }
 
-  return { audio, contentType };
+  return { audio, contentType, fresh: true, characters: trimmed.length };
 }

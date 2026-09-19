@@ -4,13 +4,568 @@
   "examBoard": "",
   "nodes": [
     {
+      "id": "NUM_0_3",
+      "label": "Cardinal numbers: cero, uno",
+      "subtopic": "A1.2 Numbers, time and dates"
+    },
+    {
+      "id": "NUM_0_3__2",
+      "label": "Cardinal numbers: dos, tres",
+      "subtopic": "A1.2 Numbers, time and dates"
+    },
+    {
+      "id": "IR_SG",
+      "label": "Ir (singular): voy, vas",
+      "subtopic": "A1.4 Present tense: ser, estar and regular verbs"
+    },
+    {
+      "id": "IR_SG__2",
+      "label": "Ir (singular): va",
+      "subtopic": "A1.4 Present tense: ser, estar and regular verbs"
+    },
+    {
+      "id": "PODER_PL",
+      "label": "Poder (plural): podemos, podéis",
+      "subtopic": "A1.5 Family, description and common irregular verbs"
+    },
+    {
+      "id": "PODER_PL__2",
+      "label": "Poder (plural): pueden",
+      "subtopic": "A1.5 Family, description and common irregular verbs"
+    },
+    {
+      "id": "QUERER_SG",
+      "label": "Querer (singular): quiero, quieres",
+      "subtopic": "A1.5 Family, description and common irregular verbs"
+    },
+    {
+      "id": "QUERER_SG__2",
+      "label": "Querer (singular): quiere",
+      "subtopic": "A1.5 Family, description and common irregular verbs"
+    },
+    {
+      "id": "DEBER_PL",
+      "label": "Deber (plural): debemos, debéis",
+      "subtopic": "A1.5 Family, description and common irregular verbs"
+    },
+    {
+      "id": "DEBER_PL__2",
+      "label": "Deber (plural): deben",
+      "subtopic": "A1.5 Family, description and common irregular verbs"
+    },
+    {
+      "id": "DECIR_SG",
+      "label": "Decir (singular): digo, dices",
+      "subtopic": "A1.5 Family, description and common irregular verbs"
+    },
+    {
+      "id": "DECIR_SG__2",
+      "label": "Decir (singular): dice",
+      "subtopic": "A1.5 Family, description and common irregular verbs"
+    },
+    {
+      "id": "POSS_SHORT",
+      "label": "Possessive adjectives (short): mi/mis, tu/tus",
+      "subtopic": "A1.5 Family, description and common irregular verbs"
+    },
+    {
+      "id": "POSS_SHORT__2",
+      "label": "Possessive adjectives (short): su/sus",
+      "subtopic": "A1.5 Family, description and common irregular verbs"
+    },
+    {
+      "id": "PRET_AR_SG",
+      "label": "Regular -ar preterite endings (singular): -é, -aste",
+      "subtopic": "A2.1 Preterito indefinido (simple past)"
+    },
+    {
+      "id": "PRET_AR_SG__2",
+      "label": "Regular -ar preterite endings (singular): -ó",
+      "subtopic": "A2.1 Preterito indefinido (simple past)"
+    },
+    {
+      "id": "PRET_ER_PL",
+      "label": "Regular -er/-ir preterite endings (plural): -imos, -isteis",
+      "subtopic": "A2.1 Preterito indefinido (simple past)"
+    },
+    {
+      "id": "PRET_ER_PL__2",
+      "label": "Regular -er/-ir preterite endings (plural): -ieron",
+      "subtopic": "A2.1 Preterito indefinido (simple past)"
+    },
+    {
+      "id": "IMPF_ER_SG",
+      "label": "Imperfecto -er/-ir verbs (singular): -ía, -ías",
+      "subtopic": "A2.2 Preterito imperfecto and its contrast with indefinido"
+    },
+    {
+      "id": "IMPF_ER_SG__2",
+      "label": "Imperfecto -er/-ir verbs (singular): -ía",
+      "subtopic": "A2.2 Preterito imperfecto and its contrast with indefinido"
+    },
+    {
+      "id": "FUT_STEM_3",
+      "label": "Irregular future stems: vendré, querré",
+      "subtopic": "A2.4 Comparatives, superlatives and the future tense"
+    },
+    {
+      "id": "FUT_STEM_3__2",
+      "label": "Irregular future stems: sabré",
+      "subtopic": "A2.4 Comparatives, superlatives and the future tense"
+    },
+    {
+      "id": "IOBJ_PL",
+      "label": "Indirect object pronouns (plural): nos, os",
+      "subtopic": "B1.2 Combined and complex pronouns"
+    },
+    {
+      "id": "IOBJ_PL__2",
+      "label": "Indirect object pronouns (plural): les",
+      "subtopic": "B1.2 Combined and complex pronouns"
+    },
+    {
+      "id": "DOBJ_SG",
+      "label": "Direct object pronouns (singular): me, te",
+      "subtopic": "B1.2 Combined and complex pronouns"
+    },
+    {
+      "id": "DOBJ_SG__2",
+      "label": "Direct object pronouns (singular): lo, la",
+      "subtopic": "B1.2 Combined and complex pronouns"
+    },
+    {
+      "id": "SUBJ_STEM_1",
+      "label": "Irregular present subjunctive stems: ser (sea), estar (esté)",
+      "subtopic": "B1.4 Subjuntivo presente: formation and core triggers"
+    },
+    {
+      "id": "SUBJ_STEM_1__2",
+      "label": "Irregular present subjunctive stems: ir (vaya)",
+      "subtopic": "B1.4 Subjuntivo presente: formation and core triggers"
+    },
+    {
+      "id": "COURTESY_2",
+      "label": "Courtesy expressions: perdón, disculpe",
+      "subtopic": "A1.1 Greetings, introductions and register"
+    },
+    {
+      "id": "NUM_4_7",
+      "label": "Cardinal numbers: cuatro, cinco",
+      "subtopic": "A1.2 Numbers, time and dates"
+    },
+    {
+      "id": "NUM_4_7__2",
+      "label": "Cardinal numbers: seis, siete",
+      "subtopic": "A1.2 Numbers, time and dates"
+    },
+    {
+      "id": "IR_PL",
+      "label": "Ir (plural): vamos, vais",
+      "subtopic": "A1.4 Present tense: ser, estar and regular verbs"
+    },
+    {
+      "id": "IR_PL__2",
+      "label": "Ir (plural): van",
+      "subtopic": "A1.4 Present tense: ser, estar and regular verbs"
+    },
+    {
+      "id": "PRON_SG",
+      "label": "Subject pronouns (singular): yo, tú",
+      "subtopic": "A1.4 Present tense: ser, estar and regular verbs"
+    },
+    {
+      "id": "PRON_SG__2",
+      "label": "Subject pronouns (singular): él/ella",
+      "subtopic": "A1.4 Present tense: ser, estar and regular verbs"
+    },
+    {
+      "id": "QUERER_PL",
+      "label": "Querer (plural): queremos, queréis",
+      "subtopic": "A1.5 Family, description and common irregular verbs"
+    },
+    {
+      "id": "QUERER_PL__2",
+      "label": "Querer (plural): quieren",
+      "subtopic": "A1.5 Family, description and common irregular verbs"
+    },
+    {
+      "id": "DECIR_PL",
+      "label": "Decir (plural): decimos, decís",
+      "subtopic": "A1.5 Family, description and common irregular verbs"
+    },
+    {
+      "id": "DECIR_PL__2",
+      "label": "Decir (plural): dicen",
+      "subtopic": "A1.5 Family, description and common irregular verbs"
+    },
+    {
+      "id": "POSS_LONG",
+      "label": "Possessive adjectives (long): nuestro/a/os/as, vuestro/a/os/as",
+      "subtopic": "A1.5 Family, description and common irregular verbs"
+    },
+    {
+      "id": "FAM_3",
+      "label": "Family vocabulary: marido, esposa",
+      "subtopic": "A1.5 Family, description and common irregular verbs"
+    },
+    {
+      "id": "FAM_3__2",
+      "label": "Family vocabulary: tio, tia",
+      "subtopic": "A1.5 Family, description and common irregular verbs"
+    },
+    {
+      "id": "PRET_AR_PL",
+      "label": "Regular -ar preterite endings (plural): -amos, -asteis",
+      "subtopic": "A2.1 Preterito indefinido (simple past)"
+    },
+    {
+      "id": "PRET_AR_PL__2",
+      "label": "Regular -ar preterite endings (plural): -aron",
+      "subtopic": "A2.1 Preterito indefinido (simple past)"
+    },
+    {
+      "id": "SERIR_PRET_SG",
+      "label": "Ser/ir preterite (singular): fui, fuiste",
+      "subtopic": "A2.1 Preterito indefinido (simple past)"
+    },
+    {
+      "id": "SERIR_PRET_SG__2",
+      "label": "Ser/ir preterite (singular): fue",
+      "subtopic": "A2.1 Preterito indefinido (simple past)"
+    },
+    {
+      "id": "IMPF_AR_PL",
+      "label": "Imperfecto -ar verbs (plural): -ábamos, -abais",
+      "subtopic": "A2.2 Preterito imperfecto and its contrast with indefinido"
+    },
+    {
+      "id": "IMPF_AR_PL__2",
+      "label": "Imperfecto -ar verbs (plural): -aban",
+      "subtopic": "A2.2 Preterito imperfecto and its contrast with indefinido"
+    },
+    {
+      "id": "IMPF_ER_PL",
+      "label": "Imperfecto -er/-ir verbs (plural): -íamos, -íais",
+      "subtopic": "A2.2 Preterito imperfecto and its contrast with indefinido"
+    },
+    {
+      "id": "IMPF_ER_PL__2",
+      "label": "Imperfecto -er/-ir verbs (plural): -ían",
+      "subtopic": "A2.2 Preterito imperfecto and its contrast with indefinido"
+    },
+    {
+      "id": "FUT_END_SG",
+      "label": "Future tense endings (singular): -é, -ás",
+      "subtopic": "A2.4 Comparatives, superlatives and the future tense"
+    },
+    {
+      "id": "FUT_END_SG__2",
+      "label": "Future tense endings (singular): -á",
+      "subtopic": "A2.4 Comparatives, superlatives and the future tense"
+    },
+    {
+      "id": "DOBJ_PL",
+      "label": "Direct object pronouns (plural): nos, os",
+      "subtopic": "B1.2 Combined and complex pronouns"
+    },
+    {
+      "id": "DOBJ_PL__2",
+      "label": "Direct object pronouns (plural): los, las",
+      "subtopic": "B1.2 Combined and complex pronouns"
+    },
+    {
+      "id": "SUBJ_ER_SG",
+      "label": "Present subjunctive -er/-ir endings (singular): -a, -as",
+      "subtopic": "B1.4 Subjuntivo presente: formation and core triggers"
+    },
+    {
+      "id": "SUBJ_ER_SG__2",
+      "label": "Present subjunctive -er/-ir endings (singular): -a",
+      "subtopic": "B1.4 Subjuntivo presente: formation and core triggers"
+    },
+    {
+      "id": "SUBJ_STEM_2",
+      "label": "Irregular present subjunctive stems: saber (sepa), dar (dé)",
+      "subtopic": "B1.4 Subjuntivo presente: formation and core triggers"
+    },
+    {
+      "id": "SUBJ_STEM_2__2",
+      "label": "Irregular present subjunctive stems: haber (haya)",
+      "subtopic": "B1.4 Subjuntivo presente: formation and core triggers"
+    },
+    {
+      "id": "IMPSUBJ_RA_PL",
+      "label": "Imperfect subjunctive -ra endings (plural): -ramos, -rais",
+      "subtopic": "B2.1 Subjuntivo pasado (imperfecto and pluscuamperfecto), and secuencia de tiempos"
+    },
+    {
+      "id": "IMPSUBJ_RA_PL__2",
+      "label": "Imperfect subjunctive -ra endings (plural): -ran",
+      "subtopic": "B2.1 Subjuntivo pasado (imperfecto and pluscuamperfecto), and secuencia de tiempos"
+    },
+    {
+      "id": "PRET_IRREG_END_SG",
+      "label": "Irregular preterite shared endings (singular): -e, -iste",
+      "subtopic": "A2.1 Preterito indefinido (simple past)"
+    },
+    {
+      "id": "PRET_IRREG_END_SG__2",
+      "label": "Irregular preterite shared endings (singular): -o",
+      "subtopic": "A2.1 Preterito indefinido (simple past)"
+    },
+    {
+      "id": "NUM_8_11",
+      "label": "Cardinal numbers: ocho, nueve",
+      "subtopic": "A1.2 Numbers, time and dates"
+    },
+    {
+      "id": "NUM_8_11__2",
+      "label": "Cardinal numbers: diez, once",
+      "subtopic": "A1.2 Numbers, time and dates"
+    },
+    {
+      "id": "PRON_PL",
+      "label": "Subject pronouns (plural): nosotros, vosotros",
+      "subtopic": "A1.4 Present tense: ser, estar and regular verbs"
+    },
+    {
+      "id": "PRON_PL__2",
+      "label": "Subject pronouns (plural): ellos",
+      "subtopic": "A1.4 Present tense: ser, estar and regular verbs"
+    },
+    {
+      "id": "FAM_1",
+      "label": "Family vocabulary: madre, padre",
+      "subtopic": "A1.5 Family, description and common irregular verbs"
+    },
+    {
+      "id": "FAM_1__2",
+      "label": "Family vocabulary: hermano, hermana",
+      "subtopic": "A1.5 Family, description and common irregular verbs"
+    },
+    {
+      "id": "FAM_4",
+      "label": "Family vocabulary: primo/a",
+      "subtopic": "A1.5 Family, description and common irregular verbs"
+    },
+    {
+      "id": "PRET_ER_SG",
+      "label": "Regular -er/-ir preterite endings (singular): -í, -iste",
+      "subtopic": "A2.1 Preterito indefinido (simple past)"
+    },
+    {
+      "id": "PRET_ER_SG__2",
+      "label": "Regular -er/-ir preterite endings (singular): -ió",
+      "subtopic": "A2.1 Preterito indefinido (simple past)"
+    },
+    {
+      "id": "SERIR_PRET_PL",
+      "label": "Ser/ir preterite (plural): fuimos, fuisteis",
+      "subtopic": "A2.1 Preterito indefinido (simple past)"
+    },
+    {
+      "id": "SERIR_PRET_PL__2",
+      "label": "Ser/ir preterite (plural): fueron",
+      "subtopic": "A2.1 Preterito indefinido (simple past)"
+    },
+    {
+      "id": "FUT_END_PL",
+      "label": "Future tense endings (plural): -emos, -éis",
+      "subtopic": "A2.4 Comparatives, superlatives and the future tense"
+    },
+    {
+      "id": "FUT_END_PL__2",
+      "label": "Future tense endings (plural): -án",
+      "subtopic": "A2.4 Comparatives, superlatives and the future tense"
+    },
+    {
+      "id": "FUT_STEM_1",
+      "label": "Irregular future stems: tendré, podré",
+      "subtopic": "A2.4 Comparatives, superlatives and the future tense"
+    },
+    {
+      "id": "FUT_STEM_1__2",
+      "label": "Irregular future stems: haré",
+      "subtopic": "A2.4 Comparatives, superlatives and the future tense"
+    },
+    {
+      "id": "SUBJ_AR_SG",
+      "label": "Present subjunctive -ar endings (singular): -e, -es",
+      "subtopic": "B1.4 Subjuntivo presente: formation and core triggers"
+    },
+    {
+      "id": "SUBJ_AR_SG__2",
+      "label": "Present subjunctive -ar endings (singular): -e",
+      "subtopic": "B1.4 Subjuntivo presente: formation and core triggers"
+    },
+    {
+      "id": "SUBJ_ER_PL",
+      "label": "Present subjunctive -er/-ir endings (plural): -amos, -áis",
+      "subtopic": "B1.4 Subjuntivo presente: formation and core triggers"
+    },
+    {
+      "id": "SUBJ_ER_PL__2",
+      "label": "Present subjunctive -er/-ir endings (plural): -an",
+      "subtopic": "B1.4 Subjuntivo presente: formation and core triggers"
+    },
+    {
+      "id": "HABER_SUBJ_PL",
+      "label": "Present subjunctive of haber (plural): hayamos, hayáis",
+      "subtopic": "B2.1 Subjuntivo pasado (imperfecto and pluscuamperfecto), and secuencia de tiempos"
+    },
+    {
+      "id": "HABER_SUBJ_PL__2",
+      "label": "Present subjunctive of haber (plural): hayan",
+      "subtopic": "B2.1 Subjuntivo pasado (imperfecto and pluscuamperfecto), and secuencia de tiempos"
+    },
+    {
+      "id": "IMPSUBJ_RA_SG",
+      "label": "Imperfect subjunctive -ra endings (singular): -ra, -ras",
+      "subtopic": "B2.1 Subjuntivo pasado (imperfecto and pluscuamperfecto), and secuencia de tiempos"
+    },
+    {
+      "id": "IMPSUBJ_RA_SG__2",
+      "label": "Imperfect subjunctive -ra endings (singular): -ra",
+      "subtopic": "B2.1 Subjuntivo pasado (imperfecto and pluscuamperfecto), and secuencia de tiempos"
+    },
+    {
+      "id": "IMPSUBJ_SE_SG",
+      "label": "Imperfect subjunctive -se endings (singular): -se, -ses",
+      "subtopic": "B2.1 Subjuntivo pasado (imperfecto and pluscuamperfecto), and secuencia de tiempos"
+    },
+    {
+      "id": "IMPSUBJ_SE_SG__2",
+      "label": "Imperfect subjunctive -se endings (singular): -se",
+      "subtopic": "B2.1 Subjuntivo pasado (imperfecto and pluscuamperfecto), and secuencia de tiempos"
+    },
+    {
+      "id": "PRET_IRREG_END_PL",
+      "label": "Irregular preterite shared endings (plural): -imos, -isteis",
+      "subtopic": "A2.1 Preterito indefinido (simple past)"
+    },
+    {
+      "id": "PRET_IRREG_END_PL__2",
+      "label": "Irregular preterite shared endings (plural): -ieron",
+      "subtopic": "A2.1 Preterito indefinido (simple past)"
+    },
+    {
+      "id": "NUM_12_15",
+      "label": "Cardinal numbers: doce, trece",
+      "subtopic": "A1.2 Numbers, time and dates"
+    },
+    {
+      "id": "NUM_12_15__2",
+      "label": "Cardinal numbers: catorce, quince",
+      "subtopic": "A1.2 Numbers, time and dates"
+    },
+    {
+      "id": "NUM_16_19",
+      "label": "Teen numbers 16-19: the 'dieci-' pattern (dieciséis, diecisiete, dieciocho, diecinueve)",
+      "subtopic": "A1.2 Numbers, time and dates"
+    },
+    {
+      "id": "HACER_SG",
+      "label": "Hacer (singular): hago, haces",
+      "subtopic": "A1.5 Family, description and common irregular verbs"
+    },
+    {
+      "id": "HACER_SG__2",
+      "label": "Hacer (singular): hace",
+      "subtopic": "A1.5 Family, description and common irregular verbs"
+    },
+    {
+      "id": "HACER_PL",
+      "label": "Hacer (plural): hacemos, hacéis",
+      "subtopic": "A1.5 Family, description and common irregular verbs"
+    },
+    {
+      "id": "HACER_PL__2",
+      "label": "Hacer (plural): hacen",
+      "subtopic": "A1.5 Family, description and common irregular verbs"
+    },
+    {
+      "id": "TENER_SG",
+      "label": "Tener (singular): tengo, tienes",
+      "subtopic": "A1.5 Family, description and common irregular verbs"
+    },
+    {
+      "id": "TENER_SG__2",
+      "label": "Tener (singular): tiene",
+      "subtopic": "A1.5 Family, description and common irregular verbs"
+    },
+    {
+      "id": "MONTHS",
+      "label": "Months of the year: enero, febrero",
+      "subtopic": "A1.2 Numbers, time and dates"
+    },
+    {
+      "id": "MONTHS__2",
+      "label": "Months of the year: marzo, abril",
+      "subtopic": "A1.2 Numbers, time and dates"
+    },
+    {
+      "id": "MONTHS__3",
+      "label": "Months of the year: mayo, junio",
+      "subtopic": "A1.2 Numbers, time and dates"
+    },
+    {
+      "id": "MONTHS__4",
+      "label": "Months of the year: julio, agosto",
+      "subtopic": "A1.2 Numbers, time and dates"
+    },
+    {
+      "id": "MONTHS__5",
+      "label": "Months of the year: septiembre, octubre",
+      "subtopic": "A1.2 Numbers, time and dates"
+    },
+    {
+      "id": "MONTHS__6",
+      "label": "Months of the year: noviembre, diciembre",
+      "subtopic": "A1.2 Numbers, time and dates"
+    },
+    {
+      "id": "DAYS",
+      "label": "Days of the week: lunes, martes",
+      "subtopic": "A1.2 Numbers, time and dates"
+    },
+    {
+      "id": "DAYS__2",
+      "label": "Days of the week: miércoles, jueves",
+      "subtopic": "A1.2 Numbers, time and dates"
+    },
+    {
+      "id": "DAYS__3",
+      "label": "Days of the week: viernes, sábado",
+      "subtopic": "A1.2 Numbers, time and dates"
+    },
+    {
+      "id": "DAYS__4",
+      "label": "Days of the week: domingo",
+      "subtopic": "A1.2 Numbers, time and dates"
+    },
+    {
+      "id": "DAYS_ASKSTATE",
+      "label": "Asking/stating what day it is",
+      "subtopic": "A1.2 Numbers, time and dates"
+    },
+    {
       "id": "greet_time_of_day",
-      "label": "Time-of-day greetings: buenos dias, buenas tardes, buenas noches",
+      "label": "Time-of-day greetings: buenos días, buenas tardes",
+      "subtopic": "A1.1 Greetings, introductions and register"
+    },
+    {
+      "id": "greet_time_of_day__2",
+      "label": "Time-of-day greetings: buenas noches",
       "subtopic": "A1.1 Greetings, introductions and register"
     },
     {
       "id": "greet_informal",
-      "label": "Informal greetings/farewells: hola, adios, hasta luego, hasta manana",
+      "label": "Informal greetings/farewells: hola, adiós",
+      "subtopic": "A1.1 Greetings, introductions and register"
+    },
+    {
+      "id": "greet_informal__2",
+      "label": "Informal greetings/farewells: hasta luego, hasta mañana",
       "subtopic": "A1.1 Greetings, introductions and register"
     },
     {
@@ -20,7 +575,27 @@
     },
     {
       "id": "subj_pronouns",
-      "label": "Subject pronouns: yo, tu, el/ella/usted, nosotros(as), vosotros(as)/ustedes, ellos/ellas",
+      "label": "Subject pronouns: yo, tú",
+      "subtopic": "A1.1 Greetings, introductions and register"
+    },
+    {
+      "id": "subj_pronouns__2",
+      "label": "Subject pronouns: él, ella",
+      "subtopic": "A1.1 Greetings, introductions and register"
+    },
+    {
+      "id": "subj_pronouns__3",
+      "label": "Subject pronouns: usted, ustedes",
+      "subtopic": "A1.1 Greetings, introductions and register"
+    },
+    {
+      "id": "subj_pronouns__4",
+      "label": "Subject pronouns: nosotros(as), vosotros(as)",
+      "subtopic": "A1.1 Greetings, introductions and register"
+    },
+    {
+      "id": "subj_pronouns__5",
+      "label": "Subject pronouns: ellos, ellas",
       "subtopic": "A1.1 Greetings, introductions and register"
     },
     {
@@ -54,13 +629,23 @@
       "subtopic": "A1.1 Greetings, introductions and register"
     },
     {
-      "id": "courtesy_expr",
-      "label": "Basic courtesy expressions: por favor, gracias, de nada, perdon, disculpe",
+      "id": "question_words",
+      "label": "Basic question words: qué, dónde",
       "subtopic": "A1.1 Greetings, introductions and register"
     },
     {
-      "id": "question_words",
-      "label": "Basic question words: que, donde, cuando, por que, quien, como, cuanto",
+      "id": "question_words__2",
+      "label": "Basic question words: cuándo, por qué",
+      "subtopic": "A1.1 Greetings, introductions and register"
+    },
+    {
+      "id": "question_words__3",
+      "label": "Basic question words: quién, cómo",
+      "subtopic": "A1.1 Greetings, introductions and register"
+    },
+    {
+      "id": "question_words__4",
+      "label": "Basic question words: cuánto",
       "subtopic": "A1.1 Greetings, introductions and register"
     },
     {
@@ -85,27 +670,62 @@
     },
     {
       "id": "nationality_agreement",
-      "label": "Nationality adjective agreement: masculine/feminine/plural forms (espanol/a/es/as, ingles/inglesa/es/as)",
+      "label": "Nationality adjectives: masculine and feminine singular (español/española)",
       "subtopic": "A1.1 Greetings, introductions and register"
     },
     {
-      "id": "NUM_0_30",
-      "label": "Cardinal numbers 0-30",
-      "subtopic": "A1.2 Numbers, time and dates"
+      "id": "nationality_agreement__2",
+      "label": "Nationality adjectives: masculine and feminine plural (españoles/españolas)",
+      "subtopic": "A1.1 Greetings, introductions and register"
     },
     {
       "id": "NUM_31_100",
-      "label": "Cardinal numbers 31-100 (tens + y + units pattern)",
+      "label": "Cardinal numbers (tens): treinta, cuarenta",
+      "subtopic": "A1.2 Numbers, time and dates"
+    },
+    {
+      "id": "NUM_31_100__2",
+      "label": "Cardinal numbers (tens): cincuenta, sesenta",
+      "subtopic": "A1.2 Numbers, time and dates"
+    },
+    {
+      "id": "NUM_31_100__3",
+      "label": "Cardinal numbers (tens): setenta, ochenta",
+      "subtopic": "A1.2 Numbers, time and dates"
+    },
+    {
+      "id": "NUM_31_100__4",
+      "label": "Cardinal numbers (tens): noventa, cien",
+      "subtopic": "A1.2 Numbers, time and dates"
+    },
+    {
+      "id": "NUM_31_100__5",
+      "label": "Cardinal numbers 31-99: tens + y + units (treinta y uno)",
       "subtopic": "A1.2 Numbers, time and dates"
     },
     {
       "id": "NUM_100PLUS",
-      "label": "Numbers above 100: pattern (cien, doscientos, mil)",
+      "label": "Numbers above 100: cien, doscientos",
+      "subtopic": "A1.2 Numbers, time and dates"
+    },
+    {
+      "id": "NUM_100PLUS__2",
+      "label": "Numbers above 100: mil",
       "subtopic": "A1.2 Numbers, time and dates"
     },
     {
       "id": "PRON_TENER",
-      "label": "Verb tener: conjugation and meaning (to have)",
+      "label": "Verb tener (to have): tengo, tienes",
+      "subtopic": "A1.2 Numbers, time and dates"
+    },
+    {
+      "id": "PRON_TENER__2",
+      "label": "Verb tener (to have): tiene, tenemos",
+      "subtopic": "A1.2 Numbers, time and dates"
+    },
+    {
+      "id": "PRON_TENER__3",
+      "label": "Verb tener (to have): tenéis, tienen",
       "subtopic": "A1.2 Numbers, time and dates"
     },
     {
@@ -149,21 +769,6 @@
       "subtopic": "A1.2 Numbers, time and dates"
     },
     {
-      "id": "DAYS",
-      "label": "Days of the week (lunes-domingo)",
-      "subtopic": "A1.2 Numbers, time and dates"
-    },
-    {
-      "id": "DAYS_ASKSTATE",
-      "label": "Asking/stating what day it is",
-      "subtopic": "A1.2 Numbers, time and dates"
-    },
-    {
-      "id": "MONTHS",
-      "label": "Months of the year",
-      "subtopic": "A1.2 Numbers, time and dates"
-    },
-    {
       "id": "DATE_PATTERN",
       "label": "Date pattern: el + cardinal number + de + month",
       "subtopic": "A1.2 Numbers, time and dates"
@@ -175,7 +780,12 @@
     },
     {
       "id": "SEASONS",
-      "label": "Seasons: la primavera, el verano, el otoño, el invierno",
+      "label": "Seasons: la primavera, el verano",
+      "subtopic": "A1.2 Numbers, time and dates"
+    },
+    {
+      "id": "SEASONS__2",
+      "label": "Seasons: el otoño, el invierno",
       "subtopic": "A1.2 Numbers, time and dates"
     },
     {
@@ -210,7 +820,12 @@
     },
     {
       "id": "DEF_ARTICLES",
-      "label": "Definite articles: el, la, los, las",
+      "label": "Definite articles: el, la",
+      "subtopic": "A1.3 Articles, gender, plurals and agreement"
+    },
+    {
+      "id": "DEF_ARTICLES__2",
+      "label": "Definite articles: los, las",
       "subtopic": "A1.3 Articles, gender, plurals and agreement"
     },
     {
@@ -220,7 +835,12 @@
     },
     {
       "id": "INDEF_ARTICLES",
-      "label": "Indefinite articles: un, una, unos, unas",
+      "label": "Indefinite articles: un, una",
+      "subtopic": "A1.3 Articles, gender, plurals and agreement"
+    },
+    {
+      "id": "INDEF_ARTICLES__2",
+      "label": "Indefinite articles: unos, unas",
       "subtopic": "A1.3 Articles, gender, plurals and agreement"
     },
     {
@@ -239,18 +859,8 @@
       "subtopic": "A1.3 Articles, gender, plurals and agreement"
     },
     {
-      "id": "SUBJ_PRON",
-      "label": "Spanish subject pronouns (yo, tú, él/ella, nosotros, vosotros, ellos)",
-      "subtopic": "A1.4 Present tense: ser, estar and regular verbs"
-    },
-    {
       "id": "VERB_CONCEPT",
       "label": "Concept of a verb and infinitive form (-ar/-er/-ir endings)",
-      "subtopic": "A1.4 Present tense: ser, estar and regular verbs"
-    },
-    {
-      "id": "SER_CONJ",
-      "label": "Present tense conjugation of ser (soy, eres, es, somos, sois, son)",
       "subtopic": "A1.4 Present tense: ser, estar and regular verbs"
     },
     {
@@ -284,11 +894,6 @@
       "subtopic": "A1.4 Present tense: ser, estar and regular verbs"
     },
     {
-      "id": "ESTAR_CONJ",
-      "label": "Present tense conjugation of estar (estoy, estás, está, estamos, estáis, están)",
-      "subtopic": "A1.4 Present tense: ser, estar and regular verbs"
-    },
-    {
       "id": "ESTAR_LOCATION",
       "label": "Estar use: location of people/things",
       "subtopic": "A1.4 Present tense: ser, estar and regular verbs"
@@ -315,33 +920,53 @@
     },
     {
       "id": "AR_CONJ",
-      "label": "Present tense of regular -ar verbs (e.g. hablar)",
+      "label": "Present tense of regular -ar verbs (hablar): -o, -as",
+      "subtopic": "A1.4 Present tense: ser, estar and regular verbs"
+    },
+    {
+      "id": "AR_CONJ__2",
+      "label": "Present tense of regular -ar verbs (hablar): -a, -amos",
+      "subtopic": "A1.4 Present tense: ser, estar and regular verbs"
+    },
+    {
+      "id": "AR_CONJ__3",
+      "label": "Present tense of regular -ar verbs (hablar): -áis, -an",
       "subtopic": "A1.4 Present tense: ser, estar and regular verbs"
     },
     {
       "id": "ER_CONJ",
-      "label": "Present tense of regular -er verbs (e.g. comer)",
+      "label": "Present tense of regular -er verbs (comer): -o, -es",
+      "subtopic": "A1.4 Present tense: ser, estar and regular verbs"
+    },
+    {
+      "id": "ER_CONJ__2",
+      "label": "Present tense of regular -er verbs (comer): -e, -emos",
+      "subtopic": "A1.4 Present tense: ser, estar and regular verbs"
+    },
+    {
+      "id": "ER_CONJ__3",
+      "label": "Present tense of regular -er verbs (comer): -éis, -en",
       "subtopic": "A1.4 Present tense: ser, estar and regular verbs"
     },
     {
       "id": "IR_CONJ",
-      "label": "Present tense of regular -ir verbs (e.g. vivir)",
+      "label": "Present tense of regular -ir verbs (vivir): -o, -es",
+      "subtopic": "A1.4 Present tense: ser, estar and regular verbs"
+    },
+    {
+      "id": "IR_CONJ__2",
+      "label": "Present tense of regular -ir verbs (vivir): -e, -imos",
+      "subtopic": "A1.4 Present tense: ser, estar and regular verbs"
+    },
+    {
+      "id": "IR_CONJ__3",
+      "label": "Present tense of regular -ir verbs (vivir): -ís, -en",
       "subtopic": "A1.4 Present tense: ser, estar and regular verbs"
     },
     {
       "id": "NEGATION_NO",
       "label": "Negation with 'no' before the conjugated verb",
       "subtopic": "A1.4 Present tense: ser, estar and regular verbs"
-    },
-    {
-      "id": "FAM_VOCAB",
-      "label": "Family vocabulary (madre, padre, hermano, hermana, abuelo, abuela, hijo, hija, marido, esposa, tio, tia, primo/a)",
-      "subtopic": "A1.5 Family, description and common irregular verbs"
-    },
-    {
-      "id": "POSS_ADJ",
-      "label": "Possessive adjectives (mi/mis, tu/tus, su/sus, nuestro/a/os/as, vuestro/a/os/as)",
-      "subtopic": "A1.5 Family, description and common irregular verbs"
     },
     {
       "id": "GENDER_NUMBER_AGREEMENT",
@@ -355,7 +980,12 @@
     },
     {
       "id": "PHYS_ADJ",
-      "label": "Physical appearance adjectives (alto/bajo, joven/viejo, etc.)",
+      "label": "Physical appearance adjectives: alto, bajo",
+      "subtopic": "A1.5 Family, description and common irregular verbs"
+    },
+    {
+      "id": "PHYS_ADJ__2",
+      "label": "Physical appearance adjectives: joven, viejo",
       "subtopic": "A1.5 Family, description and common irregular verbs"
     },
     {
@@ -379,21 +1009,6 @@
       "subtopic": "A1.5 Family, description and common irregular verbs"
     },
     {
-      "id": "TENER_CONJ",
-      "label": "Present tense of tener (tengo, tienes, tiene, tenemos, teneis, tienen)",
-      "subtopic": "A1.5 Family, description and common irregular verbs"
-    },
-    {
-      "id": "HACER_CONJ",
-      "label": "Present tense of hacer (hago, haces, hace, hacemos, haceis, hacen)",
-      "subtopic": "A1.5 Family, description and common irregular verbs"
-    },
-    {
-      "id": "DECIR_CONJ",
-      "label": "Present tense of decir (digo, dices, dice...)",
-      "subtopic": "A1.5 Family, description and common irregular verbs"
-    },
-    {
       "id": "STEM_CHANGE_CONCEPT",
       "label": "Stem-changing verbs as a category: stem changes in all forms except nosotros/vosotros",
       "subtopic": "A1.5 Family, description and common irregular verbs"
@@ -414,21 +1029,6 @@
       "subtopic": "A1.5 Family, description and common irregular verbs"
     },
     {
-      "id": "PODER_CONJ",
-      "label": "Present tense of poder (puedo, puedes, puede...)",
-      "subtopic": "A1.5 Family, description and common irregular verbs"
-    },
-    {
-      "id": "QUERER_CONJ",
-      "label": "Present tense of querer (quiero, quieres, quiere...)",
-      "subtopic": "A1.5 Family, description and common irregular verbs"
-    },
-    {
-      "id": "DEBER_CONJ",
-      "label": "Present tense of deber (debo, debes, debe...)",
-      "subtopic": "A1.5 Family, description and common irregular verbs"
-    },
-    {
       "id": "INFINITIVE_CONCEPT",
       "label": "Concept of the infinitive verb form",
       "subtopic": "A1.5 Family, description and common irregular verbs"
@@ -440,17 +1040,32 @@
     },
     {
       "id": "MODAL_CONSTRUCTION",
-      "label": "Modal verb (poder/querer/deber) + infinitive construction",
+      "label": "Modal verb + infinitive construction: poder, querer",
+      "subtopic": "A1.5 Family, description and common irregular verbs"
+    },
+    {
+      "id": "MODAL_CONSTRUCTION__2",
+      "label": "Modal verb + infinitive construction: deber",
       "subtopic": "A1.5 Family, description and common irregular verbs"
     },
     {
       "id": "FOOD_VOCAB",
-      "label": "Food and drink vocabulary (un cafe, un bocadillo, el agua, el vino, etc.)",
+      "label": "Food and drink vocabulary: un café, un bocadillo",
+      "subtopic": "A1.6 Food, shopping and everyday requests"
+    },
+    {
+      "id": "FOOD_VOCAB__2",
+      "label": "Food and drink vocabulary: el agua, el vino",
       "subtopic": "A1.6 Food, shopping and everyday requests"
     },
     {
       "id": "SHOP_VOCAB",
-      "label": "Shopping vocabulary (shop/item names)",
+      "label": "Shopping vocabulary: la panadería, la carnicería",
+      "subtopic": "A1.6 Food, shopping and everyday requests"
+    },
+    {
+      "id": "SHOP_VOCAB__2",
+      "label": "Shopping vocabulary: la farmacia, el supermercado",
       "subtopic": "A1.6 Food, shopping and everyday requests"
     },
     {
@@ -470,7 +1085,12 @@
     },
     {
       "id": "DE_QUANTITY",
-      "label": "Quantity expressions with 'de' (un poco de, un kilo de, una botella de, un vaso de)",
+      "label": "Quantity expressions with de: un poco de, un kilo de",
+      "subtopic": "A1.6 Food, shopping and everyday requests"
+    },
+    {
+      "id": "DE_QUANTITY__2",
+      "label": "Quantity expressions with de: una botella de, un vaso de",
       "subtopic": "A1.6 Food, shopping and everyday requests"
     },
     {
@@ -485,7 +1105,12 @@
     },
     {
       "id": "CURRENCY_VOCAB",
-      "label": "Currency vocabulary (euros, centimos, pesos, etc.)",
+      "label": "Currency vocabulary: euros, céntimos",
+      "subtopic": "A1.6 Food, shopping and everyday requests"
+    },
+    {
+      "id": "CURRENCY_VOCAB__2",
+      "label": "Currency vocabulary: pesos",
       "subtopic": "A1.6 Food, shopping and everyday requests"
     },
     {
@@ -505,7 +1130,17 @@
     },
     {
       "id": "ORDINAL_NUMBERS",
-      "label": "Ordinal numbers (primero, segundo, tercero...)",
+      "label": "Ordinal numbers: primero, segundo",
+      "subtopic": "A1.6 Food, shopping and everyday requests"
+    },
+    {
+      "id": "ORDINAL_NUMBERS__2",
+      "label": "Ordinal numbers: tercero, cuarto",
+      "subtopic": "A1.6 Food, shopping and everyday requests"
+    },
+    {
+      "id": "ORDINAL_NUMBERS__3",
+      "label": "Ordinal numbers: quinto, sexto",
       "subtopic": "A1.6 Food, shopping and everyday requests"
     },
     {
@@ -515,7 +1150,12 @@
     },
     {
       "id": "VERBS_COMPRAR_TOMAR_QUERER",
-      "label": "Verbs comprar, tomar, querer (meaning and conjugation)",
+      "label": "Verbs (meaning and conjugation): comprar, tomar",
+      "subtopic": "A1.6 Food, shopping and everyday requests"
+    },
+    {
+      "id": "VERBS_COMPRAR_TOMAR_QUERER__2",
+      "label": "Verbs (meaning and conjugation): querer",
       "subtopic": "A1.6 Food, shopping and everyday requests"
     },
     {
@@ -529,53 +1169,98 @@
       "subtopic": "A2.1 Preterito indefinido (simple past)"
     },
     {
-      "id": "AR_REGULAR",
-      "label": "Regular -ar preterite endings (-e, -aste, -o, -amos, -asteis, -aron)",
-      "subtopic": "A2.1 Preterito indefinido (simple past)"
-    },
-    {
-      "id": "ER_IR_REGULAR",
-      "label": "Regular -er/-ir preterite endings (-i, -iste, -io, -imos, -isteis, -ieron)",
-      "subtopic": "A2.1 Preterito indefinido (simple past)"
-    },
-    {
-      "id": "SER_IR_PRETERITE",
-      "label": "Ser and ir share identical preterite forms (fui, fuiste, fue, fuimos, fuisteis, fueron)",
-      "subtopic": "A2.1 Preterito indefinido (simple past)"
-    },
-    {
       "id": "SER_IR_CONTEXT",
       "label": "Using context to distinguish ser vs ir in preterite",
       "subtopic": "A2.1 Preterito indefinido (simple past)"
     },
     {
       "id": "TENER_PRET",
-      "label": "Irregular preterite: tener (tuve...)",
+      "label": "Irregular preterite: tener: tuve, tuviste",
+      "subtopic": "A2.1 Preterito indefinido (simple past)"
+    },
+    {
+      "id": "TENER_PRET__2",
+      "label": "Irregular preterite: tener: tuvo, tuvimos",
+      "subtopic": "A2.1 Preterito indefinido (simple past)"
+    },
+    {
+      "id": "TENER_PRET__3",
+      "label": "Irregular preterite: tener: tuvisteis, tuvieron",
       "subtopic": "A2.1 Preterito indefinido (simple past)"
     },
     {
       "id": "HACER_PRET",
-      "label": "Irregular preterite: hacer (hice, hiciste, hizo...)",
+      "label": "Irregular preterite: hacer: hice, hiciste",
+      "subtopic": "A2.1 Preterito indefinido (simple past)"
+    },
+    {
+      "id": "HACER_PRET__2",
+      "label": "Irregular preterite: hacer: hizo, hicimos",
+      "subtopic": "A2.1 Preterito indefinido (simple past)"
+    },
+    {
+      "id": "HACER_PRET__3",
+      "label": "Irregular preterite: hacer: hicisteis, hicieron",
       "subtopic": "A2.1 Preterito indefinido (simple past)"
     },
     {
       "id": "ESTAR_PRET",
-      "label": "Irregular preterite: estar (estuve...)",
+      "label": "Irregular preterite: estar: estuve, estuviste",
+      "subtopic": "A2.1 Preterito indefinido (simple past)"
+    },
+    {
+      "id": "ESTAR_PRET__2",
+      "label": "Irregular preterite: estar: estuvo, estuvimos",
+      "subtopic": "A2.1 Preterito indefinido (simple past)"
+    },
+    {
+      "id": "ESTAR_PRET__3",
+      "label": "Irregular preterite: estar: estuvisteis, estuvieron",
       "subtopic": "A2.1 Preterito indefinido (simple past)"
     },
     {
       "id": "PODER_PRET",
-      "label": "Irregular preterite: poder (pude...)",
+      "label": "Irregular preterite: poder: pude, pudiste",
+      "subtopic": "A2.1 Preterito indefinido (simple past)"
+    },
+    {
+      "id": "PODER_PRET__2",
+      "label": "Irregular preterite: poder: pudo, pudimos",
+      "subtopic": "A2.1 Preterito indefinido (simple past)"
+    },
+    {
+      "id": "PODER_PRET__3",
+      "label": "Irregular preterite: poder: pudisteis, pudieron",
       "subtopic": "A2.1 Preterito indefinido (simple past)"
     },
     {
       "id": "DECIR_PRET",
-      "label": "Irregular preterite: decir (dije... dijeron)",
+      "label": "Irregular preterite: decir: dije, dijiste",
+      "subtopic": "A2.1 Preterito indefinido (simple past)"
+    },
+    {
+      "id": "DECIR_PRET__2",
+      "label": "Irregular preterite: decir: dijo, dijimos",
+      "subtopic": "A2.1 Preterito indefinido (simple past)"
+    },
+    {
+      "id": "DECIR_PRET__3",
+      "label": "Irregular preterite: decir: dijisteis, dijeron",
       "subtopic": "A2.1 Preterito indefinido (simple past)"
     },
     {
       "id": "VENIR_PRET",
-      "label": "Irregular preterite: venir (vine...)",
+      "label": "Irregular preterite: venir: vine, viniste",
+      "subtopic": "A2.1 Preterito indefinido (simple past)"
+    },
+    {
+      "id": "VENIR_PRET__2",
+      "label": "Irregular preterite: venir: vino, vinimos",
+      "subtopic": "A2.1 Preterito indefinido (simple past)"
+    },
+    {
+      "id": "VENIR_PRET__3",
+      "label": "Irregular preterite: venir: vinisteis, vinieron",
       "subtopic": "A2.1 Preterito indefinido (simple past)"
     },
     {
@@ -610,32 +1295,57 @@
     },
     {
       "id": "TIME_EXPRESSIONS",
-      "label": "Time expressions signalling preterite (ayer, la semana pasada, anoche, hace dos dias)",
+      "label": "Time expressions signalling preterite: ayer, la semana pasada",
       "subtopic": "A2.1 Preterito indefinido (simple past)"
     },
     {
-      "id": "AR_IMPF_FORM",
-      "label": "Imperfecto formation: -ar verbs (-aba, -abas, -aba, -abamos, -abais, -aban)",
-      "subtopic": "A2.2 Preterito imperfecto and its contrast with indefinido"
-    },
-    {
-      "id": "ER_IR_IMPF_FORM",
-      "label": "Imperfecto formation: -er/-ir verbs (-ia, -ias, -ia, -iamos, -iais, -ian)",
-      "subtopic": "A2.2 Preterito imperfecto and its contrast with indefinido"
+      "id": "TIME_EXPRESSIONS__2",
+      "label": "Time expressions signalling preterite: anoche, hace dos días",
+      "subtopic": "A2.1 Preterito indefinido (simple past)"
     },
     {
       "id": "IMPF_IRREG_SER",
-      "label": "Irregular imperfecto: ser (era, eras, era...)",
+      "label": "Irregular imperfecto: ser: era, eras",
+      "subtopic": "A2.2 Preterito imperfecto and its contrast with indefinido"
+    },
+    {
+      "id": "IMPF_IRREG_SER__2",
+      "label": "Irregular imperfecto: ser: era, éramos",
+      "subtopic": "A2.2 Preterito imperfecto and its contrast with indefinido"
+    },
+    {
+      "id": "IMPF_IRREG_SER__3",
+      "label": "Irregular imperfecto: ser: erais, eran",
       "subtopic": "A2.2 Preterito imperfecto and its contrast with indefinido"
     },
     {
       "id": "IMPF_IRREG_IR",
-      "label": "Irregular imperfecto: ir (iba, ibas, iba...)",
+      "label": "Irregular imperfecto: ir: iba, ibas",
+      "subtopic": "A2.2 Preterito imperfecto and its contrast with indefinido"
+    },
+    {
+      "id": "IMPF_IRREG_IR__2",
+      "label": "Irregular imperfecto: ir: iba, íbamos",
+      "subtopic": "A2.2 Preterito imperfecto and its contrast with indefinido"
+    },
+    {
+      "id": "IMPF_IRREG_IR__3",
+      "label": "Irregular imperfecto: ir: ibais, iban",
       "subtopic": "A2.2 Preterito imperfecto and its contrast with indefinido"
     },
     {
       "id": "IMPF_IRREG_VER",
-      "label": "Irregular imperfecto: ver (veia, veias, veia...)",
+      "label": "Irregular imperfecto: ver: veía, veías",
+      "subtopic": "A2.2 Preterito imperfecto and its contrast with indefinido"
+    },
+    {
+      "id": "IMPF_IRREG_VER__2",
+      "label": "Irregular imperfecto: ver: veía, veíamos",
+      "subtopic": "A2.2 Preterito imperfecto and its contrast with indefinido"
+    },
+    {
+      "id": "IMPF_IRREG_VER__3",
+      "label": "Irregular imperfecto: ver: veíais, veían",
       "subtopic": "A2.2 Preterito imperfecto and its contrast with indefinido"
     },
     {
@@ -689,11 +1399,6 @@
       "subtopic": "A2.3 Object pronouns and reflexive verbs"
     },
     {
-      "id": "DOP_FORMS",
-      "label": "Direct object pronoun forms: me, te, lo, la, nos, os, los, las",
-      "subtopic": "A2.3 Object pronouns and reflexive verbs"
-    },
-    {
       "id": "DOP_PLACEMENT",
       "label": "Direct object pronoun placement immediately before a conjugated verb",
       "subtopic": "A2.3 Object pronouns and reflexive verbs"
@@ -704,23 +1409,18 @@
       "subtopic": "A2.3 Object pronouns and reflexive verbs"
     },
     {
-      "id": "IOP_FORMS",
-      "label": "Indirect object pronoun forms: me, te, le, nos, os, les",
+      "id": "IOP_VERBS",
+      "label": "Verbs requiring indirect object pronouns: gustar, dar",
       "subtopic": "A2.3 Object pronouns and reflexive verbs"
     },
     {
-      "id": "IOP_VERBS",
-      "label": "Verbs requiring indirect object pronouns: gustar, dar, decir, escribir",
+      "id": "IOP_VERBS__2",
+      "label": "Verbs requiring indirect object pronouns: decir, escribir",
       "subtopic": "A2.3 Object pronouns and reflexive verbs"
     },
     {
       "id": "GUSTAR_CONSTRUCTION",
       "label": "Gustar as an inverted verb: the thing liked is the grammatical subject (me gusta el cafe / me gustan los libros)",
-      "subtopic": "A2.3 Object pronouns and reflexive verbs"
-    },
-    {
-      "id": "REFLEX_PRONOUN_FORMS",
-      "label": "Reflexive pronoun forms: me, te, se, nos, os, se",
       "subtopic": "A2.3 Object pronouns and reflexive verbs"
     },
     {
@@ -730,7 +1430,17 @@
     },
     {
       "id": "REFLEX_EXAMPLES",
-      "label": "Common reflexive verbs: levantarse, despertarse, lavarse, vestirse, llamarse",
+      "label": "Common reflexive verbs: levantarse, despertarse",
+      "subtopic": "A2.3 Object pronouns and reflexive verbs"
+    },
+    {
+      "id": "REFLEX_EXAMPLES__2",
+      "label": "Common reflexive verbs: lavarse, vestirse",
+      "subtopic": "A2.3 Object pronouns and reflexive verbs"
+    },
+    {
+      "id": "REFLEX_EXAMPLES__3",
+      "label": "Common reflexive verbs: llamarse",
       "subtopic": "A2.3 Object pronouns and reflexive verbs"
     },
     {
@@ -805,7 +1515,12 @@
     },
     {
       "id": "COMP_EQ_NOUN",
-      "label": "Comparative of equality with nouns: tanto/a/os/as...como",
+      "label": "Comparative of equality with nouns: tanto, tanta",
+      "subtopic": "A2.4 Comparatives, superlatives and the future tense"
+    },
+    {
+      "id": "COMP_EQ_NOUN__2",
+      "label": "Comparative of equality with nouns: tantos, tantas",
       "subtopic": "A2.4 Comparatives, superlatives and the future tense"
     },
     {
@@ -825,7 +1540,12 @@
     },
     {
       "id": "ABS_SUPERLATIVE_ISIMO",
-      "label": "Absolute superlative: -isimo/a/os/as ending",
+      "label": "Absolute superlative ending: -ísimo, -ísima",
+      "subtopic": "A2.4 Comparatives, superlatives and the future tense"
+    },
+    {
+      "id": "ABS_SUPERLATIVE_ISIMO__2",
+      "label": "Absolute superlative ending: -ísimos, -ísimas",
       "subtopic": "A2.4 Comparatives, superlatives and the future tense"
     },
     {
@@ -839,18 +1559,8 @@
       "subtopic": "A2.4 Comparatives, superlatives and the future tense"
     },
     {
-      "id": "FUT_ENDINGS_SHARED",
-      "label": "Future tense endings shared across all three conjugations (-e, -as, -a, -emos, -eis, -an)",
-      "subtopic": "A2.4 Comparatives, superlatives and the future tense"
-    },
-    {
       "id": "FUT_REGULAR_FORMATION",
       "label": "Regular future formation: infinitive + shared endings",
-      "subtopic": "A2.4 Comparatives, superlatives and the future tense"
-    },
-    {
-      "id": "FUT_IRREGULAR_STEMS",
-      "label": "Irregular future stems formed by modifying the infinitive (tendre, podre, hare, dire, saldre, pondre, vendre, querre, sabre)",
       "subtopic": "A2.4 Comparatives, superlatives and the future tense"
     },
     {
@@ -866,11 +1576,6 @@
     {
       "id": "Q_WORDS_LOC",
       "label": "Question forms for location/directions: ¿dónde está...?, ¿cómo llego a...?",
-      "subtopic": "A2.5 Directions, travel, health and making plans"
-    },
-    {
-      "id": "DIR_VOCAB",
-      "label": "Direction vocabulary: todo recto, a la derecha, a la izquierda, en la esquina, enfrente de, al lado de",
       "subtopic": "A2.5 Directions, travel, health and making plans"
     },
     {
@@ -896,11 +1601,6 @@
     {
       "id": "GIVING_DIRECTIONS",
       "label": "Giving directions using imperative + direction vocabulary",
-      "subtopic": "A2.5 Directions, travel, health and making plans"
-    },
-    {
-      "id": "TRANSPORT_VOCAB",
-      "label": "Travel and transport nouns: el tren, el avión, la estación, el billete/boleto, la reserva",
       "subtopic": "A2.5 Directions, travel, health and making plans"
     },
     {
@@ -935,7 +1635,22 @@
     },
     {
       "id": "BODY_PARTS",
-      "label": "Parts of the body vocabulary",
+      "label": "Body vocabulary: la cabeza, el estómago",
+      "subtopic": "A2.5 Directions, travel, health and making plans"
+    },
+    {
+      "id": "BODY_PARTS__2",
+      "label": "Body vocabulary: la garganta, la espalda",
+      "subtopic": "A2.5 Directions, travel, health and making plans"
+    },
+    {
+      "id": "BODY_PARTS__3",
+      "label": "Body vocabulary: el brazo, la pierna",
+      "subtopic": "A2.5 Directions, travel, health and making plans"
+    },
+    {
+      "id": "BODY_PARTS__4",
+      "label": "Body vocabulary: la mano, el pie",
       "subtopic": "A2.5 Directions, travel, health and making plans"
     },
     {
@@ -950,8 +1665,18 @@
     },
     {
       "id": "HEALTH_EXPRESSIONS",
-      "label": "Common health expressions: me duele..., tengo dolor de cabeza/estómago, me siento bien/mal",
+      "label": "Common health expressions: me duele..., tengo dolor de cabeza",
       "subtopic": "A2.5 Directions, travel, health and making plans"
+    },
+    {
+      "id": "HEALTH_EXPRESSIONS__2",
+      "label": "Common health expressions: tengo dolor de estómago, me siento bien/mal",
+      "subtopic": "A2.5 Directions, travel, health and making plans"
+    },
+    {
+      "id": "NO_LELO",
+      "label": "Prohibition: 'le lo'/'les la' are never used",
+      "subtopic": "B1.2 Combined and complex pronouns"
     },
     {
       "id": "QUERER_CONDITIONAL",
@@ -975,7 +1700,12 @@
     },
     {
       "id": "FUTURE_TIME_EXPRESSIONS",
-      "label": "Time expressions for future plans: mañana, la próxima semana, dentro de dos días",
+      "label": "Time expressions for future plans: mañana, la próxima semana",
+      "subtopic": "A2.5 Directions, travel, health and making plans"
+    },
+    {
+      "id": "FUTURE_TIME_EXPRESSIONS__2",
+      "label": "Time expressions for future plans: dentro de dos días",
       "subtopic": "A2.5 Directions, travel, health and making plans"
     },
     {
@@ -985,7 +1715,12 @@
     },
     {
       "id": "FUT_STEMS",
-      "label": "Irregular future/conditional stems (e.g. tendr-, dir-, har-, podr-)",
+      "label": "Irregular future/conditional stems: e.g. tendr-, dir-",
+      "subtopic": "B1.1 Conditional mood and modal verbs in context"
+    },
+    {
+      "id": "FUT_STEMS__2",
+      "label": "Irregular future/conditional stems: har-, podr-",
       "subtopic": "B1.1 Conditional mood and modal verbs in context"
     },
     {
@@ -1000,17 +1735,42 @@
     },
     {
       "id": "HABER_PRESENT_COND",
-      "label": "Present conditional of haber (habria, habrias, etc.)",
+      "label": "Present conditional of haber: habría, habrías",
+      "subtopic": "B1.1 Conditional mood and modal verbs in context"
+    },
+    {
+      "id": "HABER_PRESENT_COND__2",
+      "label": "Present conditional of haber: habría, habríamos",
+      "subtopic": "B1.1 Conditional mood and modal verbs in context"
+    },
+    {
+      "id": "HABER_PRESENT_COND__3",
+      "label": "Present conditional of haber: habríais, habrían",
       "subtopic": "B1.1 Conditional mood and modal verbs in context"
     },
     {
       "id": "MODAL_PRESENT",
-      "label": "Modal verbs poder, deber, querer in the present tense",
+      "label": "Modal verbs in the present tense: poder, deber",
+      "subtopic": "B1.1 Conditional mood and modal verbs in context"
+    },
+    {
+      "id": "MODAL_PRESENT__2",
+      "label": "Modal verbs in the present tense: querer",
       "subtopic": "B1.1 Conditional mood and modal verbs in context"
     },
     {
       "id": "PRES_COND_FORM",
-      "label": "Present conditional formation: infinitive/irregular stem + -ia/-ias/-ia/-iamos/-iais/-ian",
+      "label": "Present conditional endings: -ía, -ías",
+      "subtopic": "B1.1 Conditional mood and modal verbs in context"
+    },
+    {
+      "id": "PRES_COND_FORM__2",
+      "label": "Present conditional endings: -ía, -íamos",
+      "subtopic": "B1.1 Conditional mood and modal verbs in context"
+    },
+    {
+      "id": "PRES_COND_FORM__3",
+      "label": "Present conditional endings: -íais, -ían",
       "subtopic": "B1.1 Conditional mood and modal verbs in context"
     },
     {
@@ -1059,28 +1819,18 @@
       "subtopic": "B1.1 Conditional mood and modal verbs in context"
     },
     {
-      "id": "IOP",
-      "label": "Indirect object pronouns (me, te, le, nos, os, les)",
-      "subtopic": "B1.2 Combined and complex pronouns"
-    },
-    {
-      "id": "DOP",
-      "label": "Direct object pronouns (me, te, lo, la, nos, os, los, las)",
-      "subtopic": "B1.2 Combined and complex pronouns"
-    },
-    {
       "id": "COMBINE_ORDER",
-      "label": "Combining IO + DO pronouns with IO placed first (me lo, te la, nos los, os las)",
+      "label": "Combining IO + DO pronouns with IO first: me lo, te la",
+      "subtopic": "B1.2 Combined and complex pronouns"
+    },
+    {
+      "id": "COMBINE_ORDER__2",
+      "label": "Combining IO + DO pronouns with IO first: nos los, os las",
       "subtopic": "B1.2 Combined and complex pronouns"
     },
     {
       "id": "LE_LES_TO_SE",
       "label": "Rule: le/les becomes se before a third-person direct pronoun (le lo -> se lo, les la -> se la)",
-      "subtopic": "B1.2 Combined and complex pronouns"
-    },
-    {
-      "id": "NO_LELO",
-      "label": "Prohibition: 'le lo'/'les la' are never used",
       "subtopic": "B1.2 Combined and complex pronouns"
     },
     {
@@ -1224,21 +1974,6 @@
       "subtopic": "B1.4 Subjuntivo presente: formation and core triggers"
     },
     {
-      "id": "AR_SUBJ_ENDINGS",
-      "label": "Present subjunctive endings for -ar verbs (-e, -es, -e, -emos, -eis, -en)",
-      "subtopic": "B1.4 Subjuntivo presente: formation and core triggers"
-    },
-    {
-      "id": "ER_IR_SUBJ_ENDINGS",
-      "label": "Present subjunctive endings for -er/-ir verbs (-a, -as, -a, -amos, -ais, -an)",
-      "subtopic": "B1.4 Subjuntivo presente: formation and core triggers"
-    },
-    {
-      "id": "IRREGULAR_STEMS",
-      "label": "Common irregular present subjunctive stems (ser: sea, estar: este, ir: vaya, saber: sepa, dar: de, haber: haya)",
-      "subtopic": "B1.4 Subjuntivo presente: formation and core triggers"
-    },
-    {
       "id": "STEM_CHANGE_CARRY",
       "label": "Stem-changing verbs carrying their change into the subjunctive (querer -> quiera, poder -> pueda)",
       "subtopic": "B1.4 Subjuntivo presente: formation and core triggers"
@@ -1280,7 +2015,12 @@
     },
     {
       "id": "IMPERSONAL_TRIGGERS",
-      "label": "Impersonal expressions triggering subjunctive (es necesario que, es posible que, ojala que)",
+      "label": "Impersonal expressions triggering subjunctive: es necesario que, es posible que",
+      "subtopic": "B1.4 Subjuntivo presente: formation and core triggers"
+    },
+    {
+      "id": "IMPERSONAL_TRIGGERS__2",
+      "label": "Impersonal expressions triggering subjunctive: ojalá que",
       "subtopic": "B1.4 Subjuntivo presente: formation and core triggers"
     },
     {
@@ -1370,22 +2110,37 @@
     },
     {
       "id": "PRES_SUBJ_TRIGGERS",
-      "label": "Core subjunctive triggers (wish, emotion, doubt, necessity) from present subjunctive",
+      "label": "Core subjunctive triggers: wish, emotion",
+      "subtopic": "B2.1 Subjuntivo pasado (imperfecto and pluscuamperfecto), and secuencia de tiempos"
+    },
+    {
+      "id": "PRES_SUBJ_TRIGGERS__2",
+      "label": "Core subjunctive triggers: doubt, necessity",
       "subtopic": "B2.1 Subjuntivo pasado (imperfecto and pluscuamperfecto), and secuencia de tiempos"
     },
     {
       "id": "PAST_PARTICIPLE_B2",
-      "label": "Formation of past participle (hecho, hablado, salido, etc.)",
+      "label": "Formation of past participle: regular -ado/-ido (hablado, salido)",
       "subtopic": "B2.1 Subjuntivo pasado (imperfecto and pluscuamperfecto), and secuencia de tiempos"
     },
     {
-      "id": "PRES_SUBJ_HABER",
-      "label": "Present subjunctive forms of haber (haya, hayas, haya...)",
+      "id": "PAST_PARTICIPLE_B2__2",
+      "label": "Formation of past participle: irregular (hecho, dicho)",
       "subtopic": "B2.1 Subjuntivo pasado (imperfecto and pluscuamperfecto), and secuencia de tiempos"
     },
     {
       "id": "IMPF_SUBJ_HABER",
-      "label": "Imperfect subjunctive forms of haber (hubiera/hubiese...)",
+      "label": "Imperfect subjunctive forms of haber: hubiera, hubieras",
+      "subtopic": "B2.1 Subjuntivo pasado (imperfecto and pluscuamperfecto), and secuencia de tiempos"
+    },
+    {
+      "id": "IMPF_SUBJ_HABER__2",
+      "label": "Imperfect subjunctive forms of haber: hubiera, hubiéramos",
+      "subtopic": "B2.1 Subjuntivo pasado (imperfecto and pluscuamperfecto), and secuencia de tiempos"
+    },
+    {
+      "id": "IMPF_SUBJ_HABER__3",
+      "label": "Imperfect subjunctive forms of haber: hubierais, hubieran",
       "subtopic": "B2.1 Subjuntivo pasado (imperfecto and pluscuamperfecto), and secuencia de tiempos"
     },
     {
@@ -1396,16 +2151,6 @@
     {
       "id": "PERF_SUBJ_USE",
       "label": "Use of perfect subjunctive: present-tense trigger with dependent action prior to it (creo que ya haya llegado)",
-      "subtopic": "B2.1 Subjuntivo pasado (imperfecto and pluscuamperfecto), and secuencia de tiempos"
-    },
-    {
-      "id": "IMPF_SUBJ_RA",
-      "label": "Imperfect subjunctive -ra endings (hablara, hablaras...)",
-      "subtopic": "B2.1 Subjuntivo pasado (imperfecto and pluscuamperfecto), and secuencia de tiempos"
-    },
-    {
-      "id": "IMPF_SUBJ_SE",
-      "label": "Imperfect subjunctive -se endings (hablase, hablases...)",
       "subtopic": "B2.1 Subjuntivo pasado (imperfecto and pluscuamperfecto), and secuencia de tiempos"
     },
     {
@@ -1510,12 +2255,22 @@
     },
     {
       "id": "reporting_verbs",
-      "label": "Reporting verbs: dijo que, explico que, pregunto si",
+      "label": "Reporting verbs: dijo que, explicó que",
+      "subtopic": "B2.3 Estilo indirecto (reported speech)"
+    },
+    {
+      "id": "reporting_verbs__2",
+      "label": "Reporting verbs: preguntó si",
       "subtopic": "B2.3 Estilo indirecto (reported speech)"
     },
     {
       "id": "past_tenses",
-      "label": "Knowledge of Spanish past tenses: preterito indefinido, imperfecto, pluscuamperfecto",
+      "label": "Spanish past tenses: pretérito indefinido, imperfecto",
+      "subtopic": "B2.3 Estilo indirecto (reported speech)"
+    },
+    {
+      "id": "past_tenses__2",
+      "label": "Spanish past tenses: pluscuamperfecto",
       "subtopic": "B2.3 Estilo indirecto (reported speech)"
     },
     {
@@ -1565,12 +2320,22 @@
     },
     {
       "id": "subject_pronouns",
-      "label": "Subject pronouns (yo, tu, el/ella, etc.)",
+      "label": "Subject pronouns: yo, tú",
+      "subtopic": "B2.3 Estilo indirecto (reported speech)"
+    },
+    {
+      "id": "subject_pronouns__2",
+      "label": "Subject pronouns: él, ella",
       "subtopic": "B2.3 Estilo indirecto (reported speech)"
     },
     {
       "id": "possessive_adjectives",
-      "label": "Possessive adjectives (mi, tu, su, etc.)",
+      "label": "Possessive adjectives: mi, tu",
+      "subtopic": "B2.3 Estilo indirecto (reported speech)"
+    },
+    {
+      "id": "possessive_adjectives__2",
+      "label": "Possessive adjectives: su",
       "subtopic": "B2.3 Estilo indirecto (reported speech)"
     },
     {
@@ -1585,12 +2350,22 @@
     },
     {
       "id": "time_expressions",
-      "label": "Time/adverb expressions in direct speech (hoy, manana, ayer, aqui)",
+      "label": "Time/adverb expressions in direct speech: hoy, mañana",
+      "subtopic": "B2.3 Estilo indirecto (reported speech)"
+    },
+    {
+      "id": "time_expressions__2",
+      "label": "Time/adverb expressions in direct speech: ayer, aquí",
       "subtopic": "B2.3 Estilo indirecto (reported speech)"
     },
     {
       "id": "adverb_time_changes",
-      "label": "Adverb/time-expression changes in reported speech (hoy->ese dia, manana->al dia siguiente, ayer->el dia anterior, aqui->alli)",
+      "label": "Adverb/time-expression changes in reported speech: hoy->ese día, mañana->al día siguiente",
+      "subtopic": "B2.3 Estilo indirecto (reported speech)"
+    },
+    {
+      "id": "adverb_time_changes__2",
+      "label": "Adverb/time-expression changes in reported speech: ayer->el día anterior, aquí->allí",
       "subtopic": "B2.3 Estilo indirecto (reported speech)"
     },
     {
@@ -1630,7 +2405,12 @@
     },
     {
       "id": "preterite_stem_irregular",
-      "label": "Preterite stem-change irregularities (e.g. dormir->durmio, leer->leyo, decir->dijo)",
+      "label": "Preterite stem-change irregularities: e.g. dormir->durmio, leer->leyo",
+      "subtopic": "B2.4 Gerundio, advanced connectors and register"
+    },
+    {
+      "id": "preterite_stem_irregular__2",
+      "label": "Preterite stem-change irregularities: decir->dijo",
       "subtopic": "B2.4 Gerundio, advanced connectors and register"
     },
     {
@@ -1640,7 +2420,12 @@
     },
     {
       "id": "gerundio_formation_irregular",
-      "label": "Gerundio irregularities carried over from preterite stem changes (dormir->durmiendo, leer->leyendo, decir->diciendo)",
+      "label": "Gerundio irregularities: dormir->durmiendo, leer->leyendo",
+      "subtopic": "B2.4 Gerundio, advanced connectors and register"
+    },
+    {
+      "id": "gerundio_formation_irregular__2",
+      "label": "Gerundio irregularities: decir->diciendo",
       "subtopic": "B2.4 Gerundio, advanced connectors and register"
     },
     {
@@ -1765,2342 +2550,4210 @@
     },
     {
       "id": "argumentative_paragraph_structure",
-      "label": "Structuring a short argumentative paragraph: thesis, connected supporting points, concluding connector",
+      "label": "Structuring a short argumentative paragraph: thesis and connected supporting points",
       "subtopic": "B2.4 Gerundio, advanced connectors and register"
     },
     {
-      "id": "IR_VERB_CONJ_IRREG",
-      "label": "Present tense of ir (voy, vas, va, vamos, vais, van)"
+      "id": "argumentative_paragraph_structure__2",
+      "label": "Structuring a short argumentative paragraph: concluding connector",
+      "subtopic": "B2.4 Gerundio, advanced connectors and register"
     },
     {
       "id": "ATTACH_ACCENT_A2",
-      "label": "Written accent required when a pronoun is attached and shifts the natural stress (levantándome, levántate)"
+      "label": "Written accent required when a pronoun is attached and shifts the natural stress (levantándome, levántate)",
+      "subtopic": "B2.4 Gerundio, advanced connectors and register"
     },
     {
       "id": "VAMOS_A_PROPOSAL",
-      "label": "'Vamos a' + infinitive for proposing a joint plan"
+      "label": "'Vamos a' + infinitive for proposing a joint plan",
+      "subtopic": "A2.5 Directions, travel, health and making plans"
     },
     {
       "id": "IMPF_SUBJ_STEM_FROM_PRET",
-      "label": "Imperfect subjunctive stem derived from the third-person plural preterite (hablaron -> hablara-, dijeron -> dijera-)"
+      "label": "Imperfect subjunctive stem derived from the third-person plural preterite (hablaron -> hablara-, dijeron -> dijera-)",
+      "subtopic": "B2.1 Subjuntivo pasado (imperfecto and pluscuamperfecto), and secuencia de tiempos"
+    },
+    {
+      "id": "NUM_20_29",
+      "label": "Twenties: veinte and the 'veinti-' pattern (veintiuno, veintidós ... veintinueve)",
+      "subtopic": "A1.2 Numbers, time and dates"
+    },
+    {
+      "id": "NUM_30",
+      "label": "Treinta (30)",
+      "subtopic": "A1.2 Numbers, time and dates"
+    },
+    {
+      "id": "SER_SG",
+      "label": "Ser (singular): soy, eres",
+      "subtopic": "A1.4 Present tense: ser, estar and regular verbs"
+    },
+    {
+      "id": "SER_SG__2",
+      "label": "Ser (singular): es",
+      "subtopic": "A1.4 Present tense: ser, estar and regular verbs"
+    },
+    {
+      "id": "SER_PL",
+      "label": "Ser (plural): somos, sois",
+      "subtopic": "A1.4 Present tense: ser, estar and regular verbs"
+    },
+    {
+      "id": "SER_PL__2",
+      "label": "Ser (plural): son",
+      "subtopic": "A1.4 Present tense: ser, estar and regular verbs"
+    },
+    {
+      "id": "TENER_PL",
+      "label": "Tener (plural): tenemos, tenéis",
+      "subtopic": "A1.5 Family, description and common irregular verbs"
+    },
+    {
+      "id": "TENER_PL__2",
+      "label": "Tener (plural): tienen",
+      "subtopic": "A1.5 Family, description and common irregular verbs"
+    },
+    {
+      "id": "PODER_SG",
+      "label": "Poder (singular): puedo, puedes",
+      "subtopic": "A1.5 Family, description and common irregular verbs"
+    },
+    {
+      "id": "PODER_SG__2",
+      "label": "Poder (singular): puede",
+      "subtopic": "A1.5 Family, description and common irregular verbs"
+    },
+    {
+      "id": "ESTAR_SG",
+      "label": "Estar (singular): estoy, estás",
+      "subtopic": "A1.4 Present tense: ser, estar and regular verbs"
+    },
+    {
+      "id": "ESTAR_SG__2",
+      "label": "Estar (singular): está",
+      "subtopic": "A1.4 Present tense: ser, estar and regular verbs"
+    },
+    {
+      "id": "ESTAR_PL",
+      "label": "Estar (plural): estamos, estáis",
+      "subtopic": "A1.4 Present tense: ser, estar and regular verbs"
+    },
+    {
+      "id": "ESTAR_PL__2",
+      "label": "Estar (plural): están",
+      "subtopic": "A1.4 Present tense: ser, estar and regular verbs"
+    },
+    {
+      "id": "DEBER_SG",
+      "label": "Deber (singular): debo, debes",
+      "subtopic": "A1.5 Family, description and common irregular verbs"
+    },
+    {
+      "id": "DEBER_SG__2",
+      "label": "Deber (singular): debe",
+      "subtopic": "A1.5 Family, description and common irregular verbs"
+    },
+    {
+      "id": "FAM_2",
+      "label": "Family vocabulary: abuelo, abuela",
+      "subtopic": "A1.5 Family, description and common irregular verbs"
+    },
+    {
+      "id": "FAM_2__2",
+      "label": "Family vocabulary: hijo, hija",
+      "subtopic": "A1.5 Family, description and common irregular verbs"
+    },
+    {
+      "id": "IMPF_AR_SG",
+      "label": "Imperfecto -ar verbs (singular): -aba, -abas",
+      "subtopic": "A2.2 Preterito imperfecto and its contrast with indefinido"
+    },
+    {
+      "id": "IMPF_AR_SG__2",
+      "label": "Imperfecto -ar verbs (singular): -aba",
+      "subtopic": "A2.2 Preterito imperfecto and its contrast with indefinido"
+    },
+    {
+      "id": "FUT_STEM_2",
+      "label": "Irregular future stems: diré, saldré",
+      "subtopic": "A2.4 Comparatives, superlatives and the future tense"
+    },
+    {
+      "id": "FUT_STEM_2__2",
+      "label": "Irregular future stems: pondré",
+      "subtopic": "A2.4 Comparatives, superlatives and the future tense"
+    },
+    {
+      "id": "IOBJ_SG",
+      "label": "Indirect object pronouns (singular): me, te",
+      "subtopic": "B1.2 Combined and complex pronouns"
+    },
+    {
+      "id": "IOBJ_SG__2",
+      "label": "Indirect object pronouns (singular): le",
+      "subtopic": "B1.2 Combined and complex pronouns"
+    },
+    {
+      "id": "SUBJ_AR_PL",
+      "label": "Present subjunctive -ar endings (plural): -emos, -éis",
+      "subtopic": "B1.4 Subjuntivo presente: formation and core triggers"
+    },
+    {
+      "id": "SUBJ_AR_PL__2",
+      "label": "Present subjunctive -ar endings (plural): -en",
+      "subtopic": "B1.4 Subjuntivo presente: formation and core triggers"
+    },
+    {
+      "id": "HABER_SUBJ_SG",
+      "label": "Present subjunctive of haber (singular): haya, hayas",
+      "subtopic": "B2.1 Subjuntivo pasado (imperfecto and pluscuamperfecto), and secuencia de tiempos"
+    },
+    {
+      "id": "HABER_SUBJ_SG__2",
+      "label": "Present subjunctive of haber (singular): haya",
+      "subtopic": "B2.1 Subjuntivo pasado (imperfecto and pluscuamperfecto), and secuencia de tiempos"
+    },
+    {
+      "id": "IMPSUBJ_SE_PL",
+      "label": "Imperfect subjunctive -se endings (plural): -semos, -seis",
+      "subtopic": "B2.1 Subjuntivo pasado (imperfecto and pluscuamperfecto), and secuencia de tiempos"
+    },
+    {
+      "id": "IMPSUBJ_SE_PL__2",
+      "label": "Imperfect subjunctive -se endings (plural): -sen",
+      "subtopic": "B2.1 Subjuntivo pasado (imperfecto and pluscuamperfecto), and secuencia de tiempos"
+    },
+    {
+      "id": "COURTESY_1",
+      "label": "Courtesy expressions: por favor, gracias",
+      "subtopic": "A1.1 Greetings, introductions and register"
+    },
+    {
+      "id": "COURTESY_1__2",
+      "label": "Courtesy expressions: de nada",
+      "subtopic": "A1.1 Greetings, introductions and register"
+    },
+    {
+      "id": "REFL_1",
+      "label": "Reflexive pronoun forms: me, te",
+      "subtopic": "A2.3 Object pronouns and reflexive verbs"
+    },
+    {
+      "id": "REFL_1__2",
+      "label": "Reflexive pronoun forms: se (singular)",
+      "subtopic": "A2.3 Object pronouns and reflexive verbs"
+    },
+    {
+      "id": "REFL_2",
+      "label": "Reflexive pronoun forms: nos, os",
+      "subtopic": "A2.3 Object pronouns and reflexive verbs"
+    },
+    {
+      "id": "REFL_2__2",
+      "label": "Reflexive pronoun forms: se (plural)",
+      "subtopic": "A2.3 Object pronouns and reflexive verbs"
+    },
+    {
+      "id": "DOBJ_1",
+      "label": "Direct object pronoun forms: me, te",
+      "subtopic": "A2.3 Object pronouns and reflexive verbs"
+    },
+    {
+      "id": "DOBJ_1__2",
+      "label": "Direct object pronoun forms: lo, la",
+      "subtopic": "A2.3 Object pronouns and reflexive verbs"
+    },
+    {
+      "id": "DOBJ_2",
+      "label": "Direct object pronoun forms: nos, os",
+      "subtopic": "A2.3 Object pronouns and reflexive verbs"
+    },
+    {
+      "id": "DOBJ_2__2",
+      "label": "Direct object pronoun forms: los, las",
+      "subtopic": "A2.3 Object pronouns and reflexive verbs"
+    },
+    {
+      "id": "IOBJ_1",
+      "label": "Indirect object pronoun forms: me, te",
+      "subtopic": "A2.3 Object pronouns and reflexive verbs"
+    },
+    {
+      "id": "IOBJ_1__2",
+      "label": "Indirect object pronoun forms: le",
+      "subtopic": "A2.3 Object pronouns and reflexive verbs"
+    },
+    {
+      "id": "IOBJ_2",
+      "label": "Indirect object pronoun forms: nos, os",
+      "subtopic": "A2.3 Object pronouns and reflexive verbs"
+    },
+    {
+      "id": "IOBJ_2__2",
+      "label": "Indirect object pronoun forms: les",
+      "subtopic": "A2.3 Object pronouns and reflexive verbs"
+    },
+    {
+      "id": "DIR_1",
+      "label": "Direction vocabulary: todo recto, a la derecha",
+      "subtopic": "A2.5 Directions, travel, health and making plans"
+    },
+    {
+      "id": "DIR_1__2",
+      "label": "Direction vocabulary: a la izquierda",
+      "subtopic": "A2.5 Directions, travel, health and making plans"
+    },
+    {
+      "id": "DIR_2",
+      "label": "Direction vocabulary: en la esquina, enfrente de",
+      "subtopic": "A2.5 Directions, travel, health and making plans"
+    },
+    {
+      "id": "DIR_2__2",
+      "label": "Direction vocabulary: al lado de",
+      "subtopic": "A2.5 Directions, travel, health and making plans"
+    },
+    {
+      "id": "TRAVEL_1",
+      "label": "Travel and transport nouns: el tren, el avión",
+      "subtopic": "A2.5 Directions, travel, health and making plans"
+    },
+    {
+      "id": "TRAVEL_1__2",
+      "label": "Travel and transport nouns: la estación",
+      "subtopic": "A2.5 Directions, travel, health and making plans"
+    },
+    {
+      "id": "TRAVEL_2",
+      "label": "Travel and transport nouns: el billete/boleto, la reserva",
+      "subtopic": "A2.5 Directions, travel, health and making plans"
     },
     {
       "id": "backshift_principle",
-      "label": "General principle of backshift: a past reporting verb shifts the reported tense one step back in time"
-    },
-    {
-      "id": "PRET_IRREG_STEM_ENDINGS",
-      "label": "Irregular preterite pattern: special stem + shared unstressed endings (-e, -iste, -o, -imos, -isteis, -ieron)"
+      "label": "General principle of backshift: a past reporting verb shifts the reported tense one step back in time",
+      "subtopic": "B2.3 Estilo indirecto (reported speech)"
     }
   ],
   "edges": [
-    [
-      "register_concept",
-      "tu_usted_contrast"
-    ],
-    [
-      "subj_pronouns",
-      "tu_usted_contrast"
-    ],
-    [
-      "tu_usted_contrast",
-      "ask_name_informal"
-    ],
-    [
-      "tu_usted_contrast",
-      "ask_name_formal"
-    ],
-    [
-      "self_intro",
-      "ask_name_informal"
-    ],
-    [
-      "self_intro",
-      "ask_name_formal"
-    ],
-    [
-      "self_intro",
-      "intro_others"
-    ],
-    [
-      "subj_pronouns",
-      "intro_others"
-    ],
-    [
-      "intro_others",
-      "response_intro"
-    ],
-    [
-      "ask_name_informal",
-      "response_intro"
-    ],
-    [
-      "ask_name_formal",
-      "response_intro"
-    ],
-    [
-      "greet_time_of_day",
-      "register_concept"
-    ],
-    [
-      "greet_informal",
-      "register_concept"
-    ],
-    [
-      "tu_usted_contrast",
-      "ask_origin_informal"
-    ],
-    [
-      "tu_usted_contrast",
-      "ask_origin_formal"
-    ],
-    [
-      "question_words",
-      "ask_origin_informal"
-    ],
-    [
-      "question_words",
-      "ask_origin_formal"
-    ],
-    [
-      "ask_origin_informal",
-      "say_origin"
-    ],
-    [
-      "ask_origin_formal",
-      "say_origin"
-    ],
-    [
-      "say_origin",
-      "nationality_agreement"
-    ],
-    [
-      "NUM_0_30",
-      "NUM_31_100"
-    ],
-    [
-      "NUM_31_100",
-      "NUM_100PLUS"
-    ],
-    [
-      "NUM_0_30",
-      "AGE_GIVE"
-    ],
-    [
-      "PRON_TENER",
-      "AGE_ASK"
-    ],
-    [
-      "PRON_TENER",
-      "AGE_GIVE"
-    ],
-    [
-      "AGE_ASK",
-      "AGE_GIVE"
-    ],
-    [
-      "SER_QHORA",
-      "TIME_QUEHORA"
-    ],
-    [
-      "TIME_QUEHORA",
-      "TIME_ES_LA_UNA"
-    ],
-    [
-      "TIME_QUEHORA",
-      "TIME_SON_LAS"
-    ],
-    [
-      "NUM_0_30",
-      "TIME_SON_LAS"
-    ],
-    [
-      "TIME_ES_LA_UNA",
-      "TIME_CUARTO_MEDIA"
-    ],
-    [
-      "TIME_SON_LAS",
-      "TIME_CUARTO_MEDIA"
-    ],
-    [
-      "TIME_CUARTO_MEDIA",
-      "TIME_MENOS_CUARTO"
-    ],
-    [
-      "DAYS",
-      "DAYS_ASKSTATE"
-    ],
-    [
-      "NUM_0_30",
-      "DATE_PATTERN"
-    ],
-    [
-      "MONTHS",
-      "DATE_PATTERN"
-    ],
-    [
-      "DATE_PATTERN",
-      "DATE_FIRST_EXCEPTION"
-    ],
-    [
-      "GENDER_REGULAR",
-      "GENDER_EXCEPTIONS"
-    ],
-    [
-      "GENDER_REGULAR",
-      "GENDER_LEARNED"
-    ],
-    [
-      "GENDER_REGULAR",
-      "DEF_ARTICLES"
-    ],
-    [
-      "GENDER_EXCEPTIONS",
-      "DEF_ARTICLES"
-    ],
-    [
-      "GENDER_LEARNED",
-      "DEF_ARTICLES"
-    ],
-    [
-      "GENDER_REGULAR",
-      "INDEF_ARTICLES"
-    ],
-    [
-      "GENDER_EXCEPTIONS",
-      "INDEF_ARTICLES"
-    ],
-    [
-      "GENDER_LEARNED",
-      "INDEF_ARTICLES"
-    ],
-    [
-      "PLURAL_VOWEL",
-      "DEF_ARTICLES"
-    ],
-    [
-      "PLURAL_CONSONANT",
-      "DEF_ARTICLES"
-    ],
-    [
-      "PLURAL_Z",
-      "DEF_ARTICLES"
-    ],
-    [
-      "PLURAL_VOWEL",
-      "INDEF_ARTICLES"
-    ],
-    [
-      "PLURAL_CONSONANT",
-      "INDEF_ARTICLES"
-    ],
-    [
-      "PLURAL_Z",
-      "INDEF_ARTICLES"
-    ],
-    [
-      "DEF_ARTICLES",
-      "NEUTER_LO"
-    ],
-    [
-      "GENDER_REGULAR",
-      "ADJ_AGREEMENT"
-    ],
-    [
-      "GENDER_EXCEPTIONS",
-      "ADJ_AGREEMENT"
-    ],
-    [
-      "GENDER_LEARNED",
-      "ADJ_AGREEMENT"
-    ],
-    [
-      "PLURAL_VOWEL",
-      "ADJ_AGREEMENT"
-    ],
-    [
-      "PLURAL_CONSONANT",
-      "ADJ_AGREEMENT"
-    ],
-    [
-      "PLURAL_Z",
-      "ADJ_AGREEMENT"
-    ],
-    [
-      "ADJ_AGREEMENT",
-      "ADJ_POSITION_DEFAULT"
-    ],
-    [
-      "ADJ_POSITION_DEFAULT",
-      "ADJ_POSITION_PRECEDE"
-    ],
-    [
-      "SUBJ_PRON",
-      "SER_CONJ"
-    ],
-    [
-      "SUBJ_PRON",
-      "ESTAR_CONJ"
-    ],
-    [
-      "VERB_CONCEPT",
-      "SER_CONJ"
-    ],
-    [
-      "VERB_CONCEPT",
-      "ESTAR_CONJ"
-    ],
-    [
-      "VERB_CONCEPT",
-      "AR_CONJ"
-    ],
-    [
-      "VERB_CONCEPT",
-      "ER_CONJ"
-    ],
-    [
-      "VERB_CONCEPT",
-      "IR_CONJ"
-    ],
-    [
-      "SUBJ_PRON",
-      "AR_CONJ"
-    ],
-    [
-      "SUBJ_PRON",
-      "ER_CONJ"
-    ],
-    [
-      "SUBJ_PRON",
-      "IR_CONJ"
-    ],
-    [
-      "SER_CONJ",
-      "SER_IDENTITY"
-    ],
-    [
-      "SER_CONJ",
-      "SER_NATIONALITY"
-    ],
-    [
-      "SER_CONJ",
-      "SER_CHARACTERISTICS"
-    ],
-    [
-      "SER_CONJ",
-      "SER_PROFESSION"
-    ],
-    [
-      "SER_CONJ",
-      "SER_TIME"
-    ],
-    [
-      "SER_CONJ",
-      "SER_EVENT_LOCATION"
-    ],
-    [
-      "ESTAR_CONJ",
-      "ESTAR_LOCATION"
-    ],
-    [
-      "ESTAR_CONJ",
-      "ESTAR_TEMP_STATE"
-    ],
-    [
-      "ESTAR_CONJ",
-      "ESTAR_PROGRESSIVE"
-    ],
-    [
-      "GERUND_FORM",
-      "ESTAR_PROGRESSIVE"
-    ],
-    [
-      "SER_CHARACTERISTICS",
-      "SER_ESTAR_DISTINCTION"
-    ],
-    [
-      "ESTAR_TEMP_STATE",
-      "SER_ESTAR_DISTINCTION"
-    ],
-    [
-      "ESTAR_LOCATION",
-      "SER_ESTAR_DISTINCTION"
-    ],
-    [
-      "SER_CONJ",
-      "NEGATION_NO"
-    ],
-    [
-      "ESTAR_CONJ",
-      "NEGATION_NO"
-    ],
-    [
-      "AR_CONJ",
-      "NEGATION_NO"
-    ],
-    [
-      "ER_CONJ",
-      "NEGATION_NO"
-    ],
-    [
-      "IR_CONJ",
-      "NEGATION_NO"
-    ],
-    [
-      "FAM_VOCAB",
-      "POSS_ADJ"
-    ],
-    [
-      "GENDER_NUMBER_AGREEMENT",
-      "POSS_ADJ_AGREEMENT"
-    ],
-    [
-      "POSS_ADJ",
-      "POSS_ADJ_AGREEMENT"
-    ],
-    [
-      "GENDER_NUMBER_AGREEMENT",
-      "DESC_AGREEMENT"
-    ],
-    [
-      "PHYS_ADJ",
-      "DESC_AGREEMENT"
-    ],
-    [
-      "PERS_ADJ",
-      "DESC_AGREEMENT"
-    ],
-    [
-      "REGULAR_PRESENT_CONCEPT",
-      "IRREGULAR_VERB_CONCEPT"
-    ],
-    [
-      "IRREGULAR_VERB_CONCEPT",
-      "TENER_CONJ"
-    ],
-    [
-      "IRREGULAR_VERB_CONCEPT",
-      "HACER_CONJ"
-    ],
-    [
-      "IRREGULAR_VERB_CONCEPT",
-      "DECIR_CONJ"
-    ],
-    [
-      "IRREGULAR_VERB_CONCEPT",
-      "STEM_CHANGE_CONCEPT"
-    ],
-    [
-      "STEM_CHANGE_CONCEPT",
-      "EIE_CHANGE"
-    ],
-    [
-      "STEM_CHANGE_CONCEPT",
-      "OUE_CHANGE"
-    ],
-    [
-      "STEM_CHANGE_CONCEPT",
-      "EI_CHANGE"
-    ],
-    [
-      "OUE_CHANGE",
-      "PODER_CONJ"
-    ],
-    [
-      "EIE_CHANGE",
-      "QUERER_CONJ"
-    ],
-    [
-      "REGULAR_PRESENT_CONCEPT",
-      "DEBER_CONJ"
-    ],
-    [
-      "INFINITIVE_CONCEPT",
-      "IR_A_INFINITIVE"
-    ],
-    [
-      "INFINITIVE_CONCEPT",
-      "MODAL_CONSTRUCTION"
-    ],
-    [
-      "PODER_CONJ",
-      "MODAL_CONSTRUCTION"
-    ],
-    [
-      "QUERER_CONJ",
-      "MODAL_CONSTRUCTION"
-    ],
-    [
-      "DEBER_CONJ",
-      "MODAL_CONSTRUCTION"
-    ],
-    [
-      "FOOD_VOCAB",
-      "ORDERING_REQUESTS"
-    ],
-    [
-      "QUIERO",
-      "ORDERING_REQUESTS"
-    ],
-    [
-      "ME_GUSTARIA",
-      "ORDERING_REQUESTS"
-    ],
-    [
-      "DE_QUANTITY",
-      "QUANTITY_ORDERING"
-    ],
-    [
-      "FOOD_VOCAB",
-      "QUANTITY_ORDERING"
-    ],
-    [
-      "ORDERING_REQUESTS",
-      "QUANTITY_ORDERING"
-    ],
-    [
-      "NUMBERS_CARDINAL",
-      "PRICES_NUMBERS"
-    ],
-    [
-      "CURRENCY_VOCAB",
-      "PRICES_NUMBERS"
-    ],
-    [
-      "PRICES_NUMBERS",
-      "ASKING_PRICE"
-    ],
-    [
-      "SHOP_VOCAB",
-      "ASKING_PRICE"
-    ],
-    [
-      "ASKING_PRICE",
-      "PRICE_EXCHANGE"
-    ],
-    [
-      "PRICES_NUMBERS",
-      "PRICE_EXCHANGE"
-    ],
-    [
-      "ORDINAL_NUMBERS",
-      "APOCOPE_RULE"
-    ],
-    [
-      "VERBS_COMPRAR_TOMAR_QUERER",
-      "DIRECT_OBJECT_NOUNS"
-    ],
-    [
-      "FOOD_VOCAB",
-      "DIRECT_OBJECT_NOUNS"
-    ],
-    [
-      "SHOP_VOCAB",
-      "DIRECT_OBJECT_NOUNS"
-    ],
-    [
-      "CONCEPT_COMPLETED_PAST",
-      "AR_REGULAR"
-    ],
-    [
-      "CONCEPT_COMPLETED_PAST",
-      "ER_IR_REGULAR"
-    ],
-    [
-      "AR_REGULAR",
-      "CAR_SPELLING"
-    ],
-    [
-      "AR_REGULAR",
-      "GAR_SPELLING"
-    ],
-    [
-      "AR_REGULAR",
-      "ZAR_SPELLING"
-    ],
-    [
-      "CONCEPT_COMPLETED_PAST",
-      "SER_IR_PRETERITE"
-    ],
-    [
-      "SER_IR_PRETERITE",
-      "SER_IR_CONTEXT"
-    ],
-    [
-      "CONCEPT_COMPLETED_PAST",
-      "TENER_PRET"
-    ],
-    [
-      "CONCEPT_COMPLETED_PAST",
-      "HACER_PRET"
-    ],
-    [
-      "CONCEPT_COMPLETED_PAST",
-      "ESTAR_PRET"
-    ],
-    [
-      "CONCEPT_COMPLETED_PAST",
-      "PODER_PRET"
-    ],
-    [
-      "CONCEPT_COMPLETED_PAST",
-      "DECIR_PRET"
-    ],
-    [
-      "CONCEPT_COMPLETED_PAST",
-      "VENIR_PRET"
-    ],
-    [
-      "AR_REGULAR",
-      "USE_SINGLE_ACTION"
-    ],
-    [
-      "ER_IR_REGULAR",
-      "USE_SINGLE_ACTION"
-    ],
-    [
-      "USE_SINGLE_ACTION",
-      "USE_SEQUENCE"
-    ],
-    [
-      "USE_SINGLE_ACTION",
-      "USE_DEFINED_PERIOD"
-    ],
-    [
-      "USE_SINGLE_ACTION",
-      "TIME_EXPRESSIONS"
-    ],
-    [
-      "USE_SEQUENCE",
-      "TIME_EXPRESSIONS"
-    ],
-    [
-      "USE_DEFINED_PERIOD",
-      "TIME_EXPRESSIONS"
-    ],
-    [
-      "AR_IMPF_FORM",
-      "IMPF_IRREG_SER"
-    ],
-    [
-      "ER_IR_IMPF_FORM",
-      "IMPF_IRREG_SER"
-    ],
-    [
-      "AR_IMPF_FORM",
-      "IMPF_IRREG_IR"
-    ],
-    [
-      "ER_IR_IMPF_FORM",
-      "IMPF_IRREG_IR"
-    ],
-    [
-      "AR_IMPF_FORM",
-      "IMPF_IRREG_VER"
-    ],
-    [
-      "ER_IR_IMPF_FORM",
-      "IMPF_IRREG_VER"
-    ],
-    [
-      "IMPF_IRREG_SER",
-      "IMPF_ONLY_THREE"
-    ],
-    [
-      "IMPF_IRREG_IR",
-      "IMPF_ONLY_THREE"
-    ],
-    [
-      "IMPF_IRREG_VER",
-      "IMPF_ONLY_THREE"
-    ],
-    [
-      "AR_IMPF_FORM",
-      "IMPF_USE_HABITUAL"
-    ],
-    [
-      "ER_IR_IMPF_FORM",
-      "IMPF_USE_HABITUAL"
-    ],
-    [
-      "AR_IMPF_FORM",
-      "IMPF_USE_BACKGROUND"
-    ],
-    [
-      "ER_IR_IMPF_FORM",
-      "IMPF_USE_BACKGROUND"
-    ],
-    [
-      "AR_IMPF_FORM",
-      "IMPF_USE_STATES"
-    ],
-    [
-      "ER_IR_IMPF_FORM",
-      "IMPF_USE_STATES"
-    ],
-    [
-      "INDEF_FORM_KNOWLEDGE",
-      "INDEF_USE_SINGLE"
-    ],
-    [
-      "INDEF_FORM_KNOWLEDGE",
-      "INDEF_USE_SEQUENCE"
-    ],
-    [
-      "INDEF_FORM_KNOWLEDGE",
-      "INDEF_USE_DEFINED_PERIOD"
-    ],
-    [
-      "IMPF_USE_BACKGROUND",
-      "CONTRAST_BACKGROUND_INTERRUPT"
-    ],
-    [
-      "IMPF_USE_STATES",
-      "CONTRAST_BACKGROUND_INTERRUPT"
-    ],
-    [
-      "INDEF_USE_SINGLE",
-      "CONTRAST_BACKGROUND_INTERRUPT"
-    ],
-    [
-      "OBJ_CONCEPT",
-      "DOP_FORMS"
-    ],
-    [
-      "DOP_FORMS",
-      "DOP_PLACEMENT"
-    ],
-    [
-      "CONJ_VERB_KNOWLEDGE",
-      "DOP_PLACEMENT"
-    ],
-    [
-      "OBJ_CONCEPT",
-      "IND_OBJ_CONCEPT"
-    ],
-    [
-      "IND_OBJ_CONCEPT",
-      "IOP_FORMS"
-    ],
-    [
-      "IOP_FORMS",
-      "IOP_VERBS"
-    ],
-    [
-      "IOP_VERBS",
-      "GUSTAR_CONSTRUCTION"
-    ],
-    [
-      "REFLEX_PRONOUN_FORMS",
-      "REFLEX_VERB_CONCEPT"
-    ],
-    [
-      "REFLEX_VERB_CONCEPT",
-      "REFLEX_FORMATION"
-    ],
-    [
-      "CONJ_VERB_KNOWLEDGE",
-      "REFLEX_FORMATION"
-    ],
-    [
-      "DOP_PLACEMENT",
-      "PRONOUN_ATTACH_INFINITIVE"
-    ],
-    [
-      "REFLEX_FORMATION",
-      "PRONOUN_ATTACH_INFINITIVE"
-    ],
-    [
-      "INFINITIVE_KNOWLEDGE",
-      "PRONOUN_ATTACH_INFINITIVE"
-    ],
-    [
-      "DOP_PLACEMENT",
-      "PRONOUN_ATTACH_GERUND"
-    ],
-    [
-      "REFLEX_FORMATION",
-      "PRONOUN_ATTACH_GERUND"
-    ],
-    [
-      "GERUND_KNOWLEDGE",
-      "PRONOUN_ATTACH_GERUND"
-    ],
-    [
-      "DOP_PLACEMENT",
-      "PRONOUN_ATTACH_IMPERATIVE"
-    ],
-    [
-      "REFLEX_FORMATION",
-      "PRONOUN_ATTACH_IMPERATIVE"
-    ],
-    [
-      "IMPERATIVE_KNOWLEDGE",
-      "PRONOUN_ATTACH_IMPERATIVE"
-    ],
-    [
-      "REFLEX_FORMATION",
-      "REFLEX_PRETERITO"
-    ],
-    [
-      "PRETERITO_INDEFINIDO",
-      "REFLEX_PRETERITO"
-    ],
-    [
-      "ADJ_ADV_BASE",
-      "COMP_MAJ"
-    ],
-    [
-      "ADJ_ADV_BASE",
-      "COMP_MIN"
-    ],
-    [
-      "ADJ_ADV_BASE",
-      "COMP_EQ_ADJ"
-    ],
-    [
-      "ADJ_ADV_BASE",
-      "COMP_EQ_NOUN"
-    ],
-    [
-      "COMP_MAJ",
-      "IRR_COMP_MEJOR_PEOR"
-    ],
-    [
-      "COMP_MIN",
-      "IRR_COMP_MEJOR_PEOR"
-    ],
-    [
-      "COMP_MAJ",
-      "IRR_COMP_MAYOR_MENOR"
-    ],
-    [
-      "COMP_MIN",
-      "IRR_COMP_MAYOR_MENOR"
-    ],
-    [
-      "COMP_MAJ",
-      "REL_SUPERLATIVE"
-    ],
-    [
-      "ADJ_ADV_BASE",
-      "ABS_SUPERLATIVE_ISIMO"
-    ],
-    [
-      "ADJ_ADV_BASE",
-      "ABS_SUPERLATIVE_MUY"
-    ],
-    [
-      "INFINITIVE_KNOWLEDGE_FUT",
-      "FUT_ENDINGS_SHARED"
-    ],
-    [
-      "FUT_ENDINGS_SHARED",
-      "FUT_REGULAR_FORMATION"
-    ],
-    [
-      "FUT_REGULAR_FORMATION",
-      "FUT_IRREGULAR_STEMS"
-    ],
-    [
-      "FUT_REGULAR_FORMATION",
-      "FUT_USE_PREDICTION"
-    ],
-    [
-      "FUT_USE_PREDICTION",
-      "FUT_USE_PROBABILITY"
-    ],
-    [
-      "Q_WORDS_LOC",
-      "GIVING_DIRECTIONS"
-    ],
-    [
-      "DIR_VOCAB",
-      "GIVING_DIRECTIONS"
-    ],
-    [
-      "VERB_INFINITIVE_CONCEPT",
-      "PRESENT_TENSE_TU_USTED"
-    ],
-    [
-      "PRESENT_TENSE_TU_USTED",
-      "IMPERATIVE_TU"
-    ],
-    [
-      "PRESENT_TENSE_TU_USTED",
-      "IMPERATIVE_USTED"
-    ],
-    [
-      "IMPERATIVE_TU",
-      "GIVING_DIRECTIONS"
-    ],
-    [
-      "IMPERATIVE_USTED",
-      "GIVING_DIRECTIONS"
-    ],
-    [
-      "PREP_A",
-      "PREPS_TRANSPORT_USE"
-    ],
-    [
-      "PREP_EN",
-      "PREPS_TRANSPORT_USE"
-    ],
-    [
-      "PREP_DE",
-      "PREPS_TRANSPORT_USE"
-    ],
-    [
-      "PREP_PARA",
-      "PREPS_TRANSPORT_USE"
-    ],
-    [
-      "PREP_POR",
-      "PREPS_TRANSPORT_USE"
-    ],
-    [
-      "TRANSPORT_VOCAB",
-      "PREPS_TRANSPORT_USE"
-    ],
-    [
-      "BODY_PARTS",
-      "HEALTH_EXPRESSIONS"
-    ],
-    [
-      "REFLEXIVE_VERBS",
-      "HEALTH_EXPRESSIONS"
-    ],
-    [
-      "GUSTAR_LIKE_VERBS",
-      "HEALTH_EXPRESSIONS"
-    ],
-    [
-      "VERB_INFINITIVE_CONCEPT",
-      "QUERER_CONDITIONAL"
-    ],
-    [
-      "GUSTAR_LIKE_VERBS",
-      "APETECER_STRUCTURE"
-    ],
-    [
-      "QUERER_CONDITIONAL",
-      "MAKING_INVITATIONS"
-    ],
-    [
-      "APETECER_STRUCTURE",
-      "MAKING_INVITATIONS"
-    ],
-    [
-      "MAKING_INVITATIONS",
-      "ACCEPTING_DECLINING"
-    ],
-    [
-      "MAKING_INVITATIONS",
-      "DISCUSSING_FUTURE_PLANS"
-    ],
-    [
-      "ACCEPTING_DECLINING",
-      "DISCUSSING_FUTURE_PLANS"
-    ],
-    [
-      "FUTURE_TIME_EXPRESSIONS",
-      "DISCUSSING_FUTURE_PLANS"
-    ],
-    [
-      "FUT_STEMS",
-      "PRES_COND_FORM"
-    ],
-    [
-      "INFINITIVE",
-      "PRES_COND_FORM"
-    ],
-    [
-      "PRES_COND_FORM",
-      "HABER_PRESENT_COND"
-    ],
-    [
-      "HABER_PRESENT_COND",
-      "PERF_COND_FORM"
-    ],
-    [
-      "PAST_PARTICIPLE",
-      "PERF_COND_FORM"
-    ],
-    [
-      "PRES_COND_FORM",
-      "PRES_COND_POLITE"
-    ],
-    [
-      "PRES_COND_FORM",
-      "PRES_COND_ADVICE"
-    ],
-    [
-      "PRES_COND_FORM",
-      "PRES_COND_WISH"
-    ],
-    [
-      "PRES_COND_FORM",
-      "PRES_COND_HEDGE"
-    ],
-    [
-      "PERF_COND_FORM",
-      "PERF_COND_UNFULFILLED"
-    ],
-    [
-      "PERF_COND_FORM",
-      "PERF_COND_REPORTED"
-    ],
-    [
-      "MODAL_PRESENT",
-      "MODAL_COND_SOFTEN"
-    ],
-    [
-      "PRES_COND_POLITE",
-      "MODAL_COND_SOFTEN"
-    ],
-    [
-      "PRES_COND_ADVICE",
-      "MODAL_COND_SOFTEN"
-    ],
-    [
-      "PRES_COND_WISH",
-      "COND_TIME_REFERENCE"
-    ],
-    [
-      "PERF_COND_UNFULFILLED",
-      "COND_TIME_REFERENCE"
-    ],
-    [
-      "PERF_COND_REPORTED",
-      "COND_TIME_REFERENCE"
-    ],
-    [
-      "IOP",
-      "COMBINE_ORDER"
-    ],
-    [
-      "DOP",
-      "COMBINE_ORDER"
-    ],
-    [
-      "COMBINE_ORDER",
-      "LE_LES_TO_SE"
-    ],
-    [
-      "LE_LES_TO_SE",
-      "NO_LELO"
-    ],
-    [
-      "COMBINE_ORDER",
-      "DERIVE_FORM"
-    ],
-    [
-      "LE_LES_TO_SE",
-      "DERIVE_FORM"
-    ],
-    [
-      "NO_LELO",
-      "DERIVE_FORM"
-    ],
-    [
-      "DERIVE_FORM",
-      "PLACE_BEFORE_CONJ"
-    ],
-    [
-      "VERB_CONJ",
-      "PLACE_BEFORE_CONJ"
-    ],
-    [
-      "DERIVE_FORM",
-      "PLACE_ATTACH_INF"
-    ],
-    [
-      "INFINITIVE_PRONOUN_BASE",
-      "PLACE_ATTACH_INF"
-    ],
-    [
-      "DERIVE_FORM",
-      "PLACE_ATTACH_GER"
-    ],
-    [
-      "GERUND",
-      "PLACE_ATTACH_GER"
-    ],
-    [
-      "DERIVE_FORM",
-      "PLACE_ATTACH_IMP"
-    ],
-    [
-      "IMPERATIVE_AFF",
-      "PLACE_ATTACH_IMP"
-    ],
-    [
-      "PLACE_ATTACH_INF",
-      "ACCENT_SHIFT"
-    ],
-    [
-      "PLACE_ATTACH_GER",
-      "ACCENT_SHIFT"
-    ],
-    [
-      "PLACE_ATTACH_IMP",
-      "ACCENT_SHIFT"
-    ],
-    [
-      "COMPOUND_TENSE_HABER",
-      "PARTICIPLE_INVARIABLE"
-    ],
-    [
-      "DERIVE_FORM",
-      "PARTICIPLE_INVARIABLE"
-    ],
-    [
-      "DOP",
-      "LO_NEUTER"
-    ],
-    [
-      "ANTECEDENT",
-      "QUE_REL"
-    ],
-    [
-      "ANTECEDENT",
-      "QUIEN_REL"
-    ],
-    [
-      "ANTECEDENT",
-      "ELQUE_REL"
-    ],
-    [
-      "PREP_PHRASE",
-      "QUIEN_REL"
-    ],
-    [
-      "ARTICLE_ADJ_AGREEMENT_B1",
-      "ELQUE_REL"
-    ],
-    [
-      "ELQUE_REL",
-      "ELQUE_DISAMBIG"
-    ],
-    [
-      "ANTECEDENT",
-      "LOQUE_REL"
-    ],
-    [
-      "CLAUSE_JOIN",
-      "COMPLEX_SENT_FORM"
-    ],
-    [
-      "QUE_REL",
-      "COMPLEX_SENT_FORM"
-    ],
-    [
-      "QUIEN_REL",
-      "COMPLEX_SENT_FORM"
-    ],
-    [
-      "ELQUE_REL",
-      "COMPLEX_SENT_FORM"
-    ],
-    [
-      "LOQUE_REL",
-      "COMPLEX_SENT_FORM"
-    ],
-    [
-      "COMPLEX_SENT_FORM",
-      "AVOID_NOUN_REPEAT_ERROR"
-    ],
-    [
-      "COMPLEX_SENT_FORM",
-      "RESTRICTIVE_CLAUSE"
-    ],
-    [
-      "COMPLEX_SENT_FORM",
-      "NONRESTRICTIVE_CLAUSE"
-    ],
-    [
-      "RESTRICTIVE_CLAUSE",
-      "DISTINGUISH_CLAUSE_TYPES"
-    ],
-    [
-      "NONRESTRICTIVE_CLAUSE",
-      "DISTINGUISH_CLAUSE_TYPES"
-    ],
-    [
-      "REGULAR_PRESENT_INDICATIVE",
-      "AR_SUBJ_ENDINGS"
-    ],
-    [
-      "REGULAR_PRESENT_INDICATIVE",
-      "ER_IR_SUBJ_ENDINGS"
-    ],
-    [
-      "AR_SUBJ_ENDINGS",
-      "IRREGULAR_STEMS"
-    ],
-    [
-      "ER_IR_SUBJ_ENDINGS",
-      "IRREGULAR_STEMS"
-    ],
-    [
-      "AR_SUBJ_ENDINGS",
-      "STEM_CHANGE_CARRY"
-    ],
-    [
-      "ER_IR_SUBJ_ENDINGS",
-      "STEM_CHANGE_CARRY"
-    ],
-    [
-      "TWO_CLAUSE_STRUCTURE",
-      "DIFFERENT_SUBJECTS"
-    ],
-    [
-      "TWO_CLAUSE_STRUCTURE",
-      "SAME_SUBJECT"
-    ],
-    [
-      "DIFFERENT_SUBJECTS",
-      "WISH_TRIGGERS"
-    ],
-    [
-      "DIFFERENT_SUBJECTS",
-      "EMOTION_TRIGGERS"
-    ],
-    [
-      "DIFFERENT_SUBJECTS",
-      "DOUBT_TRIGGERS"
-    ],
-    [
-      "DIFFERENT_SUBJECTS",
-      "NECESSITY_TRIGGERS"
-    ],
-    [
-      "NECESSITY_TRIGGERS",
-      "IMPERSONAL_TRIGGERS"
-    ],
-    [
-      "DOUBT_TRIGGERS",
-      "CREO_QUE_INDICATIVE"
-    ],
-    [
-      "CREO_QUE_INDICATIVE",
-      "NO_CREO_QUE_EXCEPTION"
-    ],
-    [
-      "DOUBT_TRIGGERS",
-      "NO_CREO_QUE_EXCEPTION"
-    ],
-    [
-      "SAME_SUBJECT",
-      "INFINITIVE_REPLACEMENT"
-    ],
-    [
-      "WISH_TRIGGERS",
-      "INFINITIVE_REPLACEMENT"
-    ],
-    [
-      "PAST_PART",
-      "PASSIVE_FORM"
-    ],
-    [
-      "SER_CONJ_ALL_TENSES",
-      "PASSIVE_FORM"
-    ],
-    [
-      "SUBJ_AGREEMENT",
-      "PASSIVE_FORM"
-    ],
-    [
-      "PASSIVE_FORM",
-      "POR_AGENT"
-    ],
-    [
-      "REFLEXIVE_SE",
-      "SE_PASIVA"
-    ],
-    [
-      "THIRD_PERSON_VERB",
-      "SE_PASIVA"
-    ],
-    [
-      "SUBJ_AGREEMENT",
-      "SE_PASIVA"
-    ],
-    [
-      "AGENT_UNKNOWN_UNIMPORTANT",
-      "SE_PASIVA"
-    ],
-    [
-      "REFLEXIVE_SE",
-      "SE_IMPERSONAL"
-    ],
-    [
-      "THIRD_PERSON_VERB",
-      "SE_IMPERSONAL"
-    ],
-    [
-      "GENERAL_STATEMENTS",
-      "SE_IMPERSONAL"
-    ],
-    [
-      "SE_PASIVA",
-      "DISTINGUISH_PASIVA_IMPERSONAL"
-    ],
-    [
-      "SE_IMPERSONAL",
-      "DISTINGUISH_PASIVA_IMPERSONAL"
-    ],
-    [
-      "PASSIVE_FORM",
-      "STYLISTIC_PREFERENCE"
-    ],
-    [
-      "SE_PASIVA",
-      "STYLISTIC_PREFERENCE"
-    ],
-    [
-      "SE_IMPERSONAL",
-      "STYLISTIC_PREFERENCE"
-    ],
-    [
-      "REGISTER_FORMALITY",
-      "STYLISTIC_PREFERENCE"
-    ],
-    [
-      "PAST_PARTICIPLE_B2",
-      "PERF_SUBJ_FORM"
-    ],
-    [
-      "PRES_SUBJ_HABER",
-      "PERF_SUBJ_FORM"
-    ],
-    [
-      "PERF_SUBJ_FORM",
-      "PERF_SUBJ_USE"
-    ],
-    [
-      "PRES_SUBJ_TRIGGERS",
-      "PERF_SUBJ_USE"
-    ],
-    [
-      "IMPF_SUBJ_RA",
-      "IMPF_SUBJ_REGISTER"
-    ],
-    [
-      "IMPF_SUBJ_SE",
-      "IMPF_SUBJ_REGISTER"
-    ],
-    [
-      "IMPF_SUBJ_RA",
-      "IMPF_SUBJ_USE"
-    ],
-    [
-      "IMPF_SUBJ_SE",
-      "IMPF_SUBJ_USE"
-    ],
-    [
-      "PRES_SUBJ_TRIGGERS",
-      "IMPF_SUBJ_USE"
-    ],
-    [
-      "PAST_PARTICIPLE_B2",
-      "PLUP_SUBJ_FORM"
-    ],
-    [
-      "IMPF_SUBJ_HABER",
-      "PLUP_SUBJ_FORM"
-    ],
-    [
-      "PLUP_SUBJ_FORM",
-      "PLUP_SUBJ_USE"
-    ],
-    [
-      "PRES_SUBJ_TRIGGERS",
-      "PLUP_SUBJ_USE"
-    ],
-    [
-      "PERF_SUBJ_USE",
-      "SECUENCIA_TIEMPOS"
-    ],
-    [
-      "IMPF_SUBJ_USE",
-      "SECUENCIA_TIEMPOS"
-    ],
-    [
-      "PLUP_SUBJ_USE",
-      "SECUENCIA_TIEMPOS"
-    ],
-    [
-      "PRES_IND",
-      "ZERO_COND"
-    ],
-    [
-      "PRES_IND",
-      "TYPE1"
-    ],
-    [
-      "FUTURE",
-      "TYPE1"
-    ],
-    [
-      "IMPERATIVE",
-      "TYPE1"
-    ],
-    [
-      "IMPF_SUBJ",
-      "TYPE2"
-    ],
-    [
-      "PRES_COND",
-      "TYPE2"
-    ],
-    [
-      "TYPE2",
-      "TYPE2_ERROR"
-    ],
-    [
-      "PRES_COND",
-      "TYPE2_ERROR"
-    ],
-    [
-      "PLUP_SUBJ",
-      "TYPE3"
-    ],
-    [
-      "PERF_COND",
-      "TYPE3"
-    ],
-    [
-      "TYPE1",
-      "CLAUSE_PAIRING"
-    ],
-    [
-      "TYPE2",
-      "CLAUSE_PAIRING"
-    ],
-    [
-      "TYPE3",
-      "CLAUSE_PAIRING"
-    ],
-    [
-      "CLAUSE_PAIRING",
-      "MIXED_HYPOTHETICAL"
-    ],
-    [
-      "PLUP_SUBJ",
-      "MIXED_HYPOTHETICAL"
-    ],
-    [
-      "PRES_COND",
-      "MIXED_HYPOTHETICAL"
-    ],
-    [
-      "direct_speech",
-      "reporting_verbs"
-    ],
-    [
-      "reporting_verbs",
-      "reporting_verb_past"
-    ],
-    [
-      "reporting_verbs",
-      "reporting_verb_present"
-    ],
-    [
-      "past_tenses",
-      "backshift_present_imperfecto"
-    ],
-    [
-      "present_tense",
-      "backshift_present_imperfecto"
-    ],
-    [
-      "reporting_verb_past",
-      "backshift_present_imperfecto"
-    ],
-    [
-      "past_tenses",
-      "backshift_preterito_pluscuamperfecto"
-    ],
-    [
-      "reporting_verb_past",
-      "backshift_preterito_pluscuamperfecto"
-    ],
-    [
-      "future_tense",
-      "backshift_future_conditional"
-    ],
-    [
-      "conditional_tense",
-      "backshift_future_conditional"
-    ],
-    [
-      "reporting_verb_past",
-      "backshift_future_conditional"
-    ],
-    [
-      "reporting_verb_present",
-      "no_backshift_present_reporting"
-    ],
-    [
-      "present_tense",
-      "no_backshift_present_reporting"
-    ],
-    [
-      "subject_pronouns",
-      "perspective_shift"
-    ],
-    [
-      "possessive_adjectives",
-      "perspective_shift"
-    ],
-    [
-      "reporting_verbs",
-      "perspective_shift"
-    ],
-    [
-      "perspective_shift",
-      "pronoun_possessive_changes"
-    ],
-    [
-      "time_expressions",
-      "adverb_time_changes"
-    ],
-    [
-      "perspective_shift",
-      "adverb_time_changes"
-    ],
-    [
-      "reporting_verbs",
-      "adverb_time_changes"
-    ],
-    [
-      "yes_no_questions",
-      "reporting_yes_no_si"
-    ],
-    [
-      "reporting_verbs",
-      "reporting_yes_no_si"
-    ],
-    [
-      "wh_questions",
-      "reporting_wh_questions"
-    ],
-    [
-      "question_word_order",
-      "reporting_wh_questions"
-    ],
-    [
-      "statement_word_order",
-      "reporting_wh_questions"
-    ],
-    [
-      "reporting_verbs",
-      "reporting_wh_questions"
-    ],
-    [
-      "regverb_ar_er_ir",
-      "gerundio_formation_regular"
-    ],
-    [
-      "preterite_stem_irregular",
-      "gerundio_formation_irregular"
-    ],
-    [
-      "gerundio_formation_regular",
-      "gerundio_formation_irregular"
-    ],
-    [
-      "gerundio_formation_regular",
-      "gerundio_progressive"
-    ],
-    [
-      "gerundio_formation_irregular",
-      "gerundio_progressive"
-    ],
-    [
-      "estar_conjugation",
-      "gerundio_progressive"
-    ],
-    [
-      "gerundio_formation_regular",
-      "gerundio_adverbial"
-    ],
-    [
-      "gerundio_formation_irregular",
-      "gerundio_adverbial"
-    ],
-    [
-      "subordinating_conjunctions_basic",
-      "gerundio_adverbial"
-    ],
-    [
-      "gerundio_formation_regular",
-      "gerundio_pronoun_attachment"
-    ],
-    [
-      "gerundio_formation_irregular",
-      "gerundio_pronoun_attachment"
-    ],
-    [
-      "direct_object_pronouns",
-      "gerundio_pronoun_attachment"
-    ],
-    [
-      "written_accent_rules",
-      "gerundio_pronoun_attachment"
-    ],
-    [
-      "indicative_mood_basic",
-      "connector_aunque_indicative"
-    ],
-    [
-      "subjunctive_mood_basic",
-      "connector_aunque_subjunctive"
-    ],
-    [
-      "tu_usted_forms",
-      "formal_register_usted_preference"
-    ],
-    [
-      "colloquialisms_awareness",
-      "formal_register_avoid_colloquialisms"
-    ],
-    [
-      "impersonal_se_construction",
-      "formal_register_impersonal_se_passive"
-    ],
-    [
-      "passive_voice_construction",
-      "formal_register_impersonal_se_passive"
-    ],
-    [
-      "tu_usted_forms",
-      "formal_register_impersonal_se_passive"
-    ],
-    [
-      "thesis_statement_concept",
-      "argumentative_paragraph_structure"
-    ],
-    [
-      "connector_sin_embargo",
-      "argumentative_paragraph_structure"
-    ],
-    [
-      "connector_a_pesar_de_que",
-      "argumentative_paragraph_structure"
-    ],
-    [
-      "connector_aunque_indicative",
-      "argumentative_paragraph_structure"
-    ],
-    [
-      "connector_aunque_subjunctive",
-      "argumentative_paragraph_structure"
-    ],
-    [
-      "connector_por_lo_tanto",
-      "argumentative_paragraph_structure"
-    ],
-    [
-      "connector_ademas",
-      "argumentative_paragraph_structure"
-    ],
-    [
-      "concluding_connectors",
-      "argumentative_paragraph_structure"
-    ],
-    [
-      "formal_register_usted_preference",
-      "argumentative_paragraph_structure"
-    ],
-    [
-      "formal_register_avoid_colloquialisms",
-      "argumentative_paragraph_structure"
-    ],
-    [
-      "formal_register_impersonal_se_passive",
-      "argumentative_paragraph_structure"
-    ],
-    [
-      "subj_pronouns",
-      "self_intro"
-    ],
-    [
-      "ADJ_AGREEMENT",
-      "nationality_agreement"
-    ],
-    [
-      "question_words",
-      "AGE_ASK"
-    ],
-    [
-      "question_words",
-      "TIME_QUEHORA"
-    ],
-    [
-      "DEF_ARTICLES",
-      "TIME_ES_LA_UNA"
-    ],
-    [
-      "DEF_ARTICLES",
-      "TIME_SON_LAS"
-    ],
-    [
-      "NUM_0_30",
-      "TIME_ES_LA_UNA"
-    ],
-    [
-      "question_words",
-      "DAYS_ASKSTATE"
-    ],
-    [
-      "SER_QHORA",
-      "DAYS_ASKSTATE"
-    ],
-    [
-      "DEF_ARTICLES",
-      "DATE_PATTERN"
-    ],
-    [
-      "DEF_ARTICLES",
-      "SEASONS"
-    ],
-    [
-      "ADJ_AGREEMENT",
-      "NEUTER_LO"
-    ],
-    [
-      "subj_pronouns",
-      "SUBJ_PRON"
-    ],
-    [
-      "SUBJ_PRON",
-      "subject_pronouns"
-    ],
-    [
-      "IRREGULAR_VERB_CONCEPT",
-      "IR_VERB_CONJ_IRREG"
-    ],
-    [
-      "IR_VERB_CONJ_IRREG",
-      "IR_A_INFINITIVE"
-    ],
-    [
-      "ADJ_AGREEMENT",
-      "GENDER_NUMBER_AGREEMENT"
-    ],
-    [
-      "SER_QHORA",
-      "SER_TIME"
-    ],
-    [
-      "TIME_SON_LAS",
-      "SER_TIME"
-    ],
-    [
-      "nationality_agreement",
-      "SER_NATIONALITY"
-    ],
-    [
-      "VERB_CONCEPT",
-      "GERUND_FORM"
-    ],
-    [
-      "GERUND_FORM",
-      "gerundio_formation_regular"
-    ],
-    [
-      "SER_IDENTITY",
-      "SER_ESTAR_DISTINCTION"
-    ],
-    [
-      "SER_PROFESSION",
-      "SER_ESTAR_DISTINCTION"
-    ],
-    [
-      "SER_EVENT_LOCATION",
-      "SER_ESTAR_DISTINCTION"
-    ],
-    [
-      "SUBJ_PRON",
-      "POSS_ADJ"
-    ],
-    [
-      "REFLEX_EXAMPLES",
-      "REFLEX_FORMATION"
-    ],
-    [
-      "CONJ_VERB_KNOWLEDGE",
-      "GUSTAR_CONSTRUCTION"
-    ],
-    [
-      "DOP_FORMS",
-      "REFLEX_PRONOUN_FORMS"
-    ],
-    [
-      "IOP_FORMS",
-      "PRONOUN_ATTACH_INFINITIVE"
-    ],
-    [
-      "IOP_FORMS",
-      "PRONOUN_ATTACH_GERUND"
-    ],
-    [
-      "IOP_FORMS",
-      "PRONOUN_ATTACH_IMPERATIVE"
-    ],
-    [
-      "PRONOUN_ATTACH_GERUND",
-      "ATTACH_ACCENT_A2"
-    ],
-    [
-      "PRONOUN_ATTACH_IMPERATIVE",
-      "ATTACH_ACCENT_A2"
-    ],
-    [
-      "ATTACH_ACCENT_A2",
-      "ACCENT_SHIFT"
-    ],
-    [
-      "DEF_ARTICLES",
-      "REL_SUPERLATIVE"
-    ],
-    [
-      "COMP_MIN",
-      "REL_SUPERLATIVE"
-    ],
-    [
-      "ADJ_AGREEMENT",
-      "ABS_SUPERLATIVE_ISIMO"
-    ],
-    [
-      "FUT_IRREGULAR_STEMS",
-      "FUT_STEMS"
-    ],
-    [
-      "IR_A_INFINITIVE",
-      "FUT_USE_PREDICTION"
-    ],
-    [
-      "tu_usted_contrast",
-      "IMPERATIVE_USTED"
-    ],
-    [
-      "tu_usted_contrast",
-      "IMPERATIVE_TU"
-    ],
-    [
-      "question_words",
-      "Q_WORDS_LOC"
-    ],
-    [
-      "ESTAR_LOCATION",
-      "Q_WORDS_LOC"
-    ],
-    [
-      "GUSTAR_CONSTRUCTION",
-      "GUSTAR_LIKE_VERBS"
-    ],
-    [
-      "REFLEX_FORMATION",
-      "REFLEXIVE_VERBS"
-    ],
-    [
-      "REFLEX_FORMATION",
-      "REFLEXIVE_SE"
-    ],
-    [
-      "QUERER_CONJ",
-      "QUERER_CONDITIONAL"
-    ],
-    [
-      "MODAL_CONSTRUCTION",
-      "QUERER_CONDITIONAL"
-    ],
-    [
-      "IR_A_INFINITIVE",
-      "VAMOS_A_PROPOSAL"
-    ],
-    [
-      "VAMOS_A_PROPOSAL",
-      "MAKING_INVITATIONS"
-    ],
-    [
-      "TENER_CONJ",
-      "HEALTH_EXPRESSIONS"
-    ],
-    [
-      "DAYS",
-      "DISCUSSING_FUTURE_PLANS"
-    ],
-    [
-      "TIME_SON_LAS",
-      "DISCUSSING_FUTURE_PLANS"
-    ],
-    [
-      "MODAL_PRESENT",
-      "PRES_COND_POLITE"
-    ],
-    [
-      "MODAL_PRESENT",
-      "PRES_COND_ADVICE"
-    ],
-    [
-      "reporting_verb_past",
-      "PERF_COND_REPORTED"
-    ],
-    [
-      "IOP_FORMS",
-      "IOP"
-    ],
-    [
-      "DOP_FORMS",
-      "DOP"
-    ],
-    [
-      "DOP_PLACEMENT",
-      "COMBINE_ORDER"
-    ],
-    [
-      "written_accent_rules",
-      "ACCENT_SHIFT"
-    ],
-    [
-      "NEUTER_LO",
-      "LO_NEUTER"
-    ],
-    [
-      "LO_NEUTER",
-      "LOQUE_REL"
-    ],
-    [
-      "PAST_PARTICIPLE",
-      "PARTICIPLE_INVARIABLE"
-    ],
-    [
-      "CLAUSE_JOIN",
-      "QUE_REL"
-    ],
-    [
-      "CLAUSE_JOIN",
-      "QUIEN_REL"
-    ],
-    [
-      "CLAUSE_JOIN",
-      "ELQUE_REL"
-    ],
-    [
-      "CLAUSE_JOIN",
-      "LOQUE_REL"
-    ],
-    [
-      "IRREGULAR_VERB_CONCEPT",
-      "IRREGULAR_STEMS"
-    ],
-    [
-      "STEM_CHANGE_CONCEPT",
-      "STEM_CHANGE_CARRY"
-    ],
-    [
-      "CLAUSE_JOIN",
-      "TWO_CLAUSE_STRUCTURE"
-    ],
-    [
-      "AR_SUBJ_ENDINGS",
-      "WISH_TRIGGERS"
-    ],
-    [
-      "ER_IR_SUBJ_ENDINGS",
-      "WISH_TRIGGERS"
-    ],
-    [
-      "IRREGULAR_STEMS",
-      "WISH_TRIGGERS"
-    ],
-    [
-      "STEM_CHANGE_CARRY",
-      "WISH_TRIGGERS"
-    ],
-    [
-      "INFINITIVE",
-      "INFINITIVE_REPLACEMENT"
-    ],
-    [
-      "AGENT_UNKNOWN_UNIMPORTANT",
-      "SE_IMPERSONAL"
-    ],
-    [
-      "AGENT_UNKNOWN_UNIMPORTANT",
-      "PASSIVE_FORM"
-    ],
-    [
-      "register_concept",
-      "REGISTER_FORMALITY"
-    ],
-    [
-      "REGISTER_FORMALITY",
-      "formal_register_usted_preference"
-    ],
-    [
-      "REGISTER_FORMALITY",
-      "formal_register_avoid_colloquialisms"
-    ],
-    [
-      "REGISTER_FORMALITY",
-      "formal_register_impersonal_se_passive"
-    ],
-    [
-      "WISH_TRIGGERS",
-      "PRES_SUBJ_TRIGGERS"
-    ],
-    [
-      "EMOTION_TRIGGERS",
-      "PRES_SUBJ_TRIGGERS"
-    ],
-    [
-      "DOUBT_TRIGGERS",
-      "PRES_SUBJ_TRIGGERS"
-    ],
-    [
-      "NECESSITY_TRIGGERS",
-      "PRES_SUBJ_TRIGGERS"
-    ],
-    [
-      "ER_IR_REGULAR",
-      "IMPF_SUBJ_STEM_FROM_PRET"
-    ],
-    [
-      "AR_REGULAR",
-      "IMPF_SUBJ_STEM_FROM_PRET"
-    ],
-    [
-      "DECIR_PRET",
-      "IMPF_SUBJ_STEM_FROM_PRET"
-    ],
-    [
-      "IMPF_SUBJ_STEM_FROM_PRET",
-      "IMPF_SUBJ_RA"
-    ],
-    [
-      "IMPF_SUBJ_STEM_FROM_PRET",
-      "IMPF_SUBJ_SE"
-    ],
-    [
-      "IMPF_SUBJ_STEM_FROM_PRET",
-      "IMPF_SUBJ_HABER"
-    ],
-    [
-      "IRREGULAR_STEMS",
-      "PRES_SUBJ_HABER"
-    ],
-    [
-      "past_tenses",
-      "SECUENCIA_TIEMPOS"
-    ],
-    [
-      "PRES_COND",
-      "SECUENCIA_TIEMPOS"
-    ],
-    [
-      "IMPF_SUBJ_USE",
-      "IMPF_SUBJ"
-    ],
-    [
-      "PLUP_SUBJ_USE",
-      "PLUP_SUBJ"
-    ],
-    [
-      "PRES_COND_FORM",
-      "PRES_COND"
-    ],
-    [
-      "PERF_COND_FORM",
-      "PERF_COND"
-    ],
-    [
-      "FUT_REGULAR_FORMATION",
-      "FUTURE"
-    ],
-    [
-      "IMPERATIVE_TU",
-      "IMPERATIVE"
-    ],
-    [
-      "TYPE3",
-      "MIXED_HYPOTHETICAL"
-    ],
-    [
-      "TYPE2",
-      "MIXED_HYPOTHETICAL"
-    ],
-    [
-      "INDEF_FORM_KNOWLEDGE",
-      "past_tenses"
-    ],
-    [
-      "AR_IMPF_FORM",
-      "past_tenses"
-    ],
-    [
-      "ER_IR_IMPF_FORM",
-      "past_tenses"
-    ],
-    [
-      "FUT_REGULAR_FORMATION",
-      "future_tense"
-    ],
-    [
-      "PRES_COND_FORM",
-      "conditional_tense"
-    ],
-    [
-      "reporting_verb_past",
-      "backshift_principle"
-    ],
-    [
-      "backshift_principle",
-      "backshift_present_imperfecto"
-    ],
-    [
-      "backshift_principle",
-      "backshift_preterito_pluscuamperfecto"
-    ],
-    [
-      "backshift_principle",
-      "backshift_future_conditional"
-    ],
-    [
-      "backshift_principle",
-      "no_backshift_present_reporting"
-    ],
-    [
-      "pronoun_possessive_changes",
-      "reporting_wh_questions"
-    ],
-    [
-      "pronoun_possessive_changes",
-      "reporting_yes_no_si"
-    ],
-    [
-      "backshift_present_imperfecto",
-      "reporting_wh_questions"
-    ],
-    [
-      "backshift_present_imperfecto",
-      "reporting_yes_no_si"
-    ],
-    [
-      "ESTAR_PROGRESSIVE",
-      "gerundio_progressive"
-    ],
-    [
-      "PLACE_ATTACH_GER",
-      "gerundio_pronoun_attachment"
-    ],
-    [
-      "AR_SUBJ_ENDINGS",
-      "subjunctive_mood_basic"
-    ],
-    [
-      "ER_IR_SUBJ_ENDINGS",
-      "subjunctive_mood_basic"
-    ],
-    [
-      "DOUBT_TRIGGERS",
-      "subjunctive_mood_basic"
-    ],
-    [
-      "indicative_mood_basic",
-      "connector_a_pesar_de_que"
-    ],
-    [
-      "subjunctive_mood_basic",
-      "connector_a_pesar_de_que"
-    ],
-    [
-      "SE_IMPERSONAL",
-      "impersonal_se_construction"
-    ],
-    [
-      "SE_PASIVA",
-      "impersonal_se_construction"
-    ],
-    [
-      "PASSIVE_FORM",
-      "passive_voice_construction"
-    ],
-    [
-      "STYLISTIC_PREFERENCE",
-      "formal_register_impersonal_se_passive"
-    ],
-    [
-      "tu_usted_contrast",
-      "tu_usted_forms"
-    ],
-    [
-      "PRESENT_TENSE_TU_USTED",
-      "tu_usted_forms"
-    ],
-    [
-      "PRES_COND_HEDGE",
-      "thesis_statement_concept"
-    ],
-    [
-      "CREO_QUE_INDICATIVE",
-      "thesis_statement_concept"
-    ],
-    [
-      "NO_CREO_QUE_EXCEPTION",
-      "thesis_statement_concept"
-    ],
-    [
-      "AR_REGULAR",
-      "PRETERITO_INDEFINIDO"
-    ],
-    [
-      "ER_IR_REGULAR",
-      "PRETERITO_INDEFINIDO"
-    ],
-    [
-      "AR_REGULAR",
-      "INDEF_FORM_KNOWLEDGE"
-    ],
-    [
-      "ER_IR_REGULAR",
-      "INDEF_FORM_KNOWLEDGE"
-    ],
-    [
-      "SER_IR_PRETERITE",
-      "INDEF_FORM_KNOWLEDGE"
-    ],
-    [
-      "VERB_CONCEPT",
-      "AR_IMPF_FORM"
-    ],
-    [
-      "VERB_CONCEPT",
-      "ER_IR_IMPF_FORM"
-    ],
-    [
-      "AGE_GIVE",
-      "IMPF_USE_STATES"
-    ],
-    [
-      "IMPF_IRREG_SER",
-      "IMPF_USE_STATES"
-    ],
-    [
-      "VERB_CONCEPT",
-      "AR_REGULAR"
-    ],
-    [
-      "VERB_CONCEPT",
-      "ER_IR_REGULAR"
-    ],
-    [
-      "AR_REGULAR",
-      "PRET_IRREG_STEM_ENDINGS"
-    ],
-    [
-      "ER_IR_REGULAR",
-      "PRET_IRREG_STEM_ENDINGS"
-    ],
-    [
-      "PRET_IRREG_STEM_ENDINGS",
-      "TENER_PRET"
-    ],
-    [
-      "PRET_IRREG_STEM_ENDINGS",
-      "HACER_PRET"
-    ],
-    [
-      "PRET_IRREG_STEM_ENDINGS",
-      "ESTAR_PRET"
-    ],
-    [
-      "PRET_IRREG_STEM_ENDINGS",
-      "PODER_PRET"
-    ],
-    [
-      "PRET_IRREG_STEM_ENDINGS",
-      "DECIR_PRET"
-    ],
-    [
-      "PRET_IRREG_STEM_ENDINGS",
-      "VENIR_PRET"
-    ],
-    [
-      "NUM_100PLUS",
-      "NUMBERS_CARDINAL"
-    ],
-    [
-      "NUM_31_100",
-      "NUMBERS_CARDINAL"
-    ],
-    [
-      "QUERER_CONJ",
-      "QUIERO"
-    ],
-    [
-      "IOP_FORMS",
-      "ME_GUSTARIA"
-    ],
-    [
-      "INFINITIVE_CONCEPT",
-      "QUIERO"
-    ],
-    [
-      "INFINITIVE_CONCEPT",
-      "ME_GUSTARIA"
-    ],
-    [
-      "NUMBERS_CARDINAL",
-      "ORDINAL_NUMBERS"
-    ],
-    [
-      "GENDER_REGULAR",
-      "APOCOPE_RULE"
-    ],
-    [
-      "ADJ_POSITION_PRECEDE",
-      "APOCOPE_RULE"
-    ],
-    [
-      "INDEF_ARTICLES",
-      "DE_QUANTITY"
-    ],
-    [
-      "PREP_DE",
-      "DE_QUANTITY"
-    ],
-    [
-      "DEF_ARTICLES",
-      "DIRECT_OBJECT_NOUNS"
-    ],
-    [
-      "INDEF_ARTICLES",
-      "DIRECT_OBJECT_NOUNS"
-    ],
-    [
-      "ADJ_POSITION_DEFAULT",
-      "DESC_AGREEMENT"
-    ],
-    [
-      "AR_CONJ",
-      "REGULAR_PRESENT_CONCEPT"
-    ],
-    [
-      "ER_CONJ",
-      "REGULAR_PRESENT_CONCEPT"
-    ],
-    [
-      "IR_CONJ",
-      "REGULAR_PRESENT_CONCEPT"
-    ],
-    [
-      "SER_CONJ",
-      "SER_IR_CONTEXT"
-    ]
+    {
+      "from": "register_concept",
+      "to": "tu_usted_contrast",
+      "difficulty": null
+    },
+    {
+      "from": "subj_pronouns__5",
+      "to": "tu_usted_contrast",
+      "difficulty": null
+    },
+    {
+      "from": "tu_usted_contrast",
+      "to": "ask_name_informal",
+      "difficulty": null
+    },
+    {
+      "from": "tu_usted_contrast",
+      "to": "ask_name_formal",
+      "difficulty": null
+    },
+    {
+      "from": "self_intro",
+      "to": "ask_name_informal",
+      "difficulty": null
+    },
+    {
+      "from": "self_intro",
+      "to": "ask_name_formal",
+      "difficulty": null
+    },
+    {
+      "from": "self_intro",
+      "to": "intro_others",
+      "difficulty": null
+    },
+    {
+      "from": "subj_pronouns__5",
+      "to": "intro_others",
+      "difficulty": null
+    },
+    {
+      "from": "intro_others",
+      "to": "response_intro",
+      "difficulty": null
+    },
+    {
+      "from": "ask_name_informal",
+      "to": "response_intro",
+      "difficulty": null
+    },
+    {
+      "from": "ask_name_formal",
+      "to": "response_intro",
+      "difficulty": null
+    },
+    {
+      "from": "greet_time_of_day__2",
+      "to": "register_concept",
+      "difficulty": null
+    },
+    {
+      "from": "greet_informal__2",
+      "to": "register_concept",
+      "difficulty": null
+    },
+    {
+      "from": "tu_usted_contrast",
+      "to": "ask_origin_informal",
+      "difficulty": null
+    },
+    {
+      "from": "tu_usted_contrast",
+      "to": "ask_origin_formal",
+      "difficulty": null
+    },
+    {
+      "from": "question_words__4",
+      "to": "ask_origin_informal",
+      "difficulty": null
+    },
+    {
+      "from": "question_words__4",
+      "to": "ask_origin_formal",
+      "difficulty": null
+    },
+    {
+      "from": "ask_origin_informal",
+      "to": "say_origin",
+      "difficulty": null
+    },
+    {
+      "from": "ask_origin_formal",
+      "to": "say_origin",
+      "difficulty": null
+    },
+    {
+      "from": "say_origin",
+      "to": "nationality_agreement",
+      "difficulty": null
+    },
+    {
+      "from": "NUM_31_100__5",
+      "to": "NUM_100PLUS",
+      "difficulty": null
+    },
+    {
+      "from": "PRON_TENER__3",
+      "to": "AGE_ASK",
+      "difficulty": null
+    },
+    {
+      "from": "PRON_TENER__3",
+      "to": "AGE_GIVE",
+      "difficulty": null
+    },
+    {
+      "from": "AGE_ASK",
+      "to": "AGE_GIVE",
+      "difficulty": null
+    },
+    {
+      "from": "SER_QHORA",
+      "to": "TIME_QUEHORA",
+      "difficulty": null
+    },
+    {
+      "from": "TIME_QUEHORA",
+      "to": "TIME_ES_LA_UNA",
+      "difficulty": null
+    },
+    {
+      "from": "TIME_QUEHORA",
+      "to": "TIME_SON_LAS",
+      "difficulty": null
+    },
+    {
+      "from": "TIME_ES_LA_UNA",
+      "to": "TIME_CUARTO_MEDIA",
+      "difficulty": null
+    },
+    {
+      "from": "TIME_SON_LAS",
+      "to": "TIME_CUARTO_MEDIA",
+      "difficulty": null
+    },
+    {
+      "from": "TIME_CUARTO_MEDIA",
+      "to": "TIME_MENOS_CUARTO",
+      "difficulty": null
+    },
+    {
+      "from": "DAYS__4",
+      "to": "DAYS_ASKSTATE",
+      "difficulty": null
+    },
+    {
+      "from": "MONTHS__6",
+      "to": "DATE_PATTERN",
+      "difficulty": null
+    },
+    {
+      "from": "DATE_PATTERN",
+      "to": "DATE_FIRST_EXCEPTION",
+      "difficulty": null
+    },
+    {
+      "from": "GENDER_REGULAR",
+      "to": "GENDER_EXCEPTIONS",
+      "difficulty": null
+    },
+    {
+      "from": "GENDER_REGULAR",
+      "to": "GENDER_LEARNED",
+      "difficulty": null
+    },
+    {
+      "from": "GENDER_REGULAR",
+      "to": "DEF_ARTICLES",
+      "difficulty": null
+    },
+    {
+      "from": "GENDER_EXCEPTIONS",
+      "to": "DEF_ARTICLES",
+      "difficulty": null
+    },
+    {
+      "from": "GENDER_LEARNED",
+      "to": "DEF_ARTICLES",
+      "difficulty": null
+    },
+    {
+      "from": "GENDER_REGULAR",
+      "to": "INDEF_ARTICLES",
+      "difficulty": null
+    },
+    {
+      "from": "GENDER_EXCEPTIONS",
+      "to": "INDEF_ARTICLES",
+      "difficulty": null
+    },
+    {
+      "from": "GENDER_LEARNED",
+      "to": "INDEF_ARTICLES",
+      "difficulty": null
+    },
+    {
+      "from": "PLURAL_VOWEL",
+      "to": "DEF_ARTICLES",
+      "difficulty": null
+    },
+    {
+      "from": "PLURAL_CONSONANT",
+      "to": "DEF_ARTICLES",
+      "difficulty": null
+    },
+    {
+      "from": "PLURAL_Z",
+      "to": "DEF_ARTICLES",
+      "difficulty": null
+    },
+    {
+      "from": "NUM_30",
+      "to": "AGE_GIVE",
+      "difficulty": null
+    },
+    {
+      "from": "NUM_30",
+      "to": "TIME_SON_LAS",
+      "difficulty": null
+    },
+    {
+      "from": "NUM_30",
+      "to": "DATE_PATTERN",
+      "difficulty": null
+    },
+    {
+      "from": "PLURAL_VOWEL",
+      "to": "INDEF_ARTICLES",
+      "difficulty": null
+    },
+    {
+      "from": "PLURAL_CONSONANT",
+      "to": "INDEF_ARTICLES",
+      "difficulty": null
+    },
+    {
+      "from": "PLURAL_Z",
+      "to": "INDEF_ARTICLES",
+      "difficulty": null
+    },
+    {
+      "from": "DEF_ARTICLES__2",
+      "to": "NEUTER_LO",
+      "difficulty": null
+    },
+    {
+      "from": "GENDER_REGULAR",
+      "to": "ADJ_AGREEMENT",
+      "difficulty": null
+    },
+    {
+      "from": "GENDER_EXCEPTIONS",
+      "to": "ADJ_AGREEMENT",
+      "difficulty": null
+    },
+    {
+      "from": "GENDER_LEARNED",
+      "to": "ADJ_AGREEMENT",
+      "difficulty": null
+    },
+    {
+      "from": "PLURAL_VOWEL",
+      "to": "ADJ_AGREEMENT",
+      "difficulty": null
+    },
+    {
+      "from": "PLURAL_CONSONANT",
+      "to": "ADJ_AGREEMENT",
+      "difficulty": null
+    },
+    {
+      "from": "PLURAL_Z",
+      "to": "ADJ_AGREEMENT",
+      "difficulty": null
+    },
+    {
+      "from": "ADJ_AGREEMENT",
+      "to": "ADJ_POSITION_DEFAULT",
+      "difficulty": null
+    },
+    {
+      "from": "ADJ_POSITION_DEFAULT",
+      "to": "ADJ_POSITION_PRECEDE",
+      "difficulty": null
+    },
+    {
+      "from": "VERB_CONCEPT",
+      "to": "AR_CONJ",
+      "difficulty": null
+    },
+    {
+      "from": "VERB_CONCEPT",
+      "to": "ER_CONJ",
+      "difficulty": null
+    },
+    {
+      "from": "VERB_CONCEPT",
+      "to": "IR_CONJ",
+      "difficulty": null
+    },
+    {
+      "from": "GERUND_FORM",
+      "to": "ESTAR_PROGRESSIVE",
+      "difficulty": null
+    },
+    {
+      "from": "SER_CHARACTERISTICS",
+      "to": "SER_ESTAR_DISTINCTION",
+      "difficulty": null
+    },
+    {
+      "from": "ESTAR_TEMP_STATE",
+      "to": "SER_ESTAR_DISTINCTION",
+      "difficulty": null
+    },
+    {
+      "from": "ESTAR_LOCATION",
+      "to": "SER_ESTAR_DISTINCTION",
+      "difficulty": null
+    },
+    {
+      "from": "AR_CONJ__3",
+      "to": "NEGATION_NO",
+      "difficulty": null
+    },
+    {
+      "from": "ER_CONJ__3",
+      "to": "NEGATION_NO",
+      "difficulty": null
+    },
+    {
+      "from": "IR_CONJ__3",
+      "to": "NEGATION_NO",
+      "difficulty": null
+    },
+    {
+      "from": "GENDER_NUMBER_AGREEMENT",
+      "to": "POSS_ADJ_AGREEMENT",
+      "difficulty": null
+    },
+    {
+      "from": "GENDER_NUMBER_AGREEMENT",
+      "to": "DESC_AGREEMENT",
+      "difficulty": null
+    },
+    {
+      "from": "PHYS_ADJ__2",
+      "to": "DESC_AGREEMENT",
+      "difficulty": null
+    },
+    {
+      "from": "PERS_ADJ",
+      "to": "DESC_AGREEMENT",
+      "difficulty": null
+    },
+    {
+      "from": "REGULAR_PRESENT_CONCEPT",
+      "to": "IRREGULAR_VERB_CONCEPT",
+      "difficulty": null
+    },
+    {
+      "from": "IRREGULAR_VERB_CONCEPT",
+      "to": "STEM_CHANGE_CONCEPT",
+      "difficulty": null
+    },
+    {
+      "from": "STEM_CHANGE_CONCEPT",
+      "to": "EIE_CHANGE",
+      "difficulty": null
+    },
+    {
+      "from": "STEM_CHANGE_CONCEPT",
+      "to": "OUE_CHANGE",
+      "difficulty": null
+    },
+    {
+      "from": "STEM_CHANGE_CONCEPT",
+      "to": "EI_CHANGE",
+      "difficulty": null
+    },
+    {
+      "from": "INFINITIVE_CONCEPT",
+      "to": "IR_A_INFINITIVE",
+      "difficulty": null
+    },
+    {
+      "from": "INFINITIVE_CONCEPT",
+      "to": "MODAL_CONSTRUCTION",
+      "difficulty": null
+    },
+    {
+      "from": "FOOD_VOCAB__2",
+      "to": "ORDERING_REQUESTS",
+      "difficulty": null
+    },
+    {
+      "from": "QUIERO",
+      "to": "ORDERING_REQUESTS",
+      "difficulty": null
+    },
+    {
+      "from": "ME_GUSTARIA",
+      "to": "ORDERING_REQUESTS",
+      "difficulty": null
+    },
+    {
+      "from": "DE_QUANTITY__2",
+      "to": "QUANTITY_ORDERING",
+      "difficulty": null
+    },
+    {
+      "from": "FOOD_VOCAB__2",
+      "to": "QUANTITY_ORDERING",
+      "difficulty": null
+    },
+    {
+      "from": "ORDERING_REQUESTS",
+      "to": "QUANTITY_ORDERING",
+      "difficulty": null
+    },
+    {
+      "from": "NUMBERS_CARDINAL",
+      "to": "PRICES_NUMBERS",
+      "difficulty": null
+    },
+    {
+      "from": "CURRENCY_VOCAB__2",
+      "to": "PRICES_NUMBERS",
+      "difficulty": null
+    },
+    {
+      "from": "PRICES_NUMBERS",
+      "to": "ASKING_PRICE",
+      "difficulty": null
+    },
+    {
+      "from": "SHOP_VOCAB__2",
+      "to": "ASKING_PRICE",
+      "difficulty": null
+    },
+    {
+      "from": "ASKING_PRICE",
+      "to": "PRICE_EXCHANGE",
+      "difficulty": null
+    },
+    {
+      "from": "PRICES_NUMBERS",
+      "to": "PRICE_EXCHANGE",
+      "difficulty": null
+    },
+    {
+      "from": "ORDINAL_NUMBERS__3",
+      "to": "APOCOPE_RULE",
+      "difficulty": null
+    },
+    {
+      "from": "VERBS_COMPRAR_TOMAR_QUERER__2",
+      "to": "DIRECT_OBJECT_NOUNS",
+      "difficulty": null
+    },
+    {
+      "from": "FOOD_VOCAB__2",
+      "to": "DIRECT_OBJECT_NOUNS",
+      "difficulty": null
+    },
+    {
+      "from": "SHOP_VOCAB__2",
+      "to": "DIRECT_OBJECT_NOUNS",
+      "difficulty": null
+    },
+    {
+      "from": "CONCEPT_COMPLETED_PAST",
+      "to": "TENER_PRET",
+      "difficulty": null
+    },
+    {
+      "from": "CONCEPT_COMPLETED_PAST",
+      "to": "HACER_PRET",
+      "difficulty": null
+    },
+    {
+      "from": "CONCEPT_COMPLETED_PAST",
+      "to": "ESTAR_PRET",
+      "difficulty": null
+    },
+    {
+      "from": "CONCEPT_COMPLETED_PAST",
+      "to": "PODER_PRET",
+      "difficulty": null
+    },
+    {
+      "from": "CONCEPT_COMPLETED_PAST",
+      "to": "DECIR_PRET",
+      "difficulty": null
+    },
+    {
+      "from": "CONCEPT_COMPLETED_PAST",
+      "to": "VENIR_PRET",
+      "difficulty": null
+    },
+    {
+      "from": "USE_SINGLE_ACTION",
+      "to": "USE_SEQUENCE",
+      "difficulty": null
+    },
+    {
+      "from": "USE_SINGLE_ACTION",
+      "to": "USE_DEFINED_PERIOD",
+      "difficulty": null
+    },
+    {
+      "from": "USE_SINGLE_ACTION",
+      "to": "TIME_EXPRESSIONS",
+      "difficulty": null
+    },
+    {
+      "from": "USE_SEQUENCE",
+      "to": "TIME_EXPRESSIONS",
+      "difficulty": null
+    },
+    {
+      "from": "SER_PL__2",
+      "to": "SER_NATIONALITY",
+      "difficulty": null
+    },
+    {
+      "from": "SER_PL__2",
+      "to": "SER_CHARACTERISTICS",
+      "difficulty": null
+    },
+    {
+      "from": "SER_PL__2",
+      "to": "SER_PROFESSION",
+      "difficulty": null
+    },
+    {
+      "from": "SER_PL__2",
+      "to": "SER_TIME",
+      "difficulty": null
+    },
+    {
+      "from": "SER_PL__2",
+      "to": "SER_EVENT_LOCATION",
+      "difficulty": null
+    },
+    {
+      "from": "VERB_CONCEPT",
+      "to": "SER_SG",
+      "difficulty": null
+    },
+    {
+      "from": "ESTAR_PL__2",
+      "to": "ESTAR_LOCATION",
+      "difficulty": null
+    },
+    {
+      "from": "ESTAR_PL__2",
+      "to": "ESTAR_TEMP_STATE",
+      "difficulty": null
+    },
+    {
+      "from": "ESTAR_PL__2",
+      "to": "ESTAR_PROGRESSIVE",
+      "difficulty": null
+    },
+    {
+      "from": "ESTAR_PL__2",
+      "to": "NEGATION_NO",
+      "difficulty": null
+    },
+    {
+      "from": "VERB_CONCEPT",
+      "to": "ESTAR_SG",
+      "difficulty": null
+    },
+    {
+      "from": "PRON_PL__2",
+      "to": "AR_CONJ",
+      "difficulty": null
+    },
+    {
+      "from": "PRON_PL__2",
+      "to": "ER_CONJ",
+      "difficulty": null
+    },
+    {
+      "from": "PRON_PL__2",
+      "to": "IR_CONJ",
+      "difficulty": null
+    },
+    {
+      "from": "PRON_PL__2",
+      "to": "SER_SG",
+      "difficulty": null
+    },
+    {
+      "from": "PRON_PL__2",
+      "to": "ESTAR_SG",
+      "difficulty": null
+    },
+    {
+      "from": "IRREGULAR_VERB_CONCEPT",
+      "to": "HACER_SG",
+      "difficulty": null
+    },
+    {
+      "from": "IRREGULAR_VERB_CONCEPT",
+      "to": "TENER_SG",
+      "difficulty": null
+    },
+    {
+      "from": "PODER_PL__2",
+      "to": "MODAL_CONSTRUCTION",
+      "difficulty": null
+    },
+    {
+      "from": "OUE_CHANGE",
+      "to": "PODER_SG",
+      "difficulty": null
+    },
+    {
+      "from": "QUERER_PL__2",
+      "to": "MODAL_CONSTRUCTION",
+      "difficulty": null
+    },
+    {
+      "from": "EIE_CHANGE",
+      "to": "QUERER_SG",
+      "difficulty": null
+    },
+    {
+      "from": "DEBER_PL__2",
+      "to": "MODAL_CONSTRUCTION",
+      "difficulty": null
+    },
+    {
+      "from": "IRREGULAR_VERB_CONCEPT",
+      "to": "DECIR_SG",
+      "difficulty": null
+    },
+    {
+      "from": "POSS_LONG",
+      "to": "POSS_ADJ_AGREEMENT",
+      "difficulty": null
+    },
+    {
+      "from": "FAM_4",
+      "to": "POSS_SHORT",
+      "difficulty": null
+    },
+    {
+      "from": "PRET_AR_PL__2",
+      "to": "CAR_SPELLING",
+      "difficulty": null
+    },
+    {
+      "from": "PRET_AR_PL__2",
+      "to": "GAR_SPELLING",
+      "difficulty": null
+    },
+    {
+      "from": "PRET_AR_PL__2",
+      "to": "ZAR_SPELLING",
+      "difficulty": null
+    },
+    {
+      "from": "PRET_AR_PL__2",
+      "to": "USE_SINGLE_ACTION",
+      "difficulty": null
+    },
+    {
+      "from": "CONCEPT_COMPLETED_PAST",
+      "to": "PRET_AR_SG",
+      "difficulty": null
+    },
+    {
+      "from": "PRET_ER_PL__2",
+      "to": "USE_SINGLE_ACTION",
+      "difficulty": null
+    },
+    {
+      "from": "CONCEPT_COMPLETED_PAST",
+      "to": "PRET_ER_SG",
+      "difficulty": null
+    },
+    {
+      "from": "SERIR_PRET_PL__2",
+      "to": "SER_IR_CONTEXT",
+      "difficulty": null
+    },
+    {
+      "from": "CONCEPT_COMPLETED_PAST",
+      "to": "SERIR_PRET_SG",
+      "difficulty": null
+    },
+    {
+      "from": "USE_DEFINED_PERIOD",
+      "to": "TIME_EXPRESSIONS",
+      "difficulty": null
+    },
+    {
+      "from": "IMPF_IRREG_SER__3",
+      "to": "IMPF_ONLY_THREE",
+      "difficulty": null
+    },
+    {
+      "from": "IMPF_IRREG_IR__3",
+      "to": "IMPF_ONLY_THREE",
+      "difficulty": null
+    },
+    {
+      "from": "IMPF_IRREG_VER__3",
+      "to": "IMPF_ONLY_THREE",
+      "difficulty": null
+    },
+    {
+      "from": "INDEF_FORM_KNOWLEDGE",
+      "to": "INDEF_USE_SINGLE",
+      "difficulty": null
+    },
+    {
+      "from": "INDEF_FORM_KNOWLEDGE",
+      "to": "INDEF_USE_SEQUENCE",
+      "difficulty": null
+    },
+    {
+      "from": "INDEF_FORM_KNOWLEDGE",
+      "to": "INDEF_USE_DEFINED_PERIOD",
+      "difficulty": null
+    },
+    {
+      "from": "IMPF_USE_BACKGROUND",
+      "to": "CONTRAST_BACKGROUND_INTERRUPT",
+      "difficulty": null
+    },
+    {
+      "from": "IMPF_USE_STATES",
+      "to": "CONTRAST_BACKGROUND_INTERRUPT",
+      "difficulty": null
+    },
+    {
+      "from": "INDEF_USE_SINGLE",
+      "to": "CONTRAST_BACKGROUND_INTERRUPT",
+      "difficulty": null
+    },
+    {
+      "from": "CONJ_VERB_KNOWLEDGE",
+      "to": "DOP_PLACEMENT",
+      "difficulty": null
+    },
+    {
+      "from": "OBJ_CONCEPT",
+      "to": "IND_OBJ_CONCEPT",
+      "difficulty": null
+    },
+    {
+      "from": "IOP_VERBS__2",
+      "to": "GUSTAR_CONSTRUCTION",
+      "difficulty": null
+    },
+    {
+      "from": "REFLEX_VERB_CONCEPT",
+      "to": "REFLEX_FORMATION",
+      "difficulty": null
+    },
+    {
+      "from": "CONJ_VERB_KNOWLEDGE",
+      "to": "REFLEX_FORMATION",
+      "difficulty": null
+    },
+    {
+      "from": "DOP_PLACEMENT",
+      "to": "PRONOUN_ATTACH_INFINITIVE",
+      "difficulty": null
+    },
+    {
+      "from": "REFLEX_FORMATION",
+      "to": "PRONOUN_ATTACH_INFINITIVE",
+      "difficulty": null
+    },
+    {
+      "from": "INFINITIVE_KNOWLEDGE",
+      "to": "PRONOUN_ATTACH_INFINITIVE",
+      "difficulty": null
+    },
+    {
+      "from": "DOP_PLACEMENT",
+      "to": "PRONOUN_ATTACH_GERUND",
+      "difficulty": null
+    },
+    {
+      "from": "REFLEX_FORMATION",
+      "to": "PRONOUN_ATTACH_GERUND",
+      "difficulty": null
+    },
+    {
+      "from": "GERUND_KNOWLEDGE",
+      "to": "PRONOUN_ATTACH_GERUND",
+      "difficulty": null
+    },
+    {
+      "from": "DOP_PLACEMENT",
+      "to": "PRONOUN_ATTACH_IMPERATIVE",
+      "difficulty": null
+    },
+    {
+      "from": "REFLEX_FORMATION",
+      "to": "PRONOUN_ATTACH_IMPERATIVE",
+      "difficulty": null
+    },
+    {
+      "from": "IMPERATIVE_KNOWLEDGE",
+      "to": "PRONOUN_ATTACH_IMPERATIVE",
+      "difficulty": null
+    },
+    {
+      "from": "REFLEX_FORMATION",
+      "to": "REFLEX_PRETERITO",
+      "difficulty": null
+    },
+    {
+      "from": "PRETERITO_INDEFINIDO",
+      "to": "REFLEX_PRETERITO",
+      "difficulty": null
+    },
+    {
+      "from": "ADJ_ADV_BASE",
+      "to": "COMP_MAJ",
+      "difficulty": null
+    },
+    {
+      "from": "ADJ_ADV_BASE",
+      "to": "COMP_MIN",
+      "difficulty": null
+    },
+    {
+      "from": "ADJ_ADV_BASE",
+      "to": "COMP_EQ_ADJ",
+      "difficulty": null
+    },
+    {
+      "from": "ADJ_ADV_BASE",
+      "to": "COMP_EQ_NOUN",
+      "difficulty": null
+    },
+    {
+      "from": "COMP_MAJ",
+      "to": "IRR_COMP_MEJOR_PEOR",
+      "difficulty": null
+    },
+    {
+      "from": "COMP_MIN",
+      "to": "IRR_COMP_MEJOR_PEOR",
+      "difficulty": null
+    },
+    {
+      "from": "COMP_MAJ",
+      "to": "IRR_COMP_MAYOR_MENOR",
+      "difficulty": null
+    },
+    {
+      "from": "COMP_MIN",
+      "to": "IRR_COMP_MAYOR_MENOR",
+      "difficulty": null
+    },
+    {
+      "from": "COMP_MAJ",
+      "to": "REL_SUPERLATIVE",
+      "difficulty": null
+    },
+    {
+      "from": "ADJ_ADV_BASE",
+      "to": "ABS_SUPERLATIVE_ISIMO",
+      "difficulty": null
+    },
+    {
+      "from": "ADJ_ADV_BASE",
+      "to": "ABS_SUPERLATIVE_MUY",
+      "difficulty": null
+    },
+    {
+      "from": "FUT_REGULAR_FORMATION",
+      "to": "FUT_USE_PREDICTION",
+      "difficulty": null
+    },
+    {
+      "from": "FUT_USE_PREDICTION",
+      "to": "FUT_USE_PROBABILITY",
+      "difficulty": null
+    },
+    {
+      "from": "Q_WORDS_LOC",
+      "to": "GIVING_DIRECTIONS",
+      "difficulty": null
+    },
+    {
+      "from": "VERB_INFINITIVE_CONCEPT",
+      "to": "PRESENT_TENSE_TU_USTED",
+      "difficulty": null
+    },
+    {
+      "from": "PRESENT_TENSE_TU_USTED",
+      "to": "IMPERATIVE_TU",
+      "difficulty": null
+    },
+    {
+      "from": "PRESENT_TENSE_TU_USTED",
+      "to": "IMPERATIVE_USTED",
+      "difficulty": null
+    },
+    {
+      "from": "IMPERATIVE_TU",
+      "to": "GIVING_DIRECTIONS",
+      "difficulty": null
+    },
+    {
+      "from": "IMPERATIVE_USTED",
+      "to": "GIVING_DIRECTIONS",
+      "difficulty": null
+    },
+    {
+      "from": "PREP_A",
+      "to": "PREPS_TRANSPORT_USE",
+      "difficulty": null
+    },
+    {
+      "from": "PREP_EN",
+      "to": "PREPS_TRANSPORT_USE",
+      "difficulty": null
+    },
+    {
+      "from": "PREP_DE",
+      "to": "PREPS_TRANSPORT_USE",
+      "difficulty": null
+    },
+    {
+      "from": "PREP_PARA",
+      "to": "PREPS_TRANSPORT_USE",
+      "difficulty": null
+    },
+    {
+      "from": "PREP_POR",
+      "to": "PREPS_TRANSPORT_USE",
+      "difficulty": null
+    },
+    {
+      "from": "BODY_PARTS__4",
+      "to": "HEALTH_EXPRESSIONS",
+      "difficulty": null
+    },
+    {
+      "from": "REFLEXIVE_VERBS",
+      "to": "HEALTH_EXPRESSIONS",
+      "difficulty": null
+    },
+    {
+      "from": "GUSTAR_LIKE_VERBS",
+      "to": "HEALTH_EXPRESSIONS",
+      "difficulty": null
+    },
+    {
+      "from": "VERB_INFINITIVE_CONCEPT",
+      "to": "QUERER_CONDITIONAL",
+      "difficulty": null
+    },
+    {
+      "from": "GUSTAR_LIKE_VERBS",
+      "to": "APETECER_STRUCTURE",
+      "difficulty": null
+    },
+    {
+      "from": "QUERER_CONDITIONAL",
+      "to": "MAKING_INVITATIONS",
+      "difficulty": null
+    },
+    {
+      "from": "APETECER_STRUCTURE",
+      "to": "MAKING_INVITATIONS",
+      "difficulty": null
+    },
+    {
+      "from": "MAKING_INVITATIONS",
+      "to": "ACCEPTING_DECLINING",
+      "difficulty": null
+    },
+    {
+      "from": "MAKING_INVITATIONS",
+      "to": "DISCUSSING_FUTURE_PLANS",
+      "difficulty": null
+    },
+    {
+      "from": "ACCEPTING_DECLINING",
+      "to": "DISCUSSING_FUTURE_PLANS",
+      "difficulty": null
+    },
+    {
+      "from": "FUTURE_TIME_EXPRESSIONS__2",
+      "to": "DISCUSSING_FUTURE_PLANS",
+      "difficulty": null
+    },
+    {
+      "from": "FUT_STEMS__2",
+      "to": "PRES_COND_FORM",
+      "difficulty": null
+    },
+    {
+      "from": "INFINITIVE",
+      "to": "PRES_COND_FORM",
+      "difficulty": null
+    },
+    {
+      "from": "PRES_COND_FORM__3",
+      "to": "HABER_PRESENT_COND",
+      "difficulty": null
+    },
+    {
+      "from": "HABER_PRESENT_COND__3",
+      "to": "PERF_COND_FORM",
+      "difficulty": null
+    },
+    {
+      "from": "PAST_PARTICIPLE",
+      "to": "PERF_COND_FORM",
+      "difficulty": null
+    },
+    {
+      "from": "PRES_COND_FORM__3",
+      "to": "PRES_COND_POLITE",
+      "difficulty": null
+    },
+    {
+      "from": "PRES_COND_FORM__3",
+      "to": "PRES_COND_ADVICE",
+      "difficulty": null
+    },
+    {
+      "from": "PRES_COND_FORM__3",
+      "to": "PRES_COND_WISH",
+      "difficulty": null
+    },
+    {
+      "from": "PRES_COND_FORM__3",
+      "to": "PRES_COND_HEDGE",
+      "difficulty": null
+    },
+    {
+      "from": "PERF_COND_FORM",
+      "to": "PERF_COND_UNFULFILLED",
+      "difficulty": null
+    },
+    {
+      "from": "PERF_COND_FORM",
+      "to": "PERF_COND_REPORTED",
+      "difficulty": null
+    },
+    {
+      "from": "MODAL_PRESENT__2",
+      "to": "MODAL_COND_SOFTEN",
+      "difficulty": null
+    },
+    {
+      "from": "PRES_COND_POLITE",
+      "to": "MODAL_COND_SOFTEN",
+      "difficulty": null
+    },
+    {
+      "from": "PRES_COND_ADVICE",
+      "to": "MODAL_COND_SOFTEN",
+      "difficulty": null
+    },
+    {
+      "from": "IMPF_AR_PL__2",
+      "to": "IMPF_IRREG_IR",
+      "difficulty": null
+    },
+    {
+      "from": "IMPF_AR_PL__2",
+      "to": "IMPF_IRREG_VER",
+      "difficulty": null
+    },
+    {
+      "from": "IMPF_AR_PL__2",
+      "to": "IMPF_USE_HABITUAL",
+      "difficulty": null
+    },
+    {
+      "from": "IMPF_AR_PL__2",
+      "to": "IMPF_USE_BACKGROUND",
+      "difficulty": null
+    },
+    {
+      "from": "IMPF_AR_PL__2",
+      "to": "IMPF_USE_STATES",
+      "difficulty": null
+    },
+    {
+      "from": "IMPF_ER_PL__2",
+      "to": "IMPF_IRREG_IR",
+      "difficulty": null
+    },
+    {
+      "from": "IMPF_ER_PL__2",
+      "to": "IMPF_IRREG_VER",
+      "difficulty": null
+    },
+    {
+      "from": "IMPF_ER_PL__2",
+      "to": "IMPF_USE_HABITUAL",
+      "difficulty": null
+    },
+    {
+      "from": "IMPF_ER_PL__2",
+      "to": "IMPF_USE_BACKGROUND",
+      "difficulty": null
+    },
+    {
+      "from": "IMPF_ER_PL__2",
+      "to": "IMPF_USE_STATES",
+      "difficulty": null
+    },
+    {
+      "from": "FUT_END_PL__2",
+      "to": "FUT_REGULAR_FORMATION",
+      "difficulty": null
+    },
+    {
+      "from": "INFINITIVE_KNOWLEDGE_FUT",
+      "to": "FUT_END_SG",
+      "difficulty": null
+    },
+    {
+      "from": "FUT_REGULAR_FORMATION",
+      "to": "FUT_STEM_1",
+      "difficulty": null
+    },
+    {
+      "from": "REFL_2__2",
+      "to": "REFLEX_VERB_CONCEPT",
+      "difficulty": null
+    },
+    {
+      "from": "DOBJ_2__2",
+      "to": "DOP_PLACEMENT",
+      "difficulty": null
+    },
+    {
+      "from": "OBJ_CONCEPT",
+      "to": "DOBJ_1",
+      "difficulty": null
+    },
+    {
+      "from": "IOBJ_2__2",
+      "to": "IOP_VERBS",
+      "difficulty": null
+    },
+    {
+      "from": "IND_OBJ_CONCEPT",
+      "to": "IOBJ_1",
+      "difficulty": null
+    },
+    {
+      "from": "DIR_2__2",
+      "to": "GIVING_DIRECTIONS",
+      "difficulty": null
+    },
+    {
+      "from": "TRAVEL_2",
+      "to": "PREPS_TRANSPORT_USE",
+      "difficulty": null
+    },
+    {
+      "from": "PRES_COND_WISH",
+      "to": "COND_TIME_REFERENCE",
+      "difficulty": null
+    },
+    {
+      "from": "PERF_COND_UNFULFILLED",
+      "to": "COND_TIME_REFERENCE",
+      "difficulty": null
+    },
+    {
+      "from": "PERF_COND_REPORTED",
+      "to": "COND_TIME_REFERENCE",
+      "difficulty": null
+    },
+    {
+      "from": "COMBINE_ORDER__2",
+      "to": "LE_LES_TO_SE",
+      "difficulty": null
+    },
+    {
+      "from": "LE_LES_TO_SE",
+      "to": "NO_LELO",
+      "difficulty": null
+    },
+    {
+      "from": "COMBINE_ORDER__2",
+      "to": "DERIVE_FORM",
+      "difficulty": null
+    },
+    {
+      "from": "LE_LES_TO_SE",
+      "to": "DERIVE_FORM",
+      "difficulty": null
+    },
+    {
+      "from": "NO_LELO",
+      "to": "DERIVE_FORM",
+      "difficulty": null
+    },
+    {
+      "from": "DERIVE_FORM",
+      "to": "PLACE_BEFORE_CONJ",
+      "difficulty": null
+    },
+    {
+      "from": "VERB_CONJ",
+      "to": "PLACE_BEFORE_CONJ",
+      "difficulty": null
+    },
+    {
+      "from": "DERIVE_FORM",
+      "to": "PLACE_ATTACH_INF",
+      "difficulty": null
+    },
+    {
+      "from": "INFINITIVE_PRONOUN_BASE",
+      "to": "PLACE_ATTACH_INF",
+      "difficulty": null
+    },
+    {
+      "from": "DERIVE_FORM",
+      "to": "PLACE_ATTACH_GER",
+      "difficulty": null
+    },
+    {
+      "from": "GERUND",
+      "to": "PLACE_ATTACH_GER",
+      "difficulty": null
+    },
+    {
+      "from": "DERIVE_FORM",
+      "to": "PLACE_ATTACH_IMP",
+      "difficulty": null
+    },
+    {
+      "from": "IMPERATIVE_AFF",
+      "to": "PLACE_ATTACH_IMP",
+      "difficulty": null
+    },
+    {
+      "from": "PLACE_ATTACH_INF",
+      "to": "ACCENT_SHIFT",
+      "difficulty": null
+    },
+    {
+      "from": "PLACE_ATTACH_GER",
+      "to": "ACCENT_SHIFT",
+      "difficulty": null
+    },
+    {
+      "from": "PLACE_ATTACH_IMP",
+      "to": "ACCENT_SHIFT",
+      "difficulty": null
+    },
+    {
+      "from": "COMPOUND_TENSE_HABER",
+      "to": "PARTICIPLE_INVARIABLE",
+      "difficulty": null
+    },
+    {
+      "from": "DERIVE_FORM",
+      "to": "PARTICIPLE_INVARIABLE",
+      "difficulty": null
+    },
+    {
+      "from": "ANTECEDENT",
+      "to": "QUE_REL",
+      "difficulty": null
+    },
+    {
+      "from": "ANTECEDENT",
+      "to": "QUIEN_REL",
+      "difficulty": null
+    },
+    {
+      "from": "ANTECEDENT",
+      "to": "ELQUE_REL",
+      "difficulty": null
+    },
+    {
+      "from": "PREP_PHRASE",
+      "to": "QUIEN_REL",
+      "difficulty": null
+    },
+    {
+      "from": "ARTICLE_ADJ_AGREEMENT_B1",
+      "to": "ELQUE_REL",
+      "difficulty": null
+    },
+    {
+      "from": "ELQUE_REL",
+      "to": "ELQUE_DISAMBIG",
+      "difficulty": null
+    },
+    {
+      "from": "ANTECEDENT",
+      "to": "LOQUE_REL",
+      "difficulty": null
+    },
+    {
+      "from": "CLAUSE_JOIN",
+      "to": "COMPLEX_SENT_FORM",
+      "difficulty": null
+    },
+    {
+      "from": "QUE_REL",
+      "to": "COMPLEX_SENT_FORM",
+      "difficulty": null
+    },
+    {
+      "from": "QUIEN_REL",
+      "to": "COMPLEX_SENT_FORM",
+      "difficulty": null
+    },
+    {
+      "from": "ELQUE_REL",
+      "to": "COMPLEX_SENT_FORM",
+      "difficulty": null
+    },
+    {
+      "from": "LOQUE_REL",
+      "to": "COMPLEX_SENT_FORM",
+      "difficulty": null
+    },
+    {
+      "from": "COMPLEX_SENT_FORM",
+      "to": "AVOID_NOUN_REPEAT_ERROR",
+      "difficulty": null
+    },
+    {
+      "from": "COMPLEX_SENT_FORM",
+      "to": "RESTRICTIVE_CLAUSE",
+      "difficulty": null
+    },
+    {
+      "from": "COMPLEX_SENT_FORM",
+      "to": "NONRESTRICTIVE_CLAUSE",
+      "difficulty": null
+    },
+    {
+      "from": "RESTRICTIVE_CLAUSE",
+      "to": "DISTINGUISH_CLAUSE_TYPES",
+      "difficulty": null
+    },
+    {
+      "from": "NONRESTRICTIVE_CLAUSE",
+      "to": "DISTINGUISH_CLAUSE_TYPES",
+      "difficulty": null
+    },
+    {
+      "from": "TWO_CLAUSE_STRUCTURE",
+      "to": "DIFFERENT_SUBJECTS",
+      "difficulty": null
+    },
+    {
+      "from": "TWO_CLAUSE_STRUCTURE",
+      "to": "SAME_SUBJECT",
+      "difficulty": null
+    },
+    {
+      "from": "DIFFERENT_SUBJECTS",
+      "to": "WISH_TRIGGERS",
+      "difficulty": null
+    },
+    {
+      "from": "DIFFERENT_SUBJECTS",
+      "to": "EMOTION_TRIGGERS",
+      "difficulty": null
+    },
+    {
+      "from": "DIFFERENT_SUBJECTS",
+      "to": "DOUBT_TRIGGERS",
+      "difficulty": null
+    },
+    {
+      "from": "DIFFERENT_SUBJECTS",
+      "to": "NECESSITY_TRIGGERS",
+      "difficulty": null
+    },
+    {
+      "from": "NECESSITY_TRIGGERS",
+      "to": "IMPERSONAL_TRIGGERS",
+      "difficulty": null
+    },
+    {
+      "from": "DOUBT_TRIGGERS",
+      "to": "CREO_QUE_INDICATIVE",
+      "difficulty": null
+    },
+    {
+      "from": "CREO_QUE_INDICATIVE",
+      "to": "NO_CREO_QUE_EXCEPTION",
+      "difficulty": null
+    },
+    {
+      "from": "DOUBT_TRIGGERS",
+      "to": "NO_CREO_QUE_EXCEPTION",
+      "difficulty": null
+    },
+    {
+      "from": "SAME_SUBJECT",
+      "to": "INFINITIVE_REPLACEMENT",
+      "difficulty": null
+    },
+    {
+      "from": "WISH_TRIGGERS",
+      "to": "INFINITIVE_REPLACEMENT",
+      "difficulty": null
+    },
+    {
+      "from": "PAST_PART",
+      "to": "PASSIVE_FORM",
+      "difficulty": null
+    },
+    {
+      "from": "SER_CONJ_ALL_TENSES",
+      "to": "PASSIVE_FORM",
+      "difficulty": null
+    },
+    {
+      "from": "SUBJ_AGREEMENT",
+      "to": "PASSIVE_FORM",
+      "difficulty": null
+    },
+    {
+      "from": "PASSIVE_FORM",
+      "to": "POR_AGENT",
+      "difficulty": null
+    },
+    {
+      "from": "REFLEXIVE_SE",
+      "to": "SE_PASIVA",
+      "difficulty": null
+    },
+    {
+      "from": "THIRD_PERSON_VERB",
+      "to": "SE_PASIVA",
+      "difficulty": null
+    },
+    {
+      "from": "SUBJ_AGREEMENT",
+      "to": "SE_PASIVA",
+      "difficulty": null
+    },
+    {
+      "from": "AGENT_UNKNOWN_UNIMPORTANT",
+      "to": "SE_PASIVA",
+      "difficulty": null
+    },
+    {
+      "from": "REFLEXIVE_SE",
+      "to": "SE_IMPERSONAL",
+      "difficulty": null
+    },
+    {
+      "from": "THIRD_PERSON_VERB",
+      "to": "SE_IMPERSONAL",
+      "difficulty": null
+    },
+    {
+      "from": "GENERAL_STATEMENTS",
+      "to": "SE_IMPERSONAL",
+      "difficulty": null
+    },
+    {
+      "from": "SE_PASIVA",
+      "to": "DISTINGUISH_PASIVA_IMPERSONAL",
+      "difficulty": null
+    },
+    {
+      "from": "SE_IMPERSONAL",
+      "to": "DISTINGUISH_PASIVA_IMPERSONAL",
+      "difficulty": null
+    },
+    {
+      "from": "PASSIVE_FORM",
+      "to": "STYLISTIC_PREFERENCE",
+      "difficulty": null
+    },
+    {
+      "from": "SE_PASIVA",
+      "to": "STYLISTIC_PREFERENCE",
+      "difficulty": null
+    },
+    {
+      "from": "SE_IMPERSONAL",
+      "to": "STYLISTIC_PREFERENCE",
+      "difficulty": null
+    },
+    {
+      "from": "REGISTER_FORMALITY",
+      "to": "STYLISTIC_PREFERENCE",
+      "difficulty": null
+    },
+    {
+      "from": "PAST_PARTICIPLE_B2__2",
+      "to": "PERF_SUBJ_FORM",
+      "difficulty": null
+    },
+    {
+      "from": "PERF_SUBJ_FORM",
+      "to": "PERF_SUBJ_USE",
+      "difficulty": null
+    },
+    {
+      "from": "PRES_SUBJ_TRIGGERS__2",
+      "to": "PERF_SUBJ_USE",
+      "difficulty": null
+    },
+    {
+      "from": "PRES_SUBJ_TRIGGERS__2",
+      "to": "IMPF_SUBJ_USE",
+      "difficulty": null
+    },
+    {
+      "from": "PAST_PARTICIPLE_B2__2",
+      "to": "PLUP_SUBJ_FORM",
+      "difficulty": null
+    },
+    {
+      "from": "IMPF_SUBJ_HABER__3",
+      "to": "PLUP_SUBJ_FORM",
+      "difficulty": null
+    },
+    {
+      "from": "PLUP_SUBJ_FORM",
+      "to": "PLUP_SUBJ_USE",
+      "difficulty": null
+    },
+    {
+      "from": "PRES_SUBJ_TRIGGERS__2",
+      "to": "PLUP_SUBJ_USE",
+      "difficulty": null
+    },
+    {
+      "from": "PERF_SUBJ_USE",
+      "to": "SECUENCIA_TIEMPOS",
+      "difficulty": null
+    },
+    {
+      "from": "IMPF_SUBJ_USE",
+      "to": "SECUENCIA_TIEMPOS",
+      "difficulty": null
+    },
+    {
+      "from": "PLUP_SUBJ_USE",
+      "to": "SECUENCIA_TIEMPOS",
+      "difficulty": null
+    },
+    {
+      "from": "PRES_IND",
+      "to": "ZERO_COND",
+      "difficulty": null
+    },
+    {
+      "from": "PRES_IND",
+      "to": "TYPE1",
+      "difficulty": null
+    },
+    {
+      "from": "FUTURE",
+      "to": "TYPE1",
+      "difficulty": null
+    },
+    {
+      "from": "IMPERATIVE",
+      "to": "TYPE1",
+      "difficulty": null
+    },
+    {
+      "from": "IMPF_SUBJ",
+      "to": "TYPE2",
+      "difficulty": null
+    },
+    {
+      "from": "DOBJ_PL__2",
+      "to": "COMBINE_ORDER",
+      "difficulty": null
+    },
+    {
+      "from": "DOBJ_PL__2",
+      "to": "LO_NEUTER",
+      "difficulty": null
+    },
+    {
+      "from": "SUBJ_AR_PL__2",
+      "to": "STEM_CHANGE_CARRY",
+      "difficulty": null
+    },
+    {
+      "from": "REGULAR_PRESENT_INDICATIVE",
+      "to": "SUBJ_AR_SG",
+      "difficulty": null
+    },
+    {
+      "from": "SUBJ_ER_PL__2",
+      "to": "STEM_CHANGE_CARRY",
+      "difficulty": null
+    },
+    {
+      "from": "REGULAR_PRESENT_INDICATIVE",
+      "to": "SUBJ_ER_SG",
+      "difficulty": null
+    },
+    {
+      "from": "SUBJ_AR_PL__2",
+      "to": "SUBJ_STEM_1",
+      "difficulty": null
+    },
+    {
+      "from": "HABER_SUBJ_PL__2",
+      "to": "PERF_SUBJ_FORM",
+      "difficulty": null
+    },
+    {
+      "from": "IMPSUBJ_RA_PL__2",
+      "to": "IMPF_SUBJ_REGISTER",
+      "difficulty": null
+    },
+    {
+      "from": "IMPSUBJ_RA_PL__2",
+      "to": "IMPF_SUBJ_USE",
+      "difficulty": null
+    },
+    {
+      "from": "IMPSUBJ_SE_PL__2",
+      "to": "IMPF_SUBJ_REGISTER",
+      "difficulty": null
+    },
+    {
+      "from": "IMPSUBJ_SE_PL__2",
+      "to": "IMPF_SUBJ_USE",
+      "difficulty": null
+    },
+    {
+      "from": "PRES_COND",
+      "to": "TYPE2",
+      "difficulty": null
+    },
+    {
+      "from": "TYPE2",
+      "to": "TYPE2_ERROR",
+      "difficulty": null
+    },
+    {
+      "from": "PRES_COND",
+      "to": "TYPE2_ERROR",
+      "difficulty": null
+    },
+    {
+      "from": "PLUP_SUBJ",
+      "to": "TYPE3",
+      "difficulty": null
+    },
+    {
+      "from": "PERF_COND",
+      "to": "TYPE3",
+      "difficulty": null
+    },
+    {
+      "from": "TYPE1",
+      "to": "CLAUSE_PAIRING",
+      "difficulty": null
+    },
+    {
+      "from": "TYPE2",
+      "to": "CLAUSE_PAIRING",
+      "difficulty": null
+    },
+    {
+      "from": "TYPE3",
+      "to": "CLAUSE_PAIRING",
+      "difficulty": null
+    },
+    {
+      "from": "CLAUSE_PAIRING",
+      "to": "MIXED_HYPOTHETICAL",
+      "difficulty": null
+    },
+    {
+      "from": "PLUP_SUBJ",
+      "to": "MIXED_HYPOTHETICAL",
+      "difficulty": null
+    },
+    {
+      "from": "PRES_COND",
+      "to": "MIXED_HYPOTHETICAL",
+      "difficulty": null
+    },
+    {
+      "from": "direct_speech",
+      "to": "reporting_verbs",
+      "difficulty": null
+    },
+    {
+      "from": "reporting_verbs__2",
+      "to": "reporting_verb_past",
+      "difficulty": null
+    },
+    {
+      "from": "reporting_verbs__2",
+      "to": "reporting_verb_present",
+      "difficulty": null
+    },
+    {
+      "from": "past_tenses__2",
+      "to": "backshift_present_imperfecto",
+      "difficulty": null
+    },
+    {
+      "from": "present_tense",
+      "to": "backshift_present_imperfecto",
+      "difficulty": null
+    },
+    {
+      "from": "reporting_verb_past",
+      "to": "backshift_present_imperfecto",
+      "difficulty": null
+    },
+    {
+      "from": "past_tenses__2",
+      "to": "backshift_preterito_pluscuamperfecto",
+      "difficulty": null
+    },
+    {
+      "from": "reporting_verb_past",
+      "to": "backshift_preterito_pluscuamperfecto",
+      "difficulty": null
+    },
+    {
+      "from": "future_tense",
+      "to": "backshift_future_conditional",
+      "difficulty": null
+    },
+    {
+      "from": "conditional_tense",
+      "to": "backshift_future_conditional",
+      "difficulty": null
+    },
+    {
+      "from": "reporting_verb_past",
+      "to": "backshift_future_conditional",
+      "difficulty": null
+    },
+    {
+      "from": "reporting_verb_present",
+      "to": "no_backshift_present_reporting",
+      "difficulty": null
+    },
+    {
+      "from": "present_tense",
+      "to": "no_backshift_present_reporting",
+      "difficulty": null
+    },
+    {
+      "from": "subject_pronouns__2",
+      "to": "perspective_shift",
+      "difficulty": null
+    },
+    {
+      "from": "possessive_adjectives__2",
+      "to": "perspective_shift",
+      "difficulty": null
+    },
+    {
+      "from": "reporting_verbs__2",
+      "to": "perspective_shift",
+      "difficulty": null
+    },
+    {
+      "from": "perspective_shift",
+      "to": "pronoun_possessive_changes",
+      "difficulty": null
+    },
+    {
+      "from": "time_expressions__2",
+      "to": "adverb_time_changes",
+      "difficulty": null
+    },
+    {
+      "from": "perspective_shift",
+      "to": "adverb_time_changes",
+      "difficulty": null
+    },
+    {
+      "from": "reporting_verbs__2",
+      "to": "adverb_time_changes",
+      "difficulty": null
+    },
+    {
+      "from": "yes_no_questions",
+      "to": "reporting_yes_no_si",
+      "difficulty": null
+    },
+    {
+      "from": "reporting_verbs__2",
+      "to": "reporting_yes_no_si",
+      "difficulty": null
+    },
+    {
+      "from": "wh_questions",
+      "to": "reporting_wh_questions",
+      "difficulty": null
+    },
+    {
+      "from": "question_word_order",
+      "to": "reporting_wh_questions",
+      "difficulty": null
+    },
+    {
+      "from": "statement_word_order",
+      "to": "reporting_wh_questions",
+      "difficulty": null
+    },
+    {
+      "from": "reporting_verbs__2",
+      "to": "reporting_wh_questions",
+      "difficulty": null
+    },
+    {
+      "from": "regverb_ar_er_ir",
+      "to": "gerundio_formation_regular",
+      "difficulty": null
+    },
+    {
+      "from": "preterite_stem_irregular__2",
+      "to": "gerundio_formation_irregular",
+      "difficulty": null
+    },
+    {
+      "from": "gerundio_formation_regular",
+      "to": "gerundio_formation_irregular",
+      "difficulty": null
+    },
+    {
+      "from": "gerundio_formation_regular",
+      "to": "gerundio_progressive",
+      "difficulty": null
+    },
+    {
+      "from": "gerundio_formation_irregular__2",
+      "to": "gerundio_progressive",
+      "difficulty": null
+    },
+    {
+      "from": "estar_conjugation",
+      "to": "gerundio_progressive",
+      "difficulty": null
+    },
+    {
+      "from": "gerundio_formation_regular",
+      "to": "gerundio_adverbial",
+      "difficulty": null
+    },
+    {
+      "from": "gerundio_formation_irregular__2",
+      "to": "gerundio_adverbial",
+      "difficulty": null
+    },
+    {
+      "from": "subordinating_conjunctions_basic",
+      "to": "gerundio_adverbial",
+      "difficulty": null
+    },
+    {
+      "from": "gerundio_formation_regular",
+      "to": "gerundio_pronoun_attachment",
+      "difficulty": null
+    },
+    {
+      "from": "gerundio_formation_irregular__2",
+      "to": "gerundio_pronoun_attachment",
+      "difficulty": null
+    },
+    {
+      "from": "direct_object_pronouns",
+      "to": "gerundio_pronoun_attachment",
+      "difficulty": null
+    },
+    {
+      "from": "written_accent_rules",
+      "to": "gerundio_pronoun_attachment",
+      "difficulty": null
+    },
+    {
+      "from": "indicative_mood_basic",
+      "to": "connector_aunque_indicative",
+      "difficulty": null
+    },
+    {
+      "from": "subjunctive_mood_basic",
+      "to": "connector_aunque_subjunctive",
+      "difficulty": null
+    },
+    {
+      "from": "tu_usted_forms",
+      "to": "formal_register_usted_preference",
+      "difficulty": null
+    },
+    {
+      "from": "colloquialisms_awareness",
+      "to": "formal_register_avoid_colloquialisms",
+      "difficulty": null
+    },
+    {
+      "from": "impersonal_se_construction",
+      "to": "formal_register_impersonal_se_passive",
+      "difficulty": null
+    },
+    {
+      "from": "passive_voice_construction",
+      "to": "formal_register_impersonal_se_passive",
+      "difficulty": null
+    },
+    {
+      "from": "tu_usted_forms",
+      "to": "formal_register_impersonal_se_passive",
+      "difficulty": null
+    },
+    {
+      "from": "thesis_statement_concept",
+      "to": "argumentative_paragraph_structure",
+      "difficulty": null
+    },
+    {
+      "from": "connector_sin_embargo",
+      "to": "argumentative_paragraph_structure",
+      "difficulty": null
+    },
+    {
+      "from": "connector_a_pesar_de_que",
+      "to": "argumentative_paragraph_structure",
+      "difficulty": null
+    },
+    {
+      "from": "connector_aunque_indicative",
+      "to": "argumentative_paragraph_structure",
+      "difficulty": null
+    },
+    {
+      "from": "connector_aunque_subjunctive",
+      "to": "argumentative_paragraph_structure",
+      "difficulty": null
+    },
+    {
+      "from": "connector_por_lo_tanto",
+      "to": "argumentative_paragraph_structure",
+      "difficulty": null
+    },
+    {
+      "from": "connector_ademas",
+      "to": "argumentative_paragraph_structure",
+      "difficulty": null
+    },
+    {
+      "from": "concluding_connectors",
+      "to": "argumentative_paragraph_structure",
+      "difficulty": null
+    },
+    {
+      "from": "formal_register_usted_preference",
+      "to": "argumentative_paragraph_structure",
+      "difficulty": null
+    },
+    {
+      "from": "formal_register_avoid_colloquialisms",
+      "to": "argumentative_paragraph_structure",
+      "difficulty": null
+    },
+    {
+      "from": "formal_register_impersonal_se_passive",
+      "to": "argumentative_paragraph_structure",
+      "difficulty": null
+    },
+    {
+      "from": "subj_pronouns__5",
+      "to": "self_intro",
+      "difficulty": null
+    },
+    {
+      "from": "ADJ_AGREEMENT",
+      "to": "nationality_agreement",
+      "difficulty": null
+    },
+    {
+      "from": "question_words__4",
+      "to": "AGE_ASK",
+      "difficulty": null
+    },
+    {
+      "from": "question_words__4",
+      "to": "TIME_QUEHORA",
+      "difficulty": null
+    },
+    {
+      "from": "DEF_ARTICLES__2",
+      "to": "TIME_ES_LA_UNA",
+      "difficulty": null
+    },
+    {
+      "from": "DEF_ARTICLES__2",
+      "to": "TIME_SON_LAS",
+      "difficulty": null
+    },
+    {
+      "from": "question_words__4",
+      "to": "DAYS_ASKSTATE",
+      "difficulty": null
+    },
+    {
+      "from": "SER_QHORA",
+      "to": "DAYS_ASKSTATE",
+      "difficulty": null
+    },
+    {
+      "from": "DEF_ARTICLES__2",
+      "to": "DATE_PATTERN",
+      "difficulty": null
+    },
+    {
+      "from": "DEF_ARTICLES__2",
+      "to": "SEASONS",
+      "difficulty": null
+    },
+    {
+      "from": "ADJ_AGREEMENT",
+      "to": "NEUTER_LO",
+      "difficulty": null
+    },
+    {
+      "from": "ADJ_AGREEMENT",
+      "to": "GENDER_NUMBER_AGREEMENT",
+      "difficulty": null
+    },
+    {
+      "from": "SER_QHORA",
+      "to": "SER_TIME",
+      "difficulty": null
+    },
+    {
+      "from": "TIME_SON_LAS",
+      "to": "SER_TIME",
+      "difficulty": null
+    },
+    {
+      "from": "nationality_agreement__2",
+      "to": "SER_NATIONALITY",
+      "difficulty": null
+    },
+    {
+      "from": "VERB_CONCEPT",
+      "to": "GERUND_FORM",
+      "difficulty": null
+    },
+    {
+      "from": "GERUND_FORM",
+      "to": "gerundio_formation_regular",
+      "difficulty": null
+    },
+    {
+      "from": "SER_IDENTITY",
+      "to": "SER_ESTAR_DISTINCTION",
+      "difficulty": null
+    },
+    {
+      "from": "SER_PROFESSION",
+      "to": "SER_ESTAR_DISTINCTION",
+      "difficulty": null
+    },
+    {
+      "from": "SER_EVENT_LOCATION",
+      "to": "SER_ESTAR_DISTINCTION",
+      "difficulty": null
+    },
+    {
+      "from": "REFLEX_EXAMPLES__3",
+      "to": "REFLEX_FORMATION",
+      "difficulty": null
+    },
+    {
+      "from": "CONJ_VERB_KNOWLEDGE",
+      "to": "GUSTAR_CONSTRUCTION",
+      "difficulty": null
+    },
+    {
+      "from": "IR_PL__2",
+      "to": "IR_A_INFINITIVE",
+      "difficulty": null
+    },
+    {
+      "from": "IRREGULAR_VERB_CONCEPT",
+      "to": "IR_SG",
+      "difficulty": null
+    },
+    {
+      "from": "PRON_PL__2",
+      "to": "subject_pronouns",
+      "difficulty": null
+    },
+    {
+      "from": "subj_pronouns__5",
+      "to": "PRON_SG",
+      "difficulty": null
+    },
+    {
+      "from": "DOBJ_2__2",
+      "to": "REFL_1",
+      "difficulty": null
+    },
+    {
+      "from": "PRONOUN_ATTACH_GERUND",
+      "to": "ATTACH_ACCENT_A2",
+      "difficulty": null
+    },
+    {
+      "from": "PRONOUN_ATTACH_IMPERATIVE",
+      "to": "ATTACH_ACCENT_A2",
+      "difficulty": null
+    },
+    {
+      "from": "ATTACH_ACCENT_A2",
+      "to": "ACCENT_SHIFT",
+      "difficulty": null
+    },
+    {
+      "from": "DEF_ARTICLES__2",
+      "to": "REL_SUPERLATIVE",
+      "difficulty": null
+    },
+    {
+      "from": "COMP_MIN",
+      "to": "REL_SUPERLATIVE",
+      "difficulty": null
+    },
+    {
+      "from": "ADJ_AGREEMENT",
+      "to": "ABS_SUPERLATIVE_ISIMO",
+      "difficulty": null
+    },
+    {
+      "from": "IR_A_INFINITIVE",
+      "to": "FUT_USE_PREDICTION",
+      "difficulty": null
+    },
+    {
+      "from": "tu_usted_contrast",
+      "to": "IMPERATIVE_USTED",
+      "difficulty": null
+    },
+    {
+      "from": "tu_usted_contrast",
+      "to": "IMPERATIVE_TU",
+      "difficulty": null
+    },
+    {
+      "from": "question_words__4",
+      "to": "Q_WORDS_LOC",
+      "difficulty": null
+    },
+    {
+      "from": "ESTAR_LOCATION",
+      "to": "Q_WORDS_LOC",
+      "difficulty": null
+    },
+    {
+      "from": "GUSTAR_CONSTRUCTION",
+      "to": "GUSTAR_LIKE_VERBS",
+      "difficulty": null
+    },
+    {
+      "from": "REFLEX_FORMATION",
+      "to": "REFLEXIVE_VERBS",
+      "difficulty": null
+    },
+    {
+      "from": "REFLEX_FORMATION",
+      "to": "REFLEXIVE_SE",
+      "difficulty": null
+    },
+    {
+      "from": "MODAL_CONSTRUCTION__2",
+      "to": "QUERER_CONDITIONAL",
+      "difficulty": null
+    },
+    {
+      "from": "IR_A_INFINITIVE",
+      "to": "VAMOS_A_PROPOSAL",
+      "difficulty": null
+    },
+    {
+      "from": "VAMOS_A_PROPOSAL",
+      "to": "MAKING_INVITATIONS",
+      "difficulty": null
+    },
+    {
+      "from": "DAYS__4",
+      "to": "DISCUSSING_FUTURE_PLANS",
+      "difficulty": null
+    },
+    {
+      "from": "TIME_SON_LAS",
+      "to": "DISCUSSING_FUTURE_PLANS",
+      "difficulty": null
+    },
+    {
+      "from": "MODAL_PRESENT__2",
+      "to": "PRES_COND_POLITE",
+      "difficulty": null
+    },
+    {
+      "from": "MODAL_PRESENT__2",
+      "to": "PRES_COND_ADVICE",
+      "difficulty": null
+    },
+    {
+      "from": "reporting_verb_past",
+      "to": "PERF_COND_REPORTED",
+      "difficulty": null
+    },
+    {
+      "from": "DOP_PLACEMENT",
+      "to": "COMBINE_ORDER",
+      "difficulty": null
+    },
+    {
+      "from": "written_accent_rules",
+      "to": "ACCENT_SHIFT",
+      "difficulty": null
+    },
+    {
+      "from": "NEUTER_LO",
+      "to": "LO_NEUTER",
+      "difficulty": null
+    },
+    {
+      "from": "LO_NEUTER",
+      "to": "LOQUE_REL",
+      "difficulty": null
+    },
+    {
+      "from": "PAST_PARTICIPLE",
+      "to": "PARTICIPLE_INVARIABLE",
+      "difficulty": null
+    },
+    {
+      "from": "CLAUSE_JOIN",
+      "to": "QUE_REL",
+      "difficulty": null
+    },
+    {
+      "from": "CLAUSE_JOIN",
+      "to": "QUIEN_REL",
+      "difficulty": null
+    },
+    {
+      "from": "CLAUSE_JOIN",
+      "to": "ELQUE_REL",
+      "difficulty": null
+    },
+    {
+      "from": "CLAUSE_JOIN",
+      "to": "LOQUE_REL",
+      "difficulty": null
+    },
+    {
+      "from": "STEM_CHANGE_CONCEPT",
+      "to": "STEM_CHANGE_CARRY",
+      "difficulty": null
+    },
+    {
+      "from": "CLAUSE_JOIN",
+      "to": "TWO_CLAUSE_STRUCTURE",
+      "difficulty": null
+    },
+    {
+      "from": "STEM_CHANGE_CARRY",
+      "to": "WISH_TRIGGERS",
+      "difficulty": null
+    },
+    {
+      "from": "INFINITIVE",
+      "to": "INFINITIVE_REPLACEMENT",
+      "difficulty": null
+    },
+    {
+      "from": "AGENT_UNKNOWN_UNIMPORTANT",
+      "to": "SE_IMPERSONAL",
+      "difficulty": null
+    },
+    {
+      "from": "AGENT_UNKNOWN_UNIMPORTANT",
+      "to": "PASSIVE_FORM",
+      "difficulty": null
+    },
+    {
+      "from": "register_concept",
+      "to": "REGISTER_FORMALITY",
+      "difficulty": null
+    },
+    {
+      "from": "REGISTER_FORMALITY",
+      "to": "formal_register_usted_preference",
+      "difficulty": null
+    },
+    {
+      "from": "REGISTER_FORMALITY",
+      "to": "formal_register_avoid_colloquialisms",
+      "difficulty": null
+    },
+    {
+      "from": "REGISTER_FORMALITY",
+      "to": "formal_register_impersonal_se_passive",
+      "difficulty": null
+    },
+    {
+      "from": "WISH_TRIGGERS",
+      "to": "PRES_SUBJ_TRIGGERS",
+      "difficulty": null
+    },
+    {
+      "from": "EMOTION_TRIGGERS",
+      "to": "PRES_SUBJ_TRIGGERS",
+      "difficulty": null
+    },
+    {
+      "from": "DOUBT_TRIGGERS",
+      "to": "PRES_SUBJ_TRIGGERS",
+      "difficulty": null
+    },
+    {
+      "from": "NECESSITY_TRIGGERS",
+      "to": "PRES_SUBJ_TRIGGERS",
+      "difficulty": null
+    },
+    {
+      "from": "DECIR_PRET__3",
+      "to": "IMPF_SUBJ_STEM_FROM_PRET",
+      "difficulty": null
+    },
+    {
+      "from": "IMPF_SUBJ_STEM_FROM_PRET",
+      "to": "IMPF_SUBJ_HABER",
+      "difficulty": null
+    },
+    {
+      "from": "past_tenses__2",
+      "to": "SECUENCIA_TIEMPOS",
+      "difficulty": null
+    },
+    {
+      "from": "PRES_COND",
+      "to": "SECUENCIA_TIEMPOS",
+      "difficulty": null
+    },
+    {
+      "from": "IMPF_SUBJ_USE",
+      "to": "IMPF_SUBJ",
+      "difficulty": null
+    },
+    {
+      "from": "PLUP_SUBJ_USE",
+      "to": "PLUP_SUBJ",
+      "difficulty": null
+    },
+    {
+      "from": "PRES_COND_FORM__3",
+      "to": "PRES_COND",
+      "difficulty": null
+    },
+    {
+      "from": "PERF_COND_FORM",
+      "to": "PERF_COND",
+      "difficulty": null
+    },
+    {
+      "from": "FUT_REGULAR_FORMATION",
+      "to": "FUTURE",
+      "difficulty": null
+    },
+    {
+      "from": "IMPERATIVE_TU",
+      "to": "IMPERATIVE",
+      "difficulty": null
+    },
+    {
+      "from": "TYPE3",
+      "to": "MIXED_HYPOTHETICAL",
+      "difficulty": null
+    },
+    {
+      "from": "TYPE2",
+      "to": "MIXED_HYPOTHETICAL",
+      "difficulty": null
+    },
+    {
+      "from": "INDEF_FORM_KNOWLEDGE",
+      "to": "past_tenses",
+      "difficulty": null
+    },
+    {
+      "from": "FUT_REGULAR_FORMATION",
+      "to": "future_tense",
+      "difficulty": null
+    },
+    {
+      "from": "PRES_COND_FORM__3",
+      "to": "conditional_tense",
+      "difficulty": null
+    },
+    {
+      "from": "reporting_verb_past",
+      "to": "backshift_principle",
+      "difficulty": null
+    },
+    {
+      "from": "backshift_principle",
+      "to": "backshift_present_imperfecto",
+      "difficulty": null
+    },
+    {
+      "from": "backshift_principle",
+      "to": "backshift_preterito_pluscuamperfecto",
+      "difficulty": null
+    },
+    {
+      "from": "backshift_principle",
+      "to": "backshift_future_conditional",
+      "difficulty": null
+    },
+    {
+      "from": "backshift_principle",
+      "to": "no_backshift_present_reporting",
+      "difficulty": null
+    },
+    {
+      "from": "pronoun_possessive_changes",
+      "to": "reporting_wh_questions",
+      "difficulty": null
+    },
+    {
+      "from": "pronoun_possessive_changes",
+      "to": "reporting_yes_no_si",
+      "difficulty": null
+    },
+    {
+      "from": "backshift_present_imperfecto",
+      "to": "reporting_wh_questions",
+      "difficulty": null
+    },
+    {
+      "from": "backshift_present_imperfecto",
+      "to": "reporting_yes_no_si",
+      "difficulty": null
+    },
+    {
+      "from": "ESTAR_PROGRESSIVE",
+      "to": "gerundio_progressive",
+      "difficulty": null
+    },
+    {
+      "from": "PLACE_ATTACH_GER",
+      "to": "gerundio_pronoun_attachment",
+      "difficulty": null
+    },
+    {
+      "from": "DOUBT_TRIGGERS",
+      "to": "subjunctive_mood_basic",
+      "difficulty": null
+    },
+    {
+      "from": "indicative_mood_basic",
+      "to": "connector_a_pesar_de_que",
+      "difficulty": null
+    },
+    {
+      "from": "subjunctive_mood_basic",
+      "to": "connector_a_pesar_de_que",
+      "difficulty": null
+    },
+    {
+      "from": "SE_IMPERSONAL",
+      "to": "impersonal_se_construction",
+      "difficulty": null
+    },
+    {
+      "from": "SE_PASIVA",
+      "to": "impersonal_se_construction",
+      "difficulty": null
+    },
+    {
+      "from": "QUERER_PL__2",
+      "to": "QUERER_CONDITIONAL",
+      "difficulty": null
+    },
+    {
+      "from": "PRET_AR_PL__2",
+      "to": "IMPF_SUBJ_STEM_FROM_PRET",
+      "difficulty": null
+    },
+    {
+      "from": "PRET_ER_PL__2",
+      "to": "IMPF_SUBJ_STEM_FROM_PRET",
+      "difficulty": null
+    },
+    {
+      "from": "IMPF_AR_PL__2",
+      "to": "past_tenses",
+      "difficulty": null
+    },
+    {
+      "from": "IMPF_ER_PL__2",
+      "to": "past_tenses",
+      "difficulty": null
+    },
+    {
+      "from": "SUBJ_AR_PL__2",
+      "to": "WISH_TRIGGERS",
+      "difficulty": null
+    },
+    {
+      "from": "SUBJ_AR_PL__2",
+      "to": "subjunctive_mood_basic",
+      "difficulty": null
+    },
+    {
+      "from": "SUBJ_ER_PL__2",
+      "to": "WISH_TRIGGERS",
+      "difficulty": null
+    },
+    {
+      "from": "SUBJ_ER_PL__2",
+      "to": "subjunctive_mood_basic",
+      "difficulty": null
+    },
+    {
+      "from": "SUBJ_STEM_2__2",
+      "to": "WISH_TRIGGERS",
+      "difficulty": null
+    },
+    {
+      "from": "IRREGULAR_VERB_CONCEPT",
+      "to": "SUBJ_STEM_1",
+      "difficulty": null
+    },
+    {
+      "from": "SUBJ_STEM_2__2",
+      "to": "HABER_SUBJ_SG",
+      "difficulty": null
+    },
+    {
+      "from": "IMPF_SUBJ_STEM_FROM_PRET",
+      "to": "IMPSUBJ_RA_SG",
+      "difficulty": null
+    },
+    {
+      "from": "IMPF_SUBJ_STEM_FROM_PRET",
+      "to": "IMPSUBJ_SE_SG",
+      "difficulty": null
+    },
+    {
+      "from": "DOBJ_2__2",
+      "to": "DOBJ_SG",
+      "difficulty": null
+    },
+    {
+      "from": "IOBJ_2__2",
+      "to": "PRONOUN_ATTACH_INFINITIVE",
+      "difficulty": null
+    },
+    {
+      "from": "IOBJ_2__2",
+      "to": "PRONOUN_ATTACH_GERUND",
+      "difficulty": null
+    },
+    {
+      "from": "IOBJ_2__2",
+      "to": "PRONOUN_ATTACH_IMPERATIVE",
+      "difficulty": null
+    },
+    {
+      "from": "IOBJ_2__2",
+      "to": "IOBJ_SG",
+      "difficulty": null
+    },
+    {
+      "from": "PASSIVE_FORM",
+      "to": "passive_voice_construction",
+      "difficulty": null
+    },
+    {
+      "from": "STYLISTIC_PREFERENCE",
+      "to": "formal_register_impersonal_se_passive",
+      "difficulty": null
+    },
+    {
+      "from": "tu_usted_contrast",
+      "to": "tu_usted_forms",
+      "difficulty": null
+    },
+    {
+      "from": "PRESENT_TENSE_TU_USTED",
+      "to": "tu_usted_forms",
+      "difficulty": null
+    },
+    {
+      "from": "PRES_COND_HEDGE",
+      "to": "thesis_statement_concept",
+      "difficulty": null
+    },
+    {
+      "from": "CREO_QUE_INDICATIVE",
+      "to": "thesis_statement_concept",
+      "difficulty": null
+    },
+    {
+      "from": "NO_CREO_QUE_EXCEPTION",
+      "to": "thesis_statement_concept",
+      "difficulty": null
+    },
+    {
+      "from": "AGE_GIVE",
+      "to": "IMPF_USE_STATES",
+      "difficulty": null
+    },
+    {
+      "from": "IMPF_IRREG_SER__3",
+      "to": "IMPF_USE_STATES",
+      "difficulty": null
+    },
+    {
+      "from": "NUM_100PLUS__2",
+      "to": "NUMBERS_CARDINAL",
+      "difficulty": null
+    },
+    {
+      "from": "NUM_31_100__5",
+      "to": "NUMBERS_CARDINAL",
+      "difficulty": null
+    },
+    {
+      "from": "INFINITIVE_CONCEPT",
+      "to": "QUIERO",
+      "difficulty": null
+    },
+    {
+      "from": "INFINITIVE_CONCEPT",
+      "to": "ME_GUSTARIA",
+      "difficulty": null
+    },
+    {
+      "from": "NUMBERS_CARDINAL",
+      "to": "ORDINAL_NUMBERS",
+      "difficulty": null
+    },
+    {
+      "from": "GENDER_REGULAR",
+      "to": "APOCOPE_RULE",
+      "difficulty": null
+    },
+    {
+      "from": "ADJ_POSITION_PRECEDE",
+      "to": "APOCOPE_RULE",
+      "difficulty": null
+    },
+    {
+      "from": "INDEF_ARTICLES__2",
+      "to": "DE_QUANTITY",
+      "difficulty": null
+    },
+    {
+      "from": "PREP_DE",
+      "to": "DE_QUANTITY",
+      "difficulty": null
+    },
+    {
+      "from": "DEF_ARTICLES__2",
+      "to": "DIRECT_OBJECT_NOUNS",
+      "difficulty": null
+    },
+    {
+      "from": "INDEF_ARTICLES__2",
+      "to": "DIRECT_OBJECT_NOUNS",
+      "difficulty": null
+    },
+    {
+      "from": "ADJ_POSITION_DEFAULT",
+      "to": "DESC_AGREEMENT",
+      "difficulty": null
+    },
+    {
+      "from": "AR_CONJ__3",
+      "to": "REGULAR_PRESENT_CONCEPT",
+      "difficulty": null
+    },
+    {
+      "from": "ER_CONJ__3",
+      "to": "REGULAR_PRESENT_CONCEPT",
+      "difficulty": null
+    },
+    {
+      "from": "IR_CONJ__3",
+      "to": "REGULAR_PRESENT_CONCEPT",
+      "difficulty": null
+    },
+    {
+      "from": "QUERER_PL__2",
+      "to": "QUIERO",
+      "difficulty": null
+    },
+    {
+      "from": "PRET_AR_PL__2",
+      "to": "PRETERITO_INDEFINIDO",
+      "difficulty": null
+    },
+    {
+      "from": "PRET_AR_PL__2",
+      "to": "INDEF_FORM_KNOWLEDGE",
+      "difficulty": null
+    },
+    {
+      "from": "VERB_CONCEPT",
+      "to": "PRET_AR_SG",
+      "difficulty": null
+    },
+    {
+      "from": "PRET_ER_PL__2",
+      "to": "PRETERITO_INDEFINIDO",
+      "difficulty": null
+    },
+    {
+      "from": "PRET_ER_PL__2",
+      "to": "INDEF_FORM_KNOWLEDGE",
+      "difficulty": null
+    },
+    {
+      "from": "VERB_CONCEPT",
+      "to": "PRET_ER_SG",
+      "difficulty": null
+    },
+    {
+      "from": "SERIR_PRET_PL__2",
+      "to": "INDEF_FORM_KNOWLEDGE",
+      "difficulty": null
+    },
+    {
+      "from": "VERB_CONCEPT",
+      "to": "IMPF_AR_SG",
+      "difficulty": null
+    },
+    {
+      "from": "VERB_CONCEPT",
+      "to": "IMPF_ER_SG",
+      "difficulty": null
+    },
+    {
+      "from": "PRET_IRREG_END_PL__2",
+      "to": "TENER_PRET",
+      "difficulty": null
+    },
+    {
+      "from": "PRET_IRREG_END_PL__2",
+      "to": "HACER_PRET",
+      "difficulty": null
+    },
+    {
+      "from": "PRET_IRREG_END_PL__2",
+      "to": "PODER_PRET",
+      "difficulty": null
+    },
+    {
+      "from": "PRET_IRREG_END_PL__2",
+      "to": "DECIR_PRET",
+      "difficulty": null
+    },
+    {
+      "from": "PRET_IRREG_END_PL__2",
+      "to": "VENIR_PRET",
+      "difficulty": null
+    },
+    {
+      "from": "PRET_AR_PL__2",
+      "to": "PRET_IRREG_END_SG",
+      "difficulty": null
+    },
+    {
+      "from": "PRET_ER_PL__2",
+      "to": "PRET_IRREG_END_SG",
+      "difficulty": null
+    },
+    {
+      "from": "IOBJ_2__2",
+      "to": "ME_GUSTARIA",
+      "difficulty": null
+    },
+    {
+      "from": "NUM_0_3__2",
+      "to": "NUM_4_7",
+      "difficulty": null
+    },
+    {
+      "from": "NUM_4_7__2",
+      "to": "NUM_8_11",
+      "difficulty": null
+    },
+    {
+      "from": "NUM_8_11__2",
+      "to": "NUM_12_15",
+      "difficulty": null
+    },
+    {
+      "from": "NUM_12_15__2",
+      "to": "NUM_16_19",
+      "difficulty": null
+    },
+    {
+      "from": "NUM_16_19",
+      "to": "NUM_20_29",
+      "difficulty": null
+    },
+    {
+      "from": "NUM_20_29",
+      "to": "NUM_30",
+      "difficulty": null
+    },
+    {
+      "from": "NUM_30",
+      "to": "NUM_31_100",
+      "difficulty": null
+    },
+    {
+      "from": "NUM_30",
+      "to": "TIME_ES_LA_UNA",
+      "difficulty": null
+    },
+    {
+      "from": "SER_SG__2",
+      "to": "SER_PL",
+      "difficulty": null
+    },
+    {
+      "from": "SER_PL__2",
+      "to": "SER_IDENTITY",
+      "difficulty": null
+    },
+    {
+      "from": "SER_PL__2",
+      "to": "NEGATION_NO",
+      "difficulty": null
+    },
+    {
+      "from": "SER_PL__2",
+      "to": "SER_IR_CONTEXT",
+      "difficulty": null
+    },
+    {
+      "from": "ESTAR_SG__2",
+      "to": "ESTAR_PL",
+      "difficulty": null
+    },
+    {
+      "from": "IR_SG__2",
+      "to": "IR_PL",
+      "difficulty": null
+    },
+    {
+      "from": "PRON_SG__2",
+      "to": "PRON_PL",
+      "difficulty": null
+    },
+    {
+      "from": "HACER_SG__2",
+      "to": "HACER_PL",
+      "difficulty": null
+    },
+    {
+      "from": "TENER_SG__2",
+      "to": "TENER_PL",
+      "difficulty": null
+    },
+    {
+      "from": "TENER_PL__2",
+      "to": "HEALTH_EXPRESSIONS",
+      "difficulty": null
+    },
+    {
+      "from": "PODER_SG__2",
+      "to": "PODER_PL",
+      "difficulty": null
+    },
+    {
+      "from": "QUERER_SG__2",
+      "to": "QUERER_PL",
+      "difficulty": null
+    },
+    {
+      "from": "DEBER_SG__2",
+      "to": "DEBER_PL",
+      "difficulty": null
+    },
+    {
+      "from": "REGULAR_PRESENT_CONCEPT",
+      "to": "DEBER_SG",
+      "difficulty": null
+    },
+    {
+      "from": "DECIR_SG__2",
+      "to": "DECIR_PL",
+      "difficulty": null
+    },
+    {
+      "from": "POSS_SHORT__2",
+      "to": "POSS_LONG",
+      "difficulty": null
+    },
+    {
+      "from": "PRON_PL__2",
+      "to": "POSS_SHORT",
+      "difficulty": null
+    },
+    {
+      "from": "FAM_1__2",
+      "to": "FAM_2",
+      "difficulty": null
+    },
+    {
+      "from": "FAM_2__2",
+      "to": "FAM_3",
+      "difficulty": null
+    },
+    {
+      "from": "FAM_3__2",
+      "to": "FAM_4",
+      "difficulty": null
+    },
+    {
+      "from": "PRET_AR_SG__2",
+      "to": "PRET_AR_PL",
+      "difficulty": null
+    },
+    {
+      "from": "PRET_ER_SG__2",
+      "to": "PRET_ER_PL",
+      "difficulty": null
+    },
+    {
+      "from": "SERIR_PRET_SG__2",
+      "to": "SERIR_PRET_PL",
+      "difficulty": null
+    },
+    {
+      "from": "IMPF_AR_SG__2",
+      "to": "IMPF_AR_PL",
+      "difficulty": null
+    },
+    {
+      "from": "IMPF_AR_PL__2",
+      "to": "IMPF_IRREG_SER",
+      "difficulty": null
+    },
+    {
+      "from": "IMPF_ER_SG__2",
+      "to": "IMPF_ER_PL",
+      "difficulty": null
+    },
+    {
+      "from": "IMPF_ER_PL__2",
+      "to": "IMPF_IRREG_SER",
+      "difficulty": null
+    },
+    {
+      "from": "FUT_END_SG__2",
+      "to": "FUT_END_PL",
+      "difficulty": null
+    },
+    {
+      "from": "FUT_STEM_1__2",
+      "to": "FUT_STEM_2",
+      "difficulty": null
+    },
+    {
+      "from": "FUT_STEM_2__2",
+      "to": "FUT_STEM_3",
+      "difficulty": null
+    },
+    {
+      "from": "FUT_STEM_3__2",
+      "to": "FUT_STEMS",
+      "difficulty": null
+    },
+    {
+      "from": "IOBJ_SG__2",
+      "to": "IOBJ_PL",
+      "difficulty": null
+    },
+    {
+      "from": "IOBJ_PL__2",
+      "to": "COMBINE_ORDER",
+      "difficulty": null
+    },
+    {
+      "from": "DOBJ_SG__2",
+      "to": "DOBJ_PL",
+      "difficulty": null
+    },
+    {
+      "from": "SUBJ_AR_SG__2",
+      "to": "SUBJ_AR_PL",
+      "difficulty": null
+    },
+    {
+      "from": "SUBJ_ER_SG__2",
+      "to": "SUBJ_ER_PL",
+      "difficulty": null
+    },
+    {
+      "from": "SUBJ_STEM_1__2",
+      "to": "SUBJ_STEM_2",
+      "difficulty": null
+    },
+    {
+      "from": "SUBJ_ER_PL__2",
+      "to": "SUBJ_STEM_1",
+      "difficulty": null
+    },
+    {
+      "from": "HABER_SUBJ_SG__2",
+      "to": "HABER_SUBJ_PL",
+      "difficulty": null
+    },
+    {
+      "from": "IMPSUBJ_RA_SG__2",
+      "to": "IMPSUBJ_RA_PL",
+      "difficulty": null
+    },
+    {
+      "from": "IMPSUBJ_SE_SG__2",
+      "to": "IMPSUBJ_SE_PL",
+      "difficulty": null
+    },
+    {
+      "from": "PRET_IRREG_END_SG__2",
+      "to": "PRET_IRREG_END_PL",
+      "difficulty": null
+    },
+    {
+      "from": "PRET_IRREG_END_PL__2",
+      "to": "ESTAR_PRET",
+      "difficulty": null
+    },
+    {
+      "from": "COURTESY_1__2",
+      "to": "COURTESY_2",
+      "difficulty": null
+    },
+    {
+      "from": "REFL_1__2",
+      "to": "REFL_2",
+      "difficulty": null
+    },
+    {
+      "from": "DOBJ_1__2",
+      "to": "DOBJ_2",
+      "difficulty": null
+    },
+    {
+      "from": "IOBJ_1__2",
+      "to": "IOBJ_2",
+      "difficulty": null
+    },
+    {
+      "from": "DIR_1__2",
+      "to": "DIR_2",
+      "difficulty": null
+    },
+    {
+      "from": "TRAVEL_1__2",
+      "to": "TRAVEL_2",
+      "difficulty": null
+    },
+    {
+      "difficulty": null,
+      "from": "NUM_0_3",
+      "to": "NUM_0_3__2"
+    },
+    {
+      "difficulty": null,
+      "from": "IR_SG",
+      "to": "IR_SG__2"
+    },
+    {
+      "difficulty": null,
+      "from": "PODER_PL",
+      "to": "PODER_PL__2"
+    },
+    {
+      "difficulty": null,
+      "from": "QUERER_SG",
+      "to": "QUERER_SG__2"
+    },
+    {
+      "difficulty": null,
+      "from": "DEBER_PL",
+      "to": "DEBER_PL__2"
+    },
+    {
+      "difficulty": null,
+      "from": "DECIR_SG",
+      "to": "DECIR_SG__2"
+    },
+    {
+      "difficulty": null,
+      "from": "POSS_SHORT",
+      "to": "POSS_SHORT__2"
+    },
+    {
+      "difficulty": null,
+      "from": "PRET_AR_SG",
+      "to": "PRET_AR_SG__2"
+    },
+    {
+      "difficulty": null,
+      "from": "PRET_ER_PL",
+      "to": "PRET_ER_PL__2"
+    },
+    {
+      "difficulty": null,
+      "from": "IMPF_ER_SG",
+      "to": "IMPF_ER_SG__2"
+    },
+    {
+      "difficulty": null,
+      "from": "FUT_STEM_3",
+      "to": "FUT_STEM_3__2"
+    },
+    {
+      "difficulty": null,
+      "from": "IOBJ_PL",
+      "to": "IOBJ_PL__2"
+    },
+    {
+      "difficulty": null,
+      "from": "DOBJ_SG",
+      "to": "DOBJ_SG__2"
+    },
+    {
+      "difficulty": null,
+      "from": "SUBJ_STEM_1",
+      "to": "SUBJ_STEM_1__2"
+    },
+    {
+      "difficulty": null,
+      "from": "NUM_4_7",
+      "to": "NUM_4_7__2"
+    },
+    {
+      "difficulty": null,
+      "from": "IR_PL",
+      "to": "IR_PL__2"
+    },
+    {
+      "difficulty": null,
+      "from": "PRON_SG",
+      "to": "PRON_SG__2"
+    },
+    {
+      "difficulty": null,
+      "from": "QUERER_PL",
+      "to": "QUERER_PL__2"
+    },
+    {
+      "difficulty": null,
+      "from": "DECIR_PL",
+      "to": "DECIR_PL__2"
+    },
+    {
+      "difficulty": null,
+      "from": "FAM_3",
+      "to": "FAM_3__2"
+    },
+    {
+      "difficulty": null,
+      "from": "PRET_AR_PL",
+      "to": "PRET_AR_PL__2"
+    },
+    {
+      "difficulty": null,
+      "from": "SERIR_PRET_SG",
+      "to": "SERIR_PRET_SG__2"
+    },
+    {
+      "difficulty": null,
+      "from": "IMPF_AR_PL",
+      "to": "IMPF_AR_PL__2"
+    },
+    {
+      "difficulty": null,
+      "from": "IMPF_ER_PL",
+      "to": "IMPF_ER_PL__2"
+    },
+    {
+      "difficulty": null,
+      "from": "FUT_END_SG",
+      "to": "FUT_END_SG__2"
+    },
+    {
+      "difficulty": null,
+      "from": "DOBJ_PL",
+      "to": "DOBJ_PL__2"
+    },
+    {
+      "difficulty": null,
+      "from": "SUBJ_ER_SG",
+      "to": "SUBJ_ER_SG__2"
+    },
+    {
+      "difficulty": null,
+      "from": "SUBJ_STEM_2",
+      "to": "SUBJ_STEM_2__2"
+    },
+    {
+      "difficulty": null,
+      "from": "IMPSUBJ_RA_PL",
+      "to": "IMPSUBJ_RA_PL__2"
+    },
+    {
+      "difficulty": null,
+      "from": "PRET_IRREG_END_SG",
+      "to": "PRET_IRREG_END_SG__2"
+    },
+    {
+      "difficulty": null,
+      "from": "NUM_8_11",
+      "to": "NUM_8_11__2"
+    },
+    {
+      "difficulty": null,
+      "from": "PRON_PL",
+      "to": "PRON_PL__2"
+    },
+    {
+      "difficulty": null,
+      "from": "FAM_1",
+      "to": "FAM_1__2"
+    },
+    {
+      "difficulty": null,
+      "from": "PRET_ER_SG",
+      "to": "PRET_ER_SG__2"
+    },
+    {
+      "difficulty": null,
+      "from": "SERIR_PRET_PL",
+      "to": "SERIR_PRET_PL__2"
+    },
+    {
+      "difficulty": null,
+      "from": "FUT_END_PL",
+      "to": "FUT_END_PL__2"
+    },
+    {
+      "difficulty": null,
+      "from": "FUT_STEM_1",
+      "to": "FUT_STEM_1__2"
+    },
+    {
+      "difficulty": null,
+      "from": "SUBJ_AR_SG",
+      "to": "SUBJ_AR_SG__2"
+    },
+    {
+      "difficulty": null,
+      "from": "SUBJ_ER_PL",
+      "to": "SUBJ_ER_PL__2"
+    },
+    {
+      "difficulty": null,
+      "from": "HABER_SUBJ_PL",
+      "to": "HABER_SUBJ_PL__2"
+    },
+    {
+      "difficulty": null,
+      "from": "IMPSUBJ_RA_SG",
+      "to": "IMPSUBJ_RA_SG__2"
+    },
+    {
+      "difficulty": null,
+      "from": "IMPSUBJ_SE_SG",
+      "to": "IMPSUBJ_SE_SG__2"
+    },
+    {
+      "difficulty": null,
+      "from": "PRET_IRREG_END_PL",
+      "to": "PRET_IRREG_END_PL__2"
+    },
+    {
+      "difficulty": null,
+      "from": "NUM_12_15",
+      "to": "NUM_12_15__2"
+    },
+    {
+      "difficulty": null,
+      "from": "HACER_SG",
+      "to": "HACER_SG__2"
+    },
+    {
+      "difficulty": null,
+      "from": "HACER_PL",
+      "to": "HACER_PL__2"
+    },
+    {
+      "difficulty": null,
+      "from": "TENER_SG",
+      "to": "TENER_SG__2"
+    },
+    {
+      "difficulty": null,
+      "from": "MONTHS",
+      "to": "MONTHS__2"
+    },
+    {
+      "difficulty": null,
+      "from": "MONTHS__2",
+      "to": "MONTHS__3"
+    },
+    {
+      "difficulty": null,
+      "from": "MONTHS__3",
+      "to": "MONTHS__4"
+    },
+    {
+      "difficulty": null,
+      "from": "MONTHS__4",
+      "to": "MONTHS__5"
+    },
+    {
+      "difficulty": null,
+      "from": "MONTHS__5",
+      "to": "MONTHS__6"
+    },
+    {
+      "difficulty": null,
+      "from": "DAYS",
+      "to": "DAYS__2"
+    },
+    {
+      "difficulty": null,
+      "from": "DAYS__2",
+      "to": "DAYS__3"
+    },
+    {
+      "difficulty": null,
+      "from": "DAYS__3",
+      "to": "DAYS__4"
+    },
+    {
+      "difficulty": null,
+      "from": "greet_time_of_day",
+      "to": "greet_time_of_day__2"
+    },
+    {
+      "difficulty": null,
+      "from": "greet_informal",
+      "to": "greet_informal__2"
+    },
+    {
+      "difficulty": null,
+      "from": "subj_pronouns",
+      "to": "subj_pronouns__2"
+    },
+    {
+      "difficulty": null,
+      "from": "subj_pronouns__2",
+      "to": "subj_pronouns__3"
+    },
+    {
+      "difficulty": null,
+      "from": "subj_pronouns__3",
+      "to": "subj_pronouns__4"
+    },
+    {
+      "difficulty": null,
+      "from": "subj_pronouns__4",
+      "to": "subj_pronouns__5"
+    },
+    {
+      "difficulty": null,
+      "from": "question_words",
+      "to": "question_words__2"
+    },
+    {
+      "difficulty": null,
+      "from": "question_words__2",
+      "to": "question_words__3"
+    },
+    {
+      "difficulty": null,
+      "from": "question_words__3",
+      "to": "question_words__4"
+    },
+    {
+      "difficulty": null,
+      "from": "nationality_agreement",
+      "to": "nationality_agreement__2"
+    },
+    {
+      "difficulty": null,
+      "from": "NUM_31_100",
+      "to": "NUM_31_100__2"
+    },
+    {
+      "difficulty": null,
+      "from": "NUM_31_100__2",
+      "to": "NUM_31_100__3"
+    },
+    {
+      "difficulty": null,
+      "from": "NUM_31_100__3",
+      "to": "NUM_31_100__4"
+    },
+    {
+      "difficulty": null,
+      "from": "NUM_31_100__4",
+      "to": "NUM_31_100__5"
+    },
+    {
+      "difficulty": null,
+      "from": "NUM_100PLUS",
+      "to": "NUM_100PLUS__2"
+    },
+    {
+      "difficulty": null,
+      "from": "PRON_TENER",
+      "to": "PRON_TENER__2"
+    },
+    {
+      "difficulty": null,
+      "from": "PRON_TENER__2",
+      "to": "PRON_TENER__3"
+    },
+    {
+      "difficulty": null,
+      "from": "SEASONS",
+      "to": "SEASONS__2"
+    },
+    {
+      "difficulty": null,
+      "from": "DEF_ARTICLES",
+      "to": "DEF_ARTICLES__2"
+    },
+    {
+      "difficulty": null,
+      "from": "INDEF_ARTICLES",
+      "to": "INDEF_ARTICLES__2"
+    },
+    {
+      "difficulty": null,
+      "from": "AR_CONJ",
+      "to": "AR_CONJ__2"
+    },
+    {
+      "difficulty": null,
+      "from": "AR_CONJ__2",
+      "to": "AR_CONJ__3"
+    },
+    {
+      "difficulty": null,
+      "from": "ER_CONJ",
+      "to": "ER_CONJ__2"
+    },
+    {
+      "difficulty": null,
+      "from": "ER_CONJ__2",
+      "to": "ER_CONJ__3"
+    },
+    {
+      "difficulty": null,
+      "from": "IR_CONJ",
+      "to": "IR_CONJ__2"
+    },
+    {
+      "difficulty": null,
+      "from": "IR_CONJ__2",
+      "to": "IR_CONJ__3"
+    },
+    {
+      "difficulty": null,
+      "from": "PHYS_ADJ",
+      "to": "PHYS_ADJ__2"
+    },
+    {
+      "difficulty": null,
+      "from": "MODAL_CONSTRUCTION",
+      "to": "MODAL_CONSTRUCTION__2"
+    },
+    {
+      "difficulty": null,
+      "from": "FOOD_VOCAB",
+      "to": "FOOD_VOCAB__2"
+    },
+    {
+      "difficulty": null,
+      "from": "SHOP_VOCAB",
+      "to": "SHOP_VOCAB__2"
+    },
+    {
+      "difficulty": null,
+      "from": "DE_QUANTITY",
+      "to": "DE_QUANTITY__2"
+    },
+    {
+      "difficulty": null,
+      "from": "CURRENCY_VOCAB",
+      "to": "CURRENCY_VOCAB__2"
+    },
+    {
+      "difficulty": null,
+      "from": "ORDINAL_NUMBERS",
+      "to": "ORDINAL_NUMBERS__2"
+    },
+    {
+      "difficulty": null,
+      "from": "ORDINAL_NUMBERS__2",
+      "to": "ORDINAL_NUMBERS__3"
+    },
+    {
+      "difficulty": null,
+      "from": "VERBS_COMPRAR_TOMAR_QUERER",
+      "to": "VERBS_COMPRAR_TOMAR_QUERER__2"
+    },
+    {
+      "difficulty": null,
+      "from": "TENER_PRET",
+      "to": "TENER_PRET__2"
+    },
+    {
+      "difficulty": null,
+      "from": "TENER_PRET__2",
+      "to": "TENER_PRET__3"
+    },
+    {
+      "difficulty": null,
+      "from": "HACER_PRET",
+      "to": "HACER_PRET__2"
+    },
+    {
+      "difficulty": null,
+      "from": "HACER_PRET__2",
+      "to": "HACER_PRET__3"
+    },
+    {
+      "difficulty": null,
+      "from": "ESTAR_PRET",
+      "to": "ESTAR_PRET__2"
+    },
+    {
+      "difficulty": null,
+      "from": "ESTAR_PRET__2",
+      "to": "ESTAR_PRET__3"
+    },
+    {
+      "difficulty": null,
+      "from": "PODER_PRET",
+      "to": "PODER_PRET__2"
+    },
+    {
+      "difficulty": null,
+      "from": "PODER_PRET__2",
+      "to": "PODER_PRET__3"
+    },
+    {
+      "difficulty": null,
+      "from": "DECIR_PRET",
+      "to": "DECIR_PRET__2"
+    },
+    {
+      "difficulty": null,
+      "from": "DECIR_PRET__2",
+      "to": "DECIR_PRET__3"
+    },
+    {
+      "difficulty": null,
+      "from": "VENIR_PRET",
+      "to": "VENIR_PRET__2"
+    },
+    {
+      "difficulty": null,
+      "from": "VENIR_PRET__2",
+      "to": "VENIR_PRET__3"
+    },
+    {
+      "difficulty": null,
+      "from": "TIME_EXPRESSIONS",
+      "to": "TIME_EXPRESSIONS__2"
+    },
+    {
+      "difficulty": null,
+      "from": "IMPF_IRREG_SER",
+      "to": "IMPF_IRREG_SER__2"
+    },
+    {
+      "difficulty": null,
+      "from": "IMPF_IRREG_SER__2",
+      "to": "IMPF_IRREG_SER__3"
+    },
+    {
+      "difficulty": null,
+      "from": "IMPF_IRREG_IR",
+      "to": "IMPF_IRREG_IR__2"
+    },
+    {
+      "difficulty": null,
+      "from": "IMPF_IRREG_IR__2",
+      "to": "IMPF_IRREG_IR__3"
+    },
+    {
+      "difficulty": null,
+      "from": "IMPF_IRREG_VER",
+      "to": "IMPF_IRREG_VER__2"
+    },
+    {
+      "difficulty": null,
+      "from": "IMPF_IRREG_VER__2",
+      "to": "IMPF_IRREG_VER__3"
+    },
+    {
+      "difficulty": null,
+      "from": "IOP_VERBS",
+      "to": "IOP_VERBS__2"
+    },
+    {
+      "difficulty": null,
+      "from": "REFLEX_EXAMPLES",
+      "to": "REFLEX_EXAMPLES__2"
+    },
+    {
+      "difficulty": null,
+      "from": "REFLEX_EXAMPLES__2",
+      "to": "REFLEX_EXAMPLES__3"
+    },
+    {
+      "difficulty": null,
+      "from": "COMP_EQ_NOUN",
+      "to": "COMP_EQ_NOUN__2"
+    },
+    {
+      "difficulty": null,
+      "from": "ABS_SUPERLATIVE_ISIMO",
+      "to": "ABS_SUPERLATIVE_ISIMO__2"
+    },
+    {
+      "difficulty": null,
+      "from": "BODY_PARTS",
+      "to": "BODY_PARTS__2"
+    },
+    {
+      "difficulty": null,
+      "from": "BODY_PARTS__2",
+      "to": "BODY_PARTS__3"
+    },
+    {
+      "difficulty": null,
+      "from": "BODY_PARTS__3",
+      "to": "BODY_PARTS__4"
+    },
+    {
+      "difficulty": null,
+      "from": "HEALTH_EXPRESSIONS",
+      "to": "HEALTH_EXPRESSIONS__2"
+    },
+    {
+      "difficulty": null,
+      "from": "FUTURE_TIME_EXPRESSIONS",
+      "to": "FUTURE_TIME_EXPRESSIONS__2"
+    },
+    {
+      "difficulty": null,
+      "from": "FUT_STEMS",
+      "to": "FUT_STEMS__2"
+    },
+    {
+      "difficulty": null,
+      "from": "HABER_PRESENT_COND",
+      "to": "HABER_PRESENT_COND__2"
+    },
+    {
+      "difficulty": null,
+      "from": "HABER_PRESENT_COND__2",
+      "to": "HABER_PRESENT_COND__3"
+    },
+    {
+      "difficulty": null,
+      "from": "MODAL_PRESENT",
+      "to": "MODAL_PRESENT__2"
+    },
+    {
+      "difficulty": null,
+      "from": "PRES_COND_FORM",
+      "to": "PRES_COND_FORM__2"
+    },
+    {
+      "difficulty": null,
+      "from": "PRES_COND_FORM__2",
+      "to": "PRES_COND_FORM__3"
+    },
+    {
+      "difficulty": null,
+      "from": "COMBINE_ORDER",
+      "to": "COMBINE_ORDER__2"
+    },
+    {
+      "difficulty": null,
+      "from": "IMPERSONAL_TRIGGERS",
+      "to": "IMPERSONAL_TRIGGERS__2"
+    },
+    {
+      "difficulty": null,
+      "from": "PRES_SUBJ_TRIGGERS",
+      "to": "PRES_SUBJ_TRIGGERS__2"
+    },
+    {
+      "difficulty": null,
+      "from": "PAST_PARTICIPLE_B2",
+      "to": "PAST_PARTICIPLE_B2__2"
+    },
+    {
+      "difficulty": null,
+      "from": "IMPF_SUBJ_HABER",
+      "to": "IMPF_SUBJ_HABER__2"
+    },
+    {
+      "difficulty": null,
+      "from": "IMPF_SUBJ_HABER__2",
+      "to": "IMPF_SUBJ_HABER__3"
+    },
+    {
+      "difficulty": null,
+      "from": "reporting_verbs",
+      "to": "reporting_verbs__2"
+    },
+    {
+      "difficulty": null,
+      "from": "past_tenses",
+      "to": "past_tenses__2"
+    },
+    {
+      "difficulty": null,
+      "from": "subject_pronouns",
+      "to": "subject_pronouns__2"
+    },
+    {
+      "difficulty": null,
+      "from": "possessive_adjectives",
+      "to": "possessive_adjectives__2"
+    },
+    {
+      "difficulty": null,
+      "from": "time_expressions",
+      "to": "time_expressions__2"
+    },
+    {
+      "difficulty": null,
+      "from": "adverb_time_changes",
+      "to": "adverb_time_changes__2"
+    },
+    {
+      "difficulty": null,
+      "from": "preterite_stem_irregular",
+      "to": "preterite_stem_irregular__2"
+    },
+    {
+      "difficulty": null,
+      "from": "gerundio_formation_irregular",
+      "to": "gerundio_formation_irregular__2"
+    },
+    {
+      "difficulty": null,
+      "from": "argumentative_paragraph_structure",
+      "to": "argumentative_paragraph_structure__2"
+    },
+    {
+      "difficulty": null,
+      "from": "SER_SG",
+      "to": "SER_SG__2"
+    },
+    {
+      "difficulty": null,
+      "from": "SER_PL",
+      "to": "SER_PL__2"
+    },
+    {
+      "difficulty": null,
+      "from": "TENER_PL",
+      "to": "TENER_PL__2"
+    },
+    {
+      "difficulty": null,
+      "from": "PODER_SG",
+      "to": "PODER_SG__2"
+    },
+    {
+      "difficulty": null,
+      "from": "ESTAR_SG",
+      "to": "ESTAR_SG__2"
+    },
+    {
+      "difficulty": null,
+      "from": "ESTAR_PL",
+      "to": "ESTAR_PL__2"
+    },
+    {
+      "difficulty": null,
+      "from": "DEBER_SG",
+      "to": "DEBER_SG__2"
+    },
+    {
+      "difficulty": null,
+      "from": "FAM_2",
+      "to": "FAM_2__2"
+    },
+    {
+      "difficulty": null,
+      "from": "IMPF_AR_SG",
+      "to": "IMPF_AR_SG__2"
+    },
+    {
+      "difficulty": null,
+      "from": "FUT_STEM_2",
+      "to": "FUT_STEM_2__2"
+    },
+    {
+      "difficulty": null,
+      "from": "IOBJ_SG",
+      "to": "IOBJ_SG__2"
+    },
+    {
+      "difficulty": null,
+      "from": "SUBJ_AR_PL",
+      "to": "SUBJ_AR_PL__2"
+    },
+    {
+      "difficulty": null,
+      "from": "HABER_SUBJ_SG",
+      "to": "HABER_SUBJ_SG__2"
+    },
+    {
+      "difficulty": null,
+      "from": "IMPSUBJ_SE_PL",
+      "to": "IMPSUBJ_SE_PL__2"
+    },
+    {
+      "difficulty": null,
+      "from": "COURTESY_1",
+      "to": "COURTESY_1__2"
+    },
+    {
+      "difficulty": null,
+      "from": "REFL_1",
+      "to": "REFL_1__2"
+    },
+    {
+      "difficulty": null,
+      "from": "REFL_2",
+      "to": "REFL_2__2"
+    },
+    {
+      "difficulty": null,
+      "from": "DOBJ_1",
+      "to": "DOBJ_1__2"
+    },
+    {
+      "difficulty": null,
+      "from": "DOBJ_2",
+      "to": "DOBJ_2__2"
+    },
+    {
+      "difficulty": null,
+      "from": "IOBJ_1",
+      "to": "IOBJ_1__2"
+    },
+    {
+      "difficulty": null,
+      "from": "IOBJ_2",
+      "to": "IOBJ_2__2"
+    },
+    {
+      "difficulty": null,
+      "from": "DIR_1",
+      "to": "DIR_1__2"
+    },
+    {
+      "difficulty": null,
+      "from": "DIR_2",
+      "to": "DIR_2__2"
+    },
+    {
+      "difficulty": null,
+      "from": "TRAVEL_1",
+      "to": "TRAVEL_1__2"
+    }
   ]
 }

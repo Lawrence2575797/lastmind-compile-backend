@@ -788,12 +788,12 @@ interface RecallCheck {
 // side is enforced here as an expiry (a recall isn't surfaced before
 // its due_at at all - see sfScheduleRecallTimer - so a "before" grace
 // period has nothing to apply to server-side).
-// A recall stays claimable well past its due time (the feed only asks for due
-// recalls at lesson transitions, so a 30-second window meant most were expired
-// before anyone looked). Overdue by more than this and it is stale, since the
-// Day-1 check covers the memory by then. Rows due within the lookahead are
-// returned too, so the client can time the nudge itself.
-const RECALL_EXPIRY_MS = 30 * 60 * 1000;
+// A recall is catchable for 30 seconds after it falls due; after that it is
+// left to the concept's own real review. Recalls due in the next few minutes
+// are returned too, so the feed can time its pop-up nudge for each one -
+// without them the client never learned a recall existed until it was
+// already too late to nudge.
+const RECALL_EXPIRY_MS = 30 * 1000;
 const RECALL_LOOKAHEAD_MS = 30 * 60 * 1000;
 
 // GET /immediate-recalls/due

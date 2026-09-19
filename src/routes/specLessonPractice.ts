@@ -1,5 +1,5 @@
 import { Router, Request, Response } from 'express';
-import { requireAuth, requirePaidTier } from '../services/authMiddleware';
+import { requireAuth } from '../services/authMiddleware';
 import { syncEndpointLimiter, costlyEndpointLimiter } from '../services/rateLimiters';
 import {
   getAvailableTypes,
@@ -13,7 +13,7 @@ import {
 
 const router = Router();
 
-router.use('/spec-lesson-practice', requireAuth, requirePaidTier);
+router.use('/spec-lesson-practice', requireAuth);
 
 // GET /spec-lesson-practice/:conceptId/available-types -> AvailableTypesResult
 // The shrinking pick-list for this (student, spec-lesson) - see

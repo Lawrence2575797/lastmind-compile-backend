@@ -1,5 +1,5 @@
 import { Router, Request, Response } from 'express';
-import { requireAuth, requirePaidTier } from '../services/authMiddleware';
+import { requireAuth } from '../services/authMiddleware';
 import { syncEndpointLimiter, actionEndpointLimiter } from '../services/rateLimiters';
 import { normalizeConceptKey } from '../services/chainService';
 import {
@@ -13,7 +13,7 @@ import {
 
 const router = Router();
 
-router.use('/practice-questions', requireAuth, requirePaidTier);
+router.use('/practice-questions', requireAuth);
 
 // GET /practice-questions?subject=&topic=&concept= -> PracticeQuestionSummary[]
 router.get('/practice-questions', syncEndpointLimiter, async (req: Request, res: Response) => {

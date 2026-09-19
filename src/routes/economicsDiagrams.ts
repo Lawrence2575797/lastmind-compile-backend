@@ -1,5 +1,5 @@
 import { Router, Request, Response } from 'express';
-import { requireAuth, requirePaidTier } from '../services/authMiddleware';
+import { requireAuth } from '../services/authMiddleware';
 import { syncEndpointLimiter, actionEndpointLimiter } from '../services/rateLimiters';
 import {
   listDiagrams,
@@ -15,7 +15,7 @@ const router = Router();
 // Premium-gated, same as the Maths Tool it sits next to in the topbar -
 // a personal study tool, not something the core lesson/review loop
 // depends on.
-router.use('/economics-diagrams', requireAuth, requirePaidTier);
+router.use('/economics-diagrams', requireAuth);
 
 // GET /economics-diagrams -> [{ id, title, updatedAt }], newest first
 router.get('/economics-diagrams', syncEndpointLimiter, async (req: Request, res: Response) => {

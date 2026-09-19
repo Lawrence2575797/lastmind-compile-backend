@@ -1,11 +1,11 @@
 import { Router, Request, Response } from 'express';
-import { requireAuth, requirePaidTier } from '../services/authMiddleware';
+import { requireAuth } from '../services/authMiddleware';
 import { syncEndpointLimiter, actionEndpointLimiter } from '../services/rateLimiters';
 import { listUnresolvedCorrections, submitCorrectionAnswer, ExamPrepCorrectionNotFoundError } from '../services/examPrepCorrectionService';
 
 const router = Router();
 
-router.use('/exam-prep-corrections', requireAuth, requirePaidTier);
+router.use('/exam-prep-corrections', requireAuth);
 
 // GET /exam-prep-corrections -> ExamPrepCorrection[], oldest-first, unresolved only
 router.get('/exam-prep-corrections', syncEndpointLimiter, async (req: Request, res: Response) => {

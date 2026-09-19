@@ -1,5 +1,5 @@
 import { Router, Request, Response } from 'express';
-import { requireAuth, requirePaidTier } from '../services/authMiddleware';
+import { requireAuth } from '../services/authMiddleware';
 import { costlyEndpointLimiter, syncEndpointLimiter } from '../services/rateLimiters';
 import { supabaseAdmin } from '../services/supabaseAdmin';
 import { callClaudeJSON, MODELS } from '../services/claudeClient';
@@ -17,7 +17,7 @@ const router = Router();
 // pattern as peerTutoring.ts's router.use, so a free account can't reach
 // any of this by calling the API directly even though the nav button is
 // already hidden for them.
-router.use('/math-help', requireAuth, requirePaidTier);
+router.use('/math-help', requireAuth);
 
 function truncateTitle(text: string): string {
   const oneLine = text.trim().replace(/\s+/g, ' ');

@@ -60,6 +60,12 @@ app.set('trust proxy', 1);
 // CSP defaults (meant for pages that render markup) are switched off
 // rather than fought against.
 app.use(helmet({ contentSecurityPolicy: false }));
+// A synced subject folder carries the student's whole prior-coverage list (one
+// concept id per concept they marked as already covered - over 130 KB for
+// Economics or Maths on its own) plus the lesson plan, so it needs a far larger
+// body than the 200 KB used elsewhere. This parser must come first: once a body
+// has been read, the global one below skips it.
+app.use('/sync/folders', express.json({ limit: '3mb' }));
 app.use(express.json({ limit: '200kb' }));
 app.use(cors({ origin: FRONTEND_ORIGIN, methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'] }));
 app.use(globalRateLimiter);

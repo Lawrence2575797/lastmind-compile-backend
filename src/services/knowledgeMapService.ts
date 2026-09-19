@@ -453,7 +453,7 @@ export async function getKnowledgeMapForSubject(
       conceptId: r.concept_id as string,
       label: r.label as string,
       subtopic: r.subtopic as string,
-      theme: themeMap.get(r.subtopic as string) || fallbackThemeName(r.subtopic as string),
+      theme: themeMap.get(r.subtopic as string) || fallbackThemeName(r.subtopic as string, subject),
     })),
     edges: edgeRows.map((e) => ({ source: e.from_node_id, target: e.to_node_id })),
     mastery,

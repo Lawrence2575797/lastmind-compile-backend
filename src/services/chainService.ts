@@ -200,9 +200,63 @@ const SUBTOPIC_THEME_OVERRIDES: Record<string, string> = {
   '3.6 Government intervention': 'Theme 3 - Business behaviour and the labour market',
 };
 
-export function fallbackThemeName(subtopic: string): string {
+// Exam-board-style theme titles for subjects whose knowledge-map subtopics
+// carry no seeded spec_lesson_plans theme, keyed by lower-cased subject then
+// by the subtopic's leading number/code ("2" for "2.1 ..." or "2. Algebra",
+// "A1" for "A1.3 ..."). A bare "Theme 4" tells a student nothing, so each
+// title names what the theme actually contains.
+const SUBJECT_THEME_TITLES: Record<string, Record<string, string>> = {
+  chemistry: {
+    '0': 'Topic 0 - Working scientifically, practical skills and calculations',
+    '1': 'Topic 1 - Atomic structure and the periodic table',
+    '2': 'Topic 2 - Bonding, structure and the properties of matter',
+    '3': 'Topic 3 - Quantitative chemistry: moles, yields and concentrations',
+    '4': 'Topic 4 - Chemical changes: reactivity, acids and electrolysis',
+    '5': 'Topic 5 - Energy changes: exothermic reactions and cells',
+    '6': 'Topic 6 - The rate and extent of chemical change',
+    '7': 'Topic 7 - Organic chemistry: hydrocarbons, alcohols and polymers',
+    '8': 'Topic 8 - Chemical analysis: purity, chromatography and ion tests',
+    '9': 'Topic 9 - Chemistry of the atmosphere and climate',
+    '10': 'Topic 10 - Using resources: water, life cycles and the Haber process',
+  },
+  mathematics: {
+    '1': 'Number - structure, fractions, decimals, percentages and accuracy',
+    '2': 'Algebra - manipulation, equations, inequalities, graphs and sequences',
+    '3': 'Ratio, proportion and rates of change',
+    '4': 'Geometry and measures - shapes, constructions, area, volume and vectors',
+    '5': 'Probability',
+    '6': 'Statistics',
+  },
+  spanish: {
+    A1: 'A1 Beginner - greetings, present tense and everyday needs',
+    A2: 'A2 Elementary - past tenses, pronouns and getting around',
+    B1: 'B1 Intermediate - conditional, subjunctive and complex sentences',
+    B2: 'B2 Upper intermediate - advanced subjunctive, if-clauses and reported speech',
+  },
+  italian: {
+    A1: 'A1 Beginner - greetings, present tense and everyday needs',
+    A2: 'A2 Elementary - past tenses, pronouns and getting around',
+    B1: 'B1 Intermediate - conditional, subjunctive and complex sentences',
+    B2: 'B2 Upper intermediate - advanced subjunctive, if-clauses and reported speech',
+  },
+};
+// Subtopics whose number puts them in the wrong theme (Chemistry 1.0 is the
+// working-scientifically bucket, not Atomic structure).
+const SUBTOPIC_TITLE_EXCEPTIONS: Record<string, Record<string, string>> = {
+  chemistry: { '1.0': 'Topic 0 - Working scientifically, practical skills and calculations' },
+};
+
+export function fallbackThemeName(subtopic: string, subject?: string): string {
   if (SUBTOPIC_THEME_OVERRIDES[subtopic]) return SUBTOPIC_THEME_OVERRIDES[subtopic];
-  const digit = (subtopic || '').split(' ')[0]?.split('.')[0];
+  const first = (subtopic || '').trim().split(' ')[0] || '';
+  const digit = first.split('.')[0];
+  const subj = (subject || '').trim().toLowerCase();
+  if (subj) {
+    const exception = SUBTOPIC_TITLE_EXCEPTIONS[subj]?.[first];
+    if (exception) return exception;
+    const title = SUBJECT_THEME_TITLES[subj]?.[digit];
+    if (title) return title;
+  }
   return digit ? `Theme ${digit}` : 'General';
 }
 

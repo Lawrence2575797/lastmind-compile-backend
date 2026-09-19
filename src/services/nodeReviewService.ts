@@ -1,6 +1,7 @@
 import { supabaseAdmin } from './supabaseAdmin';
 import { callClaudeJSON, MODELS } from './claudeClient';
 import { parseModelJson, parseCorrectFeedbackJson } from './jsonParsing';
+import { openFollowUp, followUpFromGrading, FollowUpForClient } from './followUp';
 import { KNOWLEDGE_MAP_ANSWER_CHECK_PROMPT } from '../constants/knowledgeMapAnswerCheckPrompt';
 import { AO1_REWORD_QUESTION_PROMPT, AO1_SLIP_CHECK_PROMPT, INTEGRATION_REWORD_QUESTION_PROMPT } from '../constants/nodeReviewPrompts';
 import { isDueByCalendarDay, ReviewNotDueError } from './reviewService';
@@ -230,18 +231,22 @@ export async function getRewordedAo1Question(nodeId: string, userId: string): Pr
   };
 }
 
-export async function gradeRewordedAo1Answer(nodeId: string, questionText: string, answer: string, userId: string): Promise<{ correct: boolean; feedback: string } | null> {
+export async function gradeRewordedAo1Answer(nodeId: string, questionText: string, answer: string, userId: string, followUpToken?: string): Promise<{ correct: boolean; feedback: string; followUp?: FollowUpForClient } | null> {
   const source = await fetchNodeExplanationAndAo1(nodeId);
   if (!source) return null;
+  // A retry after a wrong answer answers the marker's follow-up question instead
+  // (see services/followUp.ts) - graded against that question's own mark scheme.
+  const followUpQ = openFollowUp(userId, followUpToken);
   const raw = await callClaudeJSON({
     model: MODELS.simpleQuestion,
     systemPrompt: KNOWLEDGE_MAP_ANSWER_CHECK_PROMPT,
-    userContent: `Question: ${questionText}\nMark scheme: ${source.explanation}\nStudent's answer: ${answer}`,
+    userContent: `Question: ${followUpQ ? followUpQ.questionText : questionText}\nMark scheme: ${followUpQ ? followUpQ.markScheme : source.explanation}\nStudent's answer: ${answer}`,
     temperature: 0.1,
     userId,
     meteredReason: 'node-review-ao1-grade',
   });
-  return parseCorrectFeedbackJson(raw);
+  const graded = parseCorrectFeedbackJson(raw);
+  return graded.correct ? graded : { ...graded, followUp: followUpFromGrading(userId, raw) };
 }
 
 // Only ever called on a WRONG AO1 answer, before any FSRS lapse is
@@ -401,16 +406,18 @@ export async function getIntegrationStepData(userId: string, fromNodeId: string,
 // grading always runs against the edge's own stored mark scheme (the
 // ground truth for the link), never against the original question text,
 // so a reworded phrasing grades exactly as accurately as the original did.
-export async function gradeIntegrationAnswer(fromNodeId: string, toNodeId: string, questionText: string, answer: string, userId: string): Promise<{ correct: boolean; feedback: string } | null> {
+export async function gradeIntegrationAnswer(fromNodeId: string, toNodeId: string, questionText: string, answer: string, userId: string, followUpToken?: string): Promise<{ correct: boolean; feedback: string; followUp?: FollowUpForClient } | null> {
   const edge = await resolveEdgeForReview(fromNodeId, toNodeId);
   if (!edge?.integrationQuestion?.questionText || edge.integrationQuestion.diagramSpec) return null;
+  const followUpQ = openFollowUp(userId, followUpToken);
   const raw = await callClaudeJSON({
     model: MODELS.simpleQuestion,
     systemPrompt: KNOWLEDGE_MAP_ANSWER_CHECK_PROMPT,
-    userContent: `Question: ${questionText}\nMark scheme: ${edge.integrationQuestion.markScheme || ''}\nStudent's answer: ${answer}`,
+    userContent: `Question: ${followUpQ ? followUpQ.questionText : questionText}\nMark scheme: ${followUpQ ? followUpQ.markScheme : (edge.integrationQuestion.markScheme || '')}\nStudent's answer: ${answer}`,
     temperature: 0.1,
     userId,
     meteredReason: 'node-review-integration-grade',
   });
-  return parseCorrectFeedbackJson(raw);
+  const graded = parseCorrectFeedbackJson(raw);
+  return graded.correct ? graded : { ...graded, followUp: followUpFromGrading(userId, raw) };
 }

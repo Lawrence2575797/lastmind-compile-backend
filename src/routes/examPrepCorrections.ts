@@ -20,12 +20,12 @@ router.get('/exam-prep-corrections', syncEndpointLimiter, async (req: Request, r
 
 // POST /exam-prep-corrections/:id/submit { answerText } -> { correct, feedback }
 router.post('/exam-prep-corrections/:id/submit', actionEndpointLimiter, async (req: Request, res: Response) => {
-  const { answerText } = req.body ?? {};
+  const { answerText, followUpToken } = req.body ?? {};
   if (typeof answerText !== 'string' || !answerText.trim()) {
     return res.status(400).json({ error: 'answerText is required' });
   }
   try {
-    const result = await submitCorrectionAnswer(req.userId as string, req.params.id, answerText.trim());
+    const result = await submitCorrectionAnswer(req.userId as string, req.params.id, answerText.trim(), typeof followUpToken === 'string' ? followUpToken : undefined);
     res.json(result);
   } catch (err) {
     if (err instanceof ExamPrepCorrectionNotFoundError) {

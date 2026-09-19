@@ -3,6 +3,8 @@ import { parseCorrectFeedbackJson } from './jsonParsing';
 import { callClaudeJSON, MODELS } from './claudeClient';
 import { EXAM_PREP_CORRECTION_PROMPT } from '../constants/practiceQuestionPrompts';
 import { gradeAndRecordReview, ratingFromMarkRatio } from './reviewService';
+import { FOLLOW_UP_RULE } from '../constants/knowledgeMapAnswerCheckPrompt';
+import { openFollowUp, followUpFromGrading, FollowUpForClient } from './followUp';
 
 interface CorrectionGeneration {
   explanation: string;
@@ -98,7 +100,7 @@ export class ExamPrepCorrectionNotFoundError extends Error {}
 // correction can never be "failed", only retried, matching the overnight
 // spec's "lessons/spaced repetition can never be failed" rule applied
 // here too.
-export async function submitCorrectionAnswer(userId: string, correctionId: string, answerText: string): Promise<{ correct: boolean; feedback: string }> {
+export async function submitCorrectionAnswer(userId: string, correctionId: string, answerText: string, followUpToken?: string): Promise<{ correct: boolean; feedback: string; followUp?: FollowUpForClient }> {
   const { data: correction, error } = await supabaseAdmin
     .from('exam_prep_corrections')
     .select('id, user_id, followup_question_text, followup_mark_scheme, resolved, attempt_id')
@@ -108,10 +110,13 @@ export async function submitCorrectionAnswer(userId: string, correctionId: strin
   if (!correction || correction.user_id !== userId) throw new ExamPrepCorrectionNotFoundError();
   if (correction.resolved) return { correct: true, feedback: 'Already resolved.' };
 
+  // A wrong answer is followed by a fresh question on the specific gap (see
+  // services/followUp.ts) rather than a request to edit the same answer.
+  const followUpQ = openFollowUp(userId, followUpToken);
   const raw = await callClaudeJSON({
     model: MODELS.simpleQuestion,
-    systemPrompt: 'You are checking a UK GCSE/A-Level student\'s free-text answer against a mark scheme. Output ONLY valid JSON: { "correct": boolean, "feedback": "one or two sentences" }. Mark correct only if the answer genuinely satisfies the mark scheme as stated - judge the substance strictly against the mark scheme, but spelling and typing mistakes NEVER make an answer wrong (credit the word the student clearly meant and never mention spelling). Never put a double-quote character inside the feedback string - use single quotes.',
-    userContent: `Question: ${correction.followup_question_text}\nMark scheme: ${correction.followup_mark_scheme}\nStudent's answer: ${answerText}`,
+    systemPrompt: 'You are checking a UK GCSE/A-Level student\'s free-text answer against a mark scheme. Output ONLY valid JSON: { "correct": boolean, "followUpQuestion": string, "followUpMarkScheme": string, "feedback": "one or two sentences" } - "feedback" is always the LAST field. ' + FOLLOW_UP_RULE + ' Mark correct only if the answer genuinely satisfies the mark scheme as stated - judge the substance strictly against the mark scheme, but spelling and typing mistakes NEVER make an answer wrong (credit the word the student clearly meant and never mention spelling). Never put a double-quote character inside the feedback string - use single quotes.',
+    userContent: `Question: ${followUpQ ? followUpQ.questionText : correction.followup_question_text}\nMark scheme: ${followUpQ ? followUpQ.markScheme : correction.followup_mark_scheme}\nStudent's answer: ${answerText}`,
     temperature: 0.1,
     userId,
     meteredReason: 'exam-prep-correction-grade',
@@ -150,5 +155,5 @@ export async function submitCorrectionAnswer(userId: string, correctionId: strin
     }
   }
 
-  return { correct: parsed.correct, feedback: parsed.feedback };
+  return parsed.correct ? { correct: true, feedback: parsed.feedback } : { correct: false, feedback: parsed.feedback, followUp: followUpFromGrading(userId, raw) };
 }

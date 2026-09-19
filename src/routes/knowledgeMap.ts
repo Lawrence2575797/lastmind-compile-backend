@@ -1,4 +1,5 @@
 import { Router, Request, Response } from 'express';
+import { openFollowUp, followUpFromGrading } from '../services/followUp';
 import { requireAuth, requirePaidTier, isUserPaid } from '../services/authMiddleware';
 import { costlyEndpointLimiter, syncEndpointLimiter } from '../services/rateLimiters';
 import { getKnowledgeMapForFolder, getKnowledgeMapForSubject, FolderConcept } from '../services/knowledgeMapService';
@@ -19,7 +20,7 @@ import { gradeDiagramAnswer, DiagramSpec, DiagramAnswerSubmission } from '../ser
 import { gradeCorrectness, recordFirstTeachingSignals, DURABLE_RELEARNING_CRITERION, ReviewNotDueError } from '../services/reviewService';
 import { callClaudeJSON, MODELS } from '../services/claudeClient';
 import { parseCorrectFeedbackJson, parseModelJson } from '../services/jsonParsing';
-import { KNOWLEDGE_MAP_ANSWER_CHECK_PROMPT, DAY1_CHECK_ANSWER_PROMPT, FILL_BLANK_LENIENCY_PROMPT, UNTRACKED_LESSON_GRADE_PROMPT } from '../constants/knowledgeMapAnswerCheckPrompt';
+import { KNOWLEDGE_MAP_ANSWER_CHECK_PROMPT, KNOWLEDGE_MAP_ANSWER_CHECK_NO_FOLLOW_UP_PROMPT, DAY1_CHECK_ANSWER_PROMPT, FILL_BLANK_LENIENCY_PROMPT, UNTRACKED_LESSON_GRADE_PROMPT } from '../constants/knowledgeMapAnswerCheckPrompt';
 import {
   getQualifyingReviewLinks,
   linkIntegrationConceptId,
@@ -575,7 +576,8 @@ function normalizeForBlankComparison(text: string): string {
 }
 
 router.post('/knowledge-map-v2/text-question/submit', requireAuth, costlyEndpointLimiter, async (req: Request, res: Response) => {
-  const { nodeId, fromNodeId, toNodeId, questionType, answer, answers, retryCount } = (req.body ?? {}) as {
+  const { nodeId, fromNodeId, toNodeId, questionType, answer, answers, retryCount, followUpToken } = (req.body ?? {}) as {
+    followUpToken?: string;
     nodeId?: string;
     fromNodeId?: string;
     toNodeId?: string;
@@ -650,10 +652,15 @@ router.post('/knowledge-map-v2/text-question/submit', requireAuth, costlyEndpoin
       return res.json({ correct, feedback, perBlankCorrect, schedule: scheduleWithMastery(conceptId!, graded) });
     }
 
+    // A retry after a wrong answer is graded against the follow-up question the
+    // marker set (see services/followUp.ts) rather than the original.
+    const followUpQ = openFollowUp(userId, followUpToken);
+    const gradedQuestionText = followUpQ ? followUpQ.questionText : question.questionText;
+    const gradedMarkScheme = followUpQ ? followUpQ.markScheme : (question.markScheme || '');
     const raw = await callClaudeJSON({
       model: MODELS.simpleQuestion,
-      systemPrompt: KNOWLEDGE_MAP_ANSWER_CHECK_PROMPT,
-      userContent: `Question: ${question.questionText}\nMark scheme: ${question.markScheme || ''}\nStudent's answer: ${answer}`,
+      systemPrompt: questionType === 'practice' ? KNOWLEDGE_MAP_ANSWER_CHECK_PROMPT : KNOWLEDGE_MAP_ANSWER_CHECK_NO_FOLLOW_UP_PROMPT,
+      userContent: `Question: ${gradedQuestionText}\nMark scheme: ${gradedMarkScheme}\nStudent's answer: ${answer}`,
       temperature: 0.1,
       userId,
       // questionType is 'practice' (initial encoding), 'transfer', or
@@ -676,7 +683,7 @@ router.post('/knowledge-map-v2/text-question/submit', requireAuth, costlyEndpoin
     // student retry. Transfer/integration (a spaced review of an
     // already-encoded concept) still grades every attempt immediately.
     if (questionType === 'practice' && !correct) {
-      return res.json({ correct, feedback, retryable: true });
+      return res.json({ correct, feedback, retryable: true, followUp: followUpFromGrading(userId, raw) });
     }
     const graded = await gradeCorrectness(userId, conceptId!, correct, questionType === 'practice' ? (Number(retryCount) || 0) : 0);
     // See the identical comment on diagram-question/submit above.
@@ -744,16 +751,17 @@ router.post('/knowledge-map-v2/node/:nodeId/untracked-submit', requireAuth, cost
     if (typeof body.answer !== 'string' || !body.answer.trim()) {
       return res.status(400).json({ error: 'answer is required' });
     }
+    const untrackedFollowUp = openFollowUp(req.userId as string, (body as { followUpToken?: string }).followUpToken);
     const raw = await callClaudeJSON({
       model: MODELS.simpleQuestion,
       systemPrompt: UNTRACKED_LESSON_GRADE_PROMPT,
-      userContent: `Question: ${question.questionText}\nMark scheme: ${question.markScheme || ''}\nStudent's answer: ${body.answer}`,
+      userContent: `Question: ${untrackedFollowUp ? untrackedFollowUp.questionText : question.questionText}\nMark scheme: ${untrackedFollowUp ? untrackedFollowUp.markScheme : (question.markScheme || '')}\nStudent's answer: ${body.answer}`,
       temperature: 0.2,
       userId: req.userId,
       meteredReason: 'knowledge-map-v2-untracked-grade',
     });
     const { correct, feedback, hint } = parseModelJson<{ correct: boolean; feedback: string; hint?: string }>(raw);
-    res.json({ correct, feedback, hint: correct ? undefined : hint, retryable: !correct });
+    res.json({ correct, feedback, hint: correct ? undefined : hint, retryable: !correct, followUp: correct ? undefined : followUpFromGrading(req.userId as string, raw) });
   } catch (err) {
     console.error('Untracked lesson grading failed:', err);
     res.status(500).json({ error: 'could not grade this answer' });
@@ -940,7 +948,8 @@ router.get('/immediate-recalls/due', requireAuth, syncEndpointLimiter, async (re
 // feature didn't exist.
 router.post('/immediate-recalls/:id/submit', requireAuth, costlyEndpointLimiter, async (req: Request, res: Response) => {
   const { id } = req.params;
-  const { recallCheckIndex, answer, selectedOptionIndex, retryCount } = (req.body ?? {}) as {
+  const { recallCheckIndex, answer, selectedOptionIndex, retryCount, followUpToken } = (req.body ?? {}) as {
+    followUpToken?: string;
     recallCheckIndex?: number;
     answer?: string;
     selectedOptionIndex?: number;
@@ -988,6 +997,7 @@ router.post('/immediate-recalls/:id/submit', requireAuth, costlyEndpointLimiter,
 
     let correct: boolean;
     let feedback: string | null = null;
+    let recallFollowUpOut: ReturnType<typeof followUpFromGrading>;
     if (check.format === 'multiple_choice') {
       if (typeof selectedOptionIndex !== 'number') return res.status(400).json({ error: 'selectedOptionIndex is required' });
       correct = selectedOptionIndex === check.correctOptionIndex;
@@ -1014,15 +1024,17 @@ router.post('/immediate-recalls/:id/submit', requireAuth, costlyEndpointLimiter,
       }
     } else {
       if (typeof answer !== 'string' || !answer.trim()) return res.status(400).json({ error: 'answer is required' });
+      const recallFollowUp = openFollowUp(userId, followUpToken);
       const raw = await callClaudeJSON({
         model: MODELS.simpleQuestion,
         systemPrompt: KNOWLEDGE_MAP_ANSWER_CHECK_PROMPT,
-        userContent: `Question: ${check.questionText}\nMark scheme: ${check.markScheme || ''}\nStudent's answer: ${answer}`,
+        userContent: `Question: ${recallFollowUp ? recallFollowUp.questionText : check.questionText}\nMark scheme: ${recallFollowUp ? recallFollowUp.markScheme : (check.markScheme || '')}\nStudent's answer: ${answer}`,
         temperature: 0.1,
         userId,
         meteredReason: 'immediate-recall-grade',
       });
       ({ correct, feedback } = parseCorrectFeedbackJson(raw));
+      if (!correct) recallFollowUpOut = followUpFromGrading(userId, raw);
     }
 
     // Gamma tunes off the FIRST attempt's own result only - a retry on
@@ -1065,7 +1077,7 @@ router.post('/immediate-recalls/:id/submit', requireAuth, costlyEndpointLimiter,
         }
       }
     }
-    res.json({ correct, feedback });
+    res.json({ correct, feedback, followUp: recallFollowUpOut });
   } catch (err) {
     console.error('Immediate recall grading failed:', err);
     res.status(500).json({ error: 'could not grade this answer' });
@@ -1343,7 +1355,8 @@ router.post('/knowledge-map-v2/node-review/ao1/submit', requireAuth, costlyEndpo
     const userId = req.userId as string;
     const { data: node } = await supabaseAdmin.from('knowledge_map_nodes').select('concept_id').eq('id', nodeId).maybeSingle();
     if (!node) return res.status(404).json({ error: 'concept not found' });
-    const graded = await gradeRewordedAo1Answer(nodeId, questionText, answer, userId);
+    const followUpToken = (req.body as { followUpToken?: string }).followUpToken;
+    const graded = await gradeRewordedAo1Answer(nodeId, questionText, answer, userId, followUpToken);
     if (!graded) return res.status(404).json({ error: 'no lesson generated for this concept yet' });
     if (graded.correct) {
       return res.json(await finalizeAo1Grade(userId, node.concept_id as string, graded.feedback, Number(retryCount) || 0));
@@ -1353,11 +1366,13 @@ router.post('/knowledge-map-v2/node-review/ao1/submit', requireAuth, costlyEndpo
     // just the flagged word (see AO1_SLIP_CHECK_PROMPT) rather than a
     // generic retry; either way nothing is recorded yet - it's just a
     // retry with the grading call's own feedback as a hint.
-    const slip = await checkAo1SlipCandidate(nodeId, questionText, answer, userId);
+    // Skipped while answering a follow-up question: the slip check compares against
+    // the original answer's wording, which no longer applies.
+    const slip = followUpToken ? null : await checkAo1SlipCandidate(nodeId, questionText, answer, userId);
     if (slip?.isSlip && slip.wrongPhrase) {
       return res.json({ correct: false, feedback: graded.feedback, retryable: true, isSlipCandidate: true, wrongPhrase: slip.wrongPhrase });
     }
-    res.json({ correct: false, feedback: graded.feedback, retryable: true });
+    res.json({ correct: false, feedback: graded.feedback, retryable: true, followUp: graded.followUp });
   } catch (err) {
     console.error('AO1 reworded grading failed:', err);
     res.status(500).json({ error: 'could not grade this answer' });
@@ -1396,7 +1411,7 @@ router.post('/knowledge-map-v2/node-review/ao1/submit-slip-correction', requireA
     const graded = await gradeRewordedAo1Answer(nodeId, questionText, correctedAnswer, userId);
     if (!graded) return res.status(404).json({ error: 'no lesson generated for this concept yet' });
     if (!graded.correct) {
-      return res.json({ correct: false, feedback: graded.feedback, retryable: true });
+      return res.json({ correct: false, feedback: graded.feedback, retryable: true, followUp: graded.followUp });
     }
     // retryCount as sent by the frontend already counts the miss that
     // triggered this slip-check (it's incremented BEFORE the slip-check
@@ -1565,12 +1580,12 @@ router.post('/knowledge-map-v2/node-review/integration/submit', requireAuth, cos
     // itself always runs against the edge's own stored mark scheme, never
     // the original question text, so this only affects what's shown back
     // to the grading model as context.
-    const graded = await gradeIntegrationAnswer(fromNodeId, toNodeId, questionText, answer, userId);
+    const graded = await gradeIntegrationAnswer(fromNodeId, toNodeId, questionText, answer, userId, (req.body as { followUpToken?: string }).followUpToken);
     if (!graded) return res.status(404).json({ error: 'no integration question available for this connection' });
 
     if (!graded.correct) {
       await recordPairwiseIntegrationOutcome(userId, fromNode.concept_id as string, toNode.concept_id as string, false);
-      return res.json({ correct: false, feedback: graded.feedback, retryable: true });
+      return res.json({ correct: false, feedback: graded.feedback, retryable: true, followUp: graded.followUp });
     }
 
     const conceptId = linkIntegrationConceptId(fromNode.concept_id as string, toNode.concept_id as string);

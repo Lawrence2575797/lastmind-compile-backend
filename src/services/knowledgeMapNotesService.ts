@@ -670,7 +670,7 @@ export async function getNotesIndexForUser(userId: string): Promise<{ subjects: 
 
     const themesMap = new Map<string, NotesIndexSubtopic[]>();
     subtopicsBuilt.forEach((s) => {
-      const themeName = themeMap.get(s.subtopic) || fallbackThemeName(s.subtopic);
+      const themeName = themeMap.get(s.subtopic) || fallbackThemeName(s.subtopic, triple.subject);
       const list = themesMap.get(themeName) || [];
       list.push(s);
       themesMap.set(themeName, list);
@@ -681,7 +681,7 @@ export async function getNotesIndexForUser(userId: string): Promise<{ subjects: 
     // the theme's own display name happens to start with "Theme N".
     const themeOrder: string[] = [];
     subtopicsBuilt.forEach((s) => {
-      const themeName = themeMap.get(s.subtopic) || fallbackThemeName(s.subtopic);
+      const themeName = themeMap.get(s.subtopic) || fallbackThemeName(s.subtopic, triple.subject);
       if (!themeOrder.includes(themeName)) themeOrder.push(themeName);
     });
 

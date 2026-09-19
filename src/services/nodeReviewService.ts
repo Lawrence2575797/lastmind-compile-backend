@@ -141,8 +141,12 @@ export async function assertNodeReviewDue(userId: string, nodeId: string): Promi
   if (!node) return; // the route's own 404 check handles a missing node
 
   const links = await getQualifyingReviewLinks(userId, nodeId);
+  // A concept covered before LastMind has no FSRS card of its own (no row
+  // to be "due"), so only its integration links gate the session - without
+  // this its missing row read as permanently due.
+  const externallyCovered = await getExternalCoveredConceptIds(userId);
   const conceptIds = [
-    node.concept_id,
+    ...(externallyCovered.has(node.concept_id) ? [] : [node.concept_id]),
     ...links.map((l) => linkIntegrationConceptId(l.fromNode.concept_id, l.toNode.concept_id)),
   ];
 

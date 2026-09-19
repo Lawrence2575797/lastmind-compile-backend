@@ -195,6 +195,9 @@ const SUBTOPIC_THEME_OVERRIDES: Record<string, string> = {
   '7 Kinematics': 'Mechanics',
   "8 Forces and Newton's laws": 'Mechanics',
   '9 Moments': 'Mechanics',
+  // Edexcel A-Level Economics 3.6 has no seeded lesson plan, so it fell back to a
+  // bare "Theme 3" beside the real "Theme 3 - ..." group.
+  '3.6 Government intervention': 'Theme 3 - Business behaviour and the labour market',
 };
 
 export function fallbackThemeName(subtopic: string): string {

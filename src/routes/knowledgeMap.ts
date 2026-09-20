@@ -1121,15 +1121,22 @@ router.get('/day1-checks/due', requireAuth, syncEndpointLimiter, async (req: Req
     const missing = infos.filter((x) => x.info && !x.question && !(x.r.concept_id as string).endsWith('::integration'));
     const readyCount = infos.filter((x) => x.info && x.question).length;
     if (readyCount < 2 && missing.length) {
-      try {
-        const [next] = await orderDay1ChecksByLessonOrder(missing.map((x) => ({ conceptId: x.r.concept_id as string, item: x })));
-        await assertFreshGenerationWithinCap(userId, await isUserPaid(userId), req.userCreatedAt ?? null, req.userEmail);
-        await generateAndCacheNodeLesson(next.item.info!.nodeId, userId);
-        await recordFreshGenerationEvent(userId);
-        next.item.question = await getQuestionForConceptId(next.item.r.concept_id as string);
-      } catch (err) {
-        console.error('Regenerating a lesson for a Day-1 check failed (non-fatal):', err);
-      }
+      const regenerateNext = async () => {
+        try {
+          const [next] = await orderDay1ChecksByLessonOrder(missing.map((x) => ({ conceptId: x.r.concept_id as string, item: x })));
+          await assertFreshGenerationWithinCap(userId, await isUserPaid(userId), req.userCreatedAt ?? null, req.userEmail);
+          await generateAndCacheNodeLesson(next.item.info!.nodeId, userId);
+          await recordFreshGenerationEvent(userId);
+          next.item.question = await getQuestionForConceptId(next.item.r.concept_id as string);
+        } catch (err) {
+          console.error('Regenerating a lesson for a Day-1 check failed (non-fatal):', err);
+        }
+      };
+      // A regeneration is a full Claude lesson call (tens of seconds). Only wait for it
+      // when there is nothing to show at all; otherwise answer straight away with the
+      // checks that are ready and let it finish in the background, ready for next time.
+      if (readyCount === 0) await regenerateNext();
+      else void regenerateNext();
     }
     const withDisplay = infos.map(({ r, info, question }) => {
       if (!info || !question) return null;

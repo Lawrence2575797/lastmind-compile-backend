@@ -90,10 +90,12 @@ function walk(node: unknown, fn: (s: string, key: string, path: string[]) => str
 
 export function screenRequestBody(req: Request, res: Response, next: NextFunction) {
   if (!req.body || typeof req.body !== 'object') return next();
-  const rule = USER_TEXT_PATHS.find((r) => r.test.test(req.path));
+  const fullPath = (req.originalUrl || req.url || '').split('?')[0];
+  const rule = USER_TEXT_PATHS.find((r) => r.test.test(fullPath));
   const redacted = new Set<PiiKind>();
   let blocked = false;
   req.body = walk(req.body, (s, key, path) => {
+    if (s.length > 20000 || s.startsWith('data:')) return s;   // images and other bulk data are not free text
     const isUser = !!rule && (rule.all || rule.keys.some((k) => key === k || path.includes(k)));
     if (isUser && hasVulgarLanguage(s)) blocked = true;
     const r = redactPii(s, isUser);

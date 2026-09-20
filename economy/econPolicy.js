@@ -346,7 +346,8 @@
       var tot = { prog: {} }, rate = null, any = false;
       ids.forEach(function (id) {
         var e = byId[id]; if (!e || e.preset) return;
-        var k = t - start - lagOf(e.area); if (k < 0) return;
+        var raw0 = settings[id];
+        var k = (raw0 && typeof raw0 === 'object' && raw0.k != null) ? raw0.k : t - start - lagOf(e.area); if (k < 0) return;
         var raw = settings[id], v = raw, m = { k: k, opt: null };
         if (raw && typeof raw === 'object') { v = raw.v; m.opt = raw.opt || null; if (raw.dur) m.dur = raw.dur; }
         if (e.dur && (m.dur == null)) m.dur = 4;
@@ -356,7 +357,7 @@
         if (!available(e, pf, flags).ok) return;
         if (e.id === 'devalue' && v === 0) return;
         var o = newOut(); e.fn(v, X, o, m); any = true;
-        var ramp = Math.min(1, (k + 1) / phase);
+        var ramp = (raw0 && typeof raw0 === 'object' && raw0.noRamp) ? 1 : Math.min(1, (k + 1) / phase);
         Object.keys(o.ch).forEach(function (key) {
           if (key === 'prog') { Object.keys(o.ch.prog).forEach(function (q) { tot.prog[q] = (tot.prog[q] || 0) + o.ch.prog[q] * ramp; }); }
           else if (OVERRIDE[key]) tot[key] = o.ch[key];

@@ -629,6 +629,6 @@
     });
   }
 
-  root.LMEcon = { P: P, PARAM_DOC: PARAM_DOC, PUBLIC: PUBLIC, PROFILES: PROFILES, SHOCKS: SHOCKS, derive: derive, init: init, step: step, run: run, impulse: impulse, mulberry: mulberry, validate: validate, PROG: PROG, observed: observed };
+  root.LMEcon = { P: P, PARAM_DOC: PARAM_DOC, PUBLIC: PUBLIC, PROFILES: PROFILES, SHOCKS: SHOCKS, derive: derive, init: init, step: step, run: run, impulse: impulse, mulberry: mulberry, validate: validate, PROG: PROG, observed: observed, snapshot: snapshot };
   if (typeof module !== 'undefined' && module.exports) module.exports = root.LMEcon;
 })(typeof window !== 'undefined' ? window : globalThis);

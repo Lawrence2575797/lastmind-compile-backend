@@ -12,6 +12,7 @@ import encodingLessonRouter from './routes/encodingLesson';
 import syncRouter from './routes/sync';
 import calendarEventsRouter from './routes/calendarEvents';
 import knowledgeMapRouter from './routes/knowledgeMap';
+import createSimulationRouter from './routes/createSimulation';
 // Peer-to-peer student tutoring (opt-in, matching, request/response, ratings).
 import tutoringProfileRouter from './routes/tutoringProfile';
 import peerTutoringRouter from './routes/peerTutoring';
@@ -104,6 +105,7 @@ app.use('/', tutoringSlotsRouter);
 app.use('/', encouragementRouter);
 app.use('/', weeklyProgressReportRouter);
 app.use('/', economicsDiagramsRouter);
+app.use('/', createSimulationRouter);
 app.use('/', keysRouter);
 
 app.get('/health', (_req, res) => res.send('ok'));

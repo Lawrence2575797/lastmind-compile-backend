@@ -36,6 +36,7 @@ function briefing(b: Record<string, any>) {
     },
     recentPolicyDecisions: arr<string>(c.recentPolicies, 12).map((x) => str(x, 140)).filter(Boolean),
     inTheNews: arr<string>(c.news, 6).map((x) => str(x, 160)).filter(Boolean),
+    chancellorsStatedGoals: str(c.goals, 600) || undefined,
     chancellorsPopularity: { public: Math.round(num(c.popularityPublic, 0, 100, 50)), cabinet: Math.round(num(c.popularityCabinet, 0, 100, 50)) },
     interviewer: { name: str(c.journalist, 60), outlet: str(c.outlet, 60) },
   };
@@ -72,7 +73,7 @@ router.post('/chancellor/interview/assess', actionEndpointLimiter, async (req: R
   if (!question) return res.status(400).json({ error: 'question is required' });
   try {
     const { text, spend } = await createAiCall({
-      userId, systemPrompt: CHANCELLOR_INTERVIEW_ASSESS_PROMPT, userContent: JSON.stringify({ ...briefing(b), question, chancellorsAnswer: answer.text || '(no answer)' }),
+      userId, systemPrompt: CHANCELLOR_INTERVIEW_ASSESS_PROMPT, userContent: JSON.stringify({ ...briefing(b), question, interviewType: b.mode === 'goals' ? 'first-day interview: the Chancellor was asked to outline their goals for the term' : 'regular interview', chancellorsAnswer: answer.text || '(no answer)' }),
       maxTokens: 700, temperature: 0.3, reason: 'chancellor-interview-assess', cacheSystemPrompt: false, clientUsedUsd: Number(b.clientUsedUsd) || undefined,
     });
     const p = parseModelJson<any>(text);

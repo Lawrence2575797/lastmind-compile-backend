@@ -138,6 +138,7 @@
     backfillMonthly(g);
     g.bigBudget = { date: defaultBudgetDate(start), done: false, prepDone: false };
     scheduleAll(g);
+    addEvent(g, { kind: 'interview', needsAction: true, goals: true, date: g.startDate, title: 'First interview: your goals', journalist: pickOne(g, JOURNALISTS), outlet: pickOne(g, BROADCASTERS) });
     return g;
   }
 

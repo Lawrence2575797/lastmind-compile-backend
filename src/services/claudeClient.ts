@@ -367,6 +367,25 @@ export async function callClaudeJSON(params: {
   return text;
 }
 
+// Same call and same Locks charge as callClaudeJSON, but also hands back the usage so the caller can keep a
+// dollar budget (LastMind Create's hard testing cap). Thinking stays off for the models that default to it
+// (see modelThinksByDefault) - every call here is a structured JSON task.
+export async function callClaudeJSONWithUsage(params: {
+  model: string;
+  systemPrompt: string;
+  userContent: string;
+  maxTokens?: number;
+  temperature?: number;
+  cacheSystemPrompt?: boolean;
+  userId?: string;
+  meteredReason?: string;
+}): Promise<{ text: string; usage: ClaudeCallUsage }> {
+  const { text, usage } = await sendWithTemperatureRetry(params.model, params.systemPrompt, sanitizeForClaude(params.userContent), params.maxTokens, params.temperature, params.cacheSystemPrompt);
+  const chargeUserId = params.userId ?? currentUserId();
+  if (chargeUserId) await chargeForClaudeCall(chargeUserId, params.model, usage, params.meteredReason || 'unlabeled');
+  return { text, usage };
+}
+
 export interface ClaudeImageInput {
   mediaType: 'image/png' | 'image/jpeg' | 'image/gif' | 'image/webp';
   base64Data: string;

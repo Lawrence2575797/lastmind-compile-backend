@@ -2,7 +2,8 @@ import { Router, Request, Response } from 'express';
 import crypto from 'crypto';
 import { requireAuth } from '../services/authMiddleware';
 import { costlyEndpointLimiter, syncEndpointLimiter } from '../services/rateLimiters';
-import { callClaudeJSON, MODELS } from '../services/claudeClient';
+import { createAiCall } from '../services/createAi';
+import { CreateCapError, getUsedUsd, spendSummary } from '../services/createSpend';
 import { parseModelJson } from '../services/jsonParsing';
 import { InsufficientLocksError, assertLocksAvailable } from '../services/lockService';
 import { CRIMINAL_TRIAL_BUILD_PROMPT, CRIMINAL_TRIAL_VALIDATE_PROMPT } from '../constants/createSimulationPrompts';
@@ -13,7 +14,7 @@ router.use('/create', requireAuth);
 // Building or checking a whole case is one long Claude call (tens of seconds), longer than is safe to hold
 // an HTTP request open through a proxy. So each is run as a job: POST starts it and returns an id at once,
 // the page polls GET for the result. Jobs live in memory (a restart mid-job just makes the page offer a retry).
-interface Job { userId: string; status: 'running' | 'done' | 'error'; result?: unknown; error?: string; code?: string; createdAt: number }
+interface Job { userId: string; status: 'running' | 'done' | 'error'; result?: unknown; error?: string; code?: string; createdAt: number; spend?: { usedUsd: number; capUsd: number } }
 const jobs = new Map<string, Job>();
 const JOB_TTL_MS = 30 * 60 * 1000;
 function sweepJobs() {
@@ -21,16 +22,18 @@ function sweepJobs() {
   for (const [id, job] of jobs) if (now - job.createdAt > JOB_TTL_MS) jobs.delete(id);
 }
 
-function startJob(userId: string, work: () => Promise<unknown>): string {
+export function startJob(userId: string, work: () => Promise<unknown>): string {
   sweepJobs();
   const id = crypto.randomBytes(12).toString('hex');
   const job: Job = { userId, status: 'running', createdAt: Date.now() };
   jobs.set(id, job);
   work().then(
-    (result) => { job.status = 'done'; job.result = result; },
+    (result) => { job.status = 'done'; job.result = result; job.spend = spendSummary(userId); },
     (err) => {
       job.status = 'error';
-      if (err instanceof InsufficientLocksError) { job.error = "You're out of Locks for now."; job.code = 'LOCK_LIMIT_REACHED'; }
+      job.spend = spendSummary(userId);
+      if (err instanceof CreateCapError) { job.error = err.message; job.code = 'CREATE_SPEND_CAP'; }
+      else if (err instanceof InsufficientLocksError) { job.error = "You're out of Locks for now."; job.code = 'LOCK_LIMIT_REACHED'; }
       else { console.error('Create simulation job failed:', err); job.error = 'Cortex could not finish this - please try again.'; }
     }
   );
@@ -106,8 +109,10 @@ router.post('/create/criminal-trial/build', costlyEndpointLimiter, async (req: R
   const userId = req.userId as string;
   try {
     await assertLocksAvailable(userId);
+    if (getUsedUsd(userId, Number(body.clientUsedUsd) || undefined) >= spendSummary(userId).capUsd - 0.005) throw new CreateCapError(getUsedUsd(userId), spendSummary(userId).capUsd);
   } catch (err) {
     if (err instanceof InsufficientLocksError) return res.status(402).json({ error: 'Lock limit reached', code: 'LOCK_LIMIT_REACHED' });
+    if (err instanceof CreateCapError) return res.status(402).json({ error: err.message, code: 'CREATE_SPEND_CAP', spend: spendSummary(userId) });
     throw err;
   }
   const details = body.details && typeof body.details === 'object' ? body.details : {};
@@ -126,14 +131,9 @@ router.post('/create/criminal-trial/build', costlyEndpointLimiter, async (req: R
     },
   };
   const jobId = startJob(userId, async () => {
-    const raw = await callClaudeJSON({
-      model: MODELS.compile,
-      systemPrompt: CRIMINAL_TRIAL_BUILD_PROMPT,
-      userContent: JSON.stringify(input),
-      maxTokens: 9000,
-      temperature: 0.8,
-      userId,
-      meteredReason: 'create-criminal-trial-build',
+    const { text: raw } = await createAiCall({
+      userId, systemPrompt: CRIMINAL_TRIAL_BUILD_PROMPT, userContent: JSON.stringify(input), maxTokens: 9000, temperature: 0.8,
+      reason: 'create-criminal-trial-build', clientUsedUsd: Number(body.clientUsedUsd) || undefined,
     });
     return normaliseCase(parseModelJson<any>(raw), concepts);
   });
@@ -151,8 +151,10 @@ router.post('/create/criminal-trial/validate', costlyEndpointLimiter, async (req
   const userId = req.userId as string;
   try {
     await assertLocksAvailable(userId);
+    if (getUsedUsd(userId, Number(body.clientUsedUsd) || undefined) >= spendSummary(userId).capUsd - 0.005) throw new CreateCapError(getUsedUsd(userId), spendSummary(userId).capUsd);
   } catch (err) {
     if (err instanceof InsufficientLocksError) return res.status(402).json({ error: 'Lock limit reached', code: 'LOCK_LIMIT_REACHED' });
+    if (err instanceof CreateCapError) return res.status(402).json({ error: err.message, code: 'CREATE_SPEND_CAP', spend: spendSummary(userId) });
     throw err;
   }
   // Only the case content goes to Cortex (ids and the old coverage rating are dropped).
@@ -160,14 +162,10 @@ router.post('/create/criminal-trial/validate', costlyEndpointLimiter, async (req
   const caseText = JSON.stringify(content, (k, v) => (k === 'id' ? undefined : v));
   if (caseText.length > 60000) return res.status(413).json({ error: 'case is too large' });
   const jobId = startJob(userId, async () => {
-    const raw = await callClaudeJSON({
-      model: MODELS.compile,
-      systemPrompt: CRIMINAL_TRIAL_VALIDATE_PROMPT,
+    const { text: raw } = await createAiCall({
+      userId, systemPrompt: CRIMINAL_TRIAL_VALIDATE_PROMPT,
       userContent: JSON.stringify({ studentRole: role, approximateMinutes: minutes, curriculumConcepts: concepts, case: JSON.parse(caseText) }),
-      maxTokens: 3500,
-      temperature: 0.2,
-      userId,
-      meteredReason: 'create-criminal-trial-validate',
+      maxTokens: 3500, temperature: 0.2, reason: 'create-criminal-trial-validate', clientUsedUsd: Number(body.clientUsedUsd) || undefined,
     });
     const parsed = parseModelJson<any>(raw);
     const issues = arr<any>(parsed?.issues, 30).map((i) => ({
@@ -189,8 +187,14 @@ router.get('/create/jobs/:id', syncEndpointLimiter, (req: Request, res: Response
   const job = jobs.get(req.params.id);
   if (!job || job.userId !== req.userId) return res.status(404).json({ error: 'job not found' });
   if (job.status === 'running') return res.json({ status: 'running' });
-  if (job.status === 'error') return res.json({ status: 'error', error: job.error, code: job.code });
-  res.json({ status: 'done', result: job.result });
+  if (job.status === 'error') return res.json({ status: 'error', error: job.error, code: job.code, spend: job.spend });
+  res.json({ status: 'done', result: job.result, spend: job.spend });
+});
+
+// GET /create/spend?used=<what the page last saw> -> { usedUsd, capUsd }
+router.get('/create/spend', syncEndpointLimiter, (req: Request, res: Response) => {
+  getUsedUsd(req.userId as string, Number(req.query.used) || undefined);
+  res.json(spendSummary(req.userId as string));
 });
 
 export default router;

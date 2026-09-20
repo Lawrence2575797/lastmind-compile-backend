@@ -59,6 +59,10 @@ export const ADMIN_EMAILS = new Set(
     .filter(Boolean)
 );
 
+export function isAdminEmail(email: string | null | undefined): boolean {
+  return !!email && ADMIN_EMAILS.has(email.toLowerCase());
+}
+
 export function requireAdmin(req: Request, res: Response, next: NextFunction) {
   const email = (req.userEmail || '').toLowerCase();
   if (!email || !ADMIN_EMAILS.has(email)) {

@@ -13,6 +13,8 @@ import syncRouter from './routes/sync';
 import calendarEventsRouter from './routes/calendarEvents';
 import knowledgeMapRouter from './routes/knowledgeMap';
 import createSimulationRouter from './routes/createSimulation';
+import playtestRouter from './routes/playtest';
+import createProjectsRouter from './routes/createProjects';
 // Peer-to-peer student tutoring (opt-in, matching, request/response, ratings).
 import tutoringProfileRouter from './routes/tutoringProfile';
 import peerTutoringRouter from './routes/peerTutoring';
@@ -67,6 +69,8 @@ app.use(helmet({ contentSecurityPolicy: false }));
 // body than the 200 KB used elsewhere. This parser must come first: once a body
 // has been read, the global one below skips it.
 app.use('/sync/folders', express.json({ limit: '3mb' }));
+app.use('/create/projects', express.json({ limit: '6mb' }));
+app.use('/playtest/session', express.json({ limit: '1mb' }));
 app.use(express.json({ limit: '200kb' }));
 app.use(cors({ origin: FRONTEND_ORIGIN, methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'] }));
 app.use(globalRateLimiter);
@@ -106,6 +110,8 @@ app.use('/', encouragementRouter);
 app.use('/', weeklyProgressReportRouter);
 app.use('/', economicsDiagramsRouter);
 app.use('/', createSimulationRouter);
+app.use('/', playtestRouter);
+app.use('/', createProjectsRouter);
 app.use('/', keysRouter);
 
 app.get('/health', (_req, res) => res.send('ok'));

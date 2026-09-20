@@ -182,7 +182,7 @@
     var S = Math.max(0, debtStress + trajectory + burden + fx + infl + res + ca + pol + reg);
     return S;
   }
-  function spreadFromStress(S) { return clamp(0.15 + 2.4 * Math.pow(S, 1.6), 0.1, 25); }
+  function spreadFromStress(S) { return clamp(0.15 + 1.6 * Math.pow(S, 1.5), 0.1, 25); }
 
   /* ---------- initial (steady) state ---------- */
   function init(pf) {
@@ -456,7 +456,7 @@
     var pd = spend - revenue + (training * 100 * 0);
     var gnq = (s.Y / H.Y[1] - 1) + s.pi / 400;
     if (c('haircut') > 0 && !s.hcDone) {                                            // restructuring: debt cut now, market access lost for years (Cruces & Trebesch 2013)
-      s.hcDone = true; s.debt *= 1 - c('haircut') / 100;
+      s.hcDone = true; s.debt *= 1 - c('haircut') / 100; s.iEff *= 1 - 0.7 * c('haircut') / 100;   // the new bonds carry far lower coupons
       s.riskS += 0.07 * c('haircut'); s.creditS += 0.04 * c('haircut'); s.A = Math.max(0.05, s.A - 0.004 * c('haircut'));
     }
     var oldD = s.debt;
@@ -468,7 +468,7 @@
     if (c('debtTarget') > 0) brk += Math.max(0, s.debtGDP - c('debtTarget')) / 25;
     if (c('spendCeil') > 0) brk += Math.max(0, spend - c('spendCeil')) / 3;
     s.ruleBreach = Math.min(brk, 2);
-    var ruleAdj = c('fiscalCred') > 0 ? c('fiscalCred') * (-0.18 + 0.35 * s.ruleBreach) : 0;
+    var ruleAdj = c('fiscalCred') > 0 ? c('fiscalCred') * (-0.5 + 0.35 * s.ruleBreach) : 0;
     s.S = Math.max(0, sovStress(s, pf, d) + ruleAdj);
     var spread = spreadFromStress(s.S) + s.riskS * 1.0;
     s.spread = 0.5 * s.spread + 0.5 * Math.max(0.1, spread);

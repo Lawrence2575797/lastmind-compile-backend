@@ -41,7 +41,7 @@
   var SITUATIONS = {
     'stable': { name: 'A well-run economy', diagnosis: "Nothing is broken. The job is to keep growth steady, prices stable and the public finances sound, and to make the country better off.", pf: function (pf) { pf.credibility = Math.min(0.95, pf.credibility + 0.1); return pf; }, shocks: {} },
     'debt-crisis': { name: 'External debt crisis', diagnosis: "The government owes a lot in foreign currency, reserves are thin and lenders are pulling back, which pushes the currency down and borrowing costs up. It can be fixed: cut the deficit credibly, lengthen the debt, borrow less in foreign currency, rebuild reserves and protect the currency.",
-      pf: function (pf) { pf.debt = Math.max(pf.debt, pf.incomeRel > 0.7 ? 1.1 : 0.85); pf.fxDebt = Math.max(pf.fxDebt, 0.55); pf.reserves = Math.min(pf.reserves, 1.2); pf.baseRp += 2.0; pf.credibility = Math.max(0.2, pf.credibility - 0.25); pf.polStab = Math.max(0.2, pf.polStab - 0.2); pf.maturityYrs = Math.max(3, pf.maturityYrs * 0.5); return pf; },
+      pf: function (pf) { pf.debt = Math.max(pf.debt, pf.incomeRel > 0.7 ? 1.05 : 0.8); pf.fxDebt = Math.max(pf.fxDebt, 0.5); pf.reserves = Math.min(pf.reserves, 1.5); pf.baseRp += 1.5; pf.credibility = Math.max(0.2, pf.credibility - 0.25); pf.polStab = Math.max(0.2, pf.polStab - 0.2); pf.maturityYrs = Math.max(3, pf.maturityYrs * 0.5); return pf; },
       shocks: { 7: { risk: 1.2, e: -8, fd: -2 }, 8: { fd: -3, risk: 1.0, e: -10, hh: -1.5, biz: -2 }, 9: { risk: 1.2, credit: 1.5, e: -8, biz: -1.5 }, 10: { risk: 1.0, unc: 0.8, e: -6, hh: -1 }, 11: { risk: 0.6, e: -4, biz: -1 }, 12: { unc: 0.4 } } },
     'hyperinflation': { name: 'Hyperinflation', diagnosis: "Three things are feeding each other. The central bank is printing money to cover the government's deficit. The currency has collapsed, so imports keep getting dearer. And nobody believes inflation will come down, so prices and wages are set ever higher. Each can be attacked: close the deficit, stop the central bank financing it (Monetary: Central bank independence), raise interest rates above inflation, stabilise the currency, and adopt a fiscal rule. Rates alone will not work while the deficit is still being printed away.",
       pf: function (pf) { pf.regime = pf.regime === 'union' ? 'independent' : 'govcontrolled'; pf.monetise = 0.65; pf.credibility = 0.12; pf.hawk = 0.1; pf.maturityYrs = Math.min(pf.maturityYrs, 3); pf.fxDebt = Math.max(pf.fxDebt, 0.3); pf.baseRp += 2; pf.polStab = Math.max(0.2, pf.polStab - 0.3); return pf; },
@@ -108,6 +108,47 @@
     { id: 'politicalCrisis', label: 'Political or institutional crisis', text: 'A scandal or constitutional row rattles investors.' },
   ];
 
+
+  /* ---------- the lasting causes behind each starting situation ---------- */
+  // Each is a level (0 to 1) that keeps pressing on the economy every quarter, fades slowly by itself, and fades much faster when the right policies are used.
+  var DRIVER_DEFS = {
+    'credit-crunch': { label: 'A credit crunch and lost confidence', decay: 0.04,
+      text: 'Banks are lending little and households and firms have stopped spending, so weak demand feeds on itself and jobs keep going.',
+      fix: 'Ease credit (loan guarantees, bank support, cheaper money), put money in the hands of households (payments, tax cuts), protect jobs (furlough, grants) and rebuild confidence.',
+      shock: function (L) { return { credit: 0.5 * L, hh: -0.5 * L, biz: -0.5 * L, unc: 0.15 * L }; },
+      relief: function (ch, m) { return 0.10 * Math.min(1, (ch.creditRelief || 0) / 0.4) + 0.08 * Math.min(1, (ch.ydW || 0) / 0.01) + 0.08 * (ch.uProtect || 0) + 0.05 * Math.min(1, (ch.bizSupport || 0)) + 0.04 * (m.r < m.rstar - 0.5 ? 1 : 0); } },
+    'asset-boom': { label: 'A credit and asset-price boom', decay: 0.03,
+      text: 'Cheap credit is inflating house and asset prices and pulling spending forward. The stronger it gets, the harder the fall.',
+      fix: 'Cool it before it bursts: raise interest rates, tighten mortgage lending and bank capital rules, and tighten tax and spending.',
+      shock: function (L) { return { hh: 0.5 * L, biz: 0.5 * L, demand: 0.35 * L, credit: -0.3 * L }; },
+      relief: function (ch, m) { return 0.08 * (m.r > m.rstar + 1.5 ? 1 : 0) + 0.10 * Math.min(1, (ch.creditTight || 0) / 0.3) + 0.06 * Math.min(1, -(ch.wealthPol || 0) / 1.5) + 0.05 * Math.min(1, (ch.bankResil || 0) / 0.4) + 0.05 * Math.min(1, Math.max(0, (ch.rev || 0) - (ch.cur || 0)) / 0.01); } },
+    'export-dependence': { label: 'Dependence on one export', decay: 0.015,
+      text: 'The country lives off one commodity, so when its world price is weak, incomes, tax revenue and the currency all suffer at once.',
+      fix: 'Diversify: invest in manufacturing and strategic industries, technology adoption and trade agreements. Meanwhile cushion the fall with temporary fiscal support and protect the currency.',
+      shock: function (L) { return { comm: -4 * L, fd: -0.2 * L }; },
+      relief: function (ch) { var pr = ch.prog || {}; return 6 * ((pr.mfg || 0) + (pr.strategic || 0) + (pr.adopt || 0) + (pr.greenInd || 0)) + 0.02 * Math.max(0, ch.xAdd || 0) + 0.03 * Math.min(1, (ch.tfp || 0) / 0.5); } },
+    'bank-weakness': { label: 'Weak bank balance sheets', decay: 0.03,
+      text: 'Banks are short of capital after bad loans, so they will not lend and depositors are nervous. Until they are fixed the credit freeze continues.',
+      fix: 'Clean up the banks: recapitalise or nationalise the weakest, guarantee deposits and loans, and tighten capital rules for the future.',
+      shock: function (L) { return { credit: 0.6 * L, bankHH: -0.4 * L, bankBiz: -0.4 * L, unc: 0.15 * L }; },
+      relief: function (ch) { return 0.12 * ((ch.debtAdd || 0) > 0 ? 1 : 0) + 0.15 * Math.min(1, (ch.creditRelief || 0) / 0.5) + 0.05 * (ch.guarantee || 0) + 0.05 * Math.max(0, ch.bankResil || 0); } },
+    'investor-distrust': { label: 'Investors no longer trust the government to repay', decay: 0.03,
+      text: 'Most of the debt is in foreign currency and falls due soon, reserves are thin and the deficit is large, so lenders demand more and more to keep lending.',
+      fix: 'Rebuild trust: cut the deficit credibly, adopt a fiscal rule, lengthen the debt, borrow less in foreign currency, and build reserves.',
+      shock: function (L) { return { risk: 0.35 * L, e: -1.5 * L, unc: 0.1 * L }; },
+      relief: function (ch, m) { return 0.06 * (ch.fiscalCred || 0) + 0.08 * Math.min(1, (ch.cashAdd || 0) / 0.05) + 0.03 * Math.min(1, Math.max(0, ch.matDelta || 0) / 3) + 0.03 * ((ch.fxShare || 0) < 0 ? 1 : 0) + 0.03 * (m.deficit - m.def0 < 2 ? 1 : 0); } },
+  };
+  var SITUATION_DRIVERS = { 'debt-crisis': [['investor-distrust', 0.9]], 'slump': [['credit-crunch', 0.8]], 'overheating': [['asset-boom', 0.8]], 'commodity-bust': [['export-dependence', 0.8]], 'banking-crisis': [['bank-weakness', 0.9]] };
+  function driverShocks(drivers) {
+    var out = {};
+    (drivers || []).forEach(function (d) { var def = DRIVER_DEFS[d.id]; if (!def || d.level < 0.01) return; var sh = def.shock(d.level); Object.keys(sh).forEach(function (k) { out[k] = (out[k] || 0) + sh[k]; }); });
+    return out;
+  }
+  function stepDrivers(drivers, pol, m) {
+    (drivers || []).forEach(function (d) { var def = DRIVER_DEFS[d.id]; if (!def) return; d.level = Math.max(0, d.level * (1 - def.decay) - def.relief((pol && pol.ch) || {}, m)); });
+  }
+  function driverMetrics(g, snap) { return { r: snap.r, rstar: g.pf.rstar, deficit: snap.deficit, def0: g.def0 == null ? snap.deficit : g.def0 }; }
+
   /* ---------- new game ---------- */
   function newGame(cfg) {
     cfg = cfg || {};
@@ -131,11 +172,14 @@
     g.priceIndex = 100; g.startE = g.startSnap.E;
     g.termStart = start; g.electionDate = addYears(start, 4); g.earlyElection = null;
     g.window = { kind: 'none' }; g.over = null;
+    g.drivers = (SITUATION_DRIVERS[sit] || []).map(function (d) { return { id: d[0], level: d[1] }; });
+    g.def0 = g.s.def0;
     g.outlets = outletsFor(cfg.country || 'Varuna');
     setupPeople(g, cfg);
     setupPopularity(g);
     proj(g);
     backfillMonthly(g);
+    g.news = openingNews(g).reverse().concat(g.news);   // the papers on day one explain how the country got here
     g.bigBudget = { date: defaultBudgetDate(start), done: false, prepDone: false };
     scheduleAll(g);
     addEvent(g, { kind: 'interview', needsAction: true, goals: true, date: g.startDate, title: 'First interview: your goals', journalist: pickOne(g, JOURNALISTS), outlet: pickOne(g, BROADCASTERS) });
@@ -282,7 +326,7 @@
     return out;
   }
   function polFor(g, t) { return L.compile(settingsAt(g, t), g.pf, { start: 0, phase: 1, flags: { unlock: true } })(t); }
-  function shocksFor(g, t) { return g.shocksByQ[t] || {}; }
+  function shocksFor(g, t) { var out = Object.assign({}, g.shocksByQ[t] || {}), ds = driverShocks(g.drivers); Object.keys(ds).forEach(function (k) { out[k] = (out[k] || 0) + ds[k]; }); return out; }
 
   function proj(g) {
     var t = g.q + 1, s2 = JSON.parse(JSON.stringify(g.s));
@@ -431,6 +475,53 @@
     return out.slice(0, 3);
   }
 
+
+  /* ---------- the papers on day one: how the country got here ---------- */
+  // Written from the real starting figures and the drivers behind each situation, from three angles, so the causes are readable in the News section straight away.
+  function openingNews(g) {
+    var m = currentMetrics(g), c = g.cfg.country || 'the country', cur = g.cfg.currency || 'the currency', gov = g.parties.gov.name, opp = g.parties.opp.name, rising = g.parties.rising.name;
+    var pm = person(g, 'pm').name, chan = person(g, 'chancellor').name, sc = person(g, 'shadowChancellor').name, ol = person(g, 'oppLeader').name, rl = person(g, 'risingLeader').name;
+    var n1 = function (x) { return fmt(x, 1); };
+    var A = {
+      'stable': [
+        ['business', 'A steady hand: growth ' + n1(m.growth) + '%, inflation ' + n1(m.inflation) + '%', c + ' begins a new chapter with the economy in reasonable health. Unemployment is ' + n1(m.unemployment) + '% and debt ' + Math.round(m.debtGDP) + '% of GDP. The risks are complacency and the next shock, which nobody can name in advance.'],
+        ['left', 'Good figures, but who feels them?', 'Headline growth hides pressure on household budgets, says ' + sc + '. Real wages are moving ' + n1(m.realWages) + '% a year and ' + opp + ' wants the new Chancellor, ' + chan + ', to show fairness as well as competence.'],
+        ['right', 'Do not waste the calm', 'With the deficit at ' + n1(m.deficit) + '% of GDP, the right-leaning press urges ' + chan + ' to rebuild room to act before the next downturn arrives.'],
+      ],
+      'debt-crisis': [
+        ['business', 'Investors demand ' + n1(m.riskPremium) + ' points extra to hold ' + c + ' debt', 'Reserves have fallen to ' + n1(m.reserves) + ' months of imports and most of the debt is in foreign currency and falls due soon. Every fall in the ' + cur + ' makes the debt heavier, and lenders are pulling back. The deficit is ' + n1(m.deficit) + '% of GDP and debt ' + Math.round(m.debtGDP) + '%.'],
+        ['right', 'Years of borrowing have caught up with us', 'The deficit and the debt are the root of the crisis, argue right-leaning commentators. ' + gov + ' spent beyond its means and now lenders are demanding proof of a credible plan: a fiscal rule, real cuts, and a longer debt profile.'],
+        ['left', 'Panicking lenders, not public services, are the problem', sc + ' says the interest bill is being driven by market fear. Cuts that push the economy into recession, the left warns, will make the debt harder to repay. A restructuring, with fair terms, may yet be needed.'],
+      ],
+      'hyperinflation': [
+        ['business', 'Central bank prints money to cover the deficit', 'With the government unable to borrow, the central bank is creating money to pay its bills. Inflation is ' + n1(m.inflation) + '% and expected to stay high: nobody believes the promises. The ' + cur + ' has collapsed, and every import costs more each month.'],
+        ['right', 'Fix the budget and the bank, or nothing else will work', 'The deficit is ' + n1(m.deficit) + '% of GDP. Ending the printing, making the central bank independent and adopting a fiscal rule are the only credible way out, say economists. Raising rates alone will not work while the deficit is being printed away.'],
+        ['left', 'Families crushed as prices spiral', 'Wages cannot keep up with prices rising ' + n1(m.inflation) + '% a year. ' + ol + ' says pensioners and workers are paying for the government\'s failures, and demands protection for the poorest as any stabilisation plan begins.'],
+      ],
+      'slump': [
+        ['business', 'Credit crunch: lending dries up as firms stop investing', 'The economy is ' + n1(-m.gap) + '% below its potential. Banks are lending little, firms have cancelled investment and households have cut spending. Unemployment has reached ' + n1(m.unemployment) + '% and each round of layoffs weakens demand further.'],
+        ['left', 'Jobs lost as confidence collapses', 'Working families are bearing the brunt of the slump. ' + sc + ' calls for immediate action: money in households\' hands, protection for jobs, and support for firms that can survive.'],
+        ['right', 'Spending is not the answer, some warn', 'With the deficit already at ' + n1(m.deficit) + '% of GDP, right-leaning voices say the way out is lower taxes and less red tape rather than more government spending.'],
+      ],
+      'overheating': [
+        ['business', 'Credit and house prices racing ahead', 'The economy is running ' + n1(m.gap) + '% above its sustainable capacity, unemployment is only ' + n1(m.unemployment) + '% and inflation is ' + n1(m.inflation) + '% and rising. Cheap credit is fuelling a boom in asset prices that analysts warn cannot last.'],
+        ['left', 'Booming, but renters and first-time buyers are priced out', 'The young are shut out of a housing market driven by easy credit. ' + rl + ' of ' + rising + ' says both big parties have ignored a bubble that will burst on ordinary families.'],
+        ['right', 'Tighten now, or pay later', 'Economists urge the new Chancellor to raise rates, tighten mortgage rules and trim spending before the boom turns to bust. "The bigger it gets, the harder the fall," one says.'],
+      ],
+      'commodity-bust': [
+        ['business', 'Export price collapse: revenue and currency fall', 'The price of ' + c + '\'s main export has collapsed. Export earnings, tax revenue and the ' + cur + ' are all weaker, the deficit has reached ' + n1(m.deficit) + '% of GDP, and the currency is under pressure.'],
+        ['left', 'Whole communities depend on one industry', 'Workers in the export regions face lost jobs. ' + sc + ' calls for temporary support and a serious plan for new industries.'],
+        ['right', 'Too many eggs in one basket', 'The country has relied on one commodity for too long, say right-leaning commentators: diversify, invest in manufacturing and trade, and make sure the state can withstand a bad year.'],
+      ],
+      'banking-crisis': [
+        ['business', 'Banks face losses as lending freezes', 'A wave of bad loans has left the banks short of capital. They are lending very little, firms cannot get credit, and the economy is ' + n1(-m.gap) + '% below its potential. Depositors are nervous.'],
+        ['left', 'Bail out the banks or protect the public?', sc + ' warns that any rescue must protect ordinary savers and jobs, not the shareholders and executives who took the risks.'],
+        ['right', 'Risk-taking banks and sleeping regulators', 'Right-leaning papers blame lax supervision and reckless lending, and want tough capital rules once the immediate crisis is over.'],
+      ],
+    }[g.sit] || [];
+    return A.map(function (a, i) { var o = g.outlets.filter(function (x) { return x.slant === a[0]; })[0]; return { date: addDays(g.startDate, -1 - i), outlet: o.name, slant: a[0], headline: a[1], body: a[2], kind: 'background' }; });
+  }
+
   /* ---------- time ---------- */
   function nextEvent(g) { for (var i = 0; i < g.events.length; i++) if (!g.events[i].done) return g.events[i]; return null; }
 
@@ -438,6 +529,7 @@
     var t = g.q + 1;
     E.step(g.s, g.pf, polFor(g, t) || {}, shocksFor(g, t), null);
     var snap = E.snapshot(g.s, g.pf);
+    stepDrivers(g.drivers, polFor(g, t), driverMetrics(g, snap));
     g.qhist.push({ t: t, date: g.date, snap: snap }); g.q = t;
     g.priceIndex *= 1 + snap.pi / 400;
     recordSpending(g, t, snap);
@@ -625,15 +717,29 @@
     return { done: done, blocked: blocked };
   }
 
-  // Look ahead n quarters with today's policies plus any changes not yet enacted; no new shocks. Used for forecasts and previews.
-  function forecast(g, n, extra) {
-    var c = { pf: g.pf, decisions: g.decisions.slice(), shocksByQ: g.shocksByQ, q: g.q }, s2 = JSON.parse(JSON.stringify(g.s)), out = [];
-    (extra || []).forEach(function (d) { c.decisions.push({ id: d.id, at: g.q + 1, v: d.v, opt: d.opt || null, dur: d.dur || null }); });
-    for (var i = 1; i <= n; i++) { var t = g.q + i; E.step(s2, g.pf, polFor(c, t) || {}, shocksFor(c, t), null); out.push(E.snapshot(s2, g.pf)); }
+
+  // What is behind the starting situation, live: the lasting drivers plus (for hyperinflation) the causes the engine works out itself.
+  function causes(g) {
+    var out = [], m = currentMetrics(g);
+    (g.drivers || []).forEach(function (d) { var def = DRIVER_DEFS[d.id]; if (def) out.push({ id: d.id, label: def.label, text: def.text, fix: def.fix, level: d.level, start: (SITUATION_DRIVERS[g.sit] || []).filter(function (x) { return x[0] === d.id; })[0][1] }); });
+    if (g.sit === 'hyperinflation') {
+      var ms = m.moneyFinancing || 0;
+      out.push({ id: 'money', label: 'The central bank prints money to cover the deficit', level: Math.min(1, ms / 8), start: 1, text: 'The government cannot borrow, so the central bank creates money to pay its bills. That alone is adding about ' + (Math.round(ms * 10) / 10) + ' points to inflation.', fix: 'Cut the deficit and end the practice: Monetary, Central bank independence.' });
+      out.push({ id: 'anchor', label: 'Nobody believes inflation will come down', level: 1 - Math.min(1, m.anchor / 0.85), start: 1, text: 'Expected inflation is ' + (Math.round(m.expectedInflation * 10) / 10) + '%, so wages and prices are set to match it. Credibility is close to zero.', fix: 'Raise interest rates above inflation, adopt a fiscal rule and make the central bank independent. Credibility rebuilds only slowly.' });
+      out.push({ id: 'currency', label: 'The currency has collapsed', level: Math.min(1, Math.max(0, -m.exchangeVsStart + 60) / 100), start: 1, text: 'Every fall in the currency raises the price of imports, which feed straight into prices.', fix: 'Stabilise the currency: rates above inflation, reserves, capital controls or a peg.' });
+    }
     return out;
   }
 
-  var api = { draftSet: draftSet, draftClear: draftClear, submitDraft: submitDraft, forecast: forecast, STAGES: STAGES, SITUATIONS: SITUATIONS, SHOCK_MENU: SHOCK_MENU, GROUPS: GROUPS, CABINET_ROLES: CABINET_ROLES, OPPOSITION_ROLES: OPPOSITION_ROLES, RISING_ROLES: RISING_ROLES,
+  // Look ahead n quarters with today's policies plus any changes not yet enacted; no new shocks. Used for forecasts and previews.
+  function forecast(g, n, extra) {
+    var c = { pf: g.pf, decisions: g.decisions.slice(), shocksByQ: g.shocksByQ, q: g.q, drivers: JSON.parse(JSON.stringify(g.drivers || [])), def0: g.def0 }, s2 = JSON.parse(JSON.stringify(g.s)), out = [];
+    (extra || []).forEach(function (d) { c.decisions.push({ id: d.id, at: g.q + 1, v: d.v, opt: d.opt || null, dur: d.dur || null }); });
+    for (var i = 1; i <= n; i++) { var t = g.q + i, pol = polFor(c, t) || {}; E.step(s2, g.pf, pol, shocksFor(c, t), null); var sn = E.snapshot(s2, g.pf); stepDrivers(c.drivers, pol, driverMetrics(c, sn)); out.push(sn); }
+    return out;
+  }
+
+  var api = { causes: causes, draftSet: draftSet, draftClear: draftClear, submitDraft: submitDraft, forecast: forecast, STAGES: STAGES, SITUATIONS: SITUATIONS, SHOCK_MENU: SHOCK_MENU, GROUPS: GROUPS, CABINET_ROLES: CABINET_ROLES, OPPOSITION_ROLES: OPPOSITION_ROLES, RISING_ROLES: RISING_ROLES,
     newGame: newGame, advance: advance, decide: decide, canDecide: canDecide, resolveEvent: resolveEvent, rescheduleBudget: rescheduleBudget, currentMetrics: currentMetrics, spendingNow: spendingNow, person: person, cabinetAverage: cabinetAverage,
     nice: nice, niceMonth: niceMonth, addDays: addDays, iso: iso, latestValue: latestValue, settingsAt: settingsAt, describe: describe, proj: proj, policyPulse: policyPulse };
   root.LMSim = api;

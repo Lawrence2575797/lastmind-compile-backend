@@ -116,7 +116,8 @@
     var pf = JSON.parse(JSON.stringify(E.PROFILES[STAGES[stage].profile]));
     pf.name = cfg.country || pf.name;
     pf = tuneProfile(pf, cfg); pf = SITUATIONS[sit].pf(pf);
-    var g = { v: 1, cfg: cfg, stage: stage, sit: sit, pf: pf, rs: (cfg.seed || Date.now()) >>> 0 };
+    var seed0 = (cfg.seed || Date.now()) >>> 0;
+    var g = { v: 1, cfg: cfg, stage: stage, sit: sit, pf: pf, rs: seed0, seed0: seed0, draft: {} };
     var start = cfg.startDate || iso(Date.now());
     // recent history: quarters before the player takes over
     var s = E.init(pf), snaps = [E.snapshot(s, pf)], H = HISTORY_Q, sh = SITUATIONS[sit].shocks;
@@ -151,7 +152,7 @@
     g.mhistBefore = g.mhist.length;
   }
   function outletsFor(country) { return [{ name: country + OUTLET_FORMS.left, slant: 'left' }, { name: country + OUTLET_FORMS.right, slant: 'right' }, { name: country + OUTLET_FORMS.business, slant: 'business' }]; }
-  function defaultBudgetDate(start) { var y = +start.split('-')[0], m = +start.split('-')[1]; var yr = m >= 3 ? y + 1 : y; return yr + '-03-15'; }
+  function defaultBudgetDate(start) { return addDays(start, 30); }
 
   function setupPeople(g, cfg) {
     var gov = cfg.government || {}, opp = cfg.opposition || {}, ris = cfg.rising || {};
@@ -308,7 +309,9 @@
   function metricsOf(snap, g) {
     return { growth: snap.g, gap: snap.gap, inflation: snap.pi, core: snap.piCore, unemployment: snap.u, policyRate: snap.i, realRate: snap.r, exchange: snap.E, exchangeVsStart: (snap.E / g.startE - 1) * 100, debtGDP: snap.debtGDP, deficit: snap.deficit,
       interest: snap.interest, currentAccount: snap.CA, reserves: snap.reserves, riskPremium: snap.riskPremium, spread: snap.spread, realWages: snap.rw, confH: snap.confH, confB: snap.confB, gini: snap.gini, poverty: snap.poverty, emissions: snap.emis,
-      housePrices: snap.W, savingRate: snap.savingRate, potGrowth: snap.potGrowth, sovereignStress: snap.S, taxRevenue: snap.T, participation: snap.part, anchor: snap.A, ustar: snap.ustar };
+      housePrices: snap.W, savingRate: snap.savingRate,
+      nominalWages: snap.w, importInflation: snap.piImport, importPrices: snap.pm, commodityPrices: snap.comm, consumption: snap.C, investment: snap.I, exports: snap.X, imports: snap.M, gdpIndex: snap.Y, potentialGdp: snap.Ystar, employment: snap.L, productivity: snap.prod,
+      povertyRate: ({ low: 38, emerging: 17, advanced: 12 }[g.stage] || 17) + snap.poverty, giniLevel: ({ low: 44, emerging: 40, advanced: 33 }[g.stage] || 40) + snap.gini, potGrowth: snap.potGrowth, sovereignStress: snap.S, taxRevenue: snap.T, participation: snap.part, anchor: snap.A, ustar: snap.ustar };
   }
   function currentMetrics(g) {
     var m = g.mnow || (g.qhist.length ? metricsOf(g.qhist[g.qhist.length - 1].snap, g) : metricsOf(g.startSnap, g));
@@ -348,11 +351,12 @@
     var y0 = +from.split('-')[0];
     for (var y = y0; y <= y0 + 5; y++) [[1, '02-10'], [4, '05-10'], [7, '08-10'], [10, '11-10']].forEach(function (q) {
       var d = y + '-' + q[1]; if (d <= addDays(from, 20) || d >= addDays(g.electionDate, -50)) return;
+      if (g.bigBudget && Math.abs(ms(d) - ms(g.bigBudget.date)) < 30 * 864e5) return;
       addEvent(g, { kind: 'budget-prep', needsAction: true, date: addDays(d, -10), title: 'Preparing the budget statement', text: 'The Treasury has pulled together its forecast. Departments are lobbying for money.', quarterly: true, budgetDate: d });
       addEvent(g, { kind: 'budget', needsAction: true, date: d, title: 'Budget statement', text: 'You deliver the quarterly budget statement. Taxes, spending and welfare can be changed. Structural reforms wait for the main Budget.', quarterly: true });
     });
-    var d0 = addDays(from, Math.round(between(g, 30, 55)));
-    while (d0 < addDays(g.electionDate, -40)) { addEvent(g, { kind: 'interview', needsAction: true, date: d0, title: 'Interview', journalist: pickOne(g, JOURNALISTS), outlet: pickOne(g, BROADCASTERS) }); d0 = addDays(d0, Math.round(between(g, 55, 90))); }
+    var d0 = addDays(from, Math.round(between(g, 9, 16)));
+    while (d0 < addDays(g.electionDate, -40)) { addEvent(g, { kind: 'interview', needsAction: true, date: d0, title: 'Interview', journalist: pickOne(g, JOURNALISTS), outlet: pickOne(g, BROADCASTERS) }); d0 = addDays(d0, Math.round(between(g, 20, 34))); }
     addEvent(g, { kind: 'campaign', needsAction: false, date: addDays(g.electionDate, -35), title: 'The election campaign begins', text: 'The general election has been called. Policy is frozen and every announcement is judged by voters.', election: g.electionDate });
     addEvent(g, { kind: 'election', needsAction: true, date: g.electionDate, title: 'General election', text: 'Voters go to the polls.' });
   }
@@ -494,7 +498,7 @@
       g.termStart = g.date; g.electionDate = addYears(g.date, 4); g.earlyElection = null; P.pressure.level = 10; P.pressure.cabinetLow = 0; P.pressure.warned = false;
       GROUPS.forEach(function (gr) { P.boosts[gr.key] += 5; });
       g.events = g.events.filter(function (e) { return e.done; });
-      g.bigBudget = { date: defaultBudgetDate(g.date), done: false }; scheduleBigBudget(g);
+      g.bigBudget = { date: addDays(g.date, 60), done: false }; scheduleBigBudget(g);
       scheduleTerm(g, g.date);
     } else endGame(g, 'voted-out', (winner === 'opp' ? g.parties.opp.name : g.parties.rising.name) + ' wins the election with ' + r[winner] + '% of the vote. You are no longer Chancellor.');
     return g.lastElection;
@@ -551,7 +555,7 @@
       g.window = { kind: 'none' };
       // markets and public judge the budget: a bigger change to the deficit moves confidence
       var m = currentMetrics(g); g.pop.boosts.markets += m.deficit > 6 ? -2 : 1;
-      if (e.big) { var ny = ms(g.date) + 300 * 864e5; var nd = iso(ny).split('-')[0] + '-03-15'; if (nd <= addDays(g.date, 30)) nd = (+nd.split('-')[0] + 1) + '-03-15'; g.bigBudget = { date: nd, done: false }; if (nd < g.electionDate) scheduleBigBudget(g); }
+      if (e.big) { var nd = addDays(g.date, 365); g.bigBudget = { date: nd, done: false }; if (nd < addDays(g.electionDate, -60)) scheduleBigBudget(g); }
     } else if (e.kind === 'interview' && extra && extra.assessment) {
       applyInterview(g, extra.assessment, e);
     } else if (e.kind === 'shock') { e.result = 'session ended'; g.window = { kind: 'none' }; }
@@ -608,6 +612,18 @@
     return { gdp: gdp, spending: by, interest: snap.interest * q / 100, revenue: rev, revenuePolicy: fx.reduce(function (a, f) { return a + f.revPct; }, 0) * q / 100, deficit: snap.deficit * q / 100, policies: fx };
   }
 
+  // Drafts: choices saved while preparing a budget. Saving a draft changes nothing; submitting it on budget day enacts it.
+  function draftSet(g, id, v, opt, dur) { g.draft = g.draft || {}; g.draft[id] = { v: v, opt: opt || null, dur: dur || null }; }
+  function draftClear(g, id) { if (!g.draft) return; if (id) delete g.draft[id]; else g.draft = {}; }
+  function submitDraft(g) {
+    var done = [], blocked = [];
+    Object.keys(g.draft || {}).forEach(function (id) {
+      var d = g.draft[id], r = decide(g, id, d.v, d.opt, d.dur);
+      if (r.ok) { done.push(id); delete g.draft[id]; } else blocked.push({ id: id, reason: r.reason });
+    });
+    return { done: done, blocked: blocked };
+  }
+
   // Look ahead n quarters with today's policies plus any changes not yet enacted; no new shocks. Used for forecasts and previews.
   function forecast(g, n, extra) {
     var c = { pf: g.pf, decisions: g.decisions.slice(), shocksByQ: g.shocksByQ, q: g.q }, s2 = JSON.parse(JSON.stringify(g.s)), out = [];
@@ -616,7 +632,7 @@
     return out;
   }
 
-  var api = { forecast: forecast, STAGES: STAGES, SITUATIONS: SITUATIONS, SHOCK_MENU: SHOCK_MENU, GROUPS: GROUPS, CABINET_ROLES: CABINET_ROLES, OPPOSITION_ROLES: OPPOSITION_ROLES, RISING_ROLES: RISING_ROLES,
+  var api = { draftSet: draftSet, draftClear: draftClear, submitDraft: submitDraft, forecast: forecast, STAGES: STAGES, SITUATIONS: SITUATIONS, SHOCK_MENU: SHOCK_MENU, GROUPS: GROUPS, CABINET_ROLES: CABINET_ROLES, OPPOSITION_ROLES: OPPOSITION_ROLES, RISING_ROLES: RISING_ROLES,
     newGame: newGame, advance: advance, decide: decide, canDecide: canDecide, resolveEvent: resolveEvent, rescheduleBudget: rescheduleBudget, currentMetrics: currentMetrics, spendingNow: spendingNow, person: person, cabinetAverage: cabinetAverage,
     nice: nice, niceMonth: niceMonth, addDays: addDays, iso: iso, latestValue: latestValue, settingsAt: settingsAt, describe: describe, proj: proj, policyPulse: policyPulse };
   root.LMSim = api;

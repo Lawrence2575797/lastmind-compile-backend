@@ -531,7 +531,7 @@
   function snapshot(s, pf) {
     return { t: s.t, e: s.e, Y: s.Y, Ystar: s.Ystar, g: s.g, gap: s.gap, u: s.u, ustar: s.ustar, w: s.w, rw: s.rw, pi: s.pi, piE: s.piE, piCore: s.piCore, piImport: s.piImport, i: s.i, r: s.r, credit: s.credit,
       riskPremium: s.riskPremium, E: s.E, CA: s.CA, C: s.C, I: s.I, X: s.X, M: s.M, confH: s.confH, confB: s.confB, savingRate: s.savingRate * 100, deficit: s.deficit, debtGDP: s.debtGDP, interest: s.debtInterest,
-      T: s.T, Gcur: s.Gcur, Ginv: s.Ginv, part: s.part, A: s.A, W: s.W, K: s.K, potGrowth: s.potGrowth, reserves: s.reserves, S: s.S, spread: s.spread, cpiLevel: s.cpiLevel, potDev: s.potDev, emis: s.emis, gini: s.gini, poverty: s.poverty, qe: s.qeS, ruleBreach: s.ruleBreach, fd: s.fd, L: 100 * (1 - s.u / 100) * (s.part / s.part0) / (1 - s.ustar0 / 100), prod: s.Y / ((1 - s.u / 100) * (s.part / s.part0) / (1 - s.ustar0 / 100)) };
+      T: s.T, Gcur: s.Gcur, Ginv: s.Ginv, part: s.part, A: s.A, W: s.W, K: s.K, potGrowth: s.potGrowth, reserves: s.reserves, S: s.S, spread: s.spread, cpiLevel: s.cpiLevel, pm: s.pm, comm: s.comm, potDev: s.potDev, emis: s.emis, gini: s.gini, poverty: s.poverty, qe: s.qeS, ruleBreach: s.ruleBreach, fd: s.fd, L: 100 * (1 - s.u / 100) * (s.part / s.part0) / (1 - s.ustar0 / 100), prod: s.Y / ((1 - s.u / 100) * (s.part / s.part0) / (1 - s.ustar0 / 100)) };
   }
 
   // policy(t, state) may return a policy object; shocks is a function t -> impulse object (or array of scheduled shocks)

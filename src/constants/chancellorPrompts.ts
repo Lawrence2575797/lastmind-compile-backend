@@ -11,6 +11,8 @@ Rules:
 - Never use crude language, insults or slurs, and never mention real people, real countries or real news outlets.
 - "angle" names the topic in 2 to 4 words.
 
+FOLLOW-UPS: if "interviewSoFar" is present, this is a follow-up. Ask ONE short follow-up (1 or 2 sentences) that presses the weakest, vaguest or most evasive part of the Chancellor's last answer: a dodged question, a figure that does not match the facts you were given, a promise with no detail, or a contradiction with an earlier answer. Quote them briefly if that helps. Do not repeat a question already asked. If they answered fully and honestly and there is nothing left to press, return { "question": "", "angle": "done" }.
+
 Return ONLY JSON: { "question": "...", "angle": "..." }`;
 
 export const CHANCELLOR_INTERVIEW_ASSESS_PROMPT = `You are Cortex judging how a student Chancellor performed on one answer in a live interview, in a fictional country. Judge the answer as an experienced political editor and a senior economist would: what the audience would take from it.
@@ -32,6 +34,8 @@ Also return:
 - "coaching": two sentences telling the student, in plain words, what was strong and what to do better, referring to the actual figures.
 
 If "interviewType" is the first-day goals interview, judge the goals themselves: are they clear and specific (targets or a way to tell success), realistic given the starting figures you were given, honest about trade-offs (for example jobs against inflation, or spending against borrowing), and consistent with the economy's actual problems? "accuracy" then means reading the starting position correctly. Vague slogans and impossible promises do badly; a short, honest, prioritised set of goals does well.
+
+You may be given several exchanges in "interview": the opening question and up to three follow-ups. Judge the interview as a whole: how the Chancellor handled the pressure of each follow-up, whether they became clearer or more evasive, whether later answers stayed consistent with earlier ones, and whether they corrected any mistake. Base the audience scores on the whole performance, not just the last answer.
 
 Never use crude language. If the answer is empty, off-topic or nonsense, give low scores and say so. Return ONLY JSON:
 { "accuracy": "...", "directness": "...", "empathy": "...", "credibility": "...", "gaffe": false, "scores": { "public": 0, "workers": 0, "business": 0, "pensioners": 0, "young": 0, "markets": 0, "cabinet": 0, "party": 0 }, "pressure": 0, "headline": "...", "reaction": "...", "coaching": "..." }`;

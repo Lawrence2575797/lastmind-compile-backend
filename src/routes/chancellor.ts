@@ -46,14 +46,15 @@ function briefing(b: Record<string, any>) {
 router.post('/chancellor/interview/question', actionEndpointLimiter, async (req: Request, res: Response) => {
   const b = (req.body ?? {}) as Record<string, any>;
   const userId = req.userId as string;
+  const transcript = arr<any>(b.transcript, 4).map((x) => ({ question: str(x?.question, 500), answer: cleanUserText(x?.answer, 1500).text })).filter((x) => x.question);
   try {
     const { text, spend } = await createAiCall({
-      userId, systemPrompt: CHANCELLOR_INTERVIEW_QUESTION_PROMPT, userContent: JSON.stringify({ ...briefing(b), previousAngles: arr<string>(b.previousAngles, 8).map((x) => str(x, 40)) }),
+      userId, systemPrompt: CHANCELLOR_INTERVIEW_QUESTION_PROMPT, userContent: JSON.stringify({ ...briefing(b), previousAngles: arr<string>(b.previousAngles, 8).map((x) => str(x, 40)), interviewSoFar: transcript.length ? transcript : undefined }),
       maxTokens: 300, temperature: 0.8, reason: 'chancellor-interview-question', cacheSystemPrompt: false, clientUsedUsd: Number(b.clientUsedUsd) || undefined,
     });
     const p = parseModelJson<any>(text);
     const question = str(p?.question, 500);
-    if (!question) return res.status(502).json({ error: 'The interviewer had no question just now.' });
+    if (!question) { if (transcript.length) return res.json({ question: '', done: true, spend }); return res.status(502).json({ error: 'The interviewer had no question just now.' }); }
     res.json({ question, angle: str(p?.angle, 40), spend });
   } catch (err) {
     const handled = capResponse(res, userId, err);
@@ -67,13 +68,14 @@ router.post('/chancellor/interview/question', actionEndpointLimiter, async (req:
 router.post('/chancellor/interview/assess', actionEndpointLimiter, async (req: Request, res: Response) => {
   const b = (req.body ?? {}) as Record<string, any>;
   const userId = req.userId as string;
-  const answer = cleanUserText(b.answer, 2500);
-  if (answer.blocked) return res.status(422).json({ error: BLOCK_MESSAGE, code: 'CONTENT_BLOCKED' });
-  const question = str(b.question, 500);
-  if (!question) return res.status(400).json({ error: 'question is required' });
+  const rawExchanges = arr<any>(b.exchanges, 4).map((x) => ({ question: str(x?.question, 500), answer: cleanUserText(x?.answer, 2500) })).filter((x) => x.question);
+  const single = { question: str(b.question, 500), answer: cleanUserText(b.answer, 2500) };
+  const exchanges = rawExchanges.length ? rawExchanges : (single.question ? [single] : []);
+  if (!exchanges.length) return res.status(400).json({ error: 'question is required' });
+  if (exchanges.some((x) => x.answer.blocked)) return res.status(422).json({ error: BLOCK_MESSAGE, code: 'CONTENT_BLOCKED' });
   try {
     const { text, spend } = await createAiCall({
-      userId, systemPrompt: CHANCELLOR_INTERVIEW_ASSESS_PROMPT, userContent: JSON.stringify({ ...briefing(b), question, interviewType: b.mode === 'goals' ? 'first-day interview: the Chancellor was asked to outline their goals for the term' : 'regular interview', chancellorsAnswer: answer.text || '(no answer)' }),
+      userId, systemPrompt: CHANCELLOR_INTERVIEW_ASSESS_PROMPT, userContent: JSON.stringify({ ...briefing(b), interviewType: b.mode === 'goals' ? 'first-day interview: the Chancellor was asked to outline their goals for the term' : 'regular interview', interview: exchanges.map((x) => ({ question: x.question, chancellorsAnswer: x.answer.text || '(no answer)' })) }),
       maxTokens: 700, temperature: 0.3, reason: 'chancellor-interview-assess', cacheSystemPrompt: false, clientUsedUsd: Number(b.clientUsedUsd) || undefined,
     });
     const p = parseModelJson<any>(text);

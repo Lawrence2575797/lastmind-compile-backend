@@ -204,6 +204,7 @@
     g.parties = { gov: { name: gov.party || 'Government', color: '#0b7285' }, opp: { name: opp.party || 'Opposition', color: '#b45309' }, rising: { name: ris.party || 'New Movement', color: '#7c3aed' } };
     g.people = [];
     CABINET_ROLES.forEach(function (r) { g.people.push({ key: r.key, party: 'gov', role: r.role, name: (gov.people || {})[r.key] || r.role, dept: r.dept, want: r.want, approval: 55 + Math.round(between(g, -8, 8)), resigned: false }); });
+    g.people.push({ key: 'adviser', party: 'staff', role: 'Special Adviser', name: (gov.people || {}).adviser || 'Imogen Vale' });   // briefs the Chancellor before every interview
     OPPOSITION_ROLES.forEach(function (r) { g.people.push({ key: r.key, party: 'opp', role: r.role, name: (opp.people || {})[r.key] || r.role }); });
     RISING_ROLES.forEach(function (r) { g.people.push({ key: r.key, party: 'rising', role: r.role, name: (ris.people || {})[r.key] || r.role }); });
   }
@@ -215,7 +216,9 @@
     g.pop = { groups: {}, boosts: {}, pressure: { level: g.sit === 'stable' ? 5 : 20, cabinetLow: 0, warned: false }, polls: null, history: [], oppMomentum: 0, risingMomentum: 0 };
     GROUPS.forEach(function (gr) { g.pop.groups[gr.key] = clamp(base + between(g, -4, 4), 5, 95); g.pop.boosts[gr.key] = 0; });
     g.pop.polls = pollsFrom(g);
-    g.pop.history.push({ date: g.date, public: round(g.pop.groups.public, 1), gov: g.pop.polls.gov, opp: g.pop.polls.opp, rising: g.pop.polls.rising });
+    g.investConf = { 'stable': 60, 'debt-crisis': 28, 'hyperinflation': 30, 'slump': 40, 'overheating': 58, 'commodity-bust': 38, 'banking-crisis': 32 }[g.sit] || 50;   // how much investors trust the government's direction
+    g.statements = [];
+    g.pop.history.push({ date: g.date, public: round(g.pop.groups.public, 1), gov: g.pop.polls.gov, opp: g.pop.polls.opp, rising: g.pop.polls.rising, invest: g.investConf });
   }
   function pollsFrom(g) {
     var A = g.pop.groups.public, d = Math.max(0, (50 - A) / 12);
@@ -276,7 +279,8 @@
     P.polls = pollsFrom(g);
     var lead = P.polls.opp - P.polls.gov;
     P.pressure.level = clamp(P.pressure.level * 0.93 + Math.max(0, lead) * 0.55 - Math.max(0, -lead) * 0.35 + (P.groups.public < 30 ? 2.5 : 0), 0, 100);
-    P.history.push({ date: g.date, public: round(P.groups.public, 1), gov: P.polls.gov, opp: P.polls.opp, rising: P.polls.rising, pressure: round(P.pressure.level, 0) });
+    g.investConf = clamp((g.investConf == null ? 50 : g.investConf) + 0.12 * (0.5 * P.groups.business + 0.5 * P.groups.markets - (g.investConf == null ? 50 : g.investConf)), 3, 97);
+    P.history.push({ date: g.date, public: round(P.groups.public, 1), gov: P.polls.gov, opp: P.polls.opp, rising: P.polls.rising, pressure: round(P.pressure.level, 0), invest: round(g.investConf, 1) });
     // cabinet
     g.people.forEach(function (p) {
       if (p.party !== 'gov' || p.key === 'chancellor') return;
@@ -326,7 +330,12 @@
     return out;
   }
   function polFor(g, t) { return L.compile(settingsAt(g, t), g.pf, { start: 0, phase: 1, flags: { unlock: true } })(t); }
-  function shocksFor(g, t) { var out = Object.assign({}, g.shocksByQ[t] || {}), ds = driverShocks(g.drivers); Object.keys(ds).forEach(function (k) { out[k] = (out[k] || 0) + ds[k]; }); return out; }
+  function shocksFor(g, t) {
+    var out = Object.assign({}, g.shocksByQ[t] || {}), ds = driverShocks(g.drivers); Object.keys(ds).forEach(function (k) { out[k] = (out[k] || 0) + ds[k]; });
+    var dv = ((g.investConf == null ? 50 : g.investConf) - 50) / 50;        // investor confidence, from -1 to +1, moves business confidence and the risk premium
+    out.biz = (out.biz || 0) + 0.5 * dv; out.risk = (out.risk || 0) - 0.12 * dv;
+    return out;
+  }
 
   function proj(g) {
     var t = g.q + 1, s2 = JSON.parse(JSON.stringify(g.s));
@@ -397,17 +406,19 @@
     for (var y = y0; y <= y0 + 5; y++) [[1, '02-10'], [4, '05-10'], [7, '08-10'], [10, '11-10']].forEach(function (q) {
       var d = y + '-' + q[1]; if (d <= addDays(from, 20) || d >= addDays(g.electionDate, -50)) return;
       if (g.bigBudget && Math.abs(ms(d) - ms(g.bigBudget.date)) < 30 * 864e5) return;
+      addEvent(g, { kind: 'interview', needsAction: true, speculation: true, date: addDays(d, -4), budgetDate: d, title: 'Budget speculation interview', journalist: pickOne(g, JOURNALISTS), outlet: pickOne(g, BROADCASTERS) });
       addEvent(g, { kind: 'budget-prep', needsAction: true, date: addDays(d, -10), title: 'Preparing the budget statement', text: 'The Treasury has pulled together its forecast. Departments are lobbying for money.', quarterly: true, budgetDate: d });
       addEvent(g, { kind: 'budget', needsAction: true, date: d, title: 'Budget statement', text: 'You deliver the quarterly budget statement. Taxes, spending and welfare can be changed. Structural reforms wait for the main Budget.', quarterly: true });
     });
     var d0 = addDays(from, Math.round(between(g, 9, 16)));
-    while (d0 < addDays(g.electionDate, -40)) { addEvent(g, { kind: 'interview', needsAction: true, date: d0, title: 'Interview', journalist: pickOne(g, JOURNALISTS), outlet: pickOne(g, BROADCASTERS) }); d0 = addDays(d0, Math.round(between(g, 20, 34))); }
+    while (d0 < addDays(g.electionDate, -40)) { addEvent(g, { kind: 'interview', needsAction: true, date: d0, title: 'Interview', journalist: pickOne(g, JOURNALISTS), outlet: pickOne(g, BROADCASTERS) }); d0 = addDays(d0, Math.round(between(g, 12, 22))); }
     addEvent(g, { kind: 'campaign', needsAction: false, date: addDays(g.electionDate, -35), title: 'The election campaign begins', text: 'The general election has been called. Policy is frozen and every announcement is judged by voters.', election: g.electionDate });
     addEvent(g, { kind: 'election', needsAction: true, date: g.electionDate, title: 'General election', text: 'Voters go to the polls.' });
   }
   function scheduleBigBudget(g) {
     g.events = g.events.filter(function (e) { return !(e.big && !e.done); });
     var d = g.bigBudget.date;
+    addEvent(g, { kind: 'interview', needsAction: true, speculation: true, big: true, date: addDays(d, -5), budgetDate: d, title: 'Budget speculation interview', journalist: pickOne(g, JOURNALISTS), outlet: pickOne(g, BROADCASTERS) });
     addEvent(g, { kind: 'budget-prep', needsAction: true, big: true, date: addDays(d, -14), title: 'Preparing the Budget', text: 'The big annual Budget is two weeks away. The Treasury forecast is ready and every department is lobbying.', budgetDate: d });
     addEvent(g, { kind: 'budget', needsAction: true, big: true, date: d, title: 'The Budget', text: 'The main annual Budget. Every lever is on the table: taxes, spending, welfare, and structural reforms.' });
   }
@@ -520,6 +531,63 @@
       ],
     }[g.sit] || [];
     return A.map(function (a, i) { var o = g.outlets.filter(function (x) { return x.slant === a[0]; })[0]; return { date: addDays(g.startDate, -1 - i), outlet: o.name, slant: a[0], headline: a[1], body: a[2], kind: 'background' }; });
+  }
+
+
+  /* ---------- speculation before budgets: confirm or deny, and be held to it ---------- */
+  var GENERIC_RUMOURS = [
+    function (m) { return m.deficit > 4 ? { id: 'vat', dir: 1, text: 'raise VAT' } : null; },
+    function (m) { return m.deficit > 5 ? { id: 'inc_basic', dir: 1, text: 'raise income tax' } : null; },
+    function (m) { return m.deficit > 4 ? { id: 'defence', dir: -1, text: 'cut defence spending' } : null; },
+    function (m) { return m.unemployment > 6 ? { id: 'hh_payments', dir: 1, text: 'send emergency payments to households' } : null; },
+    function (m) { return m.inflation > 6 ? { id: 'food_sub', dir: 1, text: 'subsidise food' } : null; },
+    function () { return { id: 'corp', dir: -1, text: 'cut corporation tax' }; },
+    function () { return { id: 'health', dir: 1, text: 'increase health spending' }; },
+    function () { return { id: 'pensions', dir: -1, text: 'freeze pensions' }; },
+  ];
+  var AREA_RANK = { 'Income tax': 0, 'Consumption tax': 0, 'Business tax': 0, 'Wealth and property': 1, 'Government spending': 1, 'Welfare': 2 };
+  function speculation(g) {
+    var out = [], m = currentMetrics(g), seen = {};
+    Object.keys(g.draft || {}).map(function (id) { var e = entry(id), d = g.draft[id]; return e && !e.preset && typeof d.v === 'number' ? { e: e, id: id, delta: d.v - latestValue(g, id), d: d } : null; }).filter(function (x) { return x && x.delta; })
+      .sort(function (a, b) { return (AREA_RANK[a.e.area] == null ? 5 : AREA_RANK[a.e.area]) - (AREA_RANK[b.e.area] == null ? 5 : AREA_RANK[b.e.area]); }).slice(0, 3)
+      .forEach(function (x) { seen[x.id] = 1; out.push({ id: 'r' + out.length, policyId: x.id, dir: x.delta > 0 ? 1 : -1, real: true, text: 'Sources say the Chancellor will ' + (x.delta > 0 ? 'increase' : 'cut') + ' ' + x.e.name.toLowerCase() + ' (' + (x.delta > 0 ? '+' : '') + Math.round(x.delta * 100) / 100 + ' ' + (x.e.ctl.unit || '') + ').' }); });
+    for (var i = 0; i < GENERIC_RUMOURS.length && out.length < 3; i++) {
+      var c = GENERIC_RUMOURS[(i + Math.floor(rnd(g) * GENERIC_RUMOURS.length)) % GENERIC_RUMOURS.length](m);
+      if (c && !seen[c.id] && entry(c.id)) { seen[c.id] = 1; out.push({ id: 'r' + out.length, policyId: c.id, dir: c.dir, real: false, text: 'Talk in the corridors of power is that the Chancellor is preparing to ' + c.text + '.' }); }
+    }
+    return out;
+  }
+  // claims: [{ policyId, dir, claim: 'confirm' | 'deny' | 'nocomment', real }]
+  function resolveSpeculation(g, ev, claims) {
+    var before = g.investConf, delta = 0;
+    claims.forEach(function (c) {
+      g.statements.push({ policyId: c.policyId, dir: c.dir, claim: c.claim, real: !!c.real, date: g.date, budgetDate: ev.budgetDate, judged: false });
+      if (c.claim === 'confirm') delta += c.real ? 3 : 0; else if (c.claim === 'deny') delta += 2; else delta -= 2;   // clarity calms investors, silence unsettles them
+    });
+    g.investConf = clamp(g.investConf + delta, 3, 97);
+    g.pop.boosts.markets += delta * 0.4; g.pop.boosts.business += delta * 0.4;
+    g.log.push({ key: 'speculation', date: g.date, title: 'Budget speculation interview', choice: claims.map(function (c) { return c.claim; }).join(', '), note: 'Investor confidence ' + round(before, 0) + ' to ' + round(g.investConf, 0) });
+    ev.done = true;
+    return { before: before, after: g.investConf };
+  }
+  // Called when a budget is delivered: what you told the press is checked against what you did.
+  function evaluateStatements(g) {
+    var out = [];
+    (g.statements || []).forEach(function (st) {
+      if (st.judged || st.budgetDate > g.date) return;
+      var decs = g.decisions.filter(function (d) { return d.id === st.policyId; }), today = decs.filter(function (d) { return d.date === g.date; }), did = false;
+      if (today.length) { var last = today[today.length - 1], idx = decs.indexOf(last), prev = idx > 0 ? decs[idx - 1].v : 0; did = (last.v - prev) * st.dir > 0; }
+      var e = entry(st.policyId), name = e ? e.name.toLowerCase() : st.policyId, d = 0, text = '';
+      if (st.claim === 'confirm') { d = did ? 4 : -6; text = did ? 'You said you would, and you did: ' + name + '.' : 'You said you would change ' + name + ' and then did not. Investors noticed.'; }
+      else if (st.claim === 'deny') { d = did ? -10 : 3; text = did ? 'You denied it, then did it anyway: ' + name + '. The press calls it a U-turn.' : 'You denied changing ' + name + ' and kept your word.'; if (did) g.pop.pressure.level = clamp(g.pop.pressure.level + 4, 0, 100); }
+      else { d = did ? -2 : 0; text = did ? 'You would not comment on ' + name + ' and then surprised the markets.' : ''; }
+      st.judged = true; st.kept = st.claim === 'nocomment' ? null : (st.claim === 'confirm' ? did : !did);
+      if (!d && !text) return;
+      g.investConf = clamp(g.investConf + d, 3, 97); g.pop.boosts.markets += d * 0.4; g.pop.boosts.business += d * 0.4;
+      out.push({ text: text, delta: d, policyId: st.policyId, kept: st.kept });
+      if (d <= -6) { var o = g.outlets.filter(function (x) { return x.slant === 'business'; })[0]; g.news.unshift({ date: g.date, outlet: o.name, slant: 'business', headline: d <= -10 ? 'Chancellor U-turns on ' + name : 'Chancellor fails to deliver on ' + name, body: text + ' Investor confidence has fallen.', kind: 'passive' }); }
+    });
+    return out;
   }
 
   /* ---------- time ---------- */
@@ -733,13 +801,13 @@
 
   // Look ahead n quarters with today's policies plus any changes not yet enacted; no new shocks. Used for forecasts and previews.
   function forecast(g, n, extra) {
-    var c = { pf: g.pf, decisions: g.decisions.slice(), shocksByQ: g.shocksByQ, q: g.q, drivers: JSON.parse(JSON.stringify(g.drivers || [])), def0: g.def0 }, s2 = JSON.parse(JSON.stringify(g.s)), out = [];
+    var c = { pf: g.pf, decisions: g.decisions.slice(), shocksByQ: g.shocksByQ, q: g.q, drivers: JSON.parse(JSON.stringify(g.drivers || [])), def0: g.def0, investConf: g.investConf }, s2 = JSON.parse(JSON.stringify(g.s)), out = [];
     (extra || []).forEach(function (d) { c.decisions.push({ id: d.id, at: g.q + 1, v: d.v, opt: d.opt || null, dur: d.dur || null }); });
     for (var i = 1; i <= n; i++) { var t = g.q + i, pol = polFor(c, t) || {}; E.step(s2, g.pf, pol, shocksFor(c, t), null); var sn = E.snapshot(s2, g.pf); stepDrivers(c.drivers, pol, driverMetrics(c, sn)); out.push(sn); }
     return out;
   }
 
-  var api = { causes: causes, draftSet: draftSet, draftClear: draftClear, submitDraft: submitDraft, forecast: forecast, STAGES: STAGES, SITUATIONS: SITUATIONS, SHOCK_MENU: SHOCK_MENU, GROUPS: GROUPS, CABINET_ROLES: CABINET_ROLES, OPPOSITION_ROLES: OPPOSITION_ROLES, RISING_ROLES: RISING_ROLES,
+  var api = { speculation: speculation, resolveSpeculation: resolveSpeculation, evaluateStatements: evaluateStatements, causes: causes, draftSet: draftSet, draftClear: draftClear, submitDraft: submitDraft, forecast: forecast, STAGES: STAGES, SITUATIONS: SITUATIONS, SHOCK_MENU: SHOCK_MENU, GROUPS: GROUPS, CABINET_ROLES: CABINET_ROLES, OPPOSITION_ROLES: OPPOSITION_ROLES, RISING_ROLES: RISING_ROLES,
     newGame: newGame, advance: advance, decide: decide, canDecide: canDecide, resolveEvent: resolveEvent, rescheduleBudget: rescheduleBudget, currentMetrics: currentMetrics, spendingNow: spendingNow, person: person, cabinetAverage: cabinetAverage,
     nice: nice, niceMonth: niceMonth, addDays: addDays, iso: iso, latestValue: latestValue, settingsAt: settingsAt, describe: describe, proj: proj, policyPulse: policyPulse };
   root.LMSim = api;

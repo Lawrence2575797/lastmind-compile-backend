@@ -39,20 +39,20 @@
   var STAGES = { low: { profile: 'lowincome', perCapita: 1500, label: 'Low-income economy' }, emerging: { profile: 'emerging', perCapita: 9000, label: 'Emerging economy' }, advanced: { profile: 'advanced', perCapita: 45000, label: 'Advanced economy' } };
 
   var SITUATIONS = {
-    'stable': { name: 'A well-run economy', pf: function (pf) { pf.credibility = Math.min(0.95, pf.credibility + 0.1); return pf; }, shocks: {} },
-    'debt-crisis': { name: 'External debt crisis',
+    'stable': { name: 'A well-run economy', diagnosis: "Nothing is broken. The job is to keep growth steady, prices stable and the public finances sound, and to make the country better off.", pf: function (pf) { pf.credibility = Math.min(0.95, pf.credibility + 0.1); return pf; }, shocks: {} },
+    'debt-crisis': { name: 'External debt crisis', diagnosis: "The government owes a lot in foreign currency, reserves are thin and lenders are pulling back, which pushes the currency down and borrowing costs up. It can be fixed: cut the deficit credibly, lengthen the debt, borrow less in foreign currency, rebuild reserves and protect the currency.",
       pf: function (pf) { pf.debt = Math.max(pf.debt, pf.incomeRel > 0.7 ? 1.1 : 0.85); pf.fxDebt = Math.max(pf.fxDebt, 0.55); pf.reserves = Math.min(pf.reserves, 1.2); pf.baseRp += 2.0; pf.credibility = Math.max(0.2, pf.credibility - 0.25); pf.polStab = Math.max(0.2, pf.polStab - 0.2); pf.maturityYrs = Math.max(3, pf.maturityYrs * 0.5); return pf; },
       shocks: { 7: { risk: 1.2, e: -8, fd: -2 }, 8: { fd: -3, risk: 1.0, e: -10, hh: -1.5, biz: -2 }, 9: { risk: 1.2, credit: 1.5, e: -8, biz: -1.5 }, 10: { risk: 1.0, unc: 0.8, e: -6, hh: -1 }, 11: { risk: 0.6, e: -4, biz: -1 }, 12: { unc: 0.4 } } },
-    'hyperinflation': { name: 'Hyperinflation',
-      pf: function (pf) { pf.regime = pf.regime === 'union' ? 'independent' : 'govcontrolled'; pf.credibility = 0.12; pf.hawk = 0.1; pf.maturityYrs = Math.min(pf.maturityYrs, 3); pf.fxDebt = Math.max(pf.fxDebt, 0.3); pf.baseRp += 2; pf.polStab = Math.max(0.2, pf.polStab - 0.3); return pf; },
+    'hyperinflation': { name: 'Hyperinflation', diagnosis: "Three things are feeding each other. The central bank is printing money to cover the government's deficit. The currency has collapsed, so imports keep getting dearer. And nobody believes inflation will come down, so prices and wages are set ever higher. Each can be attacked: close the deficit, stop the central bank financing it (Monetary: Central bank independence), raise interest rates above inflation, stabilise the currency, and adopt a fiscal rule. Rates alone will not work while the deficit is still being printed away.",
+      pf: function (pf) { pf.regime = pf.regime === 'union' ? 'independent' : 'govcontrolled'; pf.monetise = 0.65; pf.credibility = 0.12; pf.hawk = 0.1; pf.maturityYrs = Math.min(pf.maturityYrs, 3); pf.fxDebt = Math.max(pf.fxDebt, 0.3); pf.baseRp += 2; pf.polStab = Math.max(0.2, pf.polStab - 0.3); return pf; },
       shocks: { 4: { cost: 4, e: -8 }, 5: { cost: 6, e: -12, risk: 0.6 }, 6: { cost: 8, e: -14, risk: 0.6 }, 7: { cost: 10, e: -16 }, 8: { cost: 10, e: -16 }, 9: { cost: 12, e: -16 }, 10: { cost: 12, e: -16 }, 11: { cost: 10, e: -14 }, 12: { cost: 10, e: -12 } } },
-    'slump': { name: 'Deep slump', pf: function (pf) { return pf; },
+    'slump': { name: 'Deep slump', diagnosis: "Households and firms have stopped spending, credit is tight and unemployment is climbing. It can be fixed: support demand (spending, tax cuts, payments to households), ease credit, and protect jobs with furlough and grants.", pf: function (pf) { return pf; },
       shocks: { 8: { hh: -6, biz: -5, fd: -6, credit: 2 }, 9: { credit: 1.5, unc: 0.8 }, 10: { biz: -1.5 }, 11: {}, 12: {} } },
-    'overheating': { name: 'Overheating boom', pf: function (pf) { pf.hhDebt *= 1.25; pf.creditDepth *= 1.15; return pf; },
+    'overheating': { name: 'Overheating boom', diagnosis: "Credit and spending are running ahead of what the economy can supply, so prices and asset values are rising fast. Tighten before it becomes a bust: higher rates, tighter credit and mortgage rules, and firmer tax and spending.", pf: function (pf) { pf.hhDebt *= 1.25; pf.creditDepth *= 1.15; return pf; },
       shocks: { 3: { hh: 1.2, biz: 1.2, demand: 0.6, credit: -0.6 }, 4: { hh: 1, biz: 1.2, demand: 0.6 }, 5: { hh: 1, biz: 1.2, demand: 0.6 }, 6: { hh: 1, biz: 1, demand: 0.6 }, 7: { hh: 1, biz: 1, demand: 0.6 }, 8: { hh: 1, biz: 1, demand: 0.6 }, 9: { hh: 1, biz: 1, demand: 0.6 }, 10: { hh: 1, biz: 1, demand: 0.6, credit: -0.4 }, 11: { demand: 0.6 }, 12: { demand: 0.5 } } },
-    'commodity-bust': { name: 'Commodity bust', pf: function (pf) { pf.commExport = Math.max(pf.commExport, 0.55); pf.commRev = Math.max(pf.commRev, 0.06); return pf; },
+    'commodity-bust': { name: 'Commodity bust', diagnosis: "The price of the main export has collapsed, cutting incomes, tax revenue and the currency. Cushion the drop with temporary fiscal support, protect the currency, and use the time to diversify.", pf: function (pf) { pf.commExport = Math.max(pf.commExport, 0.55); pf.commRev = Math.max(pf.commRev, 0.06); return pf; },
       shocks: { 8: { comm: -30, fd: -2 }, 9: { comm: -25, fd: -1.5, risk: 0.5 }, 10: { risk: 0.5, unc: 0.5 }, 11: {}, 12: {} } },
-    'banking-crisis': { name: 'Banking crisis', pf: function (pf) { return pf; },
+    'banking-crisis': { name: 'Banking crisis', diagnosis: "Banks are short of capital, lending has frozen and confidence is fragile. Calm the system with a deposit guarantee, recapitalisation and loan guarantees, and support demand while credit recovers.", pf: function (pf) { return pf; },
       shocks: { 9: { bankHH: -3, bankBiz: -3, credit: 3, unc: 1.5 }, 10: { credit: 2, unc: 0.8 }, 11: { credit: 1 }, 12: {} } }
   };
 
@@ -310,7 +310,7 @@
   function metricsOf(snap, g) {
     return { growth: snap.g, gap: snap.gap, inflation: snap.pi, core: snap.piCore, unemployment: snap.u, policyRate: snap.i, realRate: snap.r, exchange: snap.E, exchangeVsStart: (snap.E / g.startE - 1) * 100, debtGDP: snap.debtGDP, deficit: snap.deficit,
       interest: snap.interest, currentAccount: snap.CA, reserves: snap.reserves, riskPremium: snap.riskPremium, spread: snap.spread, realWages: snap.rw, confH: snap.confH, confB: snap.confB, gini: snap.gini, poverty: snap.poverty, emissions: snap.emis,
-      housePrices: snap.W, savingRate: snap.savingRate,
+      housePrices: snap.W, savingRate: snap.savingRate, expectedInflation: snap.piE, moneyFinancing: snap.monet,
       nominalWages: snap.w, importInflation: snap.piImport, importPrices: snap.pm, commodityPrices: snap.comm, consumption: snap.C, investment: snap.I, exports: snap.X, imports: snap.M, gdpIndex: snap.Y, potentialGdp: snap.Ystar, employment: snap.L, productivity: snap.prod,
       povertyRate: ({ low: 38, emerging: 17, advanced: 12 }[g.stage] || 17) + snap.poverty, giniLevel: ({ low: 44, emerging: 40, advanced: 33 }[g.stage] || 40) + snap.gini, potGrowth: snap.potGrowth, sovereignStress: snap.S, taxRevenue: snap.T, participation: snap.part, anchor: snap.A, ustar: snap.ustar };
   }

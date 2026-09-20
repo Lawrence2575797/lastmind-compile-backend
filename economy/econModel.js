@@ -41,6 +41,7 @@
     { k: 'kappaX', v: 0.35, lo: 0.15, hi: 0.7, g: 'Prices', what: 'Convexity: extra slope per pp of excess demand', src: 'Bank of England staff (Bunn et al.); Forbes, Gagnon & Collins (2021); Babb & Detmeister (2017)' },
     { k: 'ulcPsi', v: 0.15, lo: 0.05, hi: 0.3, g: 'Prices', what: 'Pass-through of unit-labour-cost pressure to domestic prices', src: 'Bank of England; Gali (2011)' },
     { k: 'anchorLoss', v: 0.02, lo: 0.01, hi: 0.04, g: 'Prices', what: 'Anchor lost per quarter per pp that inflation runs more than 1.5pp from target', src: 'Coibion & Gorodnichenko (2015); Carvalho et al. (2023)' },
+    { k: 'moneyPass', v: 4.0, lo: 2, hi: 8, g: 'Prices', what: 'Extra inflation (pp) per 1% of GDP of deficit above the baseline that the central bank finances by printing money', src: 'Cagan (1956); Sargent & Wallace (1981); Fischer, Sahay & Vegh (2002)' },
     { k: 'anchorGain', v: 0.008, lo: 0.003, hi: 0.02, g: 'Prices', what: 'Anchor rebuilt per quarter while inflation is inside the band', src: 'Bernanke (2007); Carvalho et al. (2023)' },
     { k: 'pmSpeed', v: 0.18, lo: 0.1, hi: 0.35, g: 'Prices', what: 'Speed import prices adjust to the exchange rate each quarter (full pass-through takes 1.5 to 2 years)', src: 'Burstein & Gopinath (2014); Bank of England (2015); Forbes, Hjortsoe & Nenova (2018)' },
     { k: 'ptComm', v: 0.45, lo: 0.3, hi: 0.6, g: 'Prices', what: 'Pass-through of a world energy/food price change into the retail basket (crude is a fraction of the pump price)', src: 'Blanchard & Gali (2007); Bank of England (2022); ECB (2010)' },
@@ -222,6 +223,7 @@
     s.spend0 = (pf.spendCur + pf.ginv + pf.transfers) * 100;
     s.revAdj = s.spend0 - pf.taxRatio * 100 - pf.commRev * 100 - s.pd0;   // other revenue (non-modelled) that closes the baseline budget
     s.deficit = s.pd0 + s.interest;
+    s.def0 = s.deficit; s.monetShare = 0;
     s.revenue = s.spend0 - s.pd0;
     s.S0 = sovStress(s, pf, d);
     s.spread0 = spreadFromStress(s.S0); s.spread = s.spread0;
@@ -265,8 +267,12 @@
     // 2. expectations and anchoring (from last quarter's data)
     var pi4 = avg(H.pi);
     var dev = Math.abs(pi4 - pf.target);
-    if (dev > 1.5) s.A = Math.max(0.05, s.A - P.anchorLoss * (0.5 + (1 - pf.credibility)) * Math.min(dev - 1.5, 6));
-    else s.A = Math.min(pf.credibility + 0.05, s.A + P.anchorGain * (0.5 + pf.credibility));
+    // A stabilisation programme rebuilds credibility even while inflation is still high: rates above inflation, a deficit that is not being printed away,
+    // a fiscal rule, or an independent central bank (Sargent 1982; Bruno 1993; Fischer, Sahay & Vegh 2002).
+    var stab = (pi4 > 15 && s.r >= 2 && (s.deficit - s.def0) < 2 ? 0.025 : 0) + 0.035 * clamp(c('cbIndep'), 0, 1) + 0.03 * clamp(c('fiscalCred'), 0, 1);
+    if (dev > 1.5 && stab > 0.02) s.A = Math.min(0.9, s.A + stab);
+    else if (dev > 1.5) s.A = Math.max(0.05, s.A - P.anchorLoss * (0.5 + (1 - pf.credibility)) * Math.min(dev - 1.5, 6));
+    else s.A = Math.min(Math.max(pf.credibility + 0.05, c('cbIndep') > 0.5 ? 0.85 : 0), s.A + P.anchorGain * (0.5 + pf.credibility) + 0.5 * stab);
     var mix = 0.7 * pi4 + 0.3 * H.pi[H.pi.length - 1];
     s.piE = 0.5 * s.piE + 0.5 * (s.A * pf.target + (1 - s.A) * mix);
 
@@ -289,7 +295,7 @@
       i = P.rhoI * s.Ipol + (1 - P.rhoI) * rule;
     }
     if (pol.rate != null && pol.rate !== '') i = pol.rate;
-    i = clamp(i, d.iFloor, 60);
+    i = clamp(i, d.iFloor, 150);
     s.Ipol = i; s.i = i;
     var rpriv = i + 0.6 * (s.riskPremium - pf.baseRp) - s.piE;
     s.r = i - s.piE;
@@ -407,7 +413,9 @@
     var ulc = s.w - (gA0 + gAq) - s.piCore;                                        // wage growth above productivity + prior inflation
     var cpOld = s.cpiPol; s.cpiPol = cpOld + 0.35 * (c('cpiLevel') - cpOld); s.cpiStep = s.cpiPol - cpOld;      // taxes/subsidies/caps move the price level over ~a year
     var coOld = s.costPol; s.costPol = coOld + 0.35 * (c('costLevel') - coOld); s.costStep = s.costPol - coOld;   // business cost pushes into domestic prices
-    var piCore = P.lambda * s.piCore + (1 - P.lambda) * s.piE + kap + P.ulcPsi * ulc + s.costS + 0.15 * d.omegaM * 4 * (s.pmStep || 0) + 4 * s.costStep;
+    s.monetShare = (reg === 'independent' || reg === 'union') ? 0 : (pf.monetise || 0) * (1 - clamp(c('cbIndep'), 0, 1));
+    var monetPush = P.moneyPass * s.monetShare * Math.max(0, s.deficit - s.def0);          // deficit financed by the central bank feeds straight into prices
+    var piCore = P.lambda * s.piCore + (1 - P.lambda) * s.piE + monetPush + kap + P.ulcPsi * ulc + s.costS + 0.15 * d.omegaM * 4 * (s.pmStep || 0) + 4 * s.costStep;
     s.piCore = clamp(piCore, -5, 150);
     // exchange rate & import prices (nominal e is last quarter's; this quarter's move uses the new value below)
     var eNew = exchangeRate(s, pf, d, rpriv, rng, sh, pol);
@@ -531,7 +539,7 @@
   function snapshot(s, pf) {
     return { t: s.t, e: s.e, Y: s.Y, Ystar: s.Ystar, g: s.g, gap: s.gap, u: s.u, ustar: s.ustar, w: s.w, rw: s.rw, pi: s.pi, piE: s.piE, piCore: s.piCore, piImport: s.piImport, i: s.i, r: s.r, credit: s.credit,
       riskPremium: s.riskPremium, E: s.E, CA: s.CA, C: s.C, I: s.I, X: s.X, M: s.M, confH: s.confH, confB: s.confB, savingRate: s.savingRate * 100, deficit: s.deficit, debtGDP: s.debtGDP, interest: s.debtInterest,
-      T: s.T, Gcur: s.Gcur, Ginv: s.Ginv, part: s.part, A: s.A, W: s.W, K: s.K, potGrowth: s.potGrowth, reserves: s.reserves, S: s.S, spread: s.spread, cpiLevel: s.cpiLevel, pm: s.pm, comm: s.comm, potDev: s.potDev, emis: s.emis, gini: s.gini, poverty: s.poverty, qe: s.qeS, ruleBreach: s.ruleBreach, fd: s.fd, L: 100 * (1 - s.u / 100) * (s.part / s.part0) / (1 - s.ustar0 / 100), prod: s.Y / ((1 - s.u / 100) * (s.part / s.part0) / (1 - s.ustar0 / 100)) };
+      T: s.T, Gcur: s.Gcur, Ginv: s.Ginv, part: s.part, A: s.A, W: s.W, K: s.K, potGrowth: s.potGrowth, reserves: s.reserves, S: s.S, spread: s.spread, monet: (s.monetShare || 0) * Math.max(0, s.deficit - (s.def0 || 0)) * P.moneyPass, cpiLevel: s.cpiLevel, pm: s.pm, comm: s.comm, potDev: s.potDev, emis: s.emis, gini: s.gini, poverty: s.poverty, qe: s.qeS, ruleBreach: s.ruleBreach, fd: s.fd, L: 100 * (1 - s.u / 100) * (s.part / s.part0) / (1 - s.ustar0 / 100), prod: s.Y / ((1 - s.u / 100) * (s.part / s.part0) / (1 - s.ustar0 / 100)) };
   }
 
   // policy(t, state) may return a policy object; shocks is a function t -> impulse object (or array of scheduled shocks)

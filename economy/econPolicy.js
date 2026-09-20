@@ -235,7 +235,8 @@
   C('childcare', 'Migration and labour supply', 'Childcare subsidy', 'Size', sl(0, 1, 0.05, '% of GDP'), 'Raises parental participation (+0.4% labour supply per 1% of GDP) and builds the early-years system.', function (v, X, o) { o.cur(0.7 * v / 100, 0); o.inv('earlyYears', 0.3 * v / 100); o.a('lab', 0.4 * v); });
 
   /* MONETARY (only where the government sets rates) */
-  C('rate', 'Monetary', 'Policy interest rate', 'Rate', sl(0, 25, 0.25, '% policy rate', { exact: true, optional: true }), 'Overrides the rule. Reaches demand over about 3 quarters, through mortgages, investment, saving and the exchange rate.', function (v, X, o) { o.rate = v; }, { gate: 'gov', now: function (X) { return (X.pf.rstar + X.pf.target).toFixed(2) + '%'; } });
+  C('rate', 'Monetary', 'Policy interest rate', 'Rate', sl(0, 80, 0.25, '% policy rate', { exact: true, optional: true }), 'Overrides the rule. Reaches demand over about 3 quarters, through mortgages, investment, saving and the exchange rate.', function (v, X, o) { o.rate = v; }, { gate: 'gov', now: function (X) { return (X.pf.rstar + X.pf.target).toFixed(2) + '%'; } });
+  C('cb_indep', 'Monetary', 'Central bank independence', 'Rule', sel([{ v: '0', l: 'No change' }, { v: '1', l: 'Ban the central bank from financing the deficit' }, { v: '2', l: 'Make the central bank independent' }]), 'Ends printing money to cover the deficit and rebuilds trust in the central bank, so expectations of inflation come back down. The classic first step out of high inflation.', function (v, X, o) { v = +v; o.a('cbIndep', v === 2 ? 1 : v === 1 ? 0.5 : 0); }, { gate: 'govcb' });
   C('qe', 'Monetary', 'Quantitative easing', 'Size', sl(0, 30, 1, '% of GDP purchased'), 'Lowers the effective rate ~0.10pp per 1% of GDP, lifts asset prices, weakens the currency slightly, lowers bond yields.', function (v, X, o) { o.a('qe', v); }, { gate: 'gov' });
   C('qt', 'Monetary', 'Quantitative tightening', 'Size', sl(0, 10, 1, '% of GDP sold'), 'The mirror image of QE.', function (v, X, o) { o.a('qe', -v); }, { gate: 'gov' });
   C('reserve_req', 'Monetary', 'Reserve requirements', 'Rate', sl(0, 10, 0.5, 'pp increase'), 'Banks lend less: credit conditions tighten (+0.06 per pp).', function (v, X, o) { o.a('creditTight', 0.06 * v); }, { gate: 'gov' });
@@ -304,6 +305,7 @@
     if (!entry.gate) return { ok: true };
     var reg = pf.regime;
     if (entry.gate === 'gov') return reg === 'govcontrolled' || flags.unlock ? { ok: true } : { ok: false, reason: reg === 'independent' ? 'Interest rates are set by the independent central bank. You cannot change this directly.' : reg === 'peg' ? 'Rates follow the exchange-rate anchor.' : 'Rates are set by the currency union.' };
+    if (entry.gate === 'govcb') return reg === 'govcontrolled' || flags.unlock ? { ok: true } : { ok: false, reason: 'The central bank already acts independently of the government.' };
     if (entry.gate === 'notunion') return reg !== 'union' ? { ok: true } : { ok: false, reason: 'The exchange rate is shared with the currency union.' };
     if (entry.gate === 'crisis') return flags.crisis || flags.unlock ? { ok: true } : { ok: false, reason: 'Only available in a sovereign debt crisis (debt distress and market closure).' };
     if (entry.gate === 'emergency') return flags.emergency || flags.unlock ? { ok: true } : { ok: false, reason: 'Only available in a declared emergency such as a war, blockade or severe shortage.' };

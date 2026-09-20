@@ -1,4 +1,11 @@
 
+// Added to every answer-grading prompt. Two real failures it fixes: (1) a correct
+// answer marked down for a caveat the question never asked for (a student agreed
+// with a claim that said "infinite resources" and was told to consider the
+// resources being merely very large); (2) feedback that read like a cold checklist.
+export const SCOPE_AND_TONE_RULE = `SCOPE - CRITICAL: judge the answer ONLY against what the question actually asks the student to do, taking its wording and any premise it states at face value (if a claim says 'infinite', the answer does not have to consider 'very large'). The mark scheme is a guide to the core idea, not a checklist of extras: never mark an answer wrong, or say it is incomplete, for missing an extension, caveat, alternative reading or extra nuance the question did not ask for and a reasonable student would not assume it wanted. If the answer gives the correct conclusion with sound reasoning that answers the question as written, it is correct, even if it is briefer than the model answer. Only mark it wrong for a genuine error, a missing core idea the question clearly asks for, or a conclusion that contradicts the mark scheme.
+TONE: write "feedback" like a warm, encouraging teacher speaking to the student directly ('you', not 'the student'). When they are right, be genuinely pleased and say specifically what they did well. When they are not there yet, start with what they got right (if anything), then say plainly and kindly what is missing, framed as the next step rather than a failure. Natural, brief and human - no exclamation-mark overload, no emojis, no cheesy praise, and never harsh, clipped or 'the mark scheme requires' language.`;
+
 // Appended to every grading prompt whose wrong answer is retried. Instead of
 // making the student edit the same answer, the marker explains what went wrong
 // and sets a NEW question on exactly that point (see services/followUp.ts).
@@ -26,6 +33,8 @@ Rules:
 
 7. ${FOLLOW_UP_RULE}
 
+${SCOPE_AND_TONE_RULE}
+
 Output schema:
 { "correct": boolean, "followUpQuestion": string, "followUpMarkScheme": string, "feedback": string }
 "followUpQuestion" and "followUpMarkScheme" ONLY when correct is false - omit entirely when correct is true. "feedback" is always the LAST field.`;
@@ -36,7 +45,9 @@ Output schema:
 export const KNOWLEDGE_MAP_ANSWER_CHECK_NO_FOLLOW_UP_PROMPT = KNOWLEDGE_MAP_ANSWER_CHECK_PROMPT.slice(
   0,
   KNOWLEDGE_MAP_ANSWER_CHECK_PROMPT.indexOf('7. CRITICAL, only when "correct" is false')
-) + `Output schema:
+) + `${SCOPE_AND_TONE_RULE}
+
+Output schema:
 { "correct": boolean, "feedback": string }`;
 
 // fill_blank recall checks are graded by exact string match first (free,
@@ -80,6 +91,8 @@ Rules:
 6b. CRITICAL - spelling and typing mistakes NEVER make an answer wrong. A misspelled or mistyped word ("ifnormal" for "informal", a swapped, doubled or missing letter, a slip of the fingers) is judged by the word the student clearly meant: if the intended word is recognisable from context, credit the answer exactly as if it were spelled correctly, and never mention, hint at or comment on the spelling in the feedback. The one exception is when the question itself is testing the exact spelling or form of a target-language word or ending, where a different real word or form results - that is judged on the form.
 7. CRITICAL, only when "correct" is false - set "sillyMistake" true ONLY when the answer shows the student genuinely knows the concept but slipped on execution: a clear typo, an obvious word-swap (said the opposite of what the rest of the answer clearly means), a sign error in an otherwise-correct calculation, or answering a different but adjacent part of the question than the one actually asked. Set it false whenever the gap could plausibly be a real misunderstanding of the concept itself, even a partial one - this is a high bar specifically because "sillyMistake": true skips a real learning signal (the concept re-enters spaced recall at its current difficulty rather than getting flagged as needing MORE recalls), so only use it when a careless-slip reading is clearly and specifically the more likely explanation, not merely possible. Omit this field entirely when "correct" is true.
 
+${SCOPE_AND_TONE_RULE}
+
 Output schema:
 { "correct": boolean, "feedback": string, "sillyMistake": boolean }
 "sillyMistake" ONLY when correct is false - omit entirely when correct is true.`;
@@ -105,6 +118,8 @@ Rules:
 7b. CRITICAL - spelling and typing mistakes NEVER make an answer wrong. A misspelled or mistyped word ("ifnormal" for "informal", a swapped, doubled or missing letter, a slip of the fingers) is judged by the word the student clearly meant: if the intended word is recognisable from context, credit the answer exactly as if it were spelled correctly, and never mention, hint at or comment on the spelling in the feedback. The one exception is when the question itself is testing the exact spelling or form of a target-language word or ending, where a different real word or form results - that is judged on the form.
 
 8. ${FOLLOW_UP_RULE} This replaces "hint" as the main help - still include the short "hint" too.
+
+${SCOPE_AND_TONE_RULE}
 
 Output schema:
 { "correct": boolean, "followUpQuestion": string, "followUpMarkScheme": string, "hint": string, "feedback": string }

@@ -3,7 +3,7 @@ import { parseCorrectFeedbackJson } from './jsonParsing';
 import { callClaudeJSON, MODELS } from './claudeClient';
 import { EXAM_PREP_CORRECTION_PROMPT } from '../constants/practiceQuestionPrompts';
 import { gradeAndRecordReview, ratingFromMarkRatio } from './reviewService';
-import { FOLLOW_UP_RULE } from '../constants/knowledgeMapAnswerCheckPrompt';
+import { FOLLOW_UP_RULE, SCOPE_AND_TONE_RULE } from '../constants/knowledgeMapAnswerCheckPrompt';
 import { openFollowUp, followUpFromGrading, FollowUpForClient } from './followUp';
 
 interface CorrectionGeneration {
@@ -115,7 +115,7 @@ export async function submitCorrectionAnswer(userId: string, correctionId: strin
   const followUpQ = openFollowUp(userId, followUpToken);
   const raw = await callClaudeJSON({
     model: MODELS.simpleQuestion,
-    systemPrompt: 'You are checking a UK GCSE/A-Level student\'s free-text answer against a mark scheme. Output ONLY valid JSON: { "correct": boolean, "followUpQuestion": string, "followUpMarkScheme": string, "feedback": "one or two sentences" } - "feedback" is always the LAST field. ' + FOLLOW_UP_RULE + ' Mark correct only if the answer genuinely satisfies the mark scheme as stated - judge the substance strictly against the mark scheme, but spelling and typing mistakes NEVER make an answer wrong (credit the word the student clearly meant and never mention spelling). Never put a double-quote character inside the feedback string - use single quotes.',
+    systemPrompt: 'You are checking a UK GCSE/A-Level student\'s free-text answer against a mark scheme. Output ONLY valid JSON: { "correct": boolean, "followUpQuestion": string, "followUpMarkScheme": string, "feedback": "one or two sentences" } - "feedback" is always the LAST field. ' + FOLLOW_UP_RULE + ' ' + SCOPE_AND_TONE_RULE + ' Mark correct only if the answer genuinely satisfies the mark scheme as stated - judge the substance strictly against the mark scheme, but spelling and typing mistakes NEVER make an answer wrong (credit the word the student clearly meant and never mention spelling). Never put a double-quote character inside the feedback string - use single quotes.',
     userContent: `Question: ${followUpQ ? followUpQ.questionText : correction.followup_question_text}\nMark scheme: ${followUpQ ? followUpQ.markScheme : correction.followup_mark_scheme}\nStudent's answer: ${answerText}`,
     temperature: 0.1,
     userId,

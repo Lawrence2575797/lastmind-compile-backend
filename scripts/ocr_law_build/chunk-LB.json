@@ -1,0 +1,757 @@
+{
+  "nodes": [
+    {
+      "id": "LB_STARE",
+      "label": "Doctrine of stare decisis: like cases must be decided alike, courts bound by decisions of higher courts",
+      "st": "3.4",
+      "difficulty": 0.25,
+      "kind": "concept"
+    },
+    {
+      "id": "LB_RATIO",
+      "label": "Ratio decidendi: the legal reasoning/principle that forms the binding part of a judgment",
+      "st": "3.4",
+      "difficulty": 0.35,
+      "kind": "concept"
+    },
+    {
+      "id": "LB_OBITER",
+      "label": "Obiter dicta: comments made 'by the way' in a judgment, not binding but persuasive",
+      "st": "3.4",
+      "difficulty": 0.3,
+      "kind": "concept"
+    },
+    {
+      "id": "LB_HIER",
+      "label": "Hierarchy of the courts (England and Wales): Supreme Court, Court of Appeal (Civil/Criminal Division), High Court, Crown Court, Magistrates'/County Court",
+      "st": "3.4",
+      "difficulty": 0.3,
+      "kind": "concept"
+    },
+    {
+      "id": "LB_SC",
+      "label": "Supreme Court: position at the top of the hierarchy and use of the Practice Statement 1966 to depart from its own past decisions",
+      "st": "3.4",
+      "difficulty": 0.4,
+      "kind": "concept"
+    },
+    {
+      "id": "LB_CA_BOUND",
+      "label": "Court of Appeal bound by Supreme Court and generally bound by its own past decisions (Young v Bristol Aeroplane Co exceptions)",
+      "st": "3.4",
+      "difficulty": 0.45,
+      "kind": "concept"
+    },
+    {
+      "id": "LB_BINDING",
+      "label": "Binding precedent: a decision from a higher (or same, per rules) court that a later court must follow",
+      "st": "3.4",
+      "difficulty": 0.3,
+      "kind": "concept"
+    },
+    {
+      "id": "LB_PERSUASIVE",
+      "label": "Persuasive precedent: not binding but may be followed, e.g. obiter dicta, lower court decisions, dissenting judgments, decisions of other jurisdictions/Privy Council",
+      "st": "3.4",
+      "difficulty": 0.3,
+      "kind": "concept"
+    },
+    {
+      "id": "LB_ORIGINAL",
+      "label": "Original precedent: a decision on a point of law that has never been decided before, forming new law",
+      "st": "3.4",
+      "difficulty": 0.3,
+      "kind": "concept"
+    },
+    {
+      "id": "LB_OVERRULE",
+      "label": "Overruling: a higher court (or same court using Practice Statement) states that a legal rule decided in an earlier case is wrong",
+      "st": "3.4",
+      "difficulty": 0.35,
+      "kind": "concept"
+    },
+    {
+      "id": "LB_REVERSE",
+      "label": "Reversing: a higher court on appeal in the same case overturns the decision of the lower court below it",
+      "st": "3.4",
+      "difficulty": 0.3,
+      "kind": "concept"
+    },
+    {
+      "id": "LB_DISTINGUISH",
+      "label": "Distinguishing: a court finds material differences between the facts of the current case and a previous precedent, avoiding being bound",
+      "st": "3.4",
+      "difficulty": 0.35,
+      "kind": "concept"
+    },
+    {
+      "id": "LB_ADV1",
+      "label": "Advantage of precedent: certainty - lawyers/clients can predict outcomes and advise accordingly",
+      "st": "3.4",
+      "difficulty": 0.25,
+      "kind": "evaluation"
+    },
+    {
+      "id": "LB_ADV2",
+      "label": "Advantage of precedent: consistency and fairness - like cases treated alike, promoting justice",
+      "st": "3.4",
+      "difficulty": 0.25,
+      "kind": "evaluation"
+    },
+    {
+      "id": "LB_ADV3",
+      "label": "Advantage of precedent: flexibility - mechanisms such as distinguishing, overruling and the Practice Statement allow the law to develop",
+      "st": "3.4",
+      "difficulty": 0.35,
+      "kind": "evaluation"
+    },
+    {
+      "id": "LB_ADV4",
+      "label": "Advantage of precedent: precision - detailed application of law to specific facts builds a large body of precise rules",
+      "st": "3.4",
+      "difficulty": 0.3,
+      "kind": "evaluation"
+    },
+    {
+      "id": "LB_ADV5",
+      "label": "Advantage of precedent: time-saving - lawyers and judges do not need to reargue settled points of law in every case",
+      "st": "3.4",
+      "difficulty": 0.25,
+      "kind": "evaluation"
+    },
+    {
+      "id": "LB_DIS1",
+      "label": "Disadvantage of precedent: rigidity - lower courts must follow binding precedent even if it seems wrong, unless it can be distinguished",
+      "st": "3.4",
+      "difficulty": 0.3,
+      "kind": "evaluation"
+    },
+    {
+      "id": "LB_DIS2",
+      "label": "Disadvantage of precedent: complexity and volume of case law makes it hard to find the correct ratio, especially in cases with multiple judgments",
+      "st": "3.4",
+      "difficulty": 0.3,
+      "kind": "evaluation"
+    },
+    {
+      "id": "LB_DIS3",
+      "label": "Disadvantage of precedent: slowness of change - the law can only develop when a suitable case reaches the appellate courts",
+      "st": "3.4",
+      "difficulty": 0.3,
+      "kind": "evaluation"
+    },
+    {
+      "id": "LB_DIS4",
+      "label": "Disadvantage of precedent: distinguishing can be used artificially/illogically, creating fine and unprincipled distinctions between cases",
+      "st": "3.4",
+      "difficulty": 0.35,
+      "kind": "evaluation"
+    },
+    {
+      "id": "LB_DIS5",
+      "label": "Disadvantage of precedent: retrospective effect - overruling changes the law after the events in question occurred, undermining certainty for past conduct",
+      "st": "3.4",
+      "difficulty": 0.35,
+      "kind": "evaluation"
+    },
+    {
+      "id": "LR_NEED",
+      "label": "Reasons law reform is needed: society, technology and values change, and gaps/inconsistencies/outdated rules must be addressed",
+      "st": "3.5",
+      "difficulty": 0.25,
+      "kind": "concept"
+    },
+    {
+      "id": "LR_LAWCOM",
+      "label": "Law Commission: permanent independent body established by the Law Commissions Act 1965 to review and recommend reform of the law",
+      "st": "3.5",
+      "difficulty": 0.3,
+      "kind": "concept"
+    },
+    {
+      "id": "LR_LAWCOM_FUNC",
+      "label": "Law Commission's functions: codification, consolidation, repeal of obsolete law, and reducing the number of separate statutes",
+      "st": "3.5",
+      "difficulty": 0.35,
+      "kind": "concept"
+    },
+    {
+      "id": "LR_LAWCOM_PROC",
+      "label": "Law Commission's process: research and consultation (consultation papers), production of reports with draft Bills for Parliament",
+      "st": "3.5",
+      "difficulty": 0.35,
+      "kind": "procedure"
+    },
+    {
+      "id": "LR_OTHERBODIES",
+      "label": "Other law reform mechanisms: Royal Commissions, ad hoc advisory committees and Parliamentary committees inquiring into specific issues",
+      "st": "3.5",
+      "difficulty": 0.3,
+      "kind": "concept"
+    },
+    {
+      "id": "LR_ADV1",
+      "label": "Advantage of law reform bodies: independence and expertise - research conducted by legal specialists free from political pressure",
+      "st": "3.5",
+      "difficulty": 0.3,
+      "kind": "evaluation"
+    },
+    {
+      "id": "LR_ADV2",
+      "label": "Advantage of law reform bodies: thorough research and public consultation produce well-considered, evidence-based reforms",
+      "st": "3.5",
+      "difficulty": 0.3,
+      "kind": "evaluation"
+    },
+    {
+      "id": "LR_ADV3",
+      "label": "Advantage of law reform bodies: codification and consolidation work simplifies and modernises the law, improving accessibility",
+      "st": "3.5",
+      "difficulty": 0.3,
+      "kind": "evaluation"
+    },
+    {
+      "id": "LR_ADV4",
+      "label": "Advantage of law reform bodies: comprehensive review of whole areas of law rather than piecemeal change",
+      "st": "3.5",
+      "difficulty": 0.3,
+      "kind": "evaluation"
+    },
+    {
+      "id": "LR_DIS1",
+      "label": "Disadvantage of law reform bodies: lack of enforcement power - Parliament is not obliged to implement Law Commission recommendations",
+      "st": "3.5",
+      "difficulty": 0.3,
+      "kind": "evaluation"
+    },
+    {
+      "id": "LR_DIS2",
+      "label": "Disadvantage of law reform bodies: delay - the process of research, consultation and drafting is slow, and implementation may take years or never happen",
+      "st": "3.5",
+      "difficulty": 0.3,
+      "kind": "evaluation"
+    },
+    {
+      "id": "LR_DIS3",
+      "label": "Disadvantage of law reform bodies: lack of Parliamentary time to debate and pass recommended reform Bills amid competing legislative priorities",
+      "st": "3.5",
+      "difficulty": 0.3,
+      "kind": "evaluation"
+    },
+    {
+      "id": "LR_DIS4",
+      "label": "Disadvantage of law reform bodies: cost of running research, consultation and reporting processes funded by the taxpayer",
+      "st": "3.5",
+      "difficulty": 0.25,
+      "kind": "evaluation"
+    },
+    {
+      "id": "EU_BACKGROUND",
+      "label": "UK membership of the EU (1973-2020) and the framework of EU law applying within England and Wales during that period",
+      "st": "3.6",
+      "difficulty": 0.25,
+      "kind": "concept"
+    },
+    {
+      "id": "EU_COMMISSION",
+      "label": "European Commission: proposes new legislation, oversees implementation of EU law and represents the EU's interests",
+      "st": "3.6",
+      "difficulty": 0.3,
+      "kind": "concept"
+    },
+    {
+      "id": "EU_COUNCIL",
+      "label": "Council of the European Union (Council of Ministers): represents member states' governments and, with Parliament, adopts legislation",
+      "st": "3.6",
+      "difficulty": 0.3,
+      "kind": "concept"
+    },
+    {
+      "id": "EU_PARLIAMENT",
+      "label": "European Parliament: directly elected body that debates and, with the Council, adopts legislation and scrutinises the Commission",
+      "st": "3.6",
+      "difficulty": 0.3,
+      "kind": "concept"
+    },
+    {
+      "id": "EU_COURT",
+      "label": "Court of Justice of the European Union (CJEU): interprets EU law, ensures its uniform application and rules on disputes between institutions/member states",
+      "st": "3.6",
+      "difficulty": 0.35,
+      "kind": "concept"
+    },
+    {
+      "id": "EU_TREATIES",
+      "label": "Treaties as a source of EU law: primary source setting out fundamental principles, directly applicable in member states",
+      "st": "3.6",
+      "difficulty": 0.35,
+      "kind": "concept"
+    },
+    {
+      "id": "EU_REGULATIONS",
+      "label": "Regulations as a source of EU law: directly applicable in all member states without the need for national implementing legislation",
+      "st": "3.6",
+      "difficulty": 0.35,
+      "kind": "concept"
+    },
+    {
+      "id": "EU_DIRECTIVES",
+      "label": "Directives as a source of EU law: set a result to be achieved, requiring member states to pass their own implementing legislation within a set time limit",
+      "st": "3.6",
+      "difficulty": 0.35,
+      "kind": "concept"
+    },
+    {
+      "id": "EU_DECISIONS",
+      "label": "Decisions as a source of EU law: binding only on the specific member state(s), companies or individuals to which they are addressed",
+      "st": "3.6",
+      "difficulty": 0.3,
+      "kind": "concept"
+    },
+    {
+      "id": "EU_SUPREMACY",
+      "label": "Supremacy of EU law: Costa v ENEL established that EU law took precedence over conflicting national law of member states",
+      "st": "3.6",
+      "difficulty": 0.45,
+      "kind": "concept"
+    },
+    {
+      "id": "EU_DIRECTEFFECT",
+      "label": "Direct effect: EU law provisions (e.g. Treaty Articles, Regulations) create rights individuals can rely on directly in national courts (Van Gend en Loos)",
+      "st": "3.6",
+      "difficulty": 0.45,
+      "kind": "concept"
+    },
+    {
+      "id": "EU_VERTICAL",
+      "label": "Vertical direct effect: individuals can enforce EU law rights against the state/emanations of the state",
+      "st": "3.6",
+      "difficulty": 0.4,
+      "kind": "concept"
+    },
+    {
+      "id": "EU_HORIZONTAL",
+      "label": "Horizontal direct effect: individuals can enforce certain EU law rights against other private individuals/bodies",
+      "st": "3.6",
+      "difficulty": 0.4,
+      "kind": "concept"
+    },
+    {
+      "id": "EU_ECA1972",
+      "label": "European Communities Act 1972: gave EU law direct effect and incorporated it into UK domestic law, including s.2(4) requiring UK courts to interpret statutes consistently with EU law",
+      "st": "3.6",
+      "difficulty": 0.4,
+      "kind": "concept"
+    },
+    {
+      "id": "EU_IMPACT_STAT",
+      "label": "Impact of EU law on UK statutory interpretation: UK courts required to interpret domestic legislation purposively to comply with EU law obligations",
+      "st": "3.6",
+      "difficulty": 0.4,
+      "kind": "concept"
+    },
+    {
+      "id": "EU_IMPACT_PARL",
+      "label": "Impact of EU law on Parliamentary sovereignty: EU law's supremacy limited Parliament's ability to legislate contrary to EU obligations while a member",
+      "st": "3.6",
+      "difficulty": 0.45,
+      "kind": "concept"
+    },
+    {
+      "id": "EU_IMPACT_PREC",
+      "label": "Impact of EU law on judicial precedent: UK courts bound to follow CJEU rulings on interpretation of EU law, affecting domestic precedent during membership",
+      "st": "3.6",
+      "difficulty": 0.4,
+      "kind": "concept"
+    },
+    {
+      "id": "EU_BREXIT",
+      "label": "Impact of Brexit/European Union (Withdrawal) Act 2018: retained EU law converted into domestic law, ending automatic supremacy and direct effect of new EU law",
+      "st": "3.6",
+      "difficulty": 0.4,
+      "kind": "concept"
+    }
+  ],
+  "edges": [
+    [
+      "LB_STARE",
+      "LB_RATIO",
+      0.3
+    ],
+    [
+      "LB_STARE",
+      "LB_OBITER",
+      0.25
+    ],
+    [
+      "LB_STARE",
+      "LB_HIER",
+      0.3
+    ],
+    [
+      "LB_HIER",
+      "LB_SC",
+      0.25
+    ],
+    [
+      "LB_HIER",
+      "LB_CA_BOUND",
+      0.3
+    ],
+    [
+      "LB_RATIO",
+      "LB_BINDING",
+      0.3
+    ],
+    [
+      "LB_OBITER",
+      "LB_PERSUASIVE",
+      0.3
+    ],
+    [
+      "LB_HIER",
+      "LB_BINDING",
+      0.3
+    ],
+    [
+      "LB_HIER",
+      "LB_PERSUASIVE",
+      0.3
+    ],
+    [
+      "LB_RATIO",
+      "LB_ORIGINAL",
+      0.3
+    ],
+    [
+      "LB_BINDING",
+      "LB_OVERRULE",
+      0.35
+    ],
+    [
+      "LB_SC",
+      "LB_OVERRULE",
+      0.35
+    ],
+    [
+      "LB_CA_BOUND",
+      "LB_OVERRULE",
+      0.35
+    ],
+    [
+      "LB_BINDING",
+      "LB_REVERSE",
+      0.3
+    ],
+    [
+      "LB_HIER",
+      "LB_REVERSE",
+      0.3
+    ],
+    [
+      "LB_RATIO",
+      "LB_DISTINGUISH",
+      0.35
+    ],
+    [
+      "LB_BINDING",
+      "LB_DISTINGUISH",
+      0.3
+    ],
+    [
+      "LB_BINDING",
+      "LB_ADV1",
+      0.25
+    ],
+    [
+      "LB_BINDING",
+      "LB_ADV2",
+      0.25
+    ],
+    [
+      "LB_OVERRULE",
+      "LB_ADV3",
+      0.3
+    ],
+    [
+      "LB_DISTINGUISH",
+      "LB_ADV3",
+      0.3
+    ],
+    [
+      "LB_SC",
+      "LB_ADV3",
+      0.3
+    ],
+    [
+      "LB_RATIO",
+      "LB_ADV4",
+      0.3
+    ],
+    [
+      "LB_BINDING",
+      "LB_ADV5",
+      0.25
+    ],
+    [
+      "LB_BINDING",
+      "LB_DIS1",
+      0.3
+    ],
+    [
+      "LB_DISTINGUISH",
+      "LB_DIS1",
+      0.25
+    ],
+    [
+      "LB_RATIO",
+      "LB_DIS2",
+      0.35
+    ],
+    [
+      "LB_OBITER",
+      "LB_DIS2",
+      0.3
+    ],
+    [
+      "LB_ORIGINAL",
+      "LB_DIS3",
+      0.3
+    ],
+    [
+      "LB_DISTINGUISH",
+      "LB_DIS4",
+      0.3
+    ],
+    [
+      "LB_ADV2",
+      "LB_DIS4",
+      0.3
+    ],
+    [
+      "LB_OVERRULE",
+      "LB_DIS5",
+      0.3
+    ],
+    [
+      "LB_ADV1",
+      "LB_DIS5",
+      0.3
+    ],
+    [
+      "LR_NEED",
+      "LR_LAWCOM",
+      0.25
+    ],
+    [
+      "LR_LAWCOM",
+      "LR_LAWCOM_FUNC",
+      0.3
+    ],
+    [
+      "LR_LAWCOM",
+      "LR_LAWCOM_PROC",
+      0.3
+    ],
+    [
+      "LR_NEED",
+      "LR_OTHERBODIES",
+      0.25
+    ],
+    [
+      "LR_LAWCOM_PROC",
+      "LR_ADV1",
+      0.25
+    ],
+    [
+      "LR_LAWCOM_PROC",
+      "LR_ADV2",
+      0.25
+    ],
+    [
+      "LR_LAWCOM_FUNC",
+      "LR_ADV3",
+      0.3
+    ],
+    [
+      "LR_LAWCOM_FUNC",
+      "LR_ADV4",
+      0.3
+    ],
+    [
+      "LR_LAWCOM_PROC",
+      "LR_DIS1",
+      0.3
+    ],
+    [
+      "LR_LAWCOM_PROC",
+      "LR_DIS2",
+      0.3
+    ],
+    [
+      "LR_ADV1",
+      "LR_DIS1",
+      0.3
+    ],
+    [
+      "LR_LAWCOM_PROC",
+      "LR_DIS3",
+      0.3
+    ],
+    [
+      "LR_LAWCOM_PROC",
+      "LR_DIS4",
+      0.25
+    ],
+    [
+      "LR_ADV2",
+      "LR_DIS4",
+      0.25
+    ],
+    [
+      "EU_BACKGROUND",
+      "EU_COMMISSION",
+      0.2
+    ],
+    [
+      "EU_BACKGROUND",
+      "EU_COUNCIL",
+      0.2
+    ],
+    [
+      "EU_BACKGROUND",
+      "EU_PARLIAMENT",
+      0.2
+    ],
+    [
+      "EU_BACKGROUND",
+      "EU_COURT",
+      0.25
+    ],
+    [
+      "EU_COMMISSION",
+      "EU_TREATIES",
+      0.3
+    ],
+    [
+      "EU_COUNCIL",
+      "EU_TREATIES",
+      0.25
+    ],
+    [
+      "EU_PARLIAMENT",
+      "EU_TREATIES",
+      0.25
+    ],
+    [
+      "EU_TREATIES",
+      "EU_REGULATIONS",
+      0.3
+    ],
+    [
+      "EU_TREATIES",
+      "EU_DIRECTIVES",
+      0.3
+    ],
+    [
+      "EU_TREATIES",
+      "EU_DECISIONS",
+      0.3
+    ],
+    [
+      "EU_COURT",
+      "EU_SUPREMACY",
+      0.4
+    ],
+    [
+      "EU_TREATIES",
+      "EU_SUPREMACY",
+      0.35
+    ],
+    [
+      "EU_COURT",
+      "EU_DIRECTEFFECT",
+      0.4
+    ],
+    [
+      "EU_TREATIES",
+      "EU_DIRECTEFFECT",
+      0.35
+    ],
+    [
+      "EU_REGULATIONS",
+      "EU_DIRECTEFFECT",
+      0.35
+    ],
+    [
+      "EU_DIRECTEFFECT",
+      "EU_VERTICAL",
+      0.3
+    ],
+    [
+      "EU_DIRECTEFFECT",
+      "EU_HORIZONTAL",
+      0.35
+    ],
+    [
+      "EU_DIRECTIVES",
+      "EU_VERTICAL",
+      0.35
+    ],
+    [
+      "EU_SUPREMACY",
+      "EU_ECA1972",
+      0.4
+    ],
+    [
+      "EU_DIRECTEFFECT",
+      "EU_ECA1972",
+      0.4
+    ],
+    [
+      "EU_ECA1972",
+      "EU_IMPACT_STAT",
+      0.35
+    ],
+    [
+      "EU_DIRECTIVES",
+      "EU_IMPACT_STAT",
+      0.3
+    ],
+    [
+      "EU_SUPREMACY",
+      "EU_IMPACT_PARL",
+      0.4
+    ],
+    [
+      "EU_ECA1972",
+      "EU_IMPACT_PARL",
+      0.35
+    ],
+    [
+      "EU_COURT",
+      "EU_IMPACT_PREC",
+      0.35
+    ],
+    [
+      "EU_ECA1972",
+      "EU_IMPACT_PREC",
+      0.3
+    ],
+    [
+      "EU_IMPACT_PARL",
+      "EU_BREXIT",
+      0.35
+    ],
+    [
+      "EU_IMPACT_STAT",
+      "EU_BREXIT",
+      0.3
+    ],
+    [
+      "EU_ECA1972",
+      "EU_BREXIT",
+      0.3
+    ]
+  ]
+}

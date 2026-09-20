@@ -1,0 +1,1154 @@
+{
+  "nodes": [
+    {
+      "id": "CT_RULES_OVERVIEW",
+      "label": "Outline of the rules of contract law: agreement, consideration, intention, terms, vitiating factors, discharge, remedies",
+      "st": "7.1",
+      "difficulty": 0.2,
+      "kind": "concept"
+    },
+    {
+      "id": "CT_THEORY",
+      "label": "Theory of contract law: freedom of contract vs consumer protection, classical vs modern approaches, bargain theory",
+      "st": "7.1",
+      "difficulty": 0.45,
+      "kind": "concept"
+    },
+    {
+      "id": "CT_OFFER",
+      "label": "Offer: a definite promise to be bound on specific terms (Carlill v Carbolic Smoke Ball Co)",
+      "st": "7.2",
+      "difficulty": 0.3,
+      "kind": "concept"
+    },
+    {
+      "id": "CT_ITT",
+      "label": "Invitation to treat distinguished from an offer (Fisher v Bell, Pharmaceutical Society of GB v Boots, Gibson v Manchester CC)",
+      "st": "7.2",
+      "difficulty": 0.4,
+      "kind": "concept"
+    },
+    {
+      "id": "CT_ACCEPTANCE",
+      "label": "Acceptance: unconditional agreement to all terms of the offer",
+      "st": "7.2",
+      "difficulty": 0.3,
+      "kind": "concept"
+    },
+    {
+      "id": "CT_COMM_ACCEPT",
+      "label": "Communication of acceptance must generally reach the offeror (Entores v Miles Far East)",
+      "st": "7.2",
+      "difficulty": 0.4,
+      "kind": "concept"
+    },
+    {
+      "id": "CT_POSTAL_RULE",
+      "label": "Postal rule: acceptance effective on posting (Adams v Lindsell)",
+      "st": "7.2",
+      "difficulty": 0.45,
+      "kind": "concept"
+    },
+    {
+      "id": "CT_REVOCATION",
+      "label": "Revocation of offer: must be communicated before acceptance (Byrne v Van Tienhoven, Routledge v Grant)",
+      "st": "7.2",
+      "difficulty": 0.4,
+      "kind": "concept"
+    },
+    {
+      "id": "CT_REVOCATION_THIRD",
+      "label": "Revocation via a reliable third party is valid (Dickinson v Dodds)",
+      "st": "7.2",
+      "difficulty": 0.4,
+      "kind": "concept"
+    },
+    {
+      "id": "CT_COUNTER_OFFER",
+      "label": "Counter-offer destroys the original offer (Hyde v Wrench)",
+      "st": "7.2",
+      "difficulty": 0.35,
+      "kind": "concept"
+    },
+    {
+      "id": "CT_ITCLR_INTRO",
+      "label": "Intention to create legal relations: requirement that parties intend the agreement to be legally binding",
+      "st": "7.2",
+      "difficulty": 0.3,
+      "kind": "concept"
+    },
+    {
+      "id": "CT_ITCLR_DOMESTIC",
+      "label": "Domestic and social agreements: rebuttable presumption of no intention to create legal relations (Balfour v Balfour, Jones v Padavatton)",
+      "st": "7.2",
+      "difficulty": 0.4,
+      "kind": "concept"
+    },
+    {
+      "id": "CT_ITCLR_DOMESTIC_REBUT",
+      "label": "Rebutting the domestic presumption where parties separated or relied to their detriment (Merritt v Merritt)",
+      "st": "7.2",
+      "difficulty": 0.4,
+      "kind": "concept"
+    },
+    {
+      "id": "CT_ITCLR_COMMERCIAL",
+      "label": "Commercial agreements: rebuttable presumption that intention to create legal relations exists (Edwards v Skyways)",
+      "st": "7.2",
+      "difficulty": 0.4,
+      "kind": "concept"
+    },
+    {
+      "id": "CT_ITCLR_COMMERCIAL_REBUT",
+      "label": "Rebutting the commercial presumption by express words such as 'binding in honour only' (Rose & Frank v Crompton)",
+      "st": "7.2",
+      "difficulty": 0.4,
+      "kind": "concept"
+    },
+    {
+      "id": "CT_CONSIDERATION_DEF",
+      "label": "Consideration: something of value passing between the parties, the price of the promise (Currie v Misa)",
+      "st": "7.2",
+      "difficulty": 0.35,
+      "kind": "concept"
+    },
+    {
+      "id": "CT_CONSID_ADEQUACY",
+      "label": "Consideration need not be adequate: courts do not assess whether the bargain is a fair economic exchange (Chappell v Nestle)",
+      "st": "7.2",
+      "difficulty": 0.35,
+      "kind": "concept"
+    },
+    {
+      "id": "CT_CONSID_SUFFICIENCY",
+      "label": "Consideration must be sufficient: it must have some recognisable value in law (Thomas v Thomas)",
+      "st": "7.2",
+      "difficulty": 0.4,
+      "kind": "concept"
+    },
+    {
+      "id": "CT_CONSID_PAST",
+      "label": "Past consideration is not valid consideration (Re McArdle), with exception where act done at the promisor's request (Lampleigh v Braithwait, Pao On v Lau Yiu Long)",
+      "st": "7.2",
+      "difficulty": 0.45,
+      "kind": "concept"
+    },
+    {
+      "id": "CT_CONSID_EXISTING_PUBLIC",
+      "label": "Performance of an existing public duty is not good consideration unless something extra is provided (Collins v Godefroy, Glasbrook Bros v Glamorgan CC)",
+      "st": "7.2",
+      "difficulty": 0.45,
+      "kind": "concept"
+    },
+    {
+      "id": "CT_CONSID_EXISTING_CONTRACT_SAME_PARTY",
+      "label": "Performance of an existing contractual duty owed to the same party is not good consideration unless a practical benefit is conferred (Stilk v Myrick; Williams v Roffey Bros)",
+      "st": "7.2",
+      "difficulty": 0.5,
+      "kind": "concept"
+    },
+    {
+      "id": "CT_CONSID_EXISTING_DUTY_THIRD_PARTY",
+      "label": "Performance of an existing contractual duty owed to a third party can be good consideration (Scotson v Pegg, Pao On v Lau Yiu Long)",
+      "st": "7.2",
+      "difficulty": 0.45,
+      "kind": "concept"
+    },
+    {
+      "id": "CT_PRIVITY_DOCTRINE",
+      "label": "Doctrine of privity: only parties to a contract can sue or be sued on it (Tweddle v Atkinson, Dunlop v Selfridge)",
+      "st": "7.2",
+      "difficulty": 0.4,
+      "kind": "concept"
+    },
+    {
+      "id": "CT_PRIVITY_STATUTE",
+      "label": "Contracts (Rights of Third Parties) Act 1999: a third party may enforce a term if the contract expressly allows it, or purports to confer a benefit on them (s.1)",
+      "st": "7.2",
+      "difficulty": 0.5,
+      "kind": "concept"
+    },
+    {
+      "id": "CT_PRIVITY_COMMON_LAW_EXCEPTIONS",
+      "label": "Common law exceptions to privity: agency, assignment, and collateral contracts (Shanklin Pier v Detel Products)",
+      "st": "7.2",
+      "difficulty": 0.5,
+      "kind": "concept"
+    },
+    {
+      "id": "CT_EXPRESS_TERMS",
+      "label": "Express terms: terms actually stated by the parties, orally or in writing",
+      "st": "7.3",
+      "difficulty": 0.25,
+      "kind": "concept"
+    },
+    {
+      "id": "CT_IMPLIED_TERMS_FACT",
+      "label": "Terms implied in fact: the officious bystander and business efficacy tests (The Moorcock, Shirlaw v Southern Foundries)",
+      "st": "7.3",
+      "difficulty": 0.4,
+      "kind": "concept"
+    },
+    {
+      "id": "CT_IMPLIED_TERMS_LAW_CUSTOM",
+      "label": "Terms implied by law and by custom, including through prior dealing and trade custom",
+      "st": "7.3",
+      "difficulty": 0.4,
+      "kind": "concept"
+    },
+    {
+      "id": "CT_CRA_TERMS",
+      "label": "Consumer Rights Act 2015: statutory implied terms in consumer contracts - satisfactory quality, fitness for purpose, and description (ss.9-11)",
+      "st": "7.3",
+      "difficulty": 0.45,
+      "kind": "concept"
+    },
+    {
+      "id": "CT_CRA_SERVICES",
+      "label": "Consumer Rights Act 2015: implied term that services be performed with reasonable care and skill (s.49)",
+      "st": "7.3",
+      "difficulty": 0.4,
+      "kind": "concept"
+    },
+    {
+      "id": "CT_CONDITIONS",
+      "label": "Conditions: major terms going to the root of the contract, breach entitles termination and damages (Poussard v Spiers)",
+      "st": "7.3",
+      "difficulty": 0.35,
+      "kind": "concept"
+    },
+    {
+      "id": "CT_WARRANTIES",
+      "label": "Warranties: minor terms, breach entitles damages only, not termination (Bettini v Gye)",
+      "st": "7.3",
+      "difficulty": 0.35,
+      "kind": "concept"
+    },
+    {
+      "id": "CT_INNOMINATE_TERMS",
+      "label": "Innominate terms: classification depends on the seriousness of the consequences of breach (Hong Kong Fir Shipping v Kawasaki Kisen Kaisha)",
+      "st": "7.3",
+      "difficulty": 0.5,
+      "kind": "concept"
+    },
+    {
+      "id": "CT_EXCLUSION_INCORP",
+      "label": "Exclusion/limitation clauses: incorporation requirements - signature, notice before/at contract formation, and course of dealing (L'Estrange v Graucob, Olley v Marlborough Court, Thornton v Shoe Lane Parking)",
+      "st": "7.3",
+      "difficulty": 0.5,
+      "kind": "concept"
+    },
+    {
+      "id": "CT_EXCLUSION_CONSTRUCTION",
+      "label": "Exclusion/limitation clauses: contra proferentem rule - ambiguous clauses construed against the party relying on them",
+      "st": "7.3",
+      "difficulty": 0.4,
+      "kind": "concept"
+    },
+    {
+      "id": "CT_UCTA_1977",
+      "label": "Unfair Contract Terms Act 1977: controls on exclusion clauses in business contracts - negligence liability for death/injury void (s.2(1)), other exclusions subject to reasonableness (s.2(2))",
+      "st": "7.3",
+      "difficulty": 0.55,
+      "kind": "concept"
+    },
+    {
+      "id": "CT_CRA_UNFAIR_TERMS",
+      "label": "Consumer Rights Act 2015 Part 2: unfair terms in consumer contracts are not binding, including the fairness test and 'grey list' of potentially unfair terms",
+      "st": "7.3",
+      "difficulty": 0.5,
+      "kind": "concept"
+    },
+    {
+      "id": "CT_MISREP_DEF",
+      "label": "Misrepresentation: a false statement of fact made by one party which induces the other to enter the contract",
+      "st": "7.4",
+      "difficulty": 0.35,
+      "kind": "concept"
+    },
+    {
+      "id": "CT_MISREP_FACT_NOT_OPINION",
+      "label": "Misrepresentation requires a statement of fact, not mere opinion (Bisset v Wilkinson) - though a false opinion by an expert can be actionable (Esso v Mardon)",
+      "st": "7.4",
+      "difficulty": 0.45,
+      "kind": "concept"
+    },
+    {
+      "id": "CT_MISREP_OMISSION",
+      "label": "Silence generally not misrepresentation, but half-truths and failure to correct a later-falsified statement are actionable (With v O'Flanagan); omission as misrepresentation in consumer contexts under the Consumer Protection from Unfair Trading Regulations 2008",
+      "st": "7.4",
+      "difficulty": 0.55,
+      "kind": "concept"
+    },
+    {
+      "id": "CT_MISREP_INDUCEMENT",
+      "label": "Misrepresentation must induce the representee to enter the contract, i.e. actually relied upon (Edgington v Fitzmaurice, Attwood v Small)",
+      "st": "7.4",
+      "difficulty": 0.4,
+      "kind": "concept"
+    },
+    {
+      "id": "CT_MISREP_FRAUDULENT",
+      "label": "Fraudulent misrepresentation: false statement made knowingly, without belief in its truth, or recklessly (Derry v Peek)",
+      "st": "7.4",
+      "difficulty": 0.4,
+      "kind": "concept"
+    },
+    {
+      "id": "CT_MISREP_NEGLIGENT",
+      "label": "Negligent misrepresentation under s.2(1) Misrepresentation Act 1967: representor must prove reasonable grounds for belief",
+      "st": "7.4",
+      "difficulty": 0.45,
+      "kind": "concept"
+    },
+    {
+      "id": "CT_MISREP_INNOCENT",
+      "label": "Innocent misrepresentation: false statement made with reasonable belief in its truth",
+      "st": "7.4",
+      "difficulty": 0.3,
+      "kind": "concept"
+    },
+    {
+      "id": "CT_MISREP_REMEDIES",
+      "label": "Remedies for misrepresentation: rescission for all types, damages for fraudulent (tort of deceit) and negligent (s.2(1)), damages in lieu of rescission under s.2(2)",
+      "st": "7.4",
+      "difficulty": 0.5,
+      "kind": "concept"
+    },
+    {
+      "id": "CT_DURESS_INTRO",
+      "label": "Economic duress: illegitimate pressure that vitiates consent to a contract or variation",
+      "st": "7.4",
+      "difficulty": 0.4,
+      "kind": "concept"
+    },
+    {
+      "id": "CT_DURESS_ILLEGITIMATE_PRESSURE",
+      "label": "Economic duress requires illegitimate pressure amounting to a threat, not mere hard bargaining (Pao On v Lau Yiu Long)",
+      "st": "7.4",
+      "difficulty": 0.45,
+      "kind": "concept"
+    },
+    {
+      "id": "CT_DURESS_NO_PRACTICAL_CHOICE",
+      "label": "Economic duress requires the victim to have no practical/realistic alternative but to submit (The Atlantic Baron; Universe Tankships v ITWF)",
+      "st": "7.4",
+      "difficulty": 0.45,
+      "kind": "concept"
+    },
+    {
+      "id": "CT_DURESS_CAUSATION",
+      "label": "Economic duress requires the illegitimate pressure to be a significant cause of entering the contract (B&S Contracts v Victor Green; DSND Subsea v Petroleum Geo-Services)",
+      "st": "7.4",
+      "difficulty": 0.45,
+      "kind": "concept"
+    },
+    {
+      "id": "CT_DURESS_REMEDY",
+      "label": "Remedy for economic duress: the contract is voidable, allowing rescission",
+      "st": "7.4",
+      "difficulty": 0.35,
+      "kind": "concept"
+    },
+    {
+      "id": "CT_PERFORMANCE_RULE",
+      "label": "Discharge by performance: general rule requires precise and complete performance of contractual obligations (Cutter v Powell)",
+      "st": "7.5",
+      "difficulty": 0.4,
+      "kind": "concept"
+    },
+    {
+      "id": "CT_PERFORMANCE_SEVERABLE",
+      "label": "Exception: severable/divisible obligations allow partial payment for partial performance",
+      "st": "7.5",
+      "difficulty": 0.4,
+      "kind": "concept"
+    },
+    {
+      "id": "CT_PERFORMANCE_SUBSTANTIAL",
+      "label": "Exception: doctrine of substantial performance allows payment less a deduction for defects (Hoenig v Isaacs)",
+      "st": "7.5",
+      "difficulty": 0.4,
+      "kind": "concept"
+    },
+    {
+      "id": "CT_PERFORMANCE_PREVENTED",
+      "label": "Exception: where the innocent party is prevented from completing performance by the other party, a quantum meruit claim may arise (Planche v Colburn)",
+      "st": "7.5",
+      "difficulty": 0.4,
+      "kind": "concept"
+    },
+    {
+      "id": "CT_PERFORMANCE_ACCEPTANCE_PARTIAL",
+      "label": "Exception: acceptance of partial performance by the other party requires payment for what was accepted (Sumpter v Hedges)",
+      "st": "7.5",
+      "difficulty": 0.4,
+      "kind": "concept"
+    },
+    {
+      "id": "CT_FRUSTRATION_DEF",
+      "label": "Frustration: a contract is discharged where, after formation, an unforeseen event makes performance impossible, illegal, or radically different from that contemplated (Taylor v Caldwell)",
+      "st": "7.5",
+      "difficulty": 0.45,
+      "kind": "concept"
+    },
+    {
+      "id": "CT_FRUSTRATION_IMPOSSIBILITY",
+      "label": "Frustrating event: physical impossibility, e.g. destruction of subject matter or unavailability of a party (Taylor v Caldwell)",
+      "st": "7.5",
+      "difficulty": 0.4,
+      "kind": "concept"
+    },
+    {
+      "id": "CT_FRUSTRATION_ILLEGALITY",
+      "label": "Frustrating event: supervening illegality, e.g. outbreak of war (Fibrosa v Fairbairn)",
+      "st": "7.5",
+      "difficulty": 0.4,
+      "kind": "concept"
+    },
+    {
+      "id": "CT_FRUSTRATION_PURPOSE",
+      "label": "Frustrating event: radical change of circumstances defeating the commercial purpose (Krell v Henry, contrasted with Herne Bay Steam Boat v Hutton)",
+      "st": "7.5",
+      "difficulty": 0.5,
+      "kind": "concept"
+    },
+    {
+      "id": "CT_FRUSTRATION_LIMITS",
+      "label": "Limits on frustration: self-induced frustration is not permitted (Maritime National Fish v Ocean Trawlers), and mere increased expense/hardship does not frustrate a contract (Davis Contractors v Fareham UDC)",
+      "st": "7.5",
+      "difficulty": 0.5,
+      "kind": "concept"
+    },
+    {
+      "id": "CT_FRUSTRATION_EFFECT",
+      "label": "Effect of frustration: contract automatically discharged for the future; financial adjustment under the Law Reform (Frustrated Contracts) Act 1943",
+      "st": "7.5",
+      "difficulty": 0.5,
+      "kind": "concept"
+    },
+    {
+      "id": "CT_BREACH_ACTUAL",
+      "label": "Actual breach: failure to perform an obligation when performance is due",
+      "st": "7.5",
+      "difficulty": 0.3,
+      "kind": "concept"
+    },
+    {
+      "id": "CT_BREACH_ANTICIPATORY",
+      "label": "Anticipatory breach: a party indicates before performance is due that they will not perform (Hochster v De La Tour), giving the innocent party the option to accept the breach immediately or wait for performance (White & Carter v McGregor)",
+      "st": "7.5",
+      "difficulty": 0.5,
+      "kind": "concept"
+    },
+    {
+      "id": "CT_BREACH_CONSEQUENCES",
+      "label": "Consequences of breach depend on the type of term broken: repudiatory breach of a condition allows termination plus damages, breach of warranty allows damages only",
+      "st": "7.5",
+      "difficulty": 0.45,
+      "kind": "concept"
+    },
+    {
+      "id": "CT_DAMAGES_COMPENSATORY",
+      "label": "Compensatory damages: aim to put the innocent party in the position they would have been in had the contract been performed (expectation loss), or the position before the contract (reliance loss)",
+      "st": "7.6",
+      "difficulty": 0.45,
+      "kind": "concept"
+    },
+    {
+      "id": "CT_DAMAGES_CAUSATION",
+      "label": "Causation in damages: the breach must be an effective/factual cause of the claimant's loss",
+      "st": "7.6",
+      "difficulty": 0.4,
+      "kind": "concept"
+    },
+    {
+      "id": "CT_DAMAGES_REMOTENESS",
+      "label": "Remoteness of damage: recoverable losses limited to those arising naturally from the breach, or reasonably within the contemplation of both parties at the time of contracting (Hadley v Baxendale, applied in Victoria Laundry v Newman Industries)",
+      "st": "7.6",
+      "difficulty": 0.5,
+      "kind": "concept"
+    },
+    {
+      "id": "CT_DAMAGES_MITIGATION",
+      "label": "Mitigation of loss: the claimant must take reasonable steps to minimise their loss and cannot recover for losses that reasonable mitigation would have avoided (British Westinghouse v Underground Electric Railways)",
+      "st": "7.6",
+      "difficulty": 0.4,
+      "kind": "concept"
+    },
+    {
+      "id": "CT_EQUITABLE_SPECIFIC",
+      "label": "Specific performance: equitable order compelling a party to perform their contractual obligations, granted at the court's discretion typically where damages are inadequate (e.g. unique goods/land)",
+      "st": "7.6",
+      "difficulty": 0.4,
+      "kind": "concept"
+    },
+    {
+      "id": "CT_EQUITABLE_INJUNCTION",
+      "label": "Injunction: equitable order restraining a party from breaching a negative contractual obligation, granted at the court's discretion",
+      "st": "7.6",
+      "difficulty": 0.4,
+      "kind": "concept"
+    },
+    {
+      "id": "CT_EQUITABLE_DISCRETION",
+      "label": "Equitable remedies are discretionary and subject to equitable maxims (e.g. must come with clean hands, no undue delay, not available where damages are adequate)",
+      "st": "7.6",
+      "difficulty": 0.45,
+      "kind": "concept"
+    },
+    {
+      "id": "CT_CRA_REMEDIES_GOODS",
+      "label": "Consumer Rights Act 2015 remedies for goods: short-term right to reject, right to repair or replacement, and right to a price reduction or final right to reject (ss.20-24)",
+      "st": "7.6",
+      "difficulty": 0.5,
+      "kind": "concept"
+    },
+    {
+      "id": "CT_CRA_REMEDIES_SERVICES",
+      "label": "Consumer Rights Act 2015 remedies for services: right to repeat performance or a price reduction where service not performed with reasonable care and skill (ss.54-56)",
+      "st": "7.6",
+      "difficulty": 0.45,
+      "kind": "concept"
+    },
+    {
+      "id": "CT_EVAL_OFFER_ACCEPT_CERTAINTY",
+      "label": "Evaluation: offer and acceptance rules provide certainty but the postal rule can produce unfair results where letters are lost or delayed",
+      "st": "7.7",
+      "difficulty": 0.45,
+      "kind": "evaluation"
+    },
+    {
+      "id": "CT_EVAL_ITT_FLEXIBILITY",
+      "label": "Evaluation: the offer/invitation to treat distinction gives flexibility in commercial negotiation but can be technical and produce arbitrary outcomes (e.g. shop displays)",
+      "st": "7.7",
+      "difficulty": 0.45,
+      "kind": "evaluation"
+    },
+    {
+      "id": "CT_EVAL_ITCLR_UNCERTAIN",
+      "label": "Evaluation: presumptions on intention to create legal relations can be criticised as based on outdated assumptions about domestic relationships (Balfour v Balfour) and create uncertainty at the margins",
+      "st": "7.7",
+      "difficulty": 0.5,
+      "kind": "evaluation"
+    },
+    {
+      "id": "CT_EVAL_CONSID_ADEQUACY_FREEDOM",
+      "label": "Evaluation: not requiring adequacy of consideration upholds freedom of contract and party autonomy",
+      "st": "7.7",
+      "difficulty": 0.4,
+      "kind": "evaluation"
+    },
+    {
+      "id": "CT_EVAL_CONSID_ADEQUACY_UNFAIR",
+      "label": "Evaluation: not requiring adequacy of consideration can permit unfair or exploitative bargains to stand",
+      "st": "7.7",
+      "difficulty": 0.45,
+      "kind": "evaluation"
+    },
+    {
+      "id": "CT_EVAL_CONSID_EXISTING_DUTY_INCONSISTENT",
+      "label": "Evaluation: the practical benefit test in Williams v Roffey Bros creates inconsistency and arguably undermines the certainty of Stilk v Myrick",
+      "st": "7.7",
+      "difficulty": 0.55,
+      "kind": "evaluation"
+    },
+    {
+      "id": "CT_EVAL_PAST_CONSID_HARSH",
+      "label": "Evaluation: the past consideration rule can produce harsh outcomes where a genuine later promise to pay for an earlier act is unenforceable, mitigated somewhat by the Lampleigh v Braithwait exception",
+      "st": "7.7",
+      "difficulty": 0.5,
+      "kind": "evaluation"
+    },
+    {
+      "id": "CT_EVAL_PRIVITY_INJUSTICE",
+      "label": "Evaluation: the strict privity doctrine caused injustice to intended beneficiaries who could not enforce contracts made for their benefit (Tweddle v Atkinson)",
+      "st": "7.7",
+      "difficulty": 0.45,
+      "kind": "evaluation"
+    },
+    {
+      "id": "CT_EVAL_PRIVITY_1999_ACT_SUCCESS",
+      "label": "Evaluation: the Contracts (Rights of Third Parties) Act 1999 successfully allows third parties to enforce benefits while respecting the original parties' intentions",
+      "st": "7.7",
+      "difficulty": 0.45,
+      "kind": "evaluation"
+    },
+    {
+      "id": "CT_EVAL_PRIVITY_1999_ACT_LIMITED",
+      "label": "Evaluation: the 1999 Act is limited because it requires the contract to expressly identify the third party or class, and parties can exclude its operation entirely",
+      "st": "7.7",
+      "difficulty": 0.5,
+      "kind": "evaluation"
+    },
+    {
+      "id": "CT_EVAL_IMPLIED_TERMS_GAP",
+      "label": "Evaluation: implied terms fill gaps and give effect to the presumed intentions of the parties, but the business efficacy/officious bystander tests are subjective and unpredictable",
+      "st": "7.7",
+      "difficulty": 0.5,
+      "kind": "evaluation"
+    },
+    {
+      "id": "CT_EVAL_CRA_CONSUMER_PROTECTION",
+      "label": "Evaluation: the Consumer Rights Act 2015 significantly strengthens consumer protection by consolidating and clarifying statutory implied terms and remedies",
+      "st": "7.7",
+      "difficulty": 0.45,
+      "kind": "evaluation"
+    },
+    {
+      "id": "CT_EVAL_INNOMINATE_UNCERTAIN",
+      "label": "Evaluation: the innominate term approach (Hong Kong Fir) offers flexibility and fairness but creates uncertainty for parties as to their rights, since classification is only known after breach",
+      "st": "7.7",
+      "difficulty": 0.55,
+      "kind": "evaluation"
+    },
+    {
+      "id": "CT_EVAL_CONDITION_WARRANTY_CERTAINTY",
+      "label": "Evaluation: the rigid condition/warranty classification offers certainty of remedy in advance but can produce disproportionate outcomes (e.g. termination for a trivial breach of a labelled 'condition')",
+      "st": "7.7",
+      "difficulty": 0.5,
+      "kind": "evaluation"
+    },
+    {
+      "id": "CT_EVAL_UCTA_PROTECTION",
+      "label": "Evaluation: UCTA 1977 and the Consumer Rights Act 2015 provide important protection against unfair exclusion clauses, but the reasonableness/fairness tests still create uncertainty in application",
+      "st": "7.7",
+      "difficulty": 0.5,
+      "kind": "evaluation"
+    },
+    {
+      "id": "CT_REFORM_PROPOSALS",
+      "label": "Reform proposals for contract formation and terms: e.g. codification of contract law, clearer statutory rules on communication of acceptance in electronic contracting, reform of consideration doctrine",
+      "st": "7.7",
+      "difficulty": 0.5,
+      "kind": "evaluation"
+    }
+  ],
+  "edges": [
+    [
+      "CT_RULES_OVERVIEW",
+      "CT_THEORY",
+      0.3
+    ],
+    [
+      "CT_THEORY",
+      "CT_EVAL_ITCLR_UNCERTAIN",
+      0.3
+    ],
+    [
+      "CT_OFFER",
+      "CT_ITT",
+      0.3
+    ],
+    [
+      "CT_OFFER",
+      "CT_ACCEPTANCE",
+      0.3
+    ],
+    [
+      "CT_ACCEPTANCE",
+      "CT_COMM_ACCEPT",
+      0.3
+    ],
+    [
+      "CT_COMM_ACCEPT",
+      "CT_POSTAL_RULE",
+      0.4
+    ],
+    [
+      "CT_OFFER",
+      "CT_REVOCATION",
+      0.35
+    ],
+    [
+      "CT_REVOCATION",
+      "CT_REVOCATION_THIRD",
+      0.35
+    ],
+    [
+      "CT_ACCEPTANCE",
+      "CT_COUNTER_OFFER",
+      0.35
+    ],
+    [
+      "CT_OFFER",
+      "CT_COUNTER_OFFER",
+      0.3
+    ],
+    [
+      "CT_ACCEPTANCE",
+      "CT_ITCLR_INTRO",
+      0.3
+    ],
+    [
+      "CT_ITCLR_INTRO",
+      "CT_ITCLR_DOMESTIC",
+      0.3
+    ],
+    [
+      "CT_ITCLR_DOMESTIC",
+      "CT_ITCLR_DOMESTIC_REBUT",
+      0.35
+    ],
+    [
+      "CT_ITCLR_INTRO",
+      "CT_ITCLR_COMMERCIAL",
+      0.3
+    ],
+    [
+      "CT_ITCLR_COMMERCIAL",
+      "CT_ITCLR_COMMERCIAL_REBUT",
+      0.35
+    ],
+    [
+      "CT_ITCLR_INTRO",
+      "CT_CONSIDERATION_DEF",
+      0.3
+    ],
+    [
+      "CT_CONSIDERATION_DEF",
+      "CT_CONSID_ADEQUACY",
+      0.3
+    ],
+    [
+      "CT_CONSIDERATION_DEF",
+      "CT_CONSID_SUFFICIENCY",
+      0.35
+    ],
+    [
+      "CT_CONSID_SUFFICIENCY",
+      "CT_CONSID_PAST",
+      0.4
+    ],
+    [
+      "CT_CONSID_SUFFICIENCY",
+      "CT_CONSID_EXISTING_PUBLIC",
+      0.4
+    ],
+    [
+      "CT_CONSID_SUFFICIENCY",
+      "CT_CONSID_EXISTING_CONTRACT_SAME_PARTY",
+      0.45
+    ],
+    [
+      "CT_CONSID_SUFFICIENCY",
+      "CT_CONSID_EXISTING_DUTY_THIRD_PARTY",
+      0.4
+    ],
+    [
+      "CT_CONSIDERATION_DEF",
+      "CT_PRIVITY_DOCTRINE",
+      0.35
+    ],
+    [
+      "CT_PRIVITY_DOCTRINE",
+      "CT_PRIVITY_STATUTE",
+      0.4
+    ],
+    [
+      "CT_PRIVITY_DOCTRINE",
+      "CT_PRIVITY_COMMON_LAW_EXCEPTIONS",
+      0.4
+    ],
+    [
+      "CT_ACCEPTANCE",
+      "CT_EXPRESS_TERMS",
+      0.25
+    ],
+    [
+      "CT_EXPRESS_TERMS",
+      "CT_IMPLIED_TERMS_FACT",
+      0.35
+    ],
+    [
+      "CT_EXPRESS_TERMS",
+      "CT_IMPLIED_TERMS_LAW_CUSTOM",
+      0.35
+    ],
+    [
+      "CT_EXPRESS_TERMS",
+      "CT_CRA_TERMS",
+      0.35
+    ],
+    [
+      "CT_CRA_TERMS",
+      "CT_CRA_SERVICES",
+      0.3
+    ],
+    [
+      "CT_EXPRESS_TERMS",
+      "CT_CONDITIONS",
+      0.3
+    ],
+    [
+      "CT_EXPRESS_TERMS",
+      "CT_WARRANTIES",
+      0.3
+    ],
+    [
+      "CT_CONDITIONS",
+      "CT_INNOMINATE_TERMS",
+      0.45
+    ],
+    [
+      "CT_WARRANTIES",
+      "CT_INNOMINATE_TERMS",
+      0.45
+    ],
+    [
+      "CT_EXPRESS_TERMS",
+      "CT_EXCLUSION_INCORP",
+      0.35
+    ],
+    [
+      "CT_EXCLUSION_INCORP",
+      "CT_EXCLUSION_CONSTRUCTION",
+      0.35
+    ],
+    [
+      "CT_EXCLUSION_CONSTRUCTION",
+      "CT_UCTA_1977",
+      0.45
+    ],
+    [
+      "CT_UCTA_1977",
+      "CT_CRA_UNFAIR_TERMS",
+      0.4
+    ],
+    [
+      "CT_CRA_TERMS",
+      "CT_CRA_UNFAIR_TERMS",
+      0.35
+    ],
+    [
+      "CT_MISREP_DEF",
+      "CT_MISREP_FACT_NOT_OPINION",
+      0.35
+    ],
+    [
+      "CT_MISREP_FACT_NOT_OPINION",
+      "CT_MISREP_OMISSION",
+      0.4
+    ],
+    [
+      "CT_MISREP_DEF",
+      "CT_MISREP_INDUCEMENT",
+      0.35
+    ],
+    [
+      "CT_MISREP_INDUCEMENT",
+      "CT_MISREP_FRAUDULENT",
+      0.35
+    ],
+    [
+      "CT_MISREP_INDUCEMENT",
+      "CT_MISREP_NEGLIGENT",
+      0.35
+    ],
+    [
+      "CT_MISREP_INDUCEMENT",
+      "CT_MISREP_INNOCENT",
+      0.3
+    ],
+    [
+      "CT_MISREP_FRAUDULENT",
+      "CT_MISREP_REMEDIES",
+      0.4
+    ],
+    [
+      "CT_MISREP_NEGLIGENT",
+      "CT_MISREP_REMEDIES",
+      0.4
+    ],
+    [
+      "CT_MISREP_INNOCENT",
+      "CT_MISREP_REMEDIES",
+      0.4
+    ],
+    [
+      "CT_DURESS_INTRO",
+      "CT_DURESS_ILLEGITIMATE_PRESSURE",
+      0.35
+    ],
+    [
+      "CT_DURESS_ILLEGITIMATE_PRESSURE",
+      "CT_DURESS_NO_PRACTICAL_CHOICE",
+      0.35
+    ],
+    [
+      "CT_DURESS_NO_PRACTICAL_CHOICE",
+      "CT_DURESS_CAUSATION",
+      0.4
+    ],
+    [
+      "CT_DURESS_CAUSATION",
+      "CT_DURESS_REMEDY",
+      0.35
+    ],
+    [
+      "CT_CONSID_EXISTING_CONTRACT_SAME_PARTY",
+      "CT_DURESS_INTRO",
+      0.4
+    ],
+    [
+      "CT_PERFORMANCE_RULE",
+      "CT_PERFORMANCE_SEVERABLE",
+      0.35
+    ],
+    [
+      "CT_PERFORMANCE_RULE",
+      "CT_PERFORMANCE_SUBSTANTIAL",
+      0.35
+    ],
+    [
+      "CT_PERFORMANCE_RULE",
+      "CT_PERFORMANCE_PREVENTED",
+      0.35
+    ],
+    [
+      "CT_PERFORMANCE_RULE",
+      "CT_PERFORMANCE_ACCEPTANCE_PARTIAL",
+      0.35
+    ],
+    [
+      "CT_FRUSTRATION_DEF",
+      "CT_FRUSTRATION_IMPOSSIBILITY",
+      0.3
+    ],
+    [
+      "CT_FRUSTRATION_DEF",
+      "CT_FRUSTRATION_ILLEGALITY",
+      0.3
+    ],
+    [
+      "CT_FRUSTRATION_DEF",
+      "CT_FRUSTRATION_PURPOSE",
+      0.4
+    ],
+    [
+      "CT_FRUSTRATION_IMPOSSIBILITY",
+      "CT_FRUSTRATION_LIMITS",
+      0.4
+    ],
+    [
+      "CT_FRUSTRATION_ILLEGALITY",
+      "CT_FRUSTRATION_LIMITS",
+      0.4
+    ],
+    [
+      "CT_FRUSTRATION_PURPOSE",
+      "CT_FRUSTRATION_LIMITS",
+      0.4
+    ],
+    [
+      "CT_FRUSTRATION_LIMITS",
+      "CT_FRUSTRATION_EFFECT",
+      0.4
+    ],
+    [
+      "CT_BREACH_ACTUAL",
+      "CT_BREACH_ANTICIPATORY",
+      0.35
+    ],
+    [
+      "CT_CONDITIONS",
+      "CT_BREACH_CONSEQUENCES",
+      0.4
+    ],
+    [
+      "CT_WARRANTIES",
+      "CT_BREACH_CONSEQUENCES",
+      0.4
+    ],
+    [
+      "CT_INNOMINATE_TERMS",
+      "CT_BREACH_CONSEQUENCES",
+      0.4
+    ],
+    [
+      "CT_BREACH_ACTUAL",
+      "CT_BREACH_CONSEQUENCES",
+      0.35
+    ],
+    [
+      "CT_BREACH_CONSEQUENCES",
+      "CT_DAMAGES_COMPENSATORY",
+      0.4
+    ],
+    [
+      "CT_DAMAGES_COMPENSATORY",
+      "CT_DAMAGES_CAUSATION",
+      0.35
+    ],
+    [
+      "CT_DAMAGES_CAUSATION",
+      "CT_DAMAGES_REMOTENESS",
+      0.45
+    ],
+    [
+      "CT_DAMAGES_REMOTENESS",
+      "CT_DAMAGES_MITIGATION",
+      0.4
+    ],
+    [
+      "CT_BREACH_CONSEQUENCES",
+      "CT_EQUITABLE_SPECIFIC",
+      0.4
+    ],
+    [
+      "CT_BREACH_CONSEQUENCES",
+      "CT_EQUITABLE_INJUNCTION",
+      0.4
+    ],
+    [
+      "CT_EQUITABLE_SPECIFIC",
+      "CT_EQUITABLE_DISCRETION",
+      0.35
+    ],
+    [
+      "CT_EQUITABLE_INJUNCTION",
+      "CT_EQUITABLE_DISCRETION",
+      0.35
+    ],
+    [
+      "CT_CRA_TERMS",
+      "CT_CRA_REMEDIES_GOODS",
+      0.4
+    ],
+    [
+      "CT_CRA_SERVICES",
+      "CT_CRA_REMEDIES_SERVICES",
+      0.4
+    ],
+    [
+      "CT_POSTAL_RULE",
+      "CT_EVAL_OFFER_ACCEPT_CERTAINTY",
+      0.4
+    ],
+    [
+      "CT_ITT",
+      "CT_EVAL_ITT_FLEXIBILITY",
+      0.4
+    ],
+    [
+      "CT_ITCLR_DOMESTIC_REBUT",
+      "CT_EVAL_ITCLR_UNCERTAIN",
+      0.4
+    ],
+    [
+      "CT_ITCLR_COMMERCIAL_REBUT",
+      "CT_EVAL_ITCLR_UNCERTAIN",
+      0.4
+    ],
+    [
+      "CT_CONSID_ADEQUACY",
+      "CT_EVAL_CONSID_ADEQUACY_FREEDOM",
+      0.4
+    ],
+    [
+      "CT_CONSID_ADEQUACY",
+      "CT_EVAL_CONSID_ADEQUACY_UNFAIR",
+      0.4
+    ],
+    [
+      "CT_EVAL_CONSID_ADEQUACY_FREEDOM",
+      "CT_EVAL_CONSID_ADEQUACY_UNFAIR",
+      0.4
+    ],
+    [
+      "CT_CONSID_EXISTING_CONTRACT_SAME_PARTY",
+      "CT_EVAL_CONSID_EXISTING_DUTY_INCONSISTENT",
+      0.5
+    ],
+    [
+      "CT_CONSID_PAST",
+      "CT_EVAL_PAST_CONSID_HARSH",
+      0.45
+    ],
+    [
+      "CT_PRIVITY_DOCTRINE",
+      "CT_EVAL_PRIVITY_INJUSTICE",
+      0.4
+    ],
+    [
+      "CT_PRIVITY_STATUTE",
+      "CT_EVAL_PRIVITY_1999_ACT_SUCCESS",
+      0.45
+    ],
+    [
+      "CT_EVAL_PRIVITY_INJUSTICE",
+      "CT_EVAL_PRIVITY_1999_ACT_SUCCESS",
+      0.4
+    ],
+    [
+      "CT_PRIVITY_STATUTE",
+      "CT_EVAL_PRIVITY_1999_ACT_LIMITED",
+      0.45
+    ],
+    [
+      "CT_EVAL_PRIVITY_1999_ACT_SUCCESS",
+      "CT_EVAL_PRIVITY_1999_ACT_LIMITED",
+      0.4
+    ],
+    [
+      "CT_IMPLIED_TERMS_FACT",
+      "CT_EVAL_IMPLIED_TERMS_GAP",
+      0.45
+    ],
+    [
+      "CT_CRA_UNFAIR_TERMS",
+      "CT_EVAL_CRA_CONSUMER_PROTECTION",
+      0.4
+    ],
+    [
+      "CT_CRA_REMEDIES_GOODS",
+      "CT_EVAL_CRA_CONSUMER_PROTECTION",
+      0.4
+    ],
+    [
+      "CT_INNOMINATE_TERMS",
+      "CT_EVAL_INNOMINATE_UNCERTAIN",
+      0.45
+    ],
+    [
+      "CT_CONDITIONS",
+      "CT_EVAL_CONDITION_WARRANTY_CERTAINTY",
+      0.4
+    ],
+    [
+      "CT_WARRANTIES",
+      "CT_EVAL_CONDITION_WARRANTY_CERTAINTY",
+      0.4
+    ],
+    [
+      "CT_EVAL_INNOMINATE_UNCERTAIN",
+      "CT_EVAL_CONDITION_WARRANTY_CERTAINTY",
+      0.4
+    ],
+    [
+      "CT_UCTA_1977",
+      "CT_EVAL_UCTA_PROTECTION",
+      0.45
+    ],
+    [
+      "CT_CRA_UNFAIR_TERMS",
+      "CT_EVAL_UCTA_PROTECTION",
+      0.4
+    ],
+    [
+      "CT_EVAL_OFFER_ACCEPT_CERTAINTY",
+      "CT_REFORM_PROPOSALS",
+      0.4
+    ],
+    [
+      "CT_EVAL_PAST_CONSID_HARSH",
+      "CT_REFORM_PROPOSALS",
+      0.4
+    ],
+    [
+      "CT_EVAL_ITCLR_UNCERTAIN",
+      "CT_REFORM_PROPOSALS",
+      0.4
+    ]
+  ]
+}

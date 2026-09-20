@@ -1,0 +1,1074 @@
+{
+  "nodes": [
+    {
+      "id": "TA_TORT_DEF",
+      "label": "Definition of a tort: a civil wrong causing loss/harm giving rise to a claim for compensation",
+      "st": "4.1",
+      "difficulty": 0.2,
+      "kind": "concept"
+    },
+    {
+      "id": "TA_CIVIL_STANDARD",
+      "label": "Tort claims decided on the balance of probabilities in civil courts (claimant sues defendant)",
+      "st": "4.1",
+      "difficulty": 0.2,
+      "kind": "concept"
+    },
+    {
+      "id": "TA_TORT_AIM_COMPENSATE",
+      "label": "Theory of tort: compensatory aim - restoring claimant to pre-tort position",
+      "st": "4.1",
+      "difficulty": 0.3,
+      "kind": "concept"
+    },
+    {
+      "id": "TA_TORT_AIM_DETER",
+      "label": "Theory of tort: deterrent aim - discouraging careless or wrongful conduct",
+      "st": "4.1",
+      "difficulty": 0.3,
+      "kind": "concept"
+    },
+    {
+      "id": "TA_TORT_AIM_JUSTICE",
+      "label": "Theory of tort: corrective/distributive justice aim - loss shifted to the party best able to bear or insure it",
+      "st": "4.1",
+      "difficulty": 0.35,
+      "kind": "concept"
+    },
+    {
+      "id": "TA_TORT_FAULT",
+      "label": "Theory of tort: fault-based liability as the general basis, contrasted with strict liability torts",
+      "st": "4.1",
+      "difficulty": 0.35,
+      "kind": "concept"
+    },
+    {
+      "id": "TA_TORT_VS_CONTRACT",
+      "label": "Distinction between tortious duties (imposed by law) and contractual duties (voluntarily assumed)",
+      "st": "4.1",
+      "difficulty": 0.3,
+      "kind": "concept"
+    },
+    {
+      "id": "TA_TORT_VS_CRIME",
+      "label": "Distinction between tort (civil, compensatory) and crime (state prosecution, punishment)",
+      "st": "4.1",
+      "difficulty": 0.25,
+      "kind": "concept"
+    },
+    {
+      "id": "TA_NEG_DEF",
+      "label": "Negligence defined: breach of a legal duty of care causing damage",
+      "st": "4.2",
+      "difficulty": 0.2,
+      "kind": "concept"
+    },
+    {
+      "id": "TA_NEG_ELEMENTS",
+      "label": "Three elements the claimant must prove in negligence: duty, breach, damage",
+      "st": "4.2",
+      "difficulty": 0.2,
+      "kind": "concept"
+    },
+    {
+      "id": "TA_DONOGHUE",
+      "label": "Donoghue v Stevenson (1932): origin of the modern duty of care and the neighbour principle",
+      "st": "4.2",
+      "difficulty": 0.4,
+      "kind": "concept"
+    },
+    {
+      "id": "TA_NEIGHBOUR_PRINCIPLE",
+      "label": "Neighbour principle (Lord Atkin): must take reasonable care to avoid acts/omissions reasonably foreseeable as likely to injure your neighbour",
+      "st": "4.2",
+      "difficulty": 0.4,
+      "kind": "concept"
+    },
+    {
+      "id": "TA_CAPARO_TEST",
+      "label": "Caparo v Dickman (1990) three-stage test for establishing a novel duty of care",
+      "st": "4.2",
+      "difficulty": 0.45,
+      "kind": "concept"
+    },
+    {
+      "id": "TA_CAPARO_FORESEE",
+      "label": "Caparo stage 1: reasonable foreseeability of harm to the claimant",
+      "st": "4.2",
+      "difficulty": 0.35,
+      "kind": "concept"
+    },
+    {
+      "id": "TA_CAPARO_PROXIMITY",
+      "label": "Caparo stage 2: sufficient proximity of relationship between claimant and defendant",
+      "st": "4.2",
+      "difficulty": 0.4,
+      "kind": "concept"
+    },
+    {
+      "id": "TA_CAPARO_FJR",
+      "label": "Caparo stage 3: fair, just and reasonable to impose a duty",
+      "st": "4.2",
+      "difficulty": 0.45,
+      "kind": "concept"
+    },
+    {
+      "id": "TA_DUTY_APPLICATION",
+      "label": "Applying the neighbour principle and Caparo test to establish whether a duty of care exists on given facts",
+      "st": "4.2",
+      "difficulty": 0.5,
+      "kind": "application"
+    },
+    {
+      "id": "TA_BREACH_DEF",
+      "label": "Breach of duty defined: falling below the standard of care required by law",
+      "st": "4.2",
+      "difficulty": 0.25,
+      "kind": "concept"
+    },
+    {
+      "id": "TA_REASONABLE_MAN",
+      "label": "Objective standard of care: the reasonable man test (Blyth v Birmingham Waterworks)",
+      "st": "4.2",
+      "difficulty": 0.35,
+      "kind": "concept"
+    },
+    {
+      "id": "TA_RISK_LIKELIHOOD",
+      "label": "Risk factor: likelihood/magnitude of harm (Bolton v Stone)",
+      "st": "4.2",
+      "difficulty": 0.35,
+      "kind": "concept"
+    },
+    {
+      "id": "TA_RISK_SERIOUSNESS",
+      "label": "Risk factor: seriousness of potential harm/vulnerability of claimant (Paris v Stepney Borough Council)",
+      "st": "4.2",
+      "difficulty": 0.35,
+      "kind": "concept"
+    },
+    {
+      "id": "TA_RISK_PRECAUTIONS",
+      "label": "Risk factor: cost and practicability of taking precautions (Latimer v AEC)",
+      "st": "4.2",
+      "difficulty": 0.35,
+      "kind": "concept"
+    },
+    {
+      "id": "TA_RISK_SOCIAL_BENEFIT",
+      "label": "Risk factor: social benefit/utility of the defendant's conduct (Watt v Hertfordshire County Council)",
+      "st": "4.2",
+      "difficulty": 0.35,
+      "kind": "concept"
+    },
+    {
+      "id": "TA_RISK_SPECIAL_SKILL",
+      "label": "Risk factor: special skill of the defendant judged against the ordinary skilled person professing that skill (Bolam v Friern Hospital Management Committee)",
+      "st": "4.2",
+      "difficulty": 0.4,
+      "kind": "concept"
+    },
+    {
+      "id": "TA_BREACH_APPLICATION",
+      "label": "Applying the reasonable man standard and risk factors to determine breach on given facts",
+      "st": "4.2",
+      "difficulty": 0.5,
+      "kind": "application"
+    },
+    {
+      "id": "TA_DAMAGE_TYPES",
+      "label": "Damage in negligence: personal injury and/or damage to property must be proved",
+      "st": "4.2",
+      "difficulty": 0.2,
+      "kind": "concept"
+    },
+    {
+      "id": "TA_FACTUAL_CAUSATION",
+      "label": "Factual causation: the 'but for' test (Barnett v Chelsea & Kensington Hospital)",
+      "st": "4.2",
+      "difficulty": 0.35,
+      "kind": "concept"
+    },
+    {
+      "id": "TA_MULTIPLE_CAUSES",
+      "label": "Factual causation complication: multiple causes/materially contributing cause (Bonnington Castings v Wardlaw)",
+      "st": "4.2",
+      "difficulty": 0.45,
+      "kind": "concept"
+    },
+    {
+      "id": "TA_LEGAL_CAUSATION_INTERVENING",
+      "label": "Legal causation: novus actus interveniens - intervening act breaking the chain of causation",
+      "st": "4.2",
+      "difficulty": 0.45,
+      "kind": "concept"
+    },
+    {
+      "id": "TA_REMOTENESS",
+      "label": "Legal causation: remoteness of damage - type of harm must be reasonably foreseeable (The Wagon Mound No.1)",
+      "st": "4.2",
+      "difficulty": 0.45,
+      "kind": "concept"
+    },
+    {
+      "id": "TA_THIN_SKULL",
+      "label": "Legal causation exception: the thin/eggshell skull rule - take your victim as you find them (Smith v Leech Brain)",
+      "st": "4.2",
+      "difficulty": 0.4,
+      "kind": "concept"
+    },
+    {
+      "id": "TA_CAUSATION_APPLICATION",
+      "label": "Applying factual and legal causation rules to determine whether damage was caused in law on given facts",
+      "st": "4.2",
+      "difficulty": 0.55,
+      "kind": "application"
+    },
+    {
+      "id": "TA_NEG_FULL_APPLICATION",
+      "label": "Full application of negligence: establishing duty, breach and causation together to determine liability on a scenario",
+      "st": "4.2",
+      "difficulty": 0.6,
+      "kind": "application"
+    },
+    {
+      "id": "TA_OCC_DEF",
+      "label": "Occupiers' liability defined: statutory duty owed by an occupier of premises for the state of those premises",
+      "st": "4.3",
+      "difficulty": 0.25,
+      "kind": "concept"
+    },
+    {
+      "id": "TA_OCC_MEANING",
+      "label": "Meaning of 'occupier': person with sufficient degree of control over premises (Wheat v E Lacon & Co)",
+      "st": "4.3",
+      "difficulty": 0.35,
+      "kind": "concept"
+    },
+    {
+      "id": "TA_PREMISES_MEANING",
+      "label": "Meaning of 'premises' under OLA 1957/1984: land, buildings, and fixed/moveable structures",
+      "st": "4.3",
+      "difficulty": 0.25,
+      "kind": "concept"
+    },
+    {
+      "id": "TA_OLA57_S1_DUTY",
+      "label": "OLA 1957 s1: duty owed by occupier to all lawful visitors",
+      "st": "4.3",
+      "difficulty": 0.3,
+      "kind": "concept"
+    },
+    {
+      "id": "TA_LAWFUL_VISITOR_MEANING",
+      "label": "Meaning of 'lawful visitor': express or implied permission to be on premises",
+      "st": "4.3",
+      "difficulty": 0.25,
+      "kind": "concept"
+    },
+    {
+      "id": "TA_OLA57_S2_COMMON_DUTY",
+      "label": "OLA 1957 s2(2): common duty of care - to take such care as is reasonable to keep the visitor reasonably safe for the purpose for which they are permitted to be there",
+      "st": "4.3",
+      "difficulty": 0.35,
+      "kind": "concept"
+    },
+    {
+      "id": "TA_OLA57_CHILDREN",
+      "label": "OLA 1957 s2(3)(a): occupier must expect children to be less careful than adults (Jolley v Sutton LBC)",
+      "st": "4.3",
+      "difficulty": 0.35,
+      "kind": "concept"
+    },
+    {
+      "id": "TA_OLA57_SKILLED",
+      "label": "OLA 1957 s2(3)(b): occupier may expect visitors exercising a calling to guard against risks incidental to it (Roles v Nathan)",
+      "st": "4.3",
+      "difficulty": 0.35,
+      "kind": "concept"
+    },
+    {
+      "id": "TA_OLA57_WARNINGS",
+      "label": "OLA 1957 s2(4)(a): warning notices may discharge the duty if sufficient to make the visitor reasonably safe",
+      "st": "4.3",
+      "difficulty": 0.3,
+      "kind": "concept"
+    },
+    {
+      "id": "TA_OLA57_INDEPENDENT_CONTRACTORS",
+      "label": "OLA 1957 s2(4)(b): occupier not liable for danger from faulty work of an independent contractor if reasonable to entrust the work and steps taken to check competence/work (Haseldine v Daw)",
+      "st": "4.3",
+      "difficulty": 0.4,
+      "kind": "concept"
+    },
+    {
+      "id": "TA_OLA57_DEFENCE_CONSENT",
+      "label": "OLA 1957 s2(5): defence of volenti/consent to the risk",
+      "st": "4.3",
+      "difficulty": 0.3,
+      "kind": "concept"
+    },
+    {
+      "id": "TA_OLA57_EXCLUSION",
+      "label": "OLA 1957 s2(1): occupier may extend, restrict, modify or exclude duty by agreement or notice, subject to UCTA 1977 limits",
+      "st": "4.3",
+      "difficulty": 0.35,
+      "kind": "concept"
+    },
+    {
+      "id": "TA_OLA57_APPLICATION",
+      "label": "Applying OLA 1957 provisions to determine occupier liability to a lawful visitor on given facts",
+      "st": "4.3",
+      "difficulty": 0.55,
+      "kind": "application"
+    },
+    {
+      "id": "TA_TRESPASSER_MEANING",
+      "label": "Meaning of 'trespasser': person on premises without permission or exceeding permission (Robert Addie & Sons v Dumbreck)",
+      "st": "4.3",
+      "difficulty": 0.3,
+      "kind": "concept"
+    },
+    {
+      "id": "TA_OLA84_S1_DUTY_EXISTENCE",
+      "label": "OLA 1984 s1(3): duty to trespassers arises if occupier aware of danger/reasonable grounds to believe it exists, knows or should know trespasser may be in vicinity, and risk is one occupier may reasonably be expected to protect against",
+      "st": "4.3",
+      "difficulty": 0.45,
+      "kind": "concept"
+    },
+    {
+      "id": "TA_OLA84_S1_4_DUTY_CONTENT",
+      "label": "OLA 1984 s1(4): duty is to take reasonable care to see the trespasser is not injured by the danger concerned",
+      "st": "4.3",
+      "difficulty": 0.35,
+      "kind": "concept"
+    },
+    {
+      "id": "TA_OLA84_CHILD_TRESPASSER",
+      "label": "OLA 1984 application to child trespassers: allurement principle (British Railways Board v Herrington)",
+      "st": "4.3",
+      "difficulty": 0.4,
+      "kind": "concept"
+    },
+    {
+      "id": "TA_OLA84_S1_5_WARNINGS",
+      "label": "OLA 1984 s1(5): duty may be discharged by taking reasonable steps to warn of or discourage the risk",
+      "st": "4.3",
+      "difficulty": 0.3,
+      "kind": "concept"
+    },
+    {
+      "id": "TA_OLA84_NO_LIABILITY_RISK",
+      "label": "OLA 1984: no duty owed for risks willingly accepted by the trespasser or for obvious risks (Tomlinson v Congleton BC; Ratcliff v McConnell)",
+      "st": "4.3",
+      "difficulty": 0.4,
+      "kind": "concept"
+    },
+    {
+      "id": "TA_OLA84_APPLICATION",
+      "label": "Applying OLA 1984 provisions to determine occupier liability to a trespasser on given facts",
+      "st": "4.3",
+      "difficulty": 0.55,
+      "kind": "application"
+    },
+    {
+      "id": "TA_PRIV_NUISANCE_DEF",
+      "label": "Private nuisance defined: unlawful, indirect interference with a person's use or enjoyment of land, or of some right over/in connection with it (Read v Lyons)",
+      "st": "4.4",
+      "difficulty": 0.35,
+      "kind": "concept"
+    },
+    {
+      "id": "TA_PRIV_NUISANCE_STANDING",
+      "label": "Private nuisance requirement: claimant must have a proprietary interest in the land (Hunter v Canary Wharf)",
+      "st": "4.4",
+      "difficulty": 0.35,
+      "kind": "concept"
+    },
+    {
+      "id": "TA_PRIV_NUISANCE_INDIRECT",
+      "label": "Private nuisance element: indirect interference (e.g. noise, smell, vibration) as opposed to direct physical invasion",
+      "st": "4.4",
+      "difficulty": 0.3,
+      "kind": "concept"
+    },
+    {
+      "id": "TA_PRIV_NUISANCE_CONTINUOUS",
+      "label": "Private nuisance element: interference must generally be continuous/repeated, not a one-off event (De Keyser's Royal Hotel v Spicer Bros; distinguished in British Celanese v Hunt)",
+      "st": "4.4",
+      "difficulty": 0.35,
+      "kind": "concept"
+    },
+    {
+      "id": "TA_PRIV_NUISANCE_LOCALITY",
+      "label": "Factor: character of the locality relevant to unreasonableness where damage is amenity-based (Sturges v Bridgman)",
+      "st": "4.4",
+      "difficulty": 0.35,
+      "kind": "concept"
+    },
+    {
+      "id": "TA_PRIV_NUISANCE_SENSITIVITY",
+      "label": "Factor: abnormal sensitivity of claimant's use of land not usually protected (Robinson v Kilvert; Network Rail v Morris)",
+      "st": "4.4",
+      "difficulty": 0.35,
+      "kind": "concept"
+    },
+    {
+      "id": "TA_PRIV_NUISANCE_MALICE",
+      "label": "Factor: malice of the defendant can render otherwise reasonable conduct unreasonable (Christie v Davey; Hollywood Silver Fox Farm v Emmett)",
+      "st": "4.4",
+      "difficulty": 0.35,
+      "kind": "concept"
+    },
+    {
+      "id": "TA_PRIV_NUISANCE_DURATION",
+      "label": "Factor: duration and frequency of the interference relevant to unreasonableness (Crown River Cruises v Kimbolton Fireworks)",
+      "st": "4.4",
+      "difficulty": 0.3,
+      "kind": "concept"
+    },
+    {
+      "id": "TA_PRIV_NUISANCE_UTILITY",
+      "label": "Factor: social utility/public benefit of defendant's activity relevant to unreasonableness (Miller v Jackson)",
+      "st": "4.4",
+      "difficulty": 0.35,
+      "kind": "concept"
+    },
+    {
+      "id": "TA_PRIV_NUISANCE_DEFENCE_20YEARS",
+      "label": "Private nuisance defence: prescription - lawful activity carried on for 20+ years without complaint (Sturges v Bridgman)",
+      "st": "4.4",
+      "difficulty": 0.35,
+      "kind": "concept"
+    },
+    {
+      "id": "TA_PRIV_NUISANCE_DEFENCE_STATUTORY",
+      "label": "Private nuisance defence: statutory authority",
+      "st": "4.4",
+      "difficulty": 0.3,
+      "kind": "concept"
+    },
+    {
+      "id": "TA_PRIV_NUISANCE_NOT_DEFENCE",
+      "label": "Not a defence to private nuisance: claimant 'coming to the nuisance' (Miller v Jackson)",
+      "st": "4.4",
+      "difficulty": 0.3,
+      "kind": "concept"
+    },
+    {
+      "id": "TA_PRIV_NUISANCE_APPLICATION",
+      "label": "Applying private nuisance elements and factors to determine liability on given facts",
+      "st": "4.4",
+      "difficulty": 0.55,
+      "kind": "application"
+    },
+    {
+      "id": "TA_PUB_NUISANCE_DEF",
+      "label": "Public nuisance defined: an act/omission materially affecting the reasonable comfort and convenience of a class of Her Majesty's subjects (Attorney-General v PYA Quarries)",
+      "st": "4.4",
+      "difficulty": 0.35,
+      "kind": "concept"
+    },
+    {
+      "id": "TA_PUB_NUISANCE_CLASS",
+      "label": "Public nuisance requirement: affects a sufficient class of people, not just an individual",
+      "st": "4.4",
+      "difficulty": 0.3,
+      "kind": "concept"
+    },
+    {
+      "id": "TA_PUB_NUISANCE_CRIME_TORT",
+      "label": "Public nuisance is both a crime and a tort; individual claimant must show special/particular damage beyond that suffered by the rest of the class to sue in tort (Castle v St Augustine's Links)",
+      "st": "4.4",
+      "difficulty": 0.4,
+      "kind": "concept"
+    },
+    {
+      "id": "TA_PUB_NUISANCE_APPLICATION",
+      "label": "Applying public nuisance rules to determine liability on given facts",
+      "st": "4.4",
+      "difficulty": 0.5,
+      "kind": "application"
+    },
+    {
+      "id": "TA_RYLANDS_RULE",
+      "label": "Rylands v Fletcher (1868) rule: strict liability where a person brings and keeps on land something likely to cause mischief if it escapes",
+      "st": "4.4",
+      "difficulty": 0.4,
+      "kind": "concept"
+    },
+    {
+      "id": "TA_RYLANDS_ELEM_ACCUMULATION",
+      "label": "Rylands element: defendant brought something onto land and accumulated it there (as opposed to it naturally being there)",
+      "st": "4.4",
+      "difficulty": 0.3,
+      "kind": "concept"
+    },
+    {
+      "id": "TA_RYLANDS_ELEM_NONNATURAL",
+      "label": "Rylands element: non-natural use of the land (Rickards v Lothian; Transco v Stockport MBC)",
+      "st": "4.4",
+      "difficulty": 0.4,
+      "kind": "concept"
+    },
+    {
+      "id": "TA_RYLANDS_ELEM_ESCAPE",
+      "label": "Rylands element: escape of the thing from the defendant's land to another's (Read v Lyons)",
+      "st": "4.4",
+      "difficulty": 0.35,
+      "kind": "concept"
+    },
+    {
+      "id": "TA_RYLANDS_ELEM_FORESEEABLE_DAMAGE",
+      "label": "Rylands element: foreseeability of damage/type of damage caused by the escape (Cambridge Water Co v Eastern Counties Leather)",
+      "st": "4.4",
+      "difficulty": 0.4,
+      "kind": "concept"
+    },
+    {
+      "id": "TA_RYLANDS_DEFENCE_ACT_STRANGER",
+      "label": "Rylands defence: act of a stranger caused the escape",
+      "st": "4.4",
+      "difficulty": 0.3,
+      "kind": "concept"
+    },
+    {
+      "id": "TA_RYLANDS_DEFENCE_CONSENT",
+      "label": "Rylands defence: consent of the claimant to the accumulation",
+      "st": "4.4",
+      "difficulty": 0.25,
+      "kind": "concept"
+    },
+    {
+      "id": "TA_RYLANDS_DEFENCE_STATUTORY",
+      "label": "Rylands defence: statutory authority",
+      "st": "4.4",
+      "difficulty": 0.25,
+      "kind": "concept"
+    },
+    {
+      "id": "TA_RYLANDS_APPLICATION",
+      "label": "Applying the Rylands v Fletcher rule and its elements/defences to determine liability on given facts",
+      "st": "4.4",
+      "difficulty": 0.55,
+      "kind": "application"
+    }
+  ],
+  "edges": [
+    [
+      "TA_TORT_DEF",
+      "TA_CIVIL_STANDARD",
+      0.15
+    ],
+    [
+      "TA_TORT_DEF",
+      "TA_TORT_VS_CONTRACT",
+      0.2
+    ],
+    [
+      "TA_TORT_DEF",
+      "TA_TORT_VS_CRIME",
+      0.2
+    ],
+    [
+      "TA_CIVIL_STANDARD",
+      "TA_TORT_AIM_COMPENSATE",
+      0.25
+    ],
+    [
+      "TA_TORT_AIM_COMPENSATE",
+      "TA_TORT_AIM_DETER",
+      0.3
+    ],
+    [
+      "TA_TORT_AIM_DETER",
+      "TA_TORT_AIM_JUSTICE",
+      0.3
+    ],
+    [
+      "TA_TORT_AIM_JUSTICE",
+      "TA_TORT_FAULT",
+      0.3
+    ],
+    [
+      "TA_TORT_DEF",
+      "TA_NEG_DEF",
+      0.2
+    ],
+    [
+      "TA_NEG_DEF",
+      "TA_NEG_ELEMENTS",
+      0.15
+    ],
+    [
+      "TA_NEG_ELEMENTS",
+      "TA_DONOGHUE",
+      0.25
+    ],
+    [
+      "TA_DONOGHUE",
+      "TA_NEIGHBOUR_PRINCIPLE",
+      0.3
+    ],
+    [
+      "TA_NEIGHBOUR_PRINCIPLE",
+      "TA_CAPARO_TEST",
+      0.4
+    ],
+    [
+      "TA_CAPARO_TEST",
+      "TA_CAPARO_FORESEE",
+      0.2
+    ],
+    [
+      "TA_CAPARO_TEST",
+      "TA_CAPARO_PROXIMITY",
+      0.25
+    ],
+    [
+      "TA_CAPARO_TEST",
+      "TA_CAPARO_FJR",
+      0.35
+    ],
+    [
+      "TA_CAPARO_FORESEE",
+      "TA_DUTY_APPLICATION",
+      0.4
+    ],
+    [
+      "TA_CAPARO_PROXIMITY",
+      "TA_DUTY_APPLICATION",
+      0.45
+    ],
+    [
+      "TA_CAPARO_FJR",
+      "TA_DUTY_APPLICATION",
+      0.5
+    ],
+    [
+      "TA_NEG_ELEMENTS",
+      "TA_BREACH_DEF",
+      0.2
+    ],
+    [
+      "TA_BREACH_DEF",
+      "TA_REASONABLE_MAN",
+      0.3
+    ],
+    [
+      "TA_REASONABLE_MAN",
+      "TA_RISK_LIKELIHOOD",
+      0.3
+    ],
+    [
+      "TA_REASONABLE_MAN",
+      "TA_RISK_SERIOUSNESS",
+      0.3
+    ],
+    [
+      "TA_REASONABLE_MAN",
+      "TA_RISK_PRECAUTIONS",
+      0.3
+    ],
+    [
+      "TA_REASONABLE_MAN",
+      "TA_RISK_SOCIAL_BENEFIT",
+      0.3
+    ],
+    [
+      "TA_REASONABLE_MAN",
+      "TA_RISK_SPECIAL_SKILL",
+      0.35
+    ],
+    [
+      "TA_RISK_LIKELIHOOD",
+      "TA_BREACH_APPLICATION",
+      0.4
+    ],
+    [
+      "TA_RISK_SERIOUSNESS",
+      "TA_BREACH_APPLICATION",
+      0.4
+    ],
+    [
+      "TA_RISK_PRECAUTIONS",
+      "TA_BREACH_APPLICATION",
+      0.4
+    ],
+    [
+      "TA_RISK_SOCIAL_BENEFIT",
+      "TA_BREACH_APPLICATION",
+      0.4
+    ],
+    [
+      "TA_RISK_SPECIAL_SKILL",
+      "TA_BREACH_APPLICATION",
+      0.45
+    ],
+    [
+      "TA_NEG_ELEMENTS",
+      "TA_DAMAGE_TYPES",
+      0.2
+    ],
+    [
+      "TA_DAMAGE_TYPES",
+      "TA_FACTUAL_CAUSATION",
+      0.3
+    ],
+    [
+      "TA_FACTUAL_CAUSATION",
+      "TA_MULTIPLE_CAUSES",
+      0.4
+    ],
+    [
+      "TA_FACTUAL_CAUSATION",
+      "TA_LEGAL_CAUSATION_INTERVENING",
+      0.4
+    ],
+    [
+      "TA_LEGAL_CAUSATION_INTERVENING",
+      "TA_REMOTENESS",
+      0.4
+    ],
+    [
+      "TA_REMOTENESS",
+      "TA_THIN_SKULL",
+      0.4
+    ],
+    [
+      "TA_MULTIPLE_CAUSES",
+      "TA_CAUSATION_APPLICATION",
+      0.45
+    ],
+    [
+      "TA_THIN_SKULL",
+      "TA_CAUSATION_APPLICATION",
+      0.45
+    ],
+    [
+      "TA_DUTY_APPLICATION",
+      "TA_NEG_FULL_APPLICATION",
+      0.55
+    ],
+    [
+      "TA_BREACH_APPLICATION",
+      "TA_NEG_FULL_APPLICATION",
+      0.55
+    ],
+    [
+      "TA_CAUSATION_APPLICATION",
+      "TA_NEG_FULL_APPLICATION",
+      0.55
+    ],
+    [
+      "TA_NEG_FULL_APPLICATION",
+      "TA_OCC_DEF",
+      0.3
+    ],
+    [
+      "TA_OCC_DEF",
+      "TA_OCC_MEANING",
+      0.25
+    ],
+    [
+      "TA_OCC_DEF",
+      "TA_PREMISES_MEANING",
+      0.2
+    ],
+    [
+      "TA_OCC_MEANING",
+      "TA_OLA57_S1_DUTY",
+      0.25
+    ],
+    [
+      "TA_PREMISES_MEANING",
+      "TA_OLA57_S1_DUTY",
+      0.2
+    ],
+    [
+      "TA_OLA57_S1_DUTY",
+      "TA_LAWFUL_VISITOR_MEANING",
+      0.2
+    ],
+    [
+      "TA_LAWFUL_VISITOR_MEANING",
+      "TA_OLA57_S2_COMMON_DUTY",
+      0.3
+    ],
+    [
+      "TA_OLA57_S2_COMMON_DUTY",
+      "TA_OLA57_CHILDREN",
+      0.3
+    ],
+    [
+      "TA_OLA57_S2_COMMON_DUTY",
+      "TA_OLA57_SKILLED",
+      0.3
+    ],
+    [
+      "TA_OLA57_S2_COMMON_DUTY",
+      "TA_OLA57_WARNINGS",
+      0.3
+    ],
+    [
+      "TA_OLA57_S2_COMMON_DUTY",
+      "TA_OLA57_INDEPENDENT_CONTRACTORS",
+      0.35
+    ],
+    [
+      "TA_OLA57_S2_COMMON_DUTY",
+      "TA_OLA57_DEFENCE_CONSENT",
+      0.3
+    ],
+    [
+      "TA_OLA57_S2_COMMON_DUTY",
+      "TA_OLA57_EXCLUSION",
+      0.35
+    ],
+    [
+      "TA_OLA57_CHILDREN",
+      "TA_OLA57_APPLICATION",
+      0.4
+    ],
+    [
+      "TA_OLA57_SKILLED",
+      "TA_OLA57_APPLICATION",
+      0.4
+    ],
+    [
+      "TA_OLA57_WARNINGS",
+      "TA_OLA57_APPLICATION",
+      0.4
+    ],
+    [
+      "TA_OLA57_INDEPENDENT_CONTRACTORS",
+      "TA_OLA57_APPLICATION",
+      0.45
+    ],
+    [
+      "TA_OLA57_DEFENCE_CONSENT",
+      "TA_OLA57_APPLICATION",
+      0.4
+    ],
+    [
+      "TA_OLA57_EXCLUSION",
+      "TA_OLA57_APPLICATION",
+      0.45
+    ],
+    [
+      "TA_OLA57_S1_DUTY",
+      "TA_TRESPASSER_MEANING",
+      0.3
+    ],
+    [
+      "TA_TRESPASSER_MEANING",
+      "TA_OLA84_S1_DUTY_EXISTENCE",
+      0.35
+    ],
+    [
+      "TA_OLA84_S1_DUTY_EXISTENCE",
+      "TA_OLA84_S1_4_DUTY_CONTENT",
+      0.3
+    ],
+    [
+      "TA_OLA84_S1_4_DUTY_CONTENT",
+      "TA_OLA84_CHILD_TRESPASSER",
+      0.35
+    ],
+    [
+      "TA_OLA84_S1_4_DUTY_CONTENT",
+      "TA_OLA84_S1_5_WARNINGS",
+      0.3
+    ],
+    [
+      "TA_OLA84_S1_4_DUTY_CONTENT",
+      "TA_OLA84_NO_LIABILITY_RISK",
+      0.35
+    ],
+    [
+      "TA_OLA84_CHILD_TRESPASSER",
+      "TA_OLA84_APPLICATION",
+      0.45
+    ],
+    [
+      "TA_OLA84_S1_5_WARNINGS",
+      "TA_OLA84_APPLICATION",
+      0.4
+    ],
+    [
+      "TA_OLA84_NO_LIABILITY_RISK",
+      "TA_OLA84_APPLICATION",
+      0.4
+    ],
+    [
+      "TA_TORT_DEF",
+      "TA_PRIV_NUISANCE_DEF",
+      0.25
+    ],
+    [
+      "TA_PRIV_NUISANCE_DEF",
+      "TA_PRIV_NUISANCE_STANDING",
+      0.3
+    ],
+    [
+      "TA_PRIV_NUISANCE_DEF",
+      "TA_PRIV_NUISANCE_INDIRECT",
+      0.25
+    ],
+    [
+      "TA_PRIV_NUISANCE_DEF",
+      "TA_PRIV_NUISANCE_CONTINUOUS",
+      0.3
+    ],
+    [
+      "TA_PRIV_NUISANCE_STANDING",
+      "TA_PRIV_NUISANCE_LOCALITY",
+      0.3
+    ],
+    [
+      "TA_PRIV_NUISANCE_CONTINUOUS",
+      "TA_PRIV_NUISANCE_LOCALITY",
+      0.3
+    ],
+    [
+      "TA_PRIV_NUISANCE_LOCALITY",
+      "TA_PRIV_NUISANCE_SENSITIVITY",
+      0.3
+    ],
+    [
+      "TA_PRIV_NUISANCE_LOCALITY",
+      "TA_PRIV_NUISANCE_MALICE",
+      0.3
+    ],
+    [
+      "TA_PRIV_NUISANCE_LOCALITY",
+      "TA_PRIV_NUISANCE_DURATION",
+      0.25
+    ],
+    [
+      "TA_PRIV_NUISANCE_LOCALITY",
+      "TA_PRIV_NUISANCE_UTILITY",
+      0.3
+    ],
+    [
+      "TA_PRIV_NUISANCE_LOCALITY",
+      "TA_PRIV_NUISANCE_DEFENCE_20YEARS",
+      0.3
+    ],
+    [
+      "TA_PRIV_NUISANCE_DEF",
+      "TA_PRIV_NUISANCE_DEFENCE_STATUTORY",
+      0.25
+    ],
+    [
+      "TA_PRIV_NUISANCE_UTILITY",
+      "TA_PRIV_NUISANCE_NOT_DEFENCE",
+      0.3
+    ],
+    [
+      "TA_PRIV_NUISANCE_SENSITIVITY",
+      "TA_PRIV_NUISANCE_APPLICATION",
+      0.45
+    ],
+    [
+      "TA_PRIV_NUISANCE_MALICE",
+      "TA_PRIV_NUISANCE_APPLICATION",
+      0.4
+    ],
+    [
+      "TA_PRIV_NUISANCE_DURATION",
+      "TA_PRIV_NUISANCE_APPLICATION",
+      0.4
+    ],
+    [
+      "TA_PRIV_NUISANCE_DEFENCE_20YEARS",
+      "TA_PRIV_NUISANCE_APPLICATION",
+      0.4
+    ],
+    [
+      "TA_PRIV_NUISANCE_DEFENCE_STATUTORY",
+      "TA_PRIV_NUISANCE_APPLICATION",
+      0.4
+    ],
+    [
+      "TA_PRIV_NUISANCE_NOT_DEFENCE",
+      "TA_PRIV_NUISANCE_APPLICATION",
+      0.35
+    ],
+    [
+      "TA_TORT_DEF",
+      "TA_PUB_NUISANCE_DEF",
+      0.25
+    ],
+    [
+      "TA_PUB_NUISANCE_DEF",
+      "TA_PUB_NUISANCE_CLASS",
+      0.25
+    ],
+    [
+      "TA_PUB_NUISANCE_CLASS",
+      "TA_PUB_NUISANCE_CRIME_TORT",
+      0.35
+    ],
+    [
+      "TA_PUB_NUISANCE_CRIME_TORT",
+      "TA_PUB_NUISANCE_APPLICATION",
+      0.45
+    ],
+    [
+      "TA_TORT_FAULT",
+      "TA_RYLANDS_RULE",
+      0.35
+    ],
+    [
+      "TA_RYLANDS_RULE",
+      "TA_RYLANDS_ELEM_ACCUMULATION",
+      0.25
+    ],
+    [
+      "TA_RYLANDS_ELEM_ACCUMULATION",
+      "TA_RYLANDS_ELEM_NONNATURAL",
+      0.35
+    ],
+    [
+      "TA_RYLANDS_ELEM_NONNATURAL",
+      "TA_RYLANDS_ELEM_ESCAPE",
+      0.3
+    ],
+    [
+      "TA_RYLANDS_ELEM_ESCAPE",
+      "TA_RYLANDS_ELEM_FORESEEABLE_DAMAGE",
+      0.4
+    ],
+    [
+      "TA_RYLANDS_ELEM_FORESEEABLE_DAMAGE",
+      "TA_RYLANDS_DEFENCE_ACT_STRANGER",
+      0.3
+    ],
+    [
+      "TA_RYLANDS_ELEM_FORESEEABLE_DAMAGE",
+      "TA_RYLANDS_DEFENCE_CONSENT",
+      0.25
+    ],
+    [
+      "TA_RYLANDS_ELEM_FORESEEABLE_DAMAGE",
+      "TA_RYLANDS_DEFENCE_STATUTORY",
+      0.25
+    ],
+    [
+      "TA_RYLANDS_DEFENCE_ACT_STRANGER",
+      "TA_RYLANDS_APPLICATION",
+      0.45
+    ],
+    [
+      "TA_RYLANDS_DEFENCE_CONSENT",
+      "TA_RYLANDS_APPLICATION",
+      0.4
+    ],
+    [
+      "TA_RYLANDS_DEFENCE_STATUTORY",
+      "TA_RYLANDS_APPLICATION",
+      0.4
+    ]
+  ]
+}

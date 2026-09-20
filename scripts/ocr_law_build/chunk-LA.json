@@ -1,0 +1,1346 @@
+{
+  "nodes": [
+    {
+      "id": "LA_INFL_POL",
+      "label": "Political influence on Parliament: manifesto commitments and party policy shaping legislation",
+      "st": "3.1",
+      "difficulty": 0.25,
+      "kind": "concept"
+    },
+    {
+      "id": "LA_INFL_PUB",
+      "label": "Public opinion as an influence on Parliament's law making",
+      "st": "3.1",
+      "difficulty": 0.2,
+      "kind": "concept"
+    },
+    {
+      "id": "LA_INFL_MEDIA",
+      "label": "Media influence on Parliament's law making",
+      "st": "3.1",
+      "difficulty": 0.2,
+      "kind": "concept"
+    },
+    {
+      "id": "LA_INFL_PRESS",
+      "label": "Pressure groups as an influence on Parliament: sectional and cause groups",
+      "st": "3.1",
+      "difficulty": 0.25,
+      "kind": "concept"
+    },
+    {
+      "id": "LA_INFL_LOBBY",
+      "label": "Lobbyists as an influence on Parliament's law making",
+      "st": "3.1",
+      "difficulty": 0.2,
+      "kind": "concept"
+    },
+    {
+      "id": "LA_ADV_POL",
+      "label": "Advantage: political influence gives government democratic mandate to legislate",
+      "st": "3.1",
+      "difficulty": 0.3,
+      "kind": "evaluation"
+    },
+    {
+      "id": "LA_DIS_POL",
+      "label": "Disadvantage: political influence can lead to manifesto pledges being abandoned or hasty legislation",
+      "st": "3.1",
+      "difficulty": 0.3,
+      "kind": "evaluation"
+    },
+    {
+      "id": "LA_ADV_PUB",
+      "label": "Advantage: public opinion can prompt Parliament to respond quickly to public concern (e.g. Dangerous Dogs Act)",
+      "st": "3.1",
+      "difficulty": 0.3,
+      "kind": "evaluation"
+    },
+    {
+      "id": "LA_DIS_PUB",
+      "label": "Disadvantage: public opinion is hard to gauge accurately and may not represent the whole population",
+      "st": "3.1",
+      "difficulty": 0.3,
+      "kind": "evaluation"
+    },
+    {
+      "id": "LA_ADV_MEDIA",
+      "label": "Advantage: media raises awareness of issues and can trigger law reform campaigns",
+      "st": "3.1",
+      "difficulty": 0.3,
+      "kind": "evaluation"
+    },
+    {
+      "id": "LA_DIS_MEDIA",
+      "label": "Disadvantage: media can be biased, sensationalist or owned by narrow interests distorting the agenda",
+      "st": "3.1",
+      "difficulty": 0.3,
+      "kind": "evaluation"
+    },
+    {
+      "id": "LA_ADV_PRESS",
+      "label": "Advantage: pressure groups provide expertise and represent minority/specialist interests",
+      "st": "3.1",
+      "difficulty": 0.3,
+      "kind": "evaluation"
+    },
+    {
+      "id": "LA_DIS_PRESS",
+      "label": "Disadvantage: pressure groups may conflict with each other or use disruptive tactics undermining legitimacy",
+      "st": "3.1",
+      "difficulty": 0.3,
+      "kind": "evaluation"
+    },
+    {
+      "id": "LA_ADV_LOBBY",
+      "label": "Advantage: lobbyists give MPs detailed technical information to inform debate",
+      "st": "3.1",
+      "difficulty": 0.3,
+      "kind": "evaluation"
+    },
+    {
+      "id": "LA_DIS_LOBBY",
+      "label": "Disadvantage: lobbying can give disproportionate influence to wealthy or well-connected interests",
+      "st": "3.1",
+      "difficulty": 0.3,
+      "kind": "evaluation"
+    },
+    {
+      "id": "LA_GREEN",
+      "label": "Green Paper: initial consultation document setting out proposals for reform",
+      "st": "3.1",
+      "difficulty": 0.15,
+      "kind": "concept"
+    },
+    {
+      "id": "LA_WHITE",
+      "label": "White Paper: firm government proposals for legislation following consultation",
+      "st": "3.1",
+      "difficulty": 0.15,
+      "kind": "concept"
+    },
+    {
+      "id": "LA_BILL_PUBLIC",
+      "label": "Public Bill: proposed law of general application (government or backbench)",
+      "st": "3.1",
+      "difficulty": 0.15,
+      "kind": "concept"
+    },
+    {
+      "id": "LA_BILL_PMB",
+      "label": "Private Member's Bill: Bill introduced by a backbench MP via ballot, ten-minute rule or presentation",
+      "st": "3.1",
+      "difficulty": 0.2,
+      "kind": "concept"
+    },
+    {
+      "id": "LA_BILL_PRIVATE",
+      "label": "Private Bill: legislation affecting only a specific individual, organisation or locality",
+      "st": "3.1",
+      "difficulty": 0.15,
+      "kind": "concept"
+    },
+    {
+      "id": "LA_BILL_HYBRID",
+      "label": "Hybrid Bill: Bill combining features of public and private Bills",
+      "st": "3.1",
+      "difficulty": 0.2,
+      "kind": "concept"
+    },
+    {
+      "id": "LA_STAGE_FIRST",
+      "label": "First Reading: formal introduction of the Bill and publication of its title",
+      "st": "3.1",
+      "difficulty": 0.15,
+      "kind": "procedure"
+    },
+    {
+      "id": "LA_STAGE_SECOND",
+      "label": "Second Reading: full debate and vote on the main principles of the Bill",
+      "st": "3.1",
+      "difficulty": 0.2,
+      "kind": "procedure"
+    },
+    {
+      "id": "LA_STAGE_COMMITTEE",
+      "label": "Committee Stage: detailed clause-by-clause examination and amendment by a committee",
+      "st": "3.1",
+      "difficulty": 0.2,
+      "kind": "procedure"
+    },
+    {
+      "id": "LA_STAGE_REPORT",
+      "label": "Report Stage: committee amendments reported back to and voted on by the House",
+      "st": "3.1",
+      "difficulty": 0.2,
+      "kind": "procedure"
+    },
+    {
+      "id": "LA_STAGE_THIRD",
+      "label": "Third Reading: final vote on the Bill as amended, with debate normally limited",
+      "st": "3.1",
+      "difficulty": 0.2,
+      "kind": "procedure"
+    },
+    {
+      "id": "LA_STAGE_OTHERHOUSE",
+      "label": "Bill passes through the same stages in the other House",
+      "st": "3.1",
+      "difficulty": 0.15,
+      "kind": "procedure"
+    },
+    {
+      "id": "LA_PING_PONG",
+      "label": "'Ping pong': Bill passed back and forth between Commons and Lords until agreement reached on amendments",
+      "st": "3.1",
+      "difficulty": 0.25,
+      "kind": "procedure"
+    },
+    {
+      "id": "LA_PARL_ACTS",
+      "label": "Parliament Acts 1911 and 1949: Commons can override Lords' delay after set time limits",
+      "st": "3.1",
+      "difficulty": 0.3,
+      "kind": "concept"
+    },
+    {
+      "id": "LA_ROYAL_ASSENT",
+      "label": "Royal Assent: the Crown's formal approval turning a Bill into an Act of Parliament",
+      "st": "3.1",
+      "difficulty": 0.15,
+      "kind": "concept"
+    },
+    {
+      "id": "LA_ROLE_CROWN",
+      "label": "Role of the Crown in the legislative process: State Opening and Royal Assent as constitutional formalities",
+      "st": "3.1",
+      "difficulty": 0.2,
+      "kind": "concept"
+    },
+    {
+      "id": "LA_ADV_PROC_SCRUTINY",
+      "label": "Advantage: multiple stages in both Houses allow thorough scrutiny and debate of proposals",
+      "st": "3.1",
+      "difficulty": 0.3,
+      "kind": "evaluation"
+    },
+    {
+      "id": "LA_ADV_PROC_DEMOCRACY",
+      "label": "Advantage: process is democratic as it involves elected representatives (Commons) voting on the Bill",
+      "st": "3.1",
+      "difficulty": 0.3,
+      "kind": "evaluation"
+    },
+    {
+      "id": "LA_ADV_PROC_EXPERTISE",
+      "label": "Advantage: House of Lords provides independent expertise and revision free from constituency pressure",
+      "st": "3.1",
+      "difficulty": 0.3,
+      "kind": "evaluation"
+    },
+    {
+      "id": "LA_ADV_PROC_CONSULT",
+      "label": "Advantage: Green/White Paper consultation allows input from interested parties before a Bill is drafted",
+      "st": "3.1",
+      "difficulty": 0.3,
+      "kind": "evaluation"
+    },
+    {
+      "id": "LA_DIS_PROC_TIME",
+      "label": "Disadvantage: the legislative process is lengthy and can delay urgently needed law",
+      "st": "3.1",
+      "difficulty": 0.3,
+      "kind": "evaluation"
+    },
+    {
+      "id": "LA_DIS_PROC_WHIP",
+      "label": "Disadvantage: party whip system can limit genuine free debate and independent voting by MPs",
+      "st": "3.1",
+      "difficulty": 0.3,
+      "kind": "evaluation"
+    },
+    {
+      "id": "LA_DIS_PROC_PMB",
+      "label": "Disadvantage: most Private Members' Bills fail due to lack of parliamentary time",
+      "st": "3.1",
+      "difficulty": 0.3,
+      "kind": "evaluation"
+    },
+    {
+      "id": "LA_DIS_PROC_UNELECTED",
+      "label": "Disadvantage: unelected House of Lords can delay or amend Bills passed by the elected Commons",
+      "st": "3.1",
+      "difficulty": 0.3,
+      "kind": "evaluation"
+    },
+    {
+      "id": "LA_DIS_PROC_GUILLOTINE",
+      "label": "Disadvantage: programme/guillotine motions can restrict time for scrutiny of complex Bills",
+      "st": "3.1",
+      "difficulty": 0.3,
+      "kind": "evaluation"
+    },
+    {
+      "id": "LA_DL_DEF",
+      "label": "Delegated legislation: law made by a body other than Parliament under authority conferred by a parent/enabling Act",
+      "st": "3.2",
+      "difficulty": 0.2,
+      "kind": "concept"
+    },
+    {
+      "id": "LA_DL_ORDERINCOUNCIL",
+      "label": "Orders in Council: delegated legislation made by the Privy Council, often used in emergencies or to transfer EU-derived powers",
+      "st": "3.2",
+      "difficulty": 0.2,
+      "kind": "concept"
+    },
+    {
+      "id": "LA_DL_SI",
+      "label": "Statutory Instruments: delegated legislation made by government ministers/departments to implement or supplement Acts",
+      "st": "3.2",
+      "difficulty": 0.2,
+      "kind": "concept"
+    },
+    {
+      "id": "LA_DL_BYLAW",
+      "label": "By-laws: delegated legislation made by local authorities or public bodies for their local area or specific undertaking",
+      "st": "3.2",
+      "difficulty": 0.2,
+      "kind": "concept"
+    },
+    {
+      "id": "LA_DL_REASON_TIME",
+      "label": "Reason for delegated legislation: lack of parliamentary time to deal with technical/local detail",
+      "st": "3.2",
+      "difficulty": 0.2,
+      "kind": "concept"
+    },
+    {
+      "id": "LA_DL_REASON_EXPERT",
+      "label": "Reason for delegated legislation: allows use of technical expertise Parliament itself lacks",
+      "st": "3.2",
+      "difficulty": 0.2,
+      "kind": "concept"
+    },
+    {
+      "id": "LA_DL_REASON_SPEED",
+      "label": "Reason for delegated legislation: enables quick law making/updating, including in emergencies",
+      "st": "3.2",
+      "difficulty": 0.2,
+      "kind": "concept"
+    },
+    {
+      "id": "LA_DL_REASON_LOCAL",
+      "label": "Reason for delegated legislation: allows local knowledge to be applied to local issues (by-laws)",
+      "st": "3.2",
+      "difficulty": 0.2,
+      "kind": "concept"
+    },
+    {
+      "id": "LA_DL_REASON_FUTURE",
+      "label": "Reason for delegated legislation: allows future/unforeseen detailed changes without needing a new Act",
+      "st": "3.2",
+      "difficulty": 0.2,
+      "kind": "concept"
+    },
+    {
+      "id": "LA_DL_CTRL_PARL_AFFIRM",
+      "label": "Parliamentary control: affirmative resolution procedure requiring positive parliamentary approval of an SI",
+      "st": "3.2",
+      "difficulty": 0.3,
+      "kind": "procedure"
+    },
+    {
+      "id": "LA_DL_CTRL_PARL_NEGATIVE",
+      "label": "Parliamentary control: negative resolution procedure allowing an SI to become law unless Parliament objects within a set period",
+      "st": "3.2",
+      "difficulty": 0.3,
+      "kind": "procedure"
+    },
+    {
+      "id": "LA_DL_CTRL_PARL_SCRUTCOMM",
+      "label": "Parliamentary control: Joint Committee on Statutory Instruments scrutinises SIs on technical grounds (e.g. vires, clarity)",
+      "st": "3.2",
+      "difficulty": 0.3,
+      "kind": "procedure"
+    },
+    {
+      "id": "LA_DL_CTRL_PARL_ENABLING",
+      "label": "Parliamentary control: the enabling/parent Act itself defines and limits the scope of delegated power granted",
+      "st": "3.2",
+      "difficulty": 0.25,
+      "kind": "concept"
+    },
+    {
+      "id": "LA_DL_CTRL_PARL_REPEAL",
+      "label": "Parliamentary control: Parliament can repeal the parent Act, removing the delegated power altogether",
+      "st": "3.2",
+      "difficulty": 0.2,
+      "kind": "concept"
+    },
+    {
+      "id": "LA_DL_CTRL_COURT_UV",
+      "label": "Judicial control: ultra vires - delegated legislation can be challenged as beyond the powers granted by the parent Act",
+      "st": "3.2",
+      "difficulty": 0.3,
+      "kind": "concept"
+    },
+    {
+      "id": "LA_DL_CTRL_COURT_PROC",
+      "label": "Judicial control: procedural ultra vires - failure to follow procedure required by the parent Act (Aylesbury Mushrooms 1972)",
+      "st": "3.2",
+      "difficulty": 0.35,
+      "kind": "concept"
+    },
+    {
+      "id": "LA_DL_CTRL_COURT_SUBST",
+      "label": "Judicial control: substantive ultra vires - the delegated legislation itself goes beyond the powers granted (A-G v Fulham Corporation 1921)",
+      "st": "3.2",
+      "difficulty": 0.35,
+      "kind": "concept"
+    },
+    {
+      "id": "LA_DL_CTRL_COURT_UNREAS",
+      "label": "Judicial control: unreasonableness/Wednesbury unreasonableness as a ground of challenge (Wednesbury Corporation 1948)",
+      "st": "3.2",
+      "difficulty": 0.35,
+      "kind": "concept"
+    },
+    {
+      "id": "LA_DL_CTRL_COURT_JR",
+      "label": "Judicial control: judicial review as the procedure by which delegated legislation is challenged in the courts",
+      "st": "3.2",
+      "difficulty": 0.3,
+      "kind": "procedure"
+    },
+    {
+      "id": "LA_DL_CTRL_EFF_PARL",
+      "label": "Effectiveness of parliamentary controls: limited due to time pressure, negative resolution rarely debated, committee lacks power to amend",
+      "st": "3.2",
+      "difficulty": 0.35,
+      "kind": "evaluation"
+    },
+    {
+      "id": "LA_DL_CTRL_EFF_COURT",
+      "label": "Effectiveness of judicial controls: judicial review is effective but only used after challenge is brought, costly and limited to those with standing",
+      "st": "3.2",
+      "difficulty": 0.35,
+      "kind": "evaluation"
+    },
+    {
+      "id": "LA_ADV_DL_TIME",
+      "label": "Advantage of delegated legislation: saves parliamentary time for major policy debate",
+      "st": "3.2",
+      "difficulty": 0.25,
+      "kind": "evaluation"
+    },
+    {
+      "id": "LA_ADV_DL_EXPERT",
+      "label": "Advantage of delegated legislation: uses specialist/technical expertise unavailable to MPs generally",
+      "st": "3.2",
+      "difficulty": 0.25,
+      "kind": "evaluation"
+    },
+    {
+      "id": "LA_ADV_DL_SPEED",
+      "label": "Advantage of delegated legislation: can be made or amended quickly, useful in emergencies or fast-changing areas",
+      "st": "3.2",
+      "difficulty": 0.25,
+      "kind": "evaluation"
+    },
+    {
+      "id": "LA_ADV_DL_FLEX",
+      "label": "Advantage of delegated legislation: flexible - easier to amend/update than a full Act of Parliament",
+      "st": "3.2",
+      "difficulty": 0.25,
+      "kind": "evaluation"
+    },
+    {
+      "id": "LA_ADV_DL_LOCAL",
+      "label": "Advantage of delegated legislation: by-laws allow decisions suited to local conditions/needs",
+      "st": "3.2",
+      "difficulty": 0.25,
+      "kind": "evaluation"
+    },
+    {
+      "id": "LA_DIS_DL_DEMOCRACY",
+      "label": "Disadvantage of delegated legislation: law made by unelected bodies raises democratic deficit concerns",
+      "st": "3.2",
+      "difficulty": 0.3,
+      "kind": "evaluation"
+    },
+    {
+      "id": "LA_DIS_DL_SUBDELEG",
+      "label": "Disadvantage of delegated legislation: sub-delegation of law-making power obscures accountability for the rules made",
+      "st": "3.2",
+      "difficulty": 0.3,
+      "kind": "evaluation"
+    },
+    {
+      "id": "LA_DIS_DL_VOLUME",
+      "label": "Disadvantage of delegated legislation: huge volume makes it hard for Parliament and the public to keep track of/scrutinise",
+      "st": "3.2",
+      "difficulty": 0.3,
+      "kind": "evaluation"
+    },
+    {
+      "id": "LA_DIS_DL_CTRLWEAK",
+      "label": "Disadvantage of delegated legislation: controls (parliamentary and judicial) are limited in practice, risking unchecked law making",
+      "st": "3.2",
+      "difficulty": 0.35,
+      "kind": "evaluation"
+    },
+    {
+      "id": "LA_SI_LIT_DEF",
+      "label": "Literal rule: words of a statute given their plain, ordinary, grammatical meaning even if the result seems unjust (Whiteley v Chappell 1868; LNER v Berriman 1946)",
+      "st": "3.3",
+      "difficulty": 0.3,
+      "kind": "concept"
+    },
+    {
+      "id": "LA_SI_GOLD_DEF",
+      "label": "Golden rule: literal meaning applied unless it produces an absurd result, which the court then modifies (narrow approach: R v Allen 1872; wide approach: Re Sigsworth 1935)",
+      "st": "3.3",
+      "difficulty": 0.35,
+      "kind": "concept"
+    },
+    {
+      "id": "LA_SI_MISCHIEF_DEF",
+      "label": "Mischief rule: court looks at the gap/mischief the statute was passed to remedy and interprets to suppress it (Heydon's Case 1584; Smith v Hughes 1960)",
+      "st": "3.3",
+      "difficulty": 0.35,
+      "kind": "concept"
+    },
+    {
+      "id": "LA_SI_PURPOSIVE_DEF",
+      "label": "Purposive approach: court looks beyond the mischief to give effect to the wider purpose/intention behind the legislation (Jones v Tower Boot Co 1997; R (Quintavalle) v Secretary of State 2003)",
+      "st": "3.3",
+      "difficulty": 0.35,
+      "kind": "concept"
+    },
+    {
+      "id": "LA_ADV_LIT",
+      "label": "Advantage of literal rule: respects parliamentary sovereignty and separation of powers by not letting judges legislate",
+      "st": "3.3",
+      "difficulty": 0.3,
+      "kind": "evaluation"
+    },
+    {
+      "id": "LA_ADV_LIT_CERT",
+      "label": "Advantage of literal rule: promotes certainty and predictability as words are given fixed ordinary meaning",
+      "st": "3.3",
+      "difficulty": 0.3,
+      "kind": "evaluation"
+    },
+    {
+      "id": "LA_DIS_LIT_ABSURD",
+      "label": "Disadvantage of literal rule: can produce absurd or unjust outcomes, as in LNER v Berriman",
+      "st": "3.3",
+      "difficulty": 0.3,
+      "kind": "evaluation"
+    },
+    {
+      "id": "LA_DIS_LIT_LANG",
+      "label": "Disadvantage of literal rule: assumes every statute can be drafted with perfect precision, which is unrealistic given the limits of language",
+      "st": "3.3",
+      "difficulty": 0.3,
+      "kind": "evaluation"
+    },
+    {
+      "id": "LA_ADV_GOLD",
+      "label": "Advantage of golden rule: avoids the worst absurdities of the literal rule while respecting the words used (Re Sigsworth)",
+      "st": "3.3",
+      "difficulty": 0.3,
+      "kind": "evaluation"
+    },
+    {
+      "id": "LA_DIS_GOLD_LIMITED",
+      "label": "Disadvantage of golden rule: only usable in limited absurdity cases, providing no coherent method otherwise",
+      "st": "3.3",
+      "difficulty": 0.3,
+      "kind": "evaluation"
+    },
+    {
+      "id": "LA_DIS_GOLD_UNPRED",
+      "label": "Disadvantage of golden rule: no fixed test for what counts as 'absurd', making outcomes unpredictable and dependent on individual judges",
+      "st": "3.3",
+      "difficulty": 0.3,
+      "kind": "evaluation"
+    },
+    {
+      "id": "LA_ADV_MISCHIEF",
+      "label": "Advantage of mischief rule: allows judges to close the gap Parliament intended to address, promoting justice",
+      "st": "3.3",
+      "difficulty": 0.3,
+      "kind": "evaluation"
+    },
+    {
+      "id": "LA_ADV_MISCHIEF_FLEX",
+      "label": "Advantage of mischief rule: flexible, allowing law to adapt to situations Parliament may not have foreseen",
+      "st": "3.3",
+      "difficulty": 0.3,
+      "kind": "evaluation"
+    },
+    {
+      "id": "LA_DIS_MISCHIEF_UNCERT",
+      "label": "Disadvantage of mischief rule: creates uncertainty as judges may go beyond genuine parliamentary intention",
+      "st": "3.3",
+      "difficulty": 0.3,
+      "kind": "evaluation"
+    },
+    {
+      "id": "LA_DIS_MISCHIEF_UNDEM",
+      "label": "Disadvantage of mischief rule: risks unelected judges effectively making law, undermining separation of powers",
+      "st": "3.3",
+      "difficulty": 0.3,
+      "kind": "evaluation"
+    },
+    {
+      "id": "LA_ADV_PURP",
+      "label": "Advantage of purposive approach: gives effect to the broader intention of Parliament, suiting a modern/EU-influenced legal system",
+      "st": "3.3",
+      "difficulty": 0.3,
+      "kind": "evaluation"
+    },
+    {
+      "id": "LA_ADV_PURP_MODERN",
+      "label": "Advantage of purposive approach: enables statutes to be applied sensibly to situations unforeseen at the time of drafting",
+      "st": "3.3",
+      "difficulty": 0.3,
+      "kind": "evaluation"
+    },
+    {
+      "id": "LA_DIS_PURP_UNDEM",
+      "label": "Disadvantage of purposive approach: gives judges wide discretion to decide what Parliament 'must have intended', risking judicial law making",
+      "st": "3.3",
+      "difficulty": 0.3,
+      "kind": "evaluation"
+    },
+    {
+      "id": "LA_DIS_PURP_UNCERT",
+      "label": "Disadvantage of purposive approach: purpose can be difficult to identify with certainty, reducing predictability",
+      "st": "3.3",
+      "difficulty": 0.3,
+      "kind": "evaluation"
+    },
+    {
+      "id": "LA_AID_LANG_EJUSDEM",
+      "label": "Rule of language: ejusdem generis - general words following specific words are limited to the same category (Powell v Kempton Park 1899)",
+      "st": "3.3",
+      "difficulty": 0.3,
+      "kind": "concept"
+    },
+    {
+      "id": "LA_AID_LANG_EXPRESSIO",
+      "label": "Rule of language: expressio unius est exclusio alterius - express mention of one thing excludes others not mentioned",
+      "st": "3.3",
+      "difficulty": 0.3,
+      "kind": "concept"
+    },
+    {
+      "id": "LA_AID_LANG_NOSCITUR",
+      "label": "Rule of language: noscitur a sociis - a word takes its meaning from the words surrounding it",
+      "st": "3.3",
+      "difficulty": 0.3,
+      "kind": "concept"
+    },
+    {
+      "id": "LA_AID_INTRINSIC",
+      "label": "Intrinsic aids: sources within the Act itself, e.g. long/short title, preamble, definition sections, schedules",
+      "st": "3.3",
+      "difficulty": 0.25,
+      "kind": "concept"
+    },
+    {
+      "id": "LA_AID_EXTRINSIC_DICT",
+      "label": "Extrinsic aid: dictionaries of the time used to establish the ordinary meaning of a word",
+      "st": "3.3",
+      "difficulty": 0.2,
+      "kind": "concept"
+    },
+    {
+      "id": "LA_AID_EXTRINSIC_HANSARD",
+      "label": "Extrinsic aid: Hansard (parliamentary debates), usable following Pepper v Hart (1993) to clarify ambiguous legislation",
+      "st": "3.3",
+      "difficulty": 0.3,
+      "kind": "concept"
+    },
+    {
+      "id": "LA_AID_EXTRINSIC_OTHER",
+      "label": "Extrinsic aid: other external sources such as earlier case law, Law Commission/other reports, and dictionaries from the time of enactment",
+      "st": "3.3",
+      "difficulty": 0.2,
+      "kind": "concept"
+    },
+    {
+      "id": "LA_ADV_AIDLANG",
+      "label": "Advantage of rules of language: promote consistency and predictability by applying settled linguistic conventions",
+      "st": "3.3",
+      "difficulty": 0.3,
+      "kind": "evaluation"
+    },
+    {
+      "id": "LA_DIS_AIDLANG",
+      "label": "Disadvantage of rules of language: rigid application can still produce outcomes contrary to Parliament's real intention",
+      "st": "3.3",
+      "difficulty": 0.3,
+      "kind": "evaluation"
+    },
+    {
+      "id": "LA_ADV_INTRINSIC",
+      "label": "Advantage of intrinsic aids: readily available within the Act, providing a reliable and objective source of interpretation",
+      "st": "3.3",
+      "difficulty": 0.3,
+      "kind": "evaluation"
+    },
+    {
+      "id": "LA_ADV_HANSARD",
+      "label": "Advantage of Hansard as an aid: allows courts to discover the true purpose behind ambiguous wording (Pepper v Hart)",
+      "st": "3.3",
+      "difficulty": 0.3,
+      "kind": "evaluation"
+    },
+    {
+      "id": "LA_DIS_HANSARD",
+      "label": "Disadvantage of Hansard as an aid: debates can be lengthy, unclear or unrepresentative of Parliament's collective intention, and searching them is costly",
+      "st": "3.3",
+      "difficulty": 0.3,
+      "kind": "evaluation"
+    },
+    {
+      "id": "LA_EU_IMPACT",
+      "label": "Impact of EU law on statutory interpretation: UK courts required to use a purposive approach to interpret law consistently with EU law/directives while EU law applied (Marleasing principle; now retained EU law post-Brexit)",
+      "st": "3.3",
+      "difficulty": 0.4,
+      "kind": "concept"
+    },
+    {
+      "id": "LA_HRA_IMPACT",
+      "label": "Impact of Human Rights Act 1998 s.3 on statutory interpretation: legislation must be read and given effect compatibly with Convention rights so far as possible, reinforcing the purposive approach",
+      "st": "3.3",
+      "difficulty": 0.4,
+      "kind": "concept"
+    },
+    {
+      "id": "LA_ADV_EUHRA",
+      "label": "Advantage of EU/HRA influence: promotes consistent, rights-compliant and purposive interpretation across UK statutes",
+      "st": "3.3",
+      "difficulty": 0.35,
+      "kind": "evaluation"
+    },
+    {
+      "id": "LA_DIS_EUHRA",
+      "label": "Disadvantage of EU/HRA influence: further increases judicial discretion and can blur the line between interpreting and making law",
+      "st": "3.3",
+      "difficulty": 0.35,
+      "kind": "evaluation"
+    }
+  ],
+  "edges": [
+    [
+      "LA_INFL_POL",
+      "LA_ADV_POL",
+      0.2
+    ],
+    [
+      "LA_INFL_POL",
+      "LA_DIS_POL",
+      0.2
+    ],
+    [
+      "LA_INFL_PUB",
+      "LA_ADV_PUB",
+      0.2
+    ],
+    [
+      "LA_INFL_PUB",
+      "LA_DIS_PUB",
+      0.2
+    ],
+    [
+      "LA_INFL_MEDIA",
+      "LA_ADV_MEDIA",
+      0.2
+    ],
+    [
+      "LA_INFL_MEDIA",
+      "LA_DIS_MEDIA",
+      0.2
+    ],
+    [
+      "LA_INFL_PRESS",
+      "LA_ADV_PRESS",
+      0.2
+    ],
+    [
+      "LA_INFL_PRESS",
+      "LA_DIS_PRESS",
+      0.2
+    ],
+    [
+      "LA_INFL_LOBBY",
+      "LA_ADV_LOBBY",
+      0.2
+    ],
+    [
+      "LA_INFL_LOBBY",
+      "LA_DIS_LOBBY",
+      0.2
+    ],
+    [
+      "LA_GREEN",
+      "LA_WHITE",
+      0.15
+    ],
+    [
+      "LA_WHITE",
+      "LA_BILL_PUBLIC",
+      0.2
+    ],
+    [
+      "LA_BILL_PUBLIC",
+      "LA_BILL_PMB",
+      0.2
+    ],
+    [
+      "LA_BILL_PUBLIC",
+      "LA_BILL_PRIVATE",
+      0.15
+    ],
+    [
+      "LA_BILL_PUBLIC",
+      "LA_BILL_HYBRID",
+      0.2
+    ],
+    [
+      "LA_BILL_PUBLIC",
+      "LA_STAGE_FIRST",
+      0.2
+    ],
+    [
+      "LA_STAGE_FIRST",
+      "LA_STAGE_SECOND",
+      0.2
+    ],
+    [
+      "LA_STAGE_SECOND",
+      "LA_STAGE_COMMITTEE",
+      0.2
+    ],
+    [
+      "LA_STAGE_COMMITTEE",
+      "LA_STAGE_REPORT",
+      0.2
+    ],
+    [
+      "LA_STAGE_REPORT",
+      "LA_STAGE_THIRD",
+      0.2
+    ],
+    [
+      "LA_STAGE_THIRD",
+      "LA_STAGE_OTHERHOUSE",
+      0.2
+    ],
+    [
+      "LA_STAGE_OTHERHOUSE",
+      "LA_PING_PONG",
+      0.3
+    ],
+    [
+      "LA_PING_PONG",
+      "LA_PARL_ACTS",
+      0.3
+    ],
+    [
+      "LA_PARL_ACTS",
+      "LA_ROYAL_ASSENT",
+      0.2
+    ],
+    [
+      "LA_ROLE_CROWN",
+      "LA_ROYAL_ASSENT",
+      0.15
+    ],
+    [
+      "LA_STAGE_FIRST",
+      "LA_ROLE_CROWN",
+      0.1
+    ],
+    [
+      "LA_STAGE_COMMITTEE",
+      "LA_ADV_PROC_SCRUTINY",
+      0.25
+    ],
+    [
+      "LA_STAGE_OTHERHOUSE",
+      "LA_ADV_PROC_SCRUTINY",
+      0.2
+    ],
+    [
+      "LA_STAGE_SECOND",
+      "LA_ADV_PROC_DEMOCRACY",
+      0.2
+    ],
+    [
+      "LA_STAGE_OTHERHOUSE",
+      "LA_ADV_PROC_EXPERTISE",
+      0.25
+    ],
+    [
+      "LA_GREEN",
+      "LA_ADV_PROC_CONSULT",
+      0.2
+    ],
+    [
+      "LA_WHITE",
+      "LA_ADV_PROC_CONSULT",
+      0.2
+    ],
+    [
+      "LA_STAGE_FIRST",
+      "LA_DIS_PROC_TIME",
+      0.25
+    ],
+    [
+      "LA_PING_PONG",
+      "LA_DIS_PROC_TIME",
+      0.25
+    ],
+    [
+      "LA_STAGE_SECOND",
+      "LA_DIS_PROC_WHIP",
+      0.3
+    ],
+    [
+      "LA_BILL_PMB",
+      "LA_DIS_PROC_PMB",
+      0.25
+    ],
+    [
+      "LA_STAGE_OTHERHOUSE",
+      "LA_DIS_PROC_UNELECTED",
+      0.3
+    ],
+    [
+      "LA_PARL_ACTS",
+      "LA_DIS_PROC_UNELECTED",
+      0.2
+    ],
+    [
+      "LA_STAGE_COMMITTEE",
+      "LA_DIS_PROC_GUILLOTINE",
+      0.3
+    ],
+    [
+      "LA_DL_DEF",
+      "LA_DL_ORDERINCOUNCIL",
+      0.15
+    ],
+    [
+      "LA_DL_DEF",
+      "LA_DL_SI",
+      0.15
+    ],
+    [
+      "LA_DL_DEF",
+      "LA_DL_BYLAW",
+      0.15
+    ],
+    [
+      "LA_DL_DEF",
+      "LA_DL_REASON_TIME",
+      0.15
+    ],
+    [
+      "LA_DL_DEF",
+      "LA_DL_REASON_EXPERT",
+      0.15
+    ],
+    [
+      "LA_DL_DEF",
+      "LA_DL_REASON_SPEED",
+      0.15
+    ],
+    [
+      "LA_DL_DEF",
+      "LA_DL_REASON_FUTURE",
+      0.15
+    ],
+    [
+      "LA_DL_BYLAW",
+      "LA_DL_REASON_LOCAL",
+      0.15
+    ],
+    [
+      "LA_DL_REASON_TIME",
+      "LA_DL_SI",
+      0.15
+    ],
+    [
+      "LA_DL_REASON_EXPERT",
+      "LA_DL_SI",
+      0.15
+    ],
+    [
+      "LA_DL_REASON_SPEED",
+      "LA_DL_ORDERINCOUNCIL",
+      0.2
+    ],
+    [
+      "LA_DL_REASON_LOCAL",
+      "LA_DL_BYLAW",
+      0.15
+    ],
+    [
+      "LA_DL_REASON_FUTURE",
+      "LA_DL_SI",
+      0.15
+    ],
+    [
+      "LA_DL_SI",
+      "LA_DL_CTRL_PARL_AFFIRM",
+      0.25
+    ],
+    [
+      "LA_DL_SI",
+      "LA_DL_CTRL_PARL_NEGATIVE",
+      0.25
+    ],
+    [
+      "LA_DL_SI",
+      "LA_DL_CTRL_PARL_SCRUTCOMM",
+      0.25
+    ],
+    [
+      "LA_DL_DEF",
+      "LA_DL_CTRL_PARL_ENABLING",
+      0.2
+    ],
+    [
+      "LA_DL_CTRL_PARL_ENABLING",
+      "LA_DL_CTRL_PARL_REPEAL",
+      0.2
+    ],
+    [
+      "LA_DL_CTRL_PARL_ENABLING",
+      "LA_DL_CTRL_COURT_UV",
+      0.3
+    ],
+    [
+      "LA_DL_CTRL_COURT_UV",
+      "LA_DL_CTRL_COURT_PROC",
+      0.3
+    ],
+    [
+      "LA_DL_CTRL_COURT_UV",
+      "LA_DL_CTRL_COURT_SUBST",
+      0.3
+    ],
+    [
+      "LA_DL_CTRL_COURT_UV",
+      "LA_DL_CTRL_COURT_UNREAS",
+      0.35
+    ],
+    [
+      "LA_DL_CTRL_COURT_PROC",
+      "LA_DL_CTRL_COURT_JR",
+      0.25
+    ],
+    [
+      "LA_DL_CTRL_COURT_SUBST",
+      "LA_DL_CTRL_COURT_JR",
+      0.25
+    ],
+    [
+      "LA_DL_CTRL_COURT_UNREAS",
+      "LA_DL_CTRL_COURT_JR",
+      0.25
+    ],
+    [
+      "LA_DL_CTRL_PARL_AFFIRM",
+      "LA_DL_CTRL_EFF_PARL",
+      0.3
+    ],
+    [
+      "LA_DL_CTRL_PARL_NEGATIVE",
+      "LA_DL_CTRL_EFF_PARL",
+      0.3
+    ],
+    [
+      "LA_DL_CTRL_PARL_SCRUTCOMM",
+      "LA_DL_CTRL_EFF_PARL",
+      0.3
+    ],
+    [
+      "LA_DL_CTRL_COURT_JR",
+      "LA_DL_CTRL_EFF_COURT",
+      0.3
+    ],
+    [
+      "LA_DL_REASON_TIME",
+      "LA_ADV_DL_TIME",
+      0.2
+    ],
+    [
+      "LA_DL_REASON_EXPERT",
+      "LA_ADV_DL_EXPERT",
+      0.2
+    ],
+    [
+      "LA_DL_REASON_SPEED",
+      "LA_ADV_DL_SPEED",
+      0.2
+    ],
+    [
+      "LA_DL_REASON_FUTURE",
+      "LA_ADV_DL_FLEX",
+      0.2
+    ],
+    [
+      "LA_DL_REASON_LOCAL",
+      "LA_ADV_DL_LOCAL",
+      0.2
+    ],
+    [
+      "LA_DL_DEF",
+      "LA_DIS_DL_DEMOCRACY",
+      0.25
+    ],
+    [
+      "LA_DL_CTRL_PARL_ENABLING",
+      "LA_DIS_DL_SUBDELEG",
+      0.3
+    ],
+    [
+      "LA_DL_SI",
+      "LA_DIS_DL_VOLUME",
+      0.25
+    ],
+    [
+      "LA_DL_CTRL_EFF_PARL",
+      "LA_DIS_DL_CTRLWEAK",
+      0.3
+    ],
+    [
+      "LA_DL_CTRL_EFF_COURT",
+      "LA_DIS_DL_CTRLWEAK",
+      0.3
+    ],
+    [
+      "LA_SI_LIT_DEF",
+      "LA_ADV_LIT",
+      0.2
+    ],
+    [
+      "LA_SI_LIT_DEF",
+      "LA_ADV_LIT_CERT",
+      0.2
+    ],
+    [
+      "LA_SI_LIT_DEF",
+      "LA_DIS_LIT_ABSURD",
+      0.25
+    ],
+    [
+      "LA_SI_LIT_DEF",
+      "LA_DIS_LIT_LANG",
+      0.25
+    ],
+    [
+      "LA_SI_LIT_DEF",
+      "LA_SI_GOLD_DEF",
+      0.3
+    ],
+    [
+      "LA_SI_GOLD_DEF",
+      "LA_ADV_GOLD",
+      0.2
+    ],
+    [
+      "LA_DIS_LIT_ABSURD",
+      "LA_ADV_GOLD",
+      0.25
+    ],
+    [
+      "LA_SI_GOLD_DEF",
+      "LA_DIS_GOLD_LIMITED",
+      0.25
+    ],
+    [
+      "LA_SI_GOLD_DEF",
+      "LA_DIS_GOLD_UNPRED",
+      0.25
+    ],
+    [
+      "LA_SI_MISCHIEF_DEF",
+      "LA_ADV_MISCHIEF",
+      0.2
+    ],
+    [
+      "LA_SI_MISCHIEF_DEF",
+      "LA_ADV_MISCHIEF_FLEX",
+      0.2
+    ],
+    [
+      "LA_SI_MISCHIEF_DEF",
+      "LA_DIS_MISCHIEF_UNCERT",
+      0.25
+    ],
+    [
+      "LA_SI_MISCHIEF_DEF",
+      "LA_DIS_MISCHIEF_UNDEM",
+      0.25
+    ],
+    [
+      "LA_SI_MISCHIEF_DEF",
+      "LA_SI_PURPOSIVE_DEF",
+      0.3
+    ],
+    [
+      "LA_SI_PURPOSIVE_DEF",
+      "LA_ADV_PURP",
+      0.2
+    ],
+    [
+      "LA_SI_PURPOSIVE_DEF",
+      "LA_ADV_PURP_MODERN",
+      0.2
+    ],
+    [
+      "LA_SI_PURPOSIVE_DEF",
+      "LA_DIS_PURP_UNDEM",
+      0.25
+    ],
+    [
+      "LA_SI_PURPOSIVE_DEF",
+      "LA_DIS_PURP_UNCERT",
+      0.25
+    ],
+    [
+      "LA_ADV_MISCHIEF_FLEX",
+      "LA_ADV_PURP_MODERN",
+      0.2
+    ],
+    [
+      "LA_DIS_MISCHIEF_UNDEM",
+      "LA_DIS_PURP_UNDEM",
+      0.2
+    ],
+    [
+      "LA_SI_LIT_DEF",
+      "LA_AID_LANG_EJUSDEM",
+      0.25
+    ],
+    [
+      "LA_SI_LIT_DEF",
+      "LA_AID_LANG_EXPRESSIO",
+      0.25
+    ],
+    [
+      "LA_SI_LIT_DEF",
+      "LA_AID_LANG_NOSCITUR",
+      0.25
+    ],
+    [
+      "LA_AID_LANG_EJUSDEM",
+      "LA_ADV_AIDLANG",
+      0.2
+    ],
+    [
+      "LA_AID_LANG_EXPRESSIO",
+      "LA_ADV_AIDLANG",
+      0.2
+    ],
+    [
+      "LA_AID_LANG_NOSCITUR",
+      "LA_ADV_AIDLANG",
+      0.2
+    ],
+    [
+      "LA_AID_LANG_EJUSDEM",
+      "LA_DIS_AIDLANG",
+      0.25
+    ],
+    [
+      "LA_AID_LANG_EXPRESSIO",
+      "LA_DIS_AIDLANG",
+      0.25
+    ],
+    [
+      "LA_AID_LANG_NOSCITUR",
+      "LA_DIS_AIDLANG",
+      0.25
+    ],
+    [
+      "LA_SI_LIT_DEF",
+      "LA_AID_INTRINSIC",
+      0.2
+    ],
+    [
+      "LA_AID_INTRINSIC",
+      "LA_ADV_INTRINSIC",
+      0.2
+    ],
+    [
+      "LA_SI_LIT_DEF",
+      "LA_AID_EXTRINSIC_DICT",
+      0.2
+    ],
+    [
+      "LA_SI_PURPOSIVE_DEF",
+      "LA_AID_EXTRINSIC_HANSARD",
+      0.3
+    ],
+    [
+      "LA_AID_EXTRINSIC_HANSARD",
+      "LA_ADV_HANSARD",
+      0.25
+    ],
+    [
+      "LA_AID_EXTRINSIC_HANSARD",
+      "LA_DIS_HANSARD",
+      0.25
+    ],
+    [
+      "LA_SI_PURPOSIVE_DEF",
+      "LA_AID_EXTRINSIC_OTHER",
+      0.2
+    ],
+    [
+      "LA_SI_PURPOSIVE_DEF",
+      "LA_EU_IMPACT",
+      0.35
+    ],
+    [
+      "LA_SI_PURPOSIVE_DEF",
+      "LA_HRA_IMPACT",
+      0.35
+    ],
+    [
+      "LA_EU_IMPACT",
+      "LA_ADV_EUHRA",
+      0.25
+    ],
+    [
+      "LA_HRA_IMPACT",
+      "LA_ADV_EUHRA",
+      0.25
+    ],
+    [
+      "LA_EU_IMPACT",
+      "LA_DIS_EUHRA",
+      0.3
+    ],
+    [
+      "LA_HRA_IMPACT",
+      "LA_DIS_EUHRA",
+      0.3
+    ],
+    [
+      "LA_DIS_PURP_UNDEM",
+      "LA_DIS_EUHRA",
+      0.25
+    ]
+  ]
+}

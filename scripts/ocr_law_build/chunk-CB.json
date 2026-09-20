@@ -1,0 +1,812 @@
+{
+  "nodes": [
+    {
+      "id": "CB_INS_RULE",
+      "label": "Insanity defence: M'Naghten Rules (1843) - defendant must labour under a defect of reason",
+      "st": "2.6",
+      "difficulty": 0.35,
+      "kind": "concept"
+    },
+    {
+      "id": "CB_INS_DISEASE",
+      "label": "Insanity: 'disease of the mind' as legal not medical concept - R v Kemp (1957) internal cause",
+      "st": "2.6",
+      "difficulty": 0.5,
+      "kind": "concept"
+    },
+    {
+      "id": "CB_INS_NOTKNOW1",
+      "label": "Insanity: defendant did not know the nature and quality of the act",
+      "st": "2.6",
+      "difficulty": 0.4,
+      "kind": "concept"
+    },
+    {
+      "id": "CB_INS_NOTKNOW2",
+      "label": "Insanity: defendant did not know the act was legally wrong - R v Windle (1952)",
+      "st": "2.6",
+      "difficulty": 0.4,
+      "kind": "concept"
+    },
+    {
+      "id": "CB_INS_CASES",
+      "label": "Insanity case examples: R v Sullivan (1984) epilepsy, R v Hennessy (1989) diabetes (hyperglycaemia), R v Burgess (1991) sleepwalking classed as internal causes",
+      "st": "2.6",
+      "difficulty": 0.5,
+      "kind": "application"
+    },
+    {
+      "id": "CB_INS_VERDICT",
+      "label": "Insanity: special verdict 'not guilty by reason of insanity' and disposal options under Criminal Procedure (Insanity) Act 1964/1991",
+      "st": "2.6",
+      "difficulty": 0.4,
+      "kind": "concept"
+    },
+    {
+      "id": "CB_AUTO_DEF",
+      "label": "Automatism: total loss of voluntary control caused by an external factor - Bratty v A-G for Northern Ireland (1963)",
+      "st": "2.6",
+      "difficulty": 0.45,
+      "kind": "concept"
+    },
+    {
+      "id": "CB_AUTO_EXTERNAL",
+      "label": "Automatism: distinction between external causes (e.g. blow to head, hypoglycaemia, sneezing, R v Quick (1973) insulin) and internal causes (leading to insanity instead)",
+      "st": "2.6",
+      "difficulty": 0.55,
+      "kind": "concept"
+    },
+    {
+      "id": "CB_AUTO_SELFINDUCED",
+      "label": "Automatism: self-induced automatism - defence unavailable where defendant is reckless in becoming automaton (R v Bailey (1983))",
+      "st": "2.6",
+      "difficulty": 0.5,
+      "kind": "concept"
+    },
+    {
+      "id": "CB_AUTO_EFFECT",
+      "label": "Automatism: successful plea leads to full (outright) acquittal",
+      "st": "2.6",
+      "difficulty": 0.3,
+      "kind": "concept"
+    },
+    {
+      "id": "CB_INTOX_VOLDEF",
+      "label": "Voluntary intoxication: definition - defendant voluntarily consumes drink/drugs known to be intoxicating",
+      "st": "2.6",
+      "difficulty": 0.3,
+      "kind": "concept"
+    },
+    {
+      "id": "CB_INTOX_SPECGEN",
+      "label": "Crime classification for intoxication: specific intent offences (require proof of intention e.g. murder, s18 GBH) vs basic intent offences (recklessness suffices e.g. manslaughter, s20/s47, assault, battery) - DPP v Majewski (1977)",
+      "st": "2.6",
+      "difficulty": 0.6,
+      "kind": "concept"
+    },
+    {
+      "id": "CB_INTOX_VOL_SPECIFIC",
+      "label": "Voluntary intoxication and specific intent crimes: intoxication may negate mens rea, allowing acquittal or conviction of a lesser basic intent offence - R v Lipman (1970)",
+      "st": "2.6",
+      "difficulty": 0.55,
+      "kind": "application"
+    },
+    {
+      "id": "CB_INTOX_VOL_BASIC",
+      "label": "Voluntary intoxication and basic intent crimes: no defence, as getting intoxicated is itself reckless (Majewski)",
+      "st": "2.6",
+      "difficulty": 0.5,
+      "kind": "application"
+    },
+    {
+      "id": "CB_INTOX_INVOL",
+      "label": "Involuntary intoxication: definition - defendant unaware they were consuming an intoxicating substance (e.g. spiked drink) - R v Hardie (1985) non-dangerous prescribed drugs",
+      "st": "2.6",
+      "difficulty": 0.4,
+      "kind": "concept"
+    },
+    {
+      "id": "CB_INTOX_INVOL_TEST",
+      "label": "Involuntary intoxication: defence available only if it prevented defendant forming the mens rea - R v Kingston (1994) confirms intent formed despite involuntary intoxication is still guilty",
+      "st": "2.6",
+      "difficulty": 0.55,
+      "kind": "application"
+    },
+    {
+      "id": "CB_INTOX_MISTAKE",
+      "label": "Intoxicated mistaken belief: voluntary intoxication cannot be relied upon to support a mistaken belief in a defence (e.g. mistaken self-defence) - R v O'Grady (1987), R v Hatton (2006)",
+      "st": "2.6",
+      "difficulty": 0.55,
+      "kind": "application"
+    },
+    {
+      "id": "CB_SD_STATUTE",
+      "label": "Self-defence: legal basis under common law and s76 Criminal Justice and Immigration Act 2008 (clarifying common law), plus s3 Criminal Law Act 1967 for prevention of crime",
+      "st": "2.7",
+      "difficulty": 0.4,
+      "kind": "concept"
+    },
+    {
+      "id": "CB_SD_TRIGGER",
+      "label": "Self-defence: available for defence of self, another person, or property, and in prevention of crime",
+      "st": "2.7",
+      "difficulty": 0.3,
+      "kind": "concept"
+    },
+    {
+      "id": "CB_SD_SUBJTEST",
+      "label": "Self-defence: subjective test - defendant judged on facts as they honestly believed them to be, even if mistaken - R v Williams (Gladstone) (1984)",
+      "st": "2.7",
+      "difficulty": 0.5,
+      "kind": "concept"
+    },
+    {
+      "id": "CB_SD_INTOXMISTAKE_LINK",
+      "label": "Self-defence: a mistaken belief induced by voluntary intoxication cannot be relied upon (link to O'Grady)",
+      "st": "2.7",
+      "difficulty": 0.5,
+      "kind": "application"
+    },
+    {
+      "id": "CB_SD_NECESSARY",
+      "label": "Self-defence: force must have been necessary in the circumstances as defendant believed them - no duty to retreat but opportunity to retreat is relevant (R v Bird (1985))",
+      "st": "2.7",
+      "difficulty": 0.45,
+      "kind": "concept"
+    },
+    {
+      "id": "CB_SD_REASONABLE",
+      "label": "Self-defence: objective test - degree of force must be reasonable in the circumstances as defendant believed them; disproportionate force in a householder case is judged by 'grossly disproportionate' test (s76(5A) CJIA 2008, R v Ray (2017))",
+      "st": "2.7",
+      "difficulty": 0.6,
+      "kind": "concept"
+    },
+    {
+      "id": "CB_SD_PREEMPTIVE",
+      "label": "Self-defence: pre-emptive strikes and preparing to defend oneself are permitted - A-G's Reference (No 2 of 1983) (1984)",
+      "st": "2.7",
+      "difficulty": 0.4,
+      "kind": "application"
+    },
+    {
+      "id": "CB_SD_EFFECT",
+      "label": "Self-defence: successful plea results in a complete acquittal",
+      "st": "2.7",
+      "difficulty": 0.25,
+      "kind": "concept"
+    },
+    {
+      "id": "CB_DURESS_THREATS_DEF",
+      "label": "Duress by threats: definition - defendant commits crime because of threats of death or serious injury from another person - R v Hudson and Taylor (1971)",
+      "st": "2.7",
+      "difficulty": 0.4,
+      "kind": "concept"
+    },
+    {
+      "id": "CB_DURESS_GRAHAM",
+      "label": "Duress by threats: two-stage Graham test (R v Graham (1982)) - (1) was D impelled to act as he did by a reasonable belief of death/serious injury; (2) would a sober person of reasonable firmness, sharing D's characteristics, have responded the same way",
+      "st": "2.7",
+      "difficulty": 0.55,
+      "kind": "concept"
+    },
+    {
+      "id": "CB_DURESS_IMMEDIACY",
+      "label": "Duress by threats: threat must be sufficiently imminent that D had no safe avenue of escape - R v Hudson and Taylor (1971)",
+      "st": "2.7",
+      "difficulty": 0.45,
+      "kind": "concept"
+    },
+    {
+      "id": "CB_DURESS_NEXUS",
+      "label": "Duress by threats: direct connection required between the threat and the crime committed - R v Cole (1994)",
+      "st": "2.7",
+      "difficulty": 0.4,
+      "kind": "concept"
+    },
+    {
+      "id": "CB_DURESS_VOLASSOC",
+      "label": "Duress by threats: defence unavailable where D voluntarily associated with a criminal group knowing risk of duress - R v Sharp (1987), R v Hasan (2005)",
+      "st": "2.7",
+      "difficulty": 0.5,
+      "kind": "concept"
+    },
+    {
+      "id": "CB_DURESS_EXCLUDED",
+      "label": "Duress by threats: unavailable as a defence to murder, attempted murder (R v Howe (1987), R v Gotts (1992))",
+      "st": "2.7",
+      "difficulty": 0.4,
+      "kind": "concept"
+    },
+    {
+      "id": "CB_DOC_DEF",
+      "label": "Duress of circumstances: definition - threat arises from surrounding circumstances rather than a direct human threat, applying the same Graham test principles - R v Conway (1989)",
+      "st": "2.7",
+      "difficulty": 0.45,
+      "kind": "concept"
+    },
+    {
+      "id": "CB_DOC_CASES",
+      "label": "Duress of circumstances: application in R v Martin (1989) (fear for family's safety while driving) and R v Willer (1986)",
+      "st": "2.7",
+      "difficulty": 0.4,
+      "kind": "application"
+    },
+    {
+      "id": "CB_NECESSITY_DEF",
+      "label": "Necessity: narrow common law defence recognised where breaking the law was necessary to avoid an inevitable and irreparable evil - Re A (Conjoined Twins) (2000)",
+      "st": "2.7",
+      "difficulty": 0.55,
+      "kind": "concept"
+    },
+    {
+      "id": "CB_CONSENT_GENRULE",
+      "label": "Consent: general rule - consent is not a defence to the infliction of actual bodily harm or above (R v Brown (1993))",
+      "st": "2.7",
+      "difficulty": 0.4,
+      "kind": "concept"
+    },
+    {
+      "id": "CB_CONSENT_VALID",
+      "label": "Consent: must be real/valid consent - fraud as to identity or nature of the act vitiates consent - R v Tabassum (2000), R v Dica (2004) distinguishing fraud as to nature of act",
+      "st": "2.7",
+      "difficulty": 0.5,
+      "kind": "concept"
+    },
+    {
+      "id": "CB_CONSENT_CAPACITY",
+      "label": "Consent: defendant must have capacity to consent and consent must not be obtained by force or fear",
+      "st": "2.7",
+      "difficulty": 0.35,
+      "kind": "concept"
+    },
+    {
+      "id": "CB_CONSENT_EXCEPTIONS",
+      "label": "Consent: recognised public policy exceptions where consent to harm above ABH is allowed - properly conducted sports, surgery, tattooing/body piercing, horseplay (R v Barnes (2005), R v Wilson (1996), R v Jones (1986))",
+      "st": "2.7",
+      "difficulty": 0.55,
+      "kind": "application"
+    },
+    {
+      "id": "CB_CONSENT_BROWN_APP",
+      "label": "Consent: R v Brown (1993) - sadomasochistic activity causing ABH/wounding held not a valid exception, consent no defence",
+      "st": "2.7",
+      "difficulty": 0.45,
+      "kind": "application"
+    },
+    {
+      "id": "CB_ATT_STATUTE",
+      "label": "Attempts: statutory basis - s1(1) Criminal Attempts Act 1981",
+      "st": "2.8",
+      "difficulty": 0.3,
+      "kind": "concept"
+    },
+    {
+      "id": "CB_ATT_AR",
+      "label": "Attempts actus reus: an act which is 'more than merely preparatory' to the commission of the full offence - R v Gullefer (1990)",
+      "st": "2.8",
+      "difficulty": 0.5,
+      "kind": "concept"
+    },
+    {
+      "id": "CB_ATT_AR_CASES",
+      "label": "Attempts actus reus case law: R v Jones (1990) (more than merely preparatory found), R v Geddes (1996) (mere preparation, not more than preparatory), R v Campbell (1991)",
+      "st": "2.8",
+      "difficulty": 0.55,
+      "kind": "application"
+    },
+    {
+      "id": "CB_ATT_MR",
+      "label": "Attempts mens rea: intention to commit the full offence required, even where the full offence could be committed recklessly - R v Pearman (1984)",
+      "st": "2.8",
+      "difficulty": 0.5,
+      "kind": "concept"
+    },
+    {
+      "id": "CB_ATT_MR_CONDITIONAL",
+      "label": "Attempts mens rea: conditional intent can suffice for attempt (A-G's References (Nos 1 and 2 of 1979) (1980))",
+      "st": "2.8",
+      "difficulty": 0.45,
+      "kind": "application"
+    },
+    {
+      "id": "CB_ATT_MR_RESULT",
+      "label": "Attempts mens rea for result crimes: where the full offence requires a specific intent or recklessness as to consequences, D must intend that specific consequence - Attorney-General's Reference (No 3 of 1992) (1994) on attempted s18 GBH intent",
+      "st": "2.8",
+      "difficulty": 0.55,
+      "kind": "application"
+    },
+    {
+      "id": "CB_ATT_IMPOSSIBILITY",
+      "label": "Attempts and impossibility: s1(2)-(3) Criminal Attempts Act 1981 - D can be guilty of attempt even where the full offence was factually impossible, provided D intended to commit an offence - R v Shivpuri (1986)",
+      "st": "2.8",
+      "difficulty": 0.6,
+      "kind": "concept"
+    },
+    {
+      "id": "CB_ATT_IMPOSSIBILITY_ANDERTON",
+      "label": "Attempts and impossibility: Anderton v Ryan (1985) wrongly decided approach overruled by R v Shivpuri (1986)",
+      "st": "2.8",
+      "difficulty": 0.5,
+      "kind": "application"
+    },
+    {
+      "id": "CB_EVAL_OATP_GBH_ARCHAIC",
+      "label": "Evaluation: offences against the person under the Offences Against the Person Act 1861 use archaic and unclear language (e.g. 'grievous', 'occasioning', 'maliciously') causing uncertainty",
+      "st": "2.9",
+      "difficulty": 0.4,
+      "kind": "evaluation"
+    },
+    {
+      "id": "CB_EVAL_OATP_HIERARCHY",
+      "label": "Evaluation: the OAPA 1861 non-fatal offences lack a coherent, logical hierarchy of seriousness reflecting harm caused, unlike a modern codified scheme",
+      "st": "2.9",
+      "difficulty": 0.45,
+      "kind": "evaluation"
+    },
+    {
+      "id": "CB_EVAL_OATP_MENSREA_MISMATCH",
+      "label": "Evaluation: mismatch between mens rea and actus reus in s47 ABH - only mens rea for common assault/battery required despite the more serious harm caused (R v Savage/Parmenter confirms no need to foresee ABH)",
+      "st": "2.9",
+      "difficulty": 0.5,
+      "kind": "evaluation"
+    },
+    {
+      "id": "CB_EVAL_OATP_REFORM",
+      "label": "Evaluation: reform proposals for offences against the person - the 1998 Draft Offences Against the Person Bill/Law Commission proposals for a modern statute with clearer, graded offences and consistent terminology",
+      "st": "2.9",
+      "difficulty": 0.45,
+      "kind": "evaluation"
+    },
+    {
+      "id": "CB_EVAL_OATP_TRANSFERRED",
+      "label": "Evaluation: uncertainty in transferred malice application to offences against the person, e.g. R v Latimer type scenarios and its interaction with statutory wording",
+      "st": "2.9",
+      "difficulty": 0.45,
+      "kind": "evaluation"
+    },
+    {
+      "id": "CB_EVAL_PROP_THEFT_DISHONESTY",
+      "label": "Evaluation: the Ivey/Barton test for dishonesty in theft creates uncertainty as it relies on a jury's assessment of ordinary standards rather than a clear legal definition",
+      "st": "2.9",
+      "difficulty": 0.5,
+      "kind": "evaluation"
+    },
+    {
+      "id": "CB_EVAL_PROP_APPROPRIATION",
+      "label": "Evaluation: the wide interpretation of appropriation in theft (R v Gomez, R v Hinks) blurs the line between criminal law and civil law of contract/gift, criticised as overreach",
+      "st": "2.9",
+      "difficulty": 0.55,
+      "kind": "evaluation"
+    },
+    {
+      "id": "CB_EVAL_PROP_ROBBERY_FORCE",
+      "label": "Evaluation: uncertainty over how much 'force' is required for robbery, with very minor force (e.g. R v Dawson and James) sufficing, arguably too broad",
+      "st": "2.9",
+      "difficulty": 0.45,
+      "kind": "evaluation"
+    },
+    {
+      "id": "CB_EVAL_PROP_BURGLARY_OVERLAP",
+      "label": "Evaluation: overlap and complexity between s9(1)(a) and s9(1)(b) burglary creates confusion in charging and jury direction",
+      "st": "2.9",
+      "difficulty": 0.45,
+      "kind": "evaluation"
+    },
+    {
+      "id": "CB_EVAL_DEF_INSANITY_OUTDATED",
+      "label": "Evaluation: the M'Naghten Rules for insanity are outdated, based on 19th century medical understanding and fail to reflect modern psychiatric conditions",
+      "st": "2.9",
+      "difficulty": 0.4,
+      "kind": "evaluation"
+    },
+    {
+      "id": "CB_EVAL_DEF_INSANITY_INTERNALEXT",
+      "label": "Evaluation: the internal/external cause distinction between insanity and automatism produces arbitrary results, e.g. diabetics and epileptics classed as insane rather than automatism (Hennessy, Sullivan)",
+      "st": "2.9",
+      "difficulty": 0.5,
+      "kind": "evaluation"
+    },
+    {
+      "id": "CB_EVAL_DEF_INSANITY_REFORM",
+      "label": "Evaluation: reform proposals for insanity - Law Commission's proposed new defence of 'not criminally responsible by reason of a recognised medical condition'",
+      "st": "2.9",
+      "difficulty": 0.4,
+      "kind": "evaluation"
+    },
+    {
+      "id": "CB_EVAL_DEF_INTOX_MAJEWSKI_UNFAIR",
+      "label": "Evaluation: the Majewski rule on basic intent crimes is criticised as a legal fiction imposing liability without true mens rea, contrary to correspondence principle",
+      "st": "2.9",
+      "difficulty": 0.5,
+      "kind": "evaluation"
+    },
+    {
+      "id": "CB_EVAL_DEF_INTOX_SPECBASIC_UNCLEAR",
+      "label": "Evaluation: the specific/basic intent distinction is unclear and inconsistently applied by courts, making outcomes unpredictable",
+      "st": "2.9",
+      "difficulty": 0.5,
+      "kind": "evaluation"
+    },
+    {
+      "id": "CB_EVAL_DEF_SD_HOUSEHOLDER",
+      "label": "Evaluation: the 'grossly disproportionate' householder test for self-defence creates an unjustifiable higher threshold compared to ordinary 'reasonable force', criticised as inconsistent",
+      "st": "2.9",
+      "difficulty": 0.5,
+      "kind": "evaluation"
+    },
+    {
+      "id": "CB_EVAL_DEF_DURESS_MURDEREXCL",
+      "label": "Evaluation: the exclusion of duress as a defence to murder is criticised as unjust where D acted under extreme, genuine threats with no real choice (Howe, Gotts)",
+      "st": "2.9",
+      "difficulty": 0.5,
+      "kind": "evaluation"
+    },
+    {
+      "id": "CB_EVAL_DEF_DURESS_REFORM",
+      "label": "Evaluation: Law Commission reform proposals to allow duress as a partial defence to murder or to reform the objective 'reasonable firmness' test",
+      "st": "2.9",
+      "difficulty": 0.45,
+      "kind": "evaluation"
+    },
+    {
+      "id": "CB_EVAL_DEF_CONSENT_PATERNALISM",
+      "label": "Evaluation: R v Brown's approach to consent is criticised as unjustified state paternalism interfering with personal autonomy in private consensual activity",
+      "st": "2.9",
+      "difficulty": 0.5,
+      "kind": "evaluation"
+    },
+    {
+      "id": "CB_EVAL_DEF_CONSENT_INCONSISTENT",
+      "label": "Evaluation: inconsistent application of consent exceptions (e.g. contact sports, tattooing allowed but sadomasochism not) shows lack of principled, consistent policy",
+      "st": "2.9",
+      "difficulty": 0.5,
+      "kind": "evaluation"
+    },
+    {
+      "id": "CB_EVAL_ATT_MORETHANPREP_VAGUE",
+      "label": "Evaluation: the 'more than merely preparatory' test for attempts is vague and produces inconsistent jury decisions (contrast Gullefer, Jones, Geddes)",
+      "st": "2.9",
+      "difficulty": 0.5,
+      "kind": "evaluation"
+    },
+    {
+      "id": "CB_EVAL_ATT_IMPOSSIBILITY_JUST",
+      "label": "Evaluation: allowing conviction for attempting the impossible (Shivpuri) is justified as it punishes culpable intention, though criticised as punishing thoughts alone",
+      "st": "2.9",
+      "difficulty": 0.5,
+      "kind": "evaluation"
+    }
+  ],
+  "edges": [
+    [
+      "CB_INS_RULE",
+      "CB_INS_DISEASE",
+      0.4
+    ],
+    [
+      "CB_INS_DISEASE",
+      "CB_INS_NOTKNOW1",
+      0.3
+    ],
+    [
+      "CB_INS_DISEASE",
+      "CB_INS_NOTKNOW2",
+      0.3
+    ],
+    [
+      "CB_INS_NOTKNOW1",
+      "CB_INS_CASES",
+      0.4
+    ],
+    [
+      "CB_INS_NOTKNOW2",
+      "CB_INS_CASES",
+      0.4
+    ],
+    [
+      "CB_INS_CASES",
+      "CB_INS_VERDICT",
+      0.35
+    ],
+    [
+      "CB_INS_DISEASE",
+      "CB_AUTO_EXTERNAL",
+      0.5
+    ],
+    [
+      "CB_AUTO_DEF",
+      "CB_AUTO_EXTERNAL",
+      0.4
+    ],
+    [
+      "CB_AUTO_EXTERNAL",
+      "CB_AUTO_SELFINDUCED",
+      0.45
+    ],
+    [
+      "CB_AUTO_DEF",
+      "CB_AUTO_EFFECT",
+      0.3
+    ],
+    [
+      "CB_INTOX_VOLDEF",
+      "CB_INTOX_SPECGEN",
+      0.45
+    ],
+    [
+      "CB_INTOX_SPECGEN",
+      "CB_INTOX_VOL_SPECIFIC",
+      0.4
+    ],
+    [
+      "CB_INTOX_SPECGEN",
+      "CB_INTOX_VOL_BASIC",
+      0.4
+    ],
+    [
+      "CB_INTOX_VOLDEF",
+      "CB_INTOX_INVOL",
+      0.35
+    ],
+    [
+      "CB_INTOX_INVOL",
+      "CB_INTOX_INVOL_TEST",
+      0.45
+    ],
+    [
+      "CB_INTOX_VOL_SPECIFIC",
+      "CB_INTOX_MISTAKE",
+      0.4
+    ],
+    [
+      "CB_SD_STATUTE",
+      "CB_SD_TRIGGER",
+      0.25
+    ],
+    [
+      "CB_SD_TRIGGER",
+      "CB_SD_SUBJTEST",
+      0.35
+    ],
+    [
+      "CB_SD_SUBJTEST",
+      "CB_SD_INTOXMISTAKE_LINK",
+      0.4
+    ],
+    [
+      "CB_INTOX_MISTAKE",
+      "CB_SD_INTOXMISTAKE_LINK",
+      0.4
+    ],
+    [
+      "CB_SD_SUBJTEST",
+      "CB_SD_NECESSARY",
+      0.4
+    ],
+    [
+      "CB_SD_NECESSARY",
+      "CB_SD_REASONABLE",
+      0.45
+    ],
+    [
+      "CB_SD_REASONABLE",
+      "CB_SD_PREEMPTIVE",
+      0.35
+    ],
+    [
+      "CB_SD_REASONABLE",
+      "CB_SD_EFFECT",
+      0.25
+    ],
+    [
+      "CB_DURESS_THREATS_DEF",
+      "CB_DURESS_GRAHAM",
+      0.4
+    ],
+    [
+      "CB_DURESS_GRAHAM",
+      "CB_DURESS_IMMEDIACY",
+      0.4
+    ],
+    [
+      "CB_DURESS_GRAHAM",
+      "CB_DURESS_NEXUS",
+      0.35
+    ],
+    [
+      "CB_DURESS_GRAHAM",
+      "CB_DURESS_VOLASSOC",
+      0.45
+    ],
+    [
+      "CB_DURESS_GRAHAM",
+      "CB_DURESS_EXCLUDED",
+      0.35
+    ],
+    [
+      "CB_DURESS_GRAHAM",
+      "CB_DOC_DEF",
+      0.4
+    ],
+    [
+      "CB_DOC_DEF",
+      "CB_DOC_CASES",
+      0.35
+    ],
+    [
+      "CB_DOC_DEF",
+      "CB_NECESSITY_DEF",
+      0.45
+    ],
+    [
+      "CB_CONSENT_GENRULE",
+      "CB_CONSENT_VALID",
+      0.35
+    ],
+    [
+      "CB_CONSENT_VALID",
+      "CB_CONSENT_CAPACITY",
+      0.3
+    ],
+    [
+      "CB_CONSENT_GENRULE",
+      "CB_CONSENT_EXCEPTIONS",
+      0.4
+    ],
+    [
+      "CB_CONSENT_EXCEPTIONS",
+      "CB_CONSENT_BROWN_APP",
+      0.4
+    ],
+    [
+      "CB_ATT_STATUTE",
+      "CB_ATT_AR",
+      0.35
+    ],
+    [
+      "CB_ATT_AR",
+      "CB_ATT_AR_CASES",
+      0.4
+    ],
+    [
+      "CB_ATT_STATUTE",
+      "CB_ATT_MR",
+      0.35
+    ],
+    [
+      "CB_ATT_MR",
+      "CB_ATT_MR_CONDITIONAL",
+      0.4
+    ],
+    [
+      "CB_ATT_MR",
+      "CB_ATT_MR_RESULT",
+      0.45
+    ],
+    [
+      "CB_ATT_AR",
+      "CB_ATT_IMPOSSIBILITY",
+      0.5
+    ],
+    [
+      "CB_ATT_MR",
+      "CB_ATT_IMPOSSIBILITY",
+      0.5
+    ],
+    [
+      "CB_ATT_IMPOSSIBILITY",
+      "CB_ATT_IMPOSSIBILITY_ANDERTON",
+      0.45
+    ],
+    [
+      "CB_EVAL_OATP_GBH_ARCHAIC",
+      "CB_EVAL_OATP_REFORM",
+      0.35
+    ],
+    [
+      "CB_EVAL_OATP_HIERARCHY",
+      "CB_EVAL_OATP_REFORM",
+      0.35
+    ],
+    [
+      "CB_EVAL_OATP_MENSREA_MISMATCH",
+      "CB_EVAL_OATP_REFORM",
+      0.4
+    ],
+    [
+      "CB_EVAL_OATP_HIERARCHY",
+      "CB_EVAL_OATP_MENSREA_MISMATCH",
+      0.4
+    ],
+    [
+      "CB_EVAL_OATP_GBH_ARCHAIC",
+      "CB_EVAL_OATP_TRANSFERRED",
+      0.4
+    ],
+    [
+      "CB_EVAL_PROP_THEFT_DISHONESTY",
+      "CB_EVAL_PROP_APPROPRIATION",
+      0.4
+    ],
+    [
+      "CB_INS_RULE",
+      "CB_EVAL_DEF_INSANITY_OUTDATED",
+      0.35
+    ],
+    [
+      "CB_INS_DISEASE",
+      "CB_EVAL_DEF_INSANITY_INTERNALEXT",
+      0.45
+    ],
+    [
+      "CB_AUTO_EXTERNAL",
+      "CB_EVAL_DEF_INSANITY_INTERNALEXT",
+      0.45
+    ],
+    [
+      "CB_EVAL_DEF_INSANITY_OUTDATED",
+      "CB_EVAL_DEF_INSANITY_REFORM",
+      0.35
+    ],
+    [
+      "CB_EVAL_DEF_INSANITY_INTERNALEXT",
+      "CB_EVAL_DEF_INSANITY_REFORM",
+      0.35
+    ],
+    [
+      "CB_INTOX_VOL_BASIC",
+      "CB_EVAL_DEF_INTOX_MAJEWSKI_UNFAIR",
+      0.45
+    ],
+    [
+      "CB_INTOX_SPECGEN",
+      "CB_EVAL_DEF_INTOX_SPECBASIC_UNCLEAR",
+      0.45
+    ],
+    [
+      "CB_SD_REASONABLE",
+      "CB_EVAL_DEF_SD_HOUSEHOLDER",
+      0.45
+    ],
+    [
+      "CB_DURESS_EXCLUDED",
+      "CB_EVAL_DEF_DURESS_MURDEREXCL",
+      0.4
+    ],
+    [
+      "CB_DURESS_GRAHAM",
+      "CB_EVAL_DEF_DURESS_REFORM",
+      0.4
+    ],
+    [
+      "CB_EVAL_DEF_DURESS_MURDEREXCL",
+      "CB_EVAL_DEF_DURESS_REFORM",
+      0.35
+    ],
+    [
+      "CB_CONSENT_BROWN_APP",
+      "CB_EVAL_DEF_CONSENT_PATERNALISM",
+      0.45
+    ],
+    [
+      "CB_CONSENT_EXCEPTIONS",
+      "CB_EVAL_DEF_CONSENT_INCONSISTENT",
+      0.45
+    ],
+    [
+      "CB_CONSENT_BROWN_APP",
+      "CB_EVAL_DEF_CONSENT_INCONSISTENT",
+      0.4
+    ],
+    [
+      "CB_ATT_AR_CASES",
+      "CB_EVAL_ATT_MORETHANPREP_VAGUE",
+      0.45
+    ],
+    [
+      "CB_ATT_IMPOSSIBILITY_ANDERTON",
+      "CB_EVAL_ATT_IMPOSSIBILITY_JUST",
+      0.45
+    ]
+  ]
+}

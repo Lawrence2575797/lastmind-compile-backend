@@ -1,0 +1,1391 @@
+{
+  "nodes": [
+    {
+      "id": "LS_CC_JUR",
+      "label": "County Court: jurisdiction over civil claims (contract, tort, equity, up to unlimited value subject to allocation)",
+      "st": "1.1",
+      "difficulty": 0.3,
+      "kind": "concept"
+    },
+    {
+      "id": "LS_HC_JUR",
+      "label": "High Court: jurisdiction and three divisions (Queen's/King's Bench, Chancery, Family)",
+      "st": "1.1",
+      "difficulty": 0.35,
+      "kind": "concept"
+    },
+    {
+      "id": "LS_PRETRIAL",
+      "label": "Pre-trial procedure: issuing a claim, particulars of claim, defence, case management by courts",
+      "st": "1.1",
+      "difficulty": 0.4,
+      "kind": "procedure"
+    },
+    {
+      "id": "LS_WOOLF",
+      "label": "Woolf reforms and the Civil Procedure Rules 1998: overriding objective of dealing with cases justly and at proportionate cost",
+      "st": "1.1",
+      "difficulty": 0.4,
+      "kind": "concept"
+    },
+    {
+      "id": "LS_TRACK_SMALL",
+      "label": "Small claims track: claims up to £10,000, informal procedure",
+      "st": "1.1",
+      "difficulty": 0.3,
+      "kind": "concept"
+    },
+    {
+      "id": "LS_TRACK_FAST",
+      "label": "Fast track: claims £10,000-£25,000, fixed procedure with limited disclosure",
+      "st": "1.1",
+      "difficulty": 0.3,
+      "kind": "concept"
+    },
+    {
+      "id": "LS_TRACK_MULTI",
+      "label": "Multi-track: claims over £25,000, case managed individually by judge",
+      "st": "1.1",
+      "difficulty": 0.3,
+      "kind": "concept"
+    },
+    {
+      "id": "LS_ALLOCATION",
+      "label": "Track allocation: court allocates case to a track based on value, complexity and other factors",
+      "st": "1.1",
+      "difficulty": 0.35,
+      "kind": "procedure"
+    },
+    {
+      "id": "LS_CIV_APPEALS",
+      "label": "Civil appeal routes: from County Court/High Court to Court of Appeal (Civil Division) and onward to Supreme Court",
+      "st": "1.1",
+      "difficulty": 0.4,
+      "kind": "procedure"
+    },
+    {
+      "id": "LS_LEAPFROG",
+      "label": "Leapfrog appeals: direct appeal from High Court to Supreme Court in limited circumstances",
+      "st": "1.1",
+      "difficulty": 0.35,
+      "kind": "concept"
+    },
+    {
+      "id": "LS_TRIBUNALS",
+      "label": "Tribunals: purpose, structure (First-tier and Upper Tribunal), use for specialist statutory disputes",
+      "st": "1.1",
+      "difficulty": 0.35,
+      "kind": "concept"
+    },
+    {
+      "id": "LS_ADR_NEG",
+      "label": "Negotiation: parties or their representatives settle a dispute directly without a third party",
+      "st": "1.1",
+      "difficulty": 0.2,
+      "kind": "concept"
+    },
+    {
+      "id": "LS_ADR_MED",
+      "label": "Mediation: neutral third party facilitates agreement, non-binding, parties control outcome",
+      "st": "1.1",
+      "difficulty": 0.25,
+      "kind": "concept"
+    },
+    {
+      "id": "LS_ADR_CON",
+      "label": "Conciliation: neutral third party actively suggests solutions to help parties reach agreement",
+      "st": "1.1",
+      "difficulty": 0.25,
+      "kind": "concept"
+    },
+    {
+      "id": "LS_ADR_ARB",
+      "label": "Arbitration: parties agree to submit dispute to a neutral arbitrator whose decision (award) is binding, governed by Arbitration Act 1996",
+      "st": "1.1",
+      "difficulty": 0.35,
+      "kind": "concept"
+    },
+    {
+      "id": "LS_ODR",
+      "label": "Online courts and Online Dispute Resolution: use of technology (e.g. Money Claim Online, HMCTS reform programme) to resolve disputes without physical hearings",
+      "st": "1.1",
+      "difficulty": 0.35,
+      "kind": "concept"
+    },
+    {
+      "id": "LS_EV_COST_CIV",
+      "label": "Evaluation: cost of civil litigation as a barrier compared to ADR/tribunals",
+      "st": "1.1",
+      "difficulty": 0.4,
+      "kind": "evaluation"
+    },
+    {
+      "id": "LS_EV_DELAY_CIV",
+      "label": "Evaluation: delay in civil courts versus speed of ADR and tribunals",
+      "st": "1.1",
+      "difficulty": 0.4,
+      "kind": "evaluation"
+    },
+    {
+      "id": "LS_EV_FORMALITY",
+      "label": "Evaluation: formality and complexity of civil court procedure deterring litigants in person",
+      "st": "1.1",
+      "difficulty": 0.4,
+      "kind": "evaluation"
+    },
+    {
+      "id": "LS_EV_ADR_PRIVACY",
+      "label": "Evaluation: ADR offers privacy and preserves relationships compared to public adversarial court hearings",
+      "st": "1.1",
+      "difficulty": 0.35,
+      "kind": "evaluation"
+    },
+    {
+      "id": "LS_EV_ADR_NOENFORCE",
+      "label": "Evaluation: mediation/conciliation outcomes are not binding and may lack enforceability compared to court judgments",
+      "st": "1.1",
+      "difficulty": 0.35,
+      "kind": "evaluation"
+    },
+    {
+      "id": "LS_EV_ARB_COST",
+      "label": "Evaluation: arbitration can be as costly and slow as litigation despite being marketed as an alternative",
+      "st": "1.1",
+      "difficulty": 0.4,
+      "kind": "evaluation"
+    },
+    {
+      "id": "LS_EV_TRIBUNAL_ACCESS",
+      "label": "Evaluation: tribunals offer cheaper, faster, specialist justice but fees have reduced access (e.g. R (UNISON) v Lord Chancellor)",
+      "st": "1.1",
+      "difficulty": 0.45,
+      "kind": "evaluation"
+    },
+    {
+      "id": "LS_EV_ODR_ACCESS",
+      "label": "Evaluation: online courts/ODR improve access and efficiency but raise concerns over digital exclusion and lack of open justice",
+      "st": "1.1",
+      "difficulty": 0.4,
+      "kind": "evaluation"
+    },
+    {
+      "id": "LS_OFF_SUM",
+      "label": "Summary offences: minor offences tried only in the Magistrates' Court",
+      "st": "1.2",
+      "difficulty": 0.2,
+      "kind": "concept"
+    },
+    {
+      "id": "LS_OFF_IND",
+      "label": "Indictable offences: serious offences tried only in the Crown Court before a jury",
+      "st": "1.2",
+      "difficulty": 0.2,
+      "kind": "concept"
+    },
+    {
+      "id": "LS_OFF_EW",
+      "label": "Either-way offences: can be tried in either the Magistrates' Court or the Crown Court",
+      "st": "1.2",
+      "difficulty": 0.25,
+      "kind": "concept"
+    },
+    {
+      "id": "LS_MODE_TRIAL",
+      "label": "Mode of trial procedure for either-way offences: plea before venue and allocation hearing",
+      "st": "1.2",
+      "difficulty": 0.35,
+      "kind": "procedure"
+    },
+    {
+      "id": "LS_MAG_JUR",
+      "label": "Magistrates' Court jurisdiction: summary trials, first hearings for all offences, sending indictable/either-way cases to Crown Court",
+      "st": "1.2",
+      "difficulty": 0.3,
+      "kind": "concept"
+    },
+    {
+      "id": "LS_CROWN_JUR",
+      "label": "Crown Court jurisdiction: trial on indictment before judge and jury, sentencing powers",
+      "st": "1.2",
+      "difficulty": 0.3,
+      "kind": "concept"
+    },
+    {
+      "id": "LS_BAIL",
+      "label": "Bail: right to bail under Bail Act 1976 and grounds for refusal",
+      "st": "1.2",
+      "difficulty": 0.35,
+      "kind": "concept"
+    },
+    {
+      "id": "LS_PLEA",
+      "label": "Plea and case management: early guilty plea reductions and case management hearings",
+      "st": "1.2",
+      "difficulty": 0.3,
+      "kind": "procedure"
+    },
+    {
+      "id": "LS_CRIM_APPEAL_MAG",
+      "label": "Appeals from Magistrates' Court: to Crown Court (fact/law/sentence) or by case stated to High Court (Divisional Court) on point of law",
+      "st": "1.2",
+      "difficulty": 0.4,
+      "kind": "procedure"
+    },
+    {
+      "id": "LS_CRIM_APPEAL_CROWN",
+      "label": "Appeals from Crown Court: defence appeal to Court of Appeal (Criminal Division) against conviction/sentence; prosecution right to appeal on point of law or unduly lenient sentence",
+      "st": "1.2",
+      "difficulty": 0.4,
+      "kind": "procedure"
+    },
+    {
+      "id": "LS_CRIM_APPEAL_SC",
+      "label": "Further appeal from Court of Appeal (Criminal Division) to Supreme Court on point of law of general public importance",
+      "st": "1.2",
+      "difficulty": 0.35,
+      "kind": "concept"
+    },
+    {
+      "id": "LS_AG_REF",
+      "label": "Attorney General's reference: referring an unduly lenient sentence or a point of law following acquittal",
+      "st": "1.2",
+      "difficulty": 0.35,
+      "kind": "concept"
+    },
+    {
+      "id": "LS_CCRC",
+      "label": "Criminal Cases Review Commission: reviewing suspected miscarriages of justice and referring cases to Court of Appeal",
+      "st": "1.2",
+      "difficulty": 0.35,
+      "kind": "concept"
+    },
+    {
+      "id": "LS_SENT_AIM_PUNISH",
+      "label": "Sentencing aim: punishment/retribution",
+      "st": "1.2",
+      "difficulty": 0.2,
+      "kind": "concept"
+    },
+    {
+      "id": "LS_SENT_AIM_DETER",
+      "label": "Sentencing aim: deterrence (individual and general)",
+      "st": "1.2",
+      "difficulty": 0.2,
+      "kind": "concept"
+    },
+    {
+      "id": "LS_SENT_AIM_REFORM",
+      "label": "Sentencing aim: reform and rehabilitation",
+      "st": "1.2",
+      "difficulty": 0.2,
+      "kind": "concept"
+    },
+    {
+      "id": "LS_SENT_AIM_PROTECT",
+      "label": "Sentencing aim: public protection/incapacitation",
+      "st": "1.2",
+      "difficulty": 0.2,
+      "kind": "concept"
+    },
+    {
+      "id": "LS_SENT_AIM_REPAR",
+      "label": "Sentencing aim: reparation to victims or community",
+      "st": "1.2",
+      "difficulty": 0.2,
+      "kind": "concept"
+    },
+    {
+      "id": "LS_SENT_FACTORS_AGG",
+      "label": "Sentencing factor: aggravating factors increasing sentence severity",
+      "st": "1.2",
+      "difficulty": 0.25,
+      "kind": "concept"
+    },
+    {
+      "id": "LS_SENT_FACTORS_MIT",
+      "label": "Sentencing factor: mitigating factors reducing sentence severity",
+      "st": "1.2",
+      "difficulty": 0.25,
+      "kind": "concept"
+    },
+    {
+      "id": "LS_SENT_GUIDELINES",
+      "label": "Sentencing Council guidelines: structuring judicial discretion in sentencing",
+      "st": "1.2",
+      "difficulty": 0.3,
+      "kind": "concept"
+    },
+    {
+      "id": "LS_SENT_CUSTODIAL",
+      "label": "Custodial sentences: fixed-term, life, suspended sentences",
+      "st": "1.2",
+      "difficulty": 0.3,
+      "kind": "concept"
+    },
+    {
+      "id": "LS_SENT_COMMUNITY",
+      "label": "Community sentences: requirements such as unpaid work, curfew, rehabilitation activity",
+      "st": "1.2",
+      "difficulty": 0.3,
+      "kind": "concept"
+    },
+    {
+      "id": "LS_SENT_FINE",
+      "label": "Fines: financial penalty as a sentence",
+      "st": "1.2",
+      "difficulty": 0.2,
+      "kind": "concept"
+    },
+    {
+      "id": "LS_SENT_DISCHARGE",
+      "label": "Discharges: absolute and conditional discharge",
+      "st": "1.2",
+      "difficulty": 0.25,
+      "kind": "concept"
+    },
+    {
+      "id": "LS_MAG_QUAL",
+      "label": "Lay magistrates: qualifications and eligibility criteria (age, residency, character requirements)",
+      "st": "1.2",
+      "difficulty": 0.25,
+      "kind": "concept"
+    },
+    {
+      "id": "LS_MAG_SELECT",
+      "label": "Lay magistrates: selection and appointment process via local advisory committees",
+      "st": "1.2",
+      "difficulty": 0.3,
+      "kind": "procedure"
+    },
+    {
+      "id": "LS_MAG_ROLE",
+      "label": "Lay magistrates: role in criminal cases (summary trials, early hearings, sending cases, youth court)",
+      "st": "1.2",
+      "difficulty": 0.3,
+      "kind": "concept"
+    },
+    {
+      "id": "LS_JURY_QUAL",
+      "label": "Jurors: qualifications and eligibility under Juries Act 1974",
+      "st": "1.2",
+      "difficulty": 0.25,
+      "kind": "concept"
+    },
+    {
+      "id": "LS_JURY_SELECT",
+      "label": "Jury selection: random selection from electoral roll, vetting and challenges",
+      "st": "1.2",
+      "difficulty": 0.3,
+      "kind": "procedure"
+    },
+    {
+      "id": "LS_JURY_ROLE",
+      "label": "Jury role: determining verdict on facts in Crown Court trials, majority verdicts",
+      "st": "1.2",
+      "difficulty": 0.3,
+      "kind": "concept"
+    },
+    {
+      "id": "LS_EV_CUSTODIAL",
+      "label": "Evaluation: custodial sentences incapacitate but have high reoffending rates and cost",
+      "st": "1.2",
+      "difficulty": 0.4,
+      "kind": "evaluation"
+    },
+    {
+      "id": "LS_EV_COMMUNITY",
+      "label": "Evaluation: community sentences rehabilitate and are cost-effective but seen as a soft option",
+      "st": "1.2",
+      "difficulty": 0.4,
+      "kind": "evaluation"
+    },
+    {
+      "id": "LS_EV_FINE",
+      "label": "Evaluation: fines are flexible and easy to administer but can be unfair given differing means and difficult to enforce",
+      "st": "1.2",
+      "difficulty": 0.35,
+      "kind": "evaluation"
+    },
+    {
+      "id": "LS_EV_DISCHARGE",
+      "label": "Evaluation: discharges avoid stigmatising minor offenders but provide little deterrence",
+      "st": "1.2",
+      "difficulty": 0.3,
+      "kind": "evaluation"
+    },
+    {
+      "id": "LS_EV_MAG_REPRESENT",
+      "label": "Evaluation: lay magistrates provide local community input but are criticised as unrepresentative of society",
+      "st": "1.2",
+      "difficulty": 0.4,
+      "kind": "evaluation"
+    },
+    {
+      "id": "LS_EV_MAG_TRAINING",
+      "label": "Evaluation: lay magistrates receive free, quick, cost-effective justice but lack of legal training risks inconsistency",
+      "st": "1.2",
+      "difficulty": 0.4,
+      "kind": "evaluation"
+    },
+    {
+      "id": "LS_EV_MAG_BIAS",
+      "label": "Evaluation: reliance on legal advisers/clerks and prosecution bias concerns regarding lay magistrates",
+      "st": "1.2",
+      "difficulty": 0.4,
+      "kind": "evaluation"
+    },
+    {
+      "id": "LS_EV_JURY_REPRESENT",
+      "label": "Evaluation: jury as representative of the public and a democratic safeguard",
+      "st": "1.2",
+      "difficulty": 0.35,
+      "kind": "evaluation"
+    },
+    {
+      "id": "LS_EV_JURY_SECRECY",
+      "label": "Evaluation: jury secrecy prevents scrutiny of reasoning, raising concerns over perverse verdicts (contempt of Court Act 1981 s8)",
+      "st": "1.2",
+      "difficulty": 0.45,
+      "kind": "evaluation"
+    },
+    {
+      "id": "LS_EV_JURY_COMPREHEND",
+      "label": "Evaluation: jurors may struggle to understand complex evidence, e.g. in fraud trials",
+      "st": "1.2",
+      "difficulty": 0.4,
+      "kind": "evaluation"
+    },
+    {
+      "id": "LS_EV_JURY_NOBBLING",
+      "label": "Evaluation: risk of jury nobbling/intimidation and susceptibility to media influence",
+      "st": "1.2",
+      "difficulty": 0.4,
+      "kind": "evaluation"
+    },
+    {
+      "id": "LS_EV_JURY_COST",
+      "label": "Evaluation: jury trials are costly and slow compared to summary trial",
+      "st": "1.2",
+      "difficulty": 0.35,
+      "kind": "evaluation"
+    },
+    {
+      "id": "LS_SOLICITOR",
+      "label": "Solicitors: qualifications, training routes (including SQE), work and areas of practice",
+      "st": "1.3",
+      "difficulty": 0.3,
+      "kind": "concept"
+    },
+    {
+      "id": "LS_SOLICITOR_REG",
+      "label": "Solicitors: regulation by the Solicitors Regulation Authority (SRA)",
+      "st": "1.3",
+      "difficulty": 0.3,
+      "kind": "concept"
+    },
+    {
+      "id": "LS_BARRISTER",
+      "label": "Barristers: qualifications, training (academic, vocational, pupillage), work including advocacy",
+      "st": "1.3",
+      "difficulty": 0.3,
+      "kind": "concept"
+    },
+    {
+      "id": "LS_BARRISTER_REG",
+      "label": "Barristers: regulation by the Bar Standards Board (BSB)",
+      "st": "1.3",
+      "difficulty": 0.3,
+      "kind": "concept"
+    },
+    {
+      "id": "LS_CILEX",
+      "label": "Chartered Legal Executives: qualifications, training and work, regulated by CILEx Regulation",
+      "st": "1.3",
+      "difficulty": 0.3,
+      "kind": "concept"
+    },
+    {
+      "id": "LS_FUSION",
+      "label": "Trends: fusion of roles between solicitors and barristers, e.g. solicitor-advocates",
+      "st": "1.3",
+      "difficulty": 0.35,
+      "kind": "concept"
+    },
+    {
+      "id": "LS_TECH_LEGAL",
+      "label": "Impact of technology on legal services: online services, AI-assisted document review, virtual hearings",
+      "st": "1.3",
+      "difficulty": 0.35,
+      "kind": "concept"
+    },
+    {
+      "id": "LS_GLOBAL_LEGAL",
+      "label": "Impact of globalisation on legal services: international law firms, cross-border legal practice",
+      "st": "1.3",
+      "difficulty": 0.35,
+      "kind": "concept"
+    },
+    {
+      "id": "LS_JUDGE_QUAL",
+      "label": "Judiciary: qualifications required for judicial appointment (relevant legal qualification and experience)",
+      "st": "1.3",
+      "difficulty": 0.3,
+      "kind": "concept"
+    },
+    {
+      "id": "LS_JAC",
+      "label": "Judicial Appointments Commission: role in selection and appointment of judges, replacing the old 'secret soundings' system",
+      "st": "1.3",
+      "difficulty": 0.35,
+      "kind": "concept"
+    },
+    {
+      "id": "LS_JUDGE_TRAINING",
+      "label": "Judicial training: role of the Judicial College in ongoing training",
+      "st": "1.3",
+      "difficulty": 0.25,
+      "kind": "concept"
+    },
+    {
+      "id": "LS_JUDGE_ROLE",
+      "label": "Role of the judiciary: presiding over trials, case management, sentencing, developing precedent",
+      "st": "1.3",
+      "difficulty": 0.3,
+      "kind": "concept"
+    },
+    {
+      "id": "LS_JUDGE_RETIRE",
+      "label": "Judicial retirement: mandatory retirement age",
+      "st": "1.3",
+      "difficulty": 0.2,
+      "kind": "concept"
+    },
+    {
+      "id": "LS_JUDGE_REMOVE",
+      "label": "Judicial removal: security of tenure, removal only for misbehaviour via address to both Houses of Parliament (senior judges) or Lord Chancellor (inferior judges)",
+      "st": "1.3",
+      "difficulty": 0.35,
+      "kind": "concept"
+    },
+    {
+      "id": "LS_SOP",
+      "label": "Separation of powers doctrine: division between legislature, executive and judiciary (Montesquieu)",
+      "st": "1.3",
+      "difficulty": 0.4,
+      "kind": "concept"
+    },
+    {
+      "id": "LS_JUD_INDEPENDENCE",
+      "label": "Judicial independence: security of tenure, immunity from suit, independence from executive/legislature underpinning the rule of law",
+      "st": "1.3",
+      "difficulty": 0.4,
+      "kind": "concept"
+    },
+    {
+      "id": "LS_CRA2005",
+      "label": "Constitutional Reform Act 2005: creation of Supreme Court, JAC and reforms strengthening separation of powers",
+      "st": "1.3",
+      "difficulty": 0.4,
+      "kind": "concept"
+    },
+    {
+      "id": "LS_EV_SOLICITOR_BARRISTER",
+      "label": "Evaluation: divided profession (solicitors/barristers) offers specialisation but causes duplication of cost and inefficiency for clients",
+      "st": "1.3",
+      "difficulty": 0.4,
+      "kind": "evaluation"
+    },
+    {
+      "id": "LS_EV_CILEX_ACCESS",
+      "label": "Evaluation: CILEx route improves access to the legal profession for non-graduates but has narrower rights than solicitors/barristers",
+      "st": "1.3",
+      "difficulty": 0.35,
+      "kind": "evaluation"
+    },
+    {
+      "id": "LS_EV_TECH_ACCESS",
+      "label": "Evaluation: technology increases efficiency and access to legal services but risks reducing personal client care and raises cybersecurity concerns",
+      "st": "1.3",
+      "difficulty": 0.4,
+      "kind": "evaluation"
+    },
+    {
+      "id": "LS_EV_GLOBAL_COMPETITION",
+      "label": "Evaluation: globalisation increases competition and choice but disadvantages smaller domestic firms",
+      "st": "1.3",
+      "difficulty": 0.35,
+      "kind": "evaluation"
+    },
+    {
+      "id": "LS_EV_JAC_DIVERSITY",
+      "label": "Evaluation: JAC improves transparency in appointments but judiciary remains criticised as unrepresentative in diversity",
+      "st": "1.3",
+      "difficulty": 0.45,
+      "kind": "evaluation"
+    },
+    {
+      "id": "LS_EV_JUDGE_INDEPENDENCE_STRONG",
+      "label": "Evaluation: security of tenure and removal safeguards protect judicial independence and impartial decision-making",
+      "st": "1.3",
+      "difficulty": 0.4,
+      "kind": "evaluation"
+    },
+    {
+      "id": "LS_EV_JUDGE_INDEPENDENCE_WEAK",
+      "label": "Evaluation: Lord Chancellor's continuing role and executive influence over appointments/discipline can undermine perceived judicial independence",
+      "st": "1.3",
+      "difficulty": 0.45,
+      "kind": "evaluation"
+    },
+    {
+      "id": "LS_LEGALAID_HIST",
+      "label": "Origins of state funding: Legal Aid and Advice Act 1949 establishing legal aid",
+      "st": "1.4",
+      "difficulty": 0.25,
+      "kind": "concept"
+    },
+    {
+      "id": "LS_LASPO",
+      "label": "LASPO 2012: Legal Aid, Sentencing and Punishment of Offenders Act reforms restricting scope of civil legal aid",
+      "st": "1.4",
+      "difficulty": 0.4,
+      "kind": "concept"
+    },
+    {
+      "id": "LS_CIV_LEGALAID_SCOPE",
+      "label": "Civil legal aid: means and merits tests, scope limited mainly to specific categories (e.g. family/domestic abuse, housing, asylum)",
+      "st": "1.4",
+      "difficulty": 0.4,
+      "kind": "concept"
+    },
+    {
+      "id": "LS_CRIM_LEGALAID",
+      "label": "Criminal legal aid: right to representation, means and interests-of-justice tests, duty solicitor scheme",
+      "st": "1.4",
+      "difficulty": 0.4,
+      "kind": "concept"
+    },
+    {
+      "id": "LS_LAA",
+      "label": "Legal Aid Agency: administers state funding for legal aid",
+      "st": "1.4",
+      "difficulty": 0.2,
+      "kind": "concept"
+    },
+    {
+      "id": "LS_PRIVATE_FUND",
+      "label": "Private funding: paying privately for legal fees out of own resources",
+      "st": "1.4",
+      "difficulty": 0.2,
+      "kind": "concept"
+    },
+    {
+      "id": "LS_INSURANCE_FUND",
+      "label": "Legal expenses insurance: before-the-event (BTE) insurance covering legal costs",
+      "st": "1.4",
+      "difficulty": 0.25,
+      "kind": "concept"
+    },
+    {
+      "id": "LS_CFA",
+      "label": "Conditional fee agreements ('no win, no fee'): solicitor's success fee payable only if case is won, funded under Courts and Legal Services Act 1990 as amended",
+      "st": "1.4",
+      "difficulty": 0.4,
+      "kind": "concept"
+    },
+    {
+      "id": "LS_DBA",
+      "label": "Damages-based agreements: lawyer's fee paid as a percentage of damages recovered",
+      "st": "1.4",
+      "difficulty": 0.35,
+      "kind": "concept"
+    },
+    {
+      "id": "LS_TRADE_UNION",
+      "label": "Trade union and other group funding: unions or organisations funding members' legal claims",
+      "st": "1.4",
+      "difficulty": 0.2,
+      "kind": "concept"
+    },
+    {
+      "id": "LS_PRO_BONO",
+      "label": "Pro bono work: free legal services provided voluntarily by lawyers",
+      "st": "1.4",
+      "difficulty": 0.2,
+      "kind": "concept"
+    },
+    {
+      "id": "LS_CAB",
+      "label": "Citizens Advice Bureau and other advice agencies: free initial advice and signposting",
+      "st": "1.4",
+      "difficulty": 0.2,
+      "kind": "concept"
+    },
+    {
+      "id": "LS_LAW_CENTRES",
+      "label": "Law centres: free legal services in local communities, often for disadvantaged groups",
+      "st": "1.4",
+      "difficulty": 0.2,
+      "kind": "concept"
+    },
+    {
+      "id": "LS_EV_LASPO_CUTS",
+      "label": "Evaluation: LASPO cuts saved public money but created advice deserts and reduced access to justice for civil claimants",
+      "st": "1.4",
+      "difficulty": 0.45,
+      "kind": "evaluation"
+    },
+    {
+      "id": "LS_EV_CRIMLEGALAID_ACCESS",
+      "label": "Evaluation: criminal legal aid safeguards fair trial rights but funding cuts and low fees reduce solicitor availability",
+      "st": "1.4",
+      "difficulty": 0.4,
+      "kind": "evaluation"
+    },
+    {
+      "id": "LS_EV_CFA_ACCESS",
+      "label": "Evaluation: CFAs improve access to justice for those without means but success fees/insurance costs can erode damages and deter risk-averse solicitors",
+      "st": "1.4",
+      "difficulty": 0.45,
+      "kind": "evaluation"
+    },
+    {
+      "id": "LS_EV_PRIVATE_INEQUALITY",
+      "label": "Evaluation: private funding provides full choice of representation but creates inequality of access based on wealth",
+      "st": "1.4",
+      "difficulty": 0.35,
+      "kind": "evaluation"
+    },
+    {
+      "id": "LS_EV_ADVICEAGENCY_LIMIT",
+      "label": "Evaluation: advice agencies and law centres widen access but are underfunded and cannot replace full legal representation",
+      "st": "1.4",
+      "difficulty": 0.4,
+      "kind": "evaluation"
+    },
+    {
+      "id": "LS_EV_PROBONO_LIMIT",
+      "label": "Evaluation: pro bono work helps some litigants but is inconsistent, unpredictable and cannot meet overall demand",
+      "st": "1.4",
+      "difficulty": 0.35,
+      "kind": "evaluation"
+    }
+  ],
+  "edges": [
+    [
+      "LS_CC_JUR",
+      "LS_ALLOCATION",
+      0.3
+    ],
+    [
+      "LS_HC_JUR",
+      "LS_ALLOCATION",
+      0.3
+    ],
+    [
+      "LS_WOOLF",
+      "LS_PRETRIAL",
+      0.35
+    ],
+    [
+      "LS_PRETRIAL",
+      "LS_ALLOCATION",
+      0.3
+    ],
+    [
+      "LS_ALLOCATION",
+      "LS_TRACK_SMALL",
+      0.25
+    ],
+    [
+      "LS_ALLOCATION",
+      "LS_TRACK_FAST",
+      0.25
+    ],
+    [
+      "LS_ALLOCATION",
+      "LS_TRACK_MULTI",
+      0.25
+    ],
+    [
+      "LS_CC_JUR",
+      "LS_CIV_APPEALS",
+      0.3
+    ],
+    [
+      "LS_HC_JUR",
+      "LS_CIV_APPEALS",
+      0.3
+    ],
+    [
+      "LS_CIV_APPEALS",
+      "LS_LEAPFROG",
+      0.35
+    ],
+    [
+      "LS_HC_JUR",
+      "LS_TRIBUNALS",
+      0.2
+    ],
+    [
+      "LS_ADR_NEG",
+      "LS_ADR_MED",
+      0.2
+    ],
+    [
+      "LS_ADR_MED",
+      "LS_ADR_CON",
+      0.2
+    ],
+    [
+      "LS_ADR_CON",
+      "LS_ADR_ARB",
+      0.25
+    ],
+    [
+      "LS_PRETRIAL",
+      "LS_ODR",
+      0.3
+    ],
+    [
+      "LS_PRETRIAL",
+      "LS_EV_COST_CIV",
+      0.35
+    ],
+    [
+      "LS_TRACK_MULTI",
+      "LS_EV_COST_CIV",
+      0.3
+    ],
+    [
+      "LS_CIV_APPEALS",
+      "LS_EV_DELAY_CIV",
+      0.3
+    ],
+    [
+      "LS_TRACK_MULTI",
+      "LS_EV_DELAY_CIV",
+      0.3
+    ],
+    [
+      "LS_PRETRIAL",
+      "LS_EV_FORMALITY",
+      0.3
+    ],
+    [
+      "LS_ADR_MED",
+      "LS_EV_ADR_PRIVACY",
+      0.3
+    ],
+    [
+      "LS_ADR_CON",
+      "LS_EV_ADR_PRIVACY",
+      0.25
+    ],
+    [
+      "LS_ADR_MED",
+      "LS_EV_ADR_NOENFORCE",
+      0.35
+    ],
+    [
+      "LS_ADR_CON",
+      "LS_EV_ADR_NOENFORCE",
+      0.3
+    ],
+    [
+      "LS_ADR_ARB",
+      "LS_EV_ARB_COST",
+      0.4
+    ],
+    [
+      "LS_TRIBUNALS",
+      "LS_EV_TRIBUNAL_ACCESS",
+      0.45
+    ],
+    [
+      "LS_ODR",
+      "LS_EV_ODR_ACCESS",
+      0.4
+    ],
+    [
+      "LS_EV_ADR_PRIVACY",
+      "LS_EV_ADR_NOENFORCE",
+      0.3
+    ],
+    [
+      "LS_EV_COST_CIV",
+      "LS_EV_TRIBUNAL_ACCESS",
+      0.3
+    ],
+    [
+      "LS_EV_ARB_COST",
+      "LS_EV_TRIBUNAL_ACCESS",
+      0.25
+    ],
+    [
+      "LS_OFF_SUM",
+      "LS_MAG_JUR",
+      0.2
+    ],
+    [
+      "LS_OFF_IND",
+      "LS_CROWN_JUR",
+      0.2
+    ],
+    [
+      "LS_OFF_EW",
+      "LS_MODE_TRIAL",
+      0.3
+    ],
+    [
+      "LS_MAG_JUR",
+      "LS_MODE_TRIAL",
+      0.25
+    ],
+    [
+      "LS_CROWN_JUR",
+      "LS_MODE_TRIAL",
+      0.25
+    ],
+    [
+      "LS_MODE_TRIAL",
+      "LS_BAIL",
+      0.25
+    ],
+    [
+      "LS_BAIL",
+      "LS_PLEA",
+      0.25
+    ],
+    [
+      "LS_MAG_JUR",
+      "LS_CRIM_APPEAL_MAG",
+      0.3
+    ],
+    [
+      "LS_CROWN_JUR",
+      "LS_CRIM_APPEAL_CROWN",
+      0.3
+    ],
+    [
+      "LS_CRIM_APPEAL_CROWN",
+      "LS_CRIM_APPEAL_SC",
+      0.3
+    ],
+    [
+      "LS_CRIM_APPEAL_CROWN",
+      "LS_AG_REF",
+      0.35
+    ],
+    [
+      "LS_CRIM_APPEAL_CROWN",
+      "LS_CCRC",
+      0.35
+    ],
+    [
+      "LS_SENT_AIM_PUNISH",
+      "LS_SENT_GUIDELINES",
+      0.2
+    ],
+    [
+      "LS_SENT_AIM_DETER",
+      "LS_SENT_GUIDELINES",
+      0.2
+    ],
+    [
+      "LS_SENT_AIM_REFORM",
+      "LS_SENT_GUIDELINES",
+      0.2
+    ],
+    [
+      "LS_SENT_AIM_PROTECT",
+      "LS_SENT_GUIDELINES",
+      0.2
+    ],
+    [
+      "LS_SENT_AIM_REPAR",
+      "LS_SENT_GUIDELINES",
+      0.2
+    ],
+    [
+      "LS_SENT_GUIDELINES",
+      "LS_SENT_FACTORS_AGG",
+      0.25
+    ],
+    [
+      "LS_SENT_GUIDELINES",
+      "LS_SENT_FACTORS_MIT",
+      0.25
+    ],
+    [
+      "LS_SENT_FACTORS_AGG",
+      "LS_SENT_CUSTODIAL",
+      0.3
+    ],
+    [
+      "LS_SENT_FACTORS_MIT",
+      "LS_SENT_CUSTODIAL",
+      0.3
+    ],
+    [
+      "LS_SENT_FACTORS_AGG",
+      "LS_SENT_COMMUNITY",
+      0.25
+    ],
+    [
+      "LS_SENT_FACTORS_MIT",
+      "LS_SENT_COMMUNITY",
+      0.25
+    ],
+    [
+      "LS_SENT_FACTORS_MIT",
+      "LS_SENT_FINE",
+      0.25
+    ],
+    [
+      "LS_SENT_FACTORS_MIT",
+      "LS_SENT_DISCHARGE",
+      0.25
+    ],
+    [
+      "LS_SENT_CUSTODIAL",
+      "LS_EV_CUSTODIAL",
+      0.35
+    ],
+    [
+      "LS_SENT_COMMUNITY",
+      "LS_EV_COMMUNITY",
+      0.35
+    ],
+    [
+      "LS_SENT_FINE",
+      "LS_EV_FINE",
+      0.3
+    ],
+    [
+      "LS_SENT_DISCHARGE",
+      "LS_EV_DISCHARGE",
+      0.3
+    ],
+    [
+      "LS_EV_CUSTODIAL",
+      "LS_EV_COMMUNITY",
+      0.3
+    ],
+    [
+      "LS_MAG_QUAL",
+      "LS_MAG_SELECT",
+      0.25
+    ],
+    [
+      "LS_MAG_SELECT",
+      "LS_MAG_ROLE",
+      0.25
+    ],
+    [
+      "LS_MAG_JUR",
+      "LS_MAG_ROLE",
+      0.2
+    ],
+    [
+      "LS_MAG_ROLE",
+      "LS_EV_MAG_REPRESENT",
+      0.35
+    ],
+    [
+      "LS_MAG_QUAL",
+      "LS_EV_MAG_REPRESENT",
+      0.3
+    ],
+    [
+      "LS_MAG_ROLE",
+      "LS_EV_MAG_TRAINING",
+      0.35
+    ],
+    [
+      "LS_MAG_ROLE",
+      "LS_EV_MAG_BIAS",
+      0.35
+    ],
+    [
+      "LS_JURY_QUAL",
+      "LS_JURY_SELECT",
+      0.25
+    ],
+    [
+      "LS_JURY_SELECT",
+      "LS_JURY_ROLE",
+      0.25
+    ],
+    [
+      "LS_CROWN_JUR",
+      "LS_JURY_ROLE",
+      0.2
+    ],
+    [
+      "LS_JURY_ROLE",
+      "LS_EV_JURY_REPRESENT",
+      0.3
+    ],
+    [
+      "LS_JURY_ROLE",
+      "LS_EV_JURY_SECRECY",
+      0.4
+    ],
+    [
+      "LS_JURY_ROLE",
+      "LS_EV_JURY_COMPREHEND",
+      0.35
+    ],
+    [
+      "LS_JURY_ROLE",
+      "LS_EV_JURY_NOBBLING",
+      0.35
+    ],
+    [
+      "LS_JURY_ROLE",
+      "LS_EV_JURY_COST",
+      0.3
+    ],
+    [
+      "LS_EV_JURY_SECRECY",
+      "LS_EV_JURY_NOBBLING",
+      0.3
+    ],
+    [
+      "LS_SOLICITOR",
+      "LS_SOLICITOR_REG",
+      0.2
+    ],
+    [
+      "LS_BARRISTER",
+      "LS_BARRISTER_REG",
+      0.2
+    ],
+    [
+      "LS_SOLICITOR",
+      "LS_FUSION",
+      0.3
+    ],
+    [
+      "LS_BARRISTER",
+      "LS_FUSION",
+      0.3
+    ],
+    [
+      "LS_SOLICITOR",
+      "LS_CILEX",
+      0.2
+    ],
+    [
+      "LS_FUSION",
+      "LS_TECH_LEGAL",
+      0.25
+    ],
+    [
+      "LS_TECH_LEGAL",
+      "LS_GLOBAL_LEGAL",
+      0.3
+    ],
+    [
+      "LS_SOLICITOR_REG",
+      "LS_EV_SOLICITOR_BARRISTER",
+      0.35
+    ],
+    [
+      "LS_BARRISTER_REG",
+      "LS_EV_SOLICITOR_BARRISTER",
+      0.35
+    ],
+    [
+      "LS_CILEX",
+      "LS_EV_CILEX_ACCESS",
+      0.3
+    ],
+    [
+      "LS_TECH_LEGAL",
+      "LS_EV_TECH_ACCESS",
+      0.35
+    ],
+    [
+      "LS_GLOBAL_LEGAL",
+      "LS_EV_GLOBAL_COMPETITION",
+      0.35
+    ],
+    [
+      "LS_CRA2005",
+      "LS_JAC",
+      0.3
+    ],
+    [
+      "LS_JUDGE_QUAL",
+      "LS_JAC",
+      0.25
+    ],
+    [
+      "LS_JAC",
+      "LS_JUDGE_TRAINING",
+      0.2
+    ],
+    [
+      "LS_JUDGE_TRAINING",
+      "LS_JUDGE_ROLE",
+      0.2
+    ],
+    [
+      "LS_JUDGE_ROLE",
+      "LS_JUDGE_RETIRE",
+      0.2
+    ],
+    [
+      "LS_JUDGE_ROLE",
+      "LS_JUDGE_REMOVE",
+      0.25
+    ],
+    [
+      "LS_SOP",
+      "LS_JUD_INDEPENDENCE",
+      0.35
+    ],
+    [
+      "LS_CRA2005",
+      "LS_JUD_INDEPENDENCE",
+      0.35
+    ],
+    [
+      "LS_JUDGE_REMOVE",
+      "LS_JUD_INDEPENDENCE",
+      0.3
+    ],
+    [
+      "LS_JAC",
+      "LS_EV_JAC_DIVERSITY",
+      0.4
+    ],
+    [
+      "LS_JUD_INDEPENDENCE",
+      "LS_EV_JUDGE_INDEPENDENCE_STRONG",
+      0.35
+    ],
+    [
+      "LS_JUD_INDEPENDENCE",
+      "LS_EV_JUDGE_INDEPENDENCE_WEAK",
+      0.4
+    ],
+    [
+      "LS_EV_JUDGE_INDEPENDENCE_STRONG",
+      "LS_EV_JUDGE_INDEPENDENCE_WEAK",
+      0.35
+    ],
+    [
+      "LS_LEGALAID_HIST",
+      "LS_LASPO",
+      0.3
+    ],
+    [
+      "LS_LASPO",
+      "LS_CIV_LEGALAID_SCOPE",
+      0.35
+    ],
+    [
+      "LS_LEGALAID_HIST",
+      "LS_CRIM_LEGALAID",
+      0.3
+    ],
+    [
+      "LS_CIV_LEGALAID_SCOPE",
+      "LS_LAA",
+      0.2
+    ],
+    [
+      "LS_CRIM_LEGALAID",
+      "LS_LAA",
+      0.2
+    ],
+    [
+      "LS_PRIVATE_FUND",
+      "LS_INSURANCE_FUND",
+      0.2
+    ],
+    [
+      "LS_CFA",
+      "LS_DBA",
+      0.3
+    ],
+    [
+      "LS_PRIVATE_FUND",
+      "LS_CFA",
+      0.25
+    ],
+    [
+      "LS_TRADE_UNION",
+      "LS_PRO_BONO",
+      0.15
+    ],
+    [
+      "LS_PRO_BONO",
+      "LS_CAB",
+      0.15
+    ],
+    [
+      "LS_CAB",
+      "LS_LAW_CENTRES",
+      0.2
+    ],
+    [
+      "LS_LASPO",
+      "LS_EV_LASPO_CUTS",
+      0.4
+    ],
+    [
+      "LS_CIV_LEGALAID_SCOPE",
+      "LS_EV_LASPO_CUTS",
+      0.35
+    ],
+    [
+      "LS_CRIM_LEGALAID",
+      "LS_EV_CRIMLEGALAID_ACCESS",
+      0.4
+    ],
+    [
+      "LS_CFA",
+      "LS_EV_CFA_ACCESS",
+      0.4
+    ],
+    [
+      "LS_DBA",
+      "LS_EV_CFA_ACCESS",
+      0.3
+    ],
+    [
+      "LS_PRIVATE_FUND",
+      "LS_EV_PRIVATE_INEQUALITY",
+      0.3
+    ],
+    [
+      "LS_CAB",
+      "LS_EV_ADVICEAGENCY_LIMIT",
+      0.3
+    ],
+    [
+      "LS_LAW_CENTRES",
+      "LS_EV_ADVICEAGENCY_LIMIT",
+      0.3
+    ],
+    [
+      "LS_PRO_BONO",
+      "LS_EV_PROBONO_LIMIT",
+      0.3
+    ],
+    [
+      "LS_EV_LASPO_CUTS",
+      "LS_EV_ADVICEAGENCY_LIMIT",
+      0.3
+    ],
+    [
+      "LS_EV_LASPO_CUTS",
+      "LS_EV_CFA_ACCESS",
+      0.3
+    ]
+  ]
+}

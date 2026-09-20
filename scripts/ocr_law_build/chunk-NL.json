@@ -1,0 +1,840 @@
+{
+  "nodes": [
+    {
+      "id": "NL_RULES_DEF",
+      "label": "Definition of a rule and characteristics of rules generally",
+      "st": "5.1",
+      "difficulty": 0.15,
+      "kind": "concept"
+    },
+    {
+      "id": "NL_LAW_ENFORCE",
+      "label": "Legal rules are enforceable by the state via courts and sanctions",
+      "st": "5.1",
+      "difficulty": 0.2,
+      "kind": "concept"
+    },
+    {
+      "id": "NL_NORMS",
+      "label": "Other norms of behaviour: social conventions, customs and etiquette as non-enforceable rules",
+      "st": "5.1",
+      "difficulty": 0.2,
+      "kind": "concept"
+    },
+    {
+      "id": "NL_LAW_VS_NORMS",
+      "label": "Distinguishing enforceable legal rules from moral, social and religious norms",
+      "st": "5.1",
+      "difficulty": 0.3,
+      "kind": "concept"
+    },
+    {
+      "id": "NL_LAW_MORALITY_LINK",
+      "label": "The connection between law and morality: overlap and divergence",
+      "st": "5.1",
+      "difficulty": 0.35,
+      "kind": "concept"
+    },
+    {
+      "id": "NL_LAW_JUSTICE_LINK",
+      "label": "The connection between law and justice as a goal of legal rules",
+      "st": "5.1",
+      "difficulty": 0.35,
+      "kind": "concept"
+    },
+    {
+      "id": "NL_CIVIL_DEF",
+      "label": "Definition and purpose of civil law: resolving disputes between private parties",
+      "st": "5.1",
+      "difficulty": 0.2,
+      "kind": "concept"
+    },
+    {
+      "id": "NL_CRIM_DEF",
+      "label": "Definition and purpose of criminal law: state prosecution of wrongs against society",
+      "st": "5.1",
+      "difficulty": 0.2,
+      "kind": "concept"
+    },
+    {
+      "id": "NL_CIVIL_CRIM_STANDARD",
+      "label": "Difference in standard of proof: balance of probabilities (civil) v beyond reasonable doubt (criminal)",
+      "st": "5.1",
+      "difficulty": 0.3,
+      "kind": "concept"
+    },
+    {
+      "id": "NL_CIVIL_CRIM_PARTIES",
+      "label": "Difference in parties and terminology: claimant/defendant (civil) v prosecution/defendant (criminal)",
+      "st": "5.1",
+      "difficulty": 0.25,
+      "kind": "concept"
+    },
+    {
+      "id": "NL_CIVIL_CRIM_COURTS",
+      "label": "Difference in courts and remedies/sanctions: damages/injunctions (civil) v fines/imprisonment (criminal)",
+      "st": "5.1",
+      "difficulty": 0.3,
+      "kind": "concept"
+    },
+    {
+      "id": "NL_CUSTOM",
+      "label": "Development of English law: custom as an early source of law",
+      "st": "5.1",
+      "difficulty": 0.25,
+      "kind": "concept"
+    },
+    {
+      "id": "NL_COMMONLAW_HIST",
+      "label": "Development of English law: the emergence of common law through royal courts and judicial precedent",
+      "st": "5.1",
+      "difficulty": 0.35,
+      "kind": "concept"
+    },
+    {
+      "id": "NL_EQUITY_HIST",
+      "label": "Development of English law: the emergence of equity to remedy the rigidity of common law",
+      "st": "5.1",
+      "difficulty": 0.35,
+      "kind": "concept"
+    },
+    {
+      "id": "NL_STATUTE_HIST",
+      "label": "Development of English law: the growth of statute law as the dominant modern source",
+      "st": "5.1",
+      "difficulty": 0.3,
+      "kind": "concept"
+    },
+    {
+      "id": "NL_COMMONLAW_SYSTEM",
+      "label": "Common law legal systems: characteristics - judicial precedent as a primary source of law",
+      "st": "5.1",
+      "difficulty": 0.35,
+      "kind": "concept"
+    },
+    {
+      "id": "NL_CIVILLAW_SYSTEM",
+      "label": "Civil law legal systems: characteristics - codified statutes as the primary source of law",
+      "st": "5.1",
+      "difficulty": 0.35,
+      "kind": "concept"
+    },
+    {
+      "id": "NL_COMMON_CIVIL_COMPARE",
+      "label": "Comparing common law and civil law legal systems: role of judges, precedent and codification",
+      "st": "5.1",
+      "difficulty": 0.4,
+      "kind": "application"
+    },
+    {
+      "id": "NL_ROL_DEF",
+      "label": "The rule of law: definition - government and citizens are bound by and act consistently with the law",
+      "st": "5.1",
+      "difficulty": 0.4,
+      "kind": "concept"
+    },
+    {
+      "id": "NL_ROL_DICEY",
+      "label": "Dicey's three principles of the rule of law: supremacy of law, equality before the law, and constitutional rights from ordinary law",
+      "st": "5.1",
+      "difficulty": 0.45,
+      "kind": "concept"
+    },
+    {
+      "id": "NL_ROL_IMPORTANCE",
+      "label": "The importance of the rule of law: protecting citizens from arbitrary state power and ensuring legal certainty",
+      "st": "5.1",
+      "difficulty": 0.4,
+      "kind": "evaluation"
+    },
+    {
+      "id": "NL_MORALS_DEF",
+      "label": "Definition of morals/morality as personal or societal beliefs about right and wrong",
+      "st": "5.2",
+      "difficulty": 0.2,
+      "kind": "concept"
+    },
+    {
+      "id": "NL_LAW_MORAL_DISTINCT",
+      "label": "Distinction between law and morals: enforceability, origin and consistency",
+      "st": "5.2",
+      "difficulty": 0.35,
+      "kind": "concept"
+    },
+    {
+      "id": "NL_LAW_MORAL_OVERLAP",
+      "label": "Areas where law and morals overlap (e.g. prohibitions on killing, theft)",
+      "st": "5.2",
+      "difficulty": 0.3,
+      "kind": "application"
+    },
+    {
+      "id": "NL_LAW_MORAL_DIVERGE",
+      "label": "Areas where law and morals diverge (e.g. legal but immoral acts, illegal but moral acts)",
+      "st": "5.2",
+      "difficulty": 0.35,
+      "kind": "application"
+    },
+    {
+      "id": "NL_PLURALISM",
+      "label": "Pluralist society: diversity of moral views among different groups and individuals",
+      "st": "5.2",
+      "difficulty": 0.3,
+      "kind": "concept"
+    },
+    {
+      "id": "NL_PLURALISM_CHALLENGE",
+      "label": "The challenge pluralism poses to creating morally uniform law",
+      "st": "5.2",
+      "difficulty": 0.4,
+      "kind": "evaluation"
+    },
+    {
+      "id": "NL_LAW_MORALS_RELATIONSHIP",
+      "label": "The relationship between law and morals: law as a vehicle enforcing or reflecting a moral code",
+      "st": "5.2",
+      "difficulty": 0.4,
+      "kind": "concept"
+    },
+    {
+      "id": "NL_LAW_MORALS_IMPORTANCE",
+      "label": "Importance of the law-morals relationship for legitimacy and public compliance with law",
+      "st": "5.2",
+      "difficulty": 0.4,
+      "kind": "evaluation"
+    },
+    {
+      "id": "NL_HART_DEVLIN",
+      "label": "The Hart-Devlin debate: Devlin's view that law should enforce a shared public morality to preserve society",
+      "st": "5.2",
+      "difficulty": 0.5,
+      "kind": "concept"
+    },
+    {
+      "id": "NL_HART_VIEW",
+      "label": "Hart's liberal view: law should only intervene to prevent harm to others (harm principle), not enforce private morality",
+      "st": "5.2",
+      "difficulty": 0.5,
+      "kind": "concept"
+    },
+    {
+      "id": "NL_HART_DEVLIN_EVAL",
+      "label": "Evaluating the Hart-Devlin debate using examples of legal enforcement of morality (e.g. Wolfenden Report, Shaw v DPP)",
+      "st": "5.2",
+      "difficulty": 0.55,
+      "kind": "evaluation"
+    },
+    {
+      "id": "NL_MORAL_ENFORCE_EX",
+      "label": "Examples of legal enforcement of moral values (e.g. laws on obscenity, drugs, assisted dying)",
+      "st": "5.2",
+      "difficulty": 0.4,
+      "kind": "application"
+    },
+    {
+      "id": "NL_MORAL_ENFORCE_PROBLEMS",
+      "label": "Problems with legally enforcing moral values in a pluralist society: risk of imposing majority morality on minorities",
+      "st": "5.2",
+      "difficulty": 0.45,
+      "kind": "evaluation"
+    },
+    {
+      "id": "NL_JUSTICE_MEANING",
+      "label": "The meaning of justice: fairness in outcomes and processes of the legal system",
+      "st": "5.3",
+      "difficulty": 0.3,
+      "kind": "concept"
+    },
+    {
+      "id": "NL_FORMAL_SUBSTANTIVE_JUSTICE",
+      "label": "Distinction between formal justice (fair procedures) and substantive justice (fair outcomes)",
+      "st": "5.3",
+      "difficulty": 0.4,
+      "kind": "concept"
+    },
+    {
+      "id": "NL_ARISTOTLE_JUSTICE",
+      "label": "Aristotle's theory of corrective and distributive justice",
+      "st": "5.3",
+      "difficulty": 0.5,
+      "kind": "concept"
+    },
+    {
+      "id": "NL_RAWLS_JUSTICE",
+      "label": "Rawls' theory of justice: the veil of ignorance and justice as fairness",
+      "st": "5.3",
+      "difficulty": 0.55,
+      "kind": "concept"
+    },
+    {
+      "id": "NL_UTILITARIAN_JUSTICE",
+      "label": "Utilitarian theory of justice: greatest happiness for the greatest number",
+      "st": "5.3",
+      "difficulty": 0.45,
+      "kind": "concept"
+    },
+    {
+      "id": "NL_NATURAL_LAW_JUSTICE",
+      "label": "Natural law theory of justice: law derived from a higher moral order",
+      "st": "5.3",
+      "difficulty": 0.45,
+      "kind": "concept"
+    },
+    {
+      "id": "NL_MARXIST_JUSTICE",
+      "label": "Marxist theory of justice: law as an instrument of the ruling class serving capitalist interests",
+      "st": "5.3",
+      "difficulty": 0.5,
+      "kind": "concept"
+    },
+    {
+      "id": "NL_JUSTICE_PROC_SUCCESS",
+      "label": "Ways the legal system achieves justice: fair trial rights, appeals, legal aid, precedent providing consistency",
+      "st": "5.3",
+      "difficulty": 0.4,
+      "kind": "evaluation"
+    },
+    {
+      "id": "NL_JUSTICE_PROC_FAILURE",
+      "label": "Ways the legal system fails to achieve justice: cost of litigation restricting access, delays, wrongful convictions",
+      "st": "5.3",
+      "difficulty": 0.45,
+      "kind": "evaluation"
+    },
+    {
+      "id": "NL_JUSTICE_THEORY_APPLIED",
+      "label": "Applying theories of justice to evaluate whether the legal system achieves justice in practice",
+      "st": "5.3",
+      "difficulty": 0.55,
+      "kind": "application"
+    },
+    {
+      "id": "NL_LAW_SOCIETY_ROLE",
+      "label": "The role of law in society: regulating behaviour, resolving disputes and protecting rights",
+      "st": "5.4",
+      "difficulty": 0.3,
+      "kind": "concept"
+    },
+    {
+      "id": "NL_SOCIAL_CONTROL_DEF",
+      "label": "Definition of social control: mechanisms used to regulate individual and group behaviour",
+      "st": "5.4",
+      "difficulty": 0.25,
+      "kind": "concept"
+    },
+    {
+      "id": "NL_LAW_AS_SOCIAL_CONTROL",
+      "label": "Law as a formal mechanism of social control alongside informal mechanisms (family, religion, peer pressure)",
+      "st": "5.4",
+      "difficulty": 0.4,
+      "kind": "concept"
+    },
+    {
+      "id": "NL_CONSENSUS_THEORY",
+      "label": "Consensus theory: law reflects shared societal values and agreement on acceptable behaviour",
+      "st": "5.4",
+      "difficulty": 0.4,
+      "kind": "concept"
+    },
+    {
+      "id": "NL_CONFLICT_THEORY",
+      "label": "Conflict theory: law reflects and manages competing interests between social groups",
+      "st": "5.4",
+      "difficulty": 0.4,
+      "kind": "concept"
+    },
+    {
+      "id": "NL_LAW_CREATES_CONSENSUS",
+      "label": "How law creates consensus: setting common standards and norms accepted by society",
+      "st": "5.4",
+      "difficulty": 0.4,
+      "kind": "application"
+    },
+    {
+      "id": "NL_LAW_DEALS_CONFLICT",
+      "label": "How law deals with conflict: providing dispute resolution mechanisms and balancing competing group interests",
+      "st": "5.4",
+      "difficulty": 0.4,
+      "kind": "application"
+    },
+    {
+      "id": "NL_REALIST_APPROACH",
+      "label": "The realist approach to law-making: law is shaped by social, political and economic realities rather than abstract logic",
+      "st": "5.4",
+      "difficulty": 0.5,
+      "kind": "concept"
+    },
+    {
+      "id": "NL_REALIST_JUDGES",
+      "label": "Realist view that judges' decisions are influenced by personal and social factors, not purely by precedent",
+      "st": "5.4",
+      "difficulty": 0.5,
+      "kind": "application"
+    },
+    {
+      "id": "NL_REALIST_EVAL",
+      "label": "Evaluating the realist approach against formalist views of law-making",
+      "st": "5.4",
+      "difficulty": 0.5,
+      "kind": "evaluation"
+    },
+    {
+      "id": "NL_TECH_INTERSECTION",
+      "label": "The intersection of law and technology: law's need to adapt to technological change",
+      "st": "5.5",
+      "difficulty": 0.3,
+      "kind": "concept"
+    },
+    {
+      "id": "NL_PRIVACY_CONCEPT",
+      "label": "The concept of privacy as a legal interest requiring protection",
+      "st": "5.5",
+      "difficulty": 0.3,
+      "kind": "concept"
+    },
+    {
+      "id": "NL_DATA_PROTECTION_LAW",
+      "label": "Data protection law: regulating the collection, storage and use of personal data (e.g. Data Protection Act 2018/UK GDPR)",
+      "st": "5.5",
+      "difficulty": 0.4,
+      "kind": "concept"
+    },
+    {
+      "id": "NL_PRIVACY_TECH_CHALLENGE",
+      "label": "Challenges technology poses to privacy: surveillance, data harvesting and profiling by digital platforms",
+      "st": "5.5",
+      "difficulty": 0.45,
+      "kind": "application"
+    },
+    {
+      "id": "NL_CYBERCRIME_DEF",
+      "label": "Definition and types of cyber-crime: hacking, fraud, identity theft and online offences",
+      "st": "5.5",
+      "difficulty": 0.35,
+      "kind": "concept"
+    },
+    {
+      "id": "NL_CYBERCRIME_LAW_CHALLENGE",
+      "label": "Challenges of applying and enforcing existing criminal law to cyber-crime",
+      "st": "5.5",
+      "difficulty": 0.45,
+      "kind": "evaluation"
+    },
+    {
+      "id": "NL_CROSSBORDER_JURISDICTION",
+      "label": "Cross-border issues: difficulties of jurisdiction and enforcement when technology-related conduct spans multiple countries",
+      "st": "5.5",
+      "difficulty": 0.5,
+      "kind": "application"
+    },
+    {
+      "id": "NL_TECH_FUTURE_CHALLENGES",
+      "label": "Future challenges for law and technology: artificial intelligence, emerging technologies and the pace of legal reform",
+      "st": "5.5",
+      "difficulty": 0.5,
+      "kind": "evaluation"
+    }
+  ],
+  "edges": [
+    [
+      "NL_RULES_DEF",
+      "NL_LAW_ENFORCE",
+      0.2
+    ],
+    [
+      "NL_RULES_DEF",
+      "NL_NORMS",
+      0.2
+    ],
+    [
+      "NL_LAW_ENFORCE",
+      "NL_LAW_VS_NORMS",
+      0.3
+    ],
+    [
+      "NL_NORMS",
+      "NL_LAW_VS_NORMS",
+      0.3
+    ],
+    [
+      "NL_LAW_VS_NORMS",
+      "NL_LAW_MORALITY_LINK",
+      0.35
+    ],
+    [
+      "NL_LAW_VS_NORMS",
+      "NL_LAW_JUSTICE_LINK",
+      0.35
+    ],
+    [
+      "NL_CIVIL_DEF",
+      "NL_CIVIL_CRIM_STANDARD",
+      0.25
+    ],
+    [
+      "NL_CRIM_DEF",
+      "NL_CIVIL_CRIM_STANDARD",
+      0.25
+    ],
+    [
+      "NL_CIVIL_DEF",
+      "NL_CIVIL_CRIM_PARTIES",
+      0.2
+    ],
+    [
+      "NL_CRIM_DEF",
+      "NL_CIVIL_CRIM_PARTIES",
+      0.2
+    ],
+    [
+      "NL_CIVIL_DEF",
+      "NL_CIVIL_CRIM_COURTS",
+      0.25
+    ],
+    [
+      "NL_CRIM_DEF",
+      "NL_CIVIL_CRIM_COURTS",
+      0.25
+    ],
+    [
+      "NL_LAW_ENFORCE",
+      "NL_CUSTOM",
+      0.2
+    ],
+    [
+      "NL_CUSTOM",
+      "NL_COMMONLAW_HIST",
+      0.3
+    ],
+    [
+      "NL_COMMONLAW_HIST",
+      "NL_EQUITY_HIST",
+      0.35
+    ],
+    [
+      "NL_EQUITY_HIST",
+      "NL_STATUTE_HIST",
+      0.3
+    ],
+    [
+      "NL_COMMONLAW_HIST",
+      "NL_COMMONLAW_SYSTEM",
+      0.35
+    ],
+    [
+      "NL_STATUTE_HIST",
+      "NL_CIVILLAW_SYSTEM",
+      0.35
+    ],
+    [
+      "NL_COMMONLAW_SYSTEM",
+      "NL_COMMON_CIVIL_COMPARE",
+      0.4
+    ],
+    [
+      "NL_CIVILLAW_SYSTEM",
+      "NL_COMMON_CIVIL_COMPARE",
+      0.4
+    ],
+    [
+      "NL_LAW_VS_NORMS",
+      "NL_ROL_DEF",
+      0.35
+    ],
+    [
+      "NL_ROL_DEF",
+      "NL_ROL_DICEY",
+      0.4
+    ],
+    [
+      "NL_ROL_DICEY",
+      "NL_ROL_IMPORTANCE",
+      0.4
+    ],
+    [
+      "NL_MORALS_DEF",
+      "NL_LAW_MORAL_DISTINCT",
+      0.3
+    ],
+    [
+      "NL_LAW_MORALITY_LINK",
+      "NL_LAW_MORAL_DISTINCT",
+      0.3
+    ],
+    [
+      "NL_LAW_MORAL_DISTINCT",
+      "NL_LAW_MORAL_OVERLAP",
+      0.35
+    ],
+    [
+      "NL_LAW_MORAL_DISTINCT",
+      "NL_LAW_MORAL_DIVERGE",
+      0.35
+    ],
+    [
+      "NL_MORALS_DEF",
+      "NL_PLURALISM",
+      0.25
+    ],
+    [
+      "NL_PLURALISM",
+      "NL_PLURALISM_CHALLENGE",
+      0.35
+    ],
+    [
+      "NL_LAW_MORAL_OVERLAP",
+      "NL_LAW_MORALS_RELATIONSHIP",
+      0.35
+    ],
+    [
+      "NL_LAW_MORAL_DIVERGE",
+      "NL_LAW_MORALS_RELATIONSHIP",
+      0.35
+    ],
+    [
+      "NL_LAW_MORALS_RELATIONSHIP",
+      "NL_LAW_MORALS_IMPORTANCE",
+      0.4
+    ],
+    [
+      "NL_LAW_MORALS_RELATIONSHIP",
+      "NL_HART_DEVLIN",
+      0.4
+    ],
+    [
+      "NL_HART_DEVLIN",
+      "NL_HART_VIEW",
+      0.35
+    ],
+    [
+      "NL_HART_DEVLIN",
+      "NL_HART_DEVLIN_EVAL",
+      0.45
+    ],
+    [
+      "NL_HART_VIEW",
+      "NL_HART_DEVLIN_EVAL",
+      0.45
+    ],
+    [
+      "PLACEHOLDER",
+      0,
+      0
+    ],
+    [
+      "NL_LAW_MORALS_RELATIONSHIP",
+      "NL_MORAL_ENFORCE_EX",
+      0.35
+    ],
+    [
+      "NL_PLURALISM_CHALLENGE",
+      "NL_MORAL_ENFORCE_PROBLEMS",
+      0.4
+    ],
+    [
+      "NL_MORAL_ENFORCE_EX",
+      "NL_MORAL_ENFORCE_PROBLEMS",
+      0.4
+    ],
+    [
+      "NL_HART_DEVLIN_EVAL",
+      "NL_MORAL_ENFORCE_PROBLEMS",
+      0.4
+    ],
+    [
+      "NL_LAW_JUSTICE_LINK",
+      "NL_JUSTICE_MEANING",
+      0.35
+    ],
+    [
+      "NL_JUSTICE_MEANING",
+      "NL_FORMAL_SUBSTANTIVE_JUSTICE",
+      0.35
+    ],
+    [
+      "NL_JUSTICE_MEANING",
+      "NL_ARISTOTLE_JUSTICE",
+      0.4
+    ],
+    [
+      "NL_JUSTICE_MEANING",
+      "NL_RAWLS_JUSTICE",
+      0.45
+    ],
+    [
+      "NL_JUSTICE_MEANING",
+      "NL_UTILITARIAN_JUSTICE",
+      0.4
+    ],
+    [
+      "NL_JUSTICE_MEANING",
+      "NL_NATURAL_LAW_JUSTICE",
+      0.4
+    ],
+    [
+      "NL_JUSTICE_MEANING",
+      "NL_MARXIST_JUSTICE",
+      0.4
+    ],
+    [
+      "NL_FORMAL_SUBSTANTIVE_JUSTICE",
+      "NL_JUSTICE_PROC_SUCCESS",
+      0.4
+    ],
+    [
+      "NL_FORMAL_SUBSTANTIVE_JUSTICE",
+      "NL_JUSTICE_PROC_FAILURE",
+      0.4
+    ],
+    [
+      "NL_ARISTOTLE_JUSTICE",
+      "NL_JUSTICE_THEORY_APPLIED",
+      0.5
+    ],
+    [
+      "NL_RAWLS_JUSTICE",
+      "NL_JUSTICE_THEORY_APPLIED",
+      0.5
+    ],
+    [
+      "NL_UTILITARIAN_JUSTICE",
+      "NL_JUSTICE_THEORY_APPLIED",
+      0.5
+    ],
+    [
+      "NL_NATURAL_LAW_JUSTICE",
+      "NL_JUSTICE_THEORY_APPLIED",
+      0.5
+    ],
+    [
+      "NL_MARXIST_JUSTICE",
+      "NL_JUSTICE_THEORY_APPLIED",
+      0.5
+    ],
+    [
+      "NL_JUSTICE_PROC_SUCCESS",
+      "NL_JUSTICE_THEORY_APPLIED",
+      0.5
+    ],
+    [
+      "NL_JUSTICE_PROC_FAILURE",
+      "NL_JUSTICE_THEORY_APPLIED",
+      0.5
+    ],
+    [
+      "NL_LAW_VS_NORMS",
+      "NL_LAW_SOCIETY_ROLE",
+      0.3
+    ],
+    [
+      "NL_SOCIAL_CONTROL_DEF",
+      "NL_LAW_AS_SOCIAL_CONTROL",
+      0.3
+    ],
+    [
+      "NL_LAW_SOCIETY_ROLE",
+      "NL_LAW_AS_SOCIAL_CONTROL",
+      0.35
+    ],
+    [
+      "NL_LAW_SOCIETY_ROLE",
+      "NL_CONSENSUS_THEORY",
+      0.35
+    ],
+    [
+      "NL_LAW_SOCIETY_ROLE",
+      "NL_CONFLICT_THEORY",
+      0.35
+    ],
+    [
+      "NL_CONSENSUS_THEORY",
+      "NL_LAW_CREATES_CONSENSUS",
+      0.4
+    ],
+    [
+      "NL_CONFLICT_THEORY",
+      "NL_LAW_DEALS_CONFLICT",
+      0.4
+    ],
+    [
+      "NL_CONFLICT_THEORY",
+      "NL_REALIST_APPROACH",
+      0.45
+    ],
+    [
+      "NL_REALIST_APPROACH",
+      "NL_REALIST_JUDGES",
+      0.45
+    ],
+    [
+      "NL_REALIST_JUDGES",
+      "NL_REALIST_EVAL",
+      0.45
+    ],
+    [
+      "NL_LAW_CREATES_CONSENSUS",
+      "NL_REALIST_EVAL",
+      0.4
+    ],
+    [
+      "NL_LAW_DEALS_CONFLICT",
+      "NL_REALIST_EVAL",
+      0.4
+    ],
+    [
+      "NL_LAW_SOCIETY_ROLE",
+      "NL_TECH_INTERSECTION",
+      0.35
+    ],
+    [
+      "NL_TECH_INTERSECTION",
+      "NL_PRIVACY_CONCEPT",
+      0.3
+    ],
+    [
+      "NL_PRIVACY_CONCEPT",
+      "NL_DATA_PROTECTION_LAW",
+      0.4
+    ],
+    [
+      "NL_DATA_PROTECTION_LAW",
+      "NL_PRIVACY_TECH_CHALLENGE",
+      0.45
+    ],
+    [
+      "NL_TECH_INTERSECTION",
+      "NL_CYBERCRIME_DEF",
+      0.3
+    ],
+    [
+      "NL_CIVIL_CRIM_COURTS",
+      "NL_CYBERCRIME_DEF",
+      0.3
+    ],
+    [
+      "NL_CYBERCRIME_DEF",
+      "NL_CYBERCRIME_LAW_CHALLENGE",
+      0.45
+    ],
+    [
+      "NL_CYBERCRIME_LAW_CHALLENGE",
+      "NL_CROSSBORDER_JURISDICTION",
+      0.45
+    ],
+    [
+      "NL_PRIVACY_TECH_CHALLENGE",
+      "NL_CROSSBORDER_JURISDICTION",
+      0.4
+    ],
+    [
+      "NL_CROSSBORDER_JURISDICTION",
+      "NL_TECH_FUTURE_CHALLENGES",
+      0.45
+    ],
+    [
+      "NL_ROL_IMPORTANCE",
+      "NL_TECH_FUTURE_CHALLENGES",
+      0.4
+    ]
+  ]
+}

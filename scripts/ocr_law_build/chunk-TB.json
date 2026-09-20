@@ -1,0 +1,784 @@
+{
+  "nodes": [
+    {
+      "id": "TB_VL_NATURE",
+      "label": "Vicarious liability: definition and purpose - imposing liability on employer for torts of employee",
+      "st": "4.5",
+      "difficulty": 0.3,
+      "kind": "concept"
+    },
+    {
+      "id": "TB_VL_JUSTIFY",
+      "label": "Justifications for vicarious liability (deep pockets, insurance, control, loss spreading, encouraging safety)",
+      "st": "4.5",
+      "difficulty": 0.35,
+      "kind": "concept"
+    },
+    {
+      "id": "TB_VL_REQ",
+      "label": "Vicarious liability: three requirements - tort committed, employment relationship, close connection to employment",
+      "st": "4.5",
+      "difficulty": 0.3,
+      "kind": "concept"
+    },
+    {
+      "id": "TB_VL_EMPSTATUS_CONTROL",
+      "label": "Employment status test: control test",
+      "st": "4.5",
+      "difficulty": 0.35,
+      "kind": "concept"
+    },
+    {
+      "id": "TB_VL_EMPSTATUS_INTEGRATION",
+      "label": "Employment status test: integration/organisation test",
+      "st": "4.5",
+      "difficulty": 0.35,
+      "kind": "concept"
+    },
+    {
+      "id": "TB_VL_EMPSTATUS_MULTIPLE",
+      "label": "Employment status: multiple/economic reality test (Ready Mixed Concrete v Minister of Pensions)",
+      "st": "4.5",
+      "difficulty": 0.45,
+      "kind": "concept"
+    },
+    {
+      "id": "TB_VL_EMPSTATUS_MODERN",
+      "label": "Modern extension of employment status to 'akin to employment' relationships (Various Claimants v Catholic Child Welfare Society; Cox v Ministry of Justice)",
+      "st": "4.5",
+      "difficulty": 0.5,
+      "kind": "concept"
+    },
+    {
+      "id": "TB_VL_COURSE_GENERAL",
+      "label": "Course of employment: torts authorised or closely connected to authorised acts are within course of employment",
+      "st": "4.5",
+      "difficulty": 0.35,
+      "kind": "concept"
+    },
+    {
+      "id": "TB_VL_COURSE_UNAUTHORISED_MODE",
+      "label": "Course of employment: unauthorised way of doing an authorised act still within course of employment (Century Insurance v Northern Ireland Road Transport Board)",
+      "st": "4.5",
+      "difficulty": 0.45,
+      "kind": "application"
+    },
+    {
+      "id": "TB_VL_COURSE_EXPRESSPROHIBIT",
+      "label": "Course of employment: express prohibition does not necessarily take act outside course of employment if act still furthers employer's business (Rose v Plenty; Limpus v London General Omnibus)",
+      "st": "4.5",
+      "difficulty": 0.5,
+      "kind": "application"
+    },
+    {
+      "id": "TB_VL_CLOSECONNECTION_TEST",
+      "label": "Close connection test for intentional/criminal torts (Lister v Hesley Hall)",
+      "st": "4.5",
+      "difficulty": 0.5,
+      "kind": "concept"
+    },
+    {
+      "id": "TB_VL_CLOSECONNECTION_APPLY",
+      "label": "Application of close connection test to serious wrongdoing (Mohamud v WM Morrison Supermarkets; Various Claimants v Wm Morrisons)",
+      "st": "4.5",
+      "difficulty": 0.55,
+      "kind": "application"
+    },
+    {
+      "id": "TB_VL_FROLIC",
+      "label": "Frolic of their own: acts outside course of employment when employee pursues own purposes (Beard v London General Omnibus; Hilton v Thomas Burton)",
+      "st": "4.5",
+      "difficulty": 0.4,
+      "kind": "application"
+    },
+    {
+      "id": "TB_VL_COMMUTING",
+      "label": "Journeys to/from work and detours generally outside course of employment unless employer benefits (Smith v Stages)",
+      "st": "4.5",
+      "difficulty": 0.4,
+      "kind": "application"
+    },
+    {
+      "id": "TB_VL_CRIMES",
+      "label": "Liability for crimes of employees: employer can be vicariously liable for criminal acts if sufficiently connected to employment (Lister v Hesley Hall; Mohamud)",
+      "st": "4.5",
+      "difficulty": 0.45,
+      "kind": "concept"
+    },
+    {
+      "id": "TB_VL_INDEPCONTRACTOR_GENERAL",
+      "label": "General rule: no vicarious liability for torts of independent contractors",
+      "st": "4.5",
+      "difficulty": 0.3,
+      "kind": "concept"
+    },
+    {
+      "id": "TB_VL_INDEPCONTRACTOR_EXCEPTIONS",
+      "label": "Exceptions to no-liability rule for independent contractors: non-delegable duties, extra-hazardous activities, employer's own negligence in selection (Honeywill and Stein v Larkin Bros)",
+      "st": "4.5",
+      "difficulty": 0.5,
+      "kind": "concept"
+    },
+    {
+      "id": "TB_CN_DEF",
+      "label": "Contributory negligence: definition - claimant partly at fault for own harm (Law Reform (Contributory Negligence) Act 1945)",
+      "st": "4.6",
+      "difficulty": 0.3,
+      "kind": "concept"
+    },
+    {
+      "id": "TB_CN_APPORTION",
+      "label": "Contributory negligence: apportionment of damages according to claimant's share of responsibility (s.1 1945 Act)",
+      "st": "4.6",
+      "difficulty": 0.35,
+      "kind": "procedure"
+    },
+    {
+      "id": "TB_CN_CASES_ADULT",
+      "label": "Contributory negligence applied: seatbelt/standard of care cases (Froom v Butcher)",
+      "st": "4.6",
+      "difficulty": 0.4,
+      "kind": "application"
+    },
+    {
+      "id": "TB_CN_CASES_CHILD",
+      "label": "Contributory negligence applied: reduced standard expected of children (Gough v Thorne)",
+      "st": "4.6",
+      "difficulty": 0.4,
+      "kind": "application"
+    },
+    {
+      "id": "TB_VNFI_DEF",
+      "label": "Volenti non fit injuria: definition - complete defence where claimant freely and voluntarily consented to risk of harm with full knowledge",
+      "st": "4.6",
+      "difficulty": 0.35,
+      "kind": "concept"
+    },
+    {
+      "id": "TB_VNFI_ELEMENT_KNOWLEDGE",
+      "label": "Volenti element: claimant had full knowledge of the nature and extent of the risk (Morris v Murray)",
+      "st": "4.6",
+      "difficulty": 0.4,
+      "kind": "concept"
+    },
+    {
+      "id": "TB_VNFI_ELEMENT_FREEWILL",
+      "label": "Volenti element: consent given freely and voluntarily, not under duress or from lack of real choice (Smith v Baker)",
+      "st": "4.6",
+      "difficulty": 0.4,
+      "kind": "concept"
+    },
+    {
+      "id": "TB_VNFI_ELEMENT_CONSENT",
+      "label": "Volenti element: claimant's agreement/consent to run the risk can be express or implied by conduct (ICI v Shatwell)",
+      "st": "4.6",
+      "difficulty": 0.4,
+      "kind": "concept"
+    },
+    {
+      "id": "TB_VNFI_RESCUERS",
+      "label": "Volenti: rescuers generally not deemed to have voluntarily accepted risk (Haynes v Harwood)",
+      "st": "4.6",
+      "difficulty": 0.4,
+      "kind": "application"
+    },
+    {
+      "id": "TB_VNFI_EMPLOYEES",
+      "label": "Volenti: limited application to employees due to unequal bargaining power/lack of true free choice (Smith v Baker)",
+      "st": "4.6",
+      "difficulty": 0.4,
+      "kind": "application"
+    },
+    {
+      "id": "TB_NUISANCE_DEF_LINK",
+      "label": "Private nuisance and Rylands v Fletcher: brief recap of the torts these defences apply to",
+      "st": "4.6",
+      "difficulty": 0.25,
+      "kind": "concept"
+    },
+    {
+      "id": "TB_DEF_PRESCRIPTION",
+      "label": "Nuisance defence: prescription - lawful activity carried out for 20+ years without complaint (Sturges v Bridgman)",
+      "st": "4.6",
+      "difficulty": 0.4,
+      "kind": "concept"
+    },
+    {
+      "id": "TB_DEF_STATUTORY_AUTHORITY",
+      "label": "Defence of statutory authority: activity authorised by statute is a defence to nuisance and Rylands v Fletcher (Allen v Gulf Oil Refining)",
+      "st": "4.6",
+      "difficulty": 0.4,
+      "kind": "concept"
+    },
+    {
+      "id": "TB_DEF_CONSENT_NUISANCE_RF",
+      "label": "Defence of consent: claimant consented to the thing likely to cause harm/nuisance (relevant to Rylands v Fletcher)",
+      "st": "4.6",
+      "difficulty": 0.35,
+      "kind": "concept"
+    },
+    {
+      "id": "TB_DEF_CONTRIB_ACT_STRANGER",
+      "label": "Rylands v Fletcher defence: act of a stranger causing the escape, beyond defendant's control (Perry v Kendricks Transport)",
+      "st": "4.6",
+      "difficulty": 0.4,
+      "kind": "concept"
+    },
+    {
+      "id": "TB_DEF_ACT_OF_GOD",
+      "label": "Rylands v Fletcher defence: act of God - natural event that could not reasonably be foreseen or guarded against (Nichols v Marsland)",
+      "st": "4.6",
+      "difficulty": 0.4,
+      "kind": "concept"
+    },
+    {
+      "id": "TB_DEF_COMMON_BENEFIT",
+      "label": "Defence: common benefit - where the thing accumulated benefits both claimant and defendant, no liability under Rylands v Fletcher",
+      "st": "4.6",
+      "difficulty": 0.35,
+      "kind": "concept"
+    },
+    {
+      "id": "TB_DEF_NOTUNREASONABLE",
+      "label": "Nuisance defence considerations: no defence that claimant came to the nuisance (Miller v Jackson) or that activity is beneficial to public (Miller v Jackson)",
+      "st": "4.6",
+      "difficulty": 0.4,
+      "kind": "concept"
+    },
+    {
+      "id": "TB_REM_COMPENSATORY_PURPOSE",
+      "label": "Compensatory damages: purpose - restore claimant to position as if tort had not occurred (restitutio in integrum)",
+      "st": "4.7",
+      "difficulty": 0.3,
+      "kind": "concept"
+    },
+    {
+      "id": "TB_REM_SPECIAL",
+      "label": "Special damages: quantifiable pre-trial financial losses (medical expenses, loss of earnings to date)",
+      "st": "4.7",
+      "difficulty": 0.3,
+      "kind": "concept"
+    },
+    {
+      "id": "TB_REM_GENERAL",
+      "label": "General damages: non-quantifiable losses including pain, suffering, loss of amenity, future loss of earnings",
+      "st": "4.7",
+      "difficulty": 0.35,
+      "kind": "concept"
+    },
+    {
+      "id": "TB_REM_PAINSUFFERING",
+      "label": "General damages: pain and suffering and loss of amenity assessed using tariffs/case comparisons and Judicial College Guidelines",
+      "st": "4.7",
+      "difficulty": 0.35,
+      "kind": "concept"
+    },
+    {
+      "id": "TB_REM_FUTURE_LOSS",
+      "label": "General damages: calculation of future loss of earnings using multiplier/multiplicand approach",
+      "st": "4.7",
+      "difficulty": 0.45,
+      "kind": "procedure"
+    },
+    {
+      "id": "TB_REM_LUMPSUM_STRUCTURED",
+      "label": "Damages payment methods: lump sum award versus structured settlement (periodical payments)",
+      "st": "4.7",
+      "difficulty": 0.35,
+      "kind": "concept"
+    },
+    {
+      "id": "TB_REM_MITIGATION",
+      "label": "Mitigation of loss: claimant has duty to take reasonable steps to reduce/minimise loss suffered (British Westinghouse v Underground Electric Railways)",
+      "st": "4.7",
+      "difficulty": 0.4,
+      "kind": "concept"
+    },
+    {
+      "id": "TB_REM_MITIGATION_EFFECT",
+      "label": "Effect of failure to mitigate: damages reduced to reflect avoidable loss",
+      "st": "4.7",
+      "difficulty": 0.35,
+      "kind": "application"
+    },
+    {
+      "id": "TB_REM_INJUNCTION_DEF",
+      "label": "Injunction: equitable remedy ordering defendant to do or refrain from doing an act",
+      "st": "4.7",
+      "difficulty": 0.3,
+      "kind": "concept"
+    },
+    {
+      "id": "TB_REM_INJUNCTION_PROHIBITORY",
+      "label": "Prohibitory injunction: orders defendant to stop committing/continuing the tort (e.g. stop the nuisance)",
+      "st": "4.7",
+      "difficulty": 0.3,
+      "kind": "concept"
+    },
+    {
+      "id": "TB_REM_INJUNCTION_MANDATORY",
+      "label": "Mandatory injunction: orders defendant to take positive action to undo the effects of the tort",
+      "st": "4.7",
+      "difficulty": 0.3,
+      "kind": "concept"
+    },
+    {
+      "id": "TB_REM_INJUNCTION_DISCRETION",
+      "label": "Injunctions are a discretionary equitable remedy - court considers proportionality and conduct of parties (Kennaway v Thompson; Miller v Jackson)",
+      "st": "4.7",
+      "difficulty": 0.4,
+      "kind": "concept"
+    },
+    {
+      "id": "TB_REM_DAMAGES_IN_LIEU",
+      "label": "Damages in lieu of injunction: court may award damages instead of an injunction under Senior Courts Act 1981 s.50 (Shelfer v City of London Electric Lighting Co)",
+      "st": "4.7",
+      "difficulty": 0.4,
+      "kind": "concept"
+    },
+    {
+      "id": "TB_EVAL_NEG_DUTY",
+      "label": "Evaluation: criticism that the Caparo three-stage test for duty of care is unpredictable and gives courts too much discretion (fair, just and reasonable stage)",
+      "st": "4.8",
+      "difficulty": 0.5,
+      "kind": "evaluation"
+    },
+    {
+      "id": "TB_EVAL_NEG_BREACH",
+      "label": "Evaluation: reasonable man standard in breach is flexible but creates uncertainty in application",
+      "st": "4.8",
+      "difficulty": 0.45,
+      "kind": "evaluation"
+    },
+    {
+      "id": "TB_EVAL_NEG_CAUSATION",
+      "label": "Evaluation: causation tests (but-for, multiple causes, Fairchild exception) criticised as inconsistent and policy-driven",
+      "st": "4.8",
+      "difficulty": 0.5,
+      "kind": "evaluation"
+    },
+    {
+      "id": "TB_EVAL_NEG_REMOTENESS",
+      "label": "Evaluation: Wagon Mound remoteness test provides fairer limit on liability than earlier direct consequence test but 'kind of damage' distinction can be arbitrary (Hughes v Lord Advocate; Jolley v Sutton)",
+      "st": "4.8",
+      "difficulty": 0.5,
+      "kind": "evaluation"
+    },
+    {
+      "id": "TB_EVAL_NEG_PSYCHIATRIC",
+      "label": "Evaluation: psychiatric injury rules (primary/secondary victim distinction, Alcock control mechanisms) criticised as arbitrary and unfair",
+      "st": "4.8",
+      "difficulty": 0.5,
+      "kind": "evaluation"
+    },
+    {
+      "id": "TB_EVAL_NEG_ECONOMICLOSS",
+      "label": "Evaluation: exclusion of pure economic loss and policy limits (Hedley Byrne exception) criticised as inconsistent",
+      "st": "4.8",
+      "difficulty": 0.5,
+      "kind": "evaluation"
+    },
+    {
+      "id": "TB_EVAL_OL_1957",
+      "label": "Evaluation: Occupiers' Liability Act 1957 provides good protection for lawful visitors but definitions (e.g. 'reasonably safe', warnings) leave uncertainty",
+      "st": "4.8",
+      "difficulty": 0.45,
+      "kind": "evaluation"
+    },
+    {
+      "id": "TB_EVAL_OL_1984",
+      "label": "Evaluation: Occupiers' Liability Act 1984 sets a deliberately high threshold for trespassers, criticised for under-protecting vulnerable trespassers (e.g. children)",
+      "st": "4.8",
+      "difficulty": 0.45,
+      "kind": "evaluation"
+    },
+    {
+      "id": "TB_EVAL_NUISANCE_UNCERTAINTY",
+      "label": "Evaluation: private nuisance's reliance on 'reasonable use' balancing test creates unpredictability of outcome",
+      "st": "4.8",
+      "difficulty": 0.45,
+      "kind": "evaluation"
+    },
+    {
+      "id": "TB_EVAL_NUISANCE_LOCALITY",
+      "label": "Evaluation: locality/character of neighbourhood factor criticised as favouring established industrial defendants over new residents",
+      "st": "4.8",
+      "difficulty": 0.45,
+      "kind": "evaluation"
+    },
+    {
+      "id": "TB_EVAL_RF_SCOPE",
+      "label": "Evaluation: narrow scope of Rylands v Fletcher (non-natural use, escape requirements) has limited its practical usefulness post-Transco",
+      "st": "4.8",
+      "difficulty": 0.5,
+      "kind": "evaluation"
+    },
+    {
+      "id": "TB_EVAL_RF_OVERLAP",
+      "label": "Evaluation: significant overlap between Rylands v Fletcher and negligence/nuisance raises question whether tort is still needed",
+      "st": "4.8",
+      "difficulty": 0.5,
+      "kind": "evaluation"
+    },
+    {
+      "id": "TB_EVAL_VL_FAIRNESS",
+      "label": "Evaluation: vicarious liability promotes fairness to claimants by ensuring solvent defendant, spreading loss via insurance",
+      "st": "4.8",
+      "difficulty": 0.4,
+      "kind": "evaluation"
+    },
+    {
+      "id": "TB_EVAL_VL_UNFAIR_EMPLOYER",
+      "label": "Evaluation: vicarious liability can be unfair to employers held liable for unforeseeable/serious wrongdoing they could not have prevented (criticism of close connection test post-Mohamud)",
+      "st": "4.8",
+      "difficulty": 0.5,
+      "kind": "evaluation"
+    },
+    {
+      "id": "TB_EVAL_VL_UNCERTAIN_TESTS",
+      "label": "Evaluation: employment status tests and 'akin to employment' extension create uncertainty over who counts as an employer",
+      "st": "4.8",
+      "difficulty": 0.5,
+      "kind": "evaluation"
+    },
+    {
+      "id": "TB_EVAL_REFORM_GENERAL",
+      "label": "Reform proposals: suggestions for statutory clarification/codification of tort principles (e.g. duty of care, nuisance defences, vicarious liability tests) to improve certainty",
+      "st": "4.8",
+      "difficulty": 0.45,
+      "kind": "evaluation"
+    }
+  ],
+  "edges": [
+    [
+      "TB_VL_NATURE",
+      "TB_VL_JUSTIFY",
+      0.25
+    ],
+    [
+      "TB_VL_NATURE",
+      "TB_VL_REQ",
+      0.3
+    ],
+    [
+      "TB_VL_REQ",
+      "TB_VL_EMPSTATUS_CONTROL",
+      0.3
+    ],
+    [
+      "TB_VL_REQ",
+      "TB_VL_EMPSTATUS_INTEGRATION",
+      0.3
+    ],
+    [
+      "TB_VL_EMPSTATUS_CONTROL",
+      "TB_VL_EMPSTATUS_MULTIPLE",
+      0.35
+    ],
+    [
+      "TB_VL_EMPSTATUS_INTEGRATION",
+      "TB_VL_EMPSTATUS_MULTIPLE",
+      0.35
+    ],
+    [
+      "TB_VL_EMPSTATUS_MULTIPLE",
+      "TB_VL_EMPSTATUS_MODERN",
+      0.45
+    ],
+    [
+      "TB_VL_REQ",
+      "TB_VL_COURSE_GENERAL",
+      0.3
+    ],
+    [
+      "TB_VL_COURSE_GENERAL",
+      "TB_VL_COURSE_UNAUTHORISED_MODE",
+      0.35
+    ],
+    [
+      "TB_VL_COURSE_GENERAL",
+      "TB_VL_COURSE_EXPRESSPROHIBIT",
+      0.4
+    ],
+    [
+      "TB_VL_COURSE_GENERAL",
+      "TB_VL_CLOSECONNECTION_TEST",
+      0.4
+    ],
+    [
+      "TB_VL_CLOSECONNECTION_TEST",
+      "TB_VL_CLOSECONNECTION_APPLY",
+      0.45
+    ],
+    [
+      "TB_VL_COURSE_GENERAL",
+      "TB_VL_FROLIC",
+      0.35
+    ],
+    [
+      "TB_VL_COURSE_GENERAL",
+      "TB_VL_COMMUTING",
+      0.35
+    ],
+    [
+      "TB_VL_CLOSECONNECTION_TEST",
+      "TB_VL_CRIMES",
+      0.4
+    ],
+    [
+      "TB_VL_CLOSECONNECTION_APPLY",
+      "TB_VL_CRIMES",
+      0.35
+    ],
+    [
+      "TB_VL_REQ",
+      "TB_VL_INDEPCONTRACTOR_GENERAL",
+      0.3
+    ],
+    [
+      "TB_VL_INDEPCONTRACTOR_GENERAL",
+      "TB_VL_INDEPCONTRACTOR_EXCEPTIONS",
+      0.4
+    ],
+    [
+      "TB_VL_EMPSTATUS_MULTIPLE",
+      "TB_VL_INDEPCONTRACTOR_GENERAL",
+      0.3
+    ],
+    [
+      "TB_CN_DEF",
+      "TB_CN_APPORTION",
+      0.3
+    ],
+    [
+      "TB_CN_APPORTION",
+      "TB_CN_CASES_ADULT",
+      0.35
+    ],
+    [
+      "TB_CN_APPORTION",
+      "TB_CN_CASES_CHILD",
+      0.35
+    ],
+    [
+      "TB_VNFI_DEF",
+      "TB_VNFI_ELEMENT_KNOWLEDGE",
+      0.3
+    ],
+    [
+      "TB_VNFI_DEF",
+      "TB_VNFI_ELEMENT_FREEWILL",
+      0.3
+    ],
+    [
+      "TB_VNFI_DEF",
+      "TB_VNFI_ELEMENT_CONSENT",
+      0.3
+    ],
+    [
+      "TB_VNFI_ELEMENT_FREEWILL",
+      "TB_VNFI_RESCUERS",
+      0.4
+    ],
+    [
+      "TB_VNFI_ELEMENT_FREEWILL",
+      "TB_VNFI_EMPLOYEES",
+      0.4
+    ],
+    [
+      "TB_NUISANCE_DEF_LINK",
+      "TB_DEF_PRESCRIPTION",
+      0.3
+    ],
+    [
+      "TB_NUISANCE_DEF_LINK",
+      "TB_DEF_STATUTORY_AUTHORITY",
+      0.3
+    ],
+    [
+      "TB_NUISANCE_DEF_LINK",
+      "TB_DEF_NOTUNREASONABLE",
+      0.3
+    ],
+    [
+      "TB_NUISANCE_DEF_LINK",
+      "TB_DEF_CONSENT_NUISANCE_RF",
+      0.3
+    ],
+    [
+      "TB_DEF_STATUTORY_AUTHORITY",
+      "TB_DEF_CONTRIB_ACT_STRANGER",
+      0.3
+    ],
+    [
+      "TB_DEF_CONTRIB_ACT_STRANGER",
+      "TB_DEF_ACT_OF_GOD",
+      0.35
+    ],
+    [
+      "TB_DEF_CONSENT_NUISANCE_RF",
+      "TB_DEF_COMMON_BENEFIT",
+      0.35
+    ],
+    [
+      "TB_REM_COMPENSATORY_PURPOSE",
+      "TB_REM_SPECIAL",
+      0.25
+    ],
+    [
+      "TB_REM_COMPENSATORY_PURPOSE",
+      "TB_REM_GENERAL",
+      0.3
+    ],
+    [
+      "TB_REM_GENERAL",
+      "TB_REM_PAINSUFFERING",
+      0.3
+    ],
+    [
+      "TB_REM_GENERAL",
+      "TB_REM_FUTURE_LOSS",
+      0.4
+    ],
+    [
+      "TB_REM_SPECIAL",
+      "TB_REM_LUMPSUM_STRUCTURED",
+      0.3
+    ],
+    [
+      "TB_REM_FUTURE_LOSS",
+      "TB_REM_LUMPSUM_STRUCTURED",
+      0.3
+    ],
+    [
+      "TB_REM_COMPENSATORY_PURPOSE",
+      "TB_REM_MITIGATION",
+      0.3
+    ],
+    [
+      "TB_REM_MITIGATION",
+      "TB_REM_MITIGATION_EFFECT",
+      0.3
+    ],
+    [
+      "TB_REM_INJUNCTION_DEF",
+      "TB_REM_INJUNCTION_PROHIBITORY",
+      0.25
+    ],
+    [
+      "TB_REM_INJUNCTION_DEF",
+      "TB_REM_INJUNCTION_MANDATORY",
+      0.25
+    ],
+    [
+      "TB_REM_INJUNCTION_PROHIBITORY",
+      "TB_REM_INJUNCTION_DISCRETION",
+      0.35
+    ],
+    [
+      "TB_REM_INJUNCTION_MANDATORY",
+      "TB_REM_INJUNCTION_DISCRETION",
+      0.35
+    ],
+    [
+      "TB_REM_INJUNCTION_DISCRETION",
+      "TB_REM_DAMAGES_IN_LIEU",
+      0.4
+    ],
+    [
+      "TB_EVAL_NEG_DUTY",
+      "TB_EVAL_REFORM_GENERAL",
+      0.35
+    ],
+    [
+      "TB_EVAL_NEG_BREACH",
+      "TB_EVAL_REFORM_GENERAL",
+      0.3
+    ],
+    [
+      "TB_EVAL_NEG_CAUSATION",
+      "TB_EVAL_REFORM_GENERAL",
+      0.35
+    ],
+    [
+      "TB_EVAL_NEG_REMOTENESS",
+      "TB_EVAL_REFORM_GENERAL",
+      0.3
+    ],
+    [
+      "TB_EVAL_NEG_PSYCHIATRIC",
+      "TB_EVAL_REFORM_GENERAL",
+      0.35
+    ],
+    [
+      "TB_EVAL_NEG_ECONOMICLOSS",
+      "TB_EVAL_REFORM_GENERAL",
+      0.35
+    ],
+    [
+      "TB_EVAL_OL_1957",
+      "TB_EVAL_REFORM_GENERAL",
+      0.3
+    ],
+    [
+      "TB_EVAL_OL_1984",
+      "TB_EVAL_REFORM_GENERAL",
+      0.3
+    ],
+    [
+      "TB_EVAL_NUISANCE_UNCERTAINTY",
+      "TB_EVAL_NUISANCE_LOCALITY",
+      0.35
+    ],
+    [
+      "TB_EVAL_NUISANCE_UNCERTAINTY",
+      "TB_EVAL_REFORM_GENERAL",
+      0.3
+    ],
+    [
+      "TB_EVAL_NUISANCE_LOCALITY",
+      "TB_EVAL_REFORM_GENERAL",
+      0.3
+    ],
+    [
+      "TB_EVAL_RF_SCOPE",
+      "TB_EVAL_RF_OVERLAP",
+      0.4
+    ],
+    [
+      "TB_EVAL_RF_OVERLAP",
+      "TB_EVAL_REFORM_GENERAL",
+      0.35
+    ],
+    [
+      "TB_VL_JUSTIFY",
+      "TB_EVAL_VL_FAIRNESS",
+      0.35
+    ],
+    [
+      "TB_VL_CLOSECONNECTION_APPLY",
+      "TB_EVAL_VL_UNFAIR_EMPLOYER",
+      0.45
+    ],
+    [
+      "TB_EVAL_VL_FAIRNESS",
+      "TB_EVAL_VL_UNFAIR_EMPLOYER",
+      0.4
+    ],
+    [
+      "TB_VL_EMPSTATUS_MODERN",
+      "TB_EVAL_VL_UNCERTAIN_TESTS",
+      0.45
+    ],
+    [
+      "TB_EVAL_VL_UNFAIR_EMPLOYER",
+      "TB_EVAL_REFORM_GENERAL",
+      0.3
+    ],
+    [
+      "TB_EVAL_VL_UNCERTAIN_TESTS",
+      "TB_EVAL_REFORM_GENERAL",
+      0.3
+    ]
+  ]
+}

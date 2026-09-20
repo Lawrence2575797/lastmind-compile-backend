@@ -1,0 +1,661 @@
+{
+  "nodes": [
+    {
+      "id": "SK_FACTS",
+      "label": "Identifying key legal facts in a scenario",
+      "subtopic": "0.1 Legal skills and argument",
+      "theme": "Theme 0 - Legal skills: analysing scenarios, applying authority and building arguments",
+      "difficulty": 0.25,
+      "objective": "Identify the material facts within a factual scenario from which legal issues arise.",
+      "essentialPoints": [
+        "Distinguish legally relevant facts from background/irrelevant detail",
+        "Material facts trigger specific legal rules or elements of an offence/tort",
+        "Accurate fact identification is the starting point for all legal analysis"
+      ],
+      "specRefs": [
+        "Analyse a factual scenario by identifying the key facts from which legal issues arise"
+      ],
+      "kind": "procedure",
+      "practicalIds": []
+    },
+    {
+      "id": "SK_ISSUES",
+      "label": "Identifying the legal issue(s) raised by facts",
+      "subtopic": "0.1 Legal skills and argument",
+      "theme": "Theme 0 - Legal skills: analysing scenarios, applying authority and building arguments",
+      "difficulty": 0.3,
+      "objective": "Formulate the precise legal question(s) that the identified facts give rise to.",
+      "essentialPoints": [
+        "Convert material facts into a legal question capable of being answered by a rule",
+        "A scenario may raise multiple distinct issues requiring separate analysis"
+      ],
+      "specRefs": [
+        "Analyse a factual scenario by identifying the key facts from which legal issues arise"
+      ],
+      "kind": "procedure",
+      "practicalIds": []
+    },
+    {
+      "id": "SK_STAT_LITERAL",
+      "label": "Literal rule of statutory interpretation",
+      "subtopic": "0.1 Legal skills and argument",
+      "theme": "Theme 0 - Legal skills: analysing scenarios, applying authority and building arguments",
+      "difficulty": 0.25,
+      "objective": "Apply the literal rule by giving words in a statute their plain, ordinary meaning.",
+      "essentialPoints": [
+        "Words given their plain, grammatical, ordinary meaning even if the result is absurd",
+        "Example: Whiteley v Chappell / LNER v Berriman illustrate literal approach"
+      ],
+      "specRefs": [
+        "Analyse legislation by applying the rules and principles of statutory interpretation"
+      ],
+      "kind": "concept",
+      "practicalIds": []
+    },
+    {
+      "id": "SK_STAT_GOLDEN",
+      "label": "Golden rule of statutory interpretation",
+      "subtopic": "0.1 Legal skills and argument",
+      "theme": "Theme 0 - Legal skills: analysing scenarios, applying authority and building arguments",
+      "difficulty": 0.25,
+      "objective": "Apply the golden rule to modify literal wording where it would produce an absurd result.",
+      "essentialPoints": [
+        "Narrow application: choose between two possible literal meanings",
+        "Wide application: modify wording to avoid an absurd or repugnant outcome (e.g. Re Sigsworth)"
+      ],
+      "specRefs": [
+        "Analyse legislation by applying the rules and principles of statutory interpretation"
+      ],
+      "kind": "concept",
+      "practicalIds": []
+    },
+    {
+      "id": "SK_STAT_MISCHIEF",
+      "label": "Mischief rule of statutory interpretation",
+      "subtopic": "0.1 Legal skills and argument",
+      "theme": "Theme 0 - Legal skills: analysing scenarios, applying authority and building arguments",
+      "difficulty": 0.3,
+      "objective": "Apply the mischief rule by interpreting a statute to remedy the mischief Parliament intended to address (Heydon's Case).",
+      "essentialPoints": [
+        "Look at the gap/mischief in the law before the statute and interpret to suppress it",
+        "Example: Smith v Hughes"
+      ],
+      "specRefs": [
+        "Analyse legislation by applying the rules and principles of statutory interpretation"
+      ],
+      "kind": "concept",
+      "practicalIds": []
+    },
+    {
+      "id": "SK_STAT_PURPOSIVE",
+      "label": "Purposive approach to statutory interpretation",
+      "subtopic": "0.1 Legal skills and argument",
+      "theme": "Theme 0 - Legal skills: analysing scenarios, applying authority and building arguments",
+      "difficulty": 0.3,
+      "objective": "Apply the purposive approach by interpreting a statute in light of Parliament's underlying purpose, including using extraneous aids.",
+      "essentialPoints": [
+        "Broader than mischief rule: asks what Parliament intended the Act to achieve overall",
+        "Example: Jones v Tower Boot Co; influenced by EU-derived and human-rights interpretation duties"
+      ],
+      "specRefs": [
+        "Analyse legislation by applying the rules and principles of statutory interpretation"
+      ],
+      "kind": "concept",
+      "practicalIds": []
+    },
+    {
+      "id": "SK_STAT_AIDS",
+      "label": "Intrinsic and extrinsic aids to interpretation",
+      "subtopic": "0.1 Legal skills and argument",
+      "theme": "Theme 0 - Legal skills: analysing scenarios, applying authority and building arguments",
+      "difficulty": 0.25,
+      "objective": "Use intrinsic aids (within the Act) and extrinsic aids (outside the Act, e.g. Hansard per Pepper v Hart) to support statutory interpretation.",
+      "essentialPoints": [
+        "Intrinsic aids: long/short title, preamble, schedules, definition sections",
+        "Extrinsic aids: dictionaries, Hansard (Pepper v Hart), explanatory notes, prior case law"
+      ],
+      "specRefs": [
+        "Analyse legislation by applying the rules and principles of statutory interpretation"
+      ],
+      "kind": "concept",
+      "practicalIds": []
+    },
+    {
+      "id": "SK_STAT_RULES",
+      "label": "Rules of language (ejusdem generis, expressio unius, noscitur a sociis)",
+      "subtopic": "0.1 Legal skills and argument",
+      "theme": "Theme 0 - Legal skills: analysing scenarios, applying authority and building arguments",
+      "difficulty": 0.35,
+      "objective": "Apply the linguistic canons of construction to interpret ambiguous statutory wording.",
+      "essentialPoints": [
+        "Ejusdem generis: general words following specific words are limited to the same class",
+        "Expressio unius est exclusio alterius: express mention of one thing excludes others",
+        "Noscitur a sociis: a word is known by the company it keeps"
+      ],
+      "specRefs": [
+        "Analyse legislation by applying the rules and principles of statutory interpretation"
+      ],
+      "kind": "concept",
+      "practicalIds": []
+    },
+    {
+      "id": "SK_STAT_APPLY",
+      "label": "Applying statutory interpretation rules to resolve a scenario",
+      "subtopic": "0.1 Legal skills and argument",
+      "theme": "Theme 0 - Legal skills: analysing scenarios, applying authority and building arguments",
+      "difficulty": 0.4,
+      "objective": "Select and apply the appropriate approach(es) to statutory interpretation to determine how a statute applies to a given scenario.",
+      "essentialPoints": [
+        "Different rules can produce different outcomes for the same wording",
+        "Justify choice of approach by reference to statutory wording and context"
+      ],
+      "specRefs": [
+        "Analyse legislation by applying the rules and principles of statutory interpretation"
+      ],
+      "kind": "application",
+      "practicalIds": []
+    },
+    {
+      "id": "SK_PREC_RATIO",
+      "label": "Ratio decidendi as the binding element of a precedent",
+      "subtopic": "0.1 Legal skills and argument",
+      "theme": "Theme 0 - Legal skills: analysing scenarios, applying authority and building arguments",
+      "difficulty": 0.3,
+      "objective": "Identify the ratio decidendi of a case as the legal reasoning that binds future courts.",
+      "essentialPoints": [
+        "Ratio decidendi is the reason for the decision, binding in later cases",
+        "Distinguished from obiter dicta, which is persuasive only"
+      ],
+      "specRefs": [
+        "Analyse case law by applying the doctrine of precedent"
+      ],
+      "kind": "concept",
+      "practicalIds": []
+    },
+    {
+      "id": "SK_PREC_OBITER",
+      "label": "Obiter dicta as persuasive precedent",
+      "subtopic": "0.1 Legal skills and argument",
+      "theme": "Theme 0 - Legal skills: analysing scenarios, applying authority and building arguments",
+      "difficulty": 0.25,
+      "objective": "Identify obiter dicta as statements not forming part of the ratio, which are persuasive but not binding.",
+      "essentialPoints": [
+        "Comments made 'by the way', not necessary to the decision",
+        "May be followed by later courts but carry no binding force"
+      ],
+      "specRefs": [
+        "Analyse case law by applying the doctrine of precedent"
+      ],
+      "kind": "concept",
+      "practicalIds": []
+    },
+    {
+      "id": "SK_PREC_HIERARCHY",
+      "label": "Court hierarchy and binding precedent",
+      "subtopic": "0.1 Legal skills and argument",
+      "theme": "Theme 0 - Legal skills: analysing scenarios, applying authority and building arguments",
+      "difficulty": 0.3,
+      "objective": "Explain how the doctrine of stare decisis operates through the hierarchy of courts, so lower courts are bound by higher courts.",
+      "essentialPoints": [
+        "Supreme Court, Court of Appeal, High Court, lower courts each bind those below",
+        "Supreme Court can depart from its own past decisions (Practice Statement 1966); Court of Appeal generally bound by own decisions subject to Young v Bristol Aeroplane exceptions"
+      ],
+      "specRefs": [
+        "Analyse case law by applying the doctrine of precedent"
+      ],
+      "kind": "concept",
+      "practicalIds": []
+    },
+    {
+      "id": "SK_PREC_DISTINGUISH",
+      "label": "Distinguishing a precedent",
+      "subtopic": "0.1 Legal skills and argument",
+      "theme": "Theme 0 - Legal skills: analysing scenarios, applying authority and building arguments",
+      "difficulty": 0.35,
+      "objective": "Apply the technique of distinguishing to avoid an otherwise binding precedent by identifying material differences in facts.",
+      "essentialPoints": [
+        "A court avoids following a precedent by showing the facts are materially different",
+        "Allows courts flexibility without overruling the earlier case"
+      ],
+      "specRefs": [
+        "Analyse case law by applying the doctrine of precedent"
+      ],
+      "kind": "procedure",
+      "practicalIds": []
+    },
+    {
+      "id": "SK_PREC_OVERRULE",
+      "label": "Overruling and reversing precedent",
+      "subtopic": "0.1 Legal skills and argument",
+      "theme": "Theme 0 - Legal skills: analysing scenarios, applying authority and building arguments",
+      "difficulty": 0.3,
+      "objective": "Distinguish overruling (a later, different case changes the law stated in an earlier case) from reversing (same case, on appeal).",
+      "essentialPoints": [
+        "Overruling: higher court in a later, separate case departs from an earlier decision",
+        "Reversing: appellate court changes the decision of a lower court in the same case"
+      ],
+      "specRefs": [
+        "Analyse case law by applying the doctrine of precedent"
+      ],
+      "kind": "concept",
+      "practicalIds": []
+    },
+    {
+      "id": "SK_PREC_APPLY",
+      "label": "Applying the doctrine of precedent to a scenario",
+      "subtopic": "0.1 Legal skills and argument",
+      "theme": "Theme 0 - Legal skills: analysing scenarios, applying authority and building arguments",
+      "difficulty": 0.4,
+      "objective": "Use identification of ratio, obiter, court hierarchy and techniques of avoidance to determine which precedent governs a given scenario.",
+      "essentialPoints": [
+        "Locate the relevant binding authority from the court hierarchy",
+        "Assess whether it can be distinguished, or whether it has been overruled"
+      ],
+      "specRefs": [
+        "Analyse case law by applying the doctrine of precedent"
+      ],
+      "kind": "application",
+      "practicalIds": []
+    },
+    {
+      "id": "SK_BREAK_RULES",
+      "label": "Breaking legal rules into constituent elements",
+      "subtopic": "0.1 Legal skills and argument",
+      "theme": "Theme 0 - Legal skills: analysing scenarios, applying authority and building arguments",
+      "difficulty": 0.35,
+      "objective": "Decompose a legal rule or test into its individual constituent elements before applying each in turn.",
+      "essentialPoints": [
+        "Legal rules (offences, torts, defences) are composed of separate elements each requiring proof",
+        "Systematic breakdown prevents missing a required element"
+      ],
+      "specRefs": [
+        "Analyse, apply and evaluate the legal rules and principles of each area of law: break them into constituent parts and apply them to a hypothetical scenario"
+      ],
+      "kind": "procedure",
+      "practicalIds": []
+    },
+    {
+      "id": "SK_APPLY_LAW",
+      "label": "Applying legal rules to a hypothetical scenario",
+      "subtopic": "0.1 Legal skills and argument",
+      "theme": "Theme 0 - Legal skills: analysing scenarios, applying authority and building arguments",
+      "difficulty": 0.45,
+      "objective": "Apply each constituent element of a legal rule methodically to the facts of a hypothetical scenario to reach a reasoned conclusion.",
+      "essentialPoints": [
+        "Match facts to each element in turn, supporting each match with authority",
+        "Reach a supported conclusion on whether the rule is satisfied"
+      ],
+      "specRefs": [
+        "Analyse, apply and evaluate the legal rules and principles of each area of law: break them into constituent parts and apply them to a hypothetical scenario"
+      ],
+      "kind": "application",
+      "practicalIds": []
+    },
+    {
+      "id": "SK_EVAL_LAW",
+      "label": "Evaluating legal rules and principles",
+      "subtopic": "0.1 Legal skills and argument",
+      "theme": "Theme 0 - Legal skills: analysing scenarios, applying authority and building arguments",
+      "difficulty": 0.45,
+      "objective": "Evaluate the strengths, weaknesses and possible reform of a legal rule after applying it to a scenario.",
+      "essentialPoints": [
+        "Evaluation goes beyond description to assess fairness, clarity, consistency or need for reform",
+        "Grounded in applied outcome, not abstract rule alone"
+      ],
+      "specRefs": [
+        "Analyse, apply and evaluate the legal rules and principles of each area of law: break them into constituent parts and apply them to a hypothetical scenario"
+      ],
+      "kind": "evaluation",
+      "practicalIds": []
+    },
+    {
+      "id": "SK_ARG_STRUCTURE",
+      "label": "Structuring a clear, logical legal argument",
+      "subtopic": "0.1 Legal skills and argument",
+      "theme": "Theme 0 - Legal skills: analysing scenarios, applying authority and building arguments",
+      "difficulty": 0.35,
+      "objective": "Construct a legal argument with a clear logical structure moving from issue to rule to application to conclusion.",
+      "essentialPoints": [
+        "Follows an issue-rule-application-conclusion structure",
+        "Each step follows logically from the last, avoiding unsupported leaps"
+      ],
+      "specRefs": [
+        "Construct clear, concise and logical legal arguments substantiated by legal authority, using appropriate legal terminology"
+      ],
+      "kind": "procedure",
+      "practicalIds": []
+    },
+    {
+      "id": "SK_ARG_AUTHORITY",
+      "label": "Substantiating arguments with legal authority",
+      "subtopic": "0.1 Legal skills and argument",
+      "theme": "Theme 0 - Legal skills: analysing scenarios, applying authority and building arguments",
+      "difficulty": 0.35,
+      "objective": "Support every legal assertion made in an argument with an appropriate statutory provision or case authority.",
+      "essentialPoints": [
+        "Every rule stated should be backed by a case or statute",
+        "Authority must be relevant and correctly applied, not merely cited"
+      ],
+      "specRefs": [
+        "Construct clear, concise and logical legal arguments substantiated by legal authority, using appropriate legal terminology"
+      ],
+      "kind": "procedure",
+      "practicalIds": []
+    },
+    {
+      "id": "SK_ARG_TERMINOLOGY",
+      "label": "Using appropriate legal terminology",
+      "subtopic": "0.1 Legal skills and argument",
+      "theme": "Theme 0 - Legal skills: analysing scenarios, applying authority and building arguments",
+      "difficulty": 0.2,
+      "objective": "Use precise and correct legal terminology when constructing legal arguments.",
+      "essentialPoints": [
+        "Correct technical vocabulary (e.g. 'ratio', 'mens rea', 'claimant') improves precision and credibility",
+        "Imprecise or lay language can obscure or misstate the legal point"
+      ],
+      "specRefs": [
+        "Construct clear, concise and logical legal arguments substantiated by legal authority, using appropriate legal terminology"
+      ],
+      "kind": "procedure",
+      "practicalIds": []
+    },
+    {
+      "id": "SK_ARG_CONCISE",
+      "label": "Writing concisely in legal argument",
+      "subtopic": "0.1 Legal skills and argument",
+      "theme": "Theme 0 - Legal skills: analysing scenarios, applying authority and building arguments",
+      "difficulty": 0.2,
+      "objective": "Express legal arguments concisely, avoiding irrelevant material and unnecessary repetition.",
+      "essentialPoints": [
+        "Focus only on facts and rules relevant to the identified issue",
+        "Concision aids clarity and effective use of time in an exam response"
+      ],
+      "specRefs": [
+        "Construct clear, concise and logical legal arguments substantiated by legal authority, using appropriate legal terminology"
+      ],
+      "kind": "procedure",
+      "practicalIds": []
+    },
+    {
+      "id": "SK_ARG_NOVEL",
+      "label": "Arguing by analogy where precedent is absent or conflicting",
+      "subtopic": "0.1 Legal skills and argument",
+      "theme": "Theme 0 - Legal skills: analysing scenarios, applying authority and building arguments",
+      "difficulty": 0.5,
+      "objective": "Construct a persuasive legal argument in a novel scenario by reasoning from analogous authority where no clear or consistent precedent exists.",
+      "essentialPoints": [
+        "Identify the closest analogous case(s) or underlying principle to extend by analogy",
+        "Address conflicting lines of authority and justify which should be preferred",
+        "Argument's persuasiveness rests on coherence with existing legal principle, not just assertion"
+      ],
+      "specRefs": [
+        "Construct a persuasive argument where there are no clear or conflicting precedents"
+      ],
+      "kind": "application",
+      "practicalIds": []
+    },
+    {
+      "id": "SK_ARG_PERSPECTIVES",
+      "label": "Identifying different legal perspectives on an issue",
+      "subtopic": "0.1 Legal skills and argument",
+      "theme": "Theme 0 - Legal skills: analysing scenarios, applying authority and building arguments",
+      "difficulty": 0.35,
+      "objective": "Identify the range of differing viewpoints or arguable positions that arise on a contested legal issue.",
+      "essentialPoints": [
+        "Recognise that a legal issue may have more than one reasonably arguable answer",
+        "Consider viewpoints of different parties or schools of legal thought"
+      ],
+      "specRefs": [
+        "Analyse and critically evaluate legal issues by identifying different perspectives, supporting the strongest viewpoint and countering alternatives"
+      ],
+      "kind": "procedure",
+      "practicalIds": []
+    },
+    {
+      "id": "SK_ARG_SUPPORT_STRONGEST",
+      "label": "Supporting the strongest viewpoint with reasoned justification",
+      "subtopic": "0.1 Legal skills and argument",
+      "theme": "Theme 0 - Legal skills: analysing scenarios, applying authority and building arguments",
+      "difficulty": 0.45,
+      "objective": "Select and justify the most defensible viewpoint on a contested legal issue using authority and reasoning.",
+      "essentialPoints": [
+        "Weigh the identified perspectives against strength of supporting authority and principle",
+        "Present a clear, justified conclusion favouring one viewpoint"
+      ],
+      "specRefs": [
+        "Analyse and critically evaluate legal issues by identifying different perspectives, supporting the strongest viewpoint and countering alternatives"
+      ],
+      "kind": "application",
+      "practicalIds": []
+    },
+    {
+      "id": "SK_ARG_COUNTER",
+      "label": "Countering alternative viewpoints",
+      "subtopic": "0.1 Legal skills and argument",
+      "theme": "Theme 0 - Legal skills: analysing scenarios, applying authority and building arguments",
+      "difficulty": 0.45,
+      "objective": "Anticipate and rebut alternative viewpoints to strengthen the overall persuasiveness of a legal argument.",
+      "essentialPoints": [
+        "Directly address weaknesses in opposing arguments rather than ignoring them",
+        "Rebuttal should use authority or logical reasoning, not mere assertion"
+      ],
+      "specRefs": [
+        "Analyse and critically evaluate legal issues by identifying different perspectives, supporting the strongest viewpoint and countering alternatives"
+      ],
+      "kind": "evaluation",
+      "practicalIds": []
+    }
+  ],
+  "edges": [
+    {
+      "from": "SK_FACTS",
+      "to": "SK_ISSUES",
+      "difficulty": 0.25
+    },
+    {
+      "from": "SK_STAT_LITERAL",
+      "to": "SK_STAT_GOLDEN",
+      "difficulty": 0.25
+    },
+    {
+      "from": "SK_STAT_GOLDEN",
+      "to": "SK_STAT_MISCHIEF",
+      "difficulty": 0.25
+    },
+    {
+      "from": "SK_STAT_MISCHIEF",
+      "to": "SK_STAT_PURPOSIVE",
+      "difficulty": 0.3
+    },
+    {
+      "from": "SK_STAT_PURPOSIVE",
+      "to": "SK_STAT_AIDS",
+      "difficulty": 0.25
+    },
+    {
+      "from": "SK_STAT_AIDS",
+      "to": "SK_STAT_RULES",
+      "difficulty": 0.3
+    },
+    {
+      "from": "SK_ISSUES",
+      "to": "SK_STAT_APPLY",
+      "difficulty": 0.3
+    },
+    {
+      "from": "SK_STAT_LITERAL",
+      "to": "SK_STAT_APPLY",
+      "difficulty": 0.3
+    },
+    {
+      "from": "SK_STAT_GOLDEN",
+      "to": "SK_STAT_APPLY",
+      "difficulty": 0.3
+    },
+    {
+      "from": "SK_STAT_MISCHIEF",
+      "to": "SK_STAT_APPLY",
+      "difficulty": 0.3
+    },
+    {
+      "from": "SK_STAT_PURPOSIVE",
+      "to": "SK_STAT_APPLY",
+      "difficulty": 0.3
+    },
+    {
+      "from": "SK_STAT_AIDS",
+      "to": "SK_STAT_APPLY",
+      "difficulty": 0.3
+    },
+    {
+      "from": "SK_STAT_RULES",
+      "to": "SK_STAT_APPLY",
+      "difficulty": 0.35
+    },
+    {
+      "from": "SK_PREC_RATIO",
+      "to": "SK_PREC_OBITER",
+      "difficulty": 0.2
+    },
+    {
+      "from": "SK_PREC_RATIO",
+      "to": "SK_PREC_HIERARCHY",
+      "difficulty": 0.3
+    },
+    {
+      "from": "SK_PREC_HIERARCHY",
+      "to": "SK_PREC_DISTINGUISH",
+      "difficulty": 0.3
+    },
+    {
+      "from": "SK_PREC_HIERARCHY",
+      "to": "SK_PREC_OVERRULE",
+      "difficulty": 0.3
+    },
+    {
+      "from": "SK_ISSUES",
+      "to": "SK_PREC_APPLY",
+      "difficulty": 0.3
+    },
+    {
+      "from": "SK_PREC_RATIO",
+      "to": "SK_PREC_APPLY",
+      "difficulty": 0.3
+    },
+    {
+      "from": "SK_PREC_OBITER",
+      "to": "SK_PREC_APPLY",
+      "difficulty": 0.25
+    },
+    {
+      "from": "SK_PREC_HIERARCHY",
+      "to": "SK_PREC_APPLY",
+      "difficulty": 0.3
+    },
+    {
+      "from": "SK_PREC_DISTINGUISH",
+      "to": "SK_PREC_APPLY",
+      "difficulty": 0.35
+    },
+    {
+      "from": "SK_PREC_OVERRULE",
+      "to": "SK_PREC_APPLY",
+      "difficulty": 0.3
+    },
+    {
+      "from": "SK_ISSUES",
+      "to": "SK_BREAK_RULES",
+      "difficulty": 0.3
+    },
+    {
+      "from": "SK_BREAK_RULES",
+      "to": "SK_APPLY_LAW",
+      "difficulty": 0.35
+    },
+    {
+      "from": "SK_STAT_APPLY",
+      "to": "SK_APPLY_LAW",
+      "difficulty": 0.3
+    },
+    {
+      "from": "SK_PREC_APPLY",
+      "to": "SK_APPLY_LAW",
+      "difficulty": 0.3
+    },
+    {
+      "from": "SK_APPLY_LAW",
+      "to": "SK_EVAL_LAW",
+      "difficulty": 0.4
+    },
+    {
+      "from": "SK_ARG_TERMINOLOGY",
+      "to": "SK_ARG_STRUCTURE",
+      "difficulty": 0.2
+    },
+    {
+      "from": "SK_ARG_CONCISE",
+      "to": "SK_ARG_STRUCTURE",
+      "difficulty": 0.2
+    },
+    {
+      "from": "SK_APPLY_LAW",
+      "to": "SK_ARG_STRUCTURE",
+      "difficulty": 0.35
+    },
+    {
+      "from": "SK_ARG_STRUCTURE",
+      "to": "SK_ARG_AUTHORITY",
+      "difficulty": 0.3
+    },
+    {
+      "from": "SK_PREC_APPLY",
+      "to": "SK_ARG_AUTHORITY",
+      "difficulty": 0.3
+    },
+    {
+      "from": "SK_STAT_APPLY",
+      "to": "SK_ARG_AUTHORITY",
+      "difficulty": 0.3
+    },
+    {
+      "from": "SK_ARG_AUTHORITY",
+      "to": "SK_ARG_NOVEL",
+      "difficulty": 0.4
+    },
+    {
+      "from": "SK_PREC_DISTINGUISH",
+      "to": "SK_ARG_NOVEL",
+      "difficulty": 0.4
+    },
+    {
+      "from": "SK_PREC_OVERRULE",
+      "to": "SK_ARG_NOVEL",
+      "difficulty": 0.4
+    },
+    {
+      "from": "SK_ARG_AUTHORITY",
+      "to": "SK_ARG_PERSPECTIVES",
+      "difficulty": 0.3
+    },
+    {
+      "from": "SK_EVAL_LAW",
+      "to": "SK_ARG_PERSPECTIVES",
+      "difficulty": 0.35
+    },
+    {
+      "from": "SK_ARG_PERSPECTIVES",
+      "to": "SK_ARG_SUPPORT_STRONGEST",
+      "difficulty": 0.35
+    },
+    {
+      "from": "SK_ARG_NOVEL",
+      "to": "SK_ARG_SUPPORT_STRONGEST",
+      "difficulty": 0.35
+    },
+    {
+      "from": "SK_ARG_SUPPORT_STRONGEST",
+      "to": "SK_ARG_COUNTER",
+      "difficulty": 0.4
+    }
+  ]
+}

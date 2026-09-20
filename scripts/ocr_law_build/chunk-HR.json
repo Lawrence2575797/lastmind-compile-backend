@@ -1,0 +1,951 @@
+{
+  "nodes": [
+    {
+      "id": "HR_theory_nature",
+      "label": "Theory of human rights: natural rights vs legal rights and universality",
+      "st": "6.1",
+      "difficulty": 0.35,
+      "kind": "concept"
+    },
+    {
+      "id": "HR_theory_types",
+      "label": "Categories of rights: absolute, limited and qualified rights",
+      "st": "6.1",
+      "difficulty": 0.4,
+      "kind": "concept"
+    },
+    {
+      "id": "HR_rules_outline",
+      "label": "Outline of the rules of human rights law: sources (ECHR, HRA 1998, common law) and their interaction",
+      "st": "6.1",
+      "difficulty": 0.4,
+      "kind": "concept"
+    },
+    {
+      "id": "HR_magna_carta",
+      "label": "Magna Carta 1215: origins of limiting arbitrary state power and due process",
+      "st": "6.2",
+      "difficulty": 0.3,
+      "kind": "concept"
+    },
+    {
+      "id": "HR_bill_of_rights",
+      "label": "Bill of Rights 1688: parliamentary sovereignty and limits on royal power",
+      "st": "6.2",
+      "difficulty": 0.3,
+      "kind": "concept"
+    },
+    {
+      "id": "HR_pre_hra_common_law",
+      "label": "Pre-HRA protection of rights via residual common law liberties and Parliament",
+      "st": "6.2",
+      "difficulty": 0.4,
+      "kind": "concept"
+    },
+    {
+      "id": "HR_echr_history",
+      "label": "History and creation of the European Convention on Human Rights (1950) after WWII",
+      "st": "6.2",
+      "difficulty": 0.3,
+      "kind": "concept"
+    },
+    {
+      "id": "HR_ecthr_history",
+      "label": "History and role of the European Court of Human Rights (Strasbourg), established under the Convention",
+      "st": "6.2",
+      "difficulty": 0.35,
+      "kind": "concept"
+    },
+    {
+      "id": "HR_uk_ratification_pre_hra",
+      "label": "UK ratification of the ECHR (1951) without domestic incorporation before 1998",
+      "st": "6.2",
+      "difficulty": 0.35,
+      "kind": "concept"
+    },
+    {
+      "id": "HR_hra_s2",
+      "label": "HRA 1998 s.2: domestic courts must take into account ECtHR jurisprudence",
+      "st": "6.2",
+      "difficulty": 0.4,
+      "kind": "concept"
+    },
+    {
+      "id": "HR_hra_s3",
+      "label": "HRA 1998 s.3: duty to interpret legislation compatibly with Convention rights so far as possible",
+      "st": "6.2",
+      "difficulty": 0.45,
+      "kind": "concept"
+    },
+    {
+      "id": "HR_hra_s4",
+      "label": "HRA 1998 s.4: declaration of incompatibility where legislation cannot be read compatibly",
+      "st": "6.2",
+      "difficulty": 0.45,
+      "kind": "concept"
+    },
+    {
+      "id": "HR_hra_s6",
+      "label": "HRA 1998 s.6: public authorities must act compatibly with Convention rights",
+      "st": "6.2",
+      "difficulty": 0.4,
+      "kind": "concept"
+    },
+    {
+      "id": "HR_hra_s7_8",
+      "label": "HRA 1998 ss.7-8: right to bring proceedings and remedies for breach of Convention rights",
+      "st": "6.2",
+      "difficulty": 0.4,
+      "kind": "concept"
+    },
+    {
+      "id": "HR_hra_s10",
+      "label": "HRA 1998 s.10: fast-track remedial orders to amend incompatible legislation",
+      "st": "6.2",
+      "difficulty": 0.4,
+      "kind": "concept"
+    },
+    {
+      "id": "HR_hra_s19",
+      "label": "HRA 1998 s.19: ministerial statements of compatibility for new Bills",
+      "st": "6.2",
+      "difficulty": 0.35,
+      "kind": "concept"
+    },
+    {
+      "id": "HR_hra_impact_domestic",
+      "label": "Impact of the HRA 1998: 'bringing rights home' and enabling domestic enforcement of Convention rights",
+      "st": "6.2",
+      "difficulty": 0.4,
+      "kind": "application"
+    },
+    {
+      "id": "HR_devolution_scotland",
+      "label": "Scotland Act 1998: Convention rights entrenched as a limit on the Scottish Parliament's legislative competence",
+      "st": "6.2",
+      "difficulty": 0.45,
+      "kind": "concept"
+    },
+    {
+      "id": "HR_devolution_wales",
+      "label": "Government of Wales Act 2006: Convention rights entrenched as a limit on the Senedd's legislative competence",
+      "st": "6.2",
+      "difficulty": 0.45,
+      "kind": "concept"
+    },
+    {
+      "id": "HR_devolution_ni",
+      "label": "Northern Ireland Act 1998: Convention rights entrenched as a limit on the Assembly's legislative competence",
+      "st": "6.2",
+      "difficulty": 0.45,
+      "kind": "concept"
+    },
+    {
+      "id": "HR_hra_entrenchment_eval",
+      "label": "Significance of HRA entrenchment in devolution: harder to repeal/amend Convention protection in devolved nations than in Westminster legislation",
+      "st": "6.2",
+      "difficulty": 0.5,
+      "kind": "evaluation"
+    },
+    {
+      "id": "HR_art5",
+      "label": "Article 5: right to liberty and security of the person",
+      "st": "6.3",
+      "difficulty": 0.35,
+      "kind": "concept"
+    },
+    {
+      "id": "HR_art5_lawful_grounds",
+      "label": "Article 5(1): permitted grounds for lawful deprivation of liberty (e.g. lawful arrest, conviction)",
+      "st": "6.3",
+      "difficulty": 0.4,
+      "kind": "concept"
+    },
+    {
+      "id": "HR_art5_procedural",
+      "label": "Article 5(2)-(5): procedural safeguards - information on arrest, prompt court appearance, compensation for unlawful detention",
+      "st": "6.3",
+      "difficulty": 0.4,
+      "kind": "concept"
+    },
+    {
+      "id": "HR_art6",
+      "label": "Article 6: right to a fair trial",
+      "st": "6.3",
+      "difficulty": 0.35,
+      "kind": "concept"
+    },
+    {
+      "id": "HR_art6_civil_criminal",
+      "label": "Article 6: distinction between civil and criminal proceedings and applicable guarantees",
+      "st": "6.3",
+      "difficulty": 0.4,
+      "kind": "concept"
+    },
+    {
+      "id": "HR_art6_elements",
+      "label": "Article 6 elements: independent/impartial tribunal, public hearing, reasonable time, presumption of innocence",
+      "st": "6.3",
+      "difficulty": 0.45,
+      "kind": "concept"
+    },
+    {
+      "id": "HR_art8",
+      "label": "Article 8: right to respect for private and family life, home and correspondence",
+      "st": "6.3",
+      "difficulty": 0.35,
+      "kind": "concept"
+    },
+    {
+      "id": "HR_art8_qualified",
+      "label": "Article 8 is a qualified right subject to Article 8(2) restrictions",
+      "st": "6.3",
+      "difficulty": 0.4,
+      "kind": "concept"
+    },
+    {
+      "id": "HR_art10",
+      "label": "Article 10: right to freedom of expression",
+      "st": "6.3",
+      "difficulty": 0.35,
+      "kind": "concept"
+    },
+    {
+      "id": "HR_art10_qualified",
+      "label": "Article 10 is a qualified right subject to Article 10(2) restrictions",
+      "st": "6.3",
+      "difficulty": 0.4,
+      "kind": "concept"
+    },
+    {
+      "id": "HR_art11",
+      "label": "Article 11: freedom of peaceful assembly and association",
+      "st": "6.3",
+      "difficulty": 0.35,
+      "kind": "concept"
+    },
+    {
+      "id": "HR_art11_qualified",
+      "label": "Article 11 is a qualified right subject to Article 11(2) restrictions",
+      "st": "6.3",
+      "difficulty": 0.4,
+      "kind": "concept"
+    },
+    {
+      "id": "HR_absolute_vs_qualified_application",
+      "label": "Applying the absolute/limited/qualified rights classification to Articles 5, 6, 8, 10 and 11",
+      "st": "6.3",
+      "difficulty": 0.45,
+      "kind": "application"
+    },
+    {
+      "id": "HR_restrictions_test",
+      "label": "Test for permitted restrictions: prescribed by law, legitimate aim, necessary in a democratic society, proportionate",
+      "st": "6.3",
+      "difficulty": 0.5,
+      "kind": "concept"
+    },
+    {
+      "id": "HR_margin_of_appreciation",
+      "label": "Margin of appreciation: deference given to states in applying Convention restrictions",
+      "st": "6.3",
+      "difficulty": 0.45,
+      "kind": "concept"
+    },
+    {
+      "id": "HR_derogation",
+      "label": "Article 15: derogation from Convention rights in times of war or public emergency",
+      "st": "6.3",
+      "difficulty": 0.4,
+      "kind": "concept"
+    },
+    {
+      "id": "HR_restrict_public_order",
+      "label": "Public order offences as a domestic restriction on Article 11/10 rights (Public Order Act 1986)",
+      "st": "6.4",
+      "difficulty": 0.45,
+      "kind": "application"
+    },
+    {
+      "id": "HR_restrict_police_powers",
+      "label": "Police powers (PACE 1984: stop and search, arrest, detention) as a restriction on Article 5 rights",
+      "st": "6.4",
+      "difficulty": 0.45,
+      "kind": "application"
+    },
+    {
+      "id": "HR_restrict_interception",
+      "label": "Interception of communications (Investigatory Powers Act 2016) as a restriction on Article 8 rights",
+      "st": "6.4",
+      "difficulty": 0.45,
+      "kind": "application"
+    },
+    {
+      "id": "HR_restrict_confidentiality",
+      "label": "Duty of confidentiality (breach of confidence) as a restriction protecting/limiting Article 8 and Article 10 rights",
+      "st": "6.4",
+      "difficulty": 0.45,
+      "kind": "application"
+    },
+    {
+      "id": "HR_restrict_obscenity",
+      "label": "Obscenity law (Obscene Publications Act 1959) as a restriction on Article 10 rights",
+      "st": "6.4",
+      "difficulty": 0.45,
+      "kind": "application"
+    },
+    {
+      "id": "HR_restrict_defamation",
+      "label": "Tort of defamation (Defamation Act 2013) as a restriction balancing Article 10 against reputation/Article 8",
+      "st": "6.4",
+      "difficulty": 0.5,
+      "kind": "application"
+    },
+    {
+      "id": "HR_restrict_trespass",
+      "label": "Tort of trespass as a restriction on Article 11 (assembly) and Article 8 rights",
+      "st": "6.4",
+      "difficulty": 0.45,
+      "kind": "application"
+    },
+    {
+      "id": "HR_restrict_harassment",
+      "label": "Harassment law (Protection from Harassment Act 1997) as a restriction balancing Article 10/11 against Article 8",
+      "st": "6.4",
+      "difficulty": 0.45,
+      "kind": "application"
+    },
+    {
+      "id": "HR_role_domestic_courts",
+      "label": "Role of domestic courts in enforcing human rights: applying ss.3, 4 and 6 HRA in litigation",
+      "st": "6.5",
+      "difficulty": 0.45,
+      "kind": "concept"
+    },
+    {
+      "id": "HR_jr_grounds",
+      "label": "Judicial review grounds: illegality, irrationality and procedural impropriety (GCHQ case)",
+      "st": "6.5",
+      "difficulty": 0.5,
+      "kind": "concept"
+    },
+    {
+      "id": "HR_jr_standing_procedure",
+      "label": "Judicial review procedure: standing (sufficient interest), permission stage, time limits, remedies (quashing, mandatory, prohibiting orders)",
+      "st": "6.5",
+      "difficulty": 0.5,
+      "kind": "procedure"
+    },
+    {
+      "id": "HR_jr_hr_route",
+      "label": "Judicial review as the procedural route for challenging public authority breaches of Convention rights under s.6 HRA",
+      "st": "6.5",
+      "difficulty": 0.5,
+      "kind": "application"
+    },
+    {
+      "id": "HR_ecthr_role",
+      "label": "Role of the ECtHR: hearing individual petitions after exhaustion of domestic remedies (Article 34/35)",
+      "st": "6.5",
+      "difficulty": 0.45,
+      "kind": "concept"
+    },
+    {
+      "id": "HR_ecthr_judgments_effect",
+      "label": "Effect of ECtHR judgments: declaratory, not directly enforceable in domestic law, but binding on the state under Article 46",
+      "st": "6.5",
+      "difficulty": 0.5,
+      "kind": "concept"
+    },
+    {
+      "id": "HR_committee_of_ministers",
+      "label": "Role of the Committee of Ministers in supervising execution of ECtHR judgments",
+      "st": "6.5",
+      "difficulty": 0.4,
+      "kind": "concept"
+    },
+    {
+      "id": "HR_eval_hra_success_domestic",
+      "label": "Evaluation: HRA 1998 successfully 'brought rights home', enabling cheaper/faster domestic enforcement",
+      "st": "6.6",
+      "difficulty": 0.45,
+      "kind": "evaluation"
+    },
+    {
+      "id": "HR_eval_s4_no_force",
+      "label": "Evaluation: s.4 declarations of incompatibility do not invalidate legislation, leaving Parliament free to ignore them",
+      "st": "6.6",
+      "difficulty": 0.5,
+      "kind": "evaluation"
+    },
+    {
+      "id": "HR_eval_parliamentary_sovereignty",
+      "label": "Evaluation: HRA preserves parliamentary sovereignty, unlike an entrenched bill of rights, limiting judicial power to protect rights",
+      "st": "6.6",
+      "difficulty": 0.5,
+      "kind": "evaluation"
+    },
+    {
+      "id": "HR_eval_s3_judicial_overreach",
+      "label": "Evaluation: s.3 interpretive duty risks judicial law-making beyond Parliament's intention (e.g. Ghaidan v Godin-Mendoza)",
+      "st": "6.6",
+      "difficulty": 0.55,
+      "kind": "evaluation"
+    },
+    {
+      "id": "HR_eval_devolution_protection",
+      "label": "Evaluation: entrenchment of Convention rights in devolution statutes gives stronger protection than in England",
+      "st": "6.6",
+      "difficulty": 0.5,
+      "kind": "evaluation"
+    },
+    {
+      "id": "HR_eval_margin_inconsistency",
+      "label": "Evaluation: margin of appreciation leads to inconsistent protection of rights across Convention states",
+      "st": "6.6",
+      "difficulty": 0.5,
+      "kind": "evaluation"
+    },
+    {
+      "id": "HR_eval_ecthr_delay",
+      "label": "Evaluation: ECtHR suffers from case backlog and delay undermining effective remedy",
+      "st": "6.6",
+      "difficulty": 0.45,
+      "kind": "evaluation"
+    },
+    {
+      "id": "HR_eval_ecthr_no_enforcement",
+      "label": "Evaluation: ECtHR lacks direct enforcement power, relying on state compliance and Committee of Ministers pressure",
+      "st": "6.6",
+      "difficulty": 0.5,
+      "kind": "evaluation"
+    },
+    {
+      "id": "HR_eval_restrictions_balance",
+      "label": "Evaluation: qualified rights restrictions can be used to justify excessive state interference (e.g. wide 'necessary in a democratic society' test)",
+      "st": "6.6",
+      "difficulty": 0.5,
+      "kind": "evaluation"
+    },
+    {
+      "id": "HR_eval_jr_limited",
+      "label": "Evaluation: judicial review's limited grounds/remedies restrict effective challenge to rights-infringing decisions",
+      "st": "6.6",
+      "difficulty": 0.5,
+      "kind": "evaluation"
+    },
+    {
+      "id": "HR_eval_repeal_bill_of_rights",
+      "label": "Reform proposal: replacing/repealing the HRA with a British Bill of Rights",
+      "st": "6.6",
+      "difficulty": 0.5,
+      "kind": "evaluation"
+    },
+    {
+      "id": "HR_eval_entrenched_reform",
+      "label": "Reform proposal: fully entrenching human rights protection in a written constitution beyond Parliament's easy amendment",
+      "st": "6.6",
+      "difficulty": 0.5,
+      "kind": "evaluation"
+    },
+    {
+      "id": "HR_eval_hra_public_awareness",
+      "label": "Evaluation: limited public awareness/understanding of HRA rights undermines its practical protective effect",
+      "st": "6.6",
+      "difficulty": 0.4,
+      "kind": "evaluation"
+    }
+  ],
+  "edges": [
+    [
+      "HR_theory_nature",
+      "HR_theory_types",
+      0.3
+    ],
+    [
+      "HR_theory_types",
+      "HR_rules_outline",
+      0.35
+    ],
+    [
+      "HR_rules_outline",
+      "HR_echr_history",
+      0.3
+    ],
+    [
+      "HR_magna_carta",
+      "HR_bill_of_rights",
+      0.25
+    ],
+    [
+      "HR_bill_of_rights",
+      "HR_pre_hra_common_law",
+      0.3
+    ],
+    [
+      "HR_pre_hra_common_law",
+      "HR_uk_ratification_pre_hra",
+      0.3
+    ],
+    [
+      "HR_echr_history",
+      "HR_ecthr_history",
+      0.3
+    ],
+    [
+      "HR_ecthr_history",
+      "HR_uk_ratification_pre_hra",
+      0.3
+    ],
+    [
+      "HR_uk_ratification_pre_hra",
+      "HR_hra_s2",
+      0.35
+    ],
+    [
+      "HR_hra_s2",
+      "HR_hra_s3",
+      0.35
+    ],
+    [
+      "HR_hra_s3",
+      "HR_hra_s4",
+      0.4
+    ],
+    [
+      "HR_hra_s3",
+      "HR_hra_s6",
+      0.35
+    ],
+    [
+      "HR_hra_s6",
+      "HR_hra_s7_8",
+      0.35
+    ],
+    [
+      "HR_hra_s4",
+      "HR_hra_s10",
+      0.35
+    ],
+    [
+      "HR_hra_s2",
+      "HR_hra_s19",
+      0.3
+    ],
+    [
+      "HR_hra_s3",
+      "HR_hra_impact_domestic",
+      0.4
+    ],
+    [
+      "HR_hra_s4",
+      "HR_hra_impact_domestic",
+      0.4
+    ],
+    [
+      "HR_hra_s6",
+      "HR_hra_impact_domestic",
+      0.4
+    ],
+    [
+      "HR_hra_s7_8",
+      "HR_hra_impact_domestic",
+      0.4
+    ],
+    [
+      "HR_hra_impact_domestic",
+      "HR_devolution_scotland",
+      0.4
+    ],
+    [
+      "HR_hra_impact_domestic",
+      "HR_devolution_wales",
+      0.4
+    ],
+    [
+      "HR_hra_impact_domestic",
+      "HR_devolution_ni",
+      0.4
+    ],
+    [
+      "HR_devolution_scotland",
+      "HR_hra_entrenchment_eval",
+      0.4
+    ],
+    [
+      "HR_devolution_wales",
+      "HR_hra_entrenchment_eval",
+      0.4
+    ],
+    [
+      "HR_devolution_ni",
+      "HR_hra_entrenchment_eval",
+      0.4
+    ],
+    [
+      "HR_hra_s4",
+      "HR_hra_entrenchment_eval",
+      0.4
+    ],
+    [
+      "HR_rules_outline",
+      "HR_art5",
+      0.3
+    ],
+    [
+      "HR_theory_types",
+      "HR_absolute_vs_qualified_application",
+      0.35
+    ],
+    [
+      "HR_art5",
+      "HR_art5_lawful_grounds",
+      0.3
+    ],
+    [
+      "HR_art5",
+      "HR_art5_procedural",
+      0.3
+    ],
+    [
+      "HR_art5",
+      "HR_absolute_vs_qualified_application",
+      0.3
+    ],
+    [
+      "HR_rules_outline",
+      "HR_art6",
+      0.3
+    ],
+    [
+      "HR_art6",
+      "HR_art6_civil_criminal",
+      0.3
+    ],
+    [
+      "HR_art6",
+      "HR_art6_elements",
+      0.35
+    ],
+    [
+      "HR_art6",
+      "HR_absolute_vs_qualified_application",
+      0.3
+    ],
+    [
+      "HR_rules_outline",
+      "HR_art8",
+      0.3
+    ],
+    [
+      "HR_art8",
+      "HR_art8_qualified",
+      0.3
+    ],
+    [
+      "HR_art8_qualified",
+      "HR_absolute_vs_qualified_application",
+      0.3
+    ],
+    [
+      "HR_rules_outline",
+      "HR_art10",
+      0.3
+    ],
+    [
+      "HR_art10",
+      "HR_art10_qualified",
+      0.3
+    ],
+    [
+      "HR_art10_qualified",
+      "HR_absolute_vs_qualified_application",
+      0.3
+    ],
+    [
+      "HR_rules_outline",
+      "HR_art11",
+      0.3
+    ],
+    [
+      "HR_art11",
+      "HR_art11_qualified",
+      0.3
+    ],
+    [
+      "HR_art11_qualified",
+      "HR_absolute_vs_qualified_application",
+      0.3
+    ],
+    [
+      "HR_art8_qualified",
+      "HR_restrictions_test",
+      0.4
+    ],
+    [
+      "HR_art10_qualified",
+      "HR_restrictions_test",
+      0.4
+    ],
+    [
+      "HR_art11_qualified",
+      "HR_restrictions_test",
+      0.4
+    ],
+    [
+      "HR_restrictions_test",
+      "HR_margin_of_appreciation",
+      0.4
+    ],
+    [
+      "HR_restrictions_test",
+      "HR_derogation",
+      0.35
+    ],
+    [
+      "HR_art11",
+      "HR_restrict_public_order",
+      0.4
+    ],
+    [
+      "HR_restrictions_test",
+      "HR_restrict_public_order",
+      0.4
+    ],
+    [
+      "HR_art5",
+      "HR_restrict_police_powers",
+      0.4
+    ],
+    [
+      "HR_art5_procedural",
+      "HR_restrict_police_powers",
+      0.4
+    ],
+    [
+      "HR_art8",
+      "HR_restrict_interception",
+      0.4
+    ],
+    [
+      "HR_restrictions_test",
+      "HR_restrict_interception",
+      0.4
+    ],
+    [
+      "HR_art8",
+      "HR_restrict_confidentiality",
+      0.4
+    ],
+    [
+      "HR_art10",
+      "HR_restrict_confidentiality",
+      0.4
+    ],
+    [
+      "HR_restrictions_test",
+      "HR_restrict_confidentiality",
+      0.4
+    ],
+    [
+      "HR_art10",
+      "HR_restrict_obscenity",
+      0.4
+    ],
+    [
+      "HR_restrictions_test",
+      "HR_restrict_obscenity",
+      0.4
+    ],
+    [
+      "HR_art10",
+      "HR_restrict_defamation",
+      0.4
+    ],
+    [
+      "HR_art8",
+      "HR_restrict_defamation",
+      0.4
+    ],
+    [
+      "HR_art11",
+      "HR_restrict_trespass",
+      0.4
+    ],
+    [
+      "HR_art8",
+      "HR_restrict_trespass",
+      0.4
+    ],
+    [
+      "HR_art10",
+      "HR_restrict_harassment",
+      0.4
+    ],
+    [
+      "HR_art11",
+      "HR_restrict_harassment",
+      0.4
+    ],
+    [
+      "HR_art8",
+      "HR_restrict_harassment",
+      0.4
+    ],
+    [
+      "HR_hra_s6",
+      "HR_role_domestic_courts",
+      0.4
+    ],
+    [
+      "HR_hra_s3",
+      "HR_role_domestic_courts",
+      0.4
+    ],
+    [
+      "HR_hra_s4",
+      "HR_role_domestic_courts",
+      0.4
+    ],
+    [
+      "HR_jr_grounds",
+      "HR_jr_standing_procedure",
+      0.4
+    ],
+    [
+      "HR_jr_standing_procedure",
+      "HR_jr_hr_route",
+      0.4
+    ],
+    [
+      "HR_hra_s6",
+      "HR_jr_hr_route",
+      0.4
+    ],
+    [
+      "HR_role_domestic_courts",
+      "HR_jr_hr_route",
+      0.35
+    ],
+    [
+      "HR_ecthr_history",
+      "HR_ecthr_role",
+      0.35
+    ],
+    [
+      "HR_ecthr_role",
+      "HR_ecthr_judgments_effect",
+      0.4
+    ],
+    [
+      "HR_ecthr_judgments_effect",
+      "HR_committee_of_ministers",
+      0.35
+    ],
+    [
+      "HR_hra_impact_domestic",
+      "HR_eval_hra_success_domestic",
+      0.4
+    ],
+    [
+      "HR_hra_s4",
+      "HR_eval_s4_no_force",
+      0.4
+    ],
+    [
+      "HR_hra_entrenchment_eval",
+      "HR_eval_s4_no_force",
+      0.4
+    ],
+    [
+      "HR_hra_s4",
+      "HR_eval_parliamentary_sovereignty",
+      0.45
+    ],
+    [
+      "HR_hra_s3",
+      "HR_eval_parliamentary_sovereignty",
+      0.4
+    ],
+    [
+      "HR_hra_s3",
+      "HR_eval_s3_judicial_overreach",
+      0.5
+    ],
+    [
+      "HR_hra_entrenchment_eval",
+      "HR_eval_devolution_protection",
+      0.45
+    ],
+    [
+      "HR_eval_parliamentary_sovereignty",
+      "HR_eval_devolution_protection",
+      0.4
+    ],
+    [
+      "HR_margin_of_appreciation",
+      "HR_eval_margin_inconsistency",
+      0.45
+    ],
+    [
+      "HR_ecthr_role",
+      "HR_eval_ecthr_delay",
+      0.4
+    ],
+    [
+      "HR_ecthr_judgments_effect",
+      "HR_eval_ecthr_no_enforcement",
+      0.45
+    ],
+    [
+      "HR_committee_of_ministers",
+      "HR_eval_ecthr_no_enforcement",
+      0.4
+    ],
+    [
+      "HR_restrictions_test",
+      "HR_eval_restrictions_balance",
+      0.45
+    ],
+    [
+      "HR_margin_of_appreciation",
+      "HR_eval_restrictions_balance",
+      0.4
+    ],
+    [
+      "HR_jr_standing_procedure",
+      "HR_eval_jr_limited",
+      0.45
+    ],
+    [
+      "HR_jr_hr_route",
+      "HR_eval_jr_limited",
+      0.4
+    ],
+    [
+      "HR_eval_s4_no_force",
+      "HR_eval_repeal_bill_of_rights",
+      0.45
+    ],
+    [
+      "HR_eval_parliamentary_sovereignty",
+      "HR_eval_repeal_bill_of_rights",
+      0.4
+    ],
+    [
+      "HR_eval_s4_no_force",
+      "HR_eval_entrenched_reform",
+      0.45
+    ],
+    [
+      "HR_eval_devolution_protection",
+      "HR_eval_entrenched_reform",
+      0.4
+    ],
+    [
+      "HR_eval_hra_success_domestic",
+      "HR_eval_hra_public_awareness",
+      0.4
+    ]
+  ]
+}

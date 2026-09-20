@@ -1,0 +1,954 @@
+{
+ "edges": [
+  {
+   "from": "SK_STAT_LITERAL",
+   "to": "LA_SI_LIT_DEF",
+   "difficulty": 0.3
+  },
+  {
+   "from": "SK_STAT_GOLDEN",
+   "to": "LA_SI_GOLD_DEF",
+   "difficulty": 0.3
+  },
+  {
+   "from": "SK_STAT_MISCHIEF",
+   "to": "LA_SI_MISCHIEF_DEF",
+   "difficulty": 0.3
+  },
+  {
+   "from": "SK_STAT_PURPOSIVE",
+   "to": "LA_SI_PURPOSIVE_DEF",
+   "difficulty": 0.3
+  },
+  {
+   "from": "SK_STAT_AIDS",
+   "to": "LA_AID_INTRINSIC",
+   "difficulty": 0.3
+  },
+  {
+   "from": "SK_STAT_RULES",
+   "to": "LA_AID_LANG_EJUSDEM",
+   "difficulty": 0.3
+  },
+  {
+   "from": "SK_STAT_APPLY",
+   "to": "LA_SI_PURPOSIVE_DEF",
+   "difficulty": 0.3
+  },
+  {
+   "from": "SK_PREC_RATIO",
+   "to": "LB_RATIO",
+   "difficulty": 0.3
+  },
+  {
+   "from": "SK_PREC_OBITER",
+   "to": "LB_OBITER",
+   "difficulty": 0.3
+  },
+  {
+   "from": "SK_PREC_HIERARCHY",
+   "to": "LB_HIER",
+   "difficulty": 0.3
+  },
+  {
+   "from": "SK_PREC_DISTINGUISH",
+   "to": "LB_DISTINGUISH",
+   "difficulty": 0.3
+  },
+  {
+   "from": "SK_PREC_OVERRULE",
+   "to": "LB_OVERRULE",
+   "difficulty": 0.3
+  },
+  {
+   "from": "SK_PREC_APPLY",
+   "to": "LB_STARE",
+   "difficulty": 0.3
+  },
+  {
+   "from": "NL_CIVIL_DEF",
+   "to": "LS_CC_JUR",
+   "difficulty": 0.3
+  },
+  {
+   "from": "NL_CRIM_DEF",
+   "to": "LS_OFF_SUM",
+   "difficulty": 0.3
+  },
+  {
+   "from": "LS_WOOLF",
+   "to": "LS_TRACK_SMALL",
+   "difficulty": 0.2
+  },
+  {
+   "from": "LS_ALLOCATION",
+   "to": "LS_TRACK_MULTI",
+   "difficulty": 0.2
+  },
+  {
+   "from": "LS_CC_JUR",
+   "to": "LS_CIV_APPEALS",
+   "difficulty": 0.2
+  },
+  {
+   "from": "LS_HC_JUR",
+   "to": "LS_LEAPFROG",
+   "difficulty": 0.2
+  },
+  {
+   "from": "LS_ADR_ARB",
+   "to": "LS_EV_ARB_COST",
+   "difficulty": 0.2
+  },
+  {
+   "from": "LS_ADR_MED",
+   "to": "LS_EV_ADR_PRIVACY",
+   "difficulty": 0.2
+  },
+  {
+   "from": "LS_ADR_MED",
+   "to": "LS_EV_ADR_NOENFORCE",
+   "difficulty": 0.2
+  },
+  {
+   "from": "LS_TRIBUNALS",
+   "to": "LS_EV_TRIBUNAL_ACCESS",
+   "difficulty": 0.2
+  },
+  {
+   "from": "LS_ODR",
+   "to": "LS_EV_ODR_ACCESS",
+   "difficulty": 0.2
+  },
+  {
+   "from": "LS_PRETRIAL",
+   "to": "LS_EV_COST_CIV",
+   "difficulty": 0.2
+  },
+  {
+   "from": "LS_PRETRIAL",
+   "to": "LS_EV_DELAY_CIV",
+   "difficulty": 0.2
+  },
+  {
+   "from": "LS_PRETRIAL",
+   "to": "LS_EV_FORMALITY",
+   "difficulty": 0.2
+  },
+  {
+   "from": "LS_OFF_EW",
+   "to": "LS_MODE_TRIAL",
+   "difficulty": 0.2
+  },
+  {
+   "from": "LS_MAG_JUR",
+   "to": "LS_CRIM_APPEAL_MAG",
+   "difficulty": 0.2
+  },
+  {
+   "from": "LS_CROWN_JUR",
+   "to": "LS_CRIM_APPEAL_CROWN",
+   "difficulty": 0.2
+  },
+  {
+   "from": "LS_CRIM_APPEAL_CROWN",
+   "to": "LS_CRIM_APPEAL_SC",
+   "difficulty": 0.2
+  },
+  {
+   "from": "LS_CRIM_APPEAL_CROWN",
+   "to": "LS_AG_REF",
+   "difficulty": 0.2
+  },
+  {
+   "from": "LS_CRIM_APPEAL_CROWN",
+   "to": "LS_CCRC",
+   "difficulty": 0.2
+  },
+  {
+   "from": "LS_SENT_CUSTODIAL",
+   "to": "LS_EV_CUSTODIAL",
+   "difficulty": 0.2
+  },
+  {
+   "from": "LS_SENT_COMMUNITY",
+   "to": "LS_EV_COMMUNITY",
+   "difficulty": 0.2
+  },
+  {
+   "from": "LS_SENT_FINE",
+   "to": "LS_EV_FINE",
+   "difficulty": 0.2
+  },
+  {
+   "from": "LS_SENT_DISCHARGE",
+   "to": "LS_EV_DISCHARGE",
+   "difficulty": 0.2
+  },
+  {
+   "from": "LS_MAG_ROLE",
+   "to": "LS_EV_MAG_REPRESENT",
+   "difficulty": 0.2
+  },
+  {
+   "from": "LS_MAG_ROLE",
+   "to": "LS_EV_MAG_TRAINING",
+   "difficulty": 0.2
+  },
+  {
+   "from": "LS_MAG_ROLE",
+   "to": "LS_EV_MAG_BIAS",
+   "difficulty": 0.2
+  },
+  {
+   "from": "LS_JURY_ROLE",
+   "to": "LS_EV_JURY_REPRESENT",
+   "difficulty": 0.2
+  },
+  {
+   "from": "LS_JURY_ROLE",
+   "to": "LS_EV_JURY_SECRECY",
+   "difficulty": 0.2
+  },
+  {
+   "from": "LS_JURY_ROLE",
+   "to": "LS_EV_JURY_COMPREHEND",
+   "difficulty": 0.2
+  },
+  {
+   "from": "LS_JURY_ROLE",
+   "to": "LS_EV_JURY_NOBBLING",
+   "difficulty": 0.2
+  },
+  {
+   "from": "LS_JURY_ROLE",
+   "to": "LS_EV_JURY_COST",
+   "difficulty": 0.2
+  },
+  {
+   "from": "LS_SOLICITOR",
+   "to": "LS_EV_SOLICITOR_BARRISTER",
+   "difficulty": 0.2
+  },
+  {
+   "from": "LS_CILEX",
+   "to": "LS_EV_CILEX_ACCESS",
+   "difficulty": 0.2
+  },
+  {
+   "from": "LS_TECH_LEGAL",
+   "to": "LS_EV_TECH_ACCESS",
+   "difficulty": 0.2
+  },
+  {
+   "from": "LS_GLOBAL_LEGAL",
+   "to": "LS_EV_GLOBAL_COMPETITION",
+   "difficulty": 0.2
+  },
+  {
+   "from": "LS_JAC",
+   "to": "LS_EV_JAC_DIVERSITY",
+   "difficulty": 0.2
+  },
+  {
+   "from": "LS_JUD_INDEPENDENCE",
+   "to": "LS_EV_JUDGE_INDEPENDENCE_STRONG",
+   "difficulty": 0.2
+  },
+  {
+   "from": "LS_JUD_INDEPENDENCE",
+   "to": "LS_EV_JUDGE_INDEPENDENCE_WEAK",
+   "difficulty": 0.2
+  },
+  {
+   "from": "LS_SOP",
+   "to": "LS_JUD_INDEPENDENCE",
+   "difficulty": 0.2
+  },
+  {
+   "from": "LS_CRA2005",
+   "to": "LS_JAC",
+   "difficulty": 0.2
+  },
+  {
+   "from": "LS_LEGALAID_HIST",
+   "to": "LS_LASPO",
+   "difficulty": 0.2
+  },
+  {
+   "from": "LS_LASPO",
+   "to": "LS_CIV_LEGALAID_SCOPE",
+   "difficulty": 0.2
+  },
+  {
+   "from": "LS_LASPO",
+   "to": "LS_EV_LASPO_CUTS",
+   "difficulty": 0.2
+  },
+  {
+   "from": "LS_CRIM_LEGALAID",
+   "to": "LS_EV_CRIMLEGALAID_ACCESS",
+   "difficulty": 0.2
+  },
+  {
+   "from": "LS_CFA",
+   "to": "LS_EV_CFA_ACCESS",
+   "difficulty": 0.2
+  },
+  {
+   "from": "LS_PRIVATE_FUND",
+   "to": "LS_EV_PRIVATE_INEQUALITY",
+   "difficulty": 0.2
+  },
+  {
+   "from": "LS_CAB",
+   "to": "LS_EV_ADVICEAGENCY_LIMIT",
+   "difficulty": 0.2
+  },
+  {
+   "from": "LS_PRO_BONO",
+   "to": "LS_EV_PROBONO_LIMIT",
+   "difficulty": 0.2
+  },
+  {
+   "from": "CA_RULES",
+   "to": "CA_CLASS",
+   "difficulty": 0.2
+  },
+  {
+   "from": "CA_ARVOL",
+   "to": "CA_OMISSION",
+   "difficulty": 0.2
+  },
+  {
+   "from": "CA_OMISSION",
+   "to": "CA_DUTY_STAT",
+   "difficulty": 0.2
+  },
+  {
+   "from": "CA_CAUSE_FACT",
+   "to": "CA_CAUSE_LEGAL",
+   "difficulty": 0.2
+  },
+  {
+   "from": "CA_CAUSE_LEGAL",
+   "to": "CA_NAI",
+   "difficulty": 0.2
+  },
+  {
+   "from": "CA_NAI",
+   "to": "CA_NAI_MED",
+   "difficulty": 0.2
+  },
+  {
+   "from": "CA_NAI",
+   "to": "CA_NAI_VICTIM",
+   "difficulty": 0.2
+  },
+  {
+   "from": "CA_MR_RECKLESS",
+   "to": "CA_MR_NEGLIGENCE",
+   "difficulty": 0.2
+  },
+  {
+   "from": "CA_MR_INTENTION_DIRECT",
+   "to": "CA_MR_INTENTION_OBLIQUE",
+   "difficulty": 0.2
+  },
+  {
+   "from": "CA_TRANSFERRED_MALICE",
+   "to": "CA_TM_LIMIT",
+   "difficulty": 0.2
+  },
+  {
+   "from": "CA_COINCIDENCE",
+   "to": "CA_COINCIDENCE_CONTINUING",
+   "difficulty": 0.2
+  },
+  {
+   "from": "CA_COINCIDENCE_CONTINUING",
+   "to": "CA_COINCIDENCE_SERIES",
+   "difficulty": 0.2
+  },
+  {
+   "from": "CA_MR_INTENTION_OBLIQUE",
+   "to": "CA_MURDER_MR",
+   "difficulty": 0.3
+  },
+  {
+   "from": "CA_CAUSE_LEGAL",
+   "to": "CA_MURDER_AR",
+   "difficulty": 0.3
+  },
+  {
+   "from": "CA_MURDER_DEF",
+   "to": "CA_MURDER_SENTENCE",
+   "difficulty": 0.2
+  },
+  {
+   "from": "CA_MURDER_DEF",
+   "to": "CA_LOC_INTRO",
+   "difficulty": 0.2
+  },
+  {
+   "from": "CA_LOC_INTRO",
+   "to": "CA_LOC_LOSS",
+   "difficulty": 0.2
+  },
+  {
+   "from": "CA_LOC_LOSS",
+   "to": "CA_LOC_NOTREVENGE",
+   "difficulty": 0.2
+  },
+  {
+   "from": "CA_LOC_TRIGGER",
+   "to": "CA_LOC_TRIGGER_FEAR",
+   "difficulty": 0.2
+  },
+  {
+   "from": "CA_LOC_TRIGGER",
+   "to": "CA_LOC_TRIGGER_JUSTSENSE",
+   "difficulty": 0.2
+  },
+  {
+   "from": "CA_LOC_TRIGGER_JUSTSENSE",
+   "to": "CA_LOC_EXCLUDE_SEXJEAL",
+   "difficulty": 0.2
+  },
+  {
+   "from": "CA_LOC_TRIGGER",
+   "to": "CA_LOC_EXCLUDE_INCITED",
+   "difficulty": 0.2
+  },
+  {
+   "from": "CA_LOC_NOTREVENGE",
+   "to": "CA_LOC_TOLERANCE",
+   "difficulty": 0.2
+  },
+  {
+   "from": "CA_MURDER_DEF",
+   "to": "CA_DR_INTRO",
+   "difficulty": 0.2
+  },
+  {
+   "from": "CA_DR_INTRO",
+   "to": "CA_DR_ABNORMALITY",
+   "difficulty": 0.2
+  },
+  {
+   "from": "CA_DR_ABNORMALITY",
+   "to": "CA_DR_IMPAIRMENT",
+   "difficulty": 0.2
+  },
+  {
+   "from": "CA_DR_IMPAIRMENT",
+   "to": "CA_DR_EXPLANATION",
+   "difficulty": 0.2
+  },
+  {
+   "from": "CA_CAUSE_LEGAL",
+   "to": "CA_UAM_CAUSED",
+   "difficulty": 0.2
+  },
+  {
+   "from": "CA_UAM_INTRO",
+   "to": "CA_UAM_UNLAWFUL",
+   "difficulty": 0.2
+  },
+  {
+   "from": "CA_UAM_UNLAWFUL",
+   "to": "CA_UAM_DANGEROUS",
+   "difficulty": 0.2
+  },
+  {
+   "from": "CA_UAM_DANGEROUS",
+   "to": "CA_UAM_CAUSED",
+   "difficulty": 0.2
+  },
+  {
+   "from": "CA_GNM_INTRO",
+   "to": "CA_GNM_DUTY",
+   "difficulty": 0.2
+  },
+  {
+   "from": "CA_GNM_DUTY",
+   "to": "CA_GNM_BREACH",
+   "difficulty": 0.2
+  },
+  {
+   "from": "CA_GNM_BREACH",
+   "to": "CA_GNM_CAUSED",
+   "difficulty": 0.2
+  },
+  {
+   "from": "CA_GNM_CAUSED",
+   "to": "CA_GNM_GROSS",
+   "difficulty": 0.2
+  },
+  {
+   "from": "CA_S39_BATTERY",
+   "to": "CA_ABH_S47",
+   "difficulty": 0.2
+  },
+  {
+   "from": "CA_ABH_S47",
+   "to": "CA_ABH_HARM",
+   "difficulty": 0.2
+  },
+  {
+   "from": "CA_ABH_HARM",
+   "to": "CA_S20_WOUND",
+   "difficulty": 0.2
+  },
+  {
+   "from": "CA_S20_WOUND",
+   "to": "CA_S20_WOUND_DEF",
+   "difficulty": 0.2
+  },
+  {
+   "from": "CA_S20_WOUND",
+   "to": "CA_S20_GBH_DEF",
+   "difficulty": 0.2
+  },
+  {
+   "from": "CA_S20_GBH_DEF",
+   "to": "CA_S20_MR",
+   "difficulty": 0.2
+  },
+  {
+   "from": "CA_S20_MR",
+   "to": "CA_S18_WOUND_GBH",
+   "difficulty": 0.2
+  },
+  {
+   "from": "CA_S18_WOUND_GBH",
+   "to": "CA_S18_MR",
+   "difficulty": 0.2
+  },
+  {
+   "from": "CA_THEFT_APPROP",
+   "to": "CA_THEFT_PROPERTY",
+   "difficulty": 0.2
+  },
+  {
+   "from": "CA_THEFT_PROPERTY",
+   "to": "CA_THEFT_BELONGING",
+   "difficulty": 0.2
+  },
+  {
+   "from": "CA_THEFT_BELONGING",
+   "to": "CA_THEFT_BELONGING_OBLIG",
+   "difficulty": 0.2
+  },
+  {
+   "from": "CA_THEFT_BELONGING",
+   "to": "CA_THEFT_DISHONEST",
+   "difficulty": 0.2
+  },
+  {
+   "from": "CA_THEFT_DISHONEST",
+   "to": "CA_THEFT_INTENTION",
+   "difficulty": 0.2
+  },
+  {
+   "from": "CA_THEFT_DEF",
+   "to": "CA_ROBBERY_DEF",
+   "difficulty": 0.2
+  },
+  {
+   "from": "CA_ROBBERY_DEF",
+   "to": "CA_ROBBERY_FORCE",
+   "difficulty": 0.2
+  },
+  {
+   "from": "CA_ROBBERY_FORCE",
+   "to": "CA_ROBBERY_NEXUS",
+   "difficulty": 0.2
+  },
+  {
+   "from": "CA_THEFT_DEF",
+   "to": "CA_BURGLARY_9A",
+   "difficulty": 0.2
+  },
+  {
+   "from": "CA_BURGLARY_9A",
+   "to": "CA_BURGLARY_9B",
+   "difficulty": 0.2
+  },
+  {
+   "from": "CA_BURGLARY_9A",
+   "to": "CA_BURGLARY_ENTRY",
+   "difficulty": 0.2
+  },
+  {
+   "from": "CA_BURGLARY_ENTRY",
+   "to": "CA_BURGLARY_BUILDING",
+   "difficulty": 0.2
+  },
+  {
+   "from": "CA_BURGLARY_BUILDING",
+   "to": "CA_BURGLARY_TRESPASS",
+   "difficulty": 0.2
+  },
+  {
+   "from": "CA_MR_INTENTION_DIRECT",
+   "to": "CB_INS_RULE",
+   "difficulty": 0.3
+  },
+  {
+   "from": "CB_INS_RULE",
+   "to": "CB_INS_DISEASE",
+   "difficulty": 0.2
+  },
+  {
+   "from": "CB_INS_DISEASE",
+   "to": "CB_INS_NOTKNOW1",
+   "difficulty": 0.2
+  },
+  {
+   "from": "CB_INS_NOTKNOW1",
+   "to": "CB_INS_NOTKNOW2",
+   "difficulty": 0.2
+  },
+  {
+   "from": "CB_INS_NOTKNOW2",
+   "to": "CB_INS_CASES",
+   "difficulty": 0.2
+  },
+  {
+   "from": "CB_INS_CASES",
+   "to": "CB_INS_VERDICT",
+   "difficulty": 0.2
+  },
+  {
+   "from": "CA_INVOL",
+   "to": "CB_AUTO_DEF",
+   "difficulty": 0.2
+  },
+  {
+   "from": "CB_INS_DISEASE",
+   "to": "CB_AUTO_EXTERNAL",
+   "difficulty": 0.2
+  },
+  {
+   "from": "CB_AUTO_EXTERNAL",
+   "to": "CB_AUTO_SELFINDUCED",
+   "difficulty": 0.2
+  },
+  {
+   "from": "CB_AUTO_SELFINDUCED",
+   "to": "CB_AUTO_EFFECT",
+   "difficulty": 0.2
+  },
+  {
+   "from": "CA_MR_RECKLESS",
+   "to": "CB_INTOX_VOLDEF",
+   "difficulty": 0.2
+  },
+  {
+   "from": "CB_INTOX_VOLDEF",
+   "to": "CB_INTOX_SPECGEN",
+   "difficulty": 0.2
+  },
+  {
+   "from": "CB_INTOX_SPECGEN",
+   "to": "CB_INTOX_VOL_SPECIFIC",
+   "difficulty": 0.2
+  },
+  {
+   "from": "CB_INTOX_SPECGEN",
+   "to": "CB_INTOX_VOL_BASIC",
+   "difficulty": 0.2
+  },
+  {
+   "from": "CB_INTOX_VOLDEF",
+   "to": "CB_INTOX_INVOL",
+   "difficulty": 0.2
+  },
+  {
+   "from": "CB_INTOX_INVOL",
+   "to": "CB_INTOX_INVOL_TEST",
+   "difficulty": 0.2
+  },
+  {
+   "from": "CB_INTOX_VOL_SPECIFIC",
+   "to": "CB_INTOX_MISTAKE",
+   "difficulty": 0.2
+  },
+  {
+   "from": "CB_INTOX_MISTAKE",
+   "to": "CB_SD_INTOXMISTAKE_LINK",
+   "difficulty": 0.2
+  },
+  {
+   "from": "CB_SD_STATUTE",
+   "to": "CB_SD_TRIGGER",
+   "difficulty": 0.2
+  },
+  {
+   "from": "CB_SD_TRIGGER",
+   "to": "CB_SD_SUBJTEST",
+   "difficulty": 0.2
+  },
+  {
+   "from": "CB_SD_SUBJTEST",
+   "to": "CB_SD_NECESSARY",
+   "difficulty": 0.2
+  },
+  {
+   "from": "CB_SD_NECESSARY",
+   "to": "CB_SD_REASONABLE",
+   "difficulty": 0.2
+  },
+  {
+   "from": "CB_SD_REASONABLE",
+   "to": "CB_SD_PREEMPTIVE",
+   "difficulty": 0.2
+  },
+  {
+   "from": "CB_SD_REASONABLE",
+   "to": "CB_SD_EFFECT",
+   "difficulty": 0.2
+  },
+  {
+   "from": "CB_DURESS_THREATS_DEF",
+   "to": "CB_DURESS_GRAHAM",
+   "difficulty": 0.2
+  },
+  {
+   "from": "CB_DURESS_GRAHAM",
+   "to": "CB_DURESS_IMMEDIACY",
+   "difficulty": 0.2
+  },
+  {
+   "from": "CB_DURESS_IMMEDIACY",
+   "to": "CB_DURESS_NEXUS",
+   "difficulty": 0.2
+  },
+  {
+   "from": "CB_DURESS_NEXUS",
+   "to": "CB_DURESS_VOLASSOC",
+   "difficulty": 0.2
+  },
+  {
+   "from": "CA_MURDER_DEF",
+   "to": "CB_DURESS_EXCLUDED",
+   "difficulty": 0.2
+  },
+  {
+   "from": "CB_DURESS_GRAHAM",
+   "to": "CB_DOC_DEF",
+   "difficulty": 0.2
+  },
+  {
+   "from": "CB_DOC_DEF",
+   "to": "CB_DOC_CASES",
+   "difficulty": 0.2
+  },
+  {
+   "from": "CB_DOC_DEF",
+   "to": "CB_NECESSITY_DEF",
+   "difficulty": 0.2
+  },
+  {
+   "from": "CA_ABH_S47",
+   "to": "CB_CONSENT_GENRULE",
+   "difficulty": 0.2
+  },
+  {
+   "from": "CB_CONSENT_GENRULE",
+   "to": "CB_CONSENT_VALID",
+   "difficulty": 0.2
+  },
+  {
+   "from": "CB_CONSENT_VALID",
+   "to": "CB_CONSENT_CAPACITY",
+   "difficulty": 0.2
+  },
+  {
+   "from": "CB_CONSENT_CAPACITY",
+   "to": "CB_CONSENT_EXCEPTIONS",
+   "difficulty": 0.2
+  },
+  {
+   "from": "CB_CONSENT_EXCEPTIONS",
+   "to": "CB_CONSENT_BROWN_APP",
+   "difficulty": 0.2
+  },
+  {
+   "from": "CA_MR_INTENTION_DIRECT",
+   "to": "CB_ATT_STATUTE",
+   "difficulty": 0.2
+  },
+  {
+   "from": "CB_ATT_STATUTE",
+   "to": "CB_ATT_AR",
+   "difficulty": 0.2
+  },
+  {
+   "from": "CB_ATT_AR",
+   "to": "CB_ATT_AR_CASES",
+   "difficulty": 0.2
+  },
+  {
+   "from": "CB_ATT_STATUTE",
+   "to": "CB_ATT_MR",
+   "difficulty": 0.2
+  },
+  {
+   "from": "CB_ATT_MR",
+   "to": "CB_ATT_MR_CONDITIONAL",
+   "difficulty": 0.2
+  },
+  {
+   "from": "CB_ATT_MR",
+   "to": "CB_ATT_MR_RESULT",
+   "difficulty": 0.2
+  },
+  {
+   "from": "CB_ATT_MR",
+   "to": "CB_ATT_IMPOSSIBILITY",
+   "difficulty": 0.2
+  },
+  {
+   "from": "CB_ATT_IMPOSSIBILITY",
+   "to": "CB_ATT_IMPOSSIBILITY_ANDERTON",
+   "difficulty": 0.2
+  },
+  {
+   "from": "CA_ABH_S47",
+   "to": "CB_EVAL_OATP_GBH_ARCHAIC",
+   "difficulty": 0.2
+  },
+  {
+   "from": "CA_S18_MR",
+   "to": "CB_EVAL_OATP_HIERARCHY",
+   "difficulty": 0.2
+  },
+  {
+   "from": "CA_ABH_S47",
+   "to": "CB_EVAL_OATP_MENSREA_MISMATCH",
+   "difficulty": 0.2
+  },
+  {
+   "from": "CB_EVAL_OATP_HIERARCHY",
+   "to": "CB_EVAL_OATP_REFORM",
+   "difficulty": 0.2
+  },
+  {
+   "from": "CA_TRANSFERRED_MALICE",
+   "to": "CB_EVAL_OATP_TRANSFERRED",
+   "difficulty": 0.2
+  },
+  {
+   "from": "CA_THEFT_DISHONEST",
+   "to": "CB_EVAL_PROP_THEFT_DISHONESTY",
+   "difficulty": 0.2
+  },
+  {
+   "from": "CA_THEFT_APPROP",
+   "to": "CB_EVAL_PROP_APPROPRIATION",
+   "difficulty": 0.2
+  },
+  {
+   "from": "CA_ROBBERY_FORCE",
+   "to": "CB_EVAL_PROP_ROBBERY_FORCE",
+   "difficulty": 0.2
+  },
+  {
+   "from": "CA_BURGLARY_9B",
+   "to": "CB_EVAL_PROP_BURGLARY_OVERLAP",
+   "difficulty": 0.2
+  },
+  {
+   "from": "CB_INS_RULE",
+   "to": "CB_EVAL_DEF_INSANITY_OUTDATED",
+   "difficulty": 0.2
+  },
+  {
+   "from": "CB_AUTO_EXTERNAL",
+   "to": "CB_EVAL_DEF_INSANITY_INTERNALEXT",
+   "difficulty": 0.2
+  },
+  {
+   "from": "CB_EVAL_DEF_INSANITY_OUTDATED",
+   "to": "CB_EVAL_DEF_INSANITY_REFORM",
+   "difficulty": 0.2
+  },
+  {
+   "from": "CB_INTOX_VOL_BASIC",
+   "to": "CB_EVAL_DEF_INTOX_MAJEWSKI_UNFAIR",
+   "difficulty": 0.2
+  },
+  {
+   "from": "CB_INTOX_SPECGEN",
+   "to": "CB_EVAL_DEF_INTOX_SPECBASIC_UNCLEAR",
+   "difficulty": 0.2
+  },
+  {
+   "from": "CB_SD_REASONABLE",
+   "to": "CB_EVAL_DEF_SD_HOUSEHOLDER",
+   "difficulty": 0.2
+  },
+  {
+   "from": "CB_DURESS_EXCLUDED",
+   "to": "CB_EVAL_DEF_DURESS_MURDEREXCL",
+   "difficulty": 0.2
+  },
+  {
+   "from": "CB_EVAL_DEF_DURESS_MURDEREXCL",
+   "to": "CB_EVAL_DEF_DURESS_REFORM",
+   "difficulty": 0.2
+  },
+  {
+   "from": "CB_CONSENT_BROWN_APP",
+   "to": "CB_EVAL_DEF_CONSENT_PATERNALISM",
+   "difficulty": 0.2
+  },
+  {
+   "from": "CB_CONSENT_EXCEPTIONS",
+   "to": "CB_EVAL_DEF_CONSENT_INCONSISTENT",
+   "difficulty": 0.2
+  },
+  {
+   "from": "CB_ATT_AR_CASES",
+   "to": "CB_EVAL_ATT_MORETHANPREP_VAGUE",
+   "difficulty": 0.2
+  },
+  {
+   "from": "CB_ATT_IMPOSSIBILITY_ANDERTON",
+   "to": "CB_EVAL_ATT_IMPOSSIBILITY_JUST",
+   "difficulty": 0.2
+  },
+  {
+   "from": "LA_GREEN",
+   "to": "LA_WHITE",
+   "difficulty": 0.2
+  },
+  {
+   "from": "LA_WHITE",
+   "to": "LA_BILL_PUBLIC",
+   "difficulty": 0.2
+  },
+  {
+   "from": "LA_BILL_PUBLIC",
+   "to": "LA_STAGE_FIRST",
+   "difficulty": 0.2
+  },
+  {
+   "from": "LA_STAGE_FIRST",
+   "to": "LA_STAGE_SECOND",
+   "difficulty": 0.2
+  },
+  {
+   "from": "LA_STAGE_SECOND",
+   "to": "LA_STAGE_COMMITTEE",
+   "difficulty": 0.2
+  },
+  {
+   "from": "LA_STAGE_COMMITTEE",
+   "to": "LA_STAGE_REPORT",
+   "difficulty": 0.2
+  }
+ ]
+}

@@ -134,7 +134,13 @@ export function normaliseGraph(raw: any, creatorCase: any, concepts: { label: st
       sentences: arr<any>(v.sentences, 6).map((s) => ({ minScore: Number(s?.minScore) || 0, text: str(s?.text, 900) })).filter((s) => s.text).sort((a, b) => a.minScore - b.minScore),
       notGuiltyText: str(v.notGuiltyText, 600) || 'Members of the jury, thank you. The defendant is discharged and free to leave.',
     },
-    curriculum: arr<any>(raw?.curriculum, 60).map((c) => ({ label: str(c?.label, 300), arisesWhen: str(c?.arisesWhen, 400) })).filter((c) => conceptLabels.has(c.label)),
+    curriculum: arr<any>(raw?.curriculum, 60).map((c) => {
+      const stage = oneOf(c?.calledUponAt?.stage, ['interview', 'opening', 'witness', 'closing'] as const, 'closing');
+      const characterId = charIds.has(str(c?.calledUponAt?.characterId, 40)) ? str(c?.calledUponAt?.characterId, 40) : '';
+      // A witness- or interview-based trigger with no valid person cannot fire, so it falls back to the closing speech.
+      const usable = (stage === 'witness' && characterId) || (stage === 'interview') || stage === 'opening';
+      return { label: str(c?.label, 300), arisesWhen: str(c?.arisesWhen, 400), calledUponAt: { stage: usable ? stage : 'closing', characterId: usable && stage !== 'opening' ? characterId : '' } };
+    }).filter((c) => conceptLabels.has(c.label)),
   };
 }
 

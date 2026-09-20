@@ -7,6 +7,7 @@ import { CreateCapError, assertCanSpend, getUsedUsd, recordSpend, spendSummary }
 import { parseModelJson } from '../services/jsonParsing';
 import { InsufficientLocksError } from '../services/lockService';
 import { startJob } from './createSimulation';
+import { generatePortraitCutout, generateEvidencePicture, downloadAsDataUrl } from '../services/createImages';
 import { CASE_GRAPH_COMPILE_PROMPT, CHARACTER_TURN_PROMPT, CLOSING_ASSESSMENT_PROMPT } from '../constants/playtestPrompts';
 
 const router = Router();
@@ -208,9 +209,11 @@ export function buildCharacterInput(graph: any, ch: any, b: Record<string, any>,
   const factById = new Map<string, any>(graph.facts.map((f: any) => [f.id, f]));
   const evById = new Map<string, any>(graph.evidence.map((e: any) => [e.id, e]));
   const shownIds = arr<string>(b.presentedEvidenceIds, 30).map((x) => str(x, 40)).filter((x) => evById.has(x));
-  const justId = str(b.presentedEvidenceId, 40);
-  const just = evById.get(justId);
-  if (just && !shownIds.includes(justId)) shownIds.push(justId);
+  // Several exhibits can be put to a witness at once (presentedEvidenceIdsNow); the single-id form still works.
+  const nowIds = arr<string>(b.presentedEvidenceIdsNow, 8).map((x) => str(x, 40)).filter((x) => evById.has(x));
+  const legacyId = str(b.presentedEvidenceId, 40);
+  if (legacyId && evById.has(legacyId) && !nowIds.includes(legacyId)) nowIds.push(legacyId);
+  nowIds.forEach((id) => { if (!shownIds.includes(id)) shownIds.push(id); });
   const history = arr<any>(b.history, 30).slice(-10).map((h) => ({ from: h?.from === 'them' ? 'you' : 'the barrister', text: str(h?.text, 700) }));
   const userContent = JSON.stringify({
     you: { name: ch.name, role: ch.role, demeanour: ch.demeanour, howYouSpeak: ch.speech },
@@ -226,8 +229,8 @@ export function buildCharacterInput(graph: any, ch: any, b: Record<string, any>,
     reliability: ch.mind.reliability,
     honesty: ch.mind.honesty,
     candourWithYourOwnLawyer: ch.mind.candourWithOwnCounsel,
-    evidenceShownSoFar: shownIds.filter((id) => id !== justId).map((id) => evById.get(id)?.title),
-    evidenceJustPutToYou: just ? { title: just.title, kind: just.kind, content: flatten(just.content), bearsOnFactIds: just.factIds } : null,
+    evidenceShownSoFar: shownIds.filter((id) => !nowIds.includes(id)).map((id) => evById.get(id)?.title),
+    evidenceJustPutToYou: nowIds.length ? nowIds.map((id) => { const e = evById.get(id); return { title: e.title, kind: e.kind, content: flatten(e.content), bearsOnFactIds: e.factIds }; }) : null,
     conversationSoFar: history,
     latestQuestion: message,
   });
@@ -320,44 +323,47 @@ router.post('/playtest/assess', costlyEndpointLimiter, async (req: Request, res:
   res.json({ jobId });
 });
 
-// POST /playtest/portrait { description } -> { image: PNG data URL with a transparent background } | 501 when no image key is set
-// One canonical waist-up figure per character. It is generated once, kept with the case, and reused in every scene (and as the
-// character card), so a person always looks like the same person. The background is removed so the page can place them inside a
-// scene, behind that scene's own foreground.
-const CUTOUT_STYLE = 'Cinematic painterly digital art, waist-up portrait of one person facing the camera, arms relaxed at their sides, warm low interior light, painterly texture, highly detailed, plain flat neutral mid-grey backdrop, centred in frame, no text, no logos, not based on any real person.';
+// POST /playtest/portrait { description } -> { image: data URL, transparent } | 501 when no image key is set
+// One canonical waist-up figure per character, generated once and kept with the case so a person always looks like the same person.
+// Several candidates are made and a quick vision check keeps one whose clothing faces the camera (see services/createImages.ts).
 router.post('/playtest/portrait', costlyEndpointLimiter, async (req: Request, res: Response) => {
   const key = process.env.FAL_KEY;
   if (!key) return res.status(501).json({ error: 'portraits not configured' });
   const userId = req.userId as string;
   const description = str((req.body ?? {}).description, 500);
   if (!description) return res.status(400).json({ error: 'description is required' });
-  const headers = { Authorization: `Key ${key}`, 'Content-Type': 'application/json' };
   try {
-    assertCanSpend(userId, 0.02, Number((req.body ?? {}).clientUsedUsd) || undefined);
-    const gen = await fetch('https://fal.run/fal-ai/flux/schnell', {
-      method: 'POST', headers,
-      body: JSON.stringify({ prompt: `${CUTOUT_STYLE} ${description}`, image_size: 'portrait_4_3', num_images: 1 }),
-    });
-    if (!gen.ok) throw new Error(`image service ${gen.status}`);
-    const genJson: any = await gen.json();
-    const srcUrl = genJson?.images?.[0]?.url;
-    if (!srcUrl) throw new Error('no image returned');
-    // Background removal; if it is unavailable the plain picture is still used (as a card).
-    let outUrl = srcUrl; let transparent = false;
-    try {
-      const cut = await fetch('https://fal.run/fal-ai/imageutils/rembg', { method: 'POST', headers, body: JSON.stringify({ image_url: srcUrl }) });
-      if (cut.ok) { const cutJson: any = await cut.json(); if (cutJson?.image?.url) { outUrl = cutJson.image.url; transparent = true; } }
-    } catch (err) { console.error('Playtest background removal failed (using the plain picture):', err); }
-    const img = await fetch(outUrl);
-    const buf = Buffer.from(await img.arrayBuffer());
-    const mime = transparent ? 'image/png' : 'image/jpeg';
-    recordSpend(userId, transparent ? 0.006 : 0.004);
-    res.json({ image: `data:${mime};base64,${buf.toString('base64')}`, transparent, spend: spendSummary(userId) });
+    assertCanSpend(userId, 0.06, Number((req.body ?? {}).clientUsedUsd) || undefined);
+    const fig = await generatePortraitCutout(key, description, userId);
+    recordSpend(userId, fig.costUsd);
+    res.json({ image: await downloadAsDataUrl(fig.url, fig.transparent), transparent: fig.transparent, usable: fig.usable, spend: spendSummary(userId) });
   } catch (err) {
     const handled = capResponse(res, userId, err);
     if (handled) return handled;
     console.error('Playtest portrait failed:', err);
     res.status(502).json({ error: 'portrait unavailable' });
+  }
+});
+
+// POST /playtest/evidence-image { kind, description } -> { image: data URL, matched }
+// A picture for CCTV, photographs and physical exhibits, checked against what the exhibit is described as showing.
+router.post('/playtest/evidence-image', costlyEndpointLimiter, async (req: Request, res: Response) => {
+  const key = process.env.FAL_KEY;
+  if (!key) return res.status(501).json({ error: 'images not configured' });
+  const userId = req.userId as string;
+  const kind = oneOf((req.body ?? {}).kind, ['cctv', 'photo', 'physical'] as const, 'photo');
+  const description = str((req.body ?? {}).description, 700);
+  if (!description) return res.status(400).json({ error: 'description is required' });
+  try {
+    assertCanSpend(userId, 0.05, Number((req.body ?? {}).clientUsedUsd) || undefined);
+    const pic = await generateEvidencePicture(key, kind, description, userId);
+    recordSpend(userId, pic.costUsd);
+    res.json({ image: await downloadAsDataUrl(pic.url, false), matched: pic.matched, spend: spendSummary(userId) });
+  } catch (err) {
+    const handled = capResponse(res, userId, err);
+    if (handled) return handled;
+    console.error('Playtest evidence picture failed:', err);
+    res.status(502).json({ error: 'picture unavailable' });
   }
 });
 

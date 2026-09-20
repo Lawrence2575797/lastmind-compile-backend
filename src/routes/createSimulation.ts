@@ -6,7 +6,7 @@ import { createAiCall } from '../services/createAi';
 import { CreateCapError, getUsedUsd, spendSummary } from '../services/createSpend';
 import { parseModelJson } from '../services/jsonParsing';
 import { InsufficientLocksError, assertLocksAvailable } from '../services/lockService';
-import { CRIMINAL_TRIAL_BUILD_PROMPT, CRIMINAL_TRIAL_VALIDATE_PROMPT } from '../constants/createSimulationPrompts';
+import { CRIMINAL_TRIAL_BUILD_PROMPT, CRIMINAL_TRIAL_VALIDATE_PROMPT, CRIMINAL_TRIAL_APPLY_FIXES_PROMPT } from '../constants/createSimulationPrompts';
 
 const router = Router();
 router.use('/create', requireAuth);
@@ -67,7 +67,8 @@ function normaliseCoverage(raw: any, concepts: ConceptInput[]) {
   };
 }
 
-function normaliseCase(raw: any, concepts: ConceptInput[]) {
+function normaliseCase(raw: any, concepts: ConceptInput[], keepIds = false) {
+  const idOf = (x: any) => (keepIds && typeof x?.id === 'string' && x.id.trim() ? x.id.trim().slice(0, 40) : uid());
   const o = raw?.overview || {};
   return {
     title: str(raw?.title, 120) || 'Untitled case',
@@ -79,20 +80,20 @@ function normaliseCase(raw: any, concepts: ConceptInput[]) {
       defenceCase: str(o.defenceCase, 2000),
       studentBriefing: str(o.studentBriefing, 1200),
     },
-    timeline: arr<any>(raw?.timeline, 30).map((t) => ({ id: uid(), time: str(t?.time, 120), event: str(t?.event, 800), knownTo: str(t?.knownTo, 300) })),
+    timeline: arr<any>(raw?.timeline, 30).map((t) => ({ id: idOf(t), time: str(t?.time, 120), event: str(t?.event, 800), knownTo: str(t?.knownTo, 300) })),
     characters: arr<any>(raw?.characters, 14).map((c) => ({
-      id: uid(), name: str(c?.name, 120), role: str(c?.role, 120), description: str(c?.description, 800),
+      id: idOf(c), name: str(c?.name, 120), role: str(c?.role, 120), description: str(c?.description, 800),
       whatTheySaw: str(c?.whatTheySaw, 1200), stance: str(c?.stance, 1200),
       honesty: ['truthful', 'mistaken', 'lying'].includes(str(c?.honesty, 12)) ? str(c?.honesty, 12) : 'truthful',
       honestyNote: str(c?.honestyNote, 600),
     })),
     evidence: arr<any>(raw?.evidence, 16).map((e) => ({
-      id: uid(), name: str(e?.name, 160), type: str(e?.type, 80), description: str(e?.description, 800),
+      id: idOf(e), name: str(e?.name, 160), type: str(e?.type, 80), description: str(e?.description, 800),
       whatItShows: str(e?.whatItShows, 800), weakness: str(e?.weakness, 800),
       favours: ['prosecution', 'defence', 'neutral'].includes(str(e?.favours, 12)) ? str(e?.favours, 12) : 'neutral',
     })),
     legalIssues: arr<any>(raw?.legalIssues, 10).map((l) => ({
-      id: uid(), issue: str(l?.issue, 300), law: str(l?.law, 1200), howItArises: str(l?.howItArises, 1000), keyQuestion: str(l?.keyQuestion, 500),
+      id: idOf(l), issue: str(l?.issue, 300), law: str(l?.law, 1200), howItArises: str(l?.howItArises, 1000), keyQuestion: str(l?.keyQuestion, 500),
     })),
     coverage: normaliseCoverage(raw?.coverage, concepts),
   };
@@ -178,6 +179,44 @@ router.post('/create/criminal-trial/validate', costlyEndpointLimiter, async (req
       issues,
       coverage: normaliseCoverage(parsed?.coverage, concepts),
     };
+  });
+  res.json({ jobId });
+});
+
+// POST /create/criminal-trial/apply-fixes { case, issues, role, minutes, concepts } -> { jobId }
+// Applies one suggestion, or all of them at once, to the case. Returns only the sections that changed, plus a plain list of what was changed.
+router.post('/create/criminal-trial/apply-fixes', costlyEndpointLimiter, async (req: Request, res: Response) => {
+  const body = (req.body ?? {}) as Record<string, any>;
+  const c = body.case;
+  if (!c || typeof c !== 'object') return res.status(400).json({ error: 'case is required' });
+  const issues = arr<any>(body.issues, 20).map((i) => ({ area: str(i?.area, 40), message: str(i?.message, 600), suggestion: str(i?.suggestion, 600) })).filter((i) => i.message);
+  if (!issues.length) return res.status(400).json({ error: 'at least one issue is required' });
+  const concepts = cleanConcepts(body.concepts);
+  const userId = req.userId as string;
+  try {
+    await assertLocksAvailable(userId);
+    if (getUsedUsd(userId, Number(body.clientUsedUsd) || undefined) >= spendSummary(userId).capUsd - 0.005) throw new CreateCapError(getUsedUsd(userId), spendSummary(userId).capUsd);
+  } catch (err) {
+    if (err instanceof InsufficientLocksError) return res.status(402).json({ error: 'Lock limit reached', code: 'LOCK_LIMIT_REACHED' });
+    if (err instanceof CreateCapError) return res.status(402).json({ error: err.message, code: 'CREATE_SPEND_CAP', spend: spendSummary(userId) });
+    throw err;
+  }
+  const { coverage: _cov, ...content } = c;
+  const caseText = JSON.stringify(content);
+  if (caseText.length > 60000) return res.status(413).json({ error: 'case is too large' });
+  const jobId = startJob(userId, async () => {
+    const { text: raw } = await createAiCall({
+      userId, systemPrompt: CRIMINAL_TRIAL_APPLY_FIXES_PROMPT, userContent: JSON.stringify({ case: JSON.parse(caseText), issues }),
+      maxTokens: 8000, temperature: 0.2, reason: 'create-criminal-trial-apply-fixes', clientUsedUsd: Number(body.clientUsedUsd) || undefined,
+    });
+    const parsed = parseModelJson<any>(raw);
+    // Merge the returned sections over the current case, normalise (keeping ids), and hand back only what changed.
+    const merged = normaliseCase({ ...content, ...parsed, coverage: undefined }, concepts, true);
+    const out: Record<string, unknown> = {};
+    for (const key of ['overview', 'timeline', 'characters', 'evidence', 'legalIssues'] as const) {
+      if (parsed && parsed[key] !== undefined) out[key] = (merged as any)[key];
+    }
+    return { sections: out, changes: arr<string>(parsed?.changes, 10).map((x) => str(x, 300)).filter(Boolean) };
   });
   res.json({ jobId });
 });

@@ -314,29 +314,39 @@ router.post('/playtest/assess', costlyEndpointLimiter, async (req: Request, res:
   res.json({ jobId });
 });
 
-// POST /playtest/portrait { description, name } -> { image: data URL } | 501 when no image key is configured
+// POST /playtest/portrait { description } -> { image: PNG data URL with a transparent background } | 501 when no image key is set
+// One canonical waist-up figure per character. It is generated once, kept with the case, and reused in every scene (and as the
+// character card), so a person always looks like the same person. The background is removed so the page can place them inside a
+// scene, behind that scene's own foreground.
+const CUTOUT_STYLE = 'Cinematic painterly digital art, waist-up portrait of one person facing the camera, arms relaxed at their sides, warm low interior light, painterly texture, highly detailed, plain flat neutral mid-grey backdrop, centred in frame, no text, no logos, not based on any real person.';
 router.post('/playtest/portrait', costlyEndpointLimiter, async (req: Request, res: Response) => {
   const key = process.env.FAL_KEY;
   if (!key) return res.status(501).json({ error: 'portraits not configured' });
   const userId = req.userId as string;
-  const description = str((req.body ?? {}).description, 400);
+  const description = str((req.body ?? {}).description, 500);
   if (!description) return res.status(400).json({ error: 'description is required' });
+  const headers = { Authorization: `Key ${key}`, 'Content-Type': 'application/json' };
   try {
-    assertCanSpend(userId, 0.01, Number((req.body ?? {}).clientUsedUsd) || undefined);
-    const prompt = `Cinematic painterly digital portrait, head and shoulders of an entirely fictional person: ${description}. Neutral expression, soft warm light, softly blurred wood-panelled background, painterly texture, highly detailed, no text, no logos, not based on any real person.`;
-    const r = await fetch('https://fal.run/fal-ai/flux/schnell', {
-      method: 'POST',
-      headers: { Authorization: `Key ${key}`, 'Content-Type': 'application/json' },
-      body: JSON.stringify({ prompt, image_size: { width: 512, height: 512 }, num_images: 1 }),
+    assertCanSpend(userId, 0.02, Number((req.body ?? {}).clientUsedUsd) || undefined);
+    const gen = await fetch('https://fal.run/fal-ai/flux/schnell', {
+      method: 'POST', headers,
+      body: JSON.stringify({ prompt: `${CUTOUT_STYLE} ${description}`, image_size: 'portrait_4_3', num_images: 1 }),
     });
-    if (!r.ok) throw new Error(`image service ${r.status}`);
-    const j: any = await r.json();
-    const url = j?.images?.[0]?.url;
-    if (!url) throw new Error('no image returned');
-    const img = await fetch(url);
+    if (!gen.ok) throw new Error(`image service ${gen.status}`);
+    const genJson: any = await gen.json();
+    const srcUrl = genJson?.images?.[0]?.url;
+    if (!srcUrl) throw new Error('no image returned');
+    // Background removal; if it is unavailable the plain picture is still used (as a card).
+    let outUrl = srcUrl; let transparent = false;
+    try {
+      const cut = await fetch('https://fal.run/fal-ai/imageutils/rembg', { method: 'POST', headers, body: JSON.stringify({ image_url: srcUrl }) });
+      if (cut.ok) { const cutJson: any = await cut.json(); if (cutJson?.image?.url) { outUrl = cutJson.image.url; transparent = true; } }
+    } catch (err) { console.error('Playtest background removal failed (using the plain picture):', err); }
+    const img = await fetch(outUrl);
     const buf = Buffer.from(await img.arrayBuffer());
-    recordSpend(userId, 0.004);
-    res.json({ image: `data:image/jpeg;base64,${buf.toString('base64')}`, spend: spendSummary(userId) });
+    const mime = transparent ? 'image/png' : 'image/jpeg';
+    recordSpend(userId, transparent ? 0.006 : 0.004);
+    res.json({ image: `data:${mime};base64,${buf.toString('base64')}`, transparent, spend: spendSummary(userId) });
   } catch (err) {
     const handled = capResponse(res, userId, err);
     if (handled) return handled;

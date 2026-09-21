@@ -34,6 +34,22 @@ export function derivationPlayerPayload(i: number): { terms: Record<string, Stag
 
 const cap = (s: string) => (s ? s.charAt(0).toUpperCase() + s.slice(1) : s);
 
+// "... is a" + "Capital goods" reads wrongly: after "a" or "an" the term goes in the singular ("a capital good").
+function singularWord(w: string): string {
+  if (w.length < 4 || /[0-9]/.test(w) || w === w.toUpperCase()) return w;
+  if (/(ss|us|is|ics|ness)$/i.test(w)) return w;
+  if (/ies$/i.test(w)) return w.slice(0, -3) + 'y';
+  if (/(sses|xes|ches|shes)$/i.test(w)) return w.slice(0, -2);
+  if (/s$/i.test(w)) return w.slice(0, -1);
+  return w;
+}
+export function labelAfterArticle(before: string, label: string): string {
+  if (!/\b(a|an)\s*$/i.test(before)) return label;
+  const parts = label.split(' ');
+  parts[parts.length - 1] = singularWord(parts[parts.length - 1]);
+  return parts.join(' ');
+}
+
 // The longest chain of ideas through this term, from the stage's own links: what an "order" question can ask for.
 function chainThrough(s: Stage, key: string): string[] {
   const out: Record<string, string[]> = {}; const inn: Record<string, string[]> = {};
@@ -61,8 +77,8 @@ export function derivationContentForNode(n: NodeIdentity): any | null {
   const step = (s.stage.script as any[]).find((x) => (x.type === 'ask' || x.type === 'read') && x.term === n.node_key);
   if (!step) return null;
   const label = term.t;
-  const scenario = step.type === 'ask' ? `${step.q} ${cap(step.opts[0])}.` : `${step.text.trim()} ${label}.`;
-  const statement = step.type === 'ask' ? `${step.pre.trim()} ${label}.` : `${label}.`;
+  const scenario = step.type === 'ask' ? `${step.q} ${cap(step.opts[0])}.` : `${step.text.trim()} ${labelAfterArticle(step.text, label)}.`;
+  const statement = step.type === 'ask' ? `${step.pre.trim()} ${labelAfterArticle(step.pre, label)}.` : `${label}.`;
   const chain = chainThrough(s, n.node_key).map((k) => s.terms[k]?.t).filter(Boolean);
   const explanation = [scenario, statement, chain.length > 1 ? `This idea sits in a chain of ideas: ${chain.join(' → ')}.` : ''].filter(Boolean).join('\n\n');
 
@@ -136,7 +152,7 @@ function statementFor(s: Stage, key: string): string {
   const step = (s.stage.script as any[]).find((x) => (x.type === 'ask' || x.type === 'read') && x.term === key);
   const label = s.terms[key]?.t ?? key;
   if (!step) return label;
-  return step.type === 'ask' ? `${step.q} ${cap(step.opts[0])}. ${step.pre.trim()} ${label}.` : `${step.text.trim()} ${label}.`;
+  return step.type === 'ask' ? `${step.q} ${cap(step.opts[0])}. ${step.pre.trim()} ${labelAfterArticle(step.pre, label)}.` : `${step.text.trim()} ${labelAfterArticle(step.text, label)}.`;
 }
 
 function introOrder(s: Stage): string[] {

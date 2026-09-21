@@ -51,6 +51,65 @@ titleFn = titleFn.replace('<div class="down">Scroll ↓</div>', '<button type="b
 if (!titleFn.includes('nextbtn') || titleFn.includes('intersectionRatio > 0.6')) throw new Error('title patch failed');
 body = body.slice(0, tt) + titleFn + body.slice(ttEnd);
 
+// after "a"/"an" the revealed term goes in the singular ("a capital good", not "a Capital goods")
+body = body.replace("  function termHtml(k, extra) {", `  function singularWord(w) {
+    if (w.length < 4 || /[0-9]/.test(w) || w === w.toUpperCase()) return w;
+    if (/(ss|us|is|ics|ness)$/i.test(w)) return w;
+    if (/ies$/i.test(w)) return w.slice(0, -3) + 'y';
+    if (/(sses|xes|ches|shes)$/i.test(w)) return w.slice(0, -2);
+    if (/s$/i.test(w)) return w.slice(0, -1);
+    return w;
+  }
+  function labelAfter(before, label) {
+    if (!/\\b(a|an)\\s*$/i.test(before)) return label;
+    var parts = label.split(' '); parts[parts.length - 1] = singularWord(parts[parts.length - 1]); return parts.join(' ');
+  }
+  function termHtmlAs(k, text, extra) { return '<span class="term ' + (extra || '') + '" style="--tc:' + TERMS[k].c + '">' + text + '</span>'; }
+  function termHtml(k, extra) {`);
+const askOld = "out.innerHTML = '<span>' + step.pre + '</span>' + termHtml(step.term, 'pop');";
+const readOld = "step.text + termHtml(step.term, 'pop') + '.";
+if (!body.includes(askOld) || !body.includes(readOld)) throw new Error('reveal lines not found');
+body = body.replace(askOld, "out.innerHTML = '<span>' + step.pre + '</span>' + termHtmlAs(step.term, labelAfter(step.pre, TERMS[step.term].t), 'pop');");
+body = body.replace(readOld, "step.text + termHtmlAs(step.term, labelAfter(step.text, TERMS[step.term].t), 'pop') + '.");
+
+// a slight scroll or key press moves on to the next step (building it if it is waiting); you can scroll back up any time
+const gestures = `
+  (function slightScroll() {
+    var lock = false, startY = null;
+    function topOf(s) { return s.getBoundingClientRect().top - feed.getBoundingClientRect().top + feed.scrollTop; }
+    function slidesNow() { return [].slice.call(feed.querySelectorAll('.slide')); }
+    function current() {
+      var a = slidesNow(), top = feed.scrollTop, best = 0, dist = 1e9;
+      a.forEach(function (s, i) { var d = Math.abs(topOf(s) - top); if (d < dist) { dist = d; best = i; } });
+      return best;
+    }
+    function go(dir) {
+      var a = slidesNow(), i = current(), s = a[i];
+      if (!s) return false;
+      if (dir > 0) {
+        if (topOf(s) + s.offsetHeight - feed.clientHeight > feed.scrollTop + 4) return false; /* a tall slide scrolls first */
+        if (i === a.length - 1) { var nb = s.querySelector('.nextbtn'); if (nb) { nb.click(); setTimeout(function () { var b = slidesNow(); b[b.length - 1].scrollIntoView({ behavior: 'smooth', block: 'start' }); }, 80); return true; } return false; }
+        a[i + 1].scrollIntoView({ behavior: 'smooth', block: 'start' }); return true;
+      }
+      if (feed.scrollTop > topOf(s) + 4) return false;
+      if (i > 0) { a[i - 1].scrollIntoView({ behavior: 'smooth', block: 'start' }); return true; }
+      return false;
+    }
+    function throttled(dir) { if (lock) return true; if (!go(dir)) return false; lock = true; setTimeout(function () { lock = false; }, 450); return true; }
+    feed.addEventListener('wheel', function (e) { if (Math.abs(e.deltaY) < 4) return; if (throttled(e.deltaY > 0 ? 1 : -1)) e.preventDefault(); }, { passive: false });
+    feed.addEventListener('touchstart', function (e) { startY = e.touches[0].clientY; }, { passive: true });
+    feed.addEventListener('touchend', function (e) { if (startY == null) return; var dy = startY - e.changedTouches[0].clientY; startY = null; if (Math.abs(dy) > 24) throttled(dy > 0 ? 1 : -1); });
+    document.addEventListener('keydown', function (e) {
+      if (/^(INPUT|TEXTAREA|SELECT)$/.test((e.target || {}).tagName || '')) return;
+      if (e.key === 'ArrowDown' || e.key === 'PageDown' || e.key === ' ') { if (throttled(1)) e.preventDefault(); }
+      else if (e.key === 'ArrowUp' || e.key === 'PageUp') { if (throttled(-1)) e.preventDefault(); }
+    });
+  })();
+`;
+const tailAt = body.lastIndexOf("  stageTitle.textContent = STAGES[0].hud;");
+if (tailAt < 0) throw new Error('tail not found');
+body = body.slice(0, tailAt) + gestures + body.slice(tailAt);
+
 // finish card: report completion to the page that embeds us
 const a = body.indexOf('  function buildDone() {');
 const b = body.indexOf('  var BUILDERS =');
@@ -87,7 +146,7 @@ window.addEventListener('message', function (e) {
 })();
 try { parent.postMessage({ type: 'lm-derive-ready' }, location.origin); } catch (e) { /* standalone */ }
 `;
-html = html.replace('</style>', '.nextbtn { justify-self: start; border: 1px solid var(--line); background: transparent; color: var(--muted); border-radius: 999px; padding: 8px 16px; font: 600 13px var(--sans); cursor: pointer; } .nextbtn:hover { border-color: var(--accent); color: var(--ink); } .tray { display: none !important; } .feed { padding-bottom: 0; overflow-x: hidden; } html, body { overflow: hidden; height: 100%; } .svgwrap, .bank, .slots, .lanes { scrollbar-width: none; } .svgwrap::-webkit-scrollbar, .bank::-webkit-scrollbar, .slots::-webkit-scrollbar, .lanes::-webkit-scrollbar { display: none; }\n</style>');
+html = html.replace('</style>', '.nextbtn { justify-self: start; border: 1px solid var(--line); background: transparent; color: var(--muted); border-radius: 999px; padding: 8px 16px; font: 600 13px var(--sans); cursor: pointer; } .nextbtn:hover { border-color: var(--accent); color: var(--ink); } .tray { display: none !important; } .feed { padding-bottom: 0; overflow-x: hidden; scroll-snap-type: y proximity; } html, body { overflow: hidden; height: 100%; } .svgwrap, .bank, .slots, .lanes { scrollbar-width: none; } .svgwrap::-webkit-scrollbar, .bank::-webkit-scrollbar, .slots::-webkit-scrollbar, .lanes::-webkit-scrollbar { display: none; }\n</style>');
 html = html.replace('<button class="hbtn" id="howBtn" type="button">', '<button class="hbtn" id="sizeBtn" type="button" hidden>Expand</button>\n  <button class="hbtn" id="howBtn" type="button">');
 html = html.replace(/<title>[^<]*<\/title>/, '<title>LastMind lesson</title>').replace(/<h1 id="stageTitle">[^<]*<\/h1>/, '<h1 id="stageTitle">Lesson</h1>');
 let shell = html.slice(0, html.indexOf('<script>') + 8) + '\n' + head + body + boot + html.slice(html.indexOf('</script>'));

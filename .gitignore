@@ -6,3 +6,4 @@ dist/
 scripts/derivation/out/
 scripts/derivation/out2/
 scripts/derivation/plan.json
+scripts/derivation/sql/

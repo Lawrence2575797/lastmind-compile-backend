@@ -81,13 +81,12 @@ export function derivationContentForNode(n: NodeIdentity): any | null {
     questionText: step.type === 'ask' ? `${step.q} ${cap(step.opts[0])}. What is this idea called?` : `${step.text.trim()} ___. What is this idea called?`,
     options: shuffled,
     correctOptionIndex: shuffled.indexOf(label),
-    markScheme: explanation,
   };
   const recallChecks: any[] = [mc];
   const path = chainThrough(s, n.node_key);
   if (path.length >= 3 && path.length <= 6) {
     recallChecks.push({
-      format: 'order', questionText: 'Put these ideas in the order they build on each other.', markScheme: explanation,
+      format: 'order', questionText: 'Put these ideas in the order they build on each other.',
       items: path.map((k) => s.terms[k]?.t).filter(Boolean),
     });
   }

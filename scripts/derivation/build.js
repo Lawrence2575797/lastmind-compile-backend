@@ -9,6 +9,7 @@ const path = require('path');
 const { layout } = require('./layout');
 
 const CAP = 4;
+const MAX_Q_WORDS = 28;
 const WORDS = ['zero', 'one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine', 'ten'];
 const PALETTE = ['#cfe8c8', '#cfe3f6', '#f6ecb9', '#f8d9c4', '#cfd9e8', '#dccff0', '#f8d3d3', '#f4a9a8', '#d5e8d0', '#f2dcc0', '#e9d0d8', '#f3b8a0', '#d0d6ee', '#e8e0b8', '#c9e5da', '#e6cfe0', '#e2e6b9', '#f5d0a9', '#f0a7b8', '#e6cfe0'];
 
@@ -49,6 +50,8 @@ function validate(spec, known) {
           asked = true;
           ['q', 'right', 'wrong', 'hint', 'pre'].forEach((f) => { if (!s[f]) err(`${at}: ask is missing "${f}"`); });
           if (s.right && s.wrong && s.right === s.wrong) err(`${at}: right and wrong options are identical`);
+          // a question is a situation and one thing to decide, not a paragraph: 28 words at most, and the prompt asks for about 20
+          if (!spec.noLengthCap) { const n = String(s.q || '').trim().split(/\s+/).filter(Boolean).length; if (n > MAX_Q_WORDS) err(`${at}: the question is ${n} words; keep it to ${MAX_Q_WORDS} or fewer (aim for about 20)`); }
           if (s.diagram) diagramErrors(s.diagram).forEach((m) => err(`${at}: diagram: ${m}`));
           const label = (spec.terms[s.term] || {}).label;
           if (label) [['q', s.q], ['right', s.right], ['wrong', s.wrong], ['hint', s.hint]].forEach(([f, v]) => {

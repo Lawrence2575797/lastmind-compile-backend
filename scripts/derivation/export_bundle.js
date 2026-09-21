@@ -16,7 +16,7 @@ const stages = [], byConcept = {}, problems = [];
 files.forEach((f) => {
   const spec = JSON.parse(fs.readFileSync(path.join(dir, f), 'utf8'));
   const st = spec.stages[0];
-  spec.known = [...new Set([...(st.given || []), ...(st.needs || [])])]; spec.pageTitle = 'x'; spec.noLeakCheck = true; // labels were unified across batches after generation
+  spec.known = [...new Set([...(st.given || []), ...(st.needs || [])])]; spec.pageTitle = 'x'; spec.noLeakCheck = true; spec.noLengthCap = true; // lessons not yet shortened by hand are exempt from the length cap; // labels were unified across batches after generation
   let r;
   try { r = build(spec); } catch (e) { problems.push(`${f}: ${e.message.split('\n')[1] || e.message}`); return; }
   const i = Number(f.slice(0, -5));

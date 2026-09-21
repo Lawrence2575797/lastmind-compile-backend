@@ -34,8 +34,8 @@ import {
 } from '../services/nodeReviewService';
 import { getNodeNoteBaseline, getNodeNoteForUser, saveNodeNoteEdit, getNodeNotes, getEdgeNoteBaseline, getEdgeNoteForUser, saveEdgeNoteEdit, getEdgeNotes, getNotesIndexForUser, getPersonalNote, savePersonalNote, checkWorkedExampleStep, markEdgeExplanationSeen } from '../services/knowledgeMapNotesService';
 import { generateAndCacheNodeLesson, generateAndCacheEdgeLesson, needsQuestionUpgrade, upgradeLessonQuestions } from '../services/lessonGenerationService';
-import { isStructured, gradeStructured, clientView, lessonForClient, sealJson, openJson, StructuredQuestion } from '../services/questionFormats';
-import { pickRotatingQuestion, poolEntry, poolOf, rotationPick } from '../services/reviewQuestionPool';
+import { isStructured, gradeStructured, clientView, lessonForClient, sealJson, openJson, closeEnough, StructuredQuestion } from '../services/questionFormats';
+import { pickRotatingQuestion, poolEntry, poolOf, rotationPick, immediatePool } from '../services/reviewQuestionPool';
 import { answerKnowledgeMapQuestion } from '../services/knowledgeMapAskService';
 import { assertFreshGenerationWithinCap, recordFreshGenerationEvent, GenerationCapExceededError } from '../services/generationCapService';
 import { InsufficientLocksError, assertLocksAvailable } from '../services/lockService';
@@ -599,7 +599,8 @@ function normalizeForBlankComparison(text: string): string {
 }
 
 router.post('/knowledge-map-v2/text-question/submit', requireAuth, costlyEndpointLimiter, async (req: Request, res: Response) => {
-  const { nodeId, fromNodeId, toNodeId, questionType, answer, answers, retryCount, followUpToken, structured } = (req.body ?? {}) as {
+  const { nodeId, fromNodeId, toNodeId, questionType, answer, answers, retryCount, followUpToken, structured, checkRef } = (req.body ?? {}) as {
+    checkRef?: number;   // answer one of this lesson's cued recall checks in place of an open-text practice question
     structured?: unknown;
     followUpToken?: string;
     nodeId?: string;
@@ -629,7 +630,9 @@ router.post('/knowledge-map-v2/text-question/submit', requireAuth, costlyEndpoin
       ]);
       if (!node) return res.status(404).json({ error: 'concept not found' });
       conceptId = node.concept_id as string;
-      question = (lesson?.encoding_content as { practiceQuestion?: { questionText?: string; markScheme?: string; blanks?: { prompt: string; answer: string }[] } } | null)?.practiceQuestion;
+      const lessonContent = lesson?.encoding_content as any;
+      question = lessonContent?.practiceQuestion;
+      if (typeof checkRef === 'number' && lessonContent?.recallChecks?.[checkRef]) question = lessonContent.recallChecks[checkRef];
     } else {
       if (!fromNodeId || !toNodeId) return res.status(400).json({ error: 'fromNodeId and toNodeId are required for a transfer/integration question' });
       const [{ data: fromNode }, { data: toNode }, { data: edgeRow }] = await Promise.all([
@@ -652,6 +655,16 @@ router.post('/knowledge-map-v2/text-question/submit', requireAuth, costlyEndpoin
     }
 
     if (!question || !question.questionText) return res.status(404).json({ error: 'question not found' });
+
+    // A cued check answered in place of an open-text practice question: multiple choice or a short fill-in, both with one right answer.
+    if (typeof checkRef === 'number' && questionType === 'practice' && (question.format === 'multiple_choice' || question.format === 'fill_blank')) {
+      const sub = structured as any;
+      const right = question.format === 'multiple_choice' ? Number(sub?.option) === question.correctOptionIndex : closeEnough(String(sub?.answer ?? ''), String(question.answer || ''));
+      if (!right) return res.json({ correct: false, feedback: question.format === 'multiple_choice' ? 'Not quite - look at the other options again.' : 'Not quite - check the term and try again.', retryable: true });
+      const gradedC = await gradeCorrectness(userId, conceptId!, true, Number(retryCount) || 0);
+      if (!gradedC.previousRow) await recordFirstTeachingSignals(userId, conceptId!);
+      return res.json({ correct: true, feedback: 'Correct.', schedule: scheduleWithMastery(conceptId!, gradedC) });
+    }
 
     // Interactive formats (spot the mistake, match, order) have exactly one right answer, so they are graded here with no AI
     // call. A wrong practice attempt is a learning rep, not a lapse: nothing is recorded until it is right (same as free text).
@@ -942,7 +955,7 @@ router.get('/immediate-recalls/due', requireAuth, syncEndpointLimiter, async (re
         const checks = content?.recallChecks;
         let recallCheckIndex: number;
         let check: RecallCheck;
-        const v2pool = (content as any)?.formatVersion === 2 ? poolOf(content) : [];
+        const v2pool = content ? immediatePool(content) : [];
         if (v2pool.length) {
           // Current-format lessons: the step decides which question, in turn (see reviewQuestionPool.ts).
           const e = rotationPick(v2pool, Number((r as any).recall_number) || 1);

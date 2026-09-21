@@ -32,6 +32,16 @@ export function rotationPick(pool: PoolEntry[], step: number): PoolEntry {
   return pool[at];
 }
 
+// The questions used for the IMMEDIATE checks (the one straight after the lesson, then the 2-minute recalls): never open recall, which is
+// kept for later (Day-1 and spaced review). For a lesson written before the interactive formats this means the multiple-choice and
+// fill-in checks it already has. The first entry is what the check straight after the lesson uses (the page mirrors this when the
+// lesson's own practice question is free text), and each recall takes the next one along.
+export function immediatePool(content: any): PoolEntry[] {
+  const all = poolOf(content);
+  const cued = all.filter((e) => String(e.question?.format || 'free_text') !== 'free_text');
+  return cued.length ? cued : all;
+}
+
 // Questions that can be answered in a feed slide and graded without the multiple-choice or fill-blank widgets.
 export const textOrInteractive = (q: any) => isStructured(q) || (q?.format === 'free_text' && !!q.markScheme && !!q.questionText);
 

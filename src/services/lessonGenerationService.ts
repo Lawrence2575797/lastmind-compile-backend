@@ -73,6 +73,9 @@ const LANGUAGE_SUBJECTS = new Set(['Spanish', 'Italian']);
 // list lines, "X = Y" definitions, and total words.
 // The three questions should be three different kinds of puzzle: the same interactive format twice is sent back once.
 export function lessonFormatProblem(content: any): string | null {
+  const pqx = content?.practiceQuestion;
+  if (pqx && (pqx.format === 'free_text' || !pqx.format) && pqx.answerInputType !== 'math' && !(Array.isArray(pqx.blanks) && pqx.blanks.length)) return 'the practice question is open text; it must be an interactive or typed-cloze question (open recall is only for later)';
+  if ((Array.isArray(content?.recallChecks) ? content.recallChecks : []).some((q: any) => q?.format === 'free_text')) return 'a recall check is open text; use cloze, steps, fill_blank, multiple_choice or an interactive format';
   const fmts = [content?.practiceQuestion, ...(Array.isArray(content?.recallChecks) ? content.recallChecks : [])].map((q: any) => q?.format).filter((f: any) => f === 'spot_mistake' || f === 'match' || f === 'order');
   const dup = fmts.find((f: string, i: number) => fmts.indexOf(f) !== i);
   return dup ? `two questions use the same format (${dup}); use three different formats` : null;
@@ -111,7 +114,9 @@ export function normaliseLessonQuestions(content: any, label: string): any {
     if (q.format === 'fill_blank') return q.answer ? q : null;
     return q.markScheme ? { ...q, format: 'free_text' } : null;
   }).filter(Boolean);
-  return { ...c, practiceQuestion: pq || c.practiceQuestion, recallChecks: checks, formatVersion: 2 };
+  // Open recall is for later (spaced review): a recall check is never free text when another kind is available.
+  const cued = checks.filter((q: any) => q.format !== 'free_text');
+  return { ...c, practiceQuestion: pq || c.practiceQuestion, recallChecks: cued.length ? cued : checks, formatVersion: 2 };
 }
 
 // Law lessons written before the question formats existed keep their explanation exactly and get new-format questions, once,

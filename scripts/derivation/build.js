@@ -12,14 +12,15 @@ const CAP = 4;
 const WORDS = ['zero', 'one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine', 'ten'];
 const PALETTE = ['#cfe8c8', '#cfe3f6', '#f6ecb9', '#f8d9c4', '#cfd9e8', '#dccff0', '#f8d3d3', '#f4a9a8', '#d5e8d0', '#f2dcc0', '#e9d0d8', '#f3b8a0', '#d0d6ee', '#e8e0b8', '#c9e5da', '#e6cfe0', '#e2e6b9', '#f5d0a9', '#f0a7b8', '#e6cfe0'];
 
-function validate(spec) {
+function validate(spec, known) {
   const errs = [];
   const err = (m) => errs.push(m);
-  const seen = new Set();
+  const seen = new Set(known || []);
   spec.stages.forEach((st, si) => {
     const where = `stage ${si + 1} (${st.name})`;
     const given = st.given || [];
-    given.forEach((g) => { if (!seen.has(g)) err(`${where}: given term "${g}" was not introduced by an earlier stage`); });
+    if (given.length > 5) err(`${where}: more than 5 given terms; put the rest in "needs"`);
+    [...given, ...(st.needs || [])].forEach((g) => { if (!seen.has(g)) err(`${where}: given term "${g}" was not introduced by an earlier stage`); });
     const intro = new Set();
     let chunk = 0, lastMilestone = -1, ended = false;
     st.steps.forEach((s, i) => {
@@ -32,6 +33,11 @@ function validate(spec) {
         if (s.type === 'ask') {
           ['q', 'right', 'wrong', 'hint', 'pre'].forEach((f) => { if (!s[f]) err(`${at}: ask is missing "${f}"`); });
           if (s.right && s.wrong && s.right === s.wrong) err(`${at}: right and wrong options are identical`);
+          const label = (spec.terms[s.term] || {}).label;
+          if (label) [['q', s.q], ['right', s.right], ['wrong', s.wrong], ['hint', s.hint]].forEach(([f, v]) => {
+            if (v && v.toLowerCase().includes(label.toLowerCase())) err(`${at}: "${f}" contains the term "${label}" it is about to reveal`);
+          });
+          if (s.right && s.wrong && Math.abs(s.right.length - s.wrong.length) > 20 && Math.max(s.right.length, s.wrong.length) / Math.min(s.right.length, s.wrong.length) > 1.5) err(`${at}: right and wrong options differ too much in length, which gives the answer away`);
         } else if (!s.text) err(`${at}: read is missing "text"`);
       } else if (s.type === 'order') {
         const n = s.terms.length;
@@ -57,8 +63,9 @@ function validate(spec) {
     (st.edges || []).forEach(([a, b]) => {
       if (!all.has(a) || !all.has(b)) err(`${where}: edge ${a} -> ${b} uses a term that is not in this stage`);
     });
-    all.forEach((t) => {
-      if (!(st.edges || []).some((e) => e.includes(t))) err(`${where}: term "${t}" has no edge`);
+    const introOrder = [...intro];
+    (st.edges || []).forEach(([a, b]) => {
+      if (introOrder.includes(a) && introOrder.includes(b) && introOrder.indexOf(a) > introOrder.indexOf(b)) err(`${where}: "${b}" is taught before "${a}", but the map says "${a}" comes first`);
     });
     intro.forEach((t) => seen.add(t));
   });
@@ -108,7 +115,7 @@ function build(spec) {
     if (si === nStages - 1) steps.push({ type: 'done' });
     return { name: st.name, hud: `Stage ${si + 1} · ${st.hudName || st.name}`, title: st.title || st.name, sub: st.sub || '', builds: st.builds || given, graph, script: steps, given };
   });
-  const PLAN = stages.map((s) => ({ name: s.name, needs: s.given }));
+  const PLAN = stages.map((s, i) => ({ name: s.name, needs: spec.stages[i].needs || s.given }));
 
   const here = (f) => fs.readFileSync(path.join(__dirname, f), 'utf8');
   let engine = here('engine.js');

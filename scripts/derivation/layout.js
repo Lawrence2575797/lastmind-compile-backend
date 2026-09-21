@@ -18,27 +18,41 @@ function layout(keys, edges, labels, pins) {
   for (let pass = 0; pass < keys.length; pass++) {
     edges.forEach(([a, b]) => { if (rank[b] < rank[a] + 1) rank[b] = rank[a] + 1; });
   }
-  const col = {}, row = {};
-  const cols = {};
-  keys.forEach((k) => {
-    if (pins[k]) { col[k] = pins[k][0]; row[k] = pins[k][1]; return; }
-    col[k] = rank[k];
-  });
-  keys.forEach((k) => { (cols[col[k]] = cols[col[k]] || []).push(k); });
-  // rows: pinned keep theirs; others fill the first free row in their column, ordered by the mean row of their parents
-  Object.keys(cols).sort((a, b) => a - b).forEach((c) => {
-    const taken = new Set(cols[c].filter((k) => pins[k]).map((k) => row[k]));
-    const free = cols[c].filter((k) => !pins[k]).sort((a, b) => parentRow(a) - parentRow(b));
-    free.forEach((k) => { let r = Math.round(parentRow(k)); while (taken.has(r)) r++; row[k] = r; taken.add(r); });
-  });
-  function parentRow(k) {
-    const ps = edges.filter((e) => e[1] === k && row[e[0]] != null).map((e) => row[e[0]]);
+  const col = {}, row = {}, band = {};
+  const sizes = {};
+  keys.forEach((k) => { sizes[k] = sizeOf(labels[k]); });
+  const maxRank = Math.max(...keys.map((k) => rank[k]));
+  const pinned = (k) => !!pins[k];
+  // fold long chains into bands so the graph always fits the width: the widest column count that leaves a gap of at least 30
+  const fits = (M) => {
+    const cw = [];
+    keys.forEach((k) => { if (!pinned(k)) cw[rank[k] % M] = Math.max(cw[rank[k] % M] || 0, sizes[k][0]); });
+    const used = cw.filter((v) => v).length;
+    return used <= 1 || (W - 2 * PAD - cw.reduce((s, v) => s + (v || 0), 0)) / (used - 1) >= 30;
+  };
+  let M = maxRank + 1;
+  while (M > 1 && !fits(M)) M--;
+  keys.forEach((k) => { if (pinned(k)) { col[k] = pins[k][0]; row[k] = pins[k][1]; band[k] = 0; } else { col[k] = rank[k] % M; band[k] = Math.floor(rank[k] / M); } });
+  const cells = {};
+  keys.forEach((k) => { if (!pinned(k)) { const id = band[k] + ':' + col[k]; (cells[id] = cells[id] || []).push(k); } });
+  const nBands = Math.max(0, ...keys.filter((k) => !pinned(k)).map((k) => band[k])) + 1;
+  const bandRows = [];
+  const parentRow = (k) => {
+    const ps = edges.filter((e) => e[1] === k && row[e[0]] != null && band[e[0]] === band[k]).map((e) => row[e[0]]);
     return ps.length ? ps.reduce((s, v) => s + v, 0) / ps.length : 0;
+  };
+  let offset = 0;
+  for (let bd = 0; bd < nBands; bd++) {
+    let used = 0;
+    for (let c = 0; c < M; c++) {
+      const list = (cells[bd + ':' + c] || []).sort((x, y) => parentRow(x) - parentRow(y));
+      const taken = new Set();
+      list.forEach((k) => { let r = Math.round(parentRow(k) - offset); r = Math.max(0, r); while (taken.has(r)) r++; row[k] = offset + r; taken.add(r); used = Math.max(used, r + 1); });
+    }
+    offset += Math.max(used, 1);
   }
   const nCols = Math.max(...keys.map((k) => col[k])) + 1;
   const nRows = Math.max(...keys.map((k) => row[k])) + 1;
-  const sizes = {};
-  keys.forEach((k) => { sizes[k] = sizeOf(labels[k]); });
   const colW = [], colX = [];
   for (let c = 0; c < nCols; c++) colW[c] = Math.max(0, ...keys.filter((k) => col[k] === c).map((k) => sizes[k][0]));
   const gap = nCols > 1 ? (W - 2 * PAD - colW.reduce((s, v) => s + v, 0)) / (nCols - 1) : 0;
@@ -50,6 +64,7 @@ function layout(keys, edges, labels, pins) {
   const h = PAD * 2 + (nRows - 1) * ROW + 64;
 
   // edge routing
+  const elbow = {};
   const inN = {}, outN = {}, inI = {}, outI = {};
   edges.forEach(([a, b]) => { outN[a] = (outN[a] || 0) + 1; inN[b] = (inN[b] || 0) + 1; });
   const spread = (n, i) => (i - (n - 1) / 2) * 12;
@@ -61,6 +76,10 @@ function layout(keys, edges, labels, pins) {
       const x = A[0] + A[2] / 2;
       return B[1] > A[1] ? [[x, A[1] + A[3]], [x, B[1]]] : [[x, A[1]], [x, B[1] + B[3]]];
     }
+    if (col[b] < col[a] || (row[b] > row[a] && col[b] <= col[a])) { // folded chain: down, across, down
+      const x1 = A[0] + A[2] / 2 + oy, x2 = B[0] + B[2] / 2 + iy, ym = Math.round((A[1] + A[3] + B[1]) / 2);
+      return [[x1, A[1] + A[3]], [x1, ym], [x2, ym], [x2, B[1]]];
+    }
     const sx = A[0] + A[2], sy = A[1] + A[3] / 2 + oy, tx = B[0], ty = B[1] + B[3] / 2 + iy;
     const blocked = keys.some((k) => k !== a && k !== b && col[k] > col[a] && col[k] < col[b] && row[k] === row[a]);
     if (blocked) { // skip over the blocking nodes through the gap under the row
@@ -68,7 +87,8 @@ function layout(keys, edges, labels, pins) {
       return [[A[0] + A[2] / 2 + oy, A[1] + A[3]], [A[0] + A[2] / 2 + oy, gap], [B[0] + B[2] / 2 + iy, gap], [B[0] + B[2] / 2 + iy, B[1] + B[3]]];
     }
     if (Math.abs(sy - ty) < 1) return [[sx, sy], [tx, ty]];
-    const mid = Math.round(tx - Math.min(35, (tx - sx) / 2));
+    const k = (elbow[col[b] + ":" + band[b]] = (elbow[col[b] + ":" + band[b]] || 0) + 1) - 1;
+    const mid = Math.round(tx - Math.min(18 + 12 * k, Math.max(8, (tx - sx) - 8)));
     return [[sx, sy], [mid, sy], [mid, ty], [tx, ty]];
   }).map((pts) => pts.map((p) => [Math.round(p[0]), Math.round(p[1])]));
   return { h, nodes, edges: routed };

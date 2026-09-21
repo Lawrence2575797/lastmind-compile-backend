@@ -1,5 +1,5 @@
 <meta charset="utf-8">
-<title>Scarcity to the production possibility frontier</title>
+<title>Utility, demand and elasticity</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Newsreader:opsz,wght@6..72,400;6..72,600&family=IBM+Plex+Sans:wght@500;600&display=swap" rel="stylesheet">
@@ -140,7 +140,7 @@ button { font: inherit; color: inherit; }
 </style>
 
 <header class="hud">
-  <h1 id="stageTitle">Stage 1 · Scarcity</h1>
+  <h1 id="stageTitle">Stage 1 · Utility and demand</h1>
   <div class="pips" aria-label="Chunks held in mind"><i></i><i></i><i></i><i></i><span id="pipText">0 of 4</span></div>
   <button class="hbtn" id="howBtn" type="button">How it works</button>
   <button class="hbtn" id="againBtn" type="button">Restart</button>
@@ -168,161 +168,139 @@ button { font: inherit; color: inherit; }
 <script>
 (function () {
   'use strict';
-  /* Economics: Scarcity to the production possibility frontier. Built offline from econ-scarcity-oppcost-ppf. */
-  var TERMS = {"land":{"t":"Land","c":"#cfe8c8"},"labour":{"t":"Labour","c":"#cfe3f6"},"capital":{"t":"Capital","c":"#f6ecb9"},"enterprise":{"t":"Enterprise","c":"#f8d9c4"},"finres":{"t":"Finite resources","c":"#cfd9e8"},"fings":{"t":"Finite goods & services","c":"#dccff0"},"wants":{"t":"Unlimited wants","c":"#f8d3d3"},"scarcity":{"t":"Scarcity","c":"#f4a9a8"},"maxout":{"t":"Maximum output","c":"#d5e8d0"},"shift":{"t":"Reallocation","c":"#f2dcc0"},"giveup":{"t":"Output given up","c":"#e9d0d8"},"ppf":{"t":"Production possibility frontier","c":"#f3b8a0"},"unattain":{"t":"Unattainable","c":"#d0d6ee"},"ineff":{"t":"Inefficiency","c":"#e8e0b8"},"choice":{"t":"Choice","c":"#c9e5da"},"tradeoff":{"t":"Trade-off","c":"#e6cfe0"},"altuses":{"t":"Alternative uses","c":"#e2e6b9"},"nextbest":{"t":"Next best alternative","c":"#f5d0a9"},"oppcost":{"t":"Opportunity cost","c":"#f0a7b8"}};
+  /* Economics: Utility, demand and elasticity. Built offline from econ-markets-sample. */
+  var TERMS = {"util":{"t":"Utility","c":"#cfe8c8"},"umax":{"t":"Utility maximisation","c":"#cfe3f6"},"demand":{"t":"Demand","c":"#f6ecb9"},"law":{"t":"Law of demand","c":"#f8d9c4"},"move":{"t":"Movement vs shift","c":"#cfd9e8"},"cond":{"t":"Conditions of demand","c":"#dccff0"},"totrev":{"t":"Total revenue","c":"#f8d3d3"},"ped":{"t":"Price elasticity of demand","c":"#f4a9a8"},"pedint":{"t":"Interpreting PED","c":"#d5e8d0"},"pedfac":{"t":"Factors affecting PED","c":"#f2dcc0"},"pedrev":{"t":"PED and total revenue","c":"#e9d0d8"}};
   var CAP = 4, DAY = 86400000;
   var STAGES = [
  {
-  "name": "Scarcity",
-  "hud": "Stage 1 · Scarcity",
-  "title": "Scarcity",
-  "sub": "Why every economy has to choose: limited resources against unlimited wants.",
+  "name": "Utility and demand",
+  "hud": "Stage 1 · Utility and demand",
+  "title": "Utility and demand",
+  "sub": "Why buyers want things, and how the price changes how much they buy.",
   "builds": [],
   "graph": {
-   "h": 504,
+   "h": 234,
    "nodes": {
-    "land": [
+    "util": [
      40,
      40,
      130,
      56
     ],
-    "labour": [
+    "umax": [
+     269,
+     40,
+     198,
+     56
+    ],
+    "demand": [
+     497,
      40,
      130,
-     130,
      56
     ],
-    "capital": [
+    "law": [
+     658,
      40,
-     220,
-     130,
+     139,
      56
     ],
-    "enterprise": [
+    "move": [
+     827,
      40,
-     310,
-     130,
+     173,
      56
     ],
-    "finres": [
-     291,
-     310,
-     164,
-     56
-    ],
-    "fings": [
-     551,
-     310,
-     224,
-     64
-    ],
-    "wants": [
+    "cond": [
      40,
-     400,
-     156,
-     56
-    ],
-    "scarcity": [
-     870,
-     400,
      130,
+     198,
      56
     ]
    },
    "edges": [
     [
      [
-      105,
+      170,
+      68
+     ],
+     [
+      269,
+      68
+     ]
+    ],
+    [
+     [
+      467,
+      68
+     ],
+     [
+      497,
+      68
+     ]
+    ],
+    [
+     [
+      627,
+      62
+     ],
+     [
+      640,
+      62
+     ],
+     [
+      640,
+      68
+     ],
+     [
+      658,
+      68
+     ]
+    ],
+    [
+     [
+      797,
+      68
+     ],
+     [
+      827,
+      68
+     ]
+    ],
+    [
+     [
+      568,
       96
      ],
      [
-      105,
+      568,
+      113
+     ],
+     [
+      133,
+      113
+     ],
+     [
+      133,
       130
      ]
     ],
     [
      [
-      105,
-      186
+      914,
+      96
      ],
      [
-      105,
-      220
-     ]
-    ],
-    [
-     [
-      105,
-      276
+      914,
+      113
      ],
      [
-      105,
-      310
-     ]
-    ],
-    [
-     [
-      170,
-      338
+      145,
+      113
      ],
      [
-      291,
-      338
-     ]
-    ],
-    [
-     [
-      455,
-      338
-     ],
-     [
-      533,
-      338
-     ],
-     [
-      533,
-      342
-     ],
-     [
-      551,
-      342
-     ]
-    ],
-    [
-     [
-      775,
-      342
-     ],
-     [
-      852,
-      342
-     ],
-     [
-      852,
-      422
-     ],
-     [
-      870,
-      422
-     ]
-    ],
-    [
-     [
-      196,
-      428
-     ],
-     [
-      840,
-      428
-     ],
-     [
-      840,
-      434
-     ],
-     [
-      870,
-      434
+      145,
+      130
      ]
     ]
    ],
@@ -334,173 +312,142 @@ button { font: inherit; color: inherit; }
    },
    {
     "type": "read",
-    "term": "land",
-    "text": "Water is used to make bottled water. The natural resources used in production are called "
+    "term": "util",
+    "text": "You eat a slice of pizza and enjoy it. The satisfaction you get from consuming a good or service is called "
    },
    {
-    "type": "read",
-    "term": "labour",
-    "text": "The people working at the bottled-water factory are "
+    "type": "ask",
+    "q": "You have limited money and many things you could buy. What do economists assume you try to do with it?",
+    "opts": [
+     "Get as much satisfaction as possible",
+     "Spend as little as possible"
+    ],
+    "ok": 0,
+    "hint": "Think about why anyone spends money at all: what do they want out of it?",
+    "pre": "So consumers are assumed to aim for",
+    "term": "umax"
    },
    {
-    "type": "read",
-    "term": "capital",
-    "text": "The machines they use are "
+    "type": "ask",
+    "q": "Buyers each have a quantity they would buy at every possible price. What does that describe?",
+    "opts": [
+     "Buyers' willingness and ability to buy at each price",
+     "Sellers' willingness to supply at each price"
+    ],
+    "ok": 0,
+    "hint": "Are we looking at the buyers' side of the market, or the sellers' side?",
+    "pre": "That quantity, at each price, is",
+    "term": "demand"
    },
    {
-    "type": "read",
-    "term": "enterprise",
-    "text": "The person who organises all of these resources provides "
+    "type": "ask",
+    "q": "The price of pizza rises from £10 to £20 and nothing else changes. What happens to the quantity bought?",
+    "opts": [
+     "It falls",
+     "It rises"
+    ],
+    "ok": 0,
+    "hint": "Would you buy more or fewer pizzas at double the price?",
+    "pre": "So price and quantity demanded move in opposite directions. That is the",
+    "term": "law"
    },
    {
     "type": "order",
     "title": "Milestone: four chunks",
-    "prompt": "Drag and drop the 4 key terms in the order they are used in production.",
+    "prompt": "Drag and drop the 4 key terms in the order they build on each other.",
     "order": [
-     "land",
-     "labour",
-     "capital",
-     "enterprise"
+     "util",
+     "umax",
+     "demand",
+     "law"
     ],
     "done": "Four chunks locked in. Your head is clear for the next ones."
    },
    {
     "type": "ask",
-    "q": "Can a business have an infinite quantity of all four?",
+    "q": "A change in the price of pizza slides you along the demand curve. What kind of change would move the whole curve instead?",
     "opts": [
-     "No, never infinite",
-     "Yes, whatever it needs"
+     "A change in something other than the price",
+     "A bigger change in the price"
     ],
     "ok": 0,
-    "hint": "Picture one factory. Could it have endless land, endless workers, endless machines and endless organisers?",
-    "pre": "So they are limited. They are",
-    "term": "finres"
+    "hint": "Price is what is on the axis. What else could change how much people want pizza?",
+    "pre": "Price changes slide you along the curve, other changes shift it. That is the distinction between a",
+    "term": "move"
    },
    {
     "type": "ask",
-    "q": "What does that mean for the number of water bottles the factory can make?",
+    "q": "Incomes rise and people want more pizza at every price. Does the demand curve slide along, or shift?",
     "opts": [
-     "There is a limit",
-     "There is no limit"
+     "It shifts to the right",
+     "It slides along"
     ],
     "ok": 0,
-    "hint": "If the resources are limited, what happens to the bottles made from them?",
-    "pre": "So the bottles, and every good and service, are",
-    "term": "fings"
-   },
-   {
-    "type": "ask",
-    "q": "You finally get the new phone you wanted. Will it be the last thing you ever want?",
-    "opts": [
-     "No, I will soon want something else",
-     "Yes, I will never want anything again"
-    ],
-    "ok": 0,
-    "hint": "Think about the last thing you really wanted. Did wanting stop?",
-    "pre": "So people have",
-    "term": "wants"
-   },
-   {
-    "type": "chains",
-    "title": "Milestone: two chains",
-    "prompt": "Drag and drop the 3 key terms into the two chains that lead to one concept. Chain 1 runs from resources to goods and services. Chain 2 is the wants side.",
-    "lanes": [
-     {
-      "label": "Chain 1",
-      "slots": [
-       {
-        "id": "c0",
-        "expect": "finres"
-       },
-       {
-        "id": "c1",
-        "expect": "fings"
-       }
-      ]
-     },
-     {
-      "label": "Chain 2",
-      "slots": [
-       {
-        "id": "c2",
-        "expect": "wants"
-       }
-      ]
-     }
-    ],
-    "bank": [
-     "finres",
-     "fings",
-     "wants"
-    ],
-    "done": "Two chains, one destination. Now: what do they lead to?"
-   },
-   {
-    "type": "ask",
-    "q": "Can everyone have everything they want?",
-    "opts": [
-     "No, not everyone can",
-     "Yes, everyone can"
-    ],
-    "ok": 0,
-    "hint": "Limited goods on one side, unlimited wants on the other. What happens when they meet?",
-    "pre": "This is the problem of",
-    "term": "scarcity"
+    "hint": "The price did not change, so the curve cannot slide along itself.",
+    "pre": "Income, tastes, the prices of related goods and population are the",
+    "term": "cond"
    },
    {
     "type": "derive",
     "title": "Final test: the whole derivation",
-    "prompt": "Drag and drop the 8 key terms into the boxes to rebuild the whole derivation from memory. Chains meet at the concept.",
-    "bridge": "Scarcity is on your map. Next on the schedule: Opportunity cost. Every prerequisite it needs is met, so it starts now."
+    "prompt": "Drag and drop the 6 key terms into the boxes to rebuild the whole derivation from memory. Chains meet at the concept.",
+    "bridge": "Conditions of demand is on your map. Next on the schedule: Price elasticity of demand. Every prerequisite it needs is met, so it starts now."
    }
   ],
   "given": []
  },
  {
-  "name": "Opportunity cost",
-  "hud": "Stage 2 · Opportunity cost",
-  "title": "Opportunity cost",
-  "sub": "The real cost of any choice, measured by what you give up.",
+  "name": "Price elasticity of demand",
+  "hud": "Stage 2 · Price elasticity of demand",
+  "title": "Price elasticity of demand",
+  "sub": "How strongly buyers react when the price changes, and what that does to a firm's revenue.",
   "builds": [
-   "scarcity"
+   "demand",
+   "move"
   ],
   "graph": {
-   "h": 234,
+   "h": 324,
    "nodes": {
-    "scarcity": [
+    "demand": [
      40,
      40,
      130,
      56
     ],
-    "choice": [
-     245,
+    "move": [
      40,
      130,
+     173,
      56
     ],
-    "tradeoff": [
-     417,
+    "totrev": [
+     275,
      40,
+     139,
+     56
+    ],
+    "ped": [
+     275,
      130,
-     56
+     230,
+     64
     ],
-    "altuses": [
-     40,
+    "pedint": [
+     567,
      130,
      164,
      56
     ],
-    "nextbest": [
-     588,
-     130,
+    "pedfac": [
+     793,
+     220,
      207,
      56
     ],
-    "oppcost": [
-     836,
+    "pedrev": [
+     793,
      130,
-     164,
+     207,
      56
     ]
    },
@@ -508,72 +455,133 @@ button { font: inherit; color: inherit; }
     [
      [
       170,
+      62
+     ],
+     [
+      257,
+      62
+     ],
+     [
+      257,
       68
+     ],
+     [
+      275,
+      68
+     ]
+    ],
+    [
+     [
+      170,
+      74
      ],
      [
       245,
-      68
+      74
+     ],
+     [
+      245,
+      156
+     ],
+     [
+      275,
+      156
      ]
     ],
     [
      [
-      375,
-      68
+      213,
+      158
      ],
      [
-      417,
-      68
+      233,
+      158
+     ],
+     [
+      233,
+      168
+     ],
+     [
+      275,
+      168
      ]
     ],
     [
      [
-      547,
-      68
+      505,
+      162
      ],
      [
-      570,
-      68
+      549,
+      162
      ],
      [
-      570,
+      549,
+      158
+     ],
+     [
+      567,
+      158
+     ]
+    ],
+    [
+     [
+      731,
       152
      ],
      [
-      588,
+      775,
+      152
+     ],
+     [
+      775,
+      248
+     ],
+     [
+      793,
+      248
+     ]
+    ],
+    [
+     [
+      731,
+      164
+     ],
+     [
+      763,
+      164
+     ],
+     [
+      763,
+      152
+     ],
+     [
+      793,
       152
      ]
     ],
     [
      [
-      204,
-      158
+      414,
+      68
      ],
      [
-      558,
-      158
+      751,
+      68
      ],
      [
-      558,
+      751,
       164
      ],
      [
-      588,
+      793,
       164
-     ]
-    ],
-    [
-     [
-      795,
-      158
-     ],
-     [
-      836,
-      158
      ]
     ]
    ],
    "given": [
-    "scarcity"
+    "demand",
+    "move"
    ]
   },
   "script": [
@@ -581,420 +589,87 @@ button { font: inherit; color: inherit; }
     "type": "title"
    },
    {
-    "type": "ask",
-    "q": "Scarcity means not everyone can have everything. So what must people, firms and governments do?",
-    "opts": [
-     "Choose between the options",
-     "Wait until there is enough for everyone"
-    ],
-    "ok": 0,
-    "hint": "If everything cannot be had at once, what is left to do?",
-    "pre": "They have to make a",
-    "term": "choice"
+    "type": "read",
+    "term": "totrev",
+    "text": "A shop sells 100 pizzas at £10 each. Price multiplied by quantity sold, here £1,000, is "
    },
    {
     "type": "ask",
-    "q": "When you choose one option, do you still get the ones you did not choose?",
+    "q": "The price rises 10% and the quantity bought falls 20%. How do we measure how responsive buyers were?",
     "opts": [
-     "No, you give them up",
-     "Yes, all of them"
+     "Percentage change in quantity demanded divided by percentage change in price",
+     "Change in price in pounds divided by the change in revenue in pounds"
     ],
     "ok": 0,
-    "hint": "You chose the phone. Can you also spend that same money on the holiday?",
-    "pre": "So every choice is a",
-    "term": "tradeoff"
+    "hint": "Responsiveness compares two percentage changes: the one in quantity against the one in price.",
+    "pre": "That measure is",
+    "term": "ped"
    },
    {
     "type": "ask",
-    "q": "Can the same land, workers and machines be used to make something else instead?",
+    "q": "The answer is −2: quantity fell twice as fast as price rose. Is demand very responsive to price, or barely?",
     "opts": [
-     "Yes, many different things",
-     "No, only one thing"
+     "Very responsive, which is elastic",
+     "Barely responsive, which is inelastic"
     ],
     "ok": 0,
-    "hint": "Could the bottling factory make juice or fizzy drinks with the very same resources?",
-    "pre": "So resources have",
-    "term": "altuses"
-   },
-   {
-    "type": "chains",
-    "title": "Milestone: two chains",
-    "prompt": "Drag and drop the 3 key terms into the two chains that lead to one concept. Chain 1 is what choosing involves. Chain 2 is what resources can do.",
-    "lanes": [
-     {
-      "label": "Chain 1",
-      "slots": [
-       {
-        "id": "c0",
-        "expect": "choice"
-       },
-       {
-        "id": "c1",
-        "expect": "tradeoff"
-       }
-      ]
-     },
-     {
-      "label": "Chain 2",
-      "slots": [
-       {
-        "id": "c2",
-        "expect": "altuses"
-       }
-      ]
-     }
-    ],
-    "bank": [
-     "choice",
-     "tradeoff",
-     "altuses"
-    ],
-    "done": "Two chains, one destination. Now: what do they lead to?"
+    "hint": "A number bigger than 1 in size means quantity moved by more than price did.",
+    "pre": "Reading whether the size is above 1, equal to 1 or below 1 is",
+    "term": "pedint"
    },
    {
     "type": "ask",
-    "q": "Of everything you gave up, which one do you count when judging a choice?",
+    "q": "What makes buyers more responsive to a price rise: having close substitutes available, or having none?",
     "opts": [
-     "The best one you gave up",
-     "All of them added together"
+     "Having close substitutes",
+     "Having none"
     ],
     "ok": 0,
-    "hint": "You can only have one thing instead. Which of the things you gave up would you actually have picked?",
-    "pre": "That is the",
-    "term": "nextbest"
+    "hint": "If a rival product is just as good, what do you do when your usual one gets dearer?",
+    "pre": "Substitutes, necessity, share of income and time all shape the",
+    "term": "pedfac"
+   },
+   {
+    "type": "order",
+    "title": "Milestone: four chunks",
+    "prompt": "Drag and drop the 4 key terms in the order they build on each other.",
+    "order": [
+     "totrev",
+     "ped",
+     "pedint",
+     "pedfac"
+    ],
+    "done": "Four chunks locked in. Your head is clear for the next ones."
    },
    {
     "type": "ask",
-    "q": "So what is the real cost of a choice?",
+    "q": "Demand is elastic and the shop raises its price. Does total revenue rise or fall?",
     "opts": [
-     "The value of the next best alternative you gave up",
-     "The money you pay, plus the time it takes"
+     "It falls, because quantity drops by more than the price rises",
+     "It rises, because each pizza sold now brings in more money"
     ],
     "ok": 0,
-    "hint": "Money is only one way of counting. What did you actually give up?",
-    "pre": "That is the",
-    "term": "oppcost"
+    "hint": "Elastic means quantity moves by more than price. Which effect is bigger?",
+    "pre": "So the link between elasticity and what the firm earns is",
+    "term": "pedrev"
    },
    {
     "type": "derive",
     "title": "Final test: the whole derivation",
-    "prompt": "Scarcity is already on your map. Drag and drop the 5 key terms into the boxes to rebuild the rest of this branch from memory. Chains meet at the concept.",
-    "bridge": "Opportunity cost is on your map. Next on the schedule: Production possibility frontier. Every prerequisite it needs is met, so it starts now."
-   }
-  ],
-  "given": [
-   "scarcity"
-  ]
- },
- {
-  "name": "Production possibility frontier",
-  "hud": "Stage 3 · Production possibility frontier",
-  "title": "The production possibility frontier",
-  "sub": "The limit of what an economy can produce, and what it costs to move along it.",
-  "builds": [
-   "oppcost",
-   "finres"
-  ],
-  "graph": {
-   "h": 324,
-   "nodes": {
-    "finres": [
-     40,
-     40,
-     164,
-     56
-    ],
-    "oppcost": [
-     40,
-     130,
-     164,
-     56
-    ],
-    "maxout": [
-     237,
-     40,
-     147,
-     56
-    ],
-    "shift": [
-     237,
-     130,
-     130,
-     56
-    ],
-    "giveup": [
-     418,
-     130,
-     156,
-     56
-    ],
-    "ppf": [
-     607,
-     130,
-     230,
-     64
-    ],
-    "unattain": [
-     870,
-     130,
-     130,
-     56
-    ],
-    "ineff": [
-     870,
-     220,
-     130,
-     56
-    ]
-   },
-   "edges": [
-    [
-     [
-      204,
-      68
-     ],
-     [
-      237,
-      68
-     ]
-    ],
-    [
-     [
-      384,
-      68
-     ],
-     [
-      589,
-      68
-     ],
-     [
-      589,
-      156
-     ],
-     [
-      607,
-      156
-     ]
-    ],
-    [
-     [
-      204,
-      158
-     ],
-     [
-      237,
-      158
-     ]
-    ],
-    [
-     [
-      367,
-      158
-     ],
-     [
-      418,
-      158
-     ]
-    ],
-    [
-     [
-      574,
-      158
-     ],
-     [
-      582,
-      158
-     ],
-     [
-      582,
-      168
-     ],
-     [
-      607,
-      168
-     ]
-    ],
-    [
-     [
-      837,
-      156
-     ],
-     [
-      852,
-      156
-     ],
-     [
-      852,
-      158
-     ],
-     [
-      870,
-      158
-     ]
-    ],
-    [
-     [
-      837,
-      168
-     ],
-     [
-      845,
-      168
-     ],
-     [
-      845,
-      248
-     ],
-     [
-      870,
-      248
-     ]
-    ]
-   ],
-   "given": [
-    "finres",
-    "oppcost"
-   ]
-  },
-  "script": [
-   {
-    "type": "title"
-   },
-   {
-    "type": "ask",
-    "q": "A country uses all its finite resources to make just two things: bottled water and phones. Can it make an unlimited amount of both?",
-    "opts": [
-     "No, there is a limit",
-     "Yes, there is no limit"
-    ],
-    "ok": 0,
-    "hint": "The resources are finite. What does that do to the most that can be made?",
-    "pre": "So there is a ceiling. It is the",
-    "term": "maxout"
-   },
-   {
-    "type": "ask",
-    "q": "To make more phones, what must the country do with its resources?",
-    "opts": [
-     "Move them from bottled water to phones",
-     "Make new resources appear"
-    ],
-    "ok": 0,
-    "hint": "The resources are already fully used. Where could extra phone-makers come from?",
-    "pre": "So resources are moved. That is",
-    "term": "shift"
-   },
-   {
-    "type": "ask",
-    "q": "What happens to the amount of bottled water when resources move to phones?",
-    "opts": [
-     "It falls",
-     "It stays the same"
-    ],
-    "ok": 0,
-    "hint": "The workers and machines that made water are now making phones.",
-    "pre": "So every extra phone costs some",
-    "term": "giveup"
-   },
-   {
-    "type": "chains",
-    "title": "Milestone: two chains",
-    "prompt": "Drag and drop the 3 key terms into the two chains that lead to one concept. One chain comes from finite resources, the other from opportunity cost.",
-    "lanes": [
-     {
-      "label": "From finite resources",
-      "slots": [
-       {
-        "id": "c0",
-        "expect": "maxout"
-       }
-      ]
-     },
-     {
-      "label": "From opportunity cost",
-      "slots": [
-       {
-        "id": "c1",
-        "expect": "shift"
-       },
-       {
-        "id": "c2",
-        "expect": "giveup"
-       }
-      ]
-     }
-    ],
-    "bank": [
-     "maxout",
-     "shift",
-     "giveup"
-    ],
-    "done": "Two chains, one destination. Now: what do they lead to?"
-   },
-   {
-    "type": "ask",
-    "q": "Each dot is the most phones the country can make for one amount of water. What would a line joining them show?",
-    "opts": [
-     "The limit of what it can produce",
-     "How much money it has"
-    ],
-    "ok": 0,
-    "hint": "Each point is the most it can make of one good, given the amount of the other.",
-    "pre": "That line is the",
-    "term": "ppf",
-    "fig": "dots"
-   },
-   {
-    "type": "show"
-   },
-   {
-    "type": "draw",
-    "title": "Economics drawing tool",
-    "prompt": "Draw the production possibility frontier. Click to place 4 to 7 points from the phones axis down to the water axis, and drag a point to adjust it."
-   },
-   {
-    "type": "ask",
-    "q": "Could the country make the mix at point D, beyond the line?",
-    "opts": [
-     "No, it is out of reach",
-     "Yes, with the same resources"
-    ],
-    "ok": 0,
-    "hint": "The line is the ceiling. What is above a ceiling?",
-    "pre": "Beyond the line is",
-    "term": "unattain",
-    "fig": "beyond"
-   },
-   {
-    "type": "ask",
-    "q": "And at point C, inside the line: is the country using all its resources well?",
-    "opts": [
-     "No, some are unused or wasted",
-     "Yes, fully"
-    ],
-    "ok": 0,
-    "hint": "If it could make more of one good without making less of the other, what is going on?",
-    "pre": "Inside the line there is",
-    "term": "ineff",
-    "fig": "inside"
-   },
-   {
-    "type": "derive",
-    "title": "Final test: the whole derivation",
-    "prompt": "Finite resources and Opportunity cost are already on your map. Drag and drop the 6 key terms into the boxes to rebuild the rest of this branch from memory. Chains meet at the concept."
+    "prompt": "Demand and Movement vs shift are already on your map. Drag and drop the 5 key terms into the boxes to rebuild the rest of this branch from memory. Chains meet at the concept."
    },
    {
     "type": "done"
    }
   ],
   "given": [
-   "finres",
-   "oppcost"
+   "demand",
+   "move"
   ]
  }
 ];
-  var PLAN = [{"name":"Scarcity","needs":[]},{"name":"Opportunity cost","needs":["scarcity"]},{"name":"Production possibility frontier","needs":["finres","oppcost"]}];
-  var SUMMARY = "Scarcity → Opportunity cost → The production possibility frontier";
+  var PLAN = [{"name":"Utility and demand","needs":[]},{"name":"Price elasticity of demand","needs":["demand","move"]}];
+  var SUMMARY = "Utility and demand → Price elasticity of demand";
   var feed = document.getElementById('feed'), tray = document.getElementById('tray'), pipEls = Array.prototype.slice.call(document.querySelectorAll('.pips i'));
   var pipText = document.getElementById('pipText'), stageTitle = document.getElementById('stageTitle');
   var stageIdx = 0, idx = -1, held = 0, collected = [], completed = 0;
@@ -1225,117 +900,6 @@ button { font: inherit; color: inherit; }
     var io = new IntersectionObserver(function (es) { es.forEach(function (e) { if (e.isIntersecting && e.intersectionRatio > 0.6 && !done) { done = true; io.disconnect(); next(false); } }); }, { root: feed, threshold: [0.6] });
     io.observe(s);
   }
-  /* ---- the economics drawing tool: axes, an animated example, and a curve the student draws ---- */
-  var PX = { ox: 70, oy: 340, W: 430, H: 290 };
-  function ppfPoint(t, u) { return [PX.ox + PX.W * t, PX.oy - PX.H * u]; }
-  function ppfY(t) { return Math.sqrt(Math.max(0, 1 - t * t)); }
-  function ppfPath() { var d = ''; for (var i = 0; i <= 60; i++) { var t = i / 60, p = ppfPoint(t, ppfY(t)); d += (i ? 'L' : 'M') + p[0].toFixed(1) + ',' + p[1].toFixed(1); } return d; }
-  function axes(svg) {
-    svg.setAttribute('viewBox', '0 0 560 400'); svg.setAttribute('class', 'dia');
-    for (var i = 1; i <= 4; i++) {
-      svgEl('line', { x1: PX.ox, x2: PX.ox + PX.W + 20, y1: PX.oy - (PX.H / 4) * i, y2: PX.oy - (PX.H / 4) * i, class: 'dgrid' }, svg);
-      svgEl('line', { y1: PX.oy, y2: PX.oy - PX.H - 20, x1: PX.ox + (PX.W / 4) * i, x2: PX.ox + (PX.W / 4) * i, class: 'dgrid' }, svg);
-    }
-    svgEl('line', { x1: PX.ox, y1: PX.oy, x2: PX.ox + PX.W + 34, y2: PX.oy, class: 'dax' }, svg);
-    svgEl('line', { x1: PX.ox, y1: PX.oy, x2: PX.ox, y2: PX.oy - PX.H - 34, class: 'dax' }, svg);
-    var xl = svgEl('text', { x: PX.ox + PX.W / 2, y: PX.oy + 44, class: 'dlab', 'text-anchor': 'middle' }, svg); xl.textContent = 'Bottled water (units)';
-    var yl = svgEl('text', { x: 22, y: PX.oy - PX.H / 2, class: 'dlab', 'text-anchor': 'middle', transform: 'rotate(-90 22 ' + (PX.oy - PX.H / 2) + ')' }, svg); yl.textContent = 'Phones (units)';
-    var o = svgEl('text', { x: PX.ox - 12, y: PX.oy + 18, class: 'dlab', 'text-anchor': 'end' }, svg); o.textContent = '0';
-  }
-  function dot(svg, t, u, label, cls) {
-    var p = ppfPoint(t, u), g = svgEl('g', { class: 'dpt ' + (cls || '') }, svg);
-    svgEl('circle', { cx: p[0], cy: p[1], r: 8 }, g);
-    if (label) { var tx = svgEl('text', { x: p[0] + 14, y: p[1] - 10, class: 'dlab' }, g); tx.textContent = label; }
-    return g;
-  }
-  /* a small figure inside a question: the frontier as dots, or a point beyond or inside it */
-  function miniFigure(kind) {
-    var box = el('div', 'svgwrap fig'), svg = document.createElementNS(NS, 'svg'); box.appendChild(svg); axes(svg);
-    if (kind === 'dots') { for (var i = 0; i <= 8; i++) { var t = i / 8; dot(svg, t, ppfY(t), '', 'plain'); } }
-    else { svgEl('path', { d: ppfPath(), class: 'dcurve' }, svg); if (kind === 'beyond') dot(svg, 0.8, 0.82, 'D', 'out'); else dot(svg, 0.45, 0.5, 'C', 'in'); }
-    return box;
-  }
-
-  function buildShow() {
-    var wrap = stack('<span class="milestone">Example</span><p class="big">Here is a production possibility frontier, drawn.</p>');
-    var box = el('div', 'svgwrap'), svg = document.createElementNS(NS, 'svg'); box.appendChild(svg); axes(svg);
-    var cap = el('div', 'cap', 'Watch the line appear.'), again = el('button', 'btn ghostbtn', 'Replay'); again.type = 'button';
-    wrap.appendChild(box); wrap.appendChild(cap); wrap.appendChild(again);
-    var s = slide(wrap), timers = [], started = false, curve = null, extras = [];
-    function clear() { timers.forEach(clearTimeout); timers = []; extras.forEach(function (e) { e.remove(); }); extras = []; if (curve) curve.remove(); }
-    function play() {
-      clear();
-      curve = svgEl('path', { d: ppfPath(), class: 'dcurve draw' }, svg);
-      var len = curve.getTotalLength ? curve.getTotalLength() : 700; curve.style.strokeDasharray = len; curve.style.strokeDashoffset = len;
-      curve.getBoundingClientRect(); curve.style.transition = 'stroke-dashoffset 1.6s ease'; curve.style.strokeDashoffset = 0;
-      cap.textContent = 'The line shows the most the country can make of one good for each amount of the other.';
-      function at(ms, fn) { timers.push(setTimeout(fn, ms)); }
-      at(2000, function () { extras.push(dot(svg, 0.3, ppfY(0.3), 'A', 'on')); extras.push(dot(svg, 0.8, ppfY(0.8), 'B', 'on')); cap.textContent = 'A and B: every resource is in use. Moving from A to B gives more water and fewer phones. What is given up is the opportunity cost.'; });
-      at(4600, function () { extras.push(dot(svg, 0.45, 0.5, 'C', 'in')); cap.textContent = 'C is inside the line: some resources are unused or wasted.'; });
-      at(6800, function () { extras.push(dot(svg, 0.8, 0.82, 'D', 'out')); cap.textContent = 'D is beyond the line: unattainable with the resources the country has.'; });
-    }
-    again.addEventListener('click', play);
-    var io = new IntersectionObserver(function (es) { es.forEach(function (e) { if (e.isIntersecting && e.intersectionRatio > 0.6 && !started) { started = true; play(); next(false); } }); }, { root: feed, threshold: [0.6] });
-    io.observe(s);
-  }
-
-  function smoothPath(pts) {
-    if (pts.length < 2) return '';
-    var d = 'M' + pts[0][0] + ',' + pts[0][1];
-    for (var i = 0; i < pts.length - 1; i++) {
-      var p0 = pts[i - 1] || pts[i], p1 = pts[i], p2 = pts[i + 1], p3 = pts[i + 2] || p2;
-      d += 'C' + (p1[0] + (p2[0] - p0[0]) / 6) + ',' + (p1[1] + (p2[1] - p0[1]) / 6) + ' ' + (p2[0] - (p3[0] - p1[0]) / 6) + ',' + (p2[1] - (p3[1] - p1[1]) / 6) + ' ' + p2[0] + ',' + p2[1];
-    }
-    return d;
-  }
-  function gradeCurve(pts) {
-    if (pts.length < 4) return 'Place at least 4 points along the curve.';
-    var p = pts.slice().sort(function (a, b) { return a[0] - b[0]; }).map(function (q) { return { x: (q[0] - PX.ox) / PX.W, y: (PX.oy - q[1]) / PX.H }; });
-    var first = p[0], last = p[p.length - 1];
-    if (first.x > 0.15 || first.y < 0.6) return 'Start on the phones axis, high up on the left. That is the most phones, with no water.';
-    if (last.y > 0.15 || last.x < 0.6) return 'End on the water axis, far to the right. That is the most water, with no phones.';
-    for (var i = 1; i < p.length; i++) if (p[i].y > p[i - 1].y + 0.03) return 'The line must slope downwards: more water means fewer phones.';
-    for (var j = 1; j < p.length - 1; j++) { var chord = first.y + (last.y - first.y) * (p[j].x - first.x) / (last.x - first.x); if (p[j].y < chord + 0.02) return 'Bow the curve outwards, away from the corner. Shifting the first resources costs little; the last ones cost a lot.'; }
-    return '';
-  }
-  function buildDraw(step) {
-    var wrap = stack('<span class="milestone">' + step.title + '</span><p class="big">' + step.prompt + '</p>');
-    var box = el('div', 'svgwrap tool'), svg = document.createElementNS(NS, 'svg'); box.appendChild(svg); axes(svg);
-    var bar = el('div', 'toolbar'), undo = el('button', 'hbtn', 'Undo point'), clr = el('button', 'hbtn', 'Clear'), count = el('span', 'hint', '0 points');
-    undo.type = 'button'; clr.type = 'button'; bar.appendChild(undo); bar.appendChild(clr); bar.appendChild(count);
-    var btn = el('button', 'btn', 'Check my curve'), note = el('div', 'note'); btn.type = 'button'; btn.disabled = true;
-    wrap.appendChild(bar); wrap.appendChild(box); wrap.appendChild(btn); wrap.appendChild(note);
-    slide(wrap);
-    var pts = [], path = svgEl('path', { class: 'dcurve mine' }, svg), dots = svgEl('g', {}, svg), drag = -1, locked = false;
-    function draw() {
-      var sorted = pts.slice().sort(function (a, b) { return a[0] - b[0]; });
-      path.setAttribute('d', smoothPath(sorted));
-      dots.innerHTML = '';
-      pts.forEach(function (p, i) { var c = svgEl('circle', { cx: p[0], cy: p[1], r: 8, class: 'handle' }, dots); c.dataset.i = i; });
-      count.textContent = pts.length + (pts.length === 1 ? ' point' : ' points'); btn.disabled = pts.length < 4 || locked;
-    }
-    function spot(e) { var r = svg.getBoundingClientRect(), vb = svg.viewBox.baseVal; return [Math.max(PX.ox - 4, Math.min(PX.ox + PX.W + 20, (e.clientX - r.left) * vb.width / r.width)), Math.max(PX.oy - PX.H - 20, Math.min(PX.oy + 4, (e.clientY - r.top) * vb.height / r.height))]; }
-    svg.addEventListener('pointerdown', function (e) {
-      if (locked) return; e.preventDefault();
-      var p = spot(e), near = -1;
-      pts.forEach(function (q, i) { if (Math.hypot(q[0] - p[0], q[1] - p[1]) < 16) near = i; });
-      if (near > -1) { drag = near; svg.setPointerCapture(e.pointerId); }
-      else if (pts.length < 7) { pts.push(p); note.textContent = ''; draw(); }
-    });
-    svg.addEventListener('pointermove', function (e) { if (drag > -1) { pts[drag] = spot(e); draw(); } });
-    svg.addEventListener('pointerup', function () { drag = -1; });
-    undo.addEventListener('click', function () { if (!locked) { pts.pop(); draw(); } });
-    clr.addEventListener('click', function () { if (!locked) { pts = []; note.textContent = ''; draw(); } });
-    btn.addEventListener('click', function () {
-      var msg = gradeCurve(pts);
-      if (msg) { note.style.color = 'var(--bad)'; note.textContent = msg; path.classList.add('bad'); setTimeout(function () { path.classList.remove('bad'); }, 600); return; }
-      locked = true; btn.disabled = true; path.classList.add('good'); note.style.color = 'var(--good)';
-      note.textContent = 'That is a production possibility frontier: downhill, and bowed outwards. Now use it.';
-      setTimeout(function () { next(true); }, 2200);
-    });
-    draw();
-  }
-
   /* ---- the schedule: what is done, what is ready, what is waiting on a prerequisite ---- */
   function fmtDate(offset) { return new Date(Date.now() + offset * DAY).toLocaleDateString(undefined, { weekday: 'short', day: 'numeric', month: 'short' }); }
   function known(key) { return collected.indexOf(key) > -1; }

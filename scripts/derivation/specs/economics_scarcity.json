@@ -306,7 +306,7 @@
      "type": "ask",
      "q": "So what is the real cost of a choice?",
      "right": "The value of the next best alternative you gave up",
-     "wrong": "The money you pay",
+     "wrong": "The money you pay, plus the time it takes",
      "hint": "Money is only one way of counting. What did you actually give up?",
      "pre": "That is the",
      "term": "oppcost"

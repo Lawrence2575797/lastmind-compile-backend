@@ -1,0 +1,239 @@
+{
+ "id": "econ-markets-sample",
+ "subject": "Economics",
+ "title": "Utility, demand and elasticity",
+ "terms": {
+  "util": {
+   "label": "Utility"
+  },
+  "umax": {
+   "label": "Utility maximisation"
+  },
+  "demand": {
+   "label": "Demand"
+  },
+  "law": {
+   "label": "Law of demand"
+  },
+  "move": {
+   "label": "Movement vs shift"
+  },
+  "cond": {
+   "label": "Conditions of demand"
+  },
+  "totrev": {
+   "label": "Total revenue"
+  },
+  "ped": {
+   "label": "Price elasticity of demand"
+  },
+  "pedint": {
+   "label": "Interpreting PED"
+  },
+  "pedfac": {
+   "label": "Factors affecting PED"
+  },
+  "pedrev": {
+   "label": "PED and total revenue"
+  }
+ },
+ "stages": [
+  {
+   "name": "Utility and demand",
+   "title": "Utility and demand",
+   "sub": "Why buyers want things, and how the price changes how much they buy.",
+   "given": [],
+   "builds": [],
+   "edges": [
+    [
+     "util",
+     "umax"
+    ],
+    [
+     "umax",
+     "demand"
+    ],
+    [
+     "demand",
+     "law"
+    ],
+    [
+     "law",
+     "move"
+    ],
+    [
+     "demand",
+     "cond"
+    ],
+    [
+     "move",
+     "cond"
+    ]
+   ],
+   "steps": [
+    {
+     "type": "read",
+     "term": "util",
+     "text": "You eat a slice of pizza and enjoy it. The satisfaction you get from consuming a good or service is called "
+    },
+    {
+     "type": "ask",
+     "q": "You have limited money and many things you could buy. What do economists assume you try to do with it?",
+     "right": "Get as much satisfaction as possible",
+     "wrong": "Spend as little as possible",
+     "hint": "Think about why anyone spends money at all: what do they want out of it?",
+     "pre": "So consumers are assumed to aim for",
+     "term": "umax"
+    },
+    {
+     "type": "ask",
+     "q": "Buyers each have a quantity they would buy at every possible price. What does that describe?",
+     "right": "Buyers' willingness and ability to buy at each price",
+     "wrong": "Sellers' willingness to supply at each price",
+     "hint": "Are we looking at the buyers' side of the market, or the sellers' side?",
+     "pre": "That quantity, at each price, is",
+     "term": "demand"
+    },
+    {
+     "type": "ask",
+     "q": "The price of pizza rises from £10 to £20 and nothing else changes. What happens to the quantity bought?",
+     "right": "It falls",
+     "wrong": "It rises",
+     "hint": "Would you buy more or fewer pizzas at double the price?",
+     "pre": "So price and quantity demanded move in opposite directions. That is the",
+     "term": "law"
+    },
+    {
+     "type": "order",
+     "terms": [
+      "util",
+      "umax",
+      "demand",
+      "law"
+     ],
+     "prompt": "Drag and drop the 4 key terms in the order they build on each other."
+    },
+    {
+     "type": "ask",
+     "q": "A change in the price of pizza slides you along the demand curve. What kind of change would move the whole curve instead?",
+     "right": "A change in something other than the price",
+     "wrong": "A bigger change in the price",
+     "hint": "Price is what is on the axis. What else could change how much people want pizza?",
+     "pre": "Price changes slide you along the curve, other changes shift it. That is the distinction between a",
+     "term": "move"
+    },
+    {
+     "type": "ask",
+     "q": "Incomes rise and people want more pizza at every price. Does the demand curve slide along, or shift?",
+     "right": "It shifts to the right",
+     "wrong": "It slides along",
+     "hint": "The price did not change, so the curve cannot slide along itself.",
+     "pre": "Income, tastes, the prices of related goods and population are the",
+     "term": "cond"
+    },
+    {
+     "type": "derive"
+    }
+   ]
+  },
+  {
+   "name": "Price elasticity of demand",
+   "title": "Price elasticity of demand",
+   "sub": "How strongly buyers react when the price changes, and what that does to a firm's revenue.",
+   "given": [
+    "demand",
+    "move"
+   ],
+   "builds": [
+    "demand",
+    "move"
+   ],
+   "edges": [
+    [
+     "demand",
+     "totrev"
+    ],
+    [
+     "demand",
+     "ped"
+    ],
+    [
+     "move",
+     "ped"
+    ],
+    [
+     "ped",
+     "pedint"
+    ],
+    [
+     "pedint",
+     "pedfac"
+    ],
+    [
+     "pedint",
+     "pedrev"
+    ],
+    [
+     "totrev",
+     "pedrev"
+    ]
+   ],
+   "steps": [
+    {
+     "type": "read",
+     "term": "totrev",
+     "text": "A shop sells 100 pizzas at £10 each. Price multiplied by quantity sold, here £1,000, is "
+    },
+    {
+     "type": "ask",
+     "q": "The price rises 10% and the quantity bought falls 20%. How do we measure how responsive buyers were?",
+     "right": "Percentage change in quantity demanded divided by percentage change in price",
+     "wrong": "Change in price in pounds divided by the change in revenue in pounds",
+     "hint": "Responsiveness compares two percentage changes: the one in quantity against the one in price.",
+     "pre": "That measure is",
+     "term": "ped"
+    },
+    {
+     "type": "ask",
+     "q": "The answer is −2: quantity fell twice as fast as price rose. Is demand very responsive to price, or barely?",
+     "right": "Very responsive, which is elastic",
+     "wrong": "Barely responsive, which is inelastic",
+     "hint": "A number bigger than 1 in size means quantity moved by more than price did.",
+     "pre": "Reading whether the size is above 1, equal to 1 or below 1 is",
+     "term": "pedint"
+    },
+    {
+     "type": "ask",
+     "q": "What makes buyers more responsive to a price rise: having close substitutes available, or having none?",
+     "right": "Having close substitutes",
+     "wrong": "Having none",
+     "hint": "If a rival product is just as good, what do you do when your usual one gets dearer?",
+     "pre": "Substitutes, necessity, share of income and time all shape the",
+     "term": "pedfac"
+    },
+    {
+     "type": "order",
+     "terms": [
+      "totrev",
+      "ped",
+      "pedint",
+      "pedfac"
+     ],
+     "prompt": "Drag and drop the 4 key terms in the order they build on each other."
+    },
+    {
+     "type": "ask",
+     "q": "Demand is elastic and the shop raises its price. Does total revenue rise or fall?",
+     "right": "It falls, because quantity drops by more than the price rises",
+     "wrong": "It rises, because each pizza sold now brings in more money",
+     "hint": "Elastic means quantity moves by more than price. Which effect is bigger?",
+     "pre": "So the link between elasticity and what the firm earns is",
+     "term": "pedrev"
+    },
+    {
+     "type": "derive"
+    }
+   ]
+  }
+ ]
+}

@@ -261,7 +261,12 @@
        identical branches can be filled either way round */
     function judge(placed) {
       var v = {}, phi = {}, seen = {}, fits = true;
-      defs.forEach(function (d) { v[d.id] = placed[d.id] === d.expect; });
+      /* terms that come from the same places and lead to the same places are interchangeable, so one of them is right in any of their boxes
+         even when something else on the board is still wrong */
+      var preds = {}, succs = {};
+      (g.pairs || []).forEach(function (p) { (succs[p[0]] = succs[p[0]] || []).push(p[1]); (preds[p[1]] = preds[p[1]] || []).push(p[0]); });
+      function sig(k) { return (preds[k] || []).slice().sort().join(',') + '|' + (succs[k] || []).slice().sort().join(','); }
+      defs.forEach(function (d) { v[d.id] = placed[d.id] === d.expect || (!!placed[d.id] && !!g.pairs && sig(placed[d.id]) === sig(d.expect)); });
       g.given.forEach(function (k) { phi[k] = k; });
       open.forEach(function (k) { phi[k] = placed[k]; if (!placed[k] || seen[placed[k]]) fits = false; seen[placed[k]] = true; });
       var edgeSet = {}; (g.pairs || []).forEach(function (p) { edgeSet[p[0] + '>' + p[1]] = true; });

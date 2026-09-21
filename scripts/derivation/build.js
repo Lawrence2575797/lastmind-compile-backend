@@ -164,7 +164,9 @@ function build(spec) {
         const o = { type: 'ask', q: s.q, opts: [s.right, s.wrong], ok: 0, hint: s.hint, pre: s.pre, term: s.term };
         if (s.fig) o.fig = s.fig; if (s.diagram) o.diagram = s.diagram; steps.push(o);
       } else if (s.type === 'order') {
-        steps.push({ type: 'order', title: `Milestone: ${WORDS[s.terms.length]} chunks`, prompt: s.prompt, order: s.terms, done: 'Four chunks locked in. Your head is clear for the next ones.'.replace('Four', WORDS[s.terms.length][0].toUpperCase() + WORDS[s.terms.length].slice(1)) });
+        const pairs = (st.edges || []).filter(([x, y]) => s.terms.includes(x) && s.terms.includes(y));
+        const prompt = pairs.length ? s.prompt : `Drag and drop the ${s.terms.length} key terms that have come up into the boxes, in any order.`;
+        steps.push({ type: 'order', title: `Milestone: ${WORDS[s.terms.length]} chunks`, prompt, pairs, order: s.terms, done: 'Four chunks locked in. Your head is clear for the next ones.'.replace('Four', WORDS[s.terms.length][0].toUpperCase() + WORDS[s.terms.length].slice(1)) });
       } else if (s.type === 'chains') {
         let n = 0; const lanes = s.lanes.map((l, li) => ({ label: l.label || 'Chain ' + (li + 1), start: l.start, slots: l.terms.map((t) => ({ id: 'c' + (n++), expect: t })) }));
         const chainTerms = s.lanes.flatMap((l) => l.terms);

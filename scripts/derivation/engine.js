@@ -129,7 +129,21 @@
     });
     wrap.appendChild(slots); wrap.appendChild(bank); wrap.appendChild(btn); wrap.appendChild(note);
     slide(wrap);
-    board({ slots: defs, bank: shuffle(step.order), bankEl: bank, btn: btn, note: note, auto: true, onSolved: function () { milestoneDone(note, step.done); } });
+    /* only real links force an order: a term must come before the terms it leads to, and everything else may go in any order */
+    function judge(placed) {
+      var v = {}, pos = {};
+      defs.forEach(function (d, i) { if (placed[d.id]) pos[placed[d.id]] = i; });
+      defs.forEach(function (d, i) {
+        var t = placed[d.id], ok = !!t;
+        (step.pairs || []).forEach(function (p) {
+          if (p[0] === t && pos[p[1]] != null && pos[p[1]] < i) ok = false;
+          if (p[1] === t && pos[p[0]] != null && pos[p[0]] > i) ok = false;
+        });
+        v[d.id] = ok;
+      });
+      return v;
+    }
+    board({ slots: defs, bank: shuffle(step.order), bankEl: bank, btn: btn, note: note, auto: true, judge: judge, onSolved: function () { milestoneDone(note, step.done); } });
   }
 
   function buildPrereq(step) {

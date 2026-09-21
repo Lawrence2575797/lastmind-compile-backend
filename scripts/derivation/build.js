@@ -164,7 +164,13 @@ function build(spec) {
         const o = { type: 'ask', q: s.q, opts: [s.right, s.wrong], ok: 0, hint: s.hint, pre: s.pre, term: s.term };
         if (s.fig) o.fig = s.fig; if (s.diagram) o.diagram = s.diagram; steps.push(o);
       } else if (s.type === 'order') {
-        const pairs = (st.edges || []).filter(([x, y]) => s.terms.includes(x) && s.terms.includes(y));
+        // only links the knowledge map itself states (both ends are map concepts) count as a real sequence; links added between building-block terms do not
+        const pairs = (st.edges || []).filter(([x, y]) => s.terms.includes(x) && s.terms.includes(y) && (!st.nodes || (st.nodes.includes(x) && st.nodes.includes(y))));
+        // An ordering task only makes sense for a real sequence: it is shown only when three or more of these terms form a chain, each leading
+        // to the next. Two short links, or none, are not a sequence to put in order, so no task is shown (the final test covers recall).
+        const nxt = {}; pairs.forEach(([x, y]) => { (nxt[x] = nxt[x] || []).push(y); });
+        const longest = (k, seen) => Math.max(1, ...(nxt[k] || []).filter((c) => !seen.has(c)).map((c) => 1 + longest(c, new Set([...seen, c]))));
+        if (Math.max(0, ...s.terms.map((k) => longest(k, new Set([k])))) < 3) return;
         const prompt = pairs.length ? s.prompt : `Drag and drop the ${s.terms.length} key terms that have come up into the boxes, in any order.`;
         steps.push({ type: 'order', title: `Milestone: ${WORDS[s.terms.length]} chunks`, prompt, pairs, order: s.terms, done: 'Four chunks locked in. Your head is clear for the next ones.'.replace('Four', WORDS[s.terms.length][0].toUpperCase() + WORDS[s.terms.length].slice(1)) });
       } else if (s.type === 'chains') {

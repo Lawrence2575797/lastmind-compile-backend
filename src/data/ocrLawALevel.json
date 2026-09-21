@@ -59,19 +59,20 @@
     },
     {
       "id": "LS_WOOLF",
-      "label": "Woolf reforms and the Civil Procedure Rules 1998: overriding objective of dealing with cases justly and at proportionate cost",
+      "label": "Woolf reforms: the problems Lord Woolf found with the old civil justice system (slow, costly and complex)",
       "difficulty": 0.4,
       "kind": "concept",
       "subtopic": "1.1 Civil courts and other forms of dispute resolution",
       "theme": "Theme 1 - The legal system: courts, legal personnel and access to justice",
-      "objective": "Understand and apply: Woolf reforms and the Civil Procedure Rules 1998: overriding objective of dealing with cases justly and at proportionate cost",
+      "objective": "Understand and apply: Woolf reforms: the problems Lord Woolf found with the old civil justice system (slow, costly and complex)",
       "specRefs": [
         "OCR H415 1.1"
       ],
       "essentialPoints": [
-        "Woolf reforms and the Civil Procedure Rules 1998: overriding objective of dealing with cases justly and at proportionate cost"
+        "Woolf reforms: the problems Lord Woolf found with the old civil justice system (slow, costly and complex)"
       ],
-      "practicalIds": []
+      "practicalIds": [],
+      "conceptId": "law:1_1_civil_courts_and_other_forms_of_dispute_resolution:woolf_reforms_and_the_civil_procedure_rules_1998_overriding_objective_of_dealing_with_cases_justly_and_at_proportionate_cost"
     },
     {
       "id": "LS_ADR_NEG",
@@ -13598,6 +13599,176 @@
       ],
       "practicalIds": [],
       "conceptId": "law:5_5_law_and_technology:cyber_crime_fraud_identity_theft_and_other_online_offences"
+    },
+    {
+      "id": "LS_WOOLF_p2",
+      "label": "The Civil Procedure Rules 1998: the new code, in force from 1999, that put Woolf's reforms into practice",
+      "difficulty": 0.4,
+      "kind": "concept",
+      "subtopic": "1.1 Civil courts and other forms of dispute resolution",
+      "theme": "Theme 1 - The legal system: courts, legal personnel and access to justice",
+      "objective": "Understand and apply: The Civil Procedure Rules 1998: the new code, in force from 1999, that put Woolf's reforms into practice",
+      "specRefs": [
+        "OCR H415 1.1"
+      ],
+      "essentialPoints": [
+        "The Civil Procedure Rules 1998: the new code, in force from 1999, that put Woolf's reforms into practice"
+      ],
+      "practicalIds": [],
+      "conceptId": "law:1_1_civil_courts_and_other_forms_of_dispute_resolution:the_civil_procedure_rules_1998_the_new_code_in_force_from_1999_that_put_woolf_s_reforms_into_practice"
+    },
+    {
+      "id": "LS_WOOLF_p3",
+      "label": "The overriding objective of the CPR: courts must deal with cases justly and at proportionate cost",
+      "difficulty": 0.4,
+      "kind": "concept",
+      "subtopic": "1.1 Civil courts and other forms of dispute resolution",
+      "theme": "Theme 1 - The legal system: courts, legal personnel and access to justice",
+      "objective": "Understand and apply: The overriding objective of the CPR: courts must deal with cases justly and at proportionate cost",
+      "specRefs": [
+        "OCR H415 1.1"
+      ],
+      "essentialPoints": [
+        "The overriding objective of the CPR: courts must deal with cases justly and at proportionate cost"
+      ],
+      "practicalIds": [],
+      "conceptId": "law:1_1_civil_courts_and_other_forms_of_dispute_resolution:the_overriding_objective_of_the_cpr_courts_must_deal_with_cases_justly_and_at_proportionate_cost"
+    },
+    {
+      "id": "LS_WOOLF_p4",
+      "label": "Dealing with a case justly: ensuring the parties are on an equal footing and saving expense",
+      "difficulty": 0.4,
+      "kind": "concept",
+      "subtopic": "1.1 Civil courts and other forms of dispute resolution",
+      "theme": "Theme 1 - The legal system: courts, legal personnel and access to justice",
+      "objective": "Understand and apply: Dealing with a case justly: ensuring the parties are on an equal footing and saving expense",
+      "specRefs": [
+        "OCR H415 1.1"
+      ],
+      "essentialPoints": [
+        "Dealing with a case justly: ensuring the parties are on an equal footing and saving expense"
+      ],
+      "practicalIds": [],
+      "conceptId": "law:1_1_civil_courts_and_other_forms_of_dispute_resolution:dealing_with_a_case_justly_ensuring_the_parties_are_on_an_equal_footing_and_saving_expense"
+    },
+    {
+      "id": "LS_WOOLF_p5",
+      "label": "Dealing with a case justly: dealing with it proportionately, expeditiously and fairly",
+      "difficulty": 0.4,
+      "kind": "concept",
+      "subtopic": "1.1 Civil courts and other forms of dispute resolution",
+      "theme": "Theme 1 - The legal system: courts, legal personnel and access to justice",
+      "objective": "Understand and apply: Dealing with a case justly: dealing with it proportionately, expeditiously and fairly",
+      "specRefs": [
+        "OCR H415 1.1"
+      ],
+      "essentialPoints": [
+        "Dealing with a case justly: dealing with it proportionately, expeditiously and fairly"
+      ],
+      "practicalIds": [],
+      "conceptId": "law:1_1_civil_courts_and_other_forms_of_dispute_resolution:dealing_with_a_case_justly_dealing_with_it_proportionately_expeditiously_and_fairly"
+    },
+    {
+      "id": "LS_WOOLF_p6",
+      "label": "Dealing with a case justly: an appropriate share of the court's resources and enforcing compliance with rules, practice directions and orders",
+      "difficulty": 0.4,
+      "kind": "concept",
+      "subtopic": "1.1 Civil courts and other forms of dispute resolution",
+      "theme": "Theme 1 - The legal system: courts, legal personnel and access to justice",
+      "objective": "Understand and apply: Dealing with a case justly: an appropriate share of the court's resources and enforcing compliance with rules, practice directions and orders",
+      "specRefs": [
+        "OCR H415 1.1"
+      ],
+      "essentialPoints": [
+        "Dealing with a case justly: an appropriate share of the court's resources and enforcing compliance with rules, practice directions and orders"
+      ],
+      "practicalIds": [],
+      "conceptId": "law:1_1_civil_courts_and_other_forms_of_dispute_resolution:dealing_with_a_case_justly_an_appropriate_share_of_the_court_s_resources_and_enforcing_compliance_with_rules_practice_directions_and_orders"
+    },
+    {
+      "id": "LS_WOOLF_p7",
+      "label": "Woolf reform: judges take active case management, controlling the timetable and progress of a case",
+      "difficulty": 0.4,
+      "kind": "concept",
+      "subtopic": "1.1 Civil courts and other forms of dispute resolution",
+      "theme": "Theme 1 - The legal system: courts, legal personnel and access to justice",
+      "objective": "Understand and apply: Woolf reform: judges take active case management, controlling the timetable and progress of a case",
+      "specRefs": [
+        "OCR H415 1.1"
+      ],
+      "essentialPoints": [
+        "Woolf reform: judges take active case management, controlling the timetable and progress of a case"
+      ],
+      "practicalIds": [],
+      "conceptId": "law:1_1_civil_courts_and_other_forms_of_dispute_resolution:woolf_reform_judges_take_active_case_management_controlling_the_timetable_and_progress_of_a_case"
+    },
+    {
+      "id": "LS_WOOLF_p8",
+      "label": "Woolf reform: the three allocation tracks for civil claims (small claims, fast track and multi-track)",
+      "difficulty": 0.4,
+      "kind": "concept",
+      "subtopic": "1.1 Civil courts and other forms of dispute resolution",
+      "theme": "Theme 1 - The legal system: courts, legal personnel and access to justice",
+      "objective": "Understand and apply: Woolf reform: the three allocation tracks for civil claims (small claims, fast track and multi-track)",
+      "specRefs": [
+        "OCR H415 1.1"
+      ],
+      "essentialPoints": [
+        "Woolf reform: the three allocation tracks for civil claims (small claims, fast track and multi-track)"
+      ],
+      "practicalIds": [],
+      "conceptId": "law:1_1_civil_courts_and_other_forms_of_dispute_resolution:woolf_reform_the_three_allocation_tracks_for_civil_claims_small_claims_fast_track_and_multi_track_"
+    },
+    {
+      "id": "LS_WOOLF_p9",
+      "label": "Woolf reform: pre-action protocols requiring the parties to exchange information and try to settle before issuing a claim",
+      "difficulty": 0.4,
+      "kind": "concept",
+      "subtopic": "1.1 Civil courts and other forms of dispute resolution",
+      "theme": "Theme 1 - The legal system: courts, legal personnel and access to justice",
+      "objective": "Understand and apply: Woolf reform: pre-action protocols requiring the parties to exchange information and try to settle before issuing a claim",
+      "specRefs": [
+        "OCR H415 1.1"
+      ],
+      "essentialPoints": [
+        "Woolf reform: pre-action protocols requiring the parties to exchange information and try to settle before issuing a claim"
+      ],
+      "practicalIds": [],
+      "conceptId": "law:1_1_civil_courts_and_other_forms_of_dispute_resolution:woolf_reform_pre_action_protocols_requiring_the_parties_to_exchange_information_and_try_to_settle_before_issuing_a_claim"
+    },
+    {
+      "id": "LS_WOOLF_p10",
+      "label": "Woolf reform: encouraging settlement through Part 36 offers and alternative dispute resolution",
+      "difficulty": 0.4,
+      "kind": "concept",
+      "subtopic": "1.1 Civil courts and other forms of dispute resolution",
+      "theme": "Theme 1 - The legal system: courts, legal personnel and access to justice",
+      "objective": "Understand and apply: Woolf reform: encouraging settlement through Part 36 offers and alternative dispute resolution",
+      "specRefs": [
+        "OCR H415 1.1"
+      ],
+      "essentialPoints": [
+        "Woolf reform: encouraging settlement through Part 36 offers and alternative dispute resolution"
+      ],
+      "practicalIds": [],
+      "conceptId": "law:1_1_civil_courts_and_other_forms_of_dispute_resolution:woolf_reform_encouraging_settlement_through_part_36_offers_and_alternative_dispute_resolution"
+    },
+    {
+      "id": "LS_WOOLF_p11",
+      "label": "Enforcing the reforms: Practice Directions and court sanctions for non-compliance (costs penalties and striking out)",
+      "difficulty": 0.4,
+      "kind": "concept",
+      "subtopic": "1.1 Civil courts and other forms of dispute resolution",
+      "theme": "Theme 1 - The legal system: courts, legal personnel and access to justice",
+      "objective": "Understand and apply: Enforcing the reforms: Practice Directions and court sanctions for non-compliance (costs penalties and striking out)",
+      "specRefs": [
+        "OCR H415 1.1"
+      ],
+      "essentialPoints": [
+        "Enforcing the reforms: Practice Directions and court sanctions for non-compliance (costs penalties and striking out)"
+      ],
+      "practicalIds": [],
+      "conceptId": "law:1_1_civil_courts_and_other_forms_of_dispute_resolution:enforcing_the_reforms_practice_directions_and_court_sanctions_for_non_compliance_costs_penalties_and_striking_out_"
     }
   ],
   "edges": [
@@ -19499,6 +19670,106 @@
     {
       "from": "NL_CYBERCRIME_DEF",
       "to": "NL_CYBERCRIME_DEF_p2",
+      "difficulty": 0.25
+    },
+    {
+      "from": "LS_WOOLF_p2",
+      "to": "LS_PRETRIAL",
+      "difficulty": 0.35
+    },
+    {
+      "from": "LS_WOOLF_p3",
+      "to": "LS_PRETRIAL",
+      "difficulty": 0.35
+    },
+    {
+      "from": "LS_WOOLF_p4",
+      "to": "LS_PRETRIAL",
+      "difficulty": 0.35
+    },
+    {
+      "from": "LS_WOOLF_p5",
+      "to": "LS_PRETRIAL",
+      "difficulty": 0.35
+    },
+    {
+      "from": "LS_WOOLF_p6",
+      "to": "LS_PRETRIAL",
+      "difficulty": 0.35
+    },
+    {
+      "from": "LS_WOOLF_p7",
+      "to": "LS_PRETRIAL",
+      "difficulty": 0.35
+    },
+    {
+      "from": "LS_WOOLF_p8",
+      "to": "LS_PRETRIAL",
+      "difficulty": 0.35
+    },
+    {
+      "from": "LS_WOOLF_p9",
+      "to": "LS_PRETRIAL",
+      "difficulty": 0.35
+    },
+    {
+      "from": "LS_WOOLF_p10",
+      "to": "LS_PRETRIAL",
+      "difficulty": 0.35
+    },
+    {
+      "from": "LS_WOOLF_p11",
+      "to": "LS_PRETRIAL",
+      "difficulty": 0.35
+    },
+    {
+      "from": "LS_WOOLF",
+      "to": "LS_WOOLF_p2",
+      "difficulty": 0.25
+    },
+    {
+      "from": "LS_WOOLF_p2",
+      "to": "LS_WOOLF_p3",
+      "difficulty": 0.25
+    },
+    {
+      "from": "LS_WOOLF_p3",
+      "to": "LS_WOOLF_p4",
+      "difficulty": 0.25
+    },
+    {
+      "from": "LS_WOOLF_p4",
+      "to": "LS_WOOLF_p5",
+      "difficulty": 0.25
+    },
+    {
+      "from": "LS_WOOLF_p5",
+      "to": "LS_WOOLF_p6",
+      "difficulty": 0.25
+    },
+    {
+      "from": "LS_WOOLF_p6",
+      "to": "LS_WOOLF_p7",
+      "difficulty": 0.25
+    },
+    {
+      "from": "LS_WOOLF_p7",
+      "to": "LS_WOOLF_p8",
+      "difficulty": 0.25
+    },
+    {
+      "from": "LS_WOOLF_p8",
+      "to": "LS_WOOLF_p9",
+      "difficulty": 0.25
+    },
+    {
+      "from": "LS_WOOLF_p9",
+      "to": "LS_WOOLF_p10",
+      "difficulty": 0.25
+    },
+    {
+      "from": "LS_WOOLF_p10",
+      "to": "LS_WOOLF_p11",
       "difficulty": 0.25
     }
   ]

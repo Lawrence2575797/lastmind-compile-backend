@@ -69,6 +69,20 @@ function parseWithClosingBraceRepair<T>(raw: string): T {
 
 const LANGUAGE_SUBJECTS = new Set(['Spanish', 'Italian']);
 
+// A lesson is one quick card of at most FOUR chunks. Counted from the text itself, so the rule holds whatever the model does:
+// list lines, "X = Y" definitions, and total words.
+export function lessonSizeProblem(content: any): string | null {
+  const text: string = typeof content?.explanation === 'string' ? content.explanation : '';
+  const lines = text.split(/\r?\n/);
+  const listLines = lines.filter((l) => /^\s*(?:\d+[.)]|[*\-•])\s+/.test(l)).length;
+  const definitions = lines.filter((l) => / = /.test(l)).length;
+  const words = (text.match(/\S+/g) || []).length;
+  if (listLines > 4) return `${listLines} list items, the limit is 4`;
+  if (definitions > 4) return `${definitions} definitions, the limit is 4`;
+  if (words > 110) return `${words} words, the limit is about 100`;
+  return null;
+}
+
 // Cleans a version-2 lesson: every interactive question must be well-formed (or it becomes plain free recall), at most three
 // questions are kept in all, and the lesson is stamped so it is known to be in the new format.
 export function normaliseLessonQuestions(content: any, label: string): any {
@@ -178,33 +192,41 @@ export async function generateAndCacheNodeLesson(nodeId: string, userId: string)
   // Every subject gets the interactive question formats; languages and Biology add their own rules on top.
   const useV2 = !biologyObjective;
 
-  const raw = await callClaudeJSON({
-    model: LESSON_MODEL,
-    systemPrompt: biologyObjective ? BIOLOGY_ATOMIC_LESSON_RULES : LANGUAGE_SUBJECTS.has(typedNode.subject) ? KNOWLEDGE_MAP_ENCODING_LESSON_PROMPT_V2_LANG : KNOWLEDGE_MAP_ENCODING_LESSON_PROMPT_V2,
-    userContent,
-    maxTokens: biologyObjective ? 3000 : MAX_TOKENS,
-    // ~1,862 tokens, well over Sonnet's 1024-token cache minimum, and
-    // byte-identical across every node/subject/student - exactly the
-    // "large, fixed prompt reused verbatim" case cacheSystemPrompt exists
-    // for (see claudeClient.ts's own comment). Wasn't set before; every
-    // fresh generation was paying full input-token price on this prompt
-    // for no reason.
-    cacheSystemPrompt: true,
-    userId,
-    meteredReason: 'knowledge-map-v2-node-lesson',
-  });
+  // The size limits are enforced here in code, not just asked for in the prompt: a lesson that packs in more than four chunks
+  // is sent back to be rewritten (up to three tries) and is never stored.
   let encodingContent: unknown;
-  try {
-    encodingContent = parseWithClosingBraceRepair<unknown>(raw);
-    if (biologyObjective) { validateBiologyEncodingLesson(encodingContent, biologyObjective); (encodingContent as Record<string, unknown>).formatVersion = 2; }
-    if (useV2) encodingContent = normaliseLessonQuestions(encodingContent, typedNode.label);
-  } catch (err) {
-    // Logged with enough to actually diagnose a live failure from Render's
-    // own logs (no other way to see this - this route is live/single-shot,
-    // unlike the offline batch pipeline's own debug-file dump) without
-    // ever putting the raw model output in the student-facing error.
-    console.error(`LastMind: node lesson generation failed to parse for "${typedNode.label}" (${nodeId}).`, { rawLength: raw.length, rawSnippet: raw.slice(0, 300) }, err);
-    throw err;
+  let correction = '';
+  for (let attempt = 1; ; attempt++) {
+    const raw = await callClaudeJSON({
+      model: LESSON_MODEL,
+      systemPrompt: biologyObjective ? BIOLOGY_ATOMIC_LESSON_RULES : LANGUAGE_SUBJECTS.has(typedNode.subject) ? KNOWLEDGE_MAP_ENCODING_LESSON_PROMPT_V2_LANG : KNOWLEDGE_MAP_ENCODING_LESSON_PROMPT_V2,
+      userContent: userContent + correction,
+      maxTokens: biologyObjective ? 3000 : MAX_TOKENS,
+      // ~1,862 tokens, well over Sonnet's 1024-token cache minimum, and
+      // byte-identical across every node/subject/student - exactly the
+      // "large, fixed prompt reused verbatim" case cacheSystemPrompt exists
+      // for (see claudeClient.ts's own comment).
+      cacheSystemPrompt: true,
+      userId,
+      meteredReason: 'knowledge-map-v2-node-lesson',
+    });
+    try {
+      encodingContent = parseWithClosingBraceRepair<unknown>(raw);
+      if (biologyObjective) { validateBiologyEncodingLesson(encodingContent, biologyObjective); (encodingContent as Record<string, unknown>).formatVersion = 2; }
+      if (useV2) encodingContent = normaliseLessonQuestions(encodingContent, typedNode.label);
+    } catch (err) {
+      // Logged with enough to diagnose a live failure from Render's own logs, without ever putting the raw model output
+      // in the student-facing error.
+      console.error(`LastMind: node lesson generation failed to parse for "${typedNode.label}" (${nodeId}).`, { rawLength: raw.length, rawSnippet: raw.slice(0, 300) }, err);
+      throw err;
+    }
+    const problem = lessonSizeProblem(encodingContent);
+    if (!problem) break;
+    if (attempt >= 3) throw new Error(`lesson for "${typedNode.label}" would not fit the size limits: ${problem}`);
+    console.warn(`LastMind: lesson for "${typedNode.label}" broke a size limit (${problem}); asking for a shorter rewrite (attempt ${attempt}).`);
+    correction = `
+
+YOUR PREVIOUS ATTEMPT BROKE A HARD LIMIT (${problem}). Rewrite it so every limit is met: teach only the idea that unites the items plus the FOUR most exam-central ones, and keep every question answerable from the explanation you write.`;
   }
 
   // Diagram-spec classification needs the ACTUAL practice question this

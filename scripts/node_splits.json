@@ -1,70 +1,500 @@
 [
-  ["Properties and definitions of special quadrilaterals (square", ["Properties and definitions of a square and a rectangle", "Properties and definitions of a parallelogram and a rhombus", "Properties and definitions of a trapezium and a kite"]],
-  ["Properties of faces, surfaces, edges and vertices of 3D shapes (cubes", ["Faces, edges and vertices of cubes and cuboids", "Faces, edges and vertices of prisms and cylinders", "Faces, edges and vertices of pyramids, cones and spheres"]],
-  ["Trigonometric ratios: sin θ = opp/hyp", ["Sine ratio: sin θ = opposite/hypotenuse", "Cosine ratio: cos θ = adjacent/hypotenuse", "Tangent ratio: tan θ = opposite/adjacent"]],
-  ["Small angle approximations:", ["Small angle approximations: sin(θ) ≈ θ and tan(θ) ≈ θ", "Small angle approximation: cos(θ) ≈ 1 − θ²/2"]],
-  ["Exact values of sin, cos, tan at standard angles", ["Exact values of sin and cos at 0, π/6, π/4, π/3, π/2 and π", "Exact values of tan at standard angles, including where it is undefined"]],
-  ["Circle definitions: centre, radius, chord", ["Circle definitions: centre, radius and diameter", "Circle definitions: circumference, arc and chord", "Circle definitions: tangent, sector and segment"]],
-  ["Conditions for a binomial model:", ["Binomial model conditions: a fixed number of trials and two possible outcomes", "Binomial model conditions: independent trials and a constant probability of success"]],
-
-  ["ONS wellbeing dimensions (1):", ["ONS wellbeing dimensions: subjective wellbeing and personal wellbeing", "ONS wellbeing dimensions: relationships and health"]],
-  ["ONS wellbeing dimensions (2):", ["ONS wellbeing dimensions: what we do, where we live and personal finance", "ONS wellbeing dimensions: the economy, education and skills, and the environment"]],
-  ["The four main macroeconomic objectives", ["Macroeconomic objectives: economic growth and low unemployment", "Macroeconomic objectives: low and stable inflation and balance of payments equilibrium"]],
-  ["Reasons for government intervention in wage setting", ["Reasons for government intervention in wage setting: equity and tackling low pay and poverty", "Reasons for government intervention in wage setting: monopsony power and controlling public spending"]],
-  ["Third degree price discrimination: necessary conditions", ["Third degree price discrimination conditions: market power and separable markets", "Third degree price discrimination conditions: differing price elasticity of demand and prevention of resale"]],
-  ["Third degree price discrimination: costs/benefits to producers", ["Third degree price discrimination: benefits to producers (higher profit, funds for investment)", "Third degree price discrimination: costs to producers (administration and enforcement costs)"]],
-  ["Third degree price discrimination: costs/benefits to consumers", ["Third degree price discrimination: loss of consumer surplus for buyers with inelastic demand", "Third degree price discrimination: lower prices and greater access for buyers with elastic demand"]],
-  ["Keynesian shape of LRAS:", ["Keynesian LRAS: horizontal section at low output because of spare capacity", "Keynesian LRAS: upward-sloping section as capacity tightens", "Keynesian LRAS: vertical section at full capacity"]],
-  ["Characteristics of perfect competition", ["Perfect competition: many buyers and sellers, price takers and a homogeneous product", "Perfect competition: perfect information and free entry and exit"]],
-  ["Occupational immobility of labour: definition and causes", ["Occupational immobility of labour: definition", "Causes of occupational immobility: skills mismatch, lack of transferable skills and discrimination"]],
-  ["Geographical immobility of labour: definition and causes", ["Geographical immobility of labour: definition", "Causes of geographical immobility: housing costs, family ties and regional cost-of-living differences"]],
-  ["Elasticity of demand for labour: definition and determinants", ["Elasticity of demand for labour: definition", "Determinants of elasticity of demand for labour: labour cost as a proportion of total cost and ease of substitution", "Determinants of elasticity of demand for labour: price elasticity of demand for the product and time period"]],
-  ["Elasticity of supply of labour: definition and determinants", ["Elasticity of supply of labour: definition", "Determinants of elasticity of supply of labour: skill level required, time period and the vocational nature of the job"]],
-  ["Policy to tackle geographical immobility:", ["Tackling geographical immobility: housing policy", "Tackling geographical immobility: relocation subsidies", "Tackling geographical immobility: transport infrastructure investment"]],
-  ["Restrictions on monopsony power: definition", ["Restrictions on monopsony power: definition", "Restrictions on monopsony power: regulation of buying practices and supply-chain codes of practice", "Restrictions on monopsony power: the minimum wage"]],
-  ["Regulation as a response to identified financial market failures", ["Financial regulation as a response to asymmetric information and moral hazard", "Financial regulation as a response to market rigging and systemic externalities"]],
-
-  ["Element names and chemical symbols (first 20 elements", ["Names and symbols of the first ten elements (hydrogen to neon)", "Names and symbols of elements 11 to 20 (sodium to calcium)", "Names and symbols of the other elements in the specification, including those in Groups 1 and 7"]],
-  ["Combustion products from fuels:", ["Products of complete combustion of fuels: carbon dioxide and water vapour", "Products of incomplete combustion of fuels: carbon monoxide and particulates", "Products from impurities and high temperatures in fuels: sulfur dioxide and oxides of nitrogen"]],
-  ["Reactions of carboxylic acids:", ["Carboxylic acids react with carbonates to form a salt, water and carbon dioxide", "Carboxylic acids dissolve in water to give acidic solutions", "Carboxylic acids react with alcohols to form esters"]],
-  ["Which substances show which bond type", ["Ionic bonding occurs in compounds of a metal with a non-metal", "Covalent bonding occurs in non-metal elements and compounds", "Metallic bonding occurs in metals and alloys"]],
-  ["Naming changes of state:", ["Changes of state: melting and freezing at the melting point", "Changes of state: boiling and condensing at the boiling point"]],
-
-  ["Lay magistrates: qualifications and eligibility criteria", ["Lay magistrates: age and residency requirements", "Lay magistrates: character requirements"]],
-  ["Solicitors: qualifications, training routes", ["Solicitors: qualifications and training routes, including the SQE", "Solicitors: work and areas of practice"]],
-  ["Barristers: qualifications, training", ["Barristers: qualifications and training (academic, vocational, pupillage)", "Barristers: work, including advocacy"]],
-  ["Chartered Legal Executives:", ["Chartered Legal Executives: qualifications and training", "Chartered Legal Executives: work and regulation by CILEx Regulation"]],
-  ["Self-defence: legal basis under common law", ["Self-defence: the common law basis", "Self-defence: section 76 Criminal Justice and Immigration Act 2008", "Self-defence: section 3 Criminal Law Act 1967 and prevention of crime"]],
-  ["Self-defence: available for defence of self", ["Self-defence: defence of oneself and of another person", "Self-defence: defence of property and prevention of crime"]],
-  ["Pre-trial procedure: issuing a claim", ["Civil pre-trial procedure: issuing a claim and the particulars of claim", "Civil pre-trial procedure: the defence and case management by the court"]],
-  ["Criminal legal aid: right to representation", ["Criminal legal aid: the right to representation and the duty solicitor scheme", "Criminal legal aid: the means test and the interests of justice test"]],
-  ["General damages: non-quantifiable losses", ["General damages: pain and suffering and loss of amenity", "General damages: future loss of earnings"]],
-  ["Invitation to treat distinguished from an offer", ["Invitation to treat: shop window displays are not offers (Fisher v Bell)", "Invitation to treat: self-service shelf displays are not offers (Pharmaceutical Society of GB v Boots)", "Invitation to treat: a statement of willingness to negotiate is not an offer (Gibson v Manchester CC)"]],
-  ["Article 6 elements:", ["Article 6 elements: an independent and impartial tribunal and a public hearing", "Article 6 elements: a hearing within a reasonable time and the presumption of innocence"]],
-  ["Intrinsic aids: sources within the Act itself", ["Intrinsic aids: the long and short title and the preamble", "Intrinsic aids: definition sections and schedules"]],
-  ["Community sentences: requirements such as unpaid work", ["Community sentence requirement: unpaid work", "Community sentence requirement: curfew", "Community sentence requirement: rehabilitation activity"]],
-  ["Role of the judiciary: presiding over trials", ["Role of the judiciary: presiding over trials and case management", "Role of the judiciary: sentencing and developing precedent"]],
-  ["Hierarchy of the courts (England and Wales):", ["Hierarchy of the courts: the Supreme Court and the Court of Appeal", "Hierarchy of the courts: the High Court and the Crown Court", "Hierarchy of the courts: the Magistrates' Court and the County Court"]],
-  ["Reasons law reform is needed:", ["Reasons law reform is needed: society, technology and values change", "Reasons law reform is needed: gaps, inconsistencies and outdated rules must be addressed"]],
-  ["Exclusion/limitation clauses: incorporation requirements", ["Exclusion clause incorporation by signature (L'Estrange v Graucob)", "Exclusion clause incorporation by notice before or at contract formation (Olley v Marlborough Court, Thornton v Shoe Lane Parking)", "Exclusion clause incorporation by course of dealing"]],
-  ["Theory of criminal law: purposes of punishment", ["Purposes of punishment: retribution and denunciation", "Purposes of punishment: deterrence and protection of the public", "Purposes of punishment: rehabilitation"]],
-  ["Law Commission's functions:", ["Law Commission's functions: codification and consolidation", "Law Commission's functions: repeal of obsolete law and reducing the number of separate statutes"]],
-  ["Crime classification for intoxication:", ["Intoxication: specific intent offences require proof of intention (e.g. murder, s18 GBH)", "Intoxication: basic intent offences are satisfied by recklessness (DPP v Majewski (1977))"]],
-  ["Consumer Rights Act 2015: statutory implied terms in consumer contracts", ["Consumer Rights Act 2015: goods must be of satisfactory quality (s.9)", "Consumer Rights Act 2015: goods must be fit for a particular purpose (s.10)", "Consumer Rights Act 2015: goods must match their description (s.11)"]],
-  ["Remedies for misrepresentation:", ["Remedies for misrepresentation: rescission for all types", "Remedies for misrepresentation: damages for fraudulent (deceit) and negligent (s.2(1)) misrepresentation", "Remedies for misrepresentation: damages in lieu of rescission under s.2(2)"]],
-  ["Consumer Rights Act 2015 remedies for goods:", ["Consumer Rights Act 2015: the short-term right to reject faulty goods", "Consumer Rights Act 2015: the right to repair or replacement", "Consumer Rights Act 2015: the right to a price reduction or final right to reject"]],
-  ["Extrinsic aid: other external sources", ["Extrinsic aids: earlier case law and Law Commission or other reports", "Extrinsic aids: dictionaries from the time of enactment"]],
-  ["Consent: recognised public policy exceptions", ["Consent exceptions: properly conducted sports and horseplay (R v Barnes (2005))", "Consent exceptions: surgery and tattooing/body piercing (R v Wilson (1996), R v Jones (1986))"]],
-  ["Exceptions to no-liability rule for independent contractors", ["Independent contractors: liability for non-delegable duties", "Independent contractors: liability for extra-hazardous activities", "Independent contractors: liability for the employer's own negligence in selection (Honeywill and Stein v Larkin Bros)"]],
-  ["Dicey's three principles of the rule of law", ["Dicey's rule of law: supremacy of law", "Dicey's rule of law: equality before the law", "Dicey's rule of law: constitutional rights arise from the ordinary law"]],
-  ["Test for permitted restrictions:", ["Test for permitted restrictions: prescribed by law and a legitimate aim", "Test for permitted restrictions: necessary in a democratic society and proportionate"]],
-  ["Common law exceptions to privity:", ["Exception to privity: agency", "Exception to privity: assignment", "Exception to privity: collateral contracts (Shanklin Pier v Detel Products)"]],
-  ["Ways the legal system fails to achieve justice:", ["Failures of justice: the cost of litigation restricts access", "Failures of justice: delays", "Failures of justice: wrongful convictions"]],
-  ["Ways the legal system achieves justice:", ["Ways the legal system achieves justice: fair trial rights and appeals", "Ways the legal system achieves justice: legal aid and precedent providing consistency"]],
-  ["Persuasive precedent: not binding", ["Persuasive precedent: obiter dicta and dissenting judgments", "Persuasive precedent: lower court decisions and decisions of other jurisdictions or the Privy Council"]],
-  ["Judicial review procedure:", ["Judicial review procedure: standing and the permission stage", "Judicial review procedure: time limits and remedies (quashing, mandatory and prohibiting orders)"]],
-  ["Civil legal aid: means and merits tests", ["Civil legal aid: the means and merits tests", "Civil legal aid: scope limited mainly to specific categories (family and domestic abuse, housing, asylum)"]],
-  ["Vicarious liability: three requirements", ["Vicarious liability: a tort must have been committed", "Vicarious liability: an employment relationship must exist", "Vicarious liability: a close connection to the employment"]],
-  ["Attempts actus reus case law:", ["Attempts actus reus: R v Jones (1990), more than merely preparatory", "Attempts actus reus: R v Geddes (1996), mere preparation", "Attempts actus reus: R v Campbell (1991)"]],
-  ["Definition and types of cyber-crime:", ["Cyber-crime: definition and hacking", "Cyber-crime: fraud, identity theft and other online offences"]]
+ [
+  "Properties and definitions of special quadrilaterals (square",
+  [
+   "Properties and definitions of a square and a rectangle",
+   "Properties and definitions of a parallelogram and a rhombus",
+   "Properties and definitions of a trapezium and a kite"
+  ]
+ ],
+ [
+  "Properties of faces, surfaces, edges and vertices of 3D shapes (cubes",
+  [
+   "Faces, edges and vertices of cubes and cuboids",
+   "Faces, edges and vertices of prisms and cylinders",
+   "Faces, edges and vertices of pyramids, cones and spheres"
+  ]
+ ],
+ [
+  "Trigonometric ratios: sin θ = opp/hyp",
+  [
+   "Sine ratio: sin θ = opposite/hypotenuse",
+   "Cosine ratio: cos θ = adjacent/hypotenuse",
+   "Tangent ratio: tan θ = opposite/adjacent"
+  ]
+ ],
+ [
+  "Small angle approximations:",
+  [
+   "Small angle approximations: sin(θ) ≈ θ and tan(θ) ≈ θ",
+   "Small angle approximation: cos(θ) ≈ 1 − θ²/2"
+  ]
+ ],
+ [
+  "Exact values of sin, cos, tan at standard angles",
+  [
+   "Exact values of sin and cos at 0, π/6, π/4, π/3, π/2 and π",
+   "Exact values of tan at standard angles, including where it is undefined"
+  ]
+ ],
+ [
+  "Circle definitions: centre, radius, chord",
+  [
+   "Circle definitions: centre, radius and diameter",
+   "Circle definitions: circumference, arc and chord",
+   "Circle definitions: tangent, sector and segment"
+  ]
+ ],
+ [
+  "Conditions for a binomial model:",
+  [
+   "Binomial model conditions: a fixed number of trials and two possible outcomes",
+   "Binomial model conditions: independent trials and a constant probability of success"
+  ]
+ ],
+ [
+  "ONS wellbeing dimensions (1):",
+  [
+   "ONS wellbeing dimensions: subjective wellbeing and personal wellbeing",
+   "ONS wellbeing dimensions: relationships and health"
+  ]
+ ],
+ [
+  "ONS wellbeing dimensions (2):",
+  [
+   "ONS wellbeing dimensions: what we do, where we live and personal finance",
+   "ONS wellbeing dimensions: the economy, education and skills, and the environment"
+  ]
+ ],
+ [
+  "The four main macroeconomic objectives",
+  [
+   "Macroeconomic objectives: economic growth and low unemployment",
+   "Macroeconomic objectives: low and stable inflation and balance of payments equilibrium"
+  ]
+ ],
+ [
+  "Reasons for government intervention in wage setting",
+  [
+   "Reasons for government intervention in wage setting: equity and tackling low pay and poverty",
+   "Reasons for government intervention in wage setting: monopsony power and controlling public spending"
+  ]
+ ],
+ [
+  "Third degree price discrimination: necessary conditions",
+  [
+   "Third degree price discrimination conditions: market power and separable markets",
+   "Third degree price discrimination conditions: differing price elasticity of demand and prevention of resale"
+  ]
+ ],
+ [
+  "Third degree price discrimination: costs/benefits to producers",
+  [
+   "Third degree price discrimination: benefits to producers (higher profit, funds for investment)",
+   "Third degree price discrimination: costs to producers (administration and enforcement costs)"
+  ]
+ ],
+ [
+  "Third degree price discrimination: costs/benefits to consumers",
+  [
+   "Third degree price discrimination: loss of consumer surplus for buyers with inelastic demand",
+   "Third degree price discrimination: lower prices and greater access for buyers with elastic demand"
+  ]
+ ],
+ [
+  "Keynesian shape of LRAS:",
+  [
+   "Keynesian LRAS: horizontal section at low output because of spare capacity",
+   "Keynesian LRAS: upward-sloping section as capacity tightens",
+   "Keynesian LRAS: vertical section at full capacity"
+  ]
+ ],
+ [
+  "Characteristics of perfect competition",
+  [
+   "Perfect competition: many buyers and sellers, price takers and a homogeneous product",
+   "Perfect competition: perfect information and free entry and exit"
+  ]
+ ],
+ [
+  "Occupational immobility of labour: definition and causes",
+  [
+   "Occupational immobility of labour: definition",
+   "Causes of occupational immobility: skills mismatch, lack of transferable skills and discrimination"
+  ]
+ ],
+ [
+  "Geographical immobility of labour: definition and causes",
+  [
+   "Geographical immobility of labour: definition",
+   "Causes of geographical immobility: housing costs, family ties and regional cost-of-living differences"
+  ]
+ ],
+ [
+  "Elasticity of demand for labour: definition and determinants",
+  [
+   "Elasticity of demand for labour: definition",
+   "Determinants of elasticity of demand for labour: labour cost as a proportion of total cost and ease of substitution",
+   "Determinants of elasticity of demand for labour: price elasticity of demand for the product and time period"
+  ]
+ ],
+ [
+  "Elasticity of supply of labour: definition and determinants",
+  [
+   "Elasticity of supply of labour: definition",
+   "Determinants of elasticity of supply of labour: skill level required, time period and the vocational nature of the job"
+  ]
+ ],
+ [
+  "Policy to tackle geographical immobility:",
+  [
+   "Tackling geographical immobility: housing policy",
+   "Tackling geographical immobility: relocation subsidies",
+   "Tackling geographical immobility: transport infrastructure investment"
+  ]
+ ],
+ [
+  "Restrictions on monopsony power: definition",
+  [
+   "Restrictions on monopsony power: definition",
+   "Restrictions on monopsony power: regulation of buying practices and supply-chain codes of practice",
+   "Restrictions on monopsony power: the minimum wage"
+  ]
+ ],
+ [
+  "Regulation as a response to identified financial market failures",
+  [
+   "Financial regulation as a response to asymmetric information and moral hazard",
+   "Financial regulation as a response to market rigging and systemic externalities"
+  ]
+ ],
+ [
+  "Element names and chemical symbols (first 20 elements",
+  [
+   "Names and symbols of the first ten elements (hydrogen to neon)",
+   "Names and symbols of elements 11 to 20 (sodium to calcium)",
+   "Names and symbols of the other elements in the specification, including those in Groups 1 and 7"
+  ]
+ ],
+ [
+  "Combustion products from fuels:",
+  [
+   "Products of complete combustion of fuels: carbon dioxide and water vapour",
+   "Products of incomplete combustion of fuels: carbon monoxide and particulates",
+   "Products from impurities and high temperatures in fuels: sulfur dioxide and oxides of nitrogen"
+  ]
+ ],
+ [
+  "Reactions of carboxylic acids:",
+  [
+   "Carboxylic acids react with carbonates to form a salt, water and carbon dioxide",
+   "Carboxylic acids dissolve in water to give acidic solutions",
+   "Carboxylic acids react with alcohols to form esters"
+  ]
+ ],
+ [
+  "Which substances show which bond type",
+  [
+   "Ionic bonding occurs in compounds of a metal with a non-metal",
+   "Covalent bonding occurs in non-metal elements and compounds",
+   "Metallic bonding occurs in metals and alloys"
+  ]
+ ],
+ [
+  "Naming changes of state:",
+  [
+   "Changes of state: melting and freezing at the melting point",
+   "Changes of state: boiling and condensing at the boiling point"
+  ]
+ ],
+ [
+  "Lay magistrates: qualifications and eligibility criteria",
+  [
+   "Lay magistrates: age and residency requirements",
+   "Lay magistrates: character requirements"
+  ]
+ ],
+ [
+  "Solicitors: qualifications, training routes",
+  [
+   "Solicitors: qualifications and training routes, including the SQE",
+   "Solicitors: work and areas of practice"
+  ]
+ ],
+ [
+  "Barristers: qualifications, training",
+  [
+   "Barristers: qualifications and training (academic, vocational, pupillage)",
+   "Barristers: work, including advocacy"
+  ]
+ ],
+ [
+  "Chartered Legal Executives:",
+  [
+   "Chartered Legal Executives: qualifications and training",
+   "Chartered Legal Executives: work and regulation by CILEx Regulation"
+  ]
+ ],
+ [
+  "Self-defence: legal basis under common law",
+  [
+   "Self-defence: the common law basis",
+   "Self-defence: section 76 Criminal Justice and Immigration Act 2008",
+   "Self-defence: section 3 Criminal Law Act 1967 and prevention of crime"
+  ]
+ ],
+ [
+  "Self-defence: available for defence of self",
+  [
+   "Self-defence: defence of oneself and of another person",
+   "Self-defence: defence of property and prevention of crime"
+  ]
+ ],
+ [
+  "Pre-trial procedure: issuing a claim",
+  [
+   "Civil pre-trial procedure: issuing a claim and the particulars of claim",
+   "Civil pre-trial procedure: the defence and case management by the court"
+  ]
+ ],
+ [
+  "Criminal legal aid: right to representation",
+  [
+   "Criminal legal aid: the right to representation and the duty solicitor scheme",
+   "Criminal legal aid: the means test and the interests of justice test"
+  ]
+ ],
+ [
+  "General damages: non-quantifiable losses",
+  [
+   "General damages: pain and suffering and loss of amenity",
+   "General damages: future loss of earnings"
+  ]
+ ],
+ [
+  "Invitation to treat distinguished from an offer",
+  [
+   "Invitation to treat: shop window displays are not offers (Fisher v Bell)",
+   "Invitation to treat: self-service shelf displays are not offers (Pharmaceutical Society of GB v Boots)",
+   "Invitation to treat: a statement of willingness to negotiate is not an offer (Gibson v Manchester CC)"
+  ]
+ ],
+ [
+  "Article 6 elements:",
+  [
+   "Article 6 elements: an independent and impartial tribunal and a public hearing",
+   "Article 6 elements: a hearing within a reasonable time and the presumption of innocence"
+  ]
+ ],
+ [
+  "Intrinsic aids: sources within the Act itself",
+  [
+   "Intrinsic aids: the long and short title and the preamble",
+   "Intrinsic aids: definition sections and schedules"
+  ]
+ ],
+ [
+  "Community sentences: requirements such as unpaid work",
+  [
+   "Community sentence requirement: unpaid work",
+   "Community sentence requirement: curfew",
+   "Community sentence requirement: rehabilitation activity"
+  ]
+ ],
+ [
+  "Role of the judiciary: presiding over trials",
+  [
+   "Role of the judiciary: presiding over trials and case management",
+   "Role of the judiciary: sentencing and developing precedent"
+  ]
+ ],
+ [
+  "Hierarchy of the courts (England and Wales):",
+  [
+   "Hierarchy of the courts: the Supreme Court and the Court of Appeal",
+   "Hierarchy of the courts: the High Court and the Crown Court",
+   "Hierarchy of the courts: the Magistrates' Court and the County Court"
+  ]
+ ],
+ [
+  "Reasons law reform is needed:",
+  [
+   "Reasons law reform is needed: society, technology and values change",
+   "Reasons law reform is needed: gaps, inconsistencies and outdated rules must be addressed"
+  ]
+ ],
+ [
+  "Exclusion/limitation clauses: incorporation requirements",
+  [
+   "Exclusion clause incorporation by signature (L'Estrange v Graucob)",
+   "Exclusion clause incorporation by notice before or at contract formation (Olley v Marlborough Court, Thornton v Shoe Lane Parking)",
+   "Exclusion clause incorporation by course of dealing"
+  ]
+ ],
+ [
+  "Theory of criminal law: purposes of punishment",
+  [
+   "Purposes of punishment: retribution and denunciation",
+   "Purposes of punishment: deterrence and protection of the public",
+   "Purposes of punishment: rehabilitation"
+  ]
+ ],
+ [
+  "Law Commission's functions:",
+  [
+   "Law Commission's functions: codification and consolidation",
+   "Law Commission's functions: repeal of obsolete law and reducing the number of separate statutes"
+  ]
+ ],
+ [
+  "Crime classification for intoxication:",
+  [
+   "Intoxication: specific intent offences require proof of intention (e.g. murder, s18 GBH)",
+   "Intoxication: basic intent offences are satisfied by recklessness (DPP v Majewski (1977))"
+  ]
+ ],
+ [
+  "Consumer Rights Act 2015: statutory implied terms in consumer contracts",
+  [
+   "Consumer Rights Act 2015: goods must be of satisfactory quality (s.9)",
+   "Consumer Rights Act 2015: goods must be fit for a particular purpose (s.10)",
+   "Consumer Rights Act 2015: goods must match their description (s.11)"
+  ]
+ ],
+ [
+  "Remedies for misrepresentation:",
+  [
+   "Remedies for misrepresentation: rescission for all types",
+   "Remedies for misrepresentation: damages for fraudulent (deceit) and negligent (s.2(1)) misrepresentation",
+   "Remedies for misrepresentation: damages in lieu of rescission under s.2(2)"
+  ]
+ ],
+ [
+  "Consumer Rights Act 2015 remedies for goods:",
+  [
+   "Consumer Rights Act 2015: the short-term right to reject faulty goods",
+   "Consumer Rights Act 2015: the right to repair or replacement",
+   "Consumer Rights Act 2015: the right to a price reduction or final right to reject"
+  ]
+ ],
+ [
+  "Extrinsic aid: other external sources",
+  [
+   "Extrinsic aids: earlier case law and Law Commission or other reports",
+   "Extrinsic aids: dictionaries from the time of enactment"
+  ]
+ ],
+ [
+  "Consent: recognised public policy exceptions",
+  [
+   "Consent exceptions: properly conducted sports and horseplay (R v Barnes (2005))",
+   "Consent exceptions: surgery and tattooing/body piercing (R v Wilson (1996), R v Jones (1986))"
+  ]
+ ],
+ [
+  "Exceptions to no-liability rule for independent contractors",
+  [
+   "Independent contractors: liability for non-delegable duties",
+   "Independent contractors: liability for extra-hazardous activities",
+   "Independent contractors: liability for the employer's own negligence in selection (Honeywill and Stein v Larkin Bros)"
+  ]
+ ],
+ [
+  "Dicey's three principles of the rule of law",
+  [
+   "Dicey's rule of law: supremacy of law",
+   "Dicey's rule of law: equality before the law",
+   "Dicey's rule of law: constitutional rights arise from the ordinary law"
+  ]
+ ],
+ [
+  "Test for permitted restrictions:",
+  [
+   "Test for permitted restrictions: prescribed by law and a legitimate aim",
+   "Test for permitted restrictions: necessary in a democratic society and proportionate"
+  ]
+ ],
+ [
+  "Common law exceptions to privity:",
+  [
+   "Exception to privity: agency",
+   "Exception to privity: assignment",
+   "Exception to privity: collateral contracts (Shanklin Pier v Detel Products)"
+  ]
+ ],
+ [
+  "Ways the legal system fails to achieve justice:",
+  [
+   "Failures of justice: the cost of litigation restricts access",
+   "Failures of justice: delays",
+   "Failures of justice: wrongful convictions"
+  ]
+ ],
+ [
+  "Ways the legal system achieves justice:",
+  [
+   "Ways the legal system achieves justice: fair trial rights and appeals",
+   "Ways the legal system achieves justice: legal aid and precedent providing consistency"
+  ]
+ ],
+ [
+  "Persuasive precedent: not binding",
+  [
+   "Persuasive precedent: obiter dicta and dissenting judgments",
+   "Persuasive precedent: lower court decisions and decisions of other jurisdictions or the Privy Council"
+  ]
+ ],
+ [
+  "Judicial review procedure:",
+  [
+   "Judicial review procedure: standing and the permission stage",
+   "Judicial review procedure: time limits and remedies (quashing, mandatory and prohibiting orders)"
+  ]
+ ],
+ [
+  "Civil legal aid: means and merits tests",
+  [
+   "Civil legal aid: the means and merits tests",
+   "Civil legal aid: scope limited mainly to specific categories (family and domestic abuse, housing, asylum)"
+  ]
+ ],
+ [
+  "Vicarious liability: three requirements",
+  [
+   "Vicarious liability: a tort must have been committed",
+   "Vicarious liability: an employment relationship must exist",
+   "Vicarious liability: a close connection to the employment"
+  ]
+ ],
+ [
+  "Attempts actus reus case law:",
+  [
+   "Attempts actus reus: R v Jones (1990), more than merely preparatory",
+   "Attempts actus reus: R v Geddes (1996), mere preparation",
+   "Attempts actus reus: R v Campbell (1991)"
+  ]
+ ],
+ [
+  "Definition and types of cyber-crime:",
+  [
+   "Cyber-crime: definition and hacking",
+   "Cyber-crime: fraud, identity theft and other online offences"
+  ]
+ ],
+ [
+  "Woolf reforms and the Civil Procedure Rules 1998: overriding objective",
+  [
+   "Woolf reforms: the problems Lord Woolf found with the old civil justice system (slow, costly and complex)",
+   "The Civil Procedure Rules 1998: the new code, in force from 1999, that put Woolf's reforms into practice",
+   "The overriding objective of the CPR: courts must deal with cases justly and at proportionate cost",
+   "Dealing with a case justly: ensuring the parties are on an equal footing and saving expense",
+   "Dealing with a case justly: dealing with it proportionately, expeditiously and fairly",
+   "Dealing with a case justly: an appropriate share of the court's resources and enforcing compliance with rules, practice directions and orders",
+   "Woolf reform: judges take active case management, controlling the timetable and progress of a case",
+   "Woolf reform: the three allocation tracks for civil claims (small claims, fast track and multi-track)",
+   "Woolf reform: pre-action protocols requiring the parties to exchange information and try to settle before issuing a claim",
+   "Woolf reform: encouraging settlement through Part 36 offers and alternative dispute resolution",
+   "Enforcing the reforms: Practice Directions and court sanctions for non-compliance (costs penalties and striking out)"
+  ]
+ ]
 ]

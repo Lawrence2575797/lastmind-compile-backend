@@ -8,7 +8,7 @@ const clean = (v) => String(v).trim().toLowerCase().replace(/[^a-z0-9]+/g, '_');
 const conceptId = (n) => `law:${clean(n.subtopic)}:${clean(n.label)}`;
 let split = 0, added = 0;
 for (const [prefix, parts] of splits) {
-  for (const orig of map.nodes.filter((n) => n.label.startsWith(prefix))) {
+  for (const orig of map.nodes.filter((n) => n.label.startsWith(prefix) && !/_p\d+$/.test(n.id))) {   // never re-split a part made by an earlier split
     if (map.nodes.some((n) => n.id === orig.id + '_p2')) continue;
     const oldConcept = orig.conceptId || conceptId(orig);
     const outgoing = map.edges.filter((e) => e.from === orig.id);

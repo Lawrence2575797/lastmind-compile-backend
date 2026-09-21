@@ -970,7 +970,7 @@ router.get('/immediate-recalls/due', requireAuth, syncEndpointLimiter, async (re
           return null; // nothing generated yet for this node at all
         }
         return {
-          recallId: r.id, nodeId: node.id, label: node.label, subject: node.subject, dueAt: r.due_at,
+          recallId: r.id, nodeId: node.id, conceptId: node.concept_id, label: node.label, subject: node.subject, dueAt: r.due_at,
           recallCheckIndex, format: check.format, questionText: check.questionText,
           options: check.format === 'multiple_choice' ? check.options : undefined,
           // Interactive formats send the puzzle (segments / lefts and shuffled rights / shuffled items), never the key.

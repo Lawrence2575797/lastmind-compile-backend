@@ -33,7 +33,7 @@ import {
   assertAo1ReviewDue,
 } from '../services/nodeReviewService';
 import { getNodeNoteBaseline, getNodeNoteForUser, saveNodeNoteEdit, getNodeNotes, getEdgeNoteBaseline, getEdgeNoteForUser, saveEdgeNoteEdit, getEdgeNotes, getNotesIndexForUser, getPersonalNote, savePersonalNote, checkWorkedExampleStep, markEdgeExplanationSeen } from '../services/knowledgeMapNotesService';
-import { ensureDerivationContent, derivationPlayerPayload, derivationConceptsOfStage, derivationNodeIds } from '../services/derivationService';
+import { ensureDerivationContent, derivationPlayerPayload, derivationConceptsOfStage, derivationNodeIds, derivationAnchorConcept, derivationSiblingConcepts } from '../services/derivationService';
 import { generateAndCacheNodeLesson, generateAndCacheEdgeLesson, needsQuestionUpgrade, upgradeLessonQuestions } from '../services/lessonGenerationService';
 import { isStructured, gradeStructured, clientView, lessonForClient, sealJson, openJson, closeEnough, StructuredQuestion } from '../services/questionFormats';
 import { pickRotatingQuestion, poolEntry, poolOf, rotationPick, immediatePool } from '../services/reviewQuestionPool';
@@ -223,7 +223,8 @@ router.post('/knowledge-map-v2/derivation/complete', requireAuth, syncEndpointLi
     for (const conceptId of concepts) {
       try {
         const graded = await gradeCorrectness(userId, conceptId, true, Number((req.body ?? {}).retryCount) || 0);
-        if (!graded.previousRow) await recordFirstTeachingSignals(userId, conceptId);
+        // The 2-minute recall and the Day-1 check belong to the whole lesson, so only its anchor concept carries them.
+        if (!graded.previousRow && conceptId === derivationAnchorConcept(stage)) await recordFirstTeachingSignals(userId, conceptId);
         schedules.push(scheduleWithMastery(conceptId, graded));
       } catch (err) {
         if (!(err instanceof ReviewNotDueError)) throw err; // already learned and not due yet: nothing to record
@@ -1408,12 +1409,23 @@ router.post('/day1-checks/:id/submit', requireAuth, costlyEndpointLimiter, async
       ({ correct, feedback, sillyMistake } = parseModelJson<{ correct: boolean; feedback: string; sillyMistake?: boolean }>(raw));
     }
 
+    // A section check (Economics) decides the schedule of every concept in that lesson, not just the one it hangs from.
+    const gradeSiblings = async (ok: boolean): Promise<any[]> => {
+      const out: any[] = [];
+      for (const sib of derivationSiblingConcepts(conceptId)) {
+        if (sib === conceptId) continue;
+        try { out.push(scheduleWithMastery(sib, await gradeCorrectness(userId, sib, ok, 0))); } catch (e) { if (!(e instanceof ReviewNotDueError)) throw e; }
+      }
+      return out;
+    };
+
     if (correct) {
       const graded = await gradeCorrectness(userId, conceptId, true, 0);
+      const schedules = await gradeSiblings(true);
       const { error: updateError } = await supabaseAdmin.from('day1_checks').update({ resolved: true }).eq('id', id);
       if (updateError) throw updateError;
       const keys = await awardDay1Keys(userId, conceptId, id, !retryAfterSillyMistake);
-      return res.json({ correct: true, feedback, schedule: scheduleWithMastery(conceptId, graded), keysAwarded: keys.awarded, keyBalance: keys.balance });
+      return res.json({ correct: true, feedback, schedule: scheduleWithMastery(conceptId, graded), schedules, keysAwarded: keys.awarded, keyBalance: keys.balance });
     }
 
     if (!retryAfterSillyMistake && sillyMistake) {
@@ -1426,10 +1438,11 @@ router.post('/day1-checks/:id/submit', requireAuth, costlyEndpointLimiter, async
     // reask already given) - resolve it, grade the FSRS card as a lapse,
     // and bump the base recall count.
     const graded = await gradeCorrectness(userId, conceptId, false, 0);
+    const schedules = await gradeSiblings(false);
     const { error: updateError } = await supabaseAdmin.from('day1_checks').update({ resolved: true }).eq('id', id);
     if (updateError) throw updateError;
     await bumpBaseRecalls(userId);
-    res.json({ correct: false, sillyMistake: false, feedback, detail, schedule: scheduleWithMastery(conceptId, graded) });
+    res.json({ correct: false, sillyMistake: false, feedback, detail, schedule: scheduleWithMastery(conceptId, graded), schedules });
   } catch (err) {
     console.error('Day-1 check grading failed:', err);
     res.status(500).json({ error: 'could not grade this answer' });

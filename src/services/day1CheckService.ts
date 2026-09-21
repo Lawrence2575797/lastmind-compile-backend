@@ -14,6 +14,7 @@
 import { isStructured, StructuredQuestion } from './questionFormats';
 import { poolOf, textOrInteractive, rotationPick } from './reviewQuestionPool';
 import { supabaseAdmin } from './supabaseAdmin';
+import { derivationStageOfConcept, derivationSectionQuestion } from './derivationService';
 import { compareSubtopics, getOrComputeSubtopicOrder } from './knowledgeMapNotesService';
 
 export async function scheduleDay1Check(userId: string, conceptId: string): Promise<void> {
@@ -75,6 +76,12 @@ export async function getConceptDisplayInfo(conceptId: string): Promise<ConceptD
 // which kind this is, since gradeAndRecordReview's own hook fires
 // identically for both.
 export async function getQuestionForConceptId(conceptId: string, userId?: string): Promise<Day1Question | null> {
+  // Economics lessons are checked as a whole section: fill in the key words of the lesson's chain of ideas, in order.
+  const derivedStage = derivationStageOfConcept(conceptId);
+  if (derivedStage !== null) {
+    const q = derivationSectionQuestion(derivedStage);
+    if (q) return { questionText: q.questionText, markScheme: q.markScheme, structured: q };
+  }
   if (conceptId.endsWith('::integration')) {
     const withoutSuffix = conceptId.slice(0, -':integration'.length - 1);
     const arrowIndex = withoutSuffix.indexOf('->');

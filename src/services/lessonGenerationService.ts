@@ -13,7 +13,7 @@ import { KNOWLEDGE_MAP_ENCODING_LESSON_PROMPT_V2, KNOWLEDGE_MAP_ENCODING_LESSON_
 import { isStructured, sanitiseStructured } from './questionFormats';
 import { getNodeNoteBaseline, getEdgeNoteBaseline } from './knowledgeMapNotesService';
 import { generateDiagramSpecForQuestion } from './diagramSpecGenerationService';
-import { ensureDerivationContent } from './derivationService';
+import { ensureDerivationContent, derivationStageOfConcept } from './derivationService';
 import { getBiologyObjective, biologySourceContext, BIOLOGY_ATOMIC_LESSON_RULES, validateBiologyEncodingLesson } from './biologyCurriculum';
 
 // Same model choice as the offline pipeline (generate_lesson_content.js's
@@ -326,6 +326,9 @@ interface EdgeLessonResult {
 // being encoded (findMissingEncoding gates it), but this is checked
 // directly rather than trusted blindly.
 export async function generateAndCacheEdgeLesson(fromNodeId: string, toNodeId: string, userId: string): Promise<EdgeLessonResult | null> {
+  // Economics derivation lessons already cover how ideas connect, so no separate integration (link) lesson is generated for them.
+  const { data: linked } = await supabaseAdmin.from('knowledge_map_nodes').select('concept_id').in('id', [fromNodeId, toNodeId]);
+  if ((linked || []).length === 2 && (linked || []).every((n: any) => derivationStageOfConcept(n.concept_id as string) !== null)) return null;
   const { data: edgeRow, error: edgeError } = await supabaseAdmin
     .from('knowledge_map_edges')
     .select('id')

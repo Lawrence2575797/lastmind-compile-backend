@@ -6,6 +6,7 @@ import { KNOWLEDGE_MAP_ANSWER_CHECK_PROMPT } from '../constants/knowledgeMapAnsw
 import { AO1_REWORD_QUESTION_PROMPT, AO1_SLIP_CHECK_PROMPT, INTEGRATION_REWORD_QUESTION_PROMPT } from '../constants/nodeReviewPrompts';
 import { isDueByCalendarDay, ReviewNotDueError } from './reviewService';
 import { getExternalCoveredConceptIds } from './externalCoverageService';
+import { derivationStageOfConcept, derivationLadder } from './derivationService';
 
 type NodeEncodingContent = {
   explanation?: string;
@@ -44,6 +45,8 @@ export interface QualifyingLink {
 }
 
 export async function getQualifyingReviewLinks(userId: string, nodeId: string): Promise<QualifyingLink[]> {
+  // Economics lessons already cover how ideas connect, so their spaced reviews carry no separate integration questions.
+  if (await isDerivationNode(nodeId)) return [];
   const { data: edges, error: edgeErr } = await supabaseAdmin
     .from('knowledge_map_edges')
     .select('from_node_id, to_node_id')
@@ -193,7 +196,22 @@ async function fetchNodeExplanationAndAo1(nodeId: string): Promise<{ explanation
 // pool is enough. Picking uniformly at random (rather than tracking
 // per-student "already seen" state) accepts an occasional immediate
 // repeat as a small, acceptable cost for not needing any extra state.
+async function isDerivationNode(nodeId: string): Promise<boolean> {
+  const { data } = await supabaseAdmin.from('knowledge_map_nodes').select('concept_id').eq('id', nodeId).maybeSingle();
+  return !!data && derivationStageOfConcept(data.concept_id as string) !== null;
+}
+
+// Spaced repetition for a derivation lesson asks for a bigger explanation each time (see derivationLadder), by how many reviews it has had.
+async function ladderForNode(nodeId: string, userId: string) {
+  const { data: node } = await supabaseAdmin.from('knowledge_map_nodes').select('concept_id').eq('id', nodeId).maybeSingle();
+  if (!node || derivationStageOfConcept(node.concept_id as string) === null) return null;
+  const { data: row } = await supabaseAdmin.from('concept_reviews').select('reps').eq('user_id', userId).eq('concept_id', node.concept_id as string).maybeSingle();
+  return derivationLadder(node.concept_id as string, Math.max(0, Number((row as any)?.reps) || 0));
+}
+
 export async function getRewordedAo1Question(nodeId: string, userId: string): Promise<{ questionText: string; modality?: 'reading' | 'writing' | 'listening' | 'speaking'; audioText?: string } | null> {
+  const ladder = await ladderForNode(nodeId, userId);
+  if (ladder) return { questionText: ladder.questionText };
   const source = await fetchNodeExplanationAndAo1(nodeId);
   if (!source) return null;
   let pool = source.rewordedPool;
@@ -234,6 +252,8 @@ export async function getRewordedAo1Question(nodeId: string, userId: string): Pr
 export async function gradeRewordedAo1Answer(nodeId: string, questionText: string, answer: string, userId: string, followUpToken?: string): Promise<{ correct: boolean; feedback: string; followUp?: FollowUpForClient } | null> {
   const source = await fetchNodeExplanationAndAo1(nodeId);
   if (!source) return null;
+  const ladder = await ladderForNode(nodeId, userId);
+  if (ladder) source.explanation = ladder.markScheme;
   // A retry after a wrong answer answers the marker's follow-up question instead
   // (see services/followUp.ts) - graded against that question's own mark scheme.
   const followUpQ = openFollowUp(userId, followUpToken);

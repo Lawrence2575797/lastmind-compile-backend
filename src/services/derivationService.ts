@@ -118,3 +118,96 @@ export async function derivationNodeIds(stage: number): Promise<string[]> {
   const { data } = await supabaseAdmin.from('knowledge_map_nodes').select('id').eq('subject', bundle.subject).eq('qualification', bundle.qualification).eq('exam_board', bundle.examBoard).in('concept_id', concepts);
   return (data || []).map((r: any) => r.id as string);
 }
+
+// ---- Section-level checks and the growing explanation ladder ----
+
+export function derivationStageOfConcept(conceptId: string): number | null {
+  const i = bundle.byConcept[conceptId];
+  return typeof i === 'number' && bundle.stages[i] ? i : null;
+}
+
+// One concept stands for the whole lesson when it comes to scheduling: the Day-1 check is about the section, not about each concept.
+export function derivationAnchorConcept(stage: number): string | null {
+  return derivationStage(stage)?.concepts[0] ?? null;
+}
+
+// The idea, in the words of the lesson: what the student was shown and what it is called.
+function statementFor(s: Stage, key: string): string {
+  const step = (s.stage.script as any[]).find((x) => (x.type === 'ask' || x.type === 'read') && x.term === key);
+  const label = s.terms[key]?.t ?? key;
+  if (!step) return label;
+  return step.type === 'ask' ? `${step.q} ${cap(step.opts[0])}. ${step.pre.trim()} ${label}.` : `${step.text.trim()} ${label}.`;
+}
+
+function introOrder(s: Stage): string[] {
+  return (s.stage.script as any[]).filter((x) => x.type === 'ask' || x.type === 'read').map((x) => x.term as string);
+}
+
+// The longest chain of ideas in the whole lesson (it always has at least three: the checker requires a chain of two links).
+function mainChain(s: Stage): string[] {
+  const out: Record<string, string[]> = {};
+  s.edges.forEach(([a, b]) => { (out[a] = out[a] || []).push(b); });
+  const from = (k: string, path: Set<string>): string[] => {
+    let best: string[] = [];
+    (out[k] || []).forEach((c) => { if (!path.has(c)) { const d = from(c, new Set([...path, c])); if (d.length > best.length) best = d; } });
+    return [k, ...best];
+  };
+  let best: string[] = [];
+  Object.keys(s.terms).forEach((k) => { const c = from(k, new Set([k])); if (c.length > best.length) best = c; });
+  return best;
+}
+
+// The Day-1 check for a whole lesson: fill in the key words of its main chain of ideas, in order. Typing the words fills them in, and where
+// each one goes puts them in order, so the one task is both. Graded exactly, no AI.
+export function derivationSectionQuestion(stage: number): any | null {
+  const s = derivationStage(stage);
+  if (!s) return null;
+  const chain = mainChain(s);
+  if (chain.length < 3) return null;
+  const shown = chain.length > 7 ? chain.slice(0, chain.length - 6) : chain.slice(0, 1);
+  const blanks = chain.slice(shown.length);
+  const label = (k: string) => s.terms[k]?.t ?? k;
+  const text = [...shown.map(label), ...blanks.map(() => '___')].join(' → ');
+  return {
+    format: 'cloze',
+    questionText: `"${s.stage.title}": fill in the key words of the chain, in order. Each blank is one key term, and each idea leads to the next.`,
+    markScheme: chain.map(label).join(' → '),
+    text,
+    blanks: blanks.map((k) => ({ answer: label(k), alt: [label(k).toLowerCase()] })),
+  };
+}
+
+// Spaced repetition asks for a bigger explanation each time: one idea, then a short chain, then the whole chain, then the whole lesson.
+export function derivationLadder(conceptId: string, reps: number): { questionText: string; markScheme: string; level: number } | null {
+  const i = derivationStageOfConcept(conceptId);
+  if (i === null) return null;
+  const s = bundle.stages[i] as Stage;
+  const key = s.nodes[s.concepts.indexOf(conceptId)];
+  if (!key) return null;
+  const label = (k: string) => s.terms[k]?.t ?? k;
+  const path = chainThrough(s, key);
+  const level = reps < 2 ? 0 : reps < 4 ? 1 : reps < 6 ? 2 : 3;
+  let scope: string[];
+  let questionText: string;
+  if (level === 0 || path.length < 3) {
+    scope = [key];
+    questionText = `In your own words, explain: ${label(key)}.`;
+  } else if (level === 1) {
+    const at = path.indexOf(key);
+    scope = path.slice(Math.max(0, at - 2), at + 1);
+    questionText = scope.length > 1 ? `In your own words, explain how ${scope.slice(0, -1).map(label).join(' and then ')} lead to ${label(key)}.` : `In your own words, explain: ${label(key)}.`;
+  } else if (level === 2) {
+    scope = path;
+    questionText = `In your own words, explain the whole chain of ideas from ${label(path[0])} to ${label(path[path.length - 1])}: how each one leads to the next.`;
+  } else {
+    scope = introOrder(s);
+    questionText = `In your own words, explain the whole topic "${s.stage.title}": cover ${scope.map(label).join(', ')} and how they connect.`;
+  }
+  return { questionText, markScheme: scope.map((k) => `${label(k)}: ${statementFor(s, k)}`).join('\n'), level };
+}
+
+// Every concept of the lesson this one belongs to (they are graded together after a section check).
+export function derivationSiblingConcepts(conceptId: string): string[] {
+  const i = derivationStageOfConcept(conceptId);
+  return i === null ? [] : (bundle.stages[i] as Stage).concepts;
+}

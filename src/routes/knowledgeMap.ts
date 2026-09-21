@@ -1154,6 +1154,29 @@ router.post('/immediate-recalls/:id/submit', requireAuth, costlyEndpointLimiter,
   }
 });
 
+// POST /immediate-recalls/:id/give-up
+// Two wrong attempts at a 2-minute recall means the concept has not been encoded yet, so instead of asking again the recall is closed and
+// the concept goes back to un-encoded: its saved review state and any pending recalls or Day-1 check are cleared, and the next lesson the
+// feed offers is that concept's lesson again (a fresh encoding, which starts a fresh recall cascade).
+router.post('/immediate-recalls/:id/give-up', requireAuth, syncEndpointLimiter, async (req: Request, res: Response) => {
+  try {
+    const userId = req.userId as string;
+    const { data: row } = await supabaseAdmin.from('immediate_recall_schedule').select('id, concept_id').eq('id', req.params.id).eq('user_id', userId).maybeSingle();
+    if (!row) return res.status(404).json({ error: 'recall not found' });
+    const conceptId = row.concept_id as string;
+    const { error: e1 } = await supabaseAdmin.from('immediate_recall_schedule').delete().eq('user_id', userId).eq('concept_id', conceptId).eq('resolved', false);
+    if (e1) throw e1;
+    const { error: e2 } = await supabaseAdmin.from('day1_checks').delete().eq('user_id', userId).eq('concept_id', conceptId).eq('resolved', false);
+    if (e2) throw e2;
+    const { error: e3 } = await supabaseAdmin.from('concept_reviews').delete().eq('user_id', userId).eq('concept_id', conceptId);
+    if (e3) throw e3;
+    res.json({ rescheduled: true, conceptId });
+  } catch (err) {
+    console.error('Giving up an immediate recall failed:', err);
+    res.status(500).json({ error: 'could not reschedule this concept' });
+  }
+});
+
 // GET /day1-checks/due
 // Lists this user's due (or overdue - see day1CheckService.ts's own
 // comment on why a missed one just stays due rather than expiring)

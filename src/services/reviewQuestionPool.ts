@@ -38,6 +38,9 @@ export function rotationPick(pool: PoolEntry[], step: number): PoolEntry {
 // lesson's own practice question is free text), and each recall takes the next one along.
 export function immediatePool(content: any): PoolEntry[] {
   const all = poolOf(content);
+  // The puzzles and typed-recall formats come first; a single fill-in or multiple choice is only used when a lesson has nothing else.
+  const puzzles = all.filter((e) => isStructured(e.question));
+  if (puzzles.length) return puzzles;
   const cued = all.filter((e) => String(e.question?.format || 'free_text') !== 'free_text');
   return cued.length ? cued : all;
 }

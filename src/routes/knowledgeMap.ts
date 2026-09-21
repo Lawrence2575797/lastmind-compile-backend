@@ -33,6 +33,7 @@ import {
   assertAo1ReviewDue,
 } from '../services/nodeReviewService';
 import { getNodeNoteBaseline, getNodeNoteForUser, saveNodeNoteEdit, getNodeNotes, getEdgeNoteBaseline, getEdgeNoteForUser, saveEdgeNoteEdit, getEdgeNotes, getNotesIndexForUser, getPersonalNote, savePersonalNote, checkWorkedExampleStep, markEdgeExplanationSeen } from '../services/knowledgeMapNotesService';
+import { ensureDerivationContent, derivationPlayerPayload, derivationConceptsOfStage, derivationNodeIds } from '../services/derivationService';
 import { generateAndCacheNodeLesson, generateAndCacheEdgeLesson, needsQuestionUpgrade, upgradeLessonQuestions } from '../services/lessonGenerationService';
 import { isStructured, gradeStructured, clientView, lessonForClient, sealJson, openJson, closeEnough, StructuredQuestion } from '../services/questionFormats';
 import { pickRotatingQuestion, poolEntry, poolOf, rotationPick, immediatePool } from '../services/reviewQuestionPool';
@@ -155,6 +156,9 @@ async function upgradeIfLaw(nodeId: string, userId: string, content: any): Promi
 router.get('/knowledge-map-v2/node/:nodeId/lesson', requireAuth, syncEndpointLimiter, async (req: Request, res: Response) => {
   const { nodeId } = req.params;
   try {
+    // Economics: taught by a derivation lesson. The stored old text lesson is replaced, and nothing is generated.
+    const derived = await ensureDerivationContent(nodeId);
+    if (derived) return res.json({ ...lessonForClient(derived.content), derivation: { stage: derived.stage } });
     const { data, error } = await supabaseAdmin
       .from('knowledge_map_node_lessons')
       .select('encoding_content')
@@ -196,6 +200,40 @@ router.get('/knowledge-map-v2/node/:nodeId/lesson', requireAuth, syncEndpointLim
     }
     console.error('Node lesson lookup/generation failed:', err);
     res.status(500).json({ error: 'could not load this lesson' });
+  }
+});
+
+// GET /derivation/stage/:stage -> the compiled derivation lesson (terms, graph, steps) the client player teaches.
+router.get('/derivation/stage/:stage', requireAuth, syncEndpointLimiter, (req: Request, res: Response) => {
+  const payload = derivationPlayerPayload(Number(req.params.stage));
+  if (!payload) return res.status(404).json({ error: 'lesson not found' });
+  res.json(payload);
+});
+
+// POST /knowledge-map-v2/derivation/complete { stage, retryCount? }
+// The student rebuilt the whole derivation from memory (its final test), so every concept in that stage counts as taught: each gets its
+// first schedule entry exactly as a correct first attempt at the old practice question did.
+router.post('/knowledge-map-v2/derivation/complete', requireAuth, syncEndpointLimiter, async (req: Request, res: Response) => {
+  const stage = Number((req.body ?? {}).stage);
+  const concepts = derivationConceptsOfStage(stage);
+  if (!concepts.length) return res.status(404).json({ error: 'lesson not found' });
+  try {
+    const userId = req.userId as string;
+    const schedules: any[] = [];
+    for (const conceptId of concepts) {
+      try {
+        const graded = await gradeCorrectness(userId, conceptId, true, Number((req.body ?? {}).retryCount) || 0);
+        if (!graded.previousRow) await recordFirstTeachingSignals(userId, conceptId);
+        schedules.push(scheduleWithMastery(conceptId, graded));
+      } catch (err) {
+        if (!(err instanceof ReviewNotDueError)) throw err; // already learned and not due yet: nothing to record
+      }
+    }
+    (await derivationNodeIds(stage)).forEach((id) => { ensureDerivationContent(id).catch((e) => console.error('LastMind: derivation content refresh failed', id, e)); });
+    res.json({ schedules });
+  } catch (err) {
+    console.error('Derivation completion failed:', err);
+    res.status(500).json({ error: 'could not record this lesson' });
   }
 });
 

@@ -167,10 +167,10 @@ async function runBatch(requests, resumeId, outDir, label) {
   todo.forEach((st, i) => save(i, results[i], st));
   // give terms taught in one stage the same short label wherever they appear as a given term in another
   const labels = {};
-  todo.forEach((_, i) => { if (results[i].spec) { const sp = results[i].spec, st = sp.stages[0]; Object.keys(sp.terms).forEach((k) => { if (!(st.given || []).includes(k)) labels[k] = sp.terms[k].label; }); } });
+  todo.forEach((_, i) => { if (results[i].spec) { const sp = results[i].spec, st = sp.stages[0]; Object.keys(sp.terms).forEach((k) => { if (!(st.given || []).includes(k) && (st.nodes || []).includes(k)) labels[k] = sp.terms[k].label; }); } });
   todo.forEach((_, i) => {
     const r = results[i]; if (!r.spec) return;
-    Object.keys(r.spec.terms).forEach((k) => { if (labels[k]) r.spec.terms[k].label = labels[k]; });
+    Object.keys(r.spec.terms).forEach((k) => { if (labels[k] && !(r.spec.stages[0].nodes || []).includes(k)) r.spec.terms[k].label = labels[k]; });
     fs.writeFileSync(path.join(outDir, `${pad(idx(i))}.json`), JSON.stringify(r.spec, null, 1));
   });
   console.log('usage (batch prices are half of these list prices)', total);

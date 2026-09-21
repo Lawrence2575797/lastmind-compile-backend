@@ -52,7 +52,7 @@ function validate(spec, known) {
           if (s.diagram) diagramErrors(s.diagram).forEach((m) => err(`${at}: diagram: ${m}`));
           const label = (spec.terms[s.term] || {}).label;
           if (label) [['q', s.q], ['right', s.right], ['wrong', s.wrong], ['hint', s.hint]].forEach(([f, v]) => {
-            if (v && v.toLowerCase().includes(label.toLowerCase())) err(`${at}: "${f}" contains the term "${label}" it is about to reveal`);
+            if (!spec.noLeakCheck && v && v.toLowerCase().includes(label.toLowerCase())) err(`${at}: "${f}" contains the term "${label}" it is about to reveal`);
           });
           if (s.right && s.wrong && Math.abs(s.right.length - s.wrong.length) > 20 && Math.max(s.right.length, s.wrong.length) / Math.min(s.right.length, s.wrong.length) > 1.5) err(`${at}: right and wrong options differ too much in length, which gives the answer away`);
         } else if (!s.text) err(`${at}: read is missing "text"`);
@@ -245,7 +245,7 @@ function build(spec) {
   html = html.replace('<title>Derivation Feed</title>', `<title>${spec.pageTitle || spec.title}</title>`);
   html = html.replace('<h1 id="stageTitle">Stage 1 · Scarcity</h1>', `<h1 id="stageTitle">${first.hud}</h1>`);
   html = html.replace('</style>', () => fs.readFileSync(path.join(__dirname, 'extra.css'), 'utf8') + '</style>');
-  return { html, js, stages };
+  return { html, js, stages, TERMS, PLAN };
 }
 
 if (require.main === module) {

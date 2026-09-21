@@ -13,6 +13,7 @@ import { KNOWLEDGE_MAP_ENCODING_LESSON_PROMPT_V2, KNOWLEDGE_MAP_ENCODING_LESSON_
 import { isStructured, sanitiseStructured } from './questionFormats';
 import { getNodeNoteBaseline, getEdgeNoteBaseline } from './knowledgeMapNotesService';
 import { generateDiagramSpecForQuestion } from './diagramSpecGenerationService';
+import { ensureDerivationContent } from './derivationService';
 import { getBiologyObjective, biologySourceContext, BIOLOGY_ATOMIC_LESSON_RULES, validateBiologyEncodingLesson } from './biologyCurriculum';
 
 // Same model choice as the offline pipeline (generate_lesson_content.js's
@@ -198,6 +199,9 @@ async function buildNodeLessonInput(nodeId: string): Promise<{ typedNode: NodeRo
 }
 
 export async function generateAndCacheNodeLesson(nodeId: string, userId: string): Promise<unknown | null> {
+  // Economics concepts are taught by derivation lessons; the old text lesson is never generated for them.
+  const derived = await ensureDerivationContent(nodeId);
+  if (derived) return derived.content;
   const input = await buildNodeLessonInput(nodeId);
   if (!input) return null;
   const { typedNode, biologyObjective, userContent } = input;

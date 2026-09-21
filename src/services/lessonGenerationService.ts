@@ -9,7 +9,7 @@
 import { supabaseAdmin } from './supabaseAdmin';
 import { callClaudeJSON } from './claudeClient';
 import { parseModelJson, stripCodeFences, escapeRawControlCharsInStrings } from './jsonParsing';
-import { KNOWLEDGE_MAP_ENCODING_LESSON_PROMPT, KNOWLEDGE_MAP_ENCODING_LESSON_PROMPT_V2, KNOWLEDGE_MAP_EDGE_LESSON_PROMPT } from '../constants/lessonGenerationPrompts';
+import { KNOWLEDGE_MAP_ENCODING_LESSON_PROMPT_V2, KNOWLEDGE_MAP_ENCODING_LESSON_PROMPT_V2_LANG, KNOWLEDGE_MAP_EDGE_LESSON_PROMPT } from '../constants/lessonGenerationPrompts';
 import { isStructured, sanitiseStructured } from './questionFormats';
 import { getNodeNoteBaseline, getEdgeNoteBaseline } from './knowledgeMapNotesService';
 import { generateDiagramSpecForQuestion } from './diagramSpecGenerationService';
@@ -175,12 +175,12 @@ export async function generateAndCacheNodeLesson(nodeId: string, userId: string)
   const input = await buildNodeLessonInput(nodeId);
   if (!input) return null;
   const { typedNode, biologyObjective, userContent } = input;
-  // Languages and Biology keep their own rules; every other subject uses the version-2 question formats.
-  const useV2 = !biologyObjective && !LANGUAGE_SUBJECTS.has(typedNode.subject);
+  // Every subject gets the interactive question formats; languages and Biology add their own rules on top.
+  const useV2 = !biologyObjective;
 
   const raw = await callClaudeJSON({
     model: LESSON_MODEL,
-    systemPrompt: biologyObjective ? BIOLOGY_ATOMIC_LESSON_RULES : useV2 ? KNOWLEDGE_MAP_ENCODING_LESSON_PROMPT_V2 : KNOWLEDGE_MAP_ENCODING_LESSON_PROMPT,
+    systemPrompt: biologyObjective ? BIOLOGY_ATOMIC_LESSON_RULES : LANGUAGE_SUBJECTS.has(typedNode.subject) ? KNOWLEDGE_MAP_ENCODING_LESSON_PROMPT_V2_LANG : KNOWLEDGE_MAP_ENCODING_LESSON_PROMPT_V2,
     userContent,
     maxTokens: biologyObjective ? 3000 : MAX_TOKENS,
     // ~1,862 tokens, well over Sonnet's 1024-token cache minimum, and
@@ -196,7 +196,7 @@ export async function generateAndCacheNodeLesson(nodeId: string, userId: string)
   let encodingContent: unknown;
   try {
     encodingContent = parseWithClosingBraceRepair<unknown>(raw);
-    if (biologyObjective) validateBiologyEncodingLesson(encodingContent, biologyObjective);
+    if (biologyObjective) { validateBiologyEncodingLesson(encodingContent, biologyObjective); (encodingContent as Record<string, unknown>).formatVersion = 2; }
     if (useV2) encodingContent = normaliseLessonQuestions(encodingContent, typedNode.label);
   } catch (err) {
     // Logged with enough to actually diagnose a live failure from Render's

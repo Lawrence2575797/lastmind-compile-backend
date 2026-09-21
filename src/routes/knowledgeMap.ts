@@ -35,7 +35,7 @@ import {
 import { getNodeNoteBaseline, getNodeNoteForUser, saveNodeNoteEdit, getNodeNotes, getEdgeNoteBaseline, getEdgeNoteForUser, saveEdgeNoteEdit, getEdgeNotes, getNotesIndexForUser, getPersonalNote, savePersonalNote, checkWorkedExampleStep, markEdgeExplanationSeen } from '../services/knowledgeMapNotesService';
 import { generateAndCacheNodeLesson, generateAndCacheEdgeLesson, needsQuestionUpgrade, upgradeLessonQuestions } from '../services/lessonGenerationService';
 import { isStructured, gradeStructured, clientView, lessonForClient } from '../services/questionFormats';
-import { pickRotatingQuestion, poolEntry } from '../services/reviewQuestionPool';
+import { pickRotatingQuestion, poolEntry, poolOf } from '../services/reviewQuestionPool';
 import { answerKnowledgeMapQuestion } from '../services/knowledgeMapAskService';
 import { assertFreshGenerationWithinCap, recordFreshGenerationEvent, GenerationCapExceededError } from '../services/generationCapService';
 import { InsufficientLocksError, assertLocksAvailable } from '../services/lockService';
@@ -849,7 +849,7 @@ router.get('/immediate-recalls/due', requireAuth, syncEndpointLimiter, async (re
     const userId = req.userId as string;
     const { data: rows, error } = await supabaseAdmin
       .from('immediate_recall_schedule')
-      .select('id, concept_id, due_at')
+      .select('id, concept_id, due_at, recall_number')
       .eq('user_id', userId)
       .eq('resolved', false);
     if (error) throw error;
@@ -931,7 +931,12 @@ router.get('/immediate-recalls/due', requireAuth, syncEndpointLimiter, async (re
         const checks = content?.recallChecks;
         let recallCheckIndex: number;
         let check: RecallCheck;
-        if (checks && checks.length) {
+        const v2pool = (content as any)?.formatVersion === 2 ? poolOf(content) : [];
+        if (v2pool.length) {
+          // Current-format lessons: the step decides which question, in turn (see reviewQuestionPool.ts).
+          const e = v2pool[(Number((r as any).recall_number) || 1) % v2pool.length];
+          recallCheckIndex = e.ref; check = e.question as RecallCheck;
+        } else if (checks && checks.length) {
           recallCheckIndex = Math.floor(Math.random() * checks.length);
           check = checks[recallCheckIndex];
         } else if (content?.practiceQuestion?.questionText) {
@@ -1023,8 +1028,9 @@ router.post('/immediate-recalls/:id/submit', requireAuth, costlyEndpointLimiter,
       // recallCheckIndex -1 is GET /due's own fallback for a node with no
       // recallChecks generated yet - re-derive the exact same fallback
       // here rather than trusting the client's copy of it.
+      const pqq: any = content?.practiceQuestion;
       check = recallCheckIndex === -1
-        ? (content?.practiceQuestion?.questionText ? { format: 'free_text', questionText: content.practiceQuestion.questionText, markScheme: content.practiceQuestion.markScheme } : undefined)
+        ? (pqq?.questionText ? (isStructured(pqq) ? (pqq as RecallCheck) : { format: 'free_text', questionText: pqq.questionText, markScheme: pqq.markScheme }) : undefined)
         : content?.recallChecks?.[recallCheckIndex];
     }
     if (!check || !check.questionText) return res.status(404).json({ error: 'question not found' });
@@ -1149,7 +1155,7 @@ router.get('/day1-checks/due', requireAuth, syncEndpointLimiter, async (req: Req
     const infos = await Promise.all(rows.map(async (r) => {
       const [info, question] = await Promise.all([
         getConceptDisplayInfo(r.concept_id as string),
-        getQuestionForConceptId(r.concept_id as string),
+        getQuestionForConceptId(r.concept_id as string, userId),
       ]);
       return { r, info, question };
     }));
@@ -1167,7 +1173,7 @@ router.get('/day1-checks/due', requireAuth, syncEndpointLimiter, async (req: Req
           await assertFreshGenerationWithinCap(userId, await isUserPaid(userId), req.userCreatedAt ?? null, req.userEmail);
           await generateAndCacheNodeLesson(next.item.info!.nodeId, userId);
           await recordFreshGenerationEvent(userId);
-          next.item.question = await getQuestionForConceptId(next.item.r.concept_id as string);
+          next.item.question = await getQuestionForConceptId(next.item.r.concept_id as string, userId);
         } catch (err) {
           console.error('Regenerating a lesson for a Day-1 check failed (non-fatal):', err);
         }
@@ -1180,7 +1186,7 @@ router.get('/day1-checks/due', requireAuth, syncEndpointLimiter, async (req: Req
     }
     const withDisplay = infos.map(({ r, info, question }) => {
       if (!info || !question) return null;
-      return { checkId: r.id, conceptId: r.concept_id, nodeId: info.nodeId, label: info.label, subject: info.subject, dueDate: r.due_date, questionText: question.questionText };
+      return { checkId: r.id, conceptId: r.concept_id, nodeId: info.nodeId, label: info.label, subject: info.subject, dueDate: r.due_date, questionText: question.questionText, ...(question.structured ? clientView(question.structured) : {}) };
     });
     const usable = withDisplay.filter((c): c is NonNullable<typeof c> => c !== null);
     // Ordered by where each concept sits in its subject's own teaching
@@ -1281,8 +1287,8 @@ router.get('/day1-checks/completed', requireAuth, syncEndpointLimiter, async (re
 // already apply.
 router.post('/day1-checks/:id/submit', requireAuth, costlyEndpointLimiter, async (req: Request, res: Response) => {
   const { id } = req.params;
-  const { answer, retryAfterSillyMistake } = (req.body ?? {}) as { answer?: string; retryAfterSillyMistake?: boolean };
-  if (typeof answer !== 'string' || !answer.trim()) return res.status(400).json({ error: 'answer is required' });
+  const { answer, retryAfterSillyMistake, structured } = (req.body ?? {}) as { answer?: string; retryAfterSillyMistake?: boolean; structured?: unknown };
+  if (structured === undefined && (typeof answer !== 'string' || !answer.trim())) return res.status(400).json({ error: 'answer is required' });
 
   try {
     const userId = req.userId as string;
@@ -1296,18 +1302,26 @@ router.post('/day1-checks/:id/submit', requireAuth, costlyEndpointLimiter, async
     if (row.resolved) return res.json({ correct: true, feedback: 'Already done.' });
     const conceptId = row.concept_id as string;
 
-    const question = await getQuestionForConceptId(conceptId);
+    const question = await getQuestionForConceptId(conceptId, userId);
     if (!question) return res.status(404).json({ error: 'question not found' });
+    if (!!question.structured !== (structured !== undefined)) return res.status(400).json({ error: 'this check is answered in a different way' });
 
-    const raw = await callClaudeJSON({
-      model: MODELS.simpleQuestion,
-      systemPrompt: DAY1_CHECK_ANSWER_PROMPT,
-      userContent: `Question: ${question.questionText}\nMark scheme: ${question.markScheme}\nStudent's answer: ${answer}`,
-      temperature: 0.1,
-      userId,
-      meteredReason: 'day1-check-grade',
-    });
-    const { correct, feedback, sillyMistake } = parseModelJson<{ correct: boolean; feedback: string; sillyMistake?: boolean }>(raw);
+    let correct: boolean; let feedback: string; let sillyMistake: boolean | undefined; let detail: boolean[] | undefined;
+    if (question.structured) {
+      // An interactive check is graded exactly. The first miss gets one re-ask (a mis-tap is a slip); the second is final.
+      const g = gradeStructured(question.structured, structured);
+      correct = g.correct; feedback = g.feedback; sillyMistake = !g.correct; detail = g.detail;
+    } else {
+      const raw = await callClaudeJSON({
+        model: MODELS.simpleQuestion,
+        systemPrompt: DAY1_CHECK_ANSWER_PROMPT,
+        userContent: `Question: ${question.questionText}\nMark scheme: ${question.markScheme}\nStudent's answer: ${answer}`,
+        temperature: 0.1,
+        userId,
+        meteredReason: 'day1-check-grade',
+      });
+      ({ correct, feedback, sillyMistake } = parseModelJson<{ correct: boolean; feedback: string; sillyMistake?: boolean }>(raw));
+    }
 
     if (correct) {
       const graded = await gradeCorrectness(userId, conceptId, true, 0);
@@ -1320,7 +1334,7 @@ router.post('/day1-checks/:id/submit', requireAuth, costlyEndpointLimiter, async
     if (!retryAfterSillyMistake && sillyMistake) {
       // Deferred - not resolved, no Rb bump and no FSRS grade yet. The
       // student gets one more attempt at the exact same question.
-      return res.json({ correct: false, sillyMistake: true, feedback });
+      return res.json({ correct: false, sillyMistake: true, feedback, detail });
     }
 
     // A genuine failure (or a still-wrong/second attempt after the one
@@ -1330,7 +1344,7 @@ router.post('/day1-checks/:id/submit', requireAuth, costlyEndpointLimiter, async
     const { error: updateError } = await supabaseAdmin.from('day1_checks').update({ resolved: true }).eq('id', id);
     if (updateError) throw updateError;
     await bumpBaseRecalls(userId);
-    res.json({ correct: false, sillyMistake: false, feedback, schedule: scheduleWithMastery(conceptId, graded) });
+    res.json({ correct: false, sillyMistake: false, feedback, detail, schedule: scheduleWithMastery(conceptId, graded) });
   } catch (err) {
     console.error('Day-1 check grading failed:', err);
     res.status(500).json({ error: 'could not grade this answer' });

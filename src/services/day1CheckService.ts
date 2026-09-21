@@ -11,7 +11,8 @@
 // student doesn't log on until they complete it" - which needs no
 // special "push back" logic at all: a due_date that's already passed
 // just stays due, the same as any FSRS review that's overdue.
-import { isStructured } from './questionFormats';
+import { isStructured, StructuredQuestion } from './questionFormats';
+import { poolOf, textOrInteractive } from './reviewQuestionPool';
 import { supabaseAdmin } from './supabaseAdmin';
 import { compareSubtopics, getOrComputeSubtopicOrder } from './knowledgeMapNotesService';
 
@@ -28,6 +29,7 @@ export async function scheduleDay1Check(userId: string, conceptId: string): Prom
 export interface Day1Question {
   questionText: string;
   markScheme: string;
+  structured?: StructuredQuestion;   // an interactive question (spot the mistake, match, order): graded exactly, no AI
 }
 
 export interface ConceptDisplayInfo {
@@ -72,7 +74,7 @@ export async function getConceptDisplayInfo(conceptId: string): Promise<ConceptD
 // the "::integration" suffix rather than needing the caller to know
 // which kind this is, since gradeAndRecordReview's own hook fires
 // identically for both.
-export async function getQuestionForConceptId(conceptId: string): Promise<Day1Question | null> {
+export async function getQuestionForConceptId(conceptId: string, userId?: string): Promise<Day1Question | null> {
   if (conceptId.endsWith('::integration')) {
     const withoutSuffix = conceptId.slice(0, -':integration'.length - 1);
     const arrowIndex = withoutSuffix.indexOf('->');
@@ -117,6 +119,20 @@ export async function getQuestionForConceptId(conceptId: string): Promise<Day1Qu
   // from a 4-item pool rather than tracking exactly which one the
   // immediate recall already used, which needs no schema change and
   // still cuts a guaranteed collision down to a 1-in-4 chance.
+  // Lessons in the current format rotate through every question written for them: the Day-1 check is simply the next one after
+  // however many recalls this student has already been through (encoding used the first, each recall the next).
+  if ((content as any)?.formatVersion === 2) {
+    const pool = poolOf(content).filter((e) => textOrInteractive(e.question));
+    if (pool.length) {
+      let done = 0;
+      if (userId) {
+        const { count } = await supabaseAdmin.from('immediate_recall_schedule').select('id', { count: 'exact', head: true }).eq('user_id', userId).eq('concept_id', conceptId);
+        done = count || 0;
+      }
+      const q = pool[(1 + done) % pool.length].question;
+      return isStructured(q) ? { questionText: q.questionText, markScheme: q.markScheme || '', structured: q } : { questionText: q.questionText, markScheme: q.markScheme || '' };
+    }
+  }
   const freeTextChecks = (content?.recallChecks || []).filter((c) => c.format === 'free_text' && c.questionText && c.markScheme);
   if (freeTextChecks.length) {
     const pick = freeTextChecks[Math.floor(Math.random() * freeTextChecks.length)];

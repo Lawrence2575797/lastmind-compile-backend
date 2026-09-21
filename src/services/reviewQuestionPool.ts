@@ -7,6 +7,20 @@ import { isStructured } from './questionFormats';
 // Only lessons in the version-2 format take part; older ones keep the original reworded-question review.
 export interface PoolEntry { ref: number; question: any }   // ref -1 = the practice question, otherwise the recallChecks index
 
+// The whole set of questions written for a lesson, in the order they are met: the practice question, then each recall check.
+// Encoding uses the first; each later step (the 2-minute recall, further recalls, the Day-1 check, then spaced reviews) takes the
+// next one along, wrapping round, so which question a student meets is decided by where they are in the schedule, never at random.
+// A practice question that is a draw-the-diagram question cannot be re-asked as a recall, so it stays out.
+export function poolOf(content: any): PoolEntry[] {
+  const out: PoolEntry[] = [];
+  const pq = content?.practiceQuestion;
+  if (pq?.questionText && !pq.diagramSpec) out.push({ ref: -1, question: isStructured(pq) ? pq : { ...pq, format: 'free_text' } });
+  (Array.isArray(content?.recallChecks) ? content.recallChecks : []).forEach((q: any, i: number) => { if (q?.questionText) out.push({ ref: i, question: q }); });
+  return out;
+}
+// Questions that can be answered in a feed slide and graded without the multiple-choice or fill-blank widgets.
+export const textOrInteractive = (q: any) => isStructured(q) || (q?.format === 'free_text' && !!q.markScheme && !!q.questionText);
+
 export async function reviewPool(nodeId: string): Promise<PoolEntry[] | null> {
   const { data: lesson } = await supabaseAdmin.from('knowledge_map_node_lessons').select('encoding_content').eq('node_id', nodeId).maybeSingle();
   const c = lesson?.encoding_content as any;

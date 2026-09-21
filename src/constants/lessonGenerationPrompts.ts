@@ -70,6 +70,36 @@ Return ONLY valid JSON:
 }
 "blanks" ONLY when rule 4b applies - omit the field entirely otherwise. A recallCheck's "fill_blank" always keeps the single "answer" field shown above (see rule 6a) - it never takes a "blanks" array.`;
 
+// Version 2 of the encoding lesson prompt, used for every subject except the languages and Biology (which keep their own
+// rules and validation). Same rules up to 4a2, then: the practice question's FORMAT is chosen from the concept (free recall,
+// spot the mistake, match, order; diagrams and maths keep their own paths), and only THREE questions are generated in all.
+const V2_HEAD = KNOWLEDGE_MAP_ENCODING_LESSON_PROMPT.slice(0, KNOWLEDGE_MAP_ENCODING_LESSON_PROMPT.indexOf('4b. **If this node'));
+export const KNOWLEDGE_MAP_ENCODING_LESSON_PROMPT_V2 = V2_HEAD + `4b. **Choose the FORMAT of the practice question from what this concept actually is.** Set "format" to one of:
+- "free_text" (the default): the student answers in their own words. Use it for explaining, defining, describing, evaluating and arguing, and for any calculation or worked method (set "answerInputType" to "math" for those - a calculation is never one of the interactive formats below). A concept whose whole point is the SHAPE or movement of a curve or diagram (supply and demand, cost and revenue curves, AD/AS and the like) also stays "free_text": the app turns it into a draw-the-diagram question by itself.
+- "spot_mistake": use it when a concept has a tempting misconception, or a rule that is easy to misstate. Write "segments": 4 to 6 short sentences that read as one connected explanation or application of the concept, exactly ONE of which contains a plausible mistake of the kind a real student makes (never an absurd or obviously silly one). Give "errorIndex" (0-based position of the wrong sentence) and "correction" (one or two sentences saying what is wrong and what is right). The "questionText" is a short instruction such as "One sentence here is wrong. Tap it." and must not point at the sentence.
+- "match": use it when the concept is a small set of 3 to 5 items each paired with something (terms with definitions, named cases with the principle each established, types with examples, causes with consequences). Give "pairs": [{"left": "...", "right": "..."}], where every "right" is distinct and fits ONLY its own "left". The "questionText" says what is to be matched to what.
+- "order": use it when the concept is a process, procedure, sequence of stages or chain of cause and effect. Give "items": 3 to 6 short steps (under 12 words each) listed in the CORRECT order. The "questionText" says what is to be ordered but does not list the steps.
+Pick the format that genuinely tests this concept, never one merely for variety. Whatever the format, still write a "markScheme": one or two plain sentences stating the correct answer. Every interactive format must be answerable from this node's own explanation alone.
+
+5. **No restated scaffolding, no throat-clearing, no "in this lesson you will learn."** Start with the actual content.
+
+6. **Also write exactly 2 short RECALL CHECKS** - lightweight re-tests of this SAME concept, used minutes later (same session), the day after (the Day-1 check draws from this same pool) and again in spaced review, where the app rotates through the practice question and these two. Each must test the identical concept this node's own label names, from a different angle and with different specifics than "practiceQuestion" and than each other, so none ever looks like a literal repeat. The FIRST is always "free_text" (a short question with its own "markScheme"). The SECOND is a different format again, chosen to suit the concept: "fill_blank" (ONE sentence with exactly one blank testing a single fact, term or number, with one exact expected "answer" that is the obvious way to complete it), "multiple_choice" (a short question plus exactly 4 options, one correct, the other 3 real plausible mistakes for this concept - "correctOptionIndex" 0-3), or one of the interactive formats "spot_mistake", "match" or "order" in the same shape as rule 4b. Never make the second the same format as the practice question when the practice question is interactive. Every one must be answerable from this node's own explanation alone, same scope discipline as rule 2.
+
+6-scope. **A mark scheme may only require what its question actually asks for, read literally.** If a question gives a claim or premise (e.g. "infinite resources at zero cost"), the mark scheme must accept that premise as stated - never require the student to also question it, hedge it, or consider a weaker version of it. Any extra depth belongs in a clearly optional "Also acceptable" note, never in what is needed to be correct.
+
+## Output format
+
+Return ONLY valid JSON:
+{
+  "explanation": "the teaching text",
+  "practiceQuestion": { "format": "free_text" | "spot_mistake" | "match" | "order", "questionText": "...", "markScheme": "...", "modality": "writing", "answerInputType": "words" | "math", "segments": ["..."], "errorIndex": 0, "correction": "...", "pairs": [{ "left": "...", "right": "..." }], "items": ["..."] },
+  "recallChecks": [
+    { "format": "free_text", "questionText": "...", "markScheme": "..." },
+    { "format": "fill_blank" | "multiple_choice" | "spot_mistake" | "match" | "order", "questionText": "...", "markScheme": "..." }
+  ]
+}
+Include ONLY the fields that belong to the chosen format ("segments", "errorIndex" and "correction" for spot_mistake; "pairs" for match; "items" for order; "answer" for fill_blank; "options" and "correctOptionIndex" for multiple_choice). Omit every other format-specific field.`;
+
 export const KNOWLEDGE_MAP_EDGE_LESSON_PROMPT = `You are writing the LINK-TEACHING and testing content for one prerequisite edge in a subject's knowledge-map graph, run after both A and B have already had their own separate encoding lessons. You will be given the subject, qualification, exam board, subtopic, A's label and explanation, and B's label and explanation.
 
 FIRST decide which of two genuinely different jobs this edge actually has, based on the subject and on what A and B actually are:

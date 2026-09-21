@@ -11,6 +11,7 @@
 // student doesn't log on until they complete it" - which needs no
 // special "push back" logic at all: a due_date that's already passed
 // just stays due, the same as any FSRS review that's overdue.
+import { isStructured } from './questionFormats';
 import { supabaseAdmin } from './supabaseAdmin';
 import { compareSubtopics, getOrComputeSubtopicOrder } from './knowledgeMapNotesService';
 
@@ -122,7 +123,7 @@ export async function getQuestionForConceptId(conceptId: string): Promise<Day1Qu
     return { questionText: pick.questionText, markScheme: pick.markScheme || '' };
   }
   const q = content?.practiceQuestion;
-  if (!q?.questionText) return null;
+  if (!q?.questionText || isStructured(q)) return null;   // an interactive question cannot be asked as plain text
   return { questionText: q.questionText, markScheme: q.markScheme || '' };
 }
 

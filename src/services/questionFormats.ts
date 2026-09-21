@@ -1,0 +1,95 @@
+import crypto from 'crypto';
+
+// Interactive question formats for the main LastMind feed, beside plain free recall:
+//   spot_mistake  a short passage in which exactly one sentence is wrong; the student taps the wrong one
+//   match         pair 3-5 terms/cases/rules with their definitions/examples/consequences
+//   order         put 3-6 steps of a process, sequence or chain of reasoning into the right order
+// All three have exactly one right answer, so they are graded here with no AI call. The answer key never leaves the server:
+// the page is sent a "client view" (segments as written, pairs split and shuffled, items shuffled).
+export type StructuredFormat = 'spot_mistake' | 'match' | 'order';
+export const STRUCTURED_FORMATS: StructuredFormat[] = ['spot_mistake', 'match', 'order'];
+
+export interface StructuredQuestion {
+  format: StructuredFormat;
+  questionText: string;
+  markScheme?: string;
+  segments?: string[]; errorIndex?: number; correction?: string;          // spot_mistake
+  pairs?: { left: string; right: string }[];                              // match
+  items?: string[];                                                       // order (already in the CORRECT order)
+  [k: string]: unknown;
+}
+
+const txt = (v: unknown, max: number) => (typeof v === 'string' ? v.trim().slice(0, max) : '');
+export const isStructured = (q: unknown): q is StructuredQuestion => !!q && typeof q === 'object' && STRUCTURED_FORMATS.includes((q as any).format);
+
+// Returns a clean structured question, or null when the model's output is not usable (the caller then falls back to free recall).
+export function sanitiseStructured(q: any): StructuredQuestion | null {
+  if (!isStructured(q)) return null;
+  const questionText = txt(q.questionText, 500);
+  if (!questionText) return null;
+  const out: StructuredQuestion = { format: q.format, questionText, markScheme: txt(q.markScheme, 800) || undefined };
+  if (q.format === 'spot_mistake') {
+    const segments = (Array.isArray(q.segments) ? q.segments : []).map((s: unknown) => txt(s, 320)).filter(Boolean);
+    const errorIndex = Number(q.errorIndex);
+    if (segments.length < 3 || segments.length > 7 || !Number.isInteger(errorIndex) || errorIndex < 0 || errorIndex >= segments.length) return null;
+    const correction = txt(q.correction, 500);
+    if (!correction) return null;
+    return { ...out, segments, errorIndex, correction };
+  }
+  if (q.format === 'match') {
+    const pairs = (Array.isArray(q.pairs) ? q.pairs : []).map((p: any) => ({ left: txt(p?.left, 160), right: txt(p?.right, 220) })).filter((p: any) => p.left && p.right);
+    const lefts = new Set(pairs.map((p: any) => p.left)), rights = new Set(pairs.map((p: any) => p.right));
+    if (pairs.length < 3 || pairs.length > 5 || lefts.size !== pairs.length || rights.size !== pairs.length) return null;
+    return { ...out, pairs };
+  }
+  const items = (Array.isArray(q.items) ? q.items : []).map((s: unknown) => txt(s, 200)).filter(Boolean);
+  if (items.length < 3 || items.length > 6 || new Set(items).size !== items.length) return null;
+  return { ...out, items };
+}
+
+function shuffled<T>(list: T[], notEqualTo?: T[]): T[] {
+  const a = list.slice();
+  for (let attempt = 0; attempt < 6; attempt++) {
+    for (let i = a.length - 1; i > 0; i--) { const j = crypto.randomInt(i + 1); [a[i], a[j]] = [a[j], a[i]]; }
+    if (!notEqualTo || a.some((x, i) => x !== notEqualTo[i])) break;   // never hand out an already-solved puzzle
+  }
+  return a;
+}
+
+// What the page is allowed to see: the puzzle, never the key.
+export function clientView(q: any): Record<string, unknown> {
+  if (!isStructured(q)) return q;
+  const base = { format: q.format, questionText: q.questionText };
+  if (q.format === 'spot_mistake') return { ...base, segments: q.segments };
+  if (q.format === 'match') return { ...base, lefts: (q.pairs || []).map((p) => p.left), rights: shuffled((q.pairs || []).map((p) => p.right), (q.pairs || []).map((p) => p.right)) };
+  return { ...base, items: shuffled(q.items || [], q.items) };
+}
+
+export interface StructuredGrade { correct: boolean; feedback: string; detail?: boolean[]; reveal?: string }
+
+export function gradeStructured(q: StructuredQuestion, answer: any): StructuredGrade {
+  if (q.format === 'spot_mistake') {
+    const picked = Number(answer?.picked);
+    const ok = Number.isInteger(picked) && picked === q.errorIndex;
+    return ok ? { correct: true, feedback: 'Found it.', reveal: q.correction } : { correct: false, feedback: 'That sentence is actually fine. Read the others again.' };
+  }
+  if (q.format === 'match') {
+    const given: { left: string; right: string }[] = Array.isArray(answer?.matches) ? answer.matches : [];
+    const detail = (q.pairs || []).map((p) => given.some((g) => txt(g?.left, 160) === p.left && txt(g?.right, 220) === p.right));
+    const ok = detail.every(Boolean);
+    return ok ? { correct: true, feedback: 'Every piece fits.' } : { correct: false, detail, feedback: `${detail.filter(Boolean).length} of ${detail.length} pieces fit. The ones that do not have popped back out.` };
+  }
+  const order: string[] = Array.isArray(answer?.order) ? answer.order.map((s: unknown) => txt(s, 200)) : [];
+  const detail = (q.items || []).map((item, i) => order[i] === item);
+  const ok = detail.length === order.length && detail.every(Boolean);
+  return ok ? { correct: true, feedback: 'That is the right order.' } : { correct: false, detail, feedback: `${detail.filter(Boolean).length} of ${detail.length} are in the right place. The rest have dropped back out.` };
+}
+
+// A whole stored lesson as the page may see it: every structured question is swapped for its client view.
+export function lessonForClient(content: any): any {
+  if (!content || typeof content !== 'object') return content;
+  const out = { ...content };
+  if (isStructured(out.practiceQuestion)) out.practiceQuestion = clientView(out.practiceQuestion);
+  if (Array.isArray(out.recallChecks)) out.recallChecks = out.recallChecks.map((c: any) => (isStructured(c) ? clientView(c) : c));
+  return out;
+}

@@ -33,7 +33,9 @@ import {
   assertAo1ReviewDue,
 } from '../services/nodeReviewService';
 import { getNodeNoteBaseline, getNodeNoteForUser, saveNodeNoteEdit, getNodeNotes, getEdgeNoteBaseline, getEdgeNoteForUser, saveEdgeNoteEdit, getEdgeNotes, getNotesIndexForUser, getPersonalNote, savePersonalNote, checkWorkedExampleStep, markEdgeExplanationSeen } from '../services/knowledgeMapNotesService';
-import { generateAndCacheNodeLesson, generateAndCacheEdgeLesson } from '../services/lessonGenerationService';
+import { generateAndCacheNodeLesson, generateAndCacheEdgeLesson, needsQuestionUpgrade, upgradeLessonQuestions } from '../services/lessonGenerationService';
+import { isStructured, gradeStructured, clientView, lessonForClient } from '../services/questionFormats';
+import { pickRotatingQuestion, poolEntry } from '../services/reviewQuestionPool';
 import { answerKnowledgeMapQuestion } from '../services/knowledgeMapAskService';
 import { assertFreshGenerationWithinCap, recordFreshGenerationEvent, GenerationCapExceededError } from '../services/generationCapService';
 import { InsufficientLocksError, assertLocksAvailable } from '../services/lockService';
@@ -144,6 +146,12 @@ router.get('/knowledge-map-v2', requireAuth, syncEndpointLimiter, async (req: Re
 // happens once per node forever after, so the tight 10/min "every call
 // costs money" limiter would just break a student legitimately browsing
 // more than 10 concepts a minute on the knowledge map.
+// Law lessons written before the interactive question formats keep their explanation and get new-format questions, once.
+async function upgradeIfLaw(nodeId: string, userId: string, content: any): Promise<any> {
+  const { data: n } = await supabaseAdmin.from('knowledge_map_nodes').select('subject').eq('id', nodeId).maybeSingle();
+  return n && needsQuestionUpgrade(n.subject as string, content) ? upgradeLessonQuestions(nodeId, userId, content) : content;
+}
+
 router.get('/knowledge-map-v2/node/:nodeId/lesson', requireAuth, syncEndpointLimiter, async (req: Request, res: Response) => {
   const { nodeId } = req.params;
   try {
@@ -153,7 +161,11 @@ router.get('/knowledge-map-v2/node/:nodeId/lesson', requireAuth, syncEndpointLim
       .eq('node_id', nodeId)
       .maybeSingle();
     if (error) throw error;
-    if (data) return res.json(data.encoding_content);
+    if (data) {
+      let content = data.encoding_content as any;
+      if (content && content.formatVersion !== 2) content = await upgradeIfLaw(nodeId, req.userId as string, content);
+      return res.json(lessonForClient(content));
+    }
 
     // Cache miss - a real Sonnet generation is about to happen. Capped
     // BEFORE generating, not after, for BOTH tiers (free used to bypass
@@ -164,7 +176,7 @@ router.get('/knowledge-map-v2/node/:nodeId/lesson', requireAuth, syncEndpointLim
     const generated = await generateAndCacheNodeLesson(nodeId, userId);
     if (!generated) return res.status(404).json({ error: 'concept not found' });
     await recordFreshGenerationEvent(userId);
-    res.json(generated);
+    res.json(lessonForClient(generated));
   } catch (err) {
     if (err instanceof InsufficientLocksError) {
       return res.status(402).json({ error: 'Lock limit reached', code: 'LOCK_LIMIT_REACHED', detail: "You're out of Locks for now." });
@@ -576,7 +588,8 @@ function normalizeForBlankComparison(text: string): string {
 }
 
 router.post('/knowledge-map-v2/text-question/submit', requireAuth, costlyEndpointLimiter, async (req: Request, res: Response) => {
-  const { nodeId, fromNodeId, toNodeId, questionType, answer, answers, retryCount, followUpToken } = (req.body ?? {}) as {
+  const { nodeId, fromNodeId, toNodeId, questionType, answer, answers, retryCount, followUpToken, structured } = (req.body ?? {}) as {
+    structured?: unknown;
     followUpToken?: string;
     nodeId?: string;
     fromNodeId?: string;
@@ -587,13 +600,14 @@ router.post('/knowledge-map-v2/text-question/submit', requireAuth, costlyEndpoin
     retryCount?: number;
   };
   const isBlanksSubmission = Array.isArray(answers);
-  if (!questionType || (isBlanksSubmission ? !answers!.length : (typeof answer !== 'string' || !answer.trim()))) {
+  const isStructuredSubmission = structured !== undefined && structured !== null;
+  if (!questionType || (isStructuredSubmission ? false : isBlanksSubmission ? !answers!.length : (typeof answer !== 'string' || !answer.trim()))) {
     return res.status(400).json({ error: 'questionType and answer(s) are required' });
   }
 
   try {
     const userId = req.userId as string;
-    let question: { questionText?: string; markScheme?: string; blanks?: { prompt: string; answer: string }[] } | undefined;
+    let question: any;
     let conceptId: string | undefined;
 
     if (questionType === 'practice') {
@@ -628,6 +642,17 @@ router.post('/knowledge-map-v2/text-question/submit', requireAuth, costlyEndpoin
 
     if (!question || !question.questionText) return res.status(404).json({ error: 'question not found' });
 
+    // Interactive formats (spot the mistake, match, order) have exactly one right answer, so they are graded here with no AI
+    // call. A wrong practice attempt is a learning rep, not a lapse: nothing is recorded until it is right (same as free text).
+    if (isStructured(question) || isStructuredSubmission) {
+      if (questionType !== 'practice' || !isStructured(question) || !isStructuredSubmission) return res.status(400).json({ error: 'this question is answered in a different way' });
+      const g = gradeStructured(question, structured);
+      if (!g.correct) return res.json({ correct: false, feedback: g.feedback, detail: g.detail, retryable: true });
+      const gradedS = await gradeCorrectness(userId, conceptId!, true, Number(retryCount) || 0);
+      if (!gradedS.previousRow) await recordFirstTeachingSignals(userId, conceptId!);
+      return res.json({ correct: true, feedback: g.feedback, reveal: g.reveal, schedule: scheduleWithMastery(conceptId!, gradedS) });
+    }
+
     // Grouped fill-in-the-gaps questions (rule 4b/4c in
     // lessonGenerationPrompts.ts) are graded locally, per blank, against
     // the exact answer generated for each one - never routed through the
@@ -639,7 +664,7 @@ router.post('/knowledge-map-v2/text-question/submit', requireAuth, costlyEndpoin
       if (questionType !== 'practice' || !question.blanks || !question.blanks.length) {
         return res.status(400).json({ error: 'this question has no separately-gradable blanks' });
       }
-      const perBlankCorrect = question.blanks.map((b, i) => normalizeForBlankComparison(answers![i] || '') === normalizeForBlankComparison(b.answer));
+      const perBlankCorrect = question.blanks.map((b: { prompt: string; answer: string }, i: number) => normalizeForBlankComparison(answers![i] || '') === normalizeForBlankComparison(b.answer));
       const correct = perBlankCorrect.every(Boolean);
       const feedback = correct ? 'All correct!' : 'Check the highlighted box(es) and try again.';
       if (!correct) {
@@ -710,8 +735,8 @@ router.post('/knowledge-map-v2/text-question/submit', requireAuth, costlyEndpoin
 // rating to protect here, so the student can simply keep trying.
 router.post('/knowledge-map-v2/node/:nodeId/untracked-submit', requireAuth, costlyEndpointLimiter, async (req: Request, res: Response) => {
   const { nodeId } = req.params;
-  const body = (req.body ?? {}) as { answer?: string | DiagramAnswerSubmission; answers?: string[] };
-  if (body.answer === undefined && !Array.isArray(body.answers)) {
+  const body = (req.body ?? {}) as { answer?: string | DiagramAnswerSubmission; answers?: string[]; structured?: unknown };
+  if (body.answer === undefined && !Array.isArray(body.answers) && !body.structured) {
     return res.status(400).json({ error: 'answer(s) required' });
   }
   try {
@@ -730,6 +755,12 @@ router.post('/knowledge-map-v2/node/:nodeId/untracked-submit', requireAuth, cost
       };
     } | null)?.practiceQuestion;
     if (!question || !question.questionText) return res.status(404).json({ error: 'question not found' });
+
+    if (isStructured(question)) {
+      if (!body.structured) return res.status(400).json({ error: 'answer is required' });
+      const g = gradeStructured(question, body.structured);
+      return res.json({ correct: g.correct, feedback: g.feedback, detail: g.detail, reveal: g.reveal, retryable: !g.correct });
+    }
 
     if (question.diagramSpec) {
       if (!body.answer) return res.status(400).json({ error: 'answer is required' });
@@ -773,7 +804,7 @@ router.post('/knowledge-map-v2/node/:nodeId/untracked-submit', requireAuth, cost
 // in lessonGenerationPrompts.ts) - generated once alongside the lesson
 // itself, cached forever, never regenerated per recall.
 interface RecallCheck {
-  format: 'free_text' | 'fill_blank' | 'multiple_choice';
+  format: 'free_text' | 'fill_blank' | 'multiple_choice' | 'spot_mistake' | 'match' | 'order';
   questionText: string;
   markScheme?: string; // free_text only
   answer?: string; // fill_blank only
@@ -913,6 +944,8 @@ router.get('/immediate-recalls/due', requireAuth, syncEndpointLimiter, async (re
           recallId: r.id, nodeId: node.id, label: node.label, subject: node.subject, dueAt: r.due_at,
           recallCheckIndex, format: check.format, questionText: check.questionText,
           options: check.format === 'multiple_choice' ? check.options : undefined,
+          // Interactive formats send the puzzle (segments / lefts and shuffled rights / shuffled items), never the key.
+          ...(isStructured(check) ? (({ format: _f, questionText: _q, ...rest }) => rest)(clientView(check) as Record<string, unknown>) : {}),
         };
       })
       .filter(Boolean);
@@ -948,7 +981,8 @@ router.get('/immediate-recalls/due', requireAuth, syncEndpointLimiter, async (re
 // feature didn't exist.
 router.post('/immediate-recalls/:id/submit', requireAuth, costlyEndpointLimiter, async (req: Request, res: Response) => {
   const { id } = req.params;
-  const { recallCheckIndex, answer, selectedOptionIndex, retryCount, followUpToken } = (req.body ?? {}) as {
+  const { recallCheckIndex, answer, selectedOptionIndex, retryCount, followUpToken, structured } = (req.body ?? {}) as {
+    structured?: unknown;
     followUpToken?: string;
     recallCheckIndex?: number;
     answer?: string;
@@ -998,7 +1032,13 @@ router.post('/immediate-recalls/:id/submit', requireAuth, costlyEndpointLimiter,
     let correct: boolean;
     let feedback: string | null = null;
     let recallFollowUpOut: ReturnType<typeof followUpFromGrading>;
-    if (check.format === 'multiple_choice') {
+    let structuredDetail: boolean[] | undefined;
+    let structuredReveal: string | undefined;
+    if (isStructured(check)) {
+      if (structured === undefined || structured === null) return res.status(400).json({ error: 'structured answer is required' });
+      const g = gradeStructured(check, structured);
+      correct = g.correct; feedback = g.correct ? null : g.feedback; structuredDetail = g.detail; structuredReveal = g.reveal;
+    } else if (check.format === 'multiple_choice') {
       if (typeof selectedOptionIndex !== 'number') return res.status(400).json({ error: 'selectedOptionIndex is required' });
       correct = selectedOptionIndex === check.correctOptionIndex;
       feedback = correct ? null : 'Not quite - check the other options again.';
@@ -1077,7 +1117,7 @@ router.post('/immediate-recalls/:id/submit', requireAuth, costlyEndpointLimiter,
         }
       }
     }
-    res.json({ correct, feedback, followUp: recallFollowUpOut });
+    res.json({ correct, feedback, followUp: recallFollowUpOut, detail: structuredDetail, reveal: structuredReveal });
   } catch (err) {
     console.error('Immediate recall grading failed:', err);
     res.status(500).json({ error: 'could not grade this answer' });
@@ -1327,6 +1367,15 @@ router.post('/knowledge-map-v2/node-review/ao1/start', requireAuth, costlyEndpoi
   if (!nodeId) return res.status(400).json({ error: 'nodeId is required' });
   try {
     await assertAo1ReviewDue(req.userId as string, nodeId);
+    // A Law lesson from before the interactive formats gets its new questions first (its explanation is untouched).
+    const { data: lessonRow } = await supabaseAdmin.from('knowledge_map_node_lessons').select('encoding_content').eq('node_id', nodeId).maybeSingle();
+    if (lessonRow?.encoding_content && (lessonRow.encoding_content as any).formatVersion !== 2) await upgradeIfLaw(nodeId, req.userId as string, lessonRow.encoding_content);
+    const { data: nodeRow } = await supabaseAdmin.from('knowledge_map_nodes').select('concept_id').eq('id', nodeId).maybeSingle();
+    const rotated = nodeRow ? await pickRotatingQuestion(req.userId as string, nodeId, nodeRow.concept_id as string) : null;
+    if (rotated) {
+      const q = rotated.question;
+      return res.json(isStructured(q) ? { ...clientView(q), poolRef: rotated.ref, modality: 'writing' } : { questionText: q.questionText, poolRef: rotated.ref, modality: 'writing' });
+    }
     const question = await getRewordedAo1Question(nodeId, req.userId as string);
     if (!question) return res.status(404).json({ error: 'no lesson generated for this concept yet' });
     res.json(question);
@@ -1352,16 +1401,25 @@ async function finalizeAo1Grade(userId: string, conceptId: string, feedback: str
 }
 
 router.post('/knowledge-map-v2/node-review/ao1/submit', requireAuth, costlyEndpointLimiter, async (req: Request, res: Response) => {
-  const { nodeId, questionText, answer, retryCount } = (req.body ?? {}) as {
-    nodeId?: string; questionText?: string; answer?: string; retryCount?: number;
+  const { nodeId, questionText, answer, retryCount, structured, poolRef } = (req.body ?? {}) as {
+    nodeId?: string; questionText?: string; answer?: string; retryCount?: number; structured?: unknown; poolRef?: number;
   };
-  if (!nodeId || !questionText || typeof answer !== 'string' || !answer.trim()) {
+  const isStructuredAnswer = structured !== undefined && structured !== null;
+  if (!nodeId || (!isStructuredAnswer && (!questionText || typeof answer !== 'string' || !answer.trim()))) {
     return res.status(400).json({ error: 'nodeId, questionText and answer are required' });
   }
   try {
     const userId = req.userId as string;
     const { data: node } = await supabaseAdmin.from('knowledge_map_nodes').select('concept_id').eq('id', nodeId).maybeSingle();
     if (!node) return res.status(404).json({ error: 'concept not found' });
+    if (isStructuredAnswer) {
+      const entry = typeof poolRef === 'number' ? await poolEntry(nodeId, poolRef) : null;
+      if (!entry || !isStructured(entry.question)) return res.status(404).json({ error: 'question not found' });
+      const g = gradeStructured(entry.question, structured);
+      if (!g.correct) return res.json({ correct: false, feedback: g.feedback, detail: g.detail, retryable: true });
+      return res.json({ ...(await finalizeAo1Grade(userId, node.concept_id as string, g.feedback, Number(retryCount) || 0)), reveal: g.reveal });
+    }
+    if (!questionText || typeof answer !== 'string' || !answer.trim()) return res.status(400).json({ error: 'questionText and answer are required' });
     const followUpToken = (req.body as { followUpToken?: string }).followUpToken;
     const graded = await gradeRewordedAo1Answer(nodeId, questionText, answer, userId, followUpToken);
     if (!graded) return res.status(404).json({ error: 'no lesson generated for this concept yet' });

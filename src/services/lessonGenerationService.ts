@@ -9,7 +9,8 @@
 import { supabaseAdmin } from './supabaseAdmin';
 import { callClaudeJSON } from './claudeClient';
 import { parseModelJson, stripCodeFences, escapeRawControlCharsInStrings } from './jsonParsing';
-import { KNOWLEDGE_MAP_ENCODING_LESSON_PROMPT, KNOWLEDGE_MAP_EDGE_LESSON_PROMPT } from '../constants/lessonGenerationPrompts';
+import { KNOWLEDGE_MAP_ENCODING_LESSON_PROMPT, KNOWLEDGE_MAP_ENCODING_LESSON_PROMPT_V2, KNOWLEDGE_MAP_EDGE_LESSON_PROMPT } from '../constants/lessonGenerationPrompts';
+import { isStructured, sanitiseStructured } from './questionFormats';
 import { getNodeNoteBaseline, getEdgeNoteBaseline } from './knowledgeMapNotesService';
 import { generateDiagramSpecForQuestion } from './diagramSpecGenerationService';
 import { getBiologyObjective, biologySourceContext, BIOLOGY_ATOMIC_LESSON_RULES, validateBiologyEncodingLesson } from './biologyCurriculum';
@@ -66,6 +67,59 @@ function parseWithClosingBraceRepair<T>(raw: string): T {
   }
 }
 
+const LANGUAGE_SUBJECTS = new Set(['Spanish', 'Italian']);
+
+// Cleans a version-2 lesson: every interactive question must be well-formed (or it becomes plain free recall), at most three
+// questions are kept in all, and the lesson is stamped so it is known to be in the new format.
+export function normaliseLessonQuestions(content: any, label: string): any {
+  const c = content && typeof content === 'object' ? content : {};
+  const explanation = typeof c.explanation === 'string' ? c.explanation : '';
+  const strip = (q: any) => { ['segments', 'errorIndex', 'correction', 'pairs', 'items'].forEach((k) => { delete q[k]; }); q.format = 'free_text'; return q; };
+  const pq = c.practiceQuestion && typeof c.practiceQuestion === 'object' ? c.practiceQuestion : null;
+  if (pq) {
+    if (isStructured(pq)) {
+      const ok = sanitiseStructured(pq);
+      if (ok) Object.assign(pq, ok);
+      else { strip(pq); pq.questionText = `In your own words, explain the key idea of: ${label}`; pq.markScheme = explanation; }
+    } else pq.format = 'free_text';
+  }
+  const checks = (Array.isArray(c.recallChecks) ? c.recallChecks : []).slice(0, 3).map((q: any) => {
+    if (!q || typeof q !== 'object' || !q.questionText) return null;
+    if (isStructured(q)) { const ok = sanitiseStructured(q); return ok ? { ...q, ...ok } : null; }
+    if (q.format === 'multiple_choice') return Array.isArray(q.options) && q.options.length === 4 && Number.isInteger(q.correctOptionIndex) ? q : null;
+    if (q.format === 'fill_blank') return q.answer ? q : null;
+    return q.markScheme ? { ...q, format: 'free_text' } : null;
+  }).filter(Boolean);
+  return { ...c, practiceQuestion: pq || c.practiceQuestion, recallChecks: checks, formatVersion: 2 };
+}
+
+// Law lessons written before the question formats existed keep their explanation exactly and get new-format questions, once,
+// the next time they are opened or reviewed. Any failure just leaves the old lesson in place.
+export function needsQuestionUpgrade(subject: string, content: any): boolean {
+  return subject === 'Law' && !!content && content.formatVersion !== 2 && typeof content.explanation === 'string' && !!content.explanation;
+}
+export async function upgradeLessonQuestions(nodeId: string, userId: string, existing: any): Promise<any> {
+  try {
+    const input = await buildNodeLessonInput(nodeId);
+    if (!input || input.biologyObjective) return existing;
+    const raw = await callClaudeJSON({
+      model: LESSON_MODEL, systemPrompt: KNOWLEDGE_MAP_ENCODING_LESSON_PROMPT_V2, maxTokens: 4000, cacheSystemPrompt: true, userId, meteredReason: 'knowledge-map-v2-question-format-upgrade',
+      userContent: `${input.userContent}
+EXISTING EXPLANATION (already written and approved. Do not change it: write the questions to fit it exactly, and copy it into "explanation" verbatim):
+${existing.explanation}`,
+    });
+    const fresh = normaliseLessonQuestions(parseWithClosingBraceRepair<unknown>(raw), input.typedNode.label);
+    if (!fresh.practiceQuestion || !fresh.practiceQuestion.questionText) return existing;
+    const merged = { ...fresh, explanation: existing.explanation };
+    const { error } = await supabaseAdmin.from('knowledge_map_node_lessons').update({ encoding_content: merged }).eq('node_id', nodeId);
+    if (error) throw error;
+    return merged;
+  } catch (err) {
+    console.error(`LastMind: could not upgrade the question format for node ${nodeId} (kept the existing lesson).`, err);
+    return existing;
+  }
+}
+
 interface NodeRow {
   id: string;
   label: string;
@@ -79,7 +133,7 @@ interface NodeRow {
 // the node itself doesn't exist (caller 404s); a generation failure
 // throws, same as every other Claude call in this app - there is
 // deliberately no silent fallback content for a real lesson.
-export async function generateAndCacheNodeLesson(nodeId: string, userId: string): Promise<unknown | null> {
+async function buildNodeLessonInput(nodeId: string): Promise<{ typedNode: NodeRow; biologyObjective: ReturnType<typeof getBiologyObjective>; userContent: string } | null> {
   const { data: node, error: nodeError } = await supabaseAdmin
     .from('knowledge_map_nodes')
     .select('id, label, subtopic, subject, qualification, exam_board')
@@ -114,10 +168,19 @@ export async function generateAndCacheNodeLesson(nodeId: string, userId: string)
     `Concepts this leads to (do not explain or foreshadow these - see rule 3): ${JSON.stringify(leadsToLabels)}`,
     `This node's own direct prerequisites, already taught immediately before this one (ground and build forward from these - see rule 1a): ${JSON.stringify(leadsFromLabels)}`,
   ].join('\n');
+  return { typedNode, biologyObjective, userContent };
+}
+
+export async function generateAndCacheNodeLesson(nodeId: string, userId: string): Promise<unknown | null> {
+  const input = await buildNodeLessonInput(nodeId);
+  if (!input) return null;
+  const { typedNode, biologyObjective, userContent } = input;
+  // Languages and Biology keep their own rules; every other subject uses the version-2 question formats.
+  const useV2 = !biologyObjective && !LANGUAGE_SUBJECTS.has(typedNode.subject);
 
   const raw = await callClaudeJSON({
     model: LESSON_MODEL,
-    systemPrompt: biologyObjective ? BIOLOGY_ATOMIC_LESSON_RULES : KNOWLEDGE_MAP_ENCODING_LESSON_PROMPT,
+    systemPrompt: biologyObjective ? BIOLOGY_ATOMIC_LESSON_RULES : useV2 ? KNOWLEDGE_MAP_ENCODING_LESSON_PROMPT_V2 : KNOWLEDGE_MAP_ENCODING_LESSON_PROMPT,
     userContent,
     maxTokens: biologyObjective ? 3000 : MAX_TOKENS,
     // ~1,862 tokens, well over Sonnet's 1024-token cache minimum, and
@@ -134,6 +197,7 @@ export async function generateAndCacheNodeLesson(nodeId: string, userId: string)
   try {
     encodingContent = parseWithClosingBraceRepair<unknown>(raw);
     if (biologyObjective) validateBiologyEncodingLesson(encodingContent, biologyObjective);
+    if (useV2) encodingContent = normaliseLessonQuestions(encodingContent, typedNode.label);
   } catch (err) {
     // Logged with enough to actually diagnose a live failure from Render's
     // own logs (no other way to see this - this route is live/single-shot,
@@ -176,6 +240,9 @@ export async function generateAndCacheNodeLesson(nodeId: string, userId: string)
           // don't match it (see generateDiagramSpecForQuestion's own
           // comment - a real bug found live).
           pq.questionText = diagramResult.questionText;
+          // A draw-the-diagram question replaces any interactive format the main pass picked.
+          Object.assign(pq, { format: 'free_text' });
+          ['segments', 'errorIndex', 'correction', 'pairs', 'items'].forEach((k) => { delete (pq as Record<string, unknown>)[k]; });
         }
       } catch (err) {
         console.error(`LastMind: diagram spec generation failed for "${typedNode.label}" (${nodeId}).`, err);

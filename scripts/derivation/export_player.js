@@ -74,12 +74,21 @@ body = body.slice(0, end) + '};\n';
 
 const boot = `
 window.addEventListener('message', function (e) {
-  if (e.origin !== location.origin || !e.data || e.data.type !== 'lm-derive-init' || window.__started) return;
+  if (e.origin !== location.origin || !e.data) return;
+  if (e.data.type === 'lm-derive-size') { var sb = document.getElementById('sizeBtn'); if (sb) sb.textContent = e.data.expanded ? 'Shrink' : 'Expand'; return; }
+  if (e.data.type !== 'lm-derive-init' || window.__started) return;
   window.__started = true; window.__runDerive(e.data.data);
 });
+(function () {
+  var sb = document.getElementById('sizeBtn');
+  if (!sb || window.parent === window) return;
+  sb.hidden = false;
+  sb.addEventListener('click', function () { try { parent.postMessage({ type: 'lm-derive-toggle-size' }, location.origin); } catch (err) { /* standalone */ } });
+})();
 try { parent.postMessage({ type: 'lm-derive-ready' }, location.origin); } catch (e) { /* standalone */ }
 `;
-html = html.replace('</style>', '.nextbtn { justify-self: start; border: 1px solid var(--line); background: transparent; color: var(--muted); border-radius: 999px; padding: 8px 16px; font: 600 13px var(--sans); cursor: pointer; } .nextbtn:hover { border-color: var(--accent); color: var(--ink); } .tray { display: none !important; } .feed { padding-bottom: 0; overflow-x: hidden; } html, body { overflow-x: hidden; } .svgwrap, .bank, .slots, .lanes { scrollbar-width: none; } .svgwrap::-webkit-scrollbar, .bank::-webkit-scrollbar, .slots::-webkit-scrollbar, .lanes::-webkit-scrollbar { display: none; }\n</style>');
+html = html.replace('</style>', '.nextbtn { justify-self: start; border: 1px solid var(--line); background: transparent; color: var(--muted); border-radius: 999px; padding: 8px 16px; font: 600 13px var(--sans); cursor: pointer; } .nextbtn:hover { border-color: var(--accent); color: var(--ink); } .tray { display: none !important; } .feed { padding-bottom: 0; overflow-x: hidden; } html, body { overflow: hidden; height: 100%; } .svgwrap, .bank, .slots, .lanes { scrollbar-width: none; } .svgwrap::-webkit-scrollbar, .bank::-webkit-scrollbar, .slots::-webkit-scrollbar, .lanes::-webkit-scrollbar { display: none; }\n</style>');
+html = html.replace('<button class="hbtn" id="howBtn" type="button">', '<button class="hbtn" id="sizeBtn" type="button" hidden>Expand</button>\n  <button class="hbtn" id="howBtn" type="button">');
 html = html.replace(/<title>[^<]*<\/title>/, '<title>LastMind lesson</title>').replace(/<h1 id="stageTitle">[^<]*<\/h1>/, '<h1 id="stageTitle">Lesson</h1>');
 let shell = html.slice(0, html.indexOf('<script>') + 8) + '\n' + head + body + boot + html.slice(html.indexOf('</script>'));
 // The lesson feed is always the light grey-blue, whatever the page around it or the device is set to.

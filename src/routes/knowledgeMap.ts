@@ -42,7 +42,7 @@ import { assertFreshGenerationWithinCap, recordFreshGenerationEvent, GenerationC
 import { InsufficientLocksError, assertLocksAvailable } from '../services/lockService';
 import { recordPairwiseIntegrationOutcome } from '../services/chainMasteryService';
 import { getOrCreateUserRecallTuning, getDifficultyAndCapability, nextRecallDelayMinutes, updateGammaAfterRecall, bumpBaseRecalls } from '../services/recallTuningService';
-import { getQuestionForConceptId, getConceptDisplayInfo, orderDay1ChecksByLessonOrder } from '../services/day1CheckService';
+import { getQuestionForConceptId, getConceptDisplayInfo, orderDay1ChecksByLessonOrder, scheduleDay1Check } from '../services/day1CheckService';
 import { biologyCurriculumStatus } from '../services/biologyCurriculum';
 import { awardDay1Keys, awardSpacedReviewKeys } from '../services/keyEconomyService';
 import { getExternalCoveredConceptIds } from '../services/externalCoverageService';
@@ -223,8 +223,8 @@ router.post('/knowledge-map-v2/derivation/complete', requireAuth, syncEndpointLi
     for (const conceptId of concepts) {
       try {
         const graded = await gradeCorrectness(userId, conceptId, true, Number((req.body ?? {}).retryCount) || 0);
-        // The 2-minute recall and the Day-1 check belong to the whole lesson, so only its anchor concept carries them.
-        if (!graded.previousRow && conceptId === derivationAnchorConcept(stage)) await recordFirstTeachingSignals(userId, conceptId);
+        // Economics has no quick (2-minute) recall. The Day-1 check belongs to the whole lesson, so only its anchor concept carries it.
+        if (!graded.previousRow && conceptId === derivationAnchorConcept(stage)) await scheduleDay1Check(userId, conceptId);
         schedules.push(scheduleWithMastery(conceptId, graded));
       } catch (err) {
         if (!(err instanceof ReviewNotDueError)) throw err; // already learned and not due yet: nothing to record

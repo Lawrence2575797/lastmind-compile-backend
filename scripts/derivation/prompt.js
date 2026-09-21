@@ -74,7 +74,8 @@ STRUCTURE
 
 QUESTION RULES (checked by code; a failing stage is rejected)
 - Every ask has q, right, wrong, hint, pre, term. Exactly two options.
-- Neither the question, the options nor the hint may contain the term being introduced. The name only appears after the answer.
+- Neither the question, the options nor the hint may contain the term being introduced, or any term that comes later in the lesson. The name only appears after the answer. An option must never simply name a term ("A positive statement", "An aggregate supply curve"): the answer is something the student works out from the situation ("the facts decide it"), and the name is revealed afterwards. Never ask "what is this called?".
+- Independent chains stay separate. If two ideas each lead into a later one but do not depend on each other (what can be checked leads to positive statements, what is believed leads to normative ones, and both lead to the distinction between them), give each its own chain and use a chains milestone with one lane each, never one long sequence.
 - Right and wrong are the same length and the same shape. The wrong option is one a real student might pick, never silly, and the right one is never the more detailed one.
 - Answerable from the situation plus common sense, or from terms already taught in this stage or given. Never from outside knowledge.
 - Never "which of these is true" and never ask the student to type. The hint nudges the reasoning without giving the answer.

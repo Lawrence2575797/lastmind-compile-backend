@@ -54,6 +54,19 @@ function validate(spec, known) {
           if (label) [['q', s.q], ['right', s.right], ['wrong', s.wrong], ['hint', s.hint]].forEach(([f, v]) => {
             if (!spec.noLeakCheck && v && v.toLowerCase().includes(label.toLowerCase())) err(`${at}: "${f}" contains the term "${label}" it is about to reveal`);
           });
+          // The answer must be something the student reasons out, never a new term handed over in an option: no option may simply name this
+          // term or any term still to come, and the wording may not show a later term's full label.
+          if (!spec.noLeakCheck) {
+            const stems = (t) => String(t).toLowerCase().replace(/[^a-z ]+/g, ' ').split(/\s+/).filter((w) => w.length > 2 && !['the', 'and', 'for', 'from', 'with', 'are', 'its', 'that'].includes(w)).map((w) => w.slice(0, 6));
+            const nrm = (t) => ' ' + String(t).toLowerCase().replace(/[^a-z0-9]+/g, ' ').trim() + ' ';
+            const ahead = st.steps.filter((x) => x.type === 'ask' || x.type === 'read').slice(st.steps.filter((x) => x.type === 'ask' || x.type === 'read').indexOf(s)).map((x) => x.term);
+            ahead.forEach((t) => {
+              const lab = (spec.terms[t] || {}).label; if (!lab) return;
+              const ls = stems(lab);
+              ['right', 'wrong'].forEach((f) => { const os = stems(s[f]); if (ls.length && os.length <= ls.length + 2 && ls.every((w) => os.includes(w))) err(`${at}: the "${f}" option just names "${lab}", which is only revealed after the answer`); });
+              if (t !== s.term && lab.length >= 5) [['q', s.q], ['right', s.right], ['wrong', s.wrong], ['hint', s.hint]].forEach(([f, v]) => { if (v && nrm(v).includes(nrm(lab))) err(`${at}: "${f}" shows "${lab}", a term that comes later`); });
+            });
+          }
           if (s.right && s.wrong && Math.abs(s.right.length - s.wrong.length) > 20 && Math.max(s.right.length, s.wrong.length) / Math.min(s.right.length, s.wrong.length) > 1.5) err(`${at}: right and wrong options differ too much in length, which gives the answer away`);
         } else if (!s.text) err(`${at}: read is missing "text"`);
       } else if (s.type === 'order') {
@@ -142,7 +155,7 @@ function build(spec) {
     const given = st.given || [];
     const nodeKeys = [...given, ...intro];
     const g = layout(nodeKeys, st.edges, labels, st.layout);
-    const graph = { h: g.h, nodes: g.nodes, edges: g.edges, given };
+    const graph = { h: g.h, nodes: g.nodes, edges: g.edges, given, pairs: st.edges };
     const final = st.steps.findIndex((s) => s.type === 'derive');
     const steps = [{ type: 'title' }];
     st.steps.forEach((s, i) => {

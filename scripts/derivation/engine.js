@@ -102,8 +102,9 @@
     });
     cfg.btn.addEventListener('click', function () {
       var allOk = true;
+      var verdict = cfg.judge ? cfg.judge(placed) : null;
       cfg.slots.forEach(function (s) {
-        if (placed[s.id] === s.expect) { locked[s.id] = true; }
+        if (verdict ? verdict[s.id] : placed[s.id] === s.expect) { locked[s.id] = true; }
         else { allOk = false; s.paint(placed[s.id], 'bad'); (function (id) { setTimeout(function () { if (!locked[id]) delete placed[id]; render(); }, 650); })(s.id); }
       });
       render();
@@ -161,7 +162,26 @@
     var bank = el('div', 'bank'), btn = el('button', 'btn', 'Check the chains'), note = el('div', 'note'); btn.type = 'button';
     wrap.appendChild(lanes); wrap.appendChild(bank); wrap.appendChild(btn); wrap.appendChild(note);
     slide(wrap);
-    board({ slots: defs, bank: shuffle(step.bank), bankEl: bank, btn: btn, note: note, onSolved: function () { milestoneDone(note, step.done); } });
+    /* two lanes of the same shape (same start, same length) are interchangeable: it does not matter which one is on top */
+    var laneIds = step.lanes.map(function (ln, li) { return { start: ln.start || '', ids: ln.slots.map(function (sl) { return sl.id; }), exp: ln.slots.map(function (sl) { return sl.expect; }) }; });
+    function judge(placed) {
+      var v = {};
+      defs.forEach(function (d) { v[d.id] = placed[d.id] === d.expect; });
+      var groups = {};
+      laneIds.forEach(function (l, i) { var key = l.start + '|' + l.ids.length; (groups[key] = groups[key] || []).push(i); });
+      Object.keys(groups).forEach(function (key) {
+        var g = groups[key]; if (g.length < 2) return;
+        var used = {}, ok = true;
+        g.forEach(function (i) {
+          var seq = laneIds[i].ids.map(function (id) { return placed[id]; }), hit = -1;
+          g.forEach(function (j) { if (hit < 0 && !used[j] && seq.every(function (t, n) { return t === laneIds[j].exp[n]; })) hit = j; });
+          if (hit < 0) ok = false; else used[hit] = true;
+        });
+        if (ok) g.forEach(function (i) { laneIds[i].ids.forEach(function (id) { v[id] = true; }); });
+      });
+      return v;
+    }
+    board({ slots: defs, bank: shuffle(step.bank), bankEl: bank, btn: btn, note: note, judge: judge, onSolved: function () { milestoneDone(note, step.done); } });
   }
 
   /* ---- a derivation drawn as a graph ---- */
@@ -210,7 +230,19 @@
         nd.t.setAttribute('class', 'ntext' + (t ? '' : ' q')); setLabel(nd.t, nd.n, t ? TERMS[t].t : '?');
       } };
     });
-    board({ slots: defs, bank: shuffle(open), bankEl: bank, btn: btn, note: note, onSolved: function () {
+    /* a placement is right when it fits the shape of the graph: every link in the graph is a link between the terms placed there, so two
+       identical branches can be filled either way round */
+    function judge(placed) {
+      var v = {}, phi = {}, seen = {}, fits = true;
+      defs.forEach(function (d) { v[d.id] = placed[d.id] === d.expect; });
+      g.given.forEach(function (k) { phi[k] = k; });
+      open.forEach(function (k) { phi[k] = placed[k]; if (!placed[k] || seen[placed[k]]) fits = false; seen[placed[k]] = true; });
+      var edgeSet = {}; (g.pairs || []).forEach(function (p) { edgeSet[p[0] + '>' + p[1]] = true; });
+      if (fits && g.pairs) g.pairs.forEach(function (p) { if (!edgeSet[phi[p[0]] + '>' + phi[p[1]]]) fits = false; });
+      if (fits && g.pairs) defs.forEach(function (d) { v[d.id] = true; });
+      return v;
+    }
+    board({ slots: defs, bank: shuffle(open), bankEl: bank, btn: btn, note: note, judge: judge, onSolved: function () {
       note.style.color = 'var(--good)'; setHeld(0); completed = stageIdx + 1;
       if (step.bridge && stageIdx < STAGES.length - 1) { note.textContent = step.bridge; setTimeout(function () { startStage(stageIdx + 1); }, 3200); }
       else { note.textContent = 'Every term, in every chain. That is the whole derivation.'; setTimeout(function () { next(true); }, 1600); }

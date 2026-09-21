@@ -2,7 +2,7 @@ import { Router, Request, Response } from 'express';
 import { requireAuth } from '../services/authMiddleware';
 import { syncEndpointLimiter } from '../services/rateLimiters';
 import { listUserFolders, upsertUserFolder, deleteUserFolder } from '../services/folderSyncService';
-import { resetConceptProgress } from '../services/progressResetService';
+import { resetConceptProgress, resetSubjectProgress } from '../services/progressResetService';
 
 const router = Router();
 
@@ -79,6 +79,20 @@ router.post('/sync/reset-progress', async (req: Request, res: Response) => {
   } catch (err) {
     console.error('Progress reset failed:', err);
     res.status(500).json({ error: 'could not reset progress for these concepts' });
+  }
+});
+
+// POST /sync/reset-subject-progress  { subject, qualification?, examBoard? }
+// Called when a whole subject is deleted: clears this user's progress for every concept of that subject's knowledge map.
+router.post('/sync/reset-subject-progress', async (req: Request, res: Response) => {
+  const { subject, qualification, examBoard } = req.body ?? {};
+  if (typeof subject !== 'string' || !subject.trim()) return res.status(400).json({ error: 'subject is required' });
+  try {
+    const concepts = await resetSubjectProgress(req.userId as string, subject.trim(), typeof qualification === 'string' ? qualification.trim() : '', typeof examBoard === 'string' ? examBoard.trim() : '');
+    res.json({ ok: true, concepts });
+  } catch (err) {
+    console.error('Subject progress reset failed:', err);
+    res.status(500).json({ error: 'could not reset progress for this subject' });
   }
 });
 

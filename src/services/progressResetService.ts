@@ -78,3 +78,32 @@ export async function resetConceptProgress(userId: string, conceptKeys: string[]
     .in('edge_id', edgeIds);
   if (edgeUnlockError) throw edgeUnlockError;
 }
+
+// Deleting a whole subject: every concept of that subject's knowledge map loses this user's progress, not just the ones the local folder
+// happens to list as pages. A map-based subject stores no pages, so the page-based reset alone left its schedule, Day-1 checks and recalls
+// behind (a deleted-then-recreated subject came back with its old reviews).
+export async function resetSubjectProgress(userId: string, subject: string, qualification: string, examBoard: string): Promise<number> {
+  const conceptIds: string[] = [];
+  for (let from = 0; ; from += 1000) {
+    let q = supabaseAdmin.from('knowledge_map_nodes').select('concept_id').eq('subject', subject);
+    if (qualification) q = q.eq('qualification', qualification);
+    if (examBoard) q = q.eq('exam_board', examBoard);
+    const { data, error } = await q.range(from, from + 999);
+    if (error) throw error;
+    (data || []).forEach((r) => conceptIds.push(r.concept_id as string));
+    if (!data || data.length < 1000) break;
+  }
+  for (let i = 0; i < conceptIds.length; i += 100) {
+    const keys = conceptIds.slice(i, i + 100);
+    await resetConceptProgress(userId, keys);
+    for (const [table, column] of [['day1_checks', 'concept_id'], ['immediate_recall_schedule', 'concept_id'], ['answer_confidence_signals', 'concept_id']] as const) {
+      const { error } = await supabaseAdmin.from(table).delete().eq('user_id', userId).in(column, keys);
+      if (error) throw error;
+    }
+    for (const column of ['from_concept_id', 'to_concept_id']) {
+      const { error } = await supabaseAdmin.from('pairwise_integration_streaks').delete().eq('user_id', userId).in(column, keys);
+      if (error) throw error;
+    }
+  }
+  return conceptIds.length;
+}

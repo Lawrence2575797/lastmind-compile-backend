@@ -8,7 +8,7 @@ import { parseModelJson } from '../services/jsonParsing';
 import { InsufficientLocksError } from '../services/lockService';
 import { startJob } from './createSimulation';
 import { generatePortraitCutout, generateEvidencePicture, downloadAsDataUrl } from '../services/createImages';
-import { CASE_GRAPH_COMPILE_PROMPT, CHARACTER_TURN_PROMPT, CLOSING_ASSESSMENT_PROMPT } from '../constants/playtestPrompts';
+import { CASE_GRAPH_COMPILE_PROMPT, CHARACTER_TURN_PROMPT, CLOSING_ASSESSMENT_PROMPT, COMPILE_SPEECH_PROMPT } from '../constants/playtestPrompts';
 
 const router = Router();
 router.use('/playtest', requireAuth);
@@ -220,6 +220,9 @@ export function buildCharacterInput(graph: any, ch: any, b: Record<string, any>,
     setting: setting === 'interview'
       ? `A private conference. The barrister speaking to you acts for the ${ch.side === 'prosecution' ? 'prosecution' : 'defence'}: they are on your side.`
       : `You are in the witness box in the Crown Court. The barrister questioning you now acts for the ${asking}.`,
+    theBarrister: setting === 'interview'
+      ? { role: `your own barrister (counsel for the ${ch.side === 'prosecution' ? 'prosecution' : 'defence'})`, name: str(b.counselName, 80) || undefined }
+      : { role: `counsel for the ${asking} (a barrister, not a witness)`, name: str(b.counselName, 80) || undefined },
     whatYouKnow: ch.mind.knows.map((id: string) => ({ id, text: factById.get(id)?.text })),
     whatYouAreConcealing: ch.mind.concealing.map((id: string) => ({ id, text: factById.get(id)?.text })),
     theLieYouTell: ch.mind.lieDetails,
@@ -321,6 +324,43 @@ router.post('/playtest/assess', costlyEndpointLimiter, async (req: Request, res:
     };
   });
   res.json({ jobId });
+});
+
+// POST /playtest/compile-speech { sessionId, kind: 'opening'|'closing', side, notes, establishedFactIds } -> { speech, tips }
+// A writing aid for advocacy: turns the learner's own quick notes into a polished courtroom speech. It adds no points of its own.
+router.post('/playtest/compile-speech', costlyEndpointLimiter, async (req: Request, res: Response) => {
+  const b = (req.body ?? {}) as Record<string, any>;
+  const userId = req.userId as string;
+  const session = sessions.get(str(b.sessionId, 40));
+  if (!session || session.userId !== userId) return res.status(409).json({ error: 'session expired', code: 'SESSION_EXPIRED' });
+  const notes = str(b.notes, 3000);
+  if (notes.split(/\s+/).filter(Boolean).length < 5) return res.status(400).json({ error: 'Jot down at least a few points first.' });
+  const graph = session.graph;
+  const kind = b.kind === 'closing' ? 'closing' : 'opening';
+  const side = b.side === 'prosecution' ? 'prosecution' : 'defence';
+  const heard = new Set<string>(arr<string>(b.establishedFactIds, 60).map((x) => str(x, 20)));
+  const input = {
+    speech: kind, youAreCounselFor: side,
+    theTraineesNotes: notes,
+    caseSummary: str(graph.caseFile?.summary, 900),
+    agreedFacts: arr<string>(graph.caseFile?.agreedFacts, 12).map((x) => str(x, 300)),
+    factsTheCourtHasHeard: kind === 'closing' ? graph.facts.filter((f: any) => heard.has(f.id)).map((f: any) => f.text) : undefined,
+  };
+  try {
+    const { text, spend } = await createAiCall({
+      userId, systemPrompt: COMPILE_SPEECH_PROMPT, userContent: JSON.stringify(input), maxTokens: 1100, temperature: 0.5,
+      reason: 'playtest-compile-speech', cacheSystemPrompt: false, clientUsedUsd: Number(b.clientUsedUsd) || undefined,
+    });
+    const p = parseModelJson<any>(text);
+    const speech = str(p?.speech, 4500);
+    if (!speech) return res.status(502).json({ error: 'Cortex could not write that up - please try again.' });
+    res.json({ speech, tips: arr<string>(p?.tips, 3).map((x) => str(x, 300)).filter(Boolean), spend });
+  } catch (err) {
+    const handled = capResponse(res, userId, err);
+    if (handled) return handled;
+    console.error('Playtest compile-speech failed:', err);
+    res.status(500).json({ error: 'Cortex could not write that up just now - please try again.' });
+  }
 });
 
 // POST /playtest/portrait { description } -> { image: data URL, transparent } | 501 when no image key is set

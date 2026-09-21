@@ -73,6 +73,7 @@ const USER_TEXT_PATHS: Array<{ test: RegExp; keys: string[]; all?: boolean }> = 
   { test: /^\/create\/criminal-trial\/build$/, keys: ['idea', 'details'] },
   { test: /^\/playtest\/character-turn$/, keys: ['message'] },
   { test: /^\/playtest\/assess$/, keys: ['opening', 'closing', 'question'] },
+  { test: /^\/playtest\/compile-speech$/, keys: ['notes'] },
   { test: /^\/chancellor\//, keys: [], all: true },
 ];
 

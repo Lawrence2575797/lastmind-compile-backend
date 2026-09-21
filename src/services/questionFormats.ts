@@ -24,8 +24,11 @@ export function openJson<T>(sealed: unknown): T | null {
   } catch (err) { return null; }
 }
 
-export type StructuredFormat = 'spot_mistake' | 'match' | 'order';
-export const STRUCTURED_FORMATS: StructuredFormat[] = ['spot_mistake', 'match', 'order'];
+// cloze   type the missing terms into a passage (graded exactly, with small typo tolerance)
+//   steps   type the steps of a process in order, one per line (each line must contain one of that step's key words)
+// Both make the student PRODUCE the answer, which is what the delayed checks are for; match and order can also carry decoys.
+export type StructuredFormat = 'spot_mistake' | 'match' | 'order' | 'cloze' | 'steps';
+export const STRUCTURED_FORMATS: StructuredFormat[] = ['spot_mistake', 'match', 'order', 'cloze', 'steps'];
 
 export interface StructuredQuestion {
   format: StructuredFormat;
@@ -34,6 +37,9 @@ export interface StructuredQuestion {
   segments?: string[]; errorIndex?: number; correction?: string;          // spot_mistake
   pairs?: { left: string; right: string }[];                              // match
   items?: string[];                                                       // order (already in the CORRECT order)
+  decoys?: string[];                                                      // match / order: extra wrong pieces mixed into the pool
+  text?: string; blanks?: { answer: string; alt?: string[] }[];           // cloze: passage with ___ per blank
+  steps?: { text: string; keys: string[] }[];                             // steps: the correct steps and the key words that identify each
   [k: string]: unknown;
 }
 
@@ -58,11 +64,29 @@ export function sanitiseStructured(q: any): StructuredQuestion | null {
     const pairs = (Array.isArray(q.pairs) ? q.pairs : []).map((p: any) => ({ left: txt(p?.left, 160), right: txt(p?.right, 220) })).filter((p: any) => p.left && p.right);
     const lefts = new Set(pairs.map((p: any) => p.left)), rights = new Set(pairs.map((p: any) => p.right));
     if (pairs.length < 3 || pairs.length > 5 || lefts.size !== pairs.length || rights.size !== pairs.length) return null;
-    return { ...out, pairs };
+    return { ...out, pairs, decoys: cleanDecoys(q.decoys, pairs.map((p: any) => p.right)) };
+  }
+  if (q.format === 'cloze') {
+    const text = txt(q.text, 900);
+    const blanks = (Array.isArray(q.blanks) ? q.blanks : []).map((b: any) => ({ answer: txt(b?.answer, 80), alt: (Array.isArray(b?.alt) ? b.alt : []).map((a: unknown) => txt(a, 80)).filter(Boolean).slice(0, 4) })).filter((b: any) => b.answer);
+    const marks = (text.match(/_{2,}/g) || []).length;
+    if (blanks.length < 2 || blanks.length > 6 || marks !== blanks.length) return null;
+    return { ...out, text, blanks };
+  }
+  if (q.format === 'steps') {
+    const steps = (Array.isArray(q.steps) ? q.steps : []).map((st: any) => ({ text: txt(st?.text, 200), keys: (Array.isArray(st?.keys) ? st.keys : []).map((k: unknown) => txt(k, 60)).filter((k: string) => k.length >= 3).slice(0, 5) })).filter((st: any) => st.text && st.keys.length);
+    if (steps.length < 3 || steps.length > 6) return null;
+    return { ...out, steps };
   }
   const items = (Array.isArray(q.items) ? q.items : []).map((s: unknown) => txt(s, 200)).filter(Boolean);
   if (items.length < 3 || items.length > 6 || new Set(items).size !== items.length) return null;
-  return { ...out, items };
+  return { ...out, items, decoys: cleanDecoys(q.decoys, items) };
+}
+
+// Extra wrong pieces for a harder puzzle: at most three, never a duplicate of a real piece.
+function cleanDecoys(raw: unknown, real: string[]): string[] {
+  const have = new Set(real);
+  return (Array.isArray(raw) ? raw : []).map((d: unknown) => txt(d, 200)).filter((d: string) => d && !have.has(d)).slice(0, 3);
 }
 
 function shuffled<T>(list: T[], notEqualTo?: T[]): T[] {
@@ -79,13 +103,38 @@ export function clientView(q: any): Record<string, unknown> {
   if (!isStructured(q)) return q;
   const base = { format: q.format, questionText: q.questionText };
   if (q.format === 'spot_mistake') return { ...base, segments: q.segments };
-  if (q.format === 'match') return { ...base, lefts: (q.pairs || []).map((p) => p.left), rights: shuffled((q.pairs || []).map((p) => p.right), (q.pairs || []).map((p) => p.right)) };
-  return { ...base, items: shuffled(q.items || [], q.items) };
+  if (q.format === 'match') { const rights = (q.pairs || []).map((p) => p.right); return { ...base, lefts: (q.pairs || []).map((p) => p.left), rights: shuffled([...rights, ...(q.decoys || [])], rights) }; }
+  if (q.format === 'cloze') return { ...base, text: q.text, blanks: (q.blanks || []).length };
+  if (q.format === 'steps') return { ...base, count: (q.steps || []).length };
+  return { ...base, items: shuffled([...(q.items || []), ...(q.decoys || [])], q.items), slots: (q.items || []).length };
 }
 
 export interface StructuredGrade { correct: boolean; feedback: string; detail?: boolean[]; reveal?: string }
 
+// Lower-case, accents and punctuation stripped, leading articles dropped: what a typed answer is compared on.
+const norm = (v: unknown) => String(v ?? '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().replace(/[^a-z0-9 ]+/g, ' ').replace(/\b(the|a|an)\b/g, ' ').replace(/\s+/g, ' ').trim();
+function within(a: string, b: string, max: number): boolean {
+  if (Math.abs(a.length - b.length) > max) return false;
+  const d: number[][] = Array.from({ length: a.length + 1 }, (_, i) => [i, ...Array(b.length).fill(0)]);
+  for (let j = 1; j <= b.length; j++) d[0][j] = j;
+  for (let i = 1; i <= a.length; i++) for (let j = 1; j <= b.length; j++) d[i][j] = Math.min(d[i - 1][j] + 1, d[i][j - 1] + 1, d[i - 1][j - 1] + (a[i - 1] === b[j - 1] ? 0 : 1));
+  return d[a.length][b.length] <= max;
+}
+const closeEnough = (given: string, target: string) => { const g = norm(given), t = norm(target); return !!g && (g === t || within(g, t, t.length >= 12 ? 2 : t.length >= 6 ? 1 : 0)); };
+
 export function gradeStructured(q: StructuredQuestion, answer: any): StructuredGrade {
+  if (q.format === 'cloze') {
+    const given: string[] = Array.isArray(answer?.answers) ? answer.answers : [];
+    const detail = (q.blanks || []).map((b, i) => [b.answer, ...(b.alt || [])].some((t) => closeEnough(given[i], t)));
+    const ok = detail.length > 0 && detail.every(Boolean);
+    return ok ? { correct: true, feedback: 'Every term is right.' } : { correct: false, detail, feedback: `${detail.filter(Boolean).length} of ${detail.length} terms are right. Fix the ones marked and check again.` };
+  }
+  if (q.format === 'steps') {
+    const lines: string[] = Array.isArray(answer?.lines) ? answer.lines.map((l: unknown) => String(l ?? '')) : [];
+    const detail = (q.steps || []).map((st, i) => { const line = norm(lines[i]); return !!line && st.keys.some((k) => { const key = norm(k); return !!key && (line.includes(key) || (key.length >= 5 && line.includes(key.slice(0, -1)))); }); });   // a key also matches its stem: reply / replies
+    const ok = detail.length > 0 && detail.every(Boolean);
+    return ok ? { correct: true, feedback: 'Every step is there, in order.', reveal: (q.steps || []).map((st, i) => `${i + 1}. ${st.text}`).join(' ') } : { correct: false, detail, feedback: `${detail.filter(Boolean).length} of ${detail.length} steps are right and in the right place. Rework the ones marked.` };
+  }
   if (q.format === 'spot_mistake') {
     const picked = Number(answer?.picked);
     const ok = Number.isInteger(picked) && picked === q.errorIndex;
@@ -99,7 +148,7 @@ export function gradeStructured(q: StructuredQuestion, answer: any): StructuredG
   }
   const order: string[] = Array.isArray(answer?.order) ? answer.order.map((s: unknown) => txt(s, 200)) : [];
   const detail = (q.items || []).map((item, i) => order[i] === item);
-  const ok = detail.length === order.length && detail.every(Boolean);
+  const ok = detail.length === order.length && detail.every(Boolean) && order.length === (q.items || []).length;
   return ok ? { correct: true, feedback: 'That is the right order.' } : { correct: false, detail, feedback: `${detail.filter(Boolean).length} of ${detail.length} are in the right place. The rest have dropped back out.` };
 }
 

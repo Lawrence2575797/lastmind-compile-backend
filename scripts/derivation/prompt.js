@@ -20,7 +20,7 @@ WHAT A STAGE IS
 - An "ask" step is a two-option question whose correct answer teaches the term. After a correct answer the term is revealed after the "pre" text.
 
 RULES (all are checked by code and a failing stage is rejected)
-1. Never more than 4 new terms between milestones. After the 4th new term put an "order" milestone listing exactly those terms in build-up order. After that up to 4 more terms may follow, then the final "derive". A stage of 5 to 8 terms has one order milestone; a stage of 4 or fewer has none.
+1. The "order" milestone comes IMMEDIATELY after the 4th new term, never after the 5th. Count carefully: steps 1 to 4 introduce four terms, step 5 is the order milestone listing exactly those four. Never more than 4 new terms between milestones. After the 4th new term put an "order" milestone listing exactly those terms in build-up order. After that up to 4 more terms may follow, then the final "derive". A stage of 5 to 8 terms has one order milestone; a stage of 4 or fewer has none.
 2. The last step is {"type":"derive"}. Do not write its text.
 3. Every ask has: q, right, wrong, hint, pre, term. Exactly two options.
 4. The question is answerable from what the student has just met plus ordinary common sense, never from outside knowledge. Do not ask something the previous steps did not prepare.
@@ -31,7 +31,7 @@ RULES (all are checked by code and a failing stage is rejected)
 9. Use the exam-board's meaning of each term, plain UK English, no filler, one idea per step. Use small realistic numbers when a calculation is involved.
 10. The order milestone prompt is exactly: "Drag and drop the N key terms in the order they build on each other." with N the number of terms.
 11. Terms that are diagram or calculation skills (draw a curve, work out a value) are introduced by a question about what the diagram or calculation shows, not by asking the student to draw.
-12. "given" terms are already known; use them freely in questions but never introduce them again.
+12. "given" terms are already known; use them freely in questions but never introduce them again. Introduce each node id exactly once; two nodes are never merged into one step.
 
 OUTPUT (JSON only, no prose):
 {"terms": {"<nodeId>": {"label": "<short label>"}, ...},

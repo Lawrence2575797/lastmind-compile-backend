@@ -73,7 +73,7 @@ function validate(spec, known) {
 }
 
 function build(spec) {
-  const errs = validate(spec);
+  const errs = validate(spec, spec.known);
   if (errs.length) { const e = new Error('Spec invalid:\n - ' + errs.join('\n - ')); e.errs = errs; throw e; }
   const keys = Object.keys(spec.terms);
   const TERMS = {};

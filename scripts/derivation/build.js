@@ -12,6 +12,20 @@ const CAP = 4;
 const WORDS = ['zero', 'one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine', 'ten'];
 const PALETTE = ['#cfe8c8', '#cfe3f6', '#f6ecb9', '#f8d9c4', '#cfd9e8', '#dccff0', '#f8d3d3', '#f4a9a8', '#d5e8d0', '#f2dcc0', '#e9d0d8', '#f3b8a0', '#d0d6ee', '#e8e0b8', '#c9e5da', '#e6cfe0', '#e2e6b9', '#f5d0a9', '#f0a7b8', '#e6cfe0'];
 
+function diagramErrors(d) {
+  const e = [];
+  const okPt = (p) => Array.isArray(p) && p.length === 2 && p.every((v) => typeof v === 'number' && v >= 0 && v <= 1);
+  if (typeof d.x !== 'string' || typeof d.y !== 'string') e.push('needs axis labels x and y');
+  if (!Array.isArray(d.curves) || !d.curves.length || d.curves.length > 3) e.push('needs 1 to 3 curves');
+  (d.curves || []).forEach((c, i) => {
+    if (!c.label) e.push(`curve ${i + 1} has no label`);
+    if (!Array.isArray(c.pts) || c.pts.length < 2 || c.pts.length > 8 || !c.pts.every(okPt)) e.push(`curve ${i + 1} needs 2 to 8 points, each [x, y] between 0 and 1`);
+  });
+  (d.points || []).forEach((p, i) => { if (!p.label || !okPt([p.x, p.y])) e.push(`point ${i + 1} needs a label and x, y between 0 and 1`); });
+  if ((d.points || []).length > 5) e.push('at most 5 points');
+  return e;
+}
+
 function validate(spec, known) {
   const errs = [];
   const err = (m) => errs.push(m);
@@ -35,6 +49,7 @@ function validate(spec, known) {
           asked = true;
           ['q', 'right', 'wrong', 'hint', 'pre'].forEach((f) => { if (!s[f]) err(`${at}: ask is missing "${f}"`); });
           if (s.right && s.wrong && s.right === s.wrong) err(`${at}: right and wrong options are identical`);
+          if (s.diagram) diagramErrors(s.diagram).forEach((m) => err(`${at}: diagram: ${m}`));
           const label = (spec.terms[s.term] || {}).label;
           if (label) [['q', s.q], ['right', s.right], ['wrong', s.wrong], ['hint', s.hint]].forEach(([f, v]) => {
             if (v && v.toLowerCase().includes(label.toLowerCase())) err(`${at}: "${f}" contains the term "${label}" it is about to reveal`);
@@ -69,6 +84,44 @@ function validate(spec, known) {
     (st.edges || []).forEach(([a, b]) => {
       if (introOrder.includes(a) && introOrder.includes(b) && introOrder.indexOf(a) > introOrder.indexOf(b)) err(`${where}: "${b}" is taught before "${a}", but the map says "${a}" comes first`);
     });
+    // ---- atomicity: only for generated stages (they carry the map node ids); hand-written specs are exempt
+    if (st.nodes) {
+      const support = [...intro].filter((t) => !st.nodes.includes(t));
+      if (intro.size < 4) err(`${where}: not atomic: only ${intro.size} new terms. A lesson needs at least 4 (map nodes plus the building blocks they rest on)`);
+      if (support.length > 5) err(`${where}: ${support.length} support terms (max 5)`);
+      st.nodes.forEach((n) => { if (!intro.has(n)) err(`${where}: map node "${n}" is never introduced`); });
+      const adj = {};
+      (st.edges || []).forEach(([x, y]) => { (adj[x] = adj[x] || []).push(y); });
+      let cyclic = false;
+      const memo = {}, onPath = new Set();
+      const f = (n) => {
+        if (memo[n] != null) return memo[n];
+        if (onPath.has(n)) { cyclic = true; return 0; }
+        onPath.add(n);
+        const d = (adj[n] || []).length ? 1 + Math.max(...adj[n].map(f)) : 0;
+        onPath.delete(n);
+        return (memo[n] = d);
+      };
+      const longest = Math.max(0, ...[...all].map(f));
+      if (cyclic) err(`${where}: the links between terms form a loop; every link must point from an earlier idea to a later one`);
+      if (longest < 2) err(`${where}: not atomic: the longest chain of ideas is ${longest} link(s); a concept must be built up from at least 2 steps`);
+    }
+    // parallel members taught as a leading run of reads must not chain into each other: each links straight into the concept they build
+    const lead = [];
+    for (const s of st.steps) { if (s.type === 'read') lead.push(s.term); else break; }
+    if (lead.length >= 2) {
+      const es = st.edges || [];
+      if (es.some(([x, y]) => lead.includes(x) && lead.includes(y))) err(`${where}: the parallel terms ${lead.join(', ')} are linked to each other; each must link directly into the concept they build`);
+      const targets = lead.map((t) => new Set(es.filter(([x]) => x === t).map(([, y]) => y)));
+      if (!([...targets[0]].some((c) => targets.every((ts) => ts.has(c))))) err(`${where}: the parallel terms ${lead.join(', ')} do not all link into one common concept`);
+    }
+    // edges the generator replaced must still be implied by a longer path
+    (st.dropped || []).forEach(([x, y]) => {
+      const adj2 = {}; (st.edges || []).forEach(([p, q]) => { (adj2[p] = adj2[p] || []).push(q); });
+      const seenN = new Set(); const stack = [x]; let hit = false;
+      while (stack.length) { const n = stack.pop(); if (seenN.has(n)) continue; seenN.add(n); (adj2[n] || []).forEach((m) => { if (m === y) hit = true; stack.push(m); }); }
+      if (!hit) err(`${where}: dropped edge ${x} -> ${y} is not implied by a path through the added terms`);
+    });
     intro.forEach((t) => seen.add(t));
   });
   return errs;
@@ -96,7 +149,7 @@ function build(spec) {
       if (s.type === 'read') steps.push({ type: 'read', term: s.term, text: s.text });
       else if (s.type === 'ask') {
         const o = { type: 'ask', q: s.q, opts: [s.right, s.wrong], ok: 0, hint: s.hint, pre: s.pre, term: s.term };
-        if (s.fig) o.fig = s.fig; steps.push(o);
+        if (s.fig) o.fig = s.fig; if (s.diagram) o.diagram = s.diagram; steps.push(o);
       } else if (s.type === 'order') {
         steps.push({ type: 'order', title: `Milestone: ${WORDS[s.terms.length]} chunks`, prompt: s.prompt, order: s.terms, done: 'Four chunks locked in. Your head is clear for the next ones.'.replace('Four', WORDS[s.terms.length][0].toUpperCase() + WORDS[s.terms.length].slice(1)) });
       } else if (s.type === 'chains') {
@@ -123,9 +176,9 @@ function build(spec) {
   let engine = here('engine.js');
   engine = engine.replace(/\(\{ title: buildTitle[^\n]*\)\[step\.type\]\(step\);/, 'BUILDERS[step.type](step);');
   if (!engine.includes('BUILDERS[step.type]')) throw new Error('engine hook missing');
-  engine = engine.replace("    var wrap = stack('<div class=\"eyebrow\">What follows?</div><p class=\"big\">' + step.q + '</p>');\n", "    var wrap = stack('<div class=\"eyebrow\">What follows?</div><p class=\"big\">' + step.q + '</p>');\n    if (step.fig && typeof miniFigure === 'function') wrap.appendChild(miniFigure(step.fig));\n");
+  engine = engine.replace("    var wrap = stack('<div class=\"eyebrow\">What follows?</div><p class=\"big\">' + step.q + '</p>');\n", "    var wrap = stack('<div class=\"eyebrow\">What follows?</div><p class=\"big\">' + step.q + '</p>');\n    if (step.fig && typeof miniFigure === 'function') wrap.appendChild(miniFigure(step.fig));\n    if (step.diagram) wrap.appendChild(diagramEl(step.diagram));\n");
 
-  const widgets = (spec.widgets || []).map((w) => here(path.join('widgets', w + '.js'))).join('\n');
+  const widgets = ['diagram'].concat(spec.widgets || []).map((w) => here(path.join('widgets', w + '.js'))).join('\n');
   const done = `
   /* the whole map at the end: a box per stage, linked by the concept that unlocked the next */
   function overview(svg) {

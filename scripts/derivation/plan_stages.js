@@ -54,6 +54,15 @@ function plan(map) {
     chunk.forEach((id) => staged.add(id));
     stages.push({ subtopic: sub, nodes: chunk });
   }
+  // thin stages (one or two nodes) are merged into a linked neighbour stage of the same subtopic, so a lesson is never a lone definition
+  const linkedStages = (A, B) => A.nodes.some((x) => B.nodes.some((y) => kids[x].has(y) || kids[y].has(x)));
+  for (let i = 0; i < stages.length; i++) {
+    const st = stages[i];
+    if (st.nodes.length > 2) continue;
+    const prev = stages[i - 1], nextS = stages[i + 1];
+    if (prev && prev.subtopic === st.subtopic && prev.nodes.length + st.nodes.length <= 6 && linkedStages(prev, st)) { prev.nodes.push(...st.nodes); stages.splice(i, 1); i--; }
+    else if (nextS && nextS.subtopic === st.subtopic && nextS.nodes.length + st.nodes.length <= 6 && linkedStages(st, nextS)) { nextS.nodes.unshift(...st.nodes); stages.splice(i, 1); i--; }
+  }
   const stageOf = {};
   stages.forEach((s, si) => s.nodes.forEach((id) => { stageOf[id] = si; }));
   stages.forEach((s, si) => {

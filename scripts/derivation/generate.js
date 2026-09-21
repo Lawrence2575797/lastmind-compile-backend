@@ -37,16 +37,25 @@ function params(messages) {
 }
 
 async function api(method, url, body) {
-  const res = await fetch(url, { method, headers: headers(), body: body ? JSON.stringify(body) : undefined });
-  if (!res.ok) throw new Error(`${res.status} ${await res.text()}`);
-  return res;
+  for (let attempt = 0; ; attempt++) {
+    try {
+      const res = await fetch(url, { method, headers: headers(), body: body ? JSON.stringify(body) : undefined });
+      if (res.ok) return res;
+      const text = await res.text();
+      if (attempt < 3 && (res.status === 429 || res.status >= 500)) { await sleep(2000 * (attempt + 1)); continue; }
+      throw new Error(`${res.status} ${text}`);
+    } catch (e) {
+      if (attempt < 3 && /fetch failed/.test(String(e))) { await sleep(2000 * (attempt + 1)); continue; }
+      throw e;
+    }
+  }
 }
 
 function toSpec(stage, out, byId) {
   const terms = { ...out.terms };
   (stage.given || []).forEach((g) => { terms[g] = terms[g] || { label: byId[g].label }; });
   const given = (stage.given || []).slice(0, 4);
-  return { id: 'gen', subject: stage.subject, title: out.stage.title, terms, stages: [{ ...out.stage, given, needs: stage.given, builds: given, edges: stage.edges.concat(stage.givenEdges, out.extraEdges || []) }] };
+  return { id: 'gen', subject: stage.subject, title: out.stage.title, terms, stages: [{ ...out.stage, given, needs: stage.given, builds: given, nodes: stage.nodes, dropped: out.dropEdges || [], edges: stage.edges.concat(stage.givenEdges).filter(([a, b]) => !(out.dropEdges || []).some(([x, y]) => x === a && y === b)).concat(out.extraEdges || []) }] };
 }
 
 // text -> { spec } or { errs }
@@ -69,7 +78,7 @@ async function runBatch(requests, resumeId, outDir, label) {
   if (!id) {
     const b = await (await api('POST', `${BASE}/messages/batches`, { requests })).json();
     id = b.id;
-    fs.writeFileSync(path.join(outDir, `batch_${label}.json`), JSON.stringify({ id, submitted: new Date().toISOString(), requests: requests.length }));
+    fs.writeFileSync(path.join(outDir, `batch_${val('--tag') || ''}${label}.json`), JSON.stringify({ id, submitted: new Date().toISOString(), requests: requests.length }));
     console.log(`submitted ${label} batch ${id} (${requests.length} requests)`);
   }
   for (;;) {
@@ -88,15 +97,27 @@ async function runBatch(requests, resumeId, outDir, label) {
   const map = JSON.parse(fs.readFileSync(mapPath, 'utf8'));
   const { stages, byId } = plan(map);
   stages.forEach((s) => { s.subject = map.subject; });
-  const todo = stages.slice(0, Math.min(stages.length, limit));
+  let todo = stages.slice(val('--from') ? Number(val('--from')) : 0, Math.min(stages.length, limit));
+  // stages already generated in this out-dir are kept, not regenerated; indexes stay the stage's position in the full plan
+  const indexOf = new Map(stages.map((st, i) => [st, i]));
+  if (flag('--skip-existing')) todo = todo.filter((st) => !fs.existsSync(path.join(outDir, `${pad(indexOf.get(st))}.json`)));
   fs.mkdirSync(path.join(outDir, 'failed'), { recursive: true });
   const total = { in: 0, out: 0, cacheRead: 0, cacheWrite: 0 };
-  const prompts = todo.map((st) => user(st, byId, {}));
+  const idx = (i) => indexOf.get(todo[i]);
+  // a stage rejected on an earlier run is asked again with the checker's reasons, so it does not repeat the same mistake
+  const prompts = todo.map((st) => {
+    let p = user(st, byId, {});
+    try {
+      const prev = JSON.parse(fs.readFileSync(path.join(outDir, 'failed', `${pad(indexOf.get(st))}.json`), 'utf8'));
+      p += '\n\nA previous attempt at this stage was rejected by the checker for:\n- ' + prev.errs.join('\n- ') + '\nAvoid these problems.';
+    } catch (e) { /* first attempt */ }
+    return p;
+  });
   if (flag('--dry-run')) { prompts.forEach((p) => console.log(p, '\n---')); return; }
 
   const save = (i, r, st) => {
-    fs.writeFileSync(path.join(outDir, r.spec ? `${pad(i)}.json` : `failed/${pad(i)}.json`), JSON.stringify(r.spec || { errs: r.errs, stage: st.nodes }, null, 1));
-    console.log(i, r.spec ? 'ok' : 'FAILED', st.subtopic);
+    fs.writeFileSync(path.join(outDir, r.spec ? `${pad(idx(i))}.json` : `failed/${pad(idx(i))}.json`), JSON.stringify(r.spec || { errs: r.errs, stage: st.nodes }, null, 1));
+    console.log(idx(i), r.spec ? 'ok' : 'FAILED', st.subtopic);
   };
 
   if (!flag('--batch')) {
@@ -115,6 +136,7 @@ async function runBatch(requests, resumeId, outDir, label) {
       save(i, r, todo[i]);
     }
     console.log('usage', total, `~$${spent(total).toFixed(3)}`);
+    fs.writeFileSync(path.join(outDir, 'usage.json'), JSON.stringify({ stages: todo.length, usd: spent(total), perAttempt: spent(total) / Math.max(1, todo.length) }));
     return;
   }
 
@@ -125,6 +147,14 @@ async function runBatch(requests, resumeId, outDir, label) {
     if (l.result.type === 'succeeded') { addUsage(total, l.result.message.usage); texts[i] = l.result.message.content.filter((c) => c.type === 'text').map((c) => c.text).join(''); results[i] = check(todo[i], texts[i], byId); }
     else results[i] = { errs: ['request ' + l.result.type] };
   });
+  if (Number.isFinite(maxUsd)) {
+    // batch prices are half of list; assume 30% of stages need a retry. Per-stage list cost is measured from a sequential run when available.
+    let per = 0.03, measured = false;
+    try { per = JSON.parse(fs.readFileSync(path.join(outDir, 'usage.json'), 'utf8')).perAttempt; measured = true; } catch (e) { /* no measurement: conservative default */ }
+    const perBatch = per * 0.5 * (measured ? 1 : 1.3), fit = Math.floor(maxUsd / perBatch);
+    console.log(`projected ~$${(todo.length * perBatch).toFixed(2)} for ${todo.length} stages (measured $${per.toFixed(4)} per stage at list price); cap $${maxUsd}`);
+    if (todo.length > fit) { console.log(`cap allows about ${fit} stages: submitting the first ${fit} of them`); todo = todo.slice(0, fit); prompts.length = fit; }
+  }
   const first = todo.map((_, i) => ({ custom_id: String(i), params: params([{ role: 'user', content: prompts[i] }]) }));
   collect(await runBatch(first, val('--resume'), outDir, 'pass1'));
   const bad = todo.map((_, i) => i).filter((i) => !results[i] || !results[i].spec);
@@ -141,7 +171,7 @@ async function runBatch(requests, resumeId, outDir, label) {
   todo.forEach((_, i) => {
     const r = results[i]; if (!r.spec) return;
     Object.keys(r.spec.terms).forEach((k) => { if (labels[k]) r.spec.terms[k].label = labels[k]; });
-    fs.writeFileSync(path.join(outDir, `${pad(i)}.json`), JSON.stringify(r.spec, null, 1));
+    fs.writeFileSync(path.join(outDir, `${pad(idx(i))}.json`), JSON.stringify(r.spec, null, 1));
   });
   console.log('usage (batch prices are half of these list prices)', total);
 })();

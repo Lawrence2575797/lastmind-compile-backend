@@ -72,9 +72,13 @@
    ],
    "steps": [
     {
-     "type": "read",
-     "term": "util",
-     "text": "You eat a slice of pizza and enjoy it. The satisfaction you get from consuming a good or service is called "
+     "type": "ask",
+     "q": "You eat a slice of pizza and enjoy it. What have you gained from eating it?",
+     "right": "Satisfaction from consuming it",
+     "wrong": "Money from selling it on",
+     "hint": "Think about why anyone eats the pizza in the first place.",
+     "pre": "The satisfaction you get from consuming a good or service is called",
+     "term": "util"
     },
     {
      "type": "ask",
@@ -180,9 +184,13 @@
    ],
    "steps": [
     {
-     "type": "read",
-     "term": "totrev",
-     "text": "A shop sells 100 pizzas at £10 each. Price multiplied by quantity sold, here £1,000, is "
+     "type": "ask",
+     "q": "A shop sells 100 pizzas at £10 each. How much money comes in from the sales?",
+     "right": "£1,000: the price times the number sold",
+     "wrong": "£10: the price of a single pizza",
+     "hint": "Every one of the 100 pizzas brings in the price.",
+     "pre": "Price multiplied by quantity sold is",
+     "term": "totrev"
     },
     {
      "type": "ask",

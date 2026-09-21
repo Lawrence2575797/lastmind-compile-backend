@@ -22,7 +22,7 @@ function validate(spec, known) {
     if (given.length > 5) err(`${where}: more than 5 given terms; put the rest in "needs"`);
     [...given, ...(st.needs || [])].forEach((g) => { if (!seen.has(g)) err(`${where}: given term "${g}" was not introduced by an earlier stage`); });
     const intro = new Set();
-    let chunk = 0, lastMilestone = -1, ended = false;
+    let chunk = 0, lastMilestone = -1, ended = false, asked = false;
     st.steps.forEach((s, i) => {
       const at = `${where}, step ${i + 1}`;
       if (s.type === 'read' || s.type === 'ask') {
@@ -30,7 +30,9 @@ function validate(spec, known) {
         if (intro.has(s.term) || given.includes(s.term)) err(`${at}: term "${s.term}" is introduced twice or is already given`);
         intro.add(s.term); chunk++;
         if (chunk > CAP) err(`${at}: more than ${CAP} new terms since the last milestone`);
+        if (s.type === 'read' && asked) err(`${at}: a read step after the first question; every later term must be introduced by a question`);
         if (s.type === 'ask') {
+          asked = true;
           ['q', 'right', 'wrong', 'hint', 'pre'].forEach((f) => { if (!s[f]) err(`${at}: ask is missing "${f}"`); });
           if (s.right && s.wrong && s.right === s.wrong) err(`${at}: right and wrong options are identical`);
           const label = (spec.terms[s.term] || {}).label;
@@ -107,7 +109,7 @@ function build(spec) {
         const opener = given.length ? `${gNames.join(' and ')} ${given.length > 1 ? 'are' : 'is'} already on your map. ` : '';
         const rest = given.length ? 'the rest of this branch' : 'the whole derivation';
         const nextSt = spec.stages[si + 1], lastT = TERMS[intro[intro.length - 1]].t;
-        const o = { type: 'derive', title: 'Final test: the whole derivation', prompt: `${opener}Drag and drop the ${open} key terms into the boxes to rebuild ${rest} from memory. Chains meet at the concept.` };
+        const o = { type: 'derive', title: 'Final test: the whole derivation', prompt: `${opener}Drag and drop the ${open} key term${open === 1 ? '' : 's'} into the boxes to rebuild ${rest} from memory. Chains meet at the concept.` };
         if (nextSt) o.bridge = `${lastT} is on your map. Next on the schedule: ${nextSt.name}. Every prerequisite it needs is met, so it starts now.`;
         steps.push(o);
       } else steps.push(s);

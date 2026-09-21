@@ -46,7 +46,7 @@ function toSpec(stage, out, byId) {
   const terms = { ...out.terms };
   (stage.given || []).forEach((g) => { terms[g] = terms[g] || { label: byId[g].label }; });
   const given = (stage.given || []).slice(0, 4);
-  return { id: 'gen', subject: stage.subject, title: out.stage.title, terms, stages: [{ ...out.stage, given, needs: stage.given, builds: given, edges: stage.edges.concat(stage.givenEdges) }] };
+  return { id: 'gen', subject: stage.subject, title: out.stage.title, terms, stages: [{ ...out.stage, given, needs: stage.given, builds: given, edges: stage.edges.concat(stage.givenEdges, out.extraEdges || []) }] };
 }
 
 // text -> { spec } or { errs }

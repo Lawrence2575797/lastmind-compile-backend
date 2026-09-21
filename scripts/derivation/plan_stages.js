@@ -2,7 +2,7 @@
 // Splits a knowledge map into derivation stages, offline: node -> one term, a stage = up to MAX connected-in-order nodes of one subtopic.
 //   node plan_stages.js ../knowledge_map_economics_alevel.json [plan.json]
 const fs = require('fs');
-const MAX = 7;
+const MAX = 5;
 
 function plan(map) {
   const nodes = map.nodes, byId = {};
@@ -27,12 +27,33 @@ function plan(map) {
   const cyclic = nodes.filter((n) => !seen.has(n.id)).map((n) => n.id);
   cyclic.forEach((id) => order.push(id));
 
-  const stages = []; let cur = null;
-  order.forEach((id) => {
-    const n = byId[id];
-    if (!cur || cur.subtopic !== n.subtopic || cur.nodes.length >= MAX) { cur = { subtopic: n.subtopic, nodes: [] }; stages.push(cur); }
-    cur.nodes.push(id);
-  });
+  // Chunk the order into stages that are about one idea: a node joins the current stage only if it is linked to it (an edge, or a shared
+  // child), the stage is under MAX, and the stage has not already closed on a single concept that all of it leads to.
+  const kids = {}, parents = {};
+  nodes.forEach((n) => { kids[n.id] = new Set(); parents[n.id] = new Set(); });
+  edges.forEach((e) => { kids[e.from].add(e.to); parents[e.to].add(e.from); });
+  const closed = (chunk) => {
+    if (chunk.length < 3) return false;
+    const inSet = new Set(chunk);
+    const sinks = chunk.filter((c) => ![...kids[c]].some((k) => inSet.has(k)));
+    return sinks.length === 1 && [...parents[sinks[0]]].filter((p) => inSet.has(p)).length >= 2;
+  };
+  const linked = (id, chunk) => chunk.some((c) => kids[c].has(id) || kids[id].has(c) || [...kids[id]].some((k) => kids[c].has(k)) || [...parents[id]].some((p) => parents[c].has(p)));
+  const staged = new Set(), stages = [];
+  const fileOrder = nodes.map((n) => n.id);
+  while (staged.size < nodes.length) {
+    const open = fileOrder.filter((id) => !staged.has(id));
+    const seed = open.find((id) => [...parents[id]].every((p) => staged.has(p))) || open[0];
+    const chunk = [seed], sub = byId[seed].subtopic;
+    for (;;) {
+      if (chunk.length >= MAX || closed(chunk)) break;
+      const next = open.find((id) => !chunk.includes(id) && byId[id].subtopic === sub && [...parents[id]].every((p) => staged.has(p) || chunk.includes(p)) && linked(id, chunk));
+      if (!next) break;
+      chunk.push(next);
+    }
+    chunk.forEach((id) => staged.add(id));
+    stages.push({ subtopic: sub, nodes: chunk });
+  }
   const stageOf = {};
   stages.forEach((s, si) => s.nodes.forEach((id) => { stageOf[id] = si; }));
   stages.forEach((s, si) => {

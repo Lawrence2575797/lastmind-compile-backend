@@ -1,48 +1,80 @@
 'use strict';
-// The generation prompt for one derivation stage. Written from the rules the offline specs had to satisfy and the mistakes
-// found while checking them (see README). The two worked examples are the checked specs, so they always match the validator.
+// The generation prompt for one derivation stage. Rewritten after the first six generated stages were judged not good enough:
+// too much telling, not enough questioning, mixed topics, and no building blocks taught before the concept that needs them.
+// Worked example 1 is the approved Scarcity lesson (same wording the student liked); example 2 is a checked demand stage.
 const fs = require('fs');
 const path = require('path');
 
-const example = JSON.parse(fs.readFileSync(path.join(__dirname, 'specs', 'economics_markets_sample.json'), 'utf8'));
-const exampleStage = (i) => {
-  const { name, title, sub, steps } = example.stages[i];
+const readSpec = (f) => JSON.parse(fs.readFileSync(path.join(__dirname, 'specs', f), 'utf8'));
+const scarcity = readSpec('economics_scarcity.json');
+const markets = readSpec('economics_markets_sample.json');
+
+// Example 1: approved Scarcity stage, re-keyed to map node ids. Land, labour, capital and enterprise are "support" terms: not map nodes,
+// taught first because "finite resources" is a category made of them.
+function example1() {
+  const st = scarcity.stages[0], T = scarcity.terms;
+  const rename = { finres: 'FINITE_RESOURCES', wants: 'UNLIMITED_WANTS', scarcity: 'SCARCITY' };
+  const k = (t) => rename[t] || t;
+  const steps = [];
+  st.steps.forEach((s) => {
+    if (s.term === 'fings') return;
+    if (s.type === 'chains') {
+      steps.push({ type: 'chains', lanes: [{ label: 'Chain 1', terms: ['FINITE_RESOURCES'] }, { label: 'Chain 2', terms: ['UNLIMITED_WANTS'] }], prompt: 'Drag and drop the 2 key terms into the two chains that lead to one concept. Chain 1 is what the factory can make. Chain 2 is what people want.', then: 'what do they lead to?' });
+    } else if (s.type === 'derive') steps.push({ type: 'derive' });
+    else if (s.type === 'order') steps.push({ ...s, terms: s.terms.map(k) });
+    else steps.push({ ...s, term: k(s.term) });
+  });
+  const support = Object.fromEntries(['land', 'labour', 'capital', 'enterprise'].map((t) => [t, { label: T[t].label }]));
+  return JSON.stringify({
+    terms: { ...support, FINITE_RESOURCES: { label: 'Finite resources' }, UNLIMITED_WANTS: { label: 'Unlimited wants' }, SCARCITY: { label: 'Scarcity' } },
+    extraEdges: [['land', 'labour'], ['labour', 'capital'], ['capital', 'enterprise'], ['enterprise', 'FINITE_RESOURCES']],
+    stage: { name: 'Scarcity', title: 'Scarcity', sub: 'Why every economy has to choose: limited resources against unlimited wants.', steps },
+  });
+}
+
+function example2() {
+  const { name, title, sub, steps } = markets.stages[0];
   const ids = new Set(steps.filter((x) => x.term).map((x) => x.term));
-  return JSON.stringify({ terms: Object.fromEntries([...ids].map((k) => [k, example.terms[k]])), stage: { name, title, sub, steps } });
-};
+  return JSON.stringify({ terms: Object.fromEntries([...ids].map((t) => [t, markets.terms[t]])), extraEdges: [], stage: { name, title, sub, steps } });
+}
 
-const SYSTEM = `You write one short lesson stage for a "derivation" learning feed. The student never reads a list of definitions. They are asked what follows, and answering teaches the next key term. You are given the knowledge-map nodes for the stage (each node is exactly one key term) and the prerequisite links between them. You return JSON only.
+const SYSTEM = `You write one short lesson stage for a "derivation" learning feed. The student never reads definitions. They are shown a small concrete situation and asked what follows, and answering that question is how they learn the term. You are given the knowledge-map nodes for the stage (each node is one key term) and the prerequisite links between them. You return JSON only.
 
-WHAT A STAGE IS
-- Each node becomes one key term with a SHORT label (1 to 4 words, Title case only for proper names). Never reuse the node text as the label if it is a sentence.
-- The steps introduce the terms one at a time, in an order where every prerequisite comes before the term that depends on it.
-- A "read" step opens the stage with a tiny concrete scene (a pizza shop, two neighbours, a factory) and ends mid-sentence, right before the first term's name, e.g. "... The satisfaction you get is called ". Use it for the first term only, and for a later term only if there is no way to ask it as a question.
-- An "ask" step is a two-option question whose correct answer teaches the term. After a correct answer the term is revealed after the "pre" text.
+THE PRINCIPLE: MORE QUESTIONING, LESS TELLING
+The student should be reasoning, not being informed. Never state a definition or a fact in a question and then ask them to pick it back out. Put them in a situation, ask what would happen or what they would conclude, and let the term name arrive only AFTER they answer ("pre" text, then the term). If a step could be answered without thinking, or if the question already contains the answer, rewrite it.
+Good (the approved Scarcity lesson): "You finally get the new phone you wanted. Will it be the last thing you ever want?" -> "No, I will soon want something else" -> "So people have ... Unlimited wants."
+Bad: "People always seem to want more goods, services and experiences, no matter how much they already have. What does this describe?" -> this tells the student the answer and asks them to repeat it.
 
-RULES (all are checked by code and a failing stage is rejected)
-1. The "order" milestone comes IMMEDIATELY after the 4th new term, never after the 5th. Count carefully: steps 1 to 4 introduce four terms, step 5 is the order milestone listing exactly those four. Never more than 4 new terms between milestones. After the 4th new term put an "order" milestone listing exactly those terms in build-up order. After that up to 4 more terms may follow, then the final "derive". A stage of 5 to 8 terms has one order milestone; a stage of 4 or fewer has none.
-2. The last step is {"type":"derive"}. Do not write its text.
-3. Every ask has: q, right, wrong, hint, pre, term. Exactly two options.
-4. The question is answerable from what the student has just met plus ordinary common sense, never from outside knowledge. Do not ask something the previous steps did not prepare.
-5. The question must NOT contain the term it introduces, and neither option may either. Ask about the idea, not the name. The name appears only after the answer, in "pre" + term.
-6. Right and wrong options must be about the same length and the same grammatical shape. A wrong option is plausible, not silly. Never make the right one the longer, more detailed one.
-7. No free-text answers, no "which of these is true", no trick questions. Do not put the answer in the hint; the hint nudges the reasoning ("Are we on the buyers' side or the sellers' side?").
-8. "pre" is a short sentence fragment that ends right before the term, e.g. "So price and quantity demanded move in opposite directions. That is the". It must read naturally with the term name after it.
-9. Use the exam-board's meaning of each term, plain UK English, no filler, one idea per step. Use small realistic numbers when a calculation is involved.
-10. The order milestone prompt is exactly: "Drag and drop the N key terms in the order they build on each other." with N the number of terms.
-11. Terms that are diagram or calculation skills (draw a curve, work out a value) are introduced by a question about what the diagram or calculation shows, not by asking the student to draw.
-12. "given" terms are already known; use them freely in questions but never introduce them again. Introduce each node id exactly once; two nodes are never merged into one step.
+STRUCTURE
+1. Every term is introduced by a question about a situation. Never tell the student a definition as a statement. The one exception is a run of PARALLEL members of one category (for example land, labour, capital, enterprise), which may be taught as consecutive "read" steps at the very start of the stage, each a one-line concrete scene ending right before the term name. A read is never allowed after the first ask, and never for a concept that has to be reasoned out.
+2. The stage is about ONE idea. If the nodes you are given do not belong to a single line of reasoning, teach only the part you are given and do not wander into neighbouring topics.
+3. BUILDING BLOCKS FIRST. If a node names a category or something built from parts a student may not know (finite resources are made of land, labour, capital and enterprise; costs are made of fixed and variable costs), teach those parts first as "support" terms, before the node. Support terms are not map nodes: give them ids in lower case, add them to "terms", and link them to the node they lead into with "extraEdges". Use at most 4 support terms per stage and only where the node genuinely rests on them. Then the node is reached by a question that builds on them (as in worked example 1: "Can a business have an infinite quantity of all four?").
+4. Order: every prerequisite is taught before the term that depends on it. Independent branches are taught one branch at a time.
+5. Milestones. The "order" milestone comes IMMEDIATELY after the 4th new term, never after the 5th: steps 1 to 4 introduce four terms, step 5 is the order milestone listing exactly those four. If a chunk holds two branches that each lead into one later concept, use a "chains" milestone (lanes = the branches) instead of "order". There are never more than 4 new terms between milestones. A stage with 4 or fewer terms has no milestone. The last step is {"type":"derive"}.
 
-OUTPUT (JSON only, no prose):
-{"terms": {"<nodeId>": {"label": "<short label>"}, ...},
- "stage": {"name": "<lesson name>", "title": "<same>", "sub": "<one sentence, what this lesson lets the student do>", "steps": [ ... ]}}
-Steps are objects: {"type":"read","term":id,"text":"..."} | {"type":"ask","q":"...","right":"...","wrong":"...","hint":"...","pre":"...","term":id} | {"type":"order","terms":[ids],"prompt":"..."} | {"type":"derive"}. Use node ids as term ids. Do not output edges, given, layout or needs: they come from the map.
+QUESTION RULES (checked by code; a failing stage is rejected)
+- Every ask has q, right, wrong, hint, pre, term. Exactly two options.
+- Neither the question, the options nor the hint may contain the term being introduced. The name only appears after the answer.
+- Right and wrong are the same length and the same shape. The wrong option is one a real student might pick, never silly, and the right one is never the more detailed one.
+- Answerable from the situation plus common sense, or from terms already taught in this stage or given. Never from outside knowledge.
+- Never "which of these is true" and never ask the student to type. The hint nudges the reasoning without giving the answer.
+- "pre" is a fragment that ends right before the term name, and reads on into it ("So people have" + Unlimited wants).
+- Plain UK English, small realistic numbers, one idea per step, no filler.
+- The order milestone prompt is exactly: "Drag and drop the N key terms in the order they build on each other." A chains prompt starts "Drag and drop the N key terms into the two chains that lead to one concept." and then says in one sentence what each chain is.
+- Diagram or calculation skills (draw a curve, work out a value) are introduced by a question about what the diagram or calculation shows, not by asking the student to draw.
+- "given" terms are already known: use them in situations, never introduce them again. Introduce every node id exactly once.
 
-WORKED EXAMPLE 1
-${exampleStage(0)}
+OUTPUT (JSON only, no prose)
+{"terms": {"<id>": {"label": "<1 to 4 words>"}, ...},          every node id, plus support terms
+ "extraEdges": [["<support id>", "<id>"], ...],                 links involving support terms only; node-to-node links come from the map
+ "stage": {"name": "...", "title": "<same>", "sub": "<one sentence: what the student can do after>", "steps": [ ... ]}}
+Steps: {"type":"read","term":id,"text":"..."} | {"type":"ask","q":"...","right":"...","wrong":"...","hint":"...","pre":"...","term":id} | {"type":"order","terms":[ids],"prompt":"..."} | {"type":"chains","lanes":[{"label":"Chain 1","terms":[ids]},{"label":"Chain 2","terms":[ids]}],"prompt":"...","then":"what do they lead to?"} | {"type":"derive"}
 
-WORKED EXAMPLE 2 (given terms demand and move are already known)
-${exampleStage(1)}`;
+WORKED EXAMPLE 1 (the approved Scarcity lesson: building blocks first, every other term reasoned out from a situation)
+${example1()}
+
+WORKED EXAMPLE 2 (Utility and demand: the very first term is a question too, not a statement)
+${example2()}`;
 
 function user(stage, byId, givenLabels) {
   const nodes = stage.nodes.map((id) => `- ${id}: ${byId[id].label}`).join('\n');

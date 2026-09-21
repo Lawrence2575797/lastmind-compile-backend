@@ -3,3 +3,6 @@ dist/
 .env
 .env.txt
 *.log
+scripts/derivation/out/
+scripts/derivation/out2/
+scripts/derivation/plan.json

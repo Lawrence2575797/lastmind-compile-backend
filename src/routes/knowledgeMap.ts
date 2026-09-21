@@ -33,7 +33,7 @@ import {
   assertAo1ReviewDue,
 } from '../services/nodeReviewService';
 import { getNodeNoteBaseline, getNodeNoteForUser, saveNodeNoteEdit, getNodeNotes, getEdgeNoteBaseline, getEdgeNoteForUser, saveEdgeNoteEdit, getEdgeNotes, getNotesIndexForUser, getPersonalNote, savePersonalNote, checkWorkedExampleStep, markEdgeExplanationSeen } from '../services/knowledgeMapNotesService';
-import { ensureDerivationContent, derivationPlayerPayload, derivationConceptsOfStage, derivationNodeIds, derivationAnchorConcept, derivationSiblingConcepts } from '../services/derivationService';
+import { derivationQuick, ensureDerivationContent, derivationPlayerPayload, derivationConceptsOfStage, derivationNodeIds, derivationAnchorConcept, derivationSiblingConcepts } from '../services/derivationService';
 import { generateAndCacheNodeLesson, generateAndCacheEdgeLesson, needsQuestionUpgrade, upgradeLessonQuestions } from '../services/lessonGenerationService';
 import { isStructured, gradeStructured, clientView, lessonForClient, sealJson, openJson, closeEnough, StructuredQuestion } from '../services/questionFormats';
 import { pickRotatingQuestion, poolEntry, poolOf, rotationPick, immediatePool } from '../services/reviewQuestionPool';
@@ -157,8 +157,8 @@ router.get('/knowledge-map-v2/node/:nodeId/lesson', requireAuth, syncEndpointLim
   const { nodeId } = req.params;
   try {
     // Economics: taught by a derivation lesson. The stored old text lesson is replaced, and nothing is generated.
-    const derived = await ensureDerivationContent(nodeId);
-    if (derived) return res.json({ ...lessonForClient(derived.content), derivation: { stage: derived.stage } });
+    const derived = await derivationQuick(nodeId);
+    if (derived) return res.json({ ...lessonForClient(derived.content), derivation: { stage: derived.stage, payload: derived.payload } });
     const { data, error } = await supabaseAdmin
       .from('knowledge_map_node_lessons')
       .select('encoding_content')

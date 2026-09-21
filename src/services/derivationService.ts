@@ -211,3 +211,17 @@ export function derivationSiblingConcepts(conceptId: string): string[] {
   const i = derivationStageOfConcept(conceptId);
   return i === null ? [] : (bundle.stages[i] as Stage).concepts;
 }
+
+// The fast path for opening a lesson: one small query for the node, everything else from memory (the compiled lesson is already loaded).
+// The stored lesson row is refreshed in the background, never on the student's wait.
+export async function derivationQuick(nodeId: string): Promise<{ content: any; stage: number; payload: { terms: Record<string, StageTerm>; stage: any } } | null> {
+  const { data: node } = await supabaseAdmin.from('knowledge_map_nodes').select('id, node_key, concept_id, subject, qualification, exam_board, label').eq('id', nodeId).maybeSingle();
+  if (!node) return null;
+  const stage = derivationStageForNode(node as NodeIdentity);
+  if (stage === null) return null;
+  const content = derivationContentForNode(node as NodeIdentity);
+  const payload = derivationPlayerPayload(stage);
+  if (!content || !payload) return null;
+  ensureDerivationContent(nodeId).catch((e) => console.error('LastMind: derivation content refresh failed', nodeId, e));
+  return { content, stage, payload };
+}

@@ -56,7 +56,9 @@ window.addEventListener('message', function (e) {
 try { parent.postMessage({ type: 'lm-derive-ready' }, location.origin); } catch (e) { /* standalone */ }
 `;
 html = html.replace(/<title>[^<]*<\/title>/, '<title>LastMind lesson</title>').replace(/<h1 id="stageTitle">[^<]*<\/h1>/, '<h1 id="stageTitle">Lesson</h1>');
-const shell = html.slice(0, html.indexOf('<script>') + 8) + '\n' + head + body + boot + html.slice(html.indexOf('</script>'));
+let shell = html.slice(0, html.indexOf('<script>') + 8) + '\n' + head + body + boot + html.slice(html.indexOf('</script>'));
+// The lesson feed is always the light grey-blue, whatever the page around it or the device is set to.
+shell = shell.replace('<title>', "<script>document.documentElement.setAttribute('data-theme', 'light');</script><title>");
 const out = process.argv[2] || path.join(__dirname, 'player.html');
 fs.writeFileSync(out, shell);
 new Function(head + body);

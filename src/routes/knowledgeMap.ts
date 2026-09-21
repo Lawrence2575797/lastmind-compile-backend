@@ -35,7 +35,7 @@ import {
 import { getNodeNoteBaseline, getNodeNoteForUser, saveNodeNoteEdit, getNodeNotes, getEdgeNoteBaseline, getEdgeNoteForUser, saveEdgeNoteEdit, getEdgeNotes, getNotesIndexForUser, getPersonalNote, savePersonalNote, checkWorkedExampleStep, markEdgeExplanationSeen } from '../services/knowledgeMapNotesService';
 import { generateAndCacheNodeLesson, generateAndCacheEdgeLesson, needsQuestionUpgrade, upgradeLessonQuestions } from '../services/lessonGenerationService';
 import { isStructured, gradeStructured, clientView, lessonForClient, sealJson, openJson, StructuredQuestion } from '../services/questionFormats';
-import { pickRotatingQuestion, poolEntry, poolOf } from '../services/reviewQuestionPool';
+import { pickRotatingQuestion, poolEntry, poolOf, rotationPick } from '../services/reviewQuestionPool';
 import { answerKnowledgeMapQuestion } from '../services/knowledgeMapAskService';
 import { assertFreshGenerationWithinCap, recordFreshGenerationEvent, GenerationCapExceededError } from '../services/generationCapService';
 import { InsufficientLocksError, assertLocksAvailable } from '../services/lockService';
@@ -945,7 +945,7 @@ router.get('/immediate-recalls/due', requireAuth, syncEndpointLimiter, async (re
         const v2pool = (content as any)?.formatVersion === 2 ? poolOf(content) : [];
         if (v2pool.length) {
           // Current-format lessons: the step decides which question, in turn (see reviewQuestionPool.ts).
-          const e = v2pool[(Number((r as any).recall_number) || 1) % v2pool.length];
+          const e = rotationPick(v2pool, Number((r as any).recall_number) || 1);
           recallCheckIndex = e.ref; check = e.question as RecallCheck;
         } else if (checks && checks.length) {
           recallCheckIndex = Math.floor(Math.random() * checks.length);

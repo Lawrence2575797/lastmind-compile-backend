@@ -71,6 +71,13 @@ const LANGUAGE_SUBJECTS = new Set(['Spanish', 'Italian']);
 
 // A lesson is one quick card of at most FOUR chunks. Counted from the text itself, so the rule holds whatever the model does:
 // list lines, "X = Y" definitions, and total words.
+// The three questions should be three different kinds of puzzle: the same interactive format twice is sent back once.
+export function lessonFormatProblem(content: any): string | null {
+  const fmts = [content?.practiceQuestion, ...(Array.isArray(content?.recallChecks) ? content.recallChecks : [])].map((q: any) => q?.format).filter((f: any) => f === 'spot_mistake' || f === 'match' || f === 'order');
+  const dup = fmts.find((f: string, i: number) => fmts.indexOf(f) !== i);
+  return dup ? `two questions use the same format (${dup}); use three different formats` : null;
+}
+
 export function lessonSizeProblem(content: any): string | null {
   const text: string = typeof content?.explanation === 'string' ? content.explanation : '';
   const lines = text.split(/\r?\n/);
@@ -225,7 +232,7 @@ export async function generateAndCacheNodeLesson(nodeId: string, userId: string)
 YOUR PREVIOUS ANSWER COULD NOT BE USED (${String((err as Error)?.message || err).slice(0, 200)}). Return ONLY valid JSON in exactly the required shape.`;
       continue;
     }
-    const problem = lessonSizeProblem(encodingContent);
+    const problem = lessonSizeProblem(encodingContent) || (useV2 ? lessonFormatProblem(encodingContent) : null);
     if (!problem) break;
     // Two tries in all (each is a full model call). If the rewrite still runs over, the lesson is kept rather than left ungenerated,
     // and logged so the prompt can be tightened.
@@ -233,7 +240,7 @@ YOUR PREVIOUS ANSWER COULD NOT BE USED (${String((err as Error)?.message || err)
     console.warn(`LastMind: lesson for "${typedNode.label}" broke a size limit (${problem}); asking for a shorter rewrite (attempt ${attempt}).`);
     correction = `
 
-YOUR PREVIOUS ATTEMPT BROKE A HARD LIMIT (${problem}). Rewrite it so every limit is met: teach only the idea that unites the items plus the FOUR most exam-central ones, and keep every question answerable from the explanation you write.`;
+YOUR PREVIOUS ATTEMPT NEEDS FIXING (${problem}). Rewrite it so every rule is met: at most FOUR chunks in the explanation, three different question formats, and every question answerable from the explanation you write.`;
   }
 
   // Diagram-spec classification needs the ACTUAL practice question this

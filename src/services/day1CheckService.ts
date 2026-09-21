@@ -12,7 +12,7 @@
 // special "push back" logic at all: a due_date that's already passed
 // just stays due, the same as any FSRS review that's overdue.
 import { isStructured, StructuredQuestion } from './questionFormats';
-import { poolOf, textOrInteractive } from './reviewQuestionPool';
+import { poolOf, textOrInteractive, rotationPick } from './reviewQuestionPool';
 import { supabaseAdmin } from './supabaseAdmin';
 import { compareSubtopics, getOrComputeSubtopicOrder } from './knowledgeMapNotesService';
 
@@ -129,7 +129,7 @@ export async function getQuestionForConceptId(conceptId: string, userId?: string
         const { count } = await supabaseAdmin.from('immediate_recall_schedule').select('id', { count: 'exact', head: true }).eq('user_id', userId).eq('concept_id', conceptId);
         done = count || 0;
       }
-      const q = pool[(1 + done) % pool.length].question;
+      const q = rotationPick(pool, 1 + done).question;
       return isStructured(q) ? { questionText: q.questionText, markScheme: q.markScheme || '', structured: q } : { questionText: q.questionText, markScheme: q.markScheme || '' };
     }
   }

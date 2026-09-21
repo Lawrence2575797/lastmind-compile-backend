@@ -18,6 +18,20 @@ export function poolOf(content: any): PoolEntry[] {
   (Array.isArray(content?.recallChecks) ? content.recallChecks : []).forEach((q: any, i: number) => { if (q?.questionText) out.push({ ref: i, question: q }); });
   return out;
 }
+// Which question a given step of the schedule asks. Step 0 is encoding; each later step takes the next question along, but never
+// one in the same format as the step before it when another format is available, so a student is not handed the same kind of
+// puzzle twice running (three spot-the-mistake questions in a row, say).
+export function rotationPick(pool: PoolEntry[], step: number): PoolEntry {
+  const fmt = (e: PoolEntry) => String(e.question?.format || 'free_text');
+  let at = 0;
+  for (let s = 1; s <= step; s++) {
+    let next = s % pool.length;
+    for (let tries = 0; tries < pool.length && fmt(pool[next]) === fmt(pool[at]); tries++) next = (next + 1) % pool.length;
+    at = next;
+  }
+  return pool[at];
+}
+
 // Questions that can be answered in a feed slide and graded without the multiple-choice or fill-blank widgets.
 export const textOrInteractive = (q: any) => isStructured(q) || (q?.format === 'free_text' && !!q.markScheme && !!q.questionText);
 

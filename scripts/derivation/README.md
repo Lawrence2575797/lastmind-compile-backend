@@ -27,7 +27,8 @@ Not automated yet: writing the read/ask steps for a node (done by hand here, to 
 ## Whole-map pipeline
     node plan_stages.js ../knowledge_map_economics_alevel.json plan.json   # 1243 nodes -> 193 stages, one node = one term
     node estimate_cost.js ../knowledge_map_economics_alevel.json           # token and dollar estimate, no API calls
-    ANTHROPIC_API_KEY=... node generate.js <map.json> <out-dir> --limit 6  # spends money; validates and retries each stage once
+    ANTHROPIC_API_KEY=... node generate.js <map.json> <out-dir> --limit 6          # spends money; one at a time
+    ANTHROPIC_API_KEY=... node generate.js <map.json> <out-dir> --batch            # Batch API, half price; add --resume <id> to rejoin a batch
 
 Extra rules the validator learned while the two sample stages were checked by hand: a question or either option may not
 contain the term it is about to reveal; right and wrong options must be similar in length (the approved artifact had a

@@ -3,7 +3,7 @@ import crypto from 'crypto';
 import { requireAuth } from '../services/authMiddleware';
 import { costlyEndpointLimiter, syncEndpointLimiter } from '../services/rateLimiters';
 import { createAiCall } from '../services/createAi';
-import { CreateCapError, getUsedUsd, spendSummary } from '../services/createSpend';
+import { CreateCapError, getUsedUsd, setUsedUsd, spendSummary } from '../services/createSpend';
 import { parseModelJson } from '../services/jsonParsing';
 import { InsufficientLocksError, assertLocksAvailable } from '../services/lockService';
 import { CRIMINAL_TRIAL_BUILD_PROMPT, CRIMINAL_TRIAL_VALIDATE_PROMPT, CRIMINAL_TRIAL_APPLY_FIXES_PROMPT } from '../constants/createSimulationPrompts';
@@ -233,6 +233,12 @@ router.get('/create/jobs/:id', syncEndpointLimiter, (req: Request, res: Response
 // GET /create/spend?used=<what the page last saw> -> { usedUsd, capUsd }
 router.get('/create/spend', syncEndpointLimiter, (req: Request, res: Response) => {
   getUsedUsd(req.userId as string, Number(req.query.used) || undefined);
+  res.json(spendSummary(req.userId as string));
+});
+
+// POST /create/spend/set { usedUsd } -> { usedUsd, capUsd }: switches the running total to the case now being worked on.
+router.post('/create/spend/set', syncEndpointLimiter, (req: Request, res: Response) => {
+  setUsedUsd(req.userId as string, Number((req.body ?? {}).usedUsd));
   res.json(spendSummary(req.userId as string));
 });
 

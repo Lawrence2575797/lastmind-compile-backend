@@ -56,6 +56,11 @@ export function recordSpend(userId: string, usd: number): number {
   return next;
 }
 
+// Each case has its own budget: the page tells the server how much the case it has just opened or started has already used.
+export function setUsedUsd(userId: string, usd: number): void {
+  used.set(userId, Math.max(0, Math.min(Number(usd) || 0, CREATE_CAP_USD * 5)));
+}
+
 export function spendSummary(userId: string) {
   return { usedUsd: Math.round((used.get(userId) || 0) * 10000) / 10000, capUsd: CREATE_CAP_USD };
 }

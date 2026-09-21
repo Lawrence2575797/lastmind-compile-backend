@@ -18,23 +18,30 @@ export interface PerStepComponentInput {
 // atomic thing, not a whole essay — since the columnar UI already breaks
 // the chain up visually; the question itself doesn't need to do that work
 // too.
-export const PER_STEP_QUESTION_PROMPT = `You are writing short, separate questions for a student who is trying to jump straight to a target concept without having covered the concepts that lead up to it. You will be given the target concept's name (context only — never explain or hint at the target's own content) and an ordered list of components: some are "encoding" checks (define/explain one concept), some are "link" checks (explain how one concept connects to/leads into the next).
+export const PER_STEP_QUESTION_PROMPT = `You are writing short, separate questions for a student who is trying to jump straight to a target concept without having covered the concepts that lead up to it. You will be given the target concept's name (context only - never explain or hint at the target's own content) and an ordered list of components: some are "encoding" checks (one concept), some are "link" checks (how one concept connects to / leads into the next). Each component comes with its Reference (the ground truth, never shown to the student).
 
 Rules:
-1. Output ONLY valid JSON, nothing else — an array with exactly one question per component, in the SAME order given, each tagged with its own componentId.
-2. For an "encoding" component, ask the student to explain what the named concept means/how it works, in their own words — name the concept explicitly.
-3. For a "link" component, ask the student to explain HOW or WHY the first named concept leads to/connects with the second — genuinely asking them to work it out and state it, not confirming something you've already told them. Name both concepts explicitly.
-4. Never state or hint at what any of the actual definitions or connections are. Never mention or foreshadow the target concept's own content — only its name, if useful as context for why this is being asked.
-5. Each question should be one or two short sentences — direct and specific to that one component, not a restatement of the whole chain.
+1. Output ONLY valid JSON: exactly one question per component, in the SAME order given, each tagged with its own componentId.
+2. Choose each question's FORMAT from what the component is. Open writing is used ONLY for a pure definition; everything else is interactive:
+   - "spot_mistake" (the default): give "segments", 4 to 6 short sentences forming one connected explanation of the component, exactly ONE of which contains a plausible mistake of the kind a real student makes; "errorIndex" (0-based position of the wrong sentence) and "correction" (one or two sentences saying what is wrong and what is right).
+   - "order": for a process, a sequence, a chain of cause and effect, and for most "link" components (how one concept leads into the next): give "items", 3 to 6 short steps (under 12 words each) in the CORRECT order.
+   - "match": 3 to 5 "pairs" ({"left","right"}, every "right" distinct and fitting only its own "left") when the component is a small set of terms with definitions, cases with principles, or types with examples.
+   - "free_text": ONLY for an "encoding" component that is a single term whose whole content is its definition. Ask the student to state the definition in their own words, naming the concept, and give a "markScheme" (one or two sentences).
+3. Build every interactive question strictly from the Reference, so there is exactly one right answer. "questionText" is a short instruction that names the concept, for example "One sentence about photosynthesis is wrong. Tap it." Never state the answer in it.
+4. Never mention or foreshadow the target concept's own content - only its name, if useful as context.
+5. Keep every sentence short and specific to that one component.
 
 Output schema:
-{ "questions": [ { "componentId": string, "questionText": string } ] }`;
+{ "questions": [ { "componentId": string, "format": "spot_mistake" | "order" | "match" | "free_text", "questionText": string, "markScheme": string (free_text only), "segments": [string], "errorIndex": number, "correction": string, "items": [string], "pairs": [ { "left": string, "right": string } ] } ] }
+Include only the fields that belong to the chosen format.`;
 
 export interface PerStepGradeResult {
   componentId: string;
   correct: boolean;
   feedback: string;
   sillyMistake?: boolean;
+  detail?: boolean[];   // interactive questions: which pieces were right
+  reveal?: string;      // interactive questions: what was wrong, once found
 }
 
 // Grades every step's own separate answer in ONE call — each component

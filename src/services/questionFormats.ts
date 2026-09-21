@@ -6,6 +6,24 @@ import crypto from 'crypto';
 //   order         put 3-6 steps of a process, sequence or chain of reasoning into the right order
 // All three have exactly one right answer, so they are graded here with no AI call. The answer key never leaves the server:
 // the page is sent a "client view" (segments as written, pairs split and shuffled, items shuffled).
+// A small AES-GCM seal so answer keys can ride inside client-held state (the prerequisite check) without the page being able to read
+// or change them. The secret comes from server configuration; if it changes, an old check simply has to be restarted.
+const sealSecret = () => crypto.createHash('sha256').update(process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.CLAUDE_API_KEY || 'lastmind-dev-seal').digest();
+export function sealJson(value: unknown): string {
+  const iv = crypto.randomBytes(12);
+  const c = crypto.createCipheriv('aes-256-gcm', sealSecret(), iv);
+  const enc = Buffer.concat([c.update(JSON.stringify(value), 'utf8'), c.final()]);
+  return Buffer.concat([iv, c.getAuthTag(), enc]).toString('base64');
+}
+export function openJson<T>(sealed: unknown): T | null {
+  try {
+    const b = Buffer.from(String(sealed), 'base64');
+    const d = crypto.createDecipheriv('aes-256-gcm', sealSecret(), b.subarray(0, 12));
+    d.setAuthTag(b.subarray(12, 28));
+    return JSON.parse(Buffer.concat([d.update(b.subarray(28)), d.final()]).toString('utf8')) as T;
+  } catch (err) { return null; }
+}
+
 export type StructuredFormat = 'spot_mistake' | 'match' | 'order';
 export const STRUCTURED_FORMATS: StructuredFormat[] = ['spot_mistake', 'match', 'order'];
 

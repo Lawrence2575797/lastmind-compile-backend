@@ -34,7 +34,7 @@ import {
 } from '../services/nodeReviewService';
 import { getNodeNoteBaseline, getNodeNoteForUser, saveNodeNoteEdit, getNodeNotes, getEdgeNoteBaseline, getEdgeNoteForUser, saveEdgeNoteEdit, getEdgeNotes, getNotesIndexForUser, getPersonalNote, savePersonalNote, checkWorkedExampleStep, markEdgeExplanationSeen } from '../services/knowledgeMapNotesService';
 import { generateAndCacheNodeLesson, generateAndCacheEdgeLesson, needsQuestionUpgrade, upgradeLessonQuestions } from '../services/lessonGenerationService';
-import { isStructured, gradeStructured, clientView, lessonForClient } from '../services/questionFormats';
+import { isStructured, gradeStructured, clientView, lessonForClient, sealJson, openJson, StructuredQuestion } from '../services/questionFormats';
 import { pickRotatingQuestion, poolEntry, poolOf } from '../services/reviewQuestionPool';
 import { answerKnowledgeMapQuestion } from '../services/knowledgeMapAskService';
 import { assertFreshGenerationWithinCap, recordFreshGenerationEvent, GenerationCapExceededError } from '../services/generationCapService';
@@ -292,7 +292,9 @@ interface PrereqCheckState {
   targetNodeId: string;
   gap: GapResult;
   chains: ChainStep[][];
+  keys?: string;   // sealed answer keys for the interactive questions (see sealJson)
 }
+const keysOf = (state: PrereqCheckState): Record<string, StructuredQuestion> => (state.keys ? openJson<Record<string, StructuredQuestion>>(state.keys) : null) || {};
 
 // POST /knowledge-map-v2/prereq-check/start  { targetNodeId, subject, qualification, examBoard }
 // -> { requiresCheck: false } if every prerequisite is already encoded
@@ -319,8 +321,9 @@ router.post('/knowledge-map-v2/prereq-check/start', requireAuth, costlyEndpointL
     if (!gap.gapNodeIds.length) return res.json({ requiresCheck: false });
 
     const chains = buildPrerequisiteChains(gap);
-    const chainsForClient = await generateChainQuestions(gap.targetLabel, chains, userId);
-    const state: PrereqCheckState = { targetNodeId, gap, chains };
+    const generated = await generateChainQuestions(gap.targetLabel, chains, userId);
+    const chainsForClient = generated.chains;
+    const state: PrereqCheckState = { targetNodeId, gap, chains, keys: sealJson(generated.keys) };
     res.json({ requiresCheck: true, targetLabel: gap.targetLabel, chains: chainsForClient, state });
   } catch (err) {
     console.error('Prerequisite check start failed:', err);
@@ -337,13 +340,13 @@ router.post('/knowledge-map-v2/prereq-check/start', requireAuth, costlyEndpointL
 // via its own fresh lesson once fed into the main feed (see finalize
 // below), never from this check itself.
 router.post('/knowledge-map-v2/prereq-check/submit', requireAuth, costlyEndpointLimiter, async (req: Request, res: Response) => {
-  const { state, answers } = (req.body ?? {}) as { state?: PrereqCheckState; answers?: Record<string, string> };
+  const { state, answers } = (req.body ?? {}) as { state?: PrereqCheckState; answers?: Record<string, unknown> };
   if (!state || !Array.isArray(state.chains) || !answers || typeof answers !== 'object') {
     return res.status(400).json({ error: 'state and answers are required' });
   }
   try {
     const userId = req.userId as string;
-    const results = await gradeChainAnswers(state.chains, answers, userId);
+    const results = await gradeChainAnswers(state.chains, answers, userId, keysOf(state));
     res.json({ results, allCorrect: results.every((r) => r.correct) });
   } catch (err) {
     console.error('Prerequisite check grading failed:', err);
@@ -370,11 +373,13 @@ router.post('/knowledge-map-v2/prereq-check/retry-steps', requireAuth, costlyEnd
       items.map(async (item) => {
         const step = flatSteps.find((s) => s.componentId === item.componentId);
         if (!step) return null;
+        const key = keysOf(state)[item.componentId];
+        if (key) return { componentId: item.componentId, questionText: key.questionText, structured: clientView(key) };
         const questionText = await generateStepRetryQuestion(step, item.originalAnswer || '', item.originalFeedback || '', userId);
         return { componentId: item.componentId, questionText };
       })
     );
-    res.json({ retries: retries.filter((r): r is { componentId: string; questionText: string } => !!r) });
+    res.json({ retries: retries.filter((r) => !!r) });
   } catch (err) {
     console.error('Prerequisite check retry-question generation failed:', err);
     res.status(500).json({ error: 'could not prepare that retry' });
@@ -389,7 +394,7 @@ router.post('/knowledge-map-v2/prereq-check/retry-steps', requireAuth, costlyEnd
 router.post('/knowledge-map-v2/prereq-check/submit-retry-steps', requireAuth, costlyEndpointLimiter, async (req: Request, res: Response) => {
   const { state, items } = (req.body ?? {}) as {
     state?: PrereqCheckState;
-    items?: { componentId: string; questionText: string; answer: string }[];
+    items?: { componentId: string; questionText: string; answer: unknown }[];
   };
   if (!state || !Array.isArray(state.chains) || !Array.isArray(items) || !items.length) {
     return res.status(400).json({ error: 'state and items are required' });
@@ -401,7 +406,13 @@ router.post('/knowledge-map-v2/prereq-check/submit-retry-steps', requireAuth, co
       items.map(async (item) => {
         const step = flatSteps.find((s) => s.componentId === item.componentId);
         if (!step) return { componentId: item.componentId, correct: false, feedback: '' };
-        const { correct, feedback } = await gradeStepRetryAnswer(step, item.questionText || '', item.answer || '', userId);
+        const key = keysOf(state)[item.componentId];
+        if (key) {
+          const g = gradeStructured(key, item.answer);
+          if (g.correct) await gradeStepCorrect(userId, step, 1);
+          return { componentId: item.componentId, correct: g.correct, feedback: g.feedback, detail: g.detail, reveal: g.reveal };
+        }
+        const { correct, feedback } = await gradeStepRetryAnswer(step, item.questionText || '', String(item.answer || ''), userId);
         if (correct) await gradeStepCorrect(userId, step, 1);
         return { componentId: item.componentId, correct, feedback };
       })

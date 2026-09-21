@@ -31,6 +31,12 @@ export async function reviewPool(nodeId: string): Promise<PoolEntry[] | null> {
   (Array.isArray(c.recallChecks) ? c.recallChecks : []).forEach((q: any, i: number) => {
     if (isStructured(q) || (q?.format === 'free_text' && q.questionText && q.markScheme)) pool.push({ ref: i, question: q });
   });
+  if (pool.length) {
+    // Spaced review may ask for open recall (immediate checks and Day-1 do not): once per cycle the student explains the concept in
+    // their own words, graded against the lesson's explanation.
+    const { data: node } = await supabaseAdmin.from('knowledge_map_nodes').select('label').eq('id', nodeId).maybeSingle();
+    if (node?.label) pool.push({ ref: -2, question: { format: 'free_text', questionText: `In your own words, explain: ${node.label}`, markScheme: c.explanation || '' } });
+  }
   return pool.length ? pool : null;
 }
 

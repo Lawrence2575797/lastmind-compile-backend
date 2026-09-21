@@ -23,6 +23,7 @@ import { parseModelJson } from './jsonParsing';
 import { resolveSubjectTriple } from './subjectResolution';
 import { getMasteryDetailsForConcepts, gradeCorrectness } from './reviewService';
 import { linkIntegrationConceptId } from './nodeReviewService';
+import { sanitiseStructured, clientView, gradeStructured, isStructured, StructuredQuestion } from './questionFormats';
 import {
   PER_STEP_QUESTION_PROMPT,
   PER_STEP_GRADE_PROMPT,
@@ -353,6 +354,12 @@ export interface ChainStepForClient {
   fromLabel?: string;
   toLabel?: string;
   questionText: string;
+  // Interactive questions (spot the mistake, match, order) carry their puzzle here; the answer key stays on the server.
+  format?: string;
+  segments?: string[];
+  lefts?: string[];
+  rights?: string[];
+  items?: string[];
 }
 
 /**
@@ -360,7 +367,7 @@ export interface ChainStepForClient {
  * ONE batched call — cheaper than one call per step, and keeps the whole
  * set contextually non-repetitive since the model sees them together.
  */
-export async function generateChainQuestions(targetLabel: string, chains: ChainStep[][], userId: string): Promise<ChainStepForClient[][]> {
+export async function generateChainQuestions(targetLabel: string, chains: ChainStep[][], userId: string): Promise<{ chains: ChainStepForClient[][]; keys: Record<string, StructuredQuestion> }> {
   const flatSteps = chains.flat();
   const resolved = (await Promise.all(flatSteps.map(resolveStep))).filter((r): r is ResolvedStep => !!r);
   const byComponentId = new Map(resolved.map((r) => [r.componentId, r]));
@@ -368,18 +375,26 @@ export async function generateChainQuestions(targetLabel: string, chains: ChainS
   const inputList = resolved
     .map((r) => `componentId: ${r.componentId}\n[${r.type}] ${r.label}\nReference (never reveal): ${r.groundTruth}`)
     .join('\n\n');
-  const { questions } = await callJSON<{ questions: { componentId: string; questionText: string }[] }>(
+  const { questions } = await callJSON<{ questions: any[] }>(
     PER_STEP_QUESTION_PROMPT,
     `Target concept (context only, never explain its own content): ${targetLabel}\n\nComponents:\n${inputList}`,
     MODELS.diagnosticTree,
     0.3,
-    Math.max(2048, flatSteps.length * 220 + 512),
+    Math.max(3072, flatSteps.length * 700 + 512),
     userId,
     'chain-diagnostic-generate-questions'
   );
-  const questionByComponentId = new Map(questions.map((q) => [q.componentId, q.questionText]));
+  const keys: Record<string, StructuredQuestion> = {};
+  const questionByComponentId = new Map<string, string>();
+  const viewByComponentId = new Map<string, Record<string, unknown>>();
+  for (const q of Array.isArray(questions) ? questions : []) {
+    if (!q || typeof q.componentId !== 'string') continue;
+    const structured = isStructured(q) ? sanitiseStructured(q) : null;
+    if (structured) { keys[q.componentId] = structured; viewByComponentId.set(q.componentId, clientView(structured)); questionByComponentId.set(q.componentId, structured.questionText); }
+    else if (typeof q.questionText === 'string' && q.format !== 'spot_mistake' && q.format !== 'match' && q.format !== 'order') questionByComponentId.set(q.componentId, q.questionText);
+  }
 
-  return chains.map((chain) => {
+  const built = chains.map((chain) => {
     const out: ChainStepForClient[] = [];
     for (const step of chain) {
       const r = byComponentId.get(step.componentId);
@@ -391,10 +406,12 @@ export async function generateChainQuestions(targetLabel: string, chains: ChainS
         fromLabel: r.fromLabel,
         toLabel: r.toLabel,
         questionText: questionByComponentId.get(step.componentId) || (step.type === 'encoding' ? `Explain what "${r.label}" means, in your own words.` : `Explain how "${r.fromLabel}" links to "${r.toLabel}".`),
+        ...(viewByComponentId.has(step.componentId) ? (({ questionText: _q, ...rest }) => rest)(viewByComponentId.get(step.componentId) as any) : {}),
       });
     }
     return out;
   });
+  return { chains: built, keys };
 }
 
 /**
@@ -408,26 +425,36 @@ export async function generateChainQuestions(targetLabel: string, chains: ChainS
  */
 export async function gradeChainAnswers(
   chains: ChainStep[][],
-  answers: Record<string, string>,
-  userId: string
+  answers: Record<string, any>,
+  userId: string,
+  keys: Record<string, StructuredQuestion> = {}
 ): Promise<PerStepGradeResult[]> {
   const flatSteps = chains.flat();
   const resolved = (await Promise.all(flatSteps.map(resolveStep))).filter((r): r is ResolvedStep => !!r);
 
-  const numbered = resolved
+  // Interactive steps have one right answer and are graded exactly; only open-text steps (a pure definition) go to the AI.
+  const exact: PerStepGradeResult[] = resolved.filter((r) => keys[r.componentId]).map((r) => {
+    const g = gradeStructured(keys[r.componentId], answers[r.componentId]);
+    return { componentId: r.componentId, correct: g.correct, feedback: g.feedback, sillyMistake: g.correct ? undefined : true, detail: g.detail, reveal: g.reveal };
+  });
+  const resolvedText = resolved.filter((r) => !keys[r.componentId]);
+
+  const numbered = resolvedText
     .map((r, i) => `${i + 1}. componentId: ${r.componentId}\n[${r.type}] ${r.label}\nReference (never reveal): ${r.groundTruth}\nStudent's answer: ${answers[r.componentId] || '(blank)'}`)
     .join('\n\n');
 
-  const { results } = await callJSON<{ results: PerStepGradeResult[] }>(
-    PER_STEP_GRADE_PROMPT,
-    `Components and answers, in order:\n${numbered}`,
-    MODELS.diagnosticTree,
-    0.1,
-    Math.max(2048, resolved.length * 350 + 512),
-    userId,
-    'chain-diagnostic-grade-answers'
-  );
-  const resultByComponentId = new Map(results.map((r) => [r.componentId, r]));
+  const { results } = resolvedText.length
+    ? await callJSON<{ results: PerStepGradeResult[] }>(
+      PER_STEP_GRADE_PROMPT,
+      `Components and answers, in order:\n${numbered}`,
+      MODELS.diagnosticTree,
+      0.1,
+      Math.max(2048, resolvedText.length * 350 + 512),
+      userId,
+      'chain-diagnostic-grade-answers'
+    )
+    : { results: [] as PerStepGradeResult[] };
+  const resultByComponentId = new Map([...results, ...exact].map((r) => [r.componentId, r]));
 
   const finalResults: PerStepGradeResult[] = resolved.map((r) => {
     const graded = resultByComponentId.get(r.componentId);
@@ -436,6 +463,8 @@ export async function gradeChainAnswers(
       correct: graded?.correct ?? false,
       feedback: graded?.feedback || '',
       sillyMistake: graded?.correct ? undefined : graded?.sillyMistake,
+      detail: graded?.detail,
+      reveal: graded?.reveal,
     };
   });
 

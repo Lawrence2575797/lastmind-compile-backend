@@ -259,3 +259,43 @@ export async function derivationCompletedStages(userId: string): Promise<any[]> 
   });
   return out;
 }
+
+// One graph for everything the student has learned. A concept from the knowledge map is the same node wherever it appears, so lessons join up
+// through the terms they share; a building-block term belongs to its own lesson (two lessons can each have a "choice" without being the same idea).
+// Links that would close a loop are dropped, so the result never circles back.
+export async function derivationKeyTermGraph(userId: string): Promise<{ terms: Record<string, { t: string; c: string; lesson: number }>; edges: [string, string][] }> {
+  return mergeStagesIntoGraph((await derivationCompletedStages(userId)).map((d) => d.i));
+}
+
+export function mergeStagesIntoGraph(stageIds: number[]): { terms: Record<string, { t: string; c: string; lesson: number }>; edges: [string, string][] } {
+  const done = stageIds.map((i) => ({ i }));
+  const terms: Record<string, { t: string; c: string; lesson: number }> = {};
+  const edgeSet = new Set<string>();
+  done.forEach((d) => {
+    const s = bundle.stages[d.i] as Stage;
+    const mapKeys = new Set<string>([...s.nodes, ...(s.stage.graph.given as string[])]);
+    const id = (k: string) => (mapKeys.has(k) ? k : `${s.i}:${k}`);
+    Object.keys(s.terms).forEach((k) => {
+      const nid = id(k);
+      const isGiven = (s.stage.graph.given as string[]).includes(k);
+      if (!terms[nid] || (!isGiven && terms[nid].lesson < 0)) terms[nid] = { t: s.terms[k].t, c: s.terms[k].c, lesson: isGiven ? -1 : s.i };
+    });
+    s.edges.forEach(([a, b]) => { if (s.terms[a] && s.terms[b]) edgeSet.add(`${id(a)}\u0000${id(b)}`); });
+  });
+  // drop any link that closes a loop (depth-first, keeping the first links seen)
+  const out: Record<string, string[]> = {};
+  const kept: [string, string][] = [];
+  const reaches = (from: string, to: string): boolean => {
+    const stack = [from]; const seen = new Set<string>();
+    while (stack.length) { const n = stack.pop() as string; if (n === to) return true; if (seen.has(n)) continue; seen.add(n); (out[n] || []).forEach((m) => stack.push(m)); }
+    return false;
+  };
+  [...edgeSet].sort().forEach((e) => {
+    const [a, b] = e.split('\u0000');
+    if (a === b || reaches(b, a)) return;
+    (out[a] = out[a] || []).push(b); kept.push([a, b]);
+  });
+  Object.keys(terms).forEach((k) => { if (terms[k].lesson < 0) terms[k].lesson = 0; });
+  return { terms, edges: kept };
+}
+

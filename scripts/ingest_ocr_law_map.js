@@ -10,7 +10,7 @@ const mapPath = path.join(__dirname, '../src/data/ocrLawALevel.json');
 const map = JSON.parse(fs.readFileSync(mapPath, 'utf8'));
 const STAGING = 'A-Level [H415 staging]';
 const clean = value => value.trim().toLowerCase().replace(/[^a-z0-9]+/g, '_');
-const conceptId = node => `law:${clean(node.subtopic)}:${clean(node.label)}`;
+const conceptId = node => node.conceptId || `law:${clean(node.subtopic)}:${clean(node.label)}`;   // split nodes keep their original concept_id
 const course = query => query.eq('subject', map.subject).eq('exam_board', map.examBoard);
 async function all(table, columns, build) {
   const rows = [];

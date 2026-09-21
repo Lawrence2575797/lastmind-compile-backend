@@ -203,19 +203,20 @@
     },
     {
       "id": "LS_MAG_QUAL",
-      "label": "Lay magistrates: qualifications and eligibility criteria (age, residency, character requirements)",
+      "label": "Lay magistrates: age and residency requirements",
       "difficulty": 0.25,
       "kind": "concept",
       "subtopic": "1.2 Criminal courts, sentencing and lay people",
       "theme": "Theme 1 - The legal system: courts, legal personnel and access to justice",
-      "objective": "Understand and apply: Lay magistrates: qualifications and eligibility criteria (age, residency, character requirements)",
+      "objective": "Understand and apply: Lay magistrates: age and residency requirements",
       "specRefs": [
         "OCR H415 1.2"
       ],
       "essentialPoints": [
-        "Lay magistrates: qualifications and eligibility criteria (age, residency, character requirements)"
+        "Lay magistrates: age and residency requirements"
       ],
-      "practicalIds": []
+      "practicalIds": [],
+      "conceptId": "law:1_2_criminal_courts_sentencing_and_lay_people:lay_magistrates_qualifications_and_eligibility_criteria_age_residency_character_requirements_"
     },
     {
       "id": "LS_JURY_QUAL",
@@ -235,35 +236,37 @@
     },
     {
       "id": "LS_SOLICITOR",
-      "label": "Solicitors: qualifications, training routes (including SQE), work and areas of practice",
+      "label": "Solicitors: qualifications and training routes, including the SQE",
       "difficulty": 0.3,
       "kind": "concept",
       "subtopic": "1.3 Legal personnel and the judiciary",
       "theme": "Theme 1 - The legal system: courts, legal personnel and access to justice",
-      "objective": "Understand and apply: Solicitors: qualifications, training routes (including SQE), work and areas of practice",
+      "objective": "Understand and apply: Solicitors: qualifications and training routes, including the SQE",
       "specRefs": [
         "OCR H415 1.3"
       ],
       "essentialPoints": [
-        "Solicitors: qualifications, training routes (including SQE), work and areas of practice"
+        "Solicitors: qualifications and training routes, including the SQE"
       ],
-      "practicalIds": []
+      "practicalIds": [],
+      "conceptId": "law:1_3_legal_personnel_and_the_judiciary:solicitors_qualifications_training_routes_including_sqe_work_and_areas_of_practice"
     },
     {
       "id": "LS_BARRISTER",
-      "label": "Barristers: qualifications, training (academic, vocational, pupillage), work including advocacy",
+      "label": "Barristers: qualifications and training (academic, vocational, pupillage)",
       "difficulty": 0.3,
       "kind": "concept",
       "subtopic": "1.3 Legal personnel and the judiciary",
       "theme": "Theme 1 - The legal system: courts, legal personnel and access to justice",
-      "objective": "Understand and apply: Barristers: qualifications, training (academic, vocational, pupillage), work including advocacy",
+      "objective": "Understand and apply: Barristers: qualifications and training (academic, vocational, pupillage)",
       "specRefs": [
         "OCR H415 1.3"
       ],
       "essentialPoints": [
-        "Barristers: qualifications, training (academic, vocational, pupillage), work including advocacy"
+        "Barristers: qualifications and training (academic, vocational, pupillage)"
       ],
-      "practicalIds": []
+      "practicalIds": [],
+      "conceptId": "law:1_3_legal_personnel_and_the_judiciary:barristers_qualifications_training_academic_vocational_pupillage_work_including_advocacy"
     },
     {
       "id": "LS_JUDGE_QUAL",
@@ -379,19 +382,20 @@
     },
     {
       "id": "CB_SD_STATUTE",
-      "label": "Self-defence: legal basis under common law and s76 Criminal Justice and Immigration Act 2008 (clarifying common law), plus s3 Criminal Law Act 1967 for prevention of crime",
+      "label": "Self-defence: the common law basis",
       "difficulty": 0.4,
       "kind": "concept",
       "subtopic": "2.7 General defences",
       "theme": "Theme 2 - Criminal law: general principles, offences and defences",
-      "objective": "Understand and apply: Self-defence: legal basis under common law and s76 Criminal Justice and Immigration Act 2008 (clarifying common law), plus s3 Criminal Law Act 1967 for prevention of crime",
+      "objective": "Understand and apply: Self-defence: the common law basis",
       "specRefs": [
         "OCR H415 2.7"
       ],
       "essentialPoints": [
-        "Self-defence: legal basis under common law and s76 Criminal Justice and Immigration Act 2008 (clarifying common law), plus s3 Criminal Law Act 1967 for prevention of crime"
+        "Self-defence: the common law basis"
       ],
-      "practicalIds": []
+      "practicalIds": [],
+      "conceptId": "law:2_7_general_defences:self_defence_legal_basis_under_common_law_and_s76_criminal_justice_and_immigration_act_2008_clarifying_common_law_plus_s3_criminal_law_act_1967_for_prevention_of_crime"
     },
     {
       "id": "CB_DURESS_THREATS_DEF",
@@ -523,19 +527,20 @@
     },
     {
       "id": "LR_NEED",
-      "label": "Reasons law reform is needed: society, technology and values change, and gaps/inconsistencies/outdated rules must be addressed",
+      "label": "Reasons law reform is needed: society, technology and values change",
       "difficulty": 0.25,
       "kind": "concept",
       "subtopic": "3.5 Law reform",
       "theme": "Theme 3 - Law making: Parliament, delegated legislation, interpretation, precedent and reform",
-      "objective": "Understand and apply: Reasons law reform is needed: society, technology and values change, and gaps/inconsistencies/outdated rules must be addressed",
+      "objective": "Understand and apply: Reasons law reform is needed: society, technology and values change",
       "specRefs": [
         "OCR H415 3.5"
       ],
       "essentialPoints": [
-        "Reasons law reform is needed: society, technology and values change, and gaps/inconsistencies/outdated rules must be addressed"
+        "Reasons law reform is needed: society, technology and values change"
       ],
-      "practicalIds": []
+      "practicalIds": [],
+      "conceptId": "law:3_5_law_reform:reasons_law_reform_is_needed_society_technology_and_values_change_and_gaps_inconsistencies_outdated_rules_must_be_addressed"
     },
     {
       "id": "EU_BACKGROUND",
@@ -828,19 +833,20 @@
     },
     {
       "id": "LS_PRETRIAL",
-      "label": "Pre-trial procedure: issuing a claim, particulars of claim, defence, case management by courts",
+      "label": "Civil pre-trial procedure: issuing a claim and the particulars of claim",
       "difficulty": 0.4,
       "kind": "procedure",
       "subtopic": "1.1 Civil courts and other forms of dispute resolution",
       "theme": "Theme 1 - The legal system: courts, legal personnel and access to justice",
-      "objective": "Understand and apply: Pre-trial procedure: issuing a claim, particulars of claim, defence, case management by courts",
+      "objective": "Understand and apply: Civil pre-trial procedure: issuing a claim and the particulars of claim",
       "specRefs": [
         "OCR H415 1.1"
       ],
       "essentialPoints": [
-        "Pre-trial procedure: issuing a claim, particulars of claim, defence, case management by courts"
+        "Civil pre-trial procedure: issuing a claim and the particulars of claim"
       ],
-      "practicalIds": []
+      "practicalIds": [],
+      "conceptId": "law:1_1_civil_courts_and_other_forms_of_dispute_resolution:pre_trial_procedure_issuing_a_claim_particulars_of_claim_defence_case_management_by_courts"
     },
     {
       "id": "LS_ADR_MED",
@@ -940,19 +946,20 @@
     },
     {
       "id": "LS_CILEX",
-      "label": "Chartered Legal Executives: qualifications, training and work, regulated by CILEx Regulation",
+      "label": "Chartered Legal Executives: qualifications and training",
       "difficulty": 0.3,
       "kind": "concept",
       "subtopic": "1.3 Legal personnel and the judiciary",
       "theme": "Theme 1 - The legal system: courts, legal personnel and access to justice",
-      "objective": "Understand and apply: Chartered Legal Executives: qualifications, training and work, regulated by CILEx Regulation",
+      "objective": "Understand and apply: Chartered Legal Executives: qualifications and training",
       "specRefs": [
         "OCR H415 1.3"
       ],
       "essentialPoints": [
-        "Chartered Legal Executives: qualifications, training and work, regulated by CILEx Regulation"
+        "Chartered Legal Executives: qualifications and training"
       ],
-      "practicalIds": []
+      "practicalIds": [],
+      "conceptId": "law:1_3_legal_personnel_and_the_judiciary:chartered_legal_executives_qualifications_training_and_work_regulated_by_cilex_regulation"
     },
     {
       "id": "LS_BARRISTER_REG",
@@ -1020,19 +1027,20 @@
     },
     {
       "id": "LS_CRIM_LEGALAID",
-      "label": "Criminal legal aid: right to representation, means and interests-of-justice tests, duty solicitor scheme",
+      "label": "Criminal legal aid: the right to representation and the duty solicitor scheme",
       "difficulty": 0.4,
       "kind": "concept",
       "subtopic": "1.4 Access to justice and funding",
       "theme": "Theme 1 - The legal system: courts, legal personnel and access to justice",
-      "objective": "Understand and apply: Criminal legal aid: right to representation, means and interests-of-justice tests, duty solicitor scheme",
+      "objective": "Understand and apply: Criminal legal aid: the right to representation and the duty solicitor scheme",
       "specRefs": [
         "OCR H415 1.4"
       ],
       "essentialPoints": [
-        "Criminal legal aid: right to representation, means and interests-of-justice tests, duty solicitor scheme"
+        "Criminal legal aid: the right to representation and the duty solicitor scheme"
       ],
-      "practicalIds": []
+      "practicalIds": [],
+      "conceptId": "law:1_4_access_to_justice_and_funding:criminal_legal_aid_right_to_representation_means_and_interests_of_justice_tests_duty_solicitor_scheme"
     },
     {
       "id": "LS_INSURANCE_FUND",
@@ -1100,19 +1108,20 @@
     },
     {
       "id": "CA_THEORY",
-      "label": "Theory of criminal law: purposes of punishment and criminalisation (retribution, deterrence, rehabilitation, protection, denunciation)",
+      "label": "Purposes of punishment: retribution and denunciation",
       "difficulty": 0.4,
       "kind": "concept",
       "subtopic": "2.1 Rules and theory of criminal law",
       "theme": "Theme 2 - Criminal law: general principles, offences and defences",
-      "objective": "Understand and apply: Theory of criminal law: purposes of punishment and criminalisation (retribution, deterrence, rehabilitation, protection, denunciation)",
+      "objective": "Understand and apply: Purposes of punishment: retribution and denunciation",
       "specRefs": [
         "OCR H415 2.1"
       ],
       "essentialPoints": [
-        "Theory of criminal law: purposes of punishment and criminalisation (retribution, deterrence, rehabilitation, protection, denunciation)"
+        "Purposes of punishment: retribution and denunciation"
       ],
-      "practicalIds": []
+      "practicalIds": [],
+      "conceptId": "law:2_1_rules_and_theory_of_criminal_law:theory_of_criminal_law_purposes_of_punishment_and_criminalisation_retribution_deterrence_rehabilitation_protection_denunciation_"
     },
     {
       "id": "CA_CLASS",
@@ -1228,19 +1237,20 @@
     },
     {
       "id": "CB_SD_TRIGGER",
-      "label": "Self-defence: available for defence of self, another person, or property, and in prevention of crime",
+      "label": "Self-defence: defence of oneself and of another person",
       "difficulty": 0.3,
       "kind": "concept",
       "subtopic": "2.7 General defences",
       "theme": "Theme 2 - Criminal law: general principles, offences and defences",
-      "objective": "Understand and apply: Self-defence: available for defence of self, another person, or property, and in prevention of crime",
+      "objective": "Understand and apply: Self-defence: defence of oneself and of another person",
       "specRefs": [
         "OCR H415 2.7"
       ],
       "essentialPoints": [
-        "Self-defence: available for defence of self, another person, or property, and in prevention of crime"
+        "Self-defence: defence of oneself and of another person"
       ],
-      "practicalIds": []
+      "practicalIds": [],
+      "conceptId": "law:2_7_general_defences:self_defence_available_for_defence_of_self_another_person_or_property_and_in_prevention_of_crime"
     },
     {
       "id": "CB_DURESS_GRAHAM",
@@ -1756,19 +1766,20 @@
     },
     {
       "id": "TB_VL_REQ",
-      "label": "Vicarious liability: three requirements - tort committed, employment relationship, close connection to employment",
+      "label": "Vicarious liability: a tort must have been committed",
       "difficulty": 0.3,
       "kind": "concept",
       "subtopic": "4.5 Vicarious liability",
       "theme": "Theme 4 - The law of tort: negligence, occupiers, land, vicarious liability, defences and remedies",
-      "objective": "Understand and apply: Vicarious liability: three requirements - tort committed, employment relationship, close connection to employment",
+      "objective": "Understand and apply: Vicarious liability: a tort must have been committed",
       "specRefs": [
         "OCR H415 4.5"
       ],
       "essentialPoints": [
-        "Vicarious liability: three requirements - tort committed, employment relationship, close connection to employment"
+        "Vicarious liability: a tort must have been committed"
       ],
-      "practicalIds": []
+      "practicalIds": [],
+      "conceptId": "law:4_5_vicarious_liability:vicarious_liability_three_requirements_tort_committed_employment_relationship_close_connection_to_employment"
     },
     {
       "id": "TB_REM_SPECIAL",
@@ -1788,19 +1799,20 @@
     },
     {
       "id": "TB_REM_GENERAL",
-      "label": "General damages: non-quantifiable losses including pain, suffering, loss of amenity, future loss of earnings",
+      "label": "General damages: pain and suffering and loss of amenity",
       "difficulty": 0.35,
       "kind": "concept",
       "subtopic": "4.7 Remedies in tort",
       "theme": "Theme 4 - The law of tort: negligence, occupiers, land, vicarious liability, defences and remedies",
-      "objective": "Understand and apply: General damages: non-quantifiable losses including pain, suffering, loss of amenity, future loss of earnings",
+      "objective": "Understand and apply: General damages: pain and suffering and loss of amenity",
       "specRefs": [
         "OCR H415 4.7"
       ],
       "essentialPoints": [
-        "General damages: non-quantifiable losses including pain, suffering, loss of amenity, future loss of earnings"
+        "General damages: pain and suffering and loss of amenity"
       ],
-      "practicalIds": []
+      "practicalIds": [],
+      "conceptId": "law:4_7_remedies_in_tort:general_damages_non_quantifiable_losses_including_pain_suffering_loss_of_amenity_future_loss_of_earnings"
     },
     {
       "id": "TB_REM_MITIGATION",
@@ -1996,19 +2008,20 @@
     },
     {
       "id": "HR_jr_standing_procedure",
-      "label": "Judicial review procedure: standing (sufficient interest), permission stage, time limits, remedies (quashing, mandatory, prohibiting orders)",
+      "label": "Judicial review procedure: standing and the permission stage",
       "difficulty": 0.5,
       "kind": "procedure",
       "subtopic": "6.5 Enforcing human rights",
       "theme": "Theme 6 - Human rights law (option): protection, Convention rights and restrictions",
-      "objective": "Understand and apply: Judicial review procedure: standing (sufficient interest), permission stage, time limits, remedies (quashing, mandatory, prohibiting orders)",
+      "objective": "Understand and apply: Judicial review procedure: standing and the permission stage",
       "specRefs": [
         "OCR H415 6.5"
       ],
       "essentialPoints": [
-        "Judicial review procedure: standing (sufficient interest), permission stage, time limits, remedies (quashing, mandatory, prohibiting orders)"
+        "Judicial review procedure: standing and the permission stage"
       ],
-      "practicalIds": []
+      "practicalIds": [],
+      "conceptId": "law:6_5_enforcing_human_rights:judicial_review_procedure_standing_sufficient_interest_permission_stage_time_limits_remedies_quashing_mandatory_prohibiting_orders_"
     },
     {
       "id": "LS_SOP",
@@ -2028,19 +2041,20 @@
     },
     {
       "id": "CT_ITT",
-      "label": "Invitation to treat distinguished from an offer (Fisher v Bell, Pharmaceutical Society of GB v Boots, Gibson v Manchester CC)",
+      "label": "Invitation to treat: shop window displays are not offers (Fisher v Bell)",
       "difficulty": 0.4,
       "kind": "concept",
       "subtopic": "7.2 Formation of a contract",
       "theme": "Theme 7 - The law of contract (option): formation, terms, vitiating factors, discharge and remedies",
-      "objective": "Understand and apply: Invitation to treat distinguished from an offer (Fisher v Bell, Pharmaceutical Society of GB v Boots, Gibson v Manchester CC)",
+      "objective": "Understand and apply: Invitation to treat: shop window displays are not offers (Fisher v Bell)",
       "specRefs": [
         "OCR H415 7.2"
       ],
       "essentialPoints": [
-        "Invitation to treat distinguished from an offer (Fisher v Bell, Pharmaceutical Society of GB v Boots, Gibson v Manchester CC)"
+        "Invitation to treat: shop window displays are not offers (Fisher v Bell)"
       ],
-      "practicalIds": []
+      "practicalIds": [],
+      "conceptId": "law:7_2_formation_of_a_contract:invitation_to_treat_distinguished_from_an_offer_fisher_v_bell_pharmaceutical_society_of_gb_v_boots_gibson_v_manchester_cc_"
     },
     {
       "id": "CT_ACCEPTANCE",
@@ -2557,19 +2571,20 @@
     },
     {
       "id": "LS_CIV_LEGALAID_SCOPE",
-      "label": "Civil legal aid: means and merits tests, scope limited mainly to specific categories (e.g. family/domestic abuse, housing, asylum)",
+      "label": "Civil legal aid: the means and merits tests",
       "difficulty": 0.4,
       "kind": "concept",
       "subtopic": "1.4 Access to justice and funding",
       "theme": "Theme 1 - The legal system: courts, legal personnel and access to justice",
-      "objective": "Understand and apply: Civil legal aid: means and merits tests, scope limited mainly to specific categories (e.g. family/domestic abuse, housing, asylum)",
+      "objective": "Understand and apply: Civil legal aid: the means and merits tests",
       "specRefs": [
         "OCR H415 1.4"
       ],
       "essentialPoints": [
-        "Civil legal aid: means and merits tests, scope limited mainly to specific categories (e.g. family/domestic abuse, housing, asylum)"
+        "Civil legal aid: the means and merits tests"
       ],
-      "practicalIds": []
+      "practicalIds": [],
+      "conceptId": "law:1_4_access_to_justice_and_funding:civil_legal_aid_means_and_merits_tests_scope_limited_mainly_to_specific_categories_e_g_family_domestic_abuse_housing_asylum_"
     },
     {
       "id": "LS_EV_CRIMLEGALAID_ACCESS",
@@ -3229,19 +3244,20 @@
     },
     {
       "id": "LR_LAWCOM_FUNC",
-      "label": "Law Commission's functions: codification, consolidation, repeal of obsolete law, and reducing the number of separate statutes",
+      "label": "Law Commission's functions: codification and consolidation",
       "difficulty": 0.35,
       "kind": "concept",
       "subtopic": "3.5 Law reform",
       "theme": "Theme 3 - Law making: Parliament, delegated legislation, interpretation, precedent and reform",
-      "objective": "Understand and apply: Law Commission's functions: codification, consolidation, repeal of obsolete law, and reducing the number of separate statutes",
+      "objective": "Understand and apply: Law Commission's functions: codification and consolidation",
       "specRefs": [
         "OCR H415 3.5"
       ],
       "essentialPoints": [
-        "Law Commission's functions: codification, consolidation, repeal of obsolete law, and reducing the number of separate statutes"
+        "Law Commission's functions: codification and consolidation"
       ],
-      "practicalIds": []
+      "practicalIds": [],
+      "conceptId": "law:3_5_law_reform:law_commission_s_functions_codification_consolidation_repeal_of_obsolete_law_and_reducing_the_number_of_separate_statutes"
     },
     {
       "id": "LR_LAWCOM_PROC",
@@ -3965,19 +3981,20 @@
     },
     {
       "id": "LB_HIER",
-      "label": "Hierarchy of the courts (England and Wales): Supreme Court, Court of Appeal (Civil/Criminal Division), High Court, Crown Court, Magistrates'/County Court",
+      "label": "Hierarchy of the courts: the Supreme Court and the Court of Appeal",
       "difficulty": 0.3,
       "kind": "concept",
       "subtopic": "3.4 Judicial precedent",
       "theme": "Theme 3 - Law making: Parliament, delegated legislation, interpretation, precedent and reform",
-      "objective": "Understand and apply: Hierarchy of the courts (England and Wales): Supreme Court, Court of Appeal (Civil/Criminal Division), High Court, Crown Court, Magistrates'/County Court",
+      "objective": "Understand and apply: Hierarchy of the courts: the Supreme Court and the Court of Appeal",
       "specRefs": [
         "OCR H415 3.4"
       ],
       "essentialPoints": [
-        "Hierarchy of the courts (England and Wales): Supreme Court, Court of Appeal (Civil/Criminal Division), High Court, Crown Court, Magistrates'/County Court"
+        "Hierarchy of the courts: the Supreme Court and the Court of Appeal"
       ],
-      "practicalIds": []
+      "practicalIds": [],
+      "conceptId": "law:3_4_judicial_precedent:hierarchy_of_the_courts_england_and_wales_supreme_court_court_of_appeal_civil_criminal_division_high_court_crown_court_magistrates_county_court"
     },
     {
       "id": "LB_ORIGINAL",
@@ -4173,19 +4190,20 @@
     },
     {
       "id": "LS_SENT_COMMUNITY",
-      "label": "Community sentences: requirements such as unpaid work, curfew, rehabilitation activity",
+      "label": "Community sentence requirement: unpaid work",
       "difficulty": 0.3,
       "kind": "concept",
       "subtopic": "1.2 Criminal courts, sentencing and lay people",
       "theme": "Theme 1 - The legal system: courts, legal personnel and access to justice",
-      "objective": "Understand and apply: Community sentences: requirements such as unpaid work, curfew, rehabilitation activity",
+      "objective": "Understand and apply: Community sentence requirement: unpaid work",
       "specRefs": [
         "OCR H415 1.2"
       ],
       "essentialPoints": [
-        "Community sentences: requirements such as unpaid work, curfew, rehabilitation activity"
+        "Community sentence requirement: unpaid work"
       ],
-      "practicalIds": []
+      "practicalIds": [],
+      "conceptId": "law:1_2_criminal_courts_sentencing_and_lay_people:community_sentences_requirements_such_as_unpaid_work_curfew_rehabilitation_activity"
     },
     {
       "id": "LS_SENT_FINE",
@@ -4317,19 +4335,20 @@
     },
     {
       "id": "LS_JUDGE_ROLE",
-      "label": "Role of the judiciary: presiding over trials, case management, sentencing, developing precedent",
+      "label": "Role of the judiciary: presiding over trials and case management",
       "difficulty": 0.3,
       "kind": "concept",
       "subtopic": "1.3 Legal personnel and the judiciary",
       "theme": "Theme 1 - The legal system: courts, legal personnel and access to justice",
-      "objective": "Understand and apply: Role of the judiciary: presiding over trials, case management, sentencing, developing precedent",
+      "objective": "Understand and apply: Role of the judiciary: presiding over trials and case management",
       "specRefs": [
         "OCR H415 1.3"
       ],
       "essentialPoints": [
-        "Role of the judiciary: presiding over trials, case management, sentencing, developing precedent"
+        "Role of the judiciary: presiding over trials and case management"
       ],
-      "practicalIds": []
+      "practicalIds": [],
+      "conceptId": "law:1_3_legal_personnel_and_the_judiciary:role_of_the_judiciary_presiding_over_trials_case_management_sentencing_developing_precedent"
     },
     {
       "id": "LS_LAA",
@@ -4525,19 +4544,20 @@
     },
     {
       "id": "CB_INTOX_SPECGEN",
-      "label": "Crime classification for intoxication: specific intent offences (require proof of intention e.g. murder, s18 GBH) vs basic intent offences (recklessness suffices e.g. manslaughter, s20/s47, assault, battery) - DPP v Majewski (1977)",
+      "label": "Intoxication: specific intent offences require proof of intention (e.g. murder, s18 GBH)",
       "difficulty": 0.6,
       "kind": "concept",
       "subtopic": "2.6 Mental capacity defences",
       "theme": "Theme 2 - Criminal law: general principles, offences and defences",
-      "objective": "Understand and apply: Crime classification for intoxication: specific intent offences (require proof of intention e.g. murder, s18 GBH) vs basic intent offences (recklessness suffices e.g. manslaughter, s20/s47, assault, battery) - DPP v Majewski (1977)",
+      "objective": "Understand and apply: Intoxication: specific intent offences require proof of intention (e.g. murder, s18 GBH)",
       "specRefs": [
         "OCR H415 2.6"
       ],
       "essentialPoints": [
-        "Crime classification for intoxication: specific intent offences (require proof of intention e.g. murder, s18 GBH) vs basic intent offences (recklessness suffices e.g. manslaughter, s20/s47, assault, battery) - DPP v Majewski (1977)"
+        "Intoxication: specific intent offences require proof of intention (e.g. murder, s18 GBH)"
       ],
-      "practicalIds": []
+      "practicalIds": [],
+      "conceptId": "law:2_6_mental_capacity_defences:crime_classification_for_intoxication_specific_intent_offences_require_proof_of_intention_e_g_murder_s18_gbh_vs_basic_intent_offences_recklessness_suffices_e_g_manslaughter_s20_s47_assault_battery_dpp_v_majewski_1977_"
     },
     {
       "id": "CB_INTOX_INVOL",
@@ -4637,19 +4657,20 @@
     },
     {
       "id": "CB_ATT_AR_CASES",
-      "label": "Attempts actus reus case law: R v Jones (1990) (more than merely preparatory found), R v Geddes (1996) (mere preparation, not more than preparatory), R v Campbell (1991)",
+      "label": "Attempts actus reus: R v Jones (1990), more than merely preparatory",
       "difficulty": 0.55,
       "kind": "application",
       "subtopic": "2.8 Preliminary offences",
       "theme": "Theme 2 - Criminal law: general principles, offences and defences",
-      "objective": "Understand and apply: Attempts actus reus case law: R v Jones (1990) (more than merely preparatory found), R v Geddes (1996) (mere preparation, not more than preparatory), R v Campbell (1991)",
+      "objective": "Understand and apply: Attempts actus reus: R v Jones (1990), more than merely preparatory",
       "specRefs": [
         "OCR H415 2.8"
       ],
       "essentialPoints": [
-        "Attempts actus reus case law: R v Jones (1990) (more than merely preparatory found), R v Geddes (1996) (mere preparation, not more than preparatory), R v Campbell (1991)"
+        "Attempts actus reus: R v Jones (1990), more than merely preparatory"
       ],
-      "practicalIds": []
+      "practicalIds": [],
+      "conceptId": "law:2_8_preliminary_offences:attempts_actus_reus_case_law_r_v_jones_1990_more_than_merely_preparatory_found_r_v_geddes_1996_mere_preparation_not_more_than_preparatory_r_v_campbell_1991_"
     },
     {
       "id": "CB_ATT_MR_CONDITIONAL",
@@ -5629,19 +5650,20 @@
     },
     {
       "id": "CT_CRA_TERMS",
-      "label": "Consumer Rights Act 2015: statutory implied terms in consumer contracts - satisfactory quality, fitness for purpose, and description (ss.9-11)",
+      "label": "Consumer Rights Act 2015: goods must be of satisfactory quality (s.9)",
       "difficulty": 0.45,
       "kind": "concept",
       "subtopic": "7.3 Terms of a contract",
       "theme": "Theme 7 - The law of contract (option): formation, terms, vitiating factors, discharge and remedies",
-      "objective": "Understand and apply: Consumer Rights Act 2015: statutory implied terms in consumer contracts - satisfactory quality, fitness for purpose, and description (ss.9-11)",
+      "objective": "Understand and apply: Consumer Rights Act 2015: goods must be of satisfactory quality (s.9)",
       "specRefs": [
         "OCR H415 7.3"
       ],
       "essentialPoints": [
-        "Consumer Rights Act 2015: statutory implied terms in consumer contracts - satisfactory quality, fitness for purpose, and description (ss.9-11)"
+        "Consumer Rights Act 2015: goods must be of satisfactory quality (s.9)"
       ],
-      "practicalIds": []
+      "practicalIds": [],
+      "conceptId": "law:7_3_terms_of_a_contract:consumer_rights_act_2015_statutory_implied_terms_in_consumer_contracts_satisfactory_quality_fitness_for_purpose_and_description_ss_9_11_"
     },
     {
       "id": "CT_CONDITIONS",
@@ -5677,35 +5699,37 @@
     },
     {
       "id": "CT_EXCLUSION_INCORP",
-      "label": "Exclusion/limitation clauses: incorporation requirements - signature, notice before/at contract formation, and course of dealing (L'Estrange v Graucob, Olley v Marlborough Court, Thornton v Shoe Lane Parking)",
+      "label": "Exclusion clause incorporation by signature (L'Estrange v Graucob)",
       "difficulty": 0.5,
       "kind": "concept",
       "subtopic": "7.3 Terms of a contract",
       "theme": "Theme 7 - The law of contract (option): formation, terms, vitiating factors, discharge and remedies",
-      "objective": "Understand and apply: Exclusion/limitation clauses: incorporation requirements - signature, notice before/at contract formation, and course of dealing (L'Estrange v Graucob, Olley v Marlborough Court, Thornton v Shoe Lane Parking)",
+      "objective": "Understand and apply: Exclusion clause incorporation by signature (L'Estrange v Graucob)",
       "specRefs": [
         "OCR H415 7.3"
       ],
       "essentialPoints": [
-        "Exclusion/limitation clauses: incorporation requirements - signature, notice before/at contract formation, and course of dealing (L'Estrange v Graucob, Olley v Marlborough Court, Thornton v Shoe Lane Parking)"
+        "Exclusion clause incorporation by signature (L'Estrange v Graucob)"
       ],
-      "practicalIds": []
+      "practicalIds": [],
+      "conceptId": "law:7_3_terms_of_a_contract:exclusion_limitation_clauses_incorporation_requirements_signature_notice_before_at_contract_formation_and_course_of_dealing_l_estrange_v_graucob_olley_v_marlborough_court_thornton_v_shoe_lane_parking_"
     },
     {
       "id": "CT_MISREP_REMEDIES",
-      "label": "Remedies for misrepresentation: rescission for all types, damages for fraudulent (tort of deceit) and negligent (s.2(1)), damages in lieu of rescission under s.2(2)",
+      "label": "Remedies for misrepresentation: rescission for all types",
       "difficulty": 0.5,
       "kind": "concept",
       "subtopic": "7.4 Vitiating factors",
       "theme": "Theme 7 - The law of contract (option): formation, terms, vitiating factors, discharge and remedies",
-      "objective": "Understand and apply: Remedies for misrepresentation: rescission for all types, damages for fraudulent (tort of deceit) and negligent (s.2(1)), damages in lieu of rescission under s.2(2)",
+      "objective": "Understand and apply: Remedies for misrepresentation: rescission for all types",
       "specRefs": [
         "OCR H415 7.4"
       ],
       "essentialPoints": [
-        "Remedies for misrepresentation: rescission for all types, damages for fraudulent (tort of deceit) and negligent (s.2(1)), damages in lieu of rescission under s.2(2)"
+        "Remedies for misrepresentation: rescission for all types"
       ],
-      "practicalIds": []
+      "practicalIds": [],
+      "conceptId": "law:7_4_vitiating_factors:remedies_for_misrepresentation_rescission_for_all_types_damages_for_fraudulent_tort_of_deceit_and_negligent_s_2_1_damages_in_lieu_of_rescission_under_s_2_2_"
     },
     {
       "id": "CT_FRUSTRATION_EFFECT",
@@ -5885,19 +5909,20 @@
     },
     {
       "id": "LB_PERSUASIVE",
-      "label": "Persuasive precedent: not binding but may be followed, e.g. obiter dicta, lower court decisions, dissenting judgments, decisions of other jurisdictions/Privy Council",
+      "label": "Persuasive precedent: obiter dicta and dissenting judgments",
       "difficulty": 0.3,
       "kind": "concept",
       "subtopic": "3.4 Judicial precedent",
       "theme": "Theme 3 - Law making: Parliament, delegated legislation, interpretation, precedent and reform",
-      "objective": "Understand and apply: Persuasive precedent: not binding but may be followed, e.g. obiter dicta, lower court decisions, dissenting judgments, decisions of other jurisdictions/Privy Council",
+      "objective": "Understand and apply: Persuasive precedent: obiter dicta and dissenting judgments",
       "specRefs": [
         "OCR H415 3.4"
       ],
       "essentialPoints": [
-        "Persuasive precedent: not binding but may be followed, e.g. obiter dicta, lower court decisions, dissenting judgments, decisions of other jurisdictions/Privy Council"
+        "Persuasive precedent: obiter dicta and dissenting judgments"
       ],
-      "practicalIds": []
+      "practicalIds": [],
+      "conceptId": "law:3_4_judicial_precedent:persuasive_precedent_not_binding_but_may_be_followed_e_g_obiter_dicta_lower_court_decisions_dissenting_judgments_decisions_of_other_jurisdictions_privy_council"
     },
     {
       "id": "LB_DIS3",
@@ -7229,19 +7254,20 @@
     },
     {
       "id": "HR_art6_elements",
-      "label": "Article 6 elements: independent/impartial tribunal, public hearing, reasonable time, presumption of innocence",
+      "label": "Article 6 elements: an independent and impartial tribunal and a public hearing",
       "difficulty": 0.45,
       "kind": "concept",
       "subtopic": "6.3 Key provisions of the European Convention on Human Rights",
       "theme": "Theme 6 - Human rights law (option): protection, Convention rights and restrictions",
-      "objective": "Understand and apply: Article 6 elements: independent/impartial tribunal, public hearing, reasonable time, presumption of innocence",
+      "objective": "Understand and apply: Article 6 elements: an independent and impartial tribunal and a public hearing",
       "specRefs": [
         "OCR H415 6.3"
       ],
       "essentialPoints": [
-        "Article 6 elements: independent/impartial tribunal, public hearing, reasonable time, presumption of innocence"
+        "Article 6 elements: an independent and impartial tribunal and a public hearing"
       ],
-      "practicalIds": []
+      "practicalIds": [],
+      "conceptId": "law:6_3_key_provisions_of_the_european_convention_on_human_rights:article_6_elements_independent_impartial_tribunal_public_hearing_reasonable_time_presumption_of_innocence"
     },
     {
       "id": "HR_art8_qualified",
@@ -7469,19 +7495,20 @@
     },
     {
       "id": "CT_CRA_REMEDIES_GOODS",
-      "label": "Consumer Rights Act 2015 remedies for goods: short-term right to reject, right to repair or replacement, and right to a price reduction or final right to reject (ss.20-24)",
+      "label": "Consumer Rights Act 2015: the short-term right to reject faulty goods",
       "difficulty": 0.5,
       "kind": "concept",
       "subtopic": "7.6 Remedies for breach of contract",
       "theme": "Theme 7 - The law of contract (option): formation, terms, vitiating factors, discharge and remedies",
-      "objective": "Understand and apply: Consumer Rights Act 2015 remedies for goods: short-term right to reject, right to repair or replacement, and right to a price reduction or final right to reject (ss.20-24)",
+      "objective": "Understand and apply: Consumer Rights Act 2015: the short-term right to reject faulty goods",
       "specRefs": [
         "OCR H415 7.6"
       ],
       "essentialPoints": [
-        "Consumer Rights Act 2015 remedies for goods: short-term right to reject, right to repair or replacement, and right to a price reduction or final right to reject (ss.20-24)"
+        "Consumer Rights Act 2015: the short-term right to reject faulty goods"
       ],
-      "practicalIds": []
+      "practicalIds": [],
+      "conceptId": "law:7_6_remedies_for_breach_of_contract:consumer_rights_act_2015_remedies_for_goods_short_term_right_to_reject_right_to_repair_or_replacement_and_right_to_a_price_reduction_or_final_right_to_reject_ss_20_24_"
     },
     {
       "id": "CT_INNOMINATE_TERMS",
@@ -7517,19 +7544,20 @@
     },
     {
       "id": "LA_AID_INTRINSIC",
-      "label": "Intrinsic aids: sources within the Act itself, e.g. long/short title, preamble, definition sections, schedules",
+      "label": "Intrinsic aids: the long and short title and the preamble",
       "difficulty": 0.25,
       "kind": "concept",
       "subtopic": "3.3 Statutory interpretation",
       "theme": "Theme 3 - Law making: Parliament, delegated legislation, interpretation, precedent and reform",
-      "objective": "Understand and apply: Intrinsic aids: sources within the Act itself, e.g. long/short title, preamble, definition sections, schedules",
+      "objective": "Understand and apply: Intrinsic aids: the long and short title and the preamble",
       "specRefs": [
         "OCR H415 3.3"
       ],
       "essentialPoints": [
-        "Intrinsic aids: sources within the Act itself, e.g. long/short title, preamble, definition sections, schedules"
+        "Intrinsic aids: the long and short title and the preamble"
       ],
-      "practicalIds": []
+      "practicalIds": [],
+      "conceptId": "law:3_3_statutory_interpretation:intrinsic_aids_sources_within_the_act_itself_e_g_long_short_title_preamble_definition_sections_schedules"
     },
     {
       "id": "LA_ADV_PURP",
@@ -7581,19 +7609,20 @@
     },
     {
       "id": "LA_AID_EXTRINSIC_OTHER",
-      "label": "Extrinsic aid: other external sources such as earlier case law, Law Commission/other reports, and dictionaries from the time of enactment",
+      "label": "Extrinsic aids: earlier case law and Law Commission or other reports",
       "difficulty": 0.2,
       "kind": "concept",
       "subtopic": "3.3 Statutory interpretation",
       "theme": "Theme 3 - Law making: Parliament, delegated legislation, interpretation, precedent and reform",
-      "objective": "Understand and apply: Extrinsic aid: other external sources such as earlier case law, Law Commission/other reports, and dictionaries from the time of enactment",
+      "objective": "Understand and apply: Extrinsic aids: earlier case law and Law Commission or other reports",
       "specRefs": [
         "OCR H415 3.3"
       ],
       "essentialPoints": [
-        "Extrinsic aid: other external sources such as earlier case law, Law Commission/other reports, and dictionaries from the time of enactment"
+        "Extrinsic aids: earlier case law and Law Commission or other reports"
       ],
-      "practicalIds": []
+      "practicalIds": [],
+      "conceptId": "law:3_3_statutory_interpretation:extrinsic_aid_other_external_sources_such_as_earlier_case_law_law_commission_other_reports_and_dictionaries_from_the_time_of_enactment"
     },
     {
       "id": "LA_EU_IMPACT",
@@ -7981,19 +8010,20 @@
     },
     {
       "id": "CB_CONSENT_EXCEPTIONS",
-      "label": "Consent: recognised public policy exceptions where consent to harm above ABH is allowed - properly conducted sports, surgery, tattooing/body piercing, horseplay (R v Barnes (2005), R v Wilson (1996), R v Jones (1986))",
+      "label": "Consent exceptions: properly conducted sports and horseplay (R v Barnes (2005))",
       "difficulty": 0.55,
       "kind": "application",
       "subtopic": "2.7 General defences",
       "theme": "Theme 2 - Criminal law: general principles, offences and defences",
-      "objective": "Understand and apply: Consent: recognised public policy exceptions where consent to harm above ABH is allowed - properly conducted sports, surgery, tattooing/body piercing, horseplay (R v Barnes (2005), R v Wilson (1996), R v Jones (1986))",
+      "objective": "Understand and apply: Consent exceptions: properly conducted sports and horseplay (R v Barnes (2005))",
       "specRefs": [
         "OCR H415 2.7"
       ],
       "essentialPoints": [
-        "Consent: recognised public policy exceptions where consent to harm above ABH is allowed - properly conducted sports, surgery, tattooing/body piercing, horseplay (R v Barnes (2005), R v Wilson (1996), R v Jones (1986))"
+        "Consent exceptions: properly conducted sports and horseplay (R v Barnes (2005))"
       ],
-      "practicalIds": []
+      "practicalIds": [],
+      "conceptId": "law:2_7_general_defences:consent_recognised_public_policy_exceptions_where_consent_to_harm_above_abh_is_allowed_properly_conducted_sports_surgery_tattooing_body_piercing_horseplay_r_v_barnes_2005_r_v_wilson_1996_r_v_jones_1986_"
     },
     {
       "id": "CB_EVAL_OATP_TRANSFERRED",
@@ -8525,19 +8555,20 @@
     },
     {
       "id": "TB_VL_INDEPCONTRACTOR_EXCEPTIONS",
-      "label": "Exceptions to no-liability rule for independent contractors: non-delegable duties, extra-hazardous activities, employer's own negligence in selection (Honeywill and Stein v Larkin Bros)",
+      "label": "Independent contractors: liability for non-delegable duties",
       "difficulty": 0.5,
       "kind": "concept",
       "subtopic": "4.5 Vicarious liability",
       "theme": "Theme 4 - The law of tort: negligence, occupiers, land, vicarious liability, defences and remedies",
-      "objective": "Understand and apply: Exceptions to no-liability rule for independent contractors: non-delegable duties, extra-hazardous activities, employer's own negligence in selection (Honeywill and Stein v Larkin Bros)",
+      "objective": "Understand and apply: Independent contractors: liability for non-delegable duties",
       "specRefs": [
         "OCR H415 4.5"
       ],
       "essentialPoints": [
-        "Exceptions to no-liability rule for independent contractors: non-delegable duties, extra-hazardous activities, employer's own negligence in selection (Honeywill and Stein v Larkin Bros)"
+        "Independent contractors: liability for non-delegable duties"
       ],
-      "practicalIds": []
+      "practicalIds": [],
+      "conceptId": "law:4_5_vicarious_liability:exceptions_to_no_liability_rule_for_independent_contractors_non_delegable_duties_extra_hazardous_activities_employer_s_own_negligence_in_selection_honeywill_and_stein_v_larkin_bros_"
     },
     {
       "id": "TB_VL_CRIMES",
@@ -8653,19 +8684,20 @@
     },
     {
       "id": "NL_ROL_DICEY",
-      "label": "Dicey's three principles of the rule of law: supremacy of law, equality before the law, and constitutional rights from ordinary law",
+      "label": "Dicey's rule of law: supremacy of law",
       "difficulty": 0.45,
       "kind": "concept",
       "subtopic": "5.1 Law and rules",
       "theme": "Theme 5 - The nature of law: rules, morality, justice, society and technology",
-      "objective": "Understand and apply: Dicey's three principles of the rule of law: supremacy of law, equality before the law, and constitutional rights from ordinary law",
+      "objective": "Understand and apply: Dicey's rule of law: supremacy of law",
       "specRefs": [
         "OCR H415 5.1"
       ],
       "essentialPoints": [
-        "Dicey's three principles of the rule of law: supremacy of law, equality before the law, and constitutional rights from ordinary law"
+        "Dicey's rule of law: supremacy of law"
       ],
-      "practicalIds": []
+      "practicalIds": [],
+      "conceptId": "law:5_1_law_and_rules:dicey_s_three_principles_of_the_rule_of_law_supremacy_of_law_equality_before_the_law_and_constitutional_rights_from_ordinary_law"
     },
     {
       "id": "NL_LAW_AS_SOCIAL_CONTROL",
@@ -8797,19 +8829,20 @@
     },
     {
       "id": "HR_restrictions_test",
-      "label": "Test for permitted restrictions: prescribed by law, legitimate aim, necessary in a democratic society, proportionate",
+      "label": "Test for permitted restrictions: prescribed by law and a legitimate aim",
       "difficulty": 0.5,
       "kind": "concept",
       "subtopic": "6.3 Key provisions of the European Convention on Human Rights",
       "theme": "Theme 6 - Human rights law (option): protection, Convention rights and restrictions",
-      "objective": "Understand and apply: Test for permitted restrictions: prescribed by law, legitimate aim, necessary in a democratic society, proportionate",
+      "objective": "Understand and apply: Test for permitted restrictions: prescribed by law and a legitimate aim",
       "specRefs": [
         "OCR H415 6.3"
       ],
       "essentialPoints": [
-        "Test for permitted restrictions: prescribed by law, legitimate aim, necessary in a democratic society, proportionate"
+        "Test for permitted restrictions: prescribed by law and a legitimate aim"
       ],
-      "practicalIds": []
+      "practicalIds": [],
+      "conceptId": "law:6_3_key_provisions_of_the_european_convention_on_human_rights:test_for_permitted_restrictions_prescribed_by_law_legitimate_aim_necessary_in_a_democratic_society_proportionate"
     },
     {
       "id": "CT_EVAL_ITCLR_UNCERTAIN",
@@ -8925,19 +8958,20 @@
     },
     {
       "id": "CT_PRIVITY_COMMON_LAW_EXCEPTIONS",
-      "label": "Common law exceptions to privity: agency, assignment, and collateral contracts (Shanklin Pier v Detel Products)",
+      "label": "Exception to privity: agency",
       "difficulty": 0.5,
       "kind": "concept",
       "subtopic": "7.2 Formation of a contract",
       "theme": "Theme 7 - The law of contract (option): formation, terms, vitiating factors, discharge and remedies",
-      "objective": "Understand and apply: Common law exceptions to privity: agency, assignment, and collateral contracts (Shanklin Pier v Detel Products)",
+      "objective": "Understand and apply: Exception to privity: agency",
       "specRefs": [
         "OCR H415 7.2"
       ],
       "essentialPoints": [
-        "Common law exceptions to privity: agency, assignment, and collateral contracts (Shanklin Pier v Detel Products)"
+        "Exception to privity: agency"
       ],
-      "practicalIds": []
+      "practicalIds": [],
+      "conceptId": "law:7_2_formation_of_a_contract:common_law_exceptions_to_privity_agency_assignment_and_collateral_contracts_shanklin_pier_v_detel_products_"
     },
     {
       "id": "CT_EVAL_PRIVITY_INJUSTICE",
@@ -9934,19 +9968,20 @@
     },
     {
       "id": "NL_CYBERCRIME_DEF",
-      "label": "Definition and types of cyber-crime: hacking, fraud, identity theft and online offences",
+      "label": "Cyber-crime: definition and hacking",
       "difficulty": 0.35,
       "kind": "concept",
       "subtopic": "5.5 Law and technology",
       "theme": "Theme 5 - The nature of law: rules, morality, justice, society and technology",
-      "objective": "Understand and apply: Definition and types of cyber-crime: hacking, fraud, identity theft and online offences",
+      "objective": "Understand and apply: Cyber-crime: definition and hacking",
       "specRefs": [
         "OCR H415 5.5"
       ],
       "essentialPoints": [
-        "Definition and types of cyber-crime: hacking, fraud, identity theft and online offences"
+        "Cyber-crime: definition and hacking"
       ],
-      "practicalIds": []
+      "practicalIds": [],
+      "conceptId": "law:5_5_law_and_technology:definition_and_types_of_cyber_crime_hacking_fraud_identity_theft_and_online_offences"
     },
     {
       "id": "HR_hra_s2",
@@ -10623,35 +10658,37 @@
     },
     {
       "id": "NL_JUSTICE_PROC_SUCCESS",
-      "label": "Ways the legal system achieves justice: fair trial rights, appeals, legal aid, precedent providing consistency",
+      "label": "Ways the legal system achieves justice: fair trial rights and appeals",
       "difficulty": 0.4,
       "kind": "evaluation",
       "subtopic": "5.3 Law and justice",
       "theme": "Theme 5 - The nature of law: rules, morality, justice, society and technology",
-      "objective": "Understand and apply: Ways the legal system achieves justice: fair trial rights, appeals, legal aid, precedent providing consistency",
+      "objective": "Understand and apply: Ways the legal system achieves justice: fair trial rights and appeals",
       "specRefs": [
         "OCR H415 5.3"
       ],
       "essentialPoints": [
-        "Ways the legal system achieves justice: fair trial rights, appeals, legal aid, precedent providing consistency"
+        "Ways the legal system achieves justice: fair trial rights and appeals"
       ],
-      "practicalIds": []
+      "practicalIds": [],
+      "conceptId": "law:5_3_law_and_justice:ways_the_legal_system_achieves_justice_fair_trial_rights_appeals_legal_aid_precedent_providing_consistency"
     },
     {
       "id": "NL_JUSTICE_PROC_FAILURE",
-      "label": "Ways the legal system fails to achieve justice: cost of litigation restricting access, delays, wrongful convictions",
+      "label": "Failures of justice: the cost of litigation restricts access",
       "difficulty": 0.45,
       "kind": "evaluation",
       "subtopic": "5.3 Law and justice",
       "theme": "Theme 5 - The nature of law: rules, morality, justice, society and technology",
-      "objective": "Understand and apply: Ways the legal system fails to achieve justice: cost of litigation restricting access, delays, wrongful convictions",
+      "objective": "Understand and apply: Failures of justice: the cost of litigation restricts access",
       "specRefs": [
         "OCR H415 5.3"
       ],
       "essentialPoints": [
-        "Ways the legal system fails to achieve justice: cost of litigation restricting access, delays, wrongful convictions"
+        "Failures of justice: the cost of litigation restricts access"
       ],
-      "practicalIds": []
+      "practicalIds": [],
+      "conceptId": "law:5_3_law_and_justice:ways_the_legal_system_fails_to_achieve_justice_cost_of_litigation_restricting_access_delays_wrongful_convictions"
     },
     {
       "id": "NL_REALIST_JUDGES",
@@ -12677,6 +12714,890 @@
         "Reform proposals: suggestions for statutory clarification/codification of tort principles (e.g. duty of care, nuisance defences, vicarious liability tests) to improve certainty"
       ],
       "practicalIds": []
+    },
+    {
+      "id": "LS_MAG_QUAL_p2",
+      "label": "Lay magistrates: character requirements",
+      "difficulty": 0.25,
+      "kind": "concept",
+      "subtopic": "1.2 Criminal courts, sentencing and lay people",
+      "theme": "Theme 1 - The legal system: courts, legal personnel and access to justice",
+      "objective": "Understand and apply: Lay magistrates: character requirements",
+      "specRefs": [
+        "OCR H415 1.2"
+      ],
+      "essentialPoints": [
+        "Lay magistrates: character requirements"
+      ],
+      "practicalIds": [],
+      "conceptId": "law:1_2_criminal_courts_sentencing_and_lay_people:lay_magistrates_character_requirements"
+    },
+    {
+      "id": "LS_SOLICITOR_p2",
+      "label": "Solicitors: work and areas of practice",
+      "difficulty": 0.3,
+      "kind": "concept",
+      "subtopic": "1.3 Legal personnel and the judiciary",
+      "theme": "Theme 1 - The legal system: courts, legal personnel and access to justice",
+      "objective": "Understand and apply: Solicitors: work and areas of practice",
+      "specRefs": [
+        "OCR H415 1.3"
+      ],
+      "essentialPoints": [
+        "Solicitors: work and areas of practice"
+      ],
+      "practicalIds": [],
+      "conceptId": "law:1_3_legal_personnel_and_the_judiciary:solicitors_work_and_areas_of_practice"
+    },
+    {
+      "id": "LS_BARRISTER_p2",
+      "label": "Barristers: work, including advocacy",
+      "difficulty": 0.3,
+      "kind": "concept",
+      "subtopic": "1.3 Legal personnel and the judiciary",
+      "theme": "Theme 1 - The legal system: courts, legal personnel and access to justice",
+      "objective": "Understand and apply: Barristers: work, including advocacy",
+      "specRefs": [
+        "OCR H415 1.3"
+      ],
+      "essentialPoints": [
+        "Barristers: work, including advocacy"
+      ],
+      "practicalIds": [],
+      "conceptId": "law:1_3_legal_personnel_and_the_judiciary:barristers_work_including_advocacy"
+    },
+    {
+      "id": "LS_CILEX_p2",
+      "label": "Chartered Legal Executives: work and regulation by CILEx Regulation",
+      "difficulty": 0.3,
+      "kind": "concept",
+      "subtopic": "1.3 Legal personnel and the judiciary",
+      "theme": "Theme 1 - The legal system: courts, legal personnel and access to justice",
+      "objective": "Understand and apply: Chartered Legal Executives: work and regulation by CILEx Regulation",
+      "specRefs": [
+        "OCR H415 1.3"
+      ],
+      "essentialPoints": [
+        "Chartered Legal Executives: work and regulation by CILEx Regulation"
+      ],
+      "practicalIds": [],
+      "conceptId": "law:1_3_legal_personnel_and_the_judiciary:chartered_legal_executives_work_and_regulation_by_cilex_regulation"
+    },
+    {
+      "id": "CB_SD_STATUTE_p2",
+      "label": "Self-defence: section 76 Criminal Justice and Immigration Act 2008",
+      "difficulty": 0.4,
+      "kind": "concept",
+      "subtopic": "2.7 General defences",
+      "theme": "Theme 2 - Criminal law: general principles, offences and defences",
+      "objective": "Understand and apply: Self-defence: section 76 Criminal Justice and Immigration Act 2008",
+      "specRefs": [
+        "OCR H415 2.7"
+      ],
+      "essentialPoints": [
+        "Self-defence: section 76 Criminal Justice and Immigration Act 2008"
+      ],
+      "practicalIds": [],
+      "conceptId": "law:2_7_general_defences:self_defence_section_76_criminal_justice_and_immigration_act_2008"
+    },
+    {
+      "id": "CB_SD_STATUTE_p3",
+      "label": "Self-defence: section 3 Criminal Law Act 1967 and prevention of crime",
+      "difficulty": 0.4,
+      "kind": "concept",
+      "subtopic": "2.7 General defences",
+      "theme": "Theme 2 - Criminal law: general principles, offences and defences",
+      "objective": "Understand and apply: Self-defence: section 3 Criminal Law Act 1967 and prevention of crime",
+      "specRefs": [
+        "OCR H415 2.7"
+      ],
+      "essentialPoints": [
+        "Self-defence: section 3 Criminal Law Act 1967 and prevention of crime"
+      ],
+      "practicalIds": [],
+      "conceptId": "law:2_7_general_defences:self_defence_section_3_criminal_law_act_1967_and_prevention_of_crime"
+    },
+    {
+      "id": "CB_SD_TRIGGER_p2",
+      "label": "Self-defence: defence of property and prevention of crime",
+      "difficulty": 0.3,
+      "kind": "concept",
+      "subtopic": "2.7 General defences",
+      "theme": "Theme 2 - Criminal law: general principles, offences and defences",
+      "objective": "Understand and apply: Self-defence: defence of property and prevention of crime",
+      "specRefs": [
+        "OCR H415 2.7"
+      ],
+      "essentialPoints": [
+        "Self-defence: defence of property and prevention of crime"
+      ],
+      "practicalIds": [],
+      "conceptId": "law:2_7_general_defences:self_defence_defence_of_property_and_prevention_of_crime"
+    },
+    {
+      "id": "LS_PRETRIAL_p2",
+      "label": "Civil pre-trial procedure: the defence and case management by the court",
+      "difficulty": 0.4,
+      "kind": "procedure",
+      "subtopic": "1.1 Civil courts and other forms of dispute resolution",
+      "theme": "Theme 1 - The legal system: courts, legal personnel and access to justice",
+      "objective": "Understand and apply: Civil pre-trial procedure: the defence and case management by the court",
+      "specRefs": [
+        "OCR H415 1.1"
+      ],
+      "essentialPoints": [
+        "Civil pre-trial procedure: the defence and case management by the court"
+      ],
+      "practicalIds": [],
+      "conceptId": "law:1_1_civil_courts_and_other_forms_of_dispute_resolution:civil_pre_trial_procedure_the_defence_and_case_management_by_the_court"
+    },
+    {
+      "id": "LS_CRIM_LEGALAID_p2",
+      "label": "Criminal legal aid: the means test and the interests of justice test",
+      "difficulty": 0.4,
+      "kind": "concept",
+      "subtopic": "1.4 Access to justice and funding",
+      "theme": "Theme 1 - The legal system: courts, legal personnel and access to justice",
+      "objective": "Understand and apply: Criminal legal aid: the means test and the interests of justice test",
+      "specRefs": [
+        "OCR H415 1.4"
+      ],
+      "essentialPoints": [
+        "Criminal legal aid: the means test and the interests of justice test"
+      ],
+      "practicalIds": [],
+      "conceptId": "law:1_4_access_to_justice_and_funding:criminal_legal_aid_the_means_test_and_the_interests_of_justice_test"
+    },
+    {
+      "id": "TB_REM_GENERAL_p2",
+      "label": "General damages: future loss of earnings",
+      "difficulty": 0.35,
+      "kind": "concept",
+      "subtopic": "4.7 Remedies in tort",
+      "theme": "Theme 4 - The law of tort: negligence, occupiers, land, vicarious liability, defences and remedies",
+      "objective": "Understand and apply: General damages: future loss of earnings",
+      "specRefs": [
+        "OCR H415 4.7"
+      ],
+      "essentialPoints": [
+        "General damages: future loss of earnings"
+      ],
+      "practicalIds": [],
+      "conceptId": "law:4_7_remedies_in_tort:general_damages_future_loss_of_earnings"
+    },
+    {
+      "id": "CT_ITT_p2",
+      "label": "Invitation to treat: self-service shelf displays are not offers (Pharmaceutical Society of GB v Boots)",
+      "difficulty": 0.4,
+      "kind": "concept",
+      "subtopic": "7.2 Formation of a contract",
+      "theme": "Theme 7 - The law of contract (option): formation, terms, vitiating factors, discharge and remedies",
+      "objective": "Understand and apply: Invitation to treat: self-service shelf displays are not offers (Pharmaceutical Society of GB v Boots)",
+      "specRefs": [
+        "OCR H415 7.2"
+      ],
+      "essentialPoints": [
+        "Invitation to treat: self-service shelf displays are not offers (Pharmaceutical Society of GB v Boots)"
+      ],
+      "practicalIds": [],
+      "conceptId": "law:7_2_formation_of_a_contract:invitation_to_treat_self_service_shelf_displays_are_not_offers_pharmaceutical_society_of_gb_v_boots_"
+    },
+    {
+      "id": "CT_ITT_p3",
+      "label": "Invitation to treat: a statement of willingness to negotiate is not an offer (Gibson v Manchester CC)",
+      "difficulty": 0.4,
+      "kind": "concept",
+      "subtopic": "7.2 Formation of a contract",
+      "theme": "Theme 7 - The law of contract (option): formation, terms, vitiating factors, discharge and remedies",
+      "objective": "Understand and apply: Invitation to treat: a statement of willingness to negotiate is not an offer (Gibson v Manchester CC)",
+      "specRefs": [
+        "OCR H415 7.2"
+      ],
+      "essentialPoints": [
+        "Invitation to treat: a statement of willingness to negotiate is not an offer (Gibson v Manchester CC)"
+      ],
+      "practicalIds": [],
+      "conceptId": "law:7_2_formation_of_a_contract:invitation_to_treat_a_statement_of_willingness_to_negotiate_is_not_an_offer_gibson_v_manchester_cc_"
+    },
+    {
+      "id": "HR_art6_elements_p2",
+      "label": "Article 6 elements: a hearing within a reasonable time and the presumption of innocence",
+      "difficulty": 0.45,
+      "kind": "concept",
+      "subtopic": "6.3 Key provisions of the European Convention on Human Rights",
+      "theme": "Theme 6 - Human rights law (option): protection, Convention rights and restrictions",
+      "objective": "Understand and apply: Article 6 elements: a hearing within a reasonable time and the presumption of innocence",
+      "specRefs": [
+        "OCR H415 6.3"
+      ],
+      "essentialPoints": [
+        "Article 6 elements: a hearing within a reasonable time and the presumption of innocence"
+      ],
+      "practicalIds": [],
+      "conceptId": "law:6_3_key_provisions_of_the_european_convention_on_human_rights:article_6_elements_a_hearing_within_a_reasonable_time_and_the_presumption_of_innocence"
+    },
+    {
+      "id": "LA_AID_INTRINSIC_p2",
+      "label": "Intrinsic aids: definition sections and schedules",
+      "difficulty": 0.25,
+      "kind": "concept",
+      "subtopic": "3.3 Statutory interpretation",
+      "theme": "Theme 3 - Law making: Parliament, delegated legislation, interpretation, precedent and reform",
+      "objective": "Understand and apply: Intrinsic aids: definition sections and schedules",
+      "specRefs": [
+        "OCR H415 3.3"
+      ],
+      "essentialPoints": [
+        "Intrinsic aids: definition sections and schedules"
+      ],
+      "practicalIds": [],
+      "conceptId": "law:3_3_statutory_interpretation:intrinsic_aids_definition_sections_and_schedules"
+    },
+    {
+      "id": "LS_SENT_COMMUNITY_p2",
+      "label": "Community sentence requirement: curfew",
+      "difficulty": 0.3,
+      "kind": "concept",
+      "subtopic": "1.2 Criminal courts, sentencing and lay people",
+      "theme": "Theme 1 - The legal system: courts, legal personnel and access to justice",
+      "objective": "Understand and apply: Community sentence requirement: curfew",
+      "specRefs": [
+        "OCR H415 1.2"
+      ],
+      "essentialPoints": [
+        "Community sentence requirement: curfew"
+      ],
+      "practicalIds": [],
+      "conceptId": "law:1_2_criminal_courts_sentencing_and_lay_people:community_sentence_requirement_curfew"
+    },
+    {
+      "id": "LS_SENT_COMMUNITY_p3",
+      "label": "Community sentence requirement: rehabilitation activity",
+      "difficulty": 0.3,
+      "kind": "concept",
+      "subtopic": "1.2 Criminal courts, sentencing and lay people",
+      "theme": "Theme 1 - The legal system: courts, legal personnel and access to justice",
+      "objective": "Understand and apply: Community sentence requirement: rehabilitation activity",
+      "specRefs": [
+        "OCR H415 1.2"
+      ],
+      "essentialPoints": [
+        "Community sentence requirement: rehabilitation activity"
+      ],
+      "practicalIds": [],
+      "conceptId": "law:1_2_criminal_courts_sentencing_and_lay_people:community_sentence_requirement_rehabilitation_activity"
+    },
+    {
+      "id": "LS_JUDGE_ROLE_p2",
+      "label": "Role of the judiciary: sentencing and developing precedent",
+      "difficulty": 0.3,
+      "kind": "concept",
+      "subtopic": "1.3 Legal personnel and the judiciary",
+      "theme": "Theme 1 - The legal system: courts, legal personnel and access to justice",
+      "objective": "Understand and apply: Role of the judiciary: sentencing and developing precedent",
+      "specRefs": [
+        "OCR H415 1.3"
+      ],
+      "essentialPoints": [
+        "Role of the judiciary: sentencing and developing precedent"
+      ],
+      "practicalIds": [],
+      "conceptId": "law:1_3_legal_personnel_and_the_judiciary:role_of_the_judiciary_sentencing_and_developing_precedent"
+    },
+    {
+      "id": "LB_HIER_p2",
+      "label": "Hierarchy of the courts: the High Court and the Crown Court",
+      "difficulty": 0.3,
+      "kind": "concept",
+      "subtopic": "3.4 Judicial precedent",
+      "theme": "Theme 3 - Law making: Parliament, delegated legislation, interpretation, precedent and reform",
+      "objective": "Understand and apply: Hierarchy of the courts: the High Court and the Crown Court",
+      "specRefs": [
+        "OCR H415 3.4"
+      ],
+      "essentialPoints": [
+        "Hierarchy of the courts: the High Court and the Crown Court"
+      ],
+      "practicalIds": [],
+      "conceptId": "law:3_4_judicial_precedent:hierarchy_of_the_courts_the_high_court_and_the_crown_court"
+    },
+    {
+      "id": "LB_HIER_p3",
+      "label": "Hierarchy of the courts: the Magistrates' Court and the County Court",
+      "difficulty": 0.3,
+      "kind": "concept",
+      "subtopic": "3.4 Judicial precedent",
+      "theme": "Theme 3 - Law making: Parliament, delegated legislation, interpretation, precedent and reform",
+      "objective": "Understand and apply: Hierarchy of the courts: the Magistrates' Court and the County Court",
+      "specRefs": [
+        "OCR H415 3.4"
+      ],
+      "essentialPoints": [
+        "Hierarchy of the courts: the Magistrates' Court and the County Court"
+      ],
+      "practicalIds": [],
+      "conceptId": "law:3_4_judicial_precedent:hierarchy_of_the_courts_the_magistrates_court_and_the_county_court"
+    },
+    {
+      "id": "LR_NEED_p2",
+      "label": "Reasons law reform is needed: gaps, inconsistencies and outdated rules must be addressed",
+      "difficulty": 0.25,
+      "kind": "concept",
+      "subtopic": "3.5 Law reform",
+      "theme": "Theme 3 - Law making: Parliament, delegated legislation, interpretation, precedent and reform",
+      "objective": "Understand and apply: Reasons law reform is needed: gaps, inconsistencies and outdated rules must be addressed",
+      "specRefs": [
+        "OCR H415 3.5"
+      ],
+      "essentialPoints": [
+        "Reasons law reform is needed: gaps, inconsistencies and outdated rules must be addressed"
+      ],
+      "practicalIds": [],
+      "conceptId": "law:3_5_law_reform:reasons_law_reform_is_needed_gaps_inconsistencies_and_outdated_rules_must_be_addressed"
+    },
+    {
+      "id": "CT_EXCLUSION_INCORP_p2",
+      "label": "Exclusion clause incorporation by notice before or at contract formation (Olley v Marlborough Court, Thornton v Shoe Lane Parking)",
+      "difficulty": 0.5,
+      "kind": "concept",
+      "subtopic": "7.3 Terms of a contract",
+      "theme": "Theme 7 - The law of contract (option): formation, terms, vitiating factors, discharge and remedies",
+      "objective": "Understand and apply: Exclusion clause incorporation by notice before or at contract formation (Olley v Marlborough Court, Thornton v Shoe Lane Parking)",
+      "specRefs": [
+        "OCR H415 7.3"
+      ],
+      "essentialPoints": [
+        "Exclusion clause incorporation by notice before or at contract formation (Olley v Marlborough Court, Thornton v Shoe Lane Parking)"
+      ],
+      "practicalIds": [],
+      "conceptId": "law:7_3_terms_of_a_contract:exclusion_clause_incorporation_by_notice_before_or_at_contract_formation_olley_v_marlborough_court_thornton_v_shoe_lane_parking_"
+    },
+    {
+      "id": "CT_EXCLUSION_INCORP_p3",
+      "label": "Exclusion clause incorporation by course of dealing",
+      "difficulty": 0.5,
+      "kind": "concept",
+      "subtopic": "7.3 Terms of a contract",
+      "theme": "Theme 7 - The law of contract (option): formation, terms, vitiating factors, discharge and remedies",
+      "objective": "Understand and apply: Exclusion clause incorporation by course of dealing",
+      "specRefs": [
+        "OCR H415 7.3"
+      ],
+      "essentialPoints": [
+        "Exclusion clause incorporation by course of dealing"
+      ],
+      "practicalIds": [],
+      "conceptId": "law:7_3_terms_of_a_contract:exclusion_clause_incorporation_by_course_of_dealing"
+    },
+    {
+      "id": "CA_THEORY_p2",
+      "label": "Purposes of punishment: deterrence and protection of the public",
+      "difficulty": 0.4,
+      "kind": "concept",
+      "subtopic": "2.1 Rules and theory of criminal law",
+      "theme": "Theme 2 - Criminal law: general principles, offences and defences",
+      "objective": "Understand and apply: Purposes of punishment: deterrence and protection of the public",
+      "specRefs": [
+        "OCR H415 2.1"
+      ],
+      "essentialPoints": [
+        "Purposes of punishment: deterrence and protection of the public"
+      ],
+      "practicalIds": [],
+      "conceptId": "law:2_1_rules_and_theory_of_criminal_law:purposes_of_punishment_deterrence_and_protection_of_the_public"
+    },
+    {
+      "id": "CA_THEORY_p3",
+      "label": "Purposes of punishment: rehabilitation",
+      "difficulty": 0.4,
+      "kind": "concept",
+      "subtopic": "2.1 Rules and theory of criminal law",
+      "theme": "Theme 2 - Criminal law: general principles, offences and defences",
+      "objective": "Understand and apply: Purposes of punishment: rehabilitation",
+      "specRefs": [
+        "OCR H415 2.1"
+      ],
+      "essentialPoints": [
+        "Purposes of punishment: rehabilitation"
+      ],
+      "practicalIds": [],
+      "conceptId": "law:2_1_rules_and_theory_of_criminal_law:purposes_of_punishment_rehabilitation"
+    },
+    {
+      "id": "LR_LAWCOM_FUNC_p2",
+      "label": "Law Commission's functions: repeal of obsolete law and reducing the number of separate statutes",
+      "difficulty": 0.35,
+      "kind": "concept",
+      "subtopic": "3.5 Law reform",
+      "theme": "Theme 3 - Law making: Parliament, delegated legislation, interpretation, precedent and reform",
+      "objective": "Understand and apply: Law Commission's functions: repeal of obsolete law and reducing the number of separate statutes",
+      "specRefs": [
+        "OCR H415 3.5"
+      ],
+      "essentialPoints": [
+        "Law Commission's functions: repeal of obsolete law and reducing the number of separate statutes"
+      ],
+      "practicalIds": [],
+      "conceptId": "law:3_5_law_reform:law_commission_s_functions_repeal_of_obsolete_law_and_reducing_the_number_of_separate_statutes"
+    },
+    {
+      "id": "CB_INTOX_SPECGEN_p2",
+      "label": "Intoxication: basic intent offences are satisfied by recklessness (DPP v Majewski (1977))",
+      "difficulty": 0.6,
+      "kind": "concept",
+      "subtopic": "2.6 Mental capacity defences",
+      "theme": "Theme 2 - Criminal law: general principles, offences and defences",
+      "objective": "Understand and apply: Intoxication: basic intent offences are satisfied by recklessness (DPP v Majewski (1977))",
+      "specRefs": [
+        "OCR H415 2.6"
+      ],
+      "essentialPoints": [
+        "Intoxication: basic intent offences are satisfied by recklessness (DPP v Majewski (1977))"
+      ],
+      "practicalIds": [],
+      "conceptId": "law:2_6_mental_capacity_defences:intoxication_basic_intent_offences_are_satisfied_by_recklessness_dpp_v_majewski_1977_"
+    },
+    {
+      "id": "CT_CRA_TERMS_p2",
+      "label": "Consumer Rights Act 2015: goods must be fit for a particular purpose (s.10)",
+      "difficulty": 0.45,
+      "kind": "concept",
+      "subtopic": "7.3 Terms of a contract",
+      "theme": "Theme 7 - The law of contract (option): formation, terms, vitiating factors, discharge and remedies",
+      "objective": "Understand and apply: Consumer Rights Act 2015: goods must be fit for a particular purpose (s.10)",
+      "specRefs": [
+        "OCR H415 7.3"
+      ],
+      "essentialPoints": [
+        "Consumer Rights Act 2015: goods must be fit for a particular purpose (s.10)"
+      ],
+      "practicalIds": [],
+      "conceptId": "law:7_3_terms_of_a_contract:consumer_rights_act_2015_goods_must_be_fit_for_a_particular_purpose_s_10_"
+    },
+    {
+      "id": "CT_CRA_TERMS_p3",
+      "label": "Consumer Rights Act 2015: goods must match their description (s.11)",
+      "difficulty": 0.45,
+      "kind": "concept",
+      "subtopic": "7.3 Terms of a contract",
+      "theme": "Theme 7 - The law of contract (option): formation, terms, vitiating factors, discharge and remedies",
+      "objective": "Understand and apply: Consumer Rights Act 2015: goods must match their description (s.11)",
+      "specRefs": [
+        "OCR H415 7.3"
+      ],
+      "essentialPoints": [
+        "Consumer Rights Act 2015: goods must match their description (s.11)"
+      ],
+      "practicalIds": [],
+      "conceptId": "law:7_3_terms_of_a_contract:consumer_rights_act_2015_goods_must_match_their_description_s_11_"
+    },
+    {
+      "id": "CT_MISREP_REMEDIES_p2",
+      "label": "Remedies for misrepresentation: damages for fraudulent (deceit) and negligent (s.2(1)) misrepresentation",
+      "difficulty": 0.5,
+      "kind": "concept",
+      "subtopic": "7.4 Vitiating factors",
+      "theme": "Theme 7 - The law of contract (option): formation, terms, vitiating factors, discharge and remedies",
+      "objective": "Understand and apply: Remedies for misrepresentation: damages for fraudulent (deceit) and negligent (s.2(1)) misrepresentation",
+      "specRefs": [
+        "OCR H415 7.4"
+      ],
+      "essentialPoints": [
+        "Remedies for misrepresentation: damages for fraudulent (deceit) and negligent (s.2(1)) misrepresentation"
+      ],
+      "practicalIds": [],
+      "conceptId": "law:7_4_vitiating_factors:remedies_for_misrepresentation_damages_for_fraudulent_deceit_and_negligent_s_2_1_misrepresentation"
+    },
+    {
+      "id": "CT_MISREP_REMEDIES_p3",
+      "label": "Remedies for misrepresentation: damages in lieu of rescission under s.2(2)",
+      "difficulty": 0.5,
+      "kind": "concept",
+      "subtopic": "7.4 Vitiating factors",
+      "theme": "Theme 7 - The law of contract (option): formation, terms, vitiating factors, discharge and remedies",
+      "objective": "Understand and apply: Remedies for misrepresentation: damages in lieu of rescission under s.2(2)",
+      "specRefs": [
+        "OCR H415 7.4"
+      ],
+      "essentialPoints": [
+        "Remedies for misrepresentation: damages in lieu of rescission under s.2(2)"
+      ],
+      "practicalIds": [],
+      "conceptId": "law:7_4_vitiating_factors:remedies_for_misrepresentation_damages_in_lieu_of_rescission_under_s_2_2_"
+    },
+    {
+      "id": "CT_CRA_REMEDIES_GOODS_p2",
+      "label": "Consumer Rights Act 2015: the right to repair or replacement",
+      "difficulty": 0.5,
+      "kind": "concept",
+      "subtopic": "7.6 Remedies for breach of contract",
+      "theme": "Theme 7 - The law of contract (option): formation, terms, vitiating factors, discharge and remedies",
+      "objective": "Understand and apply: Consumer Rights Act 2015: the right to repair or replacement",
+      "specRefs": [
+        "OCR H415 7.6"
+      ],
+      "essentialPoints": [
+        "Consumer Rights Act 2015: the right to repair or replacement"
+      ],
+      "practicalIds": [],
+      "conceptId": "law:7_6_remedies_for_breach_of_contract:consumer_rights_act_2015_the_right_to_repair_or_replacement"
+    },
+    {
+      "id": "CT_CRA_REMEDIES_GOODS_p3",
+      "label": "Consumer Rights Act 2015: the right to a price reduction or final right to reject",
+      "difficulty": 0.5,
+      "kind": "concept",
+      "subtopic": "7.6 Remedies for breach of contract",
+      "theme": "Theme 7 - The law of contract (option): formation, terms, vitiating factors, discharge and remedies",
+      "objective": "Understand and apply: Consumer Rights Act 2015: the right to a price reduction or final right to reject",
+      "specRefs": [
+        "OCR H415 7.6"
+      ],
+      "essentialPoints": [
+        "Consumer Rights Act 2015: the right to a price reduction or final right to reject"
+      ],
+      "practicalIds": [],
+      "conceptId": "law:7_6_remedies_for_breach_of_contract:consumer_rights_act_2015_the_right_to_a_price_reduction_or_final_right_to_reject"
+    },
+    {
+      "id": "LA_AID_EXTRINSIC_OTHER_p2",
+      "label": "Extrinsic aids: dictionaries from the time of enactment",
+      "difficulty": 0.2,
+      "kind": "concept",
+      "subtopic": "3.3 Statutory interpretation",
+      "theme": "Theme 3 - Law making: Parliament, delegated legislation, interpretation, precedent and reform",
+      "objective": "Understand and apply: Extrinsic aids: dictionaries from the time of enactment",
+      "specRefs": [
+        "OCR H415 3.3"
+      ],
+      "essentialPoints": [
+        "Extrinsic aids: dictionaries from the time of enactment"
+      ],
+      "practicalIds": [],
+      "conceptId": "law:3_3_statutory_interpretation:extrinsic_aids_dictionaries_from_the_time_of_enactment"
+    },
+    {
+      "id": "CB_CONSENT_EXCEPTIONS_p2",
+      "label": "Consent exceptions: surgery and tattooing/body piercing (R v Wilson (1996), R v Jones (1986))",
+      "difficulty": 0.55,
+      "kind": "application",
+      "subtopic": "2.7 General defences",
+      "theme": "Theme 2 - Criminal law: general principles, offences and defences",
+      "objective": "Understand and apply: Consent exceptions: surgery and tattooing/body piercing (R v Wilson (1996), R v Jones (1986))",
+      "specRefs": [
+        "OCR H415 2.7"
+      ],
+      "essentialPoints": [
+        "Consent exceptions: surgery and tattooing/body piercing (R v Wilson (1996), R v Jones (1986))"
+      ],
+      "practicalIds": [],
+      "conceptId": "law:2_7_general_defences:consent_exceptions_surgery_and_tattooing_body_piercing_r_v_wilson_1996_r_v_jones_1986_"
+    },
+    {
+      "id": "TB_VL_INDEPCONTRACTOR_EXCEPTIONS_p2",
+      "label": "Independent contractors: liability for extra-hazardous activities",
+      "difficulty": 0.5,
+      "kind": "concept",
+      "subtopic": "4.5 Vicarious liability",
+      "theme": "Theme 4 - The law of tort: negligence, occupiers, land, vicarious liability, defences and remedies",
+      "objective": "Understand and apply: Independent contractors: liability for extra-hazardous activities",
+      "specRefs": [
+        "OCR H415 4.5"
+      ],
+      "essentialPoints": [
+        "Independent contractors: liability for extra-hazardous activities"
+      ],
+      "practicalIds": [],
+      "conceptId": "law:4_5_vicarious_liability:independent_contractors_liability_for_extra_hazardous_activities"
+    },
+    {
+      "id": "TB_VL_INDEPCONTRACTOR_EXCEPTIONS_p3",
+      "label": "Independent contractors: liability for the employer's own negligence in selection (Honeywill and Stein v Larkin Bros)",
+      "difficulty": 0.5,
+      "kind": "concept",
+      "subtopic": "4.5 Vicarious liability",
+      "theme": "Theme 4 - The law of tort: negligence, occupiers, land, vicarious liability, defences and remedies",
+      "objective": "Understand and apply: Independent contractors: liability for the employer's own negligence in selection (Honeywill and Stein v Larkin Bros)",
+      "specRefs": [
+        "OCR H415 4.5"
+      ],
+      "essentialPoints": [
+        "Independent contractors: liability for the employer's own negligence in selection (Honeywill and Stein v Larkin Bros)"
+      ],
+      "practicalIds": [],
+      "conceptId": "law:4_5_vicarious_liability:independent_contractors_liability_for_the_employer_s_own_negligence_in_selection_honeywill_and_stein_v_larkin_bros_"
+    },
+    {
+      "id": "NL_ROL_DICEY_p2",
+      "label": "Dicey's rule of law: equality before the law",
+      "difficulty": 0.45,
+      "kind": "concept",
+      "subtopic": "5.1 Law and rules",
+      "theme": "Theme 5 - The nature of law: rules, morality, justice, society and technology",
+      "objective": "Understand and apply: Dicey's rule of law: equality before the law",
+      "specRefs": [
+        "OCR H415 5.1"
+      ],
+      "essentialPoints": [
+        "Dicey's rule of law: equality before the law"
+      ],
+      "practicalIds": [],
+      "conceptId": "law:5_1_law_and_rules:dicey_s_rule_of_law_equality_before_the_law"
+    },
+    {
+      "id": "NL_ROL_DICEY_p3",
+      "label": "Dicey's rule of law: constitutional rights arise from the ordinary law",
+      "difficulty": 0.45,
+      "kind": "concept",
+      "subtopic": "5.1 Law and rules",
+      "theme": "Theme 5 - The nature of law: rules, morality, justice, society and technology",
+      "objective": "Understand and apply: Dicey's rule of law: constitutional rights arise from the ordinary law",
+      "specRefs": [
+        "OCR H415 5.1"
+      ],
+      "essentialPoints": [
+        "Dicey's rule of law: constitutional rights arise from the ordinary law"
+      ],
+      "practicalIds": [],
+      "conceptId": "law:5_1_law_and_rules:dicey_s_rule_of_law_constitutional_rights_arise_from_the_ordinary_law"
+    },
+    {
+      "id": "HR_restrictions_test_p2",
+      "label": "Test for permitted restrictions: necessary in a democratic society and proportionate",
+      "difficulty": 0.5,
+      "kind": "concept",
+      "subtopic": "6.3 Key provisions of the European Convention on Human Rights",
+      "theme": "Theme 6 - Human rights law (option): protection, Convention rights and restrictions",
+      "objective": "Understand and apply: Test for permitted restrictions: necessary in a democratic society and proportionate",
+      "specRefs": [
+        "OCR H415 6.3"
+      ],
+      "essentialPoints": [
+        "Test for permitted restrictions: necessary in a democratic society and proportionate"
+      ],
+      "practicalIds": [],
+      "conceptId": "law:6_3_key_provisions_of_the_european_convention_on_human_rights:test_for_permitted_restrictions_necessary_in_a_democratic_society_and_proportionate"
+    },
+    {
+      "id": "CT_PRIVITY_COMMON_LAW_EXCEPTIONS_p2",
+      "label": "Exception to privity: assignment",
+      "difficulty": 0.5,
+      "kind": "concept",
+      "subtopic": "7.2 Formation of a contract",
+      "theme": "Theme 7 - The law of contract (option): formation, terms, vitiating factors, discharge and remedies",
+      "objective": "Understand and apply: Exception to privity: assignment",
+      "specRefs": [
+        "OCR H415 7.2"
+      ],
+      "essentialPoints": [
+        "Exception to privity: assignment"
+      ],
+      "practicalIds": [],
+      "conceptId": "law:7_2_formation_of_a_contract:exception_to_privity_assignment"
+    },
+    {
+      "id": "CT_PRIVITY_COMMON_LAW_EXCEPTIONS_p3",
+      "label": "Exception to privity: collateral contracts (Shanklin Pier v Detel Products)",
+      "difficulty": 0.5,
+      "kind": "concept",
+      "subtopic": "7.2 Formation of a contract",
+      "theme": "Theme 7 - The law of contract (option): formation, terms, vitiating factors, discharge and remedies",
+      "objective": "Understand and apply: Exception to privity: collateral contracts (Shanklin Pier v Detel Products)",
+      "specRefs": [
+        "OCR H415 7.2"
+      ],
+      "essentialPoints": [
+        "Exception to privity: collateral contracts (Shanklin Pier v Detel Products)"
+      ],
+      "practicalIds": [],
+      "conceptId": "law:7_2_formation_of_a_contract:exception_to_privity_collateral_contracts_shanklin_pier_v_detel_products_"
+    },
+    {
+      "id": "NL_JUSTICE_PROC_FAILURE_p2",
+      "label": "Failures of justice: delays",
+      "difficulty": 0.45,
+      "kind": "evaluation",
+      "subtopic": "5.3 Law and justice",
+      "theme": "Theme 5 - The nature of law: rules, morality, justice, society and technology",
+      "objective": "Understand and apply: Failures of justice: delays",
+      "specRefs": [
+        "OCR H415 5.3"
+      ],
+      "essentialPoints": [
+        "Failures of justice: delays"
+      ],
+      "practicalIds": [],
+      "conceptId": "law:5_3_law_and_justice:failures_of_justice_delays"
+    },
+    {
+      "id": "NL_JUSTICE_PROC_FAILURE_p3",
+      "label": "Failures of justice: wrongful convictions",
+      "difficulty": 0.45,
+      "kind": "evaluation",
+      "subtopic": "5.3 Law and justice",
+      "theme": "Theme 5 - The nature of law: rules, morality, justice, society and technology",
+      "objective": "Understand and apply: Failures of justice: wrongful convictions",
+      "specRefs": [
+        "OCR H415 5.3"
+      ],
+      "essentialPoints": [
+        "Failures of justice: wrongful convictions"
+      ],
+      "practicalIds": [],
+      "conceptId": "law:5_3_law_and_justice:failures_of_justice_wrongful_convictions"
+    },
+    {
+      "id": "NL_JUSTICE_PROC_SUCCESS_p2",
+      "label": "Ways the legal system achieves justice: legal aid and precedent providing consistency",
+      "difficulty": 0.4,
+      "kind": "evaluation",
+      "subtopic": "5.3 Law and justice",
+      "theme": "Theme 5 - The nature of law: rules, morality, justice, society and technology",
+      "objective": "Understand and apply: Ways the legal system achieves justice: legal aid and precedent providing consistency",
+      "specRefs": [
+        "OCR H415 5.3"
+      ],
+      "essentialPoints": [
+        "Ways the legal system achieves justice: legal aid and precedent providing consistency"
+      ],
+      "practicalIds": [],
+      "conceptId": "law:5_3_law_and_justice:ways_the_legal_system_achieves_justice_legal_aid_and_precedent_providing_consistency"
+    },
+    {
+      "id": "LB_PERSUASIVE_p2",
+      "label": "Persuasive precedent: lower court decisions and decisions of other jurisdictions or the Privy Council",
+      "difficulty": 0.3,
+      "kind": "concept",
+      "subtopic": "3.4 Judicial precedent",
+      "theme": "Theme 3 - Law making: Parliament, delegated legislation, interpretation, precedent and reform",
+      "objective": "Understand and apply: Persuasive precedent: lower court decisions and decisions of other jurisdictions or the Privy Council",
+      "specRefs": [
+        "OCR H415 3.4"
+      ],
+      "essentialPoints": [
+        "Persuasive precedent: lower court decisions and decisions of other jurisdictions or the Privy Council"
+      ],
+      "practicalIds": [],
+      "conceptId": "law:3_4_judicial_precedent:persuasive_precedent_lower_court_decisions_and_decisions_of_other_jurisdictions_or_the_privy_council"
+    },
+    {
+      "id": "HR_jr_standing_procedure_p2",
+      "label": "Judicial review procedure: time limits and remedies (quashing, mandatory and prohibiting orders)",
+      "difficulty": 0.5,
+      "kind": "procedure",
+      "subtopic": "6.5 Enforcing human rights",
+      "theme": "Theme 6 - Human rights law (option): protection, Convention rights and restrictions",
+      "objective": "Understand and apply: Judicial review procedure: time limits and remedies (quashing, mandatory and prohibiting orders)",
+      "specRefs": [
+        "OCR H415 6.5"
+      ],
+      "essentialPoints": [
+        "Judicial review procedure: time limits and remedies (quashing, mandatory and prohibiting orders)"
+      ],
+      "practicalIds": [],
+      "conceptId": "law:6_5_enforcing_human_rights:judicial_review_procedure_time_limits_and_remedies_quashing_mandatory_and_prohibiting_orders_"
+    },
+    {
+      "id": "LS_CIV_LEGALAID_SCOPE_p2",
+      "label": "Civil legal aid: scope limited mainly to specific categories (family and domestic abuse, housing, asylum)",
+      "difficulty": 0.4,
+      "kind": "concept",
+      "subtopic": "1.4 Access to justice and funding",
+      "theme": "Theme 1 - The legal system: courts, legal personnel and access to justice",
+      "objective": "Understand and apply: Civil legal aid: scope limited mainly to specific categories (family and domestic abuse, housing, asylum)",
+      "specRefs": [
+        "OCR H415 1.4"
+      ],
+      "essentialPoints": [
+        "Civil legal aid: scope limited mainly to specific categories (family and domestic abuse, housing, asylum)"
+      ],
+      "practicalIds": [],
+      "conceptId": "law:1_4_access_to_justice_and_funding:civil_legal_aid_scope_limited_mainly_to_specific_categories_family_and_domestic_abuse_housing_asylum_"
+    },
+    {
+      "id": "TB_VL_REQ_p2",
+      "label": "Vicarious liability: an employment relationship must exist",
+      "difficulty": 0.3,
+      "kind": "concept",
+      "subtopic": "4.5 Vicarious liability",
+      "theme": "Theme 4 - The law of tort: negligence, occupiers, land, vicarious liability, defences and remedies",
+      "objective": "Understand and apply: Vicarious liability: an employment relationship must exist",
+      "specRefs": [
+        "OCR H415 4.5"
+      ],
+      "essentialPoints": [
+        "Vicarious liability: an employment relationship must exist"
+      ],
+      "practicalIds": [],
+      "conceptId": "law:4_5_vicarious_liability:vicarious_liability_an_employment_relationship_must_exist"
+    },
+    {
+      "id": "TB_VL_REQ_p3",
+      "label": "Vicarious liability: a close connection to the employment",
+      "difficulty": 0.3,
+      "kind": "concept",
+      "subtopic": "4.5 Vicarious liability",
+      "theme": "Theme 4 - The law of tort: negligence, occupiers, land, vicarious liability, defences and remedies",
+      "objective": "Understand and apply: Vicarious liability: a close connection to the employment",
+      "specRefs": [
+        "OCR H415 4.5"
+      ],
+      "essentialPoints": [
+        "Vicarious liability: a close connection to the employment"
+      ],
+      "practicalIds": [],
+      "conceptId": "law:4_5_vicarious_liability:vicarious_liability_a_close_connection_to_the_employment"
+    },
+    {
+      "id": "CB_ATT_AR_CASES_p2",
+      "label": "Attempts actus reus: R v Geddes (1996), mere preparation",
+      "difficulty": 0.55,
+      "kind": "application",
+      "subtopic": "2.8 Preliminary offences",
+      "theme": "Theme 2 - Criminal law: general principles, offences and defences",
+      "objective": "Understand and apply: Attempts actus reus: R v Geddes (1996), mere preparation",
+      "specRefs": [
+        "OCR H415 2.8"
+      ],
+      "essentialPoints": [
+        "Attempts actus reus: R v Geddes (1996), mere preparation"
+      ],
+      "practicalIds": [],
+      "conceptId": "law:2_8_preliminary_offences:attempts_actus_reus_r_v_geddes_1996_mere_preparation"
+    },
+    {
+      "id": "CB_ATT_AR_CASES_p3",
+      "label": "Attempts actus reus: R v Campbell (1991)",
+      "difficulty": 0.55,
+      "kind": "application",
+      "subtopic": "2.8 Preliminary offences",
+      "theme": "Theme 2 - Criminal law: general principles, offences and defences",
+      "objective": "Understand and apply: Attempts actus reus: R v Campbell (1991)",
+      "specRefs": [
+        "OCR H415 2.8"
+      ],
+      "essentialPoints": [
+        "Attempts actus reus: R v Campbell (1991)"
+      ],
+      "practicalIds": [],
+      "conceptId": "law:2_8_preliminary_offences:attempts_actus_reus_r_v_campbell_1991_"
+    },
+    {
+      "id": "NL_CYBERCRIME_DEF_p2",
+      "label": "Cyber-crime: fraud, identity theft and other online offences",
+      "difficulty": 0.35,
+      "kind": "concept",
+      "subtopic": "5.5 Law and technology",
+      "theme": "Theme 5 - The nature of law: rules, morality, justice, society and technology",
+      "objective": "Understand and apply: Cyber-crime: fraud, identity theft and other online offences",
+      "specRefs": [
+        "OCR H415 5.5"
+      ],
+      "essentialPoints": [
+        "Cyber-crime: fraud, identity theft and other online offences"
+      ],
+      "practicalIds": [],
+      "conceptId": "law:5_5_law_and_technology:cyber_crime_fraud_identity_theft_and_other_online_offences"
     }
   ],
   "edges": [
@@ -17834,6 +18755,751 @@
       "from": "LB_REVERSE",
       "to": "SK_PREC_APPLY",
       "difficulty": 0.45
+    },
+    {
+      "from": "LS_MAG_QUAL_p2",
+      "to": "LS_MAG_SELECT",
+      "difficulty": 0.25
+    },
+    {
+      "from": "LS_MAG_QUAL_p2",
+      "to": "LS_EV_MAG_REPRESENT",
+      "difficulty": 0.3
+    },
+    {
+      "from": "LS_MAG_QUAL",
+      "to": "LS_MAG_QUAL_p2",
+      "difficulty": 0.25
+    },
+    {
+      "from": "LS_SOLICITOR_p2",
+      "to": "LS_SOLICITOR_REG",
+      "difficulty": 0.2
+    },
+    {
+      "from": "LS_SOLICITOR_p2",
+      "to": "LS_FUSION",
+      "difficulty": 0.3
+    },
+    {
+      "from": "LS_SOLICITOR_p2",
+      "to": "LS_CILEX",
+      "difficulty": 0.2
+    },
+    {
+      "from": "LS_SOLICITOR",
+      "to": "LS_SOLICITOR_p2",
+      "difficulty": 0.25
+    },
+    {
+      "from": "LS_BARRISTER_p2",
+      "to": "LS_BARRISTER_REG",
+      "difficulty": 0.2
+    },
+    {
+      "from": "LS_BARRISTER_p2",
+      "to": "LS_FUSION",
+      "difficulty": 0.3
+    },
+    {
+      "from": "LS_BARRISTER",
+      "to": "LS_BARRISTER_p2",
+      "difficulty": 0.25
+    },
+    {
+      "from": "LS_CILEX_p2",
+      "to": "LS_EV_CILEX_ACCESS",
+      "difficulty": 0.3
+    },
+    {
+      "from": "LS_CILEX",
+      "to": "LS_CILEX_p2",
+      "difficulty": 0.25
+    },
+    {
+      "from": "CB_SD_STATUTE_p2",
+      "to": "CB_SD_TRIGGER",
+      "difficulty": 0.25
+    },
+    {
+      "from": "CB_SD_STATUTE_p3",
+      "to": "CB_SD_TRIGGER",
+      "difficulty": 0.25
+    },
+    {
+      "from": "CB_SD_STATUTE",
+      "to": "CB_SD_STATUTE_p2",
+      "difficulty": 0.25
+    },
+    {
+      "from": "CB_SD_STATUTE_p2",
+      "to": "CB_SD_STATUTE_p3",
+      "difficulty": 0.25
+    },
+    {
+      "from": "CB_SD_TRIGGER_p2",
+      "to": "CB_SD_SUBJTEST",
+      "difficulty": 0.35
+    },
+    {
+      "from": "CB_SD_TRIGGER",
+      "to": "CB_SD_TRIGGER_p2",
+      "difficulty": 0.25
+    },
+    {
+      "from": "LS_PRETRIAL_p2",
+      "to": "LS_ALLOCATION",
+      "difficulty": 0.3
+    },
+    {
+      "from": "LS_PRETRIAL_p2",
+      "to": "LS_ODR",
+      "difficulty": 0.3
+    },
+    {
+      "from": "LS_PRETRIAL_p2",
+      "to": "LS_EV_COST_CIV",
+      "difficulty": 0.35
+    },
+    {
+      "from": "LS_PRETRIAL_p2",
+      "to": "LS_EV_FORMALITY",
+      "difficulty": 0.3
+    },
+    {
+      "from": "LS_PRETRIAL_p2",
+      "to": "LS_HC_JUR",
+      "difficulty": 0.3
+    },
+    {
+      "from": "LS_PRETRIAL",
+      "to": "LS_PRETRIAL_p2",
+      "difficulty": 0.25
+    },
+    {
+      "from": "LS_CRIM_LEGALAID_p2",
+      "to": "LS_LAA",
+      "difficulty": 0.2
+    },
+    {
+      "from": "LS_CRIM_LEGALAID_p2",
+      "to": "LS_EV_CRIMLEGALAID_ACCESS",
+      "difficulty": 0.4
+    },
+    {
+      "from": "LS_CRIM_LEGALAID",
+      "to": "LS_CRIM_LEGALAID_p2",
+      "difficulty": 0.25
+    },
+    {
+      "from": "TB_REM_GENERAL_p2",
+      "to": "TB_REM_PAINSUFFERING",
+      "difficulty": 0.3
+    },
+    {
+      "from": "TB_REM_GENERAL_p2",
+      "to": "TB_REM_FUTURE_LOSS",
+      "difficulty": 0.4
+    },
+    {
+      "from": "TB_REM_GENERAL",
+      "to": "TB_REM_GENERAL_p2",
+      "difficulty": 0.25
+    },
+    {
+      "from": "CT_ITT_p2",
+      "to": "CT_EVAL_ITT_FLEXIBILITY",
+      "difficulty": 0.4
+    },
+    {
+      "from": "CT_ITT_p3",
+      "to": "CT_EVAL_ITT_FLEXIBILITY",
+      "difficulty": 0.4
+    },
+    {
+      "from": "CT_ITT",
+      "to": "CT_ITT_p2",
+      "difficulty": 0.25
+    },
+    {
+      "from": "CT_ITT_p2",
+      "to": "CT_ITT_p3",
+      "difficulty": 0.25
+    },
+    {
+      "from": "HR_art6_elements",
+      "to": "HR_art6_elements_p2",
+      "difficulty": 0.25
+    },
+    {
+      "from": "LA_AID_INTRINSIC_p2",
+      "to": "LA_AID_LANG_EJUSDEM",
+      "difficulty": 0.3
+    },
+    {
+      "from": "LA_AID_INTRINSIC_p2",
+      "to": "SK_STAT_APPLY",
+      "difficulty": 0.3
+    },
+    {
+      "from": "LA_AID_INTRINSIC_p2",
+      "to": "LA_ADV_INTRINSIC",
+      "difficulty": 0.2
+    },
+    {
+      "from": "LA_AID_INTRINSIC",
+      "to": "LA_AID_INTRINSIC_p2",
+      "difficulty": 0.25
+    },
+    {
+      "from": "LS_SENT_COMMUNITY_p2",
+      "to": "LS_EV_COMMUNITY",
+      "difficulty": 0.35
+    },
+    {
+      "from": "LS_SENT_COMMUNITY_p3",
+      "to": "LS_EV_COMMUNITY",
+      "difficulty": 0.35
+    },
+    {
+      "from": "LS_SENT_COMMUNITY",
+      "to": "LS_SENT_COMMUNITY_p2",
+      "difficulty": 0.25
+    },
+    {
+      "from": "LS_SENT_COMMUNITY_p2",
+      "to": "LS_SENT_COMMUNITY_p3",
+      "difficulty": 0.25
+    },
+    {
+      "from": "LS_JUDGE_ROLE_p2",
+      "to": "LS_JUDGE_RETIRE",
+      "difficulty": 0.2
+    },
+    {
+      "from": "LS_JUDGE_ROLE_p2",
+      "to": "LS_JUDGE_REMOVE",
+      "difficulty": 0.25
+    },
+    {
+      "from": "LS_JUDGE_ROLE",
+      "to": "LS_JUDGE_ROLE_p2",
+      "difficulty": 0.25
+    },
+    {
+      "from": "LB_HIER_p2",
+      "to": "LB_DISTINGUISH",
+      "difficulty": 0.3
+    },
+    {
+      "from": "LB_HIER_p2",
+      "to": "LB_OVERRULE",
+      "difficulty": 0.3
+    },
+    {
+      "from": "LB_HIER_p2",
+      "to": "SK_PREC_APPLY",
+      "difficulty": 0.3
+    },
+    {
+      "from": "LB_HIER_p2",
+      "to": "LB_SC",
+      "difficulty": 0.25
+    },
+    {
+      "from": "LB_HIER_p2",
+      "to": "LB_CA_BOUND",
+      "difficulty": 0.3
+    },
+    {
+      "from": "LB_HIER_p2",
+      "to": "LB_BINDING",
+      "difficulty": 0.3
+    },
+    {
+      "from": "LB_HIER_p2",
+      "to": "LB_PERSUASIVE",
+      "difficulty": 0.3
+    },
+    {
+      "from": "LB_HIER_p2",
+      "to": "LB_REVERSE",
+      "difficulty": 0.3
+    },
+    {
+      "from": "LB_HIER_p3",
+      "to": "LB_DISTINGUISH",
+      "difficulty": 0.3
+    },
+    {
+      "from": "LB_HIER_p3",
+      "to": "LB_OVERRULE",
+      "difficulty": 0.3
+    },
+    {
+      "from": "LB_HIER_p3",
+      "to": "SK_PREC_APPLY",
+      "difficulty": 0.3
+    },
+    {
+      "from": "LB_HIER_p3",
+      "to": "LB_SC",
+      "difficulty": 0.25
+    },
+    {
+      "from": "LB_HIER_p3",
+      "to": "LB_CA_BOUND",
+      "difficulty": 0.3
+    },
+    {
+      "from": "LB_HIER_p3",
+      "to": "LB_BINDING",
+      "difficulty": 0.3
+    },
+    {
+      "from": "LB_HIER_p3",
+      "to": "LB_PERSUASIVE",
+      "difficulty": 0.3
+    },
+    {
+      "from": "LB_HIER_p3",
+      "to": "LB_REVERSE",
+      "difficulty": 0.3
+    },
+    {
+      "from": "LB_HIER",
+      "to": "LB_HIER_p2",
+      "difficulty": 0.25
+    },
+    {
+      "from": "LB_HIER_p2",
+      "to": "LB_HIER_p3",
+      "difficulty": 0.25
+    },
+    {
+      "from": "LR_NEED_p2",
+      "to": "LR_LAWCOM",
+      "difficulty": 0.25
+    },
+    {
+      "from": "LR_NEED_p2",
+      "to": "LR_OTHERBODIES",
+      "difficulty": 0.25
+    },
+    {
+      "from": "LR_NEED",
+      "to": "LR_NEED_p2",
+      "difficulty": 0.25
+    },
+    {
+      "from": "CT_EXCLUSION_INCORP_p2",
+      "to": "CT_EXCLUSION_CONSTRUCTION",
+      "difficulty": 0.35
+    },
+    {
+      "from": "CT_EXCLUSION_INCORP_p3",
+      "to": "CT_EXCLUSION_CONSTRUCTION",
+      "difficulty": 0.35
+    },
+    {
+      "from": "CT_EXCLUSION_INCORP",
+      "to": "CT_EXCLUSION_INCORP_p2",
+      "difficulty": 0.25
+    },
+    {
+      "from": "CT_EXCLUSION_INCORP_p2",
+      "to": "CT_EXCLUSION_INCORP_p3",
+      "difficulty": 0.25
+    },
+    {
+      "from": "CA_THEORY_p2",
+      "to": "CA_MORAL",
+      "difficulty": 0.3
+    },
+    {
+      "from": "CA_THEORY_p2",
+      "to": "CA_HARM",
+      "difficulty": 0.3
+    },
+    {
+      "from": "CA_THEORY_p3",
+      "to": "CA_MORAL",
+      "difficulty": 0.3
+    },
+    {
+      "from": "CA_THEORY_p3",
+      "to": "CA_HARM",
+      "difficulty": 0.3
+    },
+    {
+      "from": "CA_THEORY",
+      "to": "CA_THEORY_p2",
+      "difficulty": 0.25
+    },
+    {
+      "from": "CA_THEORY_p2",
+      "to": "CA_THEORY_p3",
+      "difficulty": 0.25
+    },
+    {
+      "from": "LR_LAWCOM_FUNC_p2",
+      "to": "LR_ADV3",
+      "difficulty": 0.3
+    },
+    {
+      "from": "LR_LAWCOM_FUNC_p2",
+      "to": "LR_ADV4",
+      "difficulty": 0.3
+    },
+    {
+      "from": "LR_LAWCOM_FUNC",
+      "to": "LR_LAWCOM_FUNC_p2",
+      "difficulty": 0.25
+    },
+    {
+      "from": "CB_INTOX_SPECGEN_p2",
+      "to": "CB_INTOX_VOL_SPECIFIC",
+      "difficulty": 0.4
+    },
+    {
+      "from": "CB_INTOX_SPECGEN_p2",
+      "to": "CB_INTOX_VOL_BASIC",
+      "difficulty": 0.4
+    },
+    {
+      "from": "CB_INTOX_SPECGEN_p2",
+      "to": "CB_EVAL_DEF_INTOX_SPECBASIC_UNCLEAR",
+      "difficulty": 0.45
+    },
+    {
+      "from": "CB_INTOX_SPECGEN",
+      "to": "CB_INTOX_SPECGEN_p2",
+      "difficulty": 0.25
+    },
+    {
+      "from": "CT_CRA_TERMS_p2",
+      "to": "CT_CRA_SERVICES",
+      "difficulty": 0.3
+    },
+    {
+      "from": "CT_CRA_TERMS_p2",
+      "to": "CT_CRA_UNFAIR_TERMS",
+      "difficulty": 0.35
+    },
+    {
+      "from": "CT_CRA_TERMS_p2",
+      "to": "CT_CRA_REMEDIES_GOODS",
+      "difficulty": 0.4
+    },
+    {
+      "from": "CT_CRA_TERMS_p3",
+      "to": "CT_CRA_SERVICES",
+      "difficulty": 0.3
+    },
+    {
+      "from": "CT_CRA_TERMS_p3",
+      "to": "CT_CRA_UNFAIR_TERMS",
+      "difficulty": 0.35
+    },
+    {
+      "from": "CT_CRA_TERMS_p3",
+      "to": "CT_CRA_REMEDIES_GOODS",
+      "difficulty": 0.4
+    },
+    {
+      "from": "CT_CRA_TERMS",
+      "to": "CT_CRA_TERMS_p2",
+      "difficulty": 0.25
+    },
+    {
+      "from": "CT_CRA_TERMS_p2",
+      "to": "CT_CRA_TERMS_p3",
+      "difficulty": 0.25
+    },
+    {
+      "from": "CT_MISREP_REMEDIES",
+      "to": "CT_MISREP_REMEDIES_p2",
+      "difficulty": 0.25
+    },
+    {
+      "from": "CT_MISREP_REMEDIES_p2",
+      "to": "CT_MISREP_REMEDIES_p3",
+      "difficulty": 0.25
+    },
+    {
+      "from": "CT_CRA_REMEDIES_GOODS_p2",
+      "to": "CT_EVAL_CRA_CONSUMER_PROTECTION",
+      "difficulty": 0.4
+    },
+    {
+      "from": "CT_CRA_REMEDIES_GOODS_p3",
+      "to": "CT_EVAL_CRA_CONSUMER_PROTECTION",
+      "difficulty": 0.4
+    },
+    {
+      "from": "CT_CRA_REMEDIES_GOODS",
+      "to": "CT_CRA_REMEDIES_GOODS_p2",
+      "difficulty": 0.25
+    },
+    {
+      "from": "CT_CRA_REMEDIES_GOODS_p2",
+      "to": "CT_CRA_REMEDIES_GOODS_p3",
+      "difficulty": 0.25
+    },
+    {
+      "from": "LA_AID_EXTRINSIC_OTHER_p2",
+      "to": "SK_STAT_APPLY",
+      "difficulty": 0.45
+    },
+    {
+      "from": "LA_AID_EXTRINSIC_OTHER",
+      "to": "LA_AID_EXTRINSIC_OTHER_p2",
+      "difficulty": 0.25
+    },
+    {
+      "from": "CB_CONSENT_EXCEPTIONS_p2",
+      "to": "CB_CONSENT_BROWN_APP",
+      "difficulty": 0.4
+    },
+    {
+      "from": "CB_CONSENT_EXCEPTIONS_p2",
+      "to": "CB_EVAL_DEF_CONSENT_INCONSISTENT",
+      "difficulty": 0.45
+    },
+    {
+      "from": "CB_CONSENT_EXCEPTIONS",
+      "to": "CB_CONSENT_EXCEPTIONS_p2",
+      "difficulty": 0.25
+    },
+    {
+      "from": "TB_VL_INDEPCONTRACTOR_EXCEPTIONS",
+      "to": "TB_VL_INDEPCONTRACTOR_EXCEPTIONS_p2",
+      "difficulty": 0.25
+    },
+    {
+      "from": "TB_VL_INDEPCONTRACTOR_EXCEPTIONS_p2",
+      "to": "TB_VL_INDEPCONTRACTOR_EXCEPTIONS_p3",
+      "difficulty": 0.25
+    },
+    {
+      "from": "NL_ROL_DICEY_p2",
+      "to": "NL_ROL_IMPORTANCE",
+      "difficulty": 0.4
+    },
+    {
+      "from": "NL_ROL_DICEY_p3",
+      "to": "NL_ROL_IMPORTANCE",
+      "difficulty": 0.4
+    },
+    {
+      "from": "NL_ROL_DICEY",
+      "to": "NL_ROL_DICEY_p2",
+      "difficulty": 0.25
+    },
+    {
+      "from": "NL_ROL_DICEY_p2",
+      "to": "NL_ROL_DICEY_p3",
+      "difficulty": 0.25
+    },
+    {
+      "from": "HR_restrictions_test_p2",
+      "to": "HR_margin_of_appreciation",
+      "difficulty": 0.4
+    },
+    {
+      "from": "HR_restrictions_test_p2",
+      "to": "HR_derogation",
+      "difficulty": 0.35
+    },
+    {
+      "from": "HR_restrictions_test_p2",
+      "to": "HR_restrict_public_order",
+      "difficulty": 0.4
+    },
+    {
+      "from": "HR_restrictions_test_p2",
+      "to": "HR_restrict_interception",
+      "difficulty": 0.4
+    },
+    {
+      "from": "HR_restrictions_test_p2",
+      "to": "HR_restrict_confidentiality",
+      "difficulty": 0.4
+    },
+    {
+      "from": "HR_restrictions_test_p2",
+      "to": "HR_restrict_obscenity",
+      "difficulty": 0.4
+    },
+    {
+      "from": "HR_restrictions_test_p2",
+      "to": "HR_eval_restrictions_balance",
+      "difficulty": 0.45
+    },
+    {
+      "from": "HR_restrictions_test",
+      "to": "HR_restrictions_test_p2",
+      "difficulty": 0.25
+    },
+    {
+      "from": "CT_PRIVITY_COMMON_LAW_EXCEPTIONS",
+      "to": "CT_PRIVITY_COMMON_LAW_EXCEPTIONS_p2",
+      "difficulty": 0.25
+    },
+    {
+      "from": "CT_PRIVITY_COMMON_LAW_EXCEPTIONS_p2",
+      "to": "CT_PRIVITY_COMMON_LAW_EXCEPTIONS_p3",
+      "difficulty": 0.25
+    },
+    {
+      "from": "NL_JUSTICE_PROC_FAILURE_p2",
+      "to": "NL_JUSTICE_THEORY_APPLIED",
+      "difficulty": 0.5
+    },
+    {
+      "from": "NL_JUSTICE_PROC_FAILURE_p3",
+      "to": "NL_JUSTICE_THEORY_APPLIED",
+      "difficulty": 0.5
+    },
+    {
+      "from": "NL_JUSTICE_PROC_FAILURE",
+      "to": "NL_JUSTICE_PROC_FAILURE_p2",
+      "difficulty": 0.25
+    },
+    {
+      "from": "NL_JUSTICE_PROC_FAILURE_p2",
+      "to": "NL_JUSTICE_PROC_FAILURE_p3",
+      "difficulty": 0.25
+    },
+    {
+      "from": "NL_JUSTICE_PROC_SUCCESS_p2",
+      "to": "NL_JUSTICE_THEORY_APPLIED",
+      "difficulty": 0.5
+    },
+    {
+      "from": "NL_JUSTICE_PROC_SUCCESS",
+      "to": "NL_JUSTICE_PROC_SUCCESS_p2",
+      "difficulty": 0.25
+    },
+    {
+      "from": "LB_PERSUASIVE_p2",
+      "to": "SK_PREC_APPLY",
+      "difficulty": 0.45
+    },
+    {
+      "from": "LB_PERSUASIVE",
+      "to": "LB_PERSUASIVE_p2",
+      "difficulty": 0.25
+    },
+    {
+      "from": "HR_jr_standing_procedure_p2",
+      "to": "HR_jr_hr_route",
+      "difficulty": 0.4
+    },
+    {
+      "from": "HR_jr_standing_procedure_p2",
+      "to": "HR_eval_jr_limited",
+      "difficulty": 0.45
+    },
+    {
+      "from": "HR_jr_standing_procedure",
+      "to": "HR_jr_standing_procedure_p2",
+      "difficulty": 0.25
+    },
+    {
+      "from": "LS_CIV_LEGALAID_SCOPE_p2",
+      "to": "LS_LAA",
+      "difficulty": 0.2
+    },
+    {
+      "from": "LS_CIV_LEGALAID_SCOPE_p2",
+      "to": "LS_EV_LASPO_CUTS",
+      "difficulty": 0.35
+    },
+    {
+      "from": "LS_CIV_LEGALAID_SCOPE",
+      "to": "LS_CIV_LEGALAID_SCOPE_p2",
+      "difficulty": 0.25
+    },
+    {
+      "from": "TB_VL_REQ_p2",
+      "to": "TB_VL_EMPSTATUS_CONTROL",
+      "difficulty": 0.3
+    },
+    {
+      "from": "TB_VL_REQ_p2",
+      "to": "TB_VL_EMPSTATUS_INTEGRATION",
+      "difficulty": 0.3
+    },
+    {
+      "from": "TB_VL_REQ_p2",
+      "to": "TB_VL_COURSE_GENERAL",
+      "difficulty": 0.3
+    },
+    {
+      "from": "TB_VL_REQ_p2",
+      "to": "TB_VL_INDEPCONTRACTOR_GENERAL",
+      "difficulty": 0.3
+    },
+    {
+      "from": "TB_VL_REQ_p3",
+      "to": "TB_VL_EMPSTATUS_CONTROL",
+      "difficulty": 0.3
+    },
+    {
+      "from": "TB_VL_REQ_p3",
+      "to": "TB_VL_EMPSTATUS_INTEGRATION",
+      "difficulty": 0.3
+    },
+    {
+      "from": "TB_VL_REQ_p3",
+      "to": "TB_VL_COURSE_GENERAL",
+      "difficulty": 0.3
+    },
+    {
+      "from": "TB_VL_REQ_p3",
+      "to": "TB_VL_INDEPCONTRACTOR_GENERAL",
+      "difficulty": 0.3
+    },
+    {
+      "from": "TB_VL_REQ",
+      "to": "TB_VL_REQ_p2",
+      "difficulty": 0.25
+    },
+    {
+      "from": "TB_VL_REQ_p2",
+      "to": "TB_VL_REQ_p3",
+      "difficulty": 0.25
+    },
+    {
+      "from": "CB_ATT_AR_CASES_p2",
+      "to": "CB_EVAL_ATT_MORETHANPREP_VAGUE",
+      "difficulty": 0.45
+    },
+    {
+      "from": "CB_ATT_AR_CASES_p3",
+      "to": "CB_EVAL_ATT_MORETHANPREP_VAGUE",
+      "difficulty": 0.45
+    },
+    {
+      "from": "CB_ATT_AR_CASES",
+      "to": "CB_ATT_AR_CASES_p2",
+      "difficulty": 0.25
+    },
+    {
+      "from": "CB_ATT_AR_CASES_p2",
+      "to": "CB_ATT_AR_CASES_p3",
+      "difficulty": 0.25
+    },
+    {
+      "from": "NL_CYBERCRIME_DEF_p2",
+      "to": "NL_CYBERCRIME_LAW_CHALLENGE",
+      "difficulty": 0.45
+    },
+    {
+      "from": "NL_CYBERCRIME_DEF",
+      "to": "NL_CYBERCRIME_DEF_p2",
+      "difficulty": 0.25
     }
   ]
 }

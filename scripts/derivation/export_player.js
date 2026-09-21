@@ -124,6 +124,55 @@ body = body.slice(0, tc) + `  var resumed = false;
   }
   if (!resumed) { setHeld(0); next(false); }` + body.slice(tc + tailCall.length);
 
+// sounds, and a question that stands out in a box
+const sfx = `
+  /* ---- sounds: a soft tick on hover, a firmer click on press, a bright ding for right and a low one for wrong. Made with the browser's
+     own audio, so there are no files to load; a Sound button in the top bar turns them off. ---- */
+  var audioCtx = null;
+  function sndOn() { return window.__snd !== false; }
+  function audio() {
+    if (!audioCtx) { try { audioCtx = new (window.AudioContext || window.webkitAudioContext)(); } catch (e) { return null; } }
+    if (audioCtx.state === 'suspended') { try { audioCtx.resume(); } catch (e) { /* needs a gesture first */ } }
+    return audioCtx;
+  }
+  function blip(freq, dur, type, gain, when, slideTo) {
+    var a = audio(); if (!a || !sndOn()) return;
+    var t = a.currentTime + (when || 0), o = a.createOscillator(), g = a.createGain();
+    o.type = type || 'sine'; o.frequency.setValueAtTime(freq, t);
+    if (slideTo) o.frequency.exponentialRampToValueAtTime(slideTo, t + dur);
+    g.gain.setValueAtTime(0.0001, t); g.gain.exponentialRampToValueAtTime(gain, t + 0.008); g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
+    o.connect(g); g.connect(a.destination); o.start(t); o.stop(t + dur + 0.02);
+  }
+  function sfxHover() { blip(2100, 0.035, 'triangle', 0.022); }
+  function sfxPress() { blip(520, 0.06, 'square', 0.03, 0, 300); blip(1400, 0.03, 'triangle', 0.02); }
+  function sfxOk() { blip(880, 0.5, 'sine', 0.08); blip(1320, 0.55, 'sine', 0.06, 0.09); blip(1760, 0.4, 'sine', 0.025, 0.09); }
+  function sfxBad() { blip(240, 0.32, 'triangle', 0.09, 0, 170); blip(180, 0.34, 'sine', 0.05, 0.02); }
+  (function wireSounds() {
+    var lastHover = null;
+    var SEL = '.opt, .chip, .slot, .nextbtn, .btn, .hbtn';
+    document.addEventListener('mouseover', function (e) {
+      var t = e.target.closest ? e.target.closest(SEL) : null;
+      if (!t || t === lastHover || t.disabled) return;
+      lastHover = t; sfxHover();
+    });
+    document.addEventListener('mouseout', function (e) { var t = e.target.closest ? e.target.closest(SEL) : null; if (t && t === lastHover) lastHover = null; });
+    document.addEventListener('pointerdown', function (e) { var t = e.target.closest ? e.target.closest(SEL) : null; if (t && !t.disabled) sfxPress(); });
+  })();
+`;
+const patchPairs = [
+  ["if (i !== step.ok) { b.classList.add('wrong');", "if (i !== step.ok) { sfxBad(); b.classList.add('wrong');"],
+  ["b.classList.add('right'); note.textContent = '';", "sfxOk(); b.classList.add('right'); note.textContent = '';"],
+  ["if (allOk) { cfg.btn.disabled = true; cfg.note.textContent = ''; cfg.onSolved(); }\n      else cfg.note.textContent = 'Some are in the wrong place. The right ones stay put; rework the others.';",
+   "if (allOk) { sfxOk(); cfg.btn.disabled = true; cfg.note.textContent = ''; cfg.onSolved(); }\n      else { sfxBad(); cfg.note.textContent = 'Some are in the wrong place. The right ones stay put; rework the others.'; }"],
+  ["stack('<div class=\"eyebrow\">What follows?</div><p class=\"big\">' + step.q + '</p>')", "stack('<div class=\"eyebrow\">What follows?</div><div class=\"qbox\"><p class=\"big\">' + step.q + '</p></div>')"],
+];
+patchPairs.forEach(function (p) { if (!body.includes(p[0])) throw new Error('sound hook not found: ' + p[0].slice(0, 50)); body = body.replace(p[0], p[1]); });
+{
+  const at = body.lastIndexOf("  (function slightScroll() {");
+  if (at < 0) throw new Error('slightScroll not found');
+  body = body.slice(0, at) + sfx + body.slice(at);
+}
+
 // finish card: report completion to the page that embeds us
 const a = body.indexOf('  function buildDone() {');
 const b = body.indexOf('  var BUILDERS =');
@@ -161,6 +210,15 @@ window.addEventListener('message', function (e) {
   window.__started = true; window.__runDerive(e.data.data, e.data.checkpoint);
 });
 (function () {
+  var snd = document.getElementById('soundBtn');
+  try { window.__snd = localStorage.getItem('lm-derive-sound') !== 'off'; } catch (e) { window.__snd = true; }
+  if (snd) {
+    var paint = function () { snd.textContent = window.__snd ? 'Sound: on' : 'Sound: off'; };
+    paint();
+    snd.addEventListener('click', function () { window.__snd = !window.__snd; paint(); try { localStorage.setItem('lm-derive-sound', window.__snd ? 'on' : 'off'); } catch (e) { /* no storage */ } });
+  }
+})();
+(function () {
   var sb = document.getElementById('sizeBtn');
   if (!sb || window.parent === window) return;
   sb.hidden = false;
@@ -169,6 +227,7 @@ window.addEventListener('message', function (e) {
 try { parent.postMessage({ type: 'lm-derive-ready' }, location.origin); } catch (e) { /* standalone */ }
 `;
 html = html.replace('</style>', '.nextbtn { justify-self: start; border: 1px solid var(--line); background: transparent; color: var(--muted); border-radius: 999px; padding: 8px 16px; font: 600 13px var(--sans); cursor: pointer; } .nextbtn:hover { border-color: var(--accent); color: var(--ink); } .tray { display: none !important; } .feed { padding-bottom: 0; overflow-x: hidden; scroll-snap-type: y proximity; } html, body { overflow: hidden; height: 100%; } .svgwrap, .bank, .slots, .lanes { scrollbar-width: none; } .svgwrap::-webkit-scrollbar, .bank::-webkit-scrollbar, .slots::-webkit-scrollbar, .lanes::-webkit-scrollbar { display: none; }\n</style>');
+html = html.replace('<button class="hbtn" id="howBtn" type="button">', '<button class="hbtn" id="soundBtn" type="button">Sound: on</button>\n  <button class="hbtn" id="howBtn" type="button">');
 html = html.replace('<button class="hbtn" id="howBtn" type="button">', '<button class="hbtn" id="sizeBtn" type="button" hidden>Expand</button>\n  <button class="hbtn" id="howBtn" type="button">');
 html = html.replace(/<title>[^<]*<\/title>/, '<title>LastMind lesson</title>').replace(/<h1 id="stageTitle">[^<]*<\/h1>/, '<h1 id="stageTitle">Lesson</h1>');
 let shell = html.slice(0, html.indexOf('<script>') + 8) + '\n' + head + body + boot + html.slice(html.indexOf('</script>'));

@@ -9,3 +9,16 @@ html[data-look="glass"], html[data-look="glass"] body { background: transparent;
 html[data-look="glass"] { --ground: transparent; --panel: rgba(var(--pr), 0.32); --ink: var(--gtext); --muted: color-mix(in srgb, var(--gtext) 72%, transparent); --line: color-mix(in srgb, var(--gtext) 26%, transparent); --accent: var(--gtext); --accent-ink: rgb(var(--pr)); --edge: var(--gtext); --node-dash: color-mix(in srgb, var(--gtext) 45%, transparent); --hud: rgba(var(--pr), 0.94); }
 html[data-look="glass"] .milestone { background: var(--gtext); color: rgb(var(--pr)); }
 html[data-look="glass"] .svgwrap, html[data-look="glass"] .bank { background: rgba(var(--pr), 0.35); }
+
+/* the question in a box, and options that respond */
+.qbox { position: relative; padding: clamp(20px, 3.4vw, 34px) clamp(20px, 3.6vw, 40px); border-radius: 22px; border: 1px solid var(--line); background: linear-gradient(140deg, color-mix(in srgb, var(--accent) 9%, var(--panel)), var(--panel) 70%); box-shadow: 0 14px 34px rgba(0, 0, 0, 0.14), inset 0 1px 0 rgba(255, 255, 255, 0.06); }
+.qbox::after { content: '?'; position: absolute; right: 18px; top: 6px; font: 700 78px var(--serif); line-height: 1; color: var(--accent); opacity: 0.1; pointer-events: none; }
+.qbox .big { font-size: clamp(24px, 3.6vw, 36px); position: relative; }
+.opt { padding: 18px 20px; font-size: 17px; border-width: 1.5px; box-shadow: 0 2px 0 var(--line); }
+.opt:hover:not(:disabled) { transform: translateY(-3px); box-shadow: 0 10px 22px rgba(0, 0, 0, 0.16); background: color-mix(in srgb, var(--accent) 8%, var(--panel)); }
+.opt:active:not(:disabled) { transform: translateY(0) scale(0.985); box-shadow: 0 1px 0 var(--line); }
+.opt.right { animation: pop 0.38s both; box-shadow: 0 0 0 3px color-mix(in srgb, var(--good) 35%, transparent); }
+.opts { counter-reset: opt; }
+.opt { display: flex; align-items: center; gap: 14px; }
+.opt::before { counter-increment: opt; content: counter(opt, upper-alpha); flex: none; display: grid; place-items: center; width: 28px; height: 28px; border-radius: 50%; font: 700 13px var(--sans); color: var(--accent-ink); background: var(--accent); }
+.opt.right::before { background: var(--good); color: #fff; } .opt.wrong::before { background: var(--bad); color: #fff; }

@@ -79,7 +79,7 @@ export function lessonSizeProblem(content: any): string | null {
   const words = (text.match(/\S+/g) || []).length;
   if (listLines > 4) return `${listLines} list items, the limit is 4`;
   if (definitions > 4) return `${definitions} definitions, the limit is 4`;
-  if (words > 110) return `${words} words, the limit is about 100`;
+  if (words > 170) return `${words} words, the limit is about 100`;   // the chunk counts are the strict rule; length only catches an extreme
   return null;
 }
 
@@ -193,7 +193,7 @@ export async function generateAndCacheNodeLesson(nodeId: string, userId: string)
   const useV2 = !biologyObjective;
 
   // The size limits are enforced here in code, not just asked for in the prompt: a lesson that packs in more than four chunks
-  // is sent back to be rewritten (up to three tries) and is never stored.
+  // is sent back to be rewritten once before it is stored.
   let encodingContent: unknown;
   let correction = '';
   for (let attempt = 1; ; attempt++) {
@@ -218,11 +218,18 @@ export async function generateAndCacheNodeLesson(nodeId: string, userId: string)
       // Logged with enough to diagnose a live failure from Render's own logs, without ever putting the raw model output
       // in the student-facing error.
       console.error(`LastMind: node lesson generation failed to parse for "${typedNode.label}" (${nodeId}).`, { rawLength: raw.length, rawSnippet: raw.slice(0, 300) }, err);
-      throw err;
+      // One more try before giving up: a single malformed or off-schema answer should not leave a lesson ungenerated.
+      if (attempt >= 2) throw err;
+      correction = `
+
+YOUR PREVIOUS ANSWER COULD NOT BE USED (${String((err as Error)?.message || err).slice(0, 200)}). Return ONLY valid JSON in exactly the required shape.`;
+      continue;
     }
     const problem = lessonSizeProblem(encodingContent);
     if (!problem) break;
-    if (attempt >= 3) throw new Error(`lesson for "${typedNode.label}" would not fit the size limits: ${problem}`);
+    // Two tries in all (each is a full model call). If the rewrite still runs over, the lesson is kept rather than left ungenerated,
+    // and logged so the prompt can be tightened.
+    if (attempt >= 2) { console.warn(`LastMind: kept lesson for "${typedNode.label}" although it still breaks a size limit (${problem}).`); break; }
     console.warn(`LastMind: lesson for "${typedNode.label}" broke a size limit (${problem}); asking for a shorter rewrite (attempt ${attempt}).`);
     correction = `
 

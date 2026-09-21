@@ -1,0 +1,166 @@
+<meta charset="utf-8">
+<title>Derivation Feed</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:opsz,wght@6..72,400;6..72,600&family=IBM+Plex+Sans:wght@500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --ground: #eef0f3; --panel: #ffffff; --ink: #1b232c; --muted: #5d6a75; --line: rgba(27,35,44,0.16);
+  --accent: #7a5a12; --accent-ink: #ffffff; --good: #1f8a5b; --bad: #c0433f; --chip-ink: #1b232c;
+  --edge: #3b4753; --node-dash: rgba(27,35,44,0.35); --hud: rgba(238,240,243,0.9);
+  --serif: 'Newsreader', Georgia, 'Times New Roman', serif; --sans: 'IBM Plex Sans', system-ui, -apple-system, 'Segoe UI', sans-serif;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --ground: #12181f; --panel: #1a232d; --ink: #f1ead6; --muted: #9aa5ac; --line: rgba(241,234,214,0.16);
+    --accent: #e6d7b0; --accent-ink: #12181f; --good: #59c48d; --bad: #ec7a76; --edge: #c9c1a8; --node-dash: rgba(241,234,214,0.4); --hud: rgba(18,24,31,0.9);
+  }
+}
+:root[data-theme="dark"] {
+  --ground: #12181f; --panel: #1a232d; --ink: #f1ead6; --muted: #9aa5ac; --line: rgba(241,234,214,0.16);
+  --accent: #e6d7b0; --accent-ink: #12181f; --good: #59c48d; --bad: #ec7a76; --edge: #c9c1a8; --node-dash: rgba(241,234,214,0.4); --hud: rgba(18,24,31,0.9);
+}
+* { box-sizing: border-box; }
+html, body { height: 100%; }
+body { background: var(--ground); color: var(--ink); font-family: var(--serif); font-size: 18px; line-height: 1.55; overflow: hidden; }
+button { font: inherit; color: inherit; }
+:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
+
+.hud { position: fixed; top: env(safe-area-inset-top, 0px); left: 0; right: 0; z-index: 20; display: flex; align-items: center; gap: 14px; padding: 10px 16px; background: var(--hud); backdrop-filter: blur(8px); border-bottom: 1px solid var(--line); font-family: var(--sans); font-size: 13px; }
+.hud h1 { margin: 0; font: 600 13px var(--sans); letter-spacing: 0.08em; text-transform: uppercase; color: var(--accent); white-space: nowrap; }
+.pips { display: flex; align-items: center; gap: 6px; margin-left: auto; color: var(--muted); }
+.pips i { width: 22px; height: 8px; border-radius: 4px; background: var(--line); transition: background .3s, transform .3s; }
+.pips i.on { background: var(--accent); transform: scaleY(1.25); }
+.pips span { min-width: 62px; text-align: right; font-variant-numeric: tabular-nums; }
+.hbtn { border: 1px solid var(--line); background: transparent; border-radius: 999px; padding: 5px 12px; font: 600 12px var(--sans); cursor: pointer; }
+.hbtn:hover { border-color: var(--accent); }
+
+.feed { height: 100%; overflow-y: auto; scroll-snap-type: y mandatory; scroll-behavior: smooth; padding-bottom: 76px; }
+.slide { min-height: 100%; scroll-snap-align: start; display: grid; place-items: center; padding: 84px 16px 40px; }
+.card { width: min(760px, 100%); display: grid; gap: 22px; }
+.eyebrow { font: 600 12px var(--sans); letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); }
+.big { font-size: clamp(26px, 5vw, 40px); line-height: 1.25; margin: 0; text-wrap: balance; font-weight: 400; }
+.hint { font: 500 13px var(--sans); color: var(--muted); }
+.hint b { color: var(--accent); }
+.down { font: 600 13px var(--sans); color: var(--muted); animation: nudge 1.6s ease-in-out infinite; }
+@keyframes nudge { 50% { transform: translateY(5px); } }
+
+.term { display: inline-block; padding: 0 .35em; border-radius: 8px; background: var(--tc, var(--line)); color: var(--chip-ink); font-weight: 600; }
+.pop { animation: pop .5s cubic-bezier(.2,1.4,.4,1) both; animation-delay: .25s; }
+@keyframes pop { from { transform: scale(.6); opacity: 0; } to { transform: none; opacity: 1; } }
+.chip { font: 600 15px var(--sans); border: 0; border-radius: 10px; padding: 9px 14px; background: var(--tc, var(--line)); color: var(--chip-ink); cursor: grab; box-shadow: 0 2px 0 rgba(0,0,0,.25); transition: transform .12s; }
+.chip:hover { transform: translateY(-2px); } .chip.sel { outline: 3px solid var(--accent); transform: translateY(-3px); }
+.bank { display: flex; flex-wrap: wrap; gap: 10px; padding: 14px; border-radius: 14px; background: var(--panel); border: 1px dashed var(--line); min-height: 64px; }
+
+.opts { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 12px; }
+.opt { text-align: left; font: 500 16px var(--sans); padding: 16px 18px; border-radius: 14px; border: 1px solid var(--line); background: var(--panel); cursor: pointer; transition: transform .12s, border-color .12s; }
+.opt:hover:not(:disabled) { border-color: var(--accent); transform: translateY(-2px); }
+.opt.wrong { border-color: var(--bad); animation: shake .4s; } .opt.right { border-color: var(--good); background: color-mix(in srgb, var(--good) 18%, var(--panel)); }
+@keyframes shake { 20%, 60% { transform: translateX(-6px); } 40%, 80% { transform: translateX(6px); } }
+.reveal { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; font-size: clamp(22px, 4vw, 30px); }
+.note { font: 500 14px var(--sans); color: var(--bad); min-height: 1.4em; }
+
+.milestone { display: inline-flex; align-items: center; gap: 8px; width: fit-content; padding: 5px 12px; border-radius: 999px; font: 600 12px var(--sans); letter-spacing: 0.08em; text-transform: uppercase; background: var(--accent); color: var(--accent-ink); }
+.slots { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 12px; }
+.slot { min-height: 74px; display: grid; place-items: center; border-radius: 14px; border: 2px dashed var(--node-dash); background: color-mix(in srgb, var(--panel) 70%, transparent); font: 600 12px var(--sans); color: var(--muted); position: relative; padding: 8px; text-align: center; cursor: pointer; }
+.slot .n { position: absolute; top: 6px; left: 8px; opacity: .7; }
+.slot.over { background: var(--panel); } .slot.good { border-style: solid; border-color: var(--good); } .slot.bad { border-color: var(--bad); animation: shake .4s; }
+.slot .term { font: 600 15px var(--sans); padding: 6px 10px; }
+.btn { justify-self: start; border: 0; border-radius: 12px; padding: 13px 30px; font: 600 16px var(--sans); background: var(--accent); color: var(--accent-ink); cursor: pointer; }
+.btn:disabled { opacity: .35; cursor: not-allowed; }
+
+.lanes { display: grid; grid-template-columns: 1fr auto; gap: 18px; align-items: center; }
+.lanes .l { display: grid; gap: 14px; }
+.lane { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+.lane .slot { flex: 1 1 150px; min-height: 64px; }
+.arrow { font: 600 20px var(--sans); color: var(--muted); }
+.join { display: grid; place-items: center; gap: 6px; }
+.locked { width: 132px; height: 84px; border-radius: 14px; display: grid; place-items: center; border: 2px solid var(--line); font: 600 30px var(--sans); color: var(--muted); background: var(--panel); }
+.locked.open { background: var(--tc); color: var(--chip-ink); border-color: transparent; font-size: 17px; text-align: center; animation: pop .5s both; }
+@media (max-width: 560px) { .lanes { grid-template-columns: 1fr; } .join { justify-items: start; } }
+
+.svgwrap { overflow-x: auto; border-radius: 14px; background: var(--panel); border: 1px solid var(--line); padding: 8px; }
+.svgwrap svg { display: block; min-width: 720px; width: 100%; height: auto; }
+.nrect { stroke: var(--node-dash); stroke-width: 2; stroke-dasharray: 7 5; fill: transparent; cursor: pointer; transition: fill .2s; }
+.node.filled .nrect { stroke-dasharray: none; stroke: var(--chip-ink); stroke-opacity: .55; }
+.node.good .nrect { stroke: var(--good); stroke-width: 4; stroke-dasharray: none; stroke-opacity: 1; }
+.node.bad .nrect { stroke: var(--bad); stroke-width: 4; }
+.node.over .nrect { fill: color-mix(in srgb, var(--accent) 22%, transparent); }
+.ntext { font: 600 19px var(--serif); fill: var(--chip-ink); text-anchor: middle; pointer-events: none; }
+.ntext.q { fill: var(--muted); font-size: 24px; }
+.edge { stroke: var(--edge); stroke-width: 2.5; fill: none; }
+.edge.draw { stroke-dasharray: 600; stroke-dashoffset: 600; animation: draw 1s ease forwards; }
+@keyframes draw { to { stroke-dashoffset: 0; } }
+.ghost .nrect { stroke-dasharray: 4 6; opacity: .45; } .ghost .ntext { fill: var(--muted); }
+.ghostedge { stroke: var(--edge); stroke-width: 2; stroke-dasharray: 4 6; opacity: .45; fill: none; }
+
+.tray { position: fixed; left: 0; right: 0; bottom: 0; z-index: 20; display: flex; align-items: center; gap: 8px; padding: 10px 16px calc(10px + env(safe-area-inset-bottom, 0px)); background: var(--hud); backdrop-filter: blur(8px); border-top: 1px solid var(--line); overflow-x: auto; font-family: var(--sans); }
+.tray b { font: 600 11px var(--sans); letter-spacing: .08em; text-transform: uppercase; color: var(--muted); white-space: nowrap; }
+.tray .term { font: 600 13px var(--sans); white-space: nowrap; padding: 3px 10px; animation: pop .4s both; }
+.tray .sep { color: var(--line); }
+
+.rules { position: fixed; inset: 0; z-index: 40; display: grid; place-items: center; padding: 16px; background: rgba(0,0,0,.55); }
+.rules .sheet { width: min(640px, 100%); max-height: 88%; overflow: auto; background: var(--panel); border: 1px solid var(--line); border-radius: 18px; padding: 24px; display: grid; gap: 12px; }
+.rules h2 { margin: 0; font-size: 26px; }
+.rules ol { margin: 0; padding-left: 1.2em; display: grid; gap: 8px; font-size: 16px; }
+.rules li strong { color: var(--accent); }
+.hi { font-size: 1.05em; }
+@media (prefers-reduced-motion: reduce) { * { animation: none !important; transition: none !important; scroll-behavior: auto !important; } }
+
+.schedule { display: grid; gap: 10px; }
+.schedule .row { display: grid; gap: 4px; padding: 12px 14px; border-radius: 12px; background: var(--panel); border: 1px solid var(--line); font-family: var(--sans); }
+.rowtop { display: flex; align-items: center; justify-content: space-between; gap: 10px; font-size: 15px; }
+.pill { font: 600 11px var(--sans); letter-spacing: .06em; text-transform: uppercase; padding: 3px 10px; border-radius: 999px; border: 1px solid var(--line); color: var(--muted); }
+.pill.good { background: color-mix(in srgb, var(--good) 20%, transparent); border-color: var(--good); color: var(--good); }
+.pill.now { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); }
+.needs { font-size: 13px; color: var(--muted); display: flex; flex-wrap: wrap; gap: 6px 12px; }
+.need.met { color: var(--good); }
+.rev { font-size: 12px; color: var(--muted); font-variant-numeric: tabular-nums; }
+.actions { display: flex; flex-wrap: wrap; gap: 12px; }
+.btn.ghostbtn { background: transparent; color: var(--ink); border: 1px solid var(--line); }
+.tray .stagemark { color: var(--accent); }
+
+.svgwrap svg.dia { display: block; min-width: 460px; width: 100%; height: auto; }
+.dax { stroke: var(--ink); stroke-width: 2.5; } .dgrid { stroke: var(--line); stroke-width: 1; }
+.dlab { font: 600 15px var(--sans); fill: var(--muted); }
+.dcurve { fill: none; stroke: var(--accent); stroke-width: 4; stroke-linecap: round; }
+.dcurve.mine { stroke: var(--ink); } .dcurve.good { stroke: var(--good); } .dcurve.bad { stroke: var(--bad); }
+.dpt circle { fill: var(--accent); stroke: var(--panel); stroke-width: 3; animation: pop .4s both; transform-box: fill-box; transform-origin: center; }
+.dpt.in circle { fill: #e8e0b8; } .dpt.out circle { fill: none; stroke: var(--bad); stroke-width: 3; stroke-dasharray: 4 3; } .dpt.plain circle { fill: var(--ink); }
+.dpt .dlab { fill: var(--ink); font-size: 18px; }
+.handle { fill: var(--ink); stroke: var(--panel); stroke-width: 3; cursor: grab; }
+.tool svg { touch-action: none; cursor: crosshair; }
+.toolbar { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+.cap { font: 500 15px var(--sans); color: var(--ink); min-height: 3em; }
+.svgwrap.fig { max-width: 520px; }
+</style>
+
+<header class="hud">
+  <h1 id="stageTitle">Stage 1 · Scarcity</h1>
+  <div class="pips" aria-label="Chunks held in mind"><i></i><i></i><i></i><i></i><span id="pipText">0 of 4</span></div>
+  <button class="hbtn" id="howBtn" type="button">How it works</button>
+  <button class="hbtn" id="againBtn" type="button">Restart</button>
+</header>
+
+<main class="feed" id="feed" aria-live="polite"></main>
+
+<footer class="tray" id="tray"><b>Key terms</b><span class="hint" id="trayEmpty">they collect here as you go</span></footer>
+
+<div class="rules" id="rules" hidden>
+  <div class="sheet" role="dialog" aria-modal="true" aria-labelledby="rulesTitle">
+    <h2 id="rulesTitle">How a derivation works</h2>
+    <ol>
+      <li><strong>Read one idea at a time.</strong> Each step is a single screen and a single new key term. Scroll to take the next one.</li>
+      <li><strong>Never more than four at once.</strong> Working memory holds about four chunks, so after four the feed stops at a <em>milestone</em> and you rebuild them before anything new arrives.</li>
+      <li><strong>The next step is the question.</strong> There is no separate practice question. You are asked what follows, and answering it teaches the next term.</li>
+      <li><strong>Chains branch.</strong> A concept can rest on several chains. At a milestone you drag terms into each chain, and the chains meet at the concept they lead to.</li>
+      <li><strong>Prerequisites first, any order.</strong> Chains can be scheduled in any order, but every direct prerequisite has to be met before the concept it leads to.</li>
+      <li><strong>The whole derivation is the final test.</strong> At the concept you fill every term of the whole graph from memory, and the finished graph becomes a new, growing branch of the knowledge map.</li>
+    </ol>
+    <button class="btn" id="rulesClose" type="button">Back to the lesson</button>
+  </div>
+</div>
+
+<script>
+/*SCRIPT*/
+</script>

@@ -1,0 +1,486 @@
+{
+ "terms": {
+  "land": {
+   "label": "Land",
+   "colour": "#cfe8c8"
+  },
+  "labour": {
+   "label": "Labour",
+   "colour": "#cfe3f6"
+  },
+  "capital": {
+   "label": "Capital",
+   "colour": "#f6ecb9"
+  },
+  "enterprise": {
+   "label": "Enterprise",
+   "colour": "#f8d9c4"
+  },
+  "finres": {
+   "label": "Finite resources",
+   "colour": "#cfd9e8"
+  },
+  "fings": {
+   "label": "Finite goods & services",
+   "colour": "#dccff0"
+  },
+  "wants": {
+   "label": "Unlimited wants",
+   "colour": "#f8d3d3"
+  },
+  "scarcity": {
+   "label": "Scarcity",
+   "colour": "#f4a9a8"
+  },
+  "maxout": {
+   "label": "Maximum output",
+   "colour": "#d5e8d0"
+  },
+  "shift": {
+   "label": "Reallocation",
+   "colour": "#f2dcc0"
+  },
+  "giveup": {
+   "label": "Output given up",
+   "colour": "#e9d0d8"
+  },
+  "ppf": {
+   "label": "Production possibility frontier",
+   "colour": "#f3b8a0"
+  },
+  "unattain": {
+   "label": "Unattainable",
+   "colour": "#d0d6ee"
+  },
+  "ineff": {
+   "label": "Inefficiency",
+   "colour": "#e8e0b8"
+  },
+  "choice": {
+   "label": "Choice",
+   "colour": "#c9e5da"
+  },
+  "tradeoff": {
+   "label": "Trade-off",
+   "colour": "#e6cfe0"
+  },
+  "altuses": {
+   "label": "Alternative uses",
+   "colour": "#e2e6b9"
+  },
+  "nextbest": {
+   "label": "Next best alternative",
+   "colour": "#f5d0a9"
+  },
+  "oppcost": {
+   "label": "Opportunity cost",
+   "colour": "#f0a7b8"
+  }
+ },
+ "stages": [
+  {
+   "name": "Scarcity",
+   "hud": "Stage 1 · Scarcity",
+   "given": [],
+   "steps": [
+    {
+     "type": "read",
+     "term": "land",
+     "text": "Water is used to make bottled water. The natural resources used in production are called "
+    },
+    {
+     "type": "read",
+     "term": "labour",
+     "text": "The people working at the bottled-water factory are "
+    },
+    {
+     "type": "read",
+     "term": "capital",
+     "text": "The machines they use are "
+    },
+    {
+     "type": "read",
+     "term": "enterprise",
+     "text": "The person who organises all of these resources provides "
+    },
+    {
+     "type": "order",
+     "terms": [
+      "land",
+      "labour",
+      "capital",
+      "enterprise"
+     ],
+     "prompt": "Drag and drop the 4 key terms in the order they are used in production."
+    },
+    {
+     "type": "ask",
+     "q": "Can a business have an infinite quantity of all four?",
+     "right": "No, never infinite",
+     "wrong": "Yes, whatever it needs",
+     "hint": "Picture one factory. Could it have endless land, endless workers, endless machines and endless organisers?",
+     "pre": "So they are limited. They are",
+     "term": "finres"
+    },
+    {
+     "type": "ask",
+     "q": "What does that mean for the number of water bottles the factory can make?",
+     "right": "There is a limit",
+     "wrong": "There is no limit",
+     "hint": "If the resources are limited, what happens to the bottles made from them?",
+     "pre": "So the bottles, and every good and service, are",
+     "term": "fings"
+    },
+    {
+     "type": "ask",
+     "q": "You finally get the new phone you wanted. Will it be the last thing you ever want?",
+     "right": "No, I will soon want something else",
+     "wrong": "Yes, I will never want anything again",
+     "hint": "Think about the last thing you really wanted. Did wanting stop?",
+     "pre": "So people have",
+     "term": "wants"
+    },
+    {
+     "type": "chains",
+     "prompt": "Drag and drop the 3 key terms into the two chains that lead to one concept. Chain 1 runs from resources to goods and services. Chain 2 is the wants side.",
+     "lanes": [
+      {
+       "label": "Chain 1",
+       "terms": [
+        "finres",
+        "fings"
+       ]
+      },
+      {
+       "label": "Chain 2",
+       "terms": [
+        "wants"
+       ]
+      }
+     ]
+    },
+    {
+     "type": "ask",
+     "q": "Can everyone have everything they want?",
+     "right": "No, not everyone can",
+     "wrong": "Yes, everyone can",
+     "hint": "Limited goods on one side, unlimited wants on the other. What happens when they meet?",
+     "pre": "This is the problem of",
+     "term": "scarcity"
+    },
+    {
+     "type": "derive"
+    }
+   ],
+   "edges": [
+    [
+     "land",
+     "labour"
+    ],
+    [
+     "labour",
+     "capital"
+    ],
+    [
+     "capital",
+     "enterprise"
+    ],
+    [
+     "enterprise",
+     "finres"
+    ],
+    [
+     "finres",
+     "fings"
+    ],
+    [
+     "fings",
+     "scarcity"
+    ],
+    [
+     "wants",
+     "scarcity"
+    ]
+   ],
+   "title": "Scarcity",
+   "sub": "Why every economy has to choose: limited resources against unlimited wants.",
+   "builds": [],
+   "layout": {
+    "land": [
+     0,
+     0
+    ],
+    "labour": [
+     0,
+     1
+    ],
+    "capital": [
+     0,
+     2
+    ],
+    "enterprise": [
+     0,
+     3
+    ],
+    "finres": [
+     1,
+     3
+    ],
+    "fings": [
+     2,
+     3
+    ],
+    "wants": [
+     0,
+     4
+    ],
+    "scarcity": [
+     3,
+     4
+    ]
+   }
+  },
+  {
+   "name": "Opportunity cost",
+   "hud": "Stage 2 · Opportunity cost",
+   "given": [
+    "scarcity"
+   ],
+   "steps": [
+    {
+     "type": "ask",
+     "q": "Scarcity means not everyone can have everything. So what must people, firms and governments do?",
+     "right": "Choose between the options",
+     "wrong": "Wait until there is enough for everyone",
+     "hint": "If everything cannot be had at once, what is left to do?",
+     "pre": "They have to make a",
+     "term": "choice"
+    },
+    {
+     "type": "ask",
+     "q": "When you choose one option, do you still get the ones you did not choose?",
+     "right": "No, you give them up",
+     "wrong": "Yes, all of them",
+     "hint": "You chose the phone. Can you also spend that same money on the holiday?",
+     "pre": "So every choice is a",
+     "term": "tradeoff"
+    },
+    {
+     "type": "ask",
+     "q": "Can the same land, workers and machines be used to make something else instead?",
+     "right": "Yes, many different things",
+     "wrong": "No, only one thing",
+     "hint": "Could the bottling factory make juice or fizzy drinks with the very same resources?",
+     "pre": "So resources have",
+     "term": "altuses"
+    },
+    {
+     "type": "chains",
+     "prompt": "Drag and drop the 3 key terms into the two chains that lead to one concept. Chain 1 is what choosing involves. Chain 2 is what resources can do.",
+     "lanes": [
+      {
+       "label": "Chain 1",
+       "terms": [
+        "choice",
+        "tradeoff"
+       ]
+      },
+      {
+       "label": "Chain 2",
+       "terms": [
+        "altuses"
+       ]
+      }
+     ]
+    },
+    {
+     "type": "ask",
+     "q": "Of everything you gave up, which one do you count when judging a choice?",
+     "right": "The best one you gave up",
+     "wrong": "All of them added together",
+     "hint": "You can only have one thing instead. Which of the things you gave up would you actually have picked?",
+     "pre": "That is the",
+     "term": "nextbest"
+    },
+    {
+     "type": "ask",
+     "q": "So what is the real cost of a choice?",
+     "right": "The value of the next best alternative you gave up",
+     "wrong": "The money you pay",
+     "hint": "Money is only one way of counting. What did you actually give up?",
+     "pre": "That is the",
+     "term": "oppcost"
+    },
+    {
+     "type": "derive"
+    }
+   ],
+   "edges": [
+    [
+     "scarcity",
+     "choice"
+    ],
+    [
+     "choice",
+     "tradeoff"
+    ],
+    [
+     "tradeoff",
+     "nextbest"
+    ],
+    [
+     "altuses",
+     "nextbest"
+    ],
+    [
+     "nextbest",
+     "oppcost"
+    ]
+   ],
+   "title": "Opportunity cost",
+   "sub": "The real cost of any choice, measured by what you give up.",
+   "builds": [
+    "scarcity"
+   ]
+  },
+  {
+   "name": "Production possibility frontier",
+   "hud": "Stage 3 · Frontier",
+   "given": [
+    "finres",
+    "oppcost"
+   ],
+   "steps": [
+    {
+     "type": "ask",
+     "q": "A country uses all its finite resources to make just two things: bottled water and phones. Can it make an unlimited amount of both?",
+     "right": "No, there is a limit",
+     "wrong": "Yes, there is no limit",
+     "hint": "The resources are finite. What does that do to the most that can be made?",
+     "pre": "So there is a ceiling. It is the",
+     "term": "maxout"
+    },
+    {
+     "type": "ask",
+     "q": "To make more phones, what must the country do with its resources?",
+     "right": "Move them from bottled water to phones",
+     "wrong": "Make new resources appear",
+     "hint": "The resources are already fully used. Where could extra phone-makers come from?",
+     "pre": "So resources are moved. That is",
+     "term": "shift"
+    },
+    {
+     "type": "ask",
+     "q": "What happens to the amount of bottled water when resources move to phones?",
+     "right": "It falls",
+     "wrong": "It stays the same",
+     "hint": "The workers and machines that made water are now making phones.",
+     "pre": "So every extra phone costs some",
+     "term": "giveup"
+    },
+    {
+     "type": "chains",
+     "prompt": "Drag and drop the 3 key terms into the two chains that lead to one concept. One chain comes from finite resources, the other from opportunity cost.",
+     "lanes": [
+      {
+       "label": "From finite resources",
+       "terms": [
+        "maxout"
+       ]
+      },
+      {
+       "label": "From opportunity cost",
+       "terms": [
+        "shift",
+        "giveup"
+       ]
+      }
+     ]
+    },
+    {
+     "type": "ask",
+     "q": "Each dot is the most phones the country can make for one amount of water. What would a line joining them show?",
+     "right": "The limit of what it can produce",
+     "wrong": "How much money it has",
+     "hint": "Each point is the most it can make of one good, given the amount of the other.",
+     "pre": "That line is the",
+     "term": "ppf",
+     "fig": "dots"
+    },
+    {
+     "type": "show"
+    },
+    {
+     "type": "draw",
+     "title": "Economics drawing tool",
+     "prompt": "Draw the production possibility frontier. Click to place 4 to 7 points from the phones axis down to the water axis, and drag a point to adjust it."
+    },
+    {
+     "type": "ask",
+     "q": "Could the country make the mix at point D, beyond the line?",
+     "right": "No, it is out of reach",
+     "wrong": "Yes, with the same resources",
+     "hint": "The line is the ceiling. What is above a ceiling?",
+     "pre": "Beyond the line is",
+     "term": "unattain",
+     "fig": "beyond"
+    },
+    {
+     "type": "ask",
+     "q": "And at point C, inside the line: is the country using all its resources well?",
+     "right": "No, some are unused or wasted",
+     "wrong": "Yes, fully",
+     "hint": "If it could make more of one good without making less of the other, what is going on?",
+     "pre": "Inside the line there is",
+     "term": "ineff",
+     "fig": "inside"
+    },
+    {
+     "type": "derive"
+    }
+   ],
+   "edges": [
+    [
+     "finres",
+     "maxout"
+    ],
+    [
+     "maxout",
+     "ppf"
+    ],
+    [
+     "oppcost",
+     "shift"
+    ],
+    [
+     "shift",
+     "giveup"
+    ],
+    [
+     "giveup",
+     "ppf"
+    ],
+    [
+     "ppf",
+     "unattain"
+    ],
+    [
+     "ppf",
+     "ineff"
+    ]
+   ],
+   "title": "The production possibility frontier",
+   "sub": "The limit of what an economy can produce, and what it costs to move along it.",
+   "builds": [
+    "oppcost",
+    "finres"
+   ]
+  }
+ ],
+ "id": "econ-scarcity-oppcost-ppf",
+ "subject": "Economics",
+ "title": "Scarcity to the production possibility frontier",
+ "widgets": [
+  "econ_ppf"
+ ]
+}

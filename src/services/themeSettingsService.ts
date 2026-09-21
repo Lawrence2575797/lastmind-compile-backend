@@ -24,7 +24,7 @@ const IMAGE_BG_TEXTURES = [
   'havnstad-village', 'wild-west-town', 'medieval-castle', 'riverside-city', 'space-station',
   'tokyo-night', 'cosy-cafe', 'samurai-japan', 'scholars-desk', 'ancient-rome', 'sakura-garden',
 ];
-const VALID_BG_TEXTURES = ['plain', 'wood', ...IMAGE_BG_TEXTURES];
+const VALID_BG_TEXTURES = ['plain', 'wood', 'minimalist', ...IMAGE_BG_TEXTURES];
 
 const DEFAULTS: ThemeSettings = {
   textColor: '#E6D7B0',

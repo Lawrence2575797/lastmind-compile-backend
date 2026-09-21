@@ -8,6 +8,7 @@ import { parseModelJson } from '../services/jsonParsing';
 import { InsufficientLocksError } from '../services/lockService';
 import { startJob } from './createSimulation';
 import { generatePortraitCutout, generateEvidencePicture, downloadAsDataUrl } from '../services/createImages';
+import { createDuel, getDuel, claimSeat, saveResult, listDuels, sideOf, resultOf, otherSide, cleanCode, DuelRow, Side } from '../services/duelStore';
 import { CASE_GRAPH_COMPILE_PROMPT, CHARACTER_TURN_PROMPT, CLOSING_ASSESSMENT_PROMPT, COMPILE_SPEECH_PROMPT } from '../constants/playtestPrompts';
 
 const router = Router();
@@ -25,6 +26,12 @@ function sweepSessions() {
   for (const [id, s] of sessions) if (now - s.createdAt > SESSION_TTL_MS) sessions.delete(id);
 }
 const newSessionId = () => crypto.randomBytes(10).toString('hex');
+function registerSession(userId: string, graph: any): string {
+  sweepSessions();
+  const id = newSessionId();
+  sessions.set(id, { userId, graph, createdAt: Date.now() });
+  return id;
+}
 
 const str = (v: unknown, max: number): string => (typeof v === 'string' ? v.trim().slice(0, max) : '');
 const arr = <T>(v: unknown, cap: number): T[] => (Array.isArray(v) ? (v.slice(0, cap) as T[]) : []);
@@ -197,6 +204,99 @@ router.post('/playtest/session', actionEndpointLimiter, (req: Request, res: Resp
   const graph = normaliseGraph(g, { characters: g.characters, evidence: g.evidence }, arr<any>(g.curriculum, 60).map((c) => ({ label: str(c?.label, 300) })));
   sessions.set(sessionId, { userId: req.userId as string, graph, createdAt: Date.now() });
   res.json({ sessionId });
+});
+
+// ---- two-player duels: each player plays their own side of the same compiled case, on their own time ----
+// Only what is needed to compare the two performances is shared: which facts each side drew out, and the persuasion score the AI gave.
+// Nothing either player typed is ever shown to the other.
+function duelView(d: DuelRow, userId: string) {
+  const side = sideOf(d, userId) as Side;
+  const mine = resultOf(d, side), theirs = resultOf(d, otherSide(side));
+  const both = !!(mine && theirs);
+  const pick = (r: any) => (r ? { established: r.established, persuasion: r.persuasion } : null);
+  return {
+    code: d.code, title: d.title, mySide: side, meta: d.meta, myDone: !!mine, opponentJoined: !!d.opponent_id || d.creator_id !== userId, opponentDone: !!theirs,
+    result: both ? { [side]: pick(mine), [otherSide(side)]: pick(theirs) } : null,
+  };
+}
+
+// POST /playtest/duel/create { graph, side, title, meta } -> { code }
+router.post('/playtest/duel/create', actionEndpointLimiter, async (req: Request, res: Response) => {
+  const b = (req.body ?? {}) as Record<string, any>;
+  const g = b.graph;
+  if (!g || typeof g !== 'object' || !Array.isArray(g.characters) || !Array.isArray(g.facts)) return res.status(400).json({ error: 'graph is required' });
+  if (JSON.stringify(g).length > 600000) return res.status(413).json({ error: 'graph is too large' });
+  const side: Side = b.side === 'prosecution' ? 'prosecution' : 'defence';
+  const graph = normaliseGraph(g, { characters: g.characters, evidence: g.evidence }, arr<any>(g.curriculum, 60).map((c) => ({ label: str(c?.label, 300) })));
+  const m = (b.meta ?? {}) as Record<string, any>;
+  const meta = {
+    creatorSide: side, charge: str(m.charge, 400), briefing: str(m.briefing, 1500),
+    concepts: arr<any>(m.concepts, 60).map((c) => ({ id: str(c?.id, 60), label: str(c?.label, 300), subtopic: str(c?.subtopic, 200) })).filter((c) => c.label),
+  };
+  try {
+    const out = await createDuel(req.userId as string, side, str(b.title, 160) || 'Untitled case', meta, graph);
+    if (out.unavailable) return res.status(503).json({ error: 'Two-player duels are not set up yet.', code: 'DUELS_UNAVAILABLE' });
+    if (!out.code) throw new Error(out.error || 'no code');
+    res.json({ code: out.code });
+  } catch (err) {
+    console.error('Duel create failed:', err);
+    res.status(500).json({ error: 'Could not create the duel just now - please try again.' });
+  }
+});
+
+// POST /playtest/duel/join { code } -> { duel, graph, sessionId }   (also how either player reopens their duel)
+router.post('/playtest/duel/join', actionEndpointLimiter, async (req: Request, res: Response) => {
+  const userId = req.userId as string;
+  const code = cleanCode((req.body ?? {}).code);
+  if (code.length !== 6) return res.status(400).json({ error: 'A duel code has six letters and numbers.' });
+  try {
+    const { duel, unavailable } = await getDuel(code);
+    if (unavailable) return res.status(503).json({ error: 'Two-player duels are not set up yet.', code: 'DUELS_UNAVAILABLE' });
+    if (!duel) return res.status(404).json({ error: 'No duel has that code. Check it and try again.' });
+    let d = duel;
+    if (!sideOf(d, userId)) {
+      if (d.opponent_id) return res.status(403).json({ error: 'That duel already has two players.' });
+      if (!(await claimSeat(d, userId))) return res.status(403).json({ error: 'That duel already has two players.' });
+      d = { ...d, opponent_id: userId };
+    }
+    res.json({ duel: duelView(d, userId), graph: d.graph, sessionId: registerSession(userId, d.graph) });
+  } catch (err) {
+    console.error('Duel join failed:', err);
+    res.status(500).json({ error: 'Could not open that duel just now - please try again.' });
+  }
+});
+
+// GET /playtest/duels -> { duels } | { unavailable }
+router.get('/playtest/duels', actionEndpointLimiter, async (req: Request, res: Response) => {
+  try { res.json(await listDuels(req.userId as string)); }
+  catch (err) { console.error('Duel list failed:', err); res.status(500).json({ error: 'Could not load your duels.' }); }
+});
+
+// GET /playtest/duel/:code -> { duel } : the current state, including both results once both players have finished
+router.get('/playtest/duel/:code', actionEndpointLimiter, async (req: Request, res: Response) => {
+  const userId = req.userId as string;
+  try {
+    const { duel } = await getDuel(cleanCode(req.params.code));
+    if (!duel || !sideOf(duel, userId)) return res.status(404).json({ error: 'No duel has that code.' });
+    res.json({ duel: duelView(duel, userId) });
+  } catch (err) { console.error('Duel status failed:', err); res.status(500).json({ error: 'Could not check the duel.' }); }
+});
+
+// POST /playtest/duel/:code/submit { establishedFactIds, persuasion } -> { duel }
+router.post('/playtest/duel/:code/submit', actionEndpointLimiter, async (req: Request, res: Response) => {
+  const userId = req.userId as string;
+  const b = (req.body ?? {}) as Record<string, any>;
+  try {
+    const { duel } = await getDuel(cleanCode(req.params.code));
+    const side = duel ? sideOf(duel, userId) : null;
+    if (!duel || !side) return res.status(404).json({ error: 'No duel has that code.' });
+    const factIds = new Set<string>((duel.graph.facts || []).map((f: any) => f.id));
+    const established = Array.from(new Set(arr<string>(b.establishedFactIds, 80).map((x) => str(x, 20)).filter((x) => factIds.has(x))));
+    const persuasion = Math.max(-1, Math.min(1, Number(b.persuasion) || 0));
+    if (!resultOf(duel, side)) await saveResult(duel, side, established, persuasion);   // a result is recorded once and cannot be replaced
+    const { duel: fresh } = await getDuel(duel.code);
+    res.json({ duel: duelView(fresh as DuelRow, userId) });
+  } catch (err) { console.error('Duel submit failed:', err); res.status(500).json({ error: 'Could not save your result - please try again.' }); }
 });
 
 const flatten = (content: unknown): string => JSON.stringify(content ?? {}).slice(0, 1800);

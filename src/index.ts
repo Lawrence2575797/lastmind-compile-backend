@@ -73,6 +73,7 @@ app.use(helmet({ contentSecurityPolicy: false }));
 app.use('/sync/folders', express.json({ limit: '3mb' }));
 app.use('/create/projects', express.json({ limit: '6mb' }));
 app.use('/playtest/session', express.json({ limit: '1mb' }));
+app.use('/playtest/duel/create', express.json({ limit: '1mb' }));
 app.use(express.json({ limit: '200kb' }));
 app.use(cors({ origin: FRONTEND_ORIGIN, methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'] }));
 app.use(globalRateLimiter);

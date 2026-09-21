@@ -17,6 +17,7 @@ const args = process.argv.slice(2);
 const [mapPath, outDir] = args;
 const flag = (f) => args.includes(f);
 const val = (f) => (args.includes(f) ? args[args.indexOf(f) + 1] : undefined);
+const maxUsd = val('--max-usd') ? Number(val('--max-usd')) : Infinity; // hard stop: no new request once this much has been spent
 const limit = val('--limit') ? Number(val('--limit')) : Infinity;
 const BASE = 'https://api.anthropic.com/v1';
 const headers = () => ({ 'content-type': 'application/json', 'x-api-key': process.env.ANTHROPIC_API_KEY, 'anthropic-version': '2023-06-01' });
@@ -58,6 +59,7 @@ function check(stage, text, byId) {
   } catch (e) { return { errs: ['not valid JSON: ' + e.message] }; }
 }
 
+const spent = (t) => (t.in * 2 + t.out * 10 + t.cacheWrite * 4 + t.cacheRead * 0.2) / 1e6; // Sonnet 5 list prices; 1h cache writes cost 2x input
 function addUsage(t, u) {
   t.in += u.input_tokens || 0; t.out += u.output_tokens || 0; t.cacheRead += u.cache_read_input_tokens || 0; t.cacheWrite += u.cache_creation_input_tokens || 0;
 }
@@ -99,18 +101,20 @@ async function runBatch(requests, resumeId, outDir, label) {
 
   if (!flag('--batch')) {
     for (let i = 0; i < todo.length; i++) {
+      if (spent(total) >= maxUsd) { console.log(`stopped at $${spent(total).toFixed(3)}: --max-usd reached`); break; }
       let messages = [{ role: 'user', content: prompts[i] }], r;
       for (let attempt = 0; attempt < 2; attempt++) {
         const j = await (await api('POST', `${BASE}/messages`, params(messages))).json();
         addUsage(total, j.usage);
+        if (spent(total) >= maxUsd && attempt === 0) console.log(`at $${spent(total).toFixed(3)}, retries will be skipped`);
         const text = j.content.filter((c) => c.type === 'text').map((c) => c.text).join('');
         r = check(todo[i], text, byId);
-        if (r.spec) break;
+        if (r.spec || spent(total) >= maxUsd) break;
         messages = [...messages, { role: 'assistant', content: text }, { role: 'user', content: 'Rejected by the checker:\n- ' + r.errs.join('\n- ') + '\nReturn the corrected JSON only.' }];
       }
       save(i, r, todo[i]);
     }
-    console.log('usage', total);
+    console.log('usage', total, `~$${spent(total).toFixed(3)}`);
     return;
   }
 

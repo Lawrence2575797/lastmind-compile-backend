@@ -183,7 +183,7 @@ function build(spec) {
       } else if (s.type === 'derive') {
         const open = intro.length;
         const gNames = given.map((k) => TERMS[k].t);
-        const opener = given.length ? `${gNames.join(' and ')} ${given.length > 1 ? 'are' : 'is'} already on your map. ` : '';
+        const opener = given.length ? 'The filled-in terms are already on your map. ' : '';
         const rest = given.length ? 'the rest of this branch' : 'the whole derivation';
         const nextSt = spec.stages[si + 1], lastT = TERMS[intro[intro.length - 1]].t;
         const o = { type: 'derive', title: 'Final test: the whole derivation', prompt: `${opener}Drag and drop the ${open} key term${open === 1 ? '' : 's'} into the boxes to rebuild ${rest} from memory. Chains meet at the concept.` };

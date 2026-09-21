@@ -10,7 +10,7 @@
   function setHeld(n) {
     held = Math.max(0, n);
     pipEls.forEach(function (p, i) { p.classList.toggle('on', i < held); });
-    pipText.textContent = held + ' of ' + CAP;
+    pipText.textContent = Math.min(held, CAP) + ' of ' + CAP;
   }
   function collect(k) {
     if (collected.indexOf(k) > -1) return;
@@ -201,10 +201,23 @@
   /* ---- a derivation drawn as a graph ---- */
   var NS = 'http://www.w3.org/2000/svg';
   function svgEl(tag, attrs, parent) { var e = document.createElementNS(NS, tag); Object.keys(attrs || {}).forEach(function (a) { e.setAttribute(a, attrs[a]); }); if (parent) parent.appendChild(e); return e; }
-  function wrapLabel(text) { if (text.length <= 15) return [text]; var cut = text.lastIndexOf(' ', 14); if (cut < 1) cut = 12; return [text.slice(0, cut), text.slice(cut).trim()]; }
+  /* a label is wrapped to the width of its own box, over as many lines as it needs, so it always fits */
+  function wrapLabel(text, maxChars) {
+    maxChars = maxChars || 15;
+    if (text.length <= maxChars) return [text];
+    var words = text.split(' '), lines = [], cur = '';
+    words.forEach(function (w) {
+      if (cur && (cur + ' ' + w).length > maxChars) { lines.push(cur); cur = w; } else cur = cur ? cur + ' ' + w : w;
+    });
+    if (cur) lines.push(cur);
+    return lines;
+  }
   function setLabel(t, n, text) {
-    t.textContent = ''; var lines = wrapLabel(text);
-    lines.forEach(function (w, j) { var ts = svgEl('tspan', { x: n[0] + n[2] / 2, dy: j === 0 ? (lines.length > 1 ? -8 : 0) : 22 }, t); ts.textContent = w; });
+    t.textContent = '';
+    var lines = wrapLabel(text, Math.max(10, Math.floor((n[2] - 22) / 10)));
+    var step = lines.length > 3 ? 17 : 22;
+    if (lines.length > 3) t.setAttribute('style', 'font-size: 15px');
+    lines.forEach(function (w, j) { var ts = svgEl('tspan', { x: n[0] + n[2] / 2, dy: j === 0 ? -((lines.length - 1) * step) / 2 + 2 : step }, t); ts.textContent = w; });
   }
   function graph(svg, g, opts) {
     svg.setAttribute('viewBox', '0 0 1040 ' + (opts.h || g.h));

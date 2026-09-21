@@ -8,7 +8,10 @@ const W = 1040, PAD = 40, ROW = 90;
 function sizeOf(label) {
   const len = label.length;
   const w = Math.max(130, Math.min(230, Math.round(len * 8.5 + 28)));
-  return [w, len > 22 ? 64 : 56];
+  const perLine = Math.max(10, Math.floor((w - 22) / 10));
+  const lines = Math.max(1, Math.ceil(len / (perLine - 1)));
+  // enough height for every line of the label (22px a line plus padding)
+  return [w, lines <= 1 ? 56 : lines === 2 ? 64 : Math.min(120, 26 + lines * 22)];
 }
 
 function layout(keys, edges, labels, pins) {
@@ -60,8 +63,9 @@ function layout(keys, edges, labels, pins) {
   let x0 = nCols > 1 ? PAD : (W - colW[0]) / 2;
   for (let c = 0; c < nCols; c++) { colX[c] = x0; x0 += colW[c] + gap; }
   const nodes = {};
-  keys.forEach((k) => { nodes[k] = [Math.round(colX[col[k]]), PAD + row[k] * ROW, sizes[k][0], sizes[k][1]]; });
-  const h = PAD * 2 + (nRows - 1) * ROW + 64;
+  const rowPitch = Math.max(ROW, Math.max(...keys.map((k) => sizes[k][1])) + 26);
+  keys.forEach((k) => { nodes[k] = [Math.round(colX[col[k]]), PAD + row[k] * rowPitch, sizes[k][0], sizes[k][1]]; });
+  const h = PAD * 2 + (nRows - 1) * rowPitch + Math.max(...keys.map((k) => sizes[k][1]));
 
   // edge routing
   const elbow = {};

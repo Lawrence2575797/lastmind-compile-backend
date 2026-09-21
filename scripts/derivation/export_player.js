@@ -11,7 +11,7 @@ let { js, html } = build(sample);
 const marker = "  var feed = document.getElementById('feed')";
 const i = js.indexOf(marker);
 if (i < 0) throw new Error('engine marker not found');
-const head = `window.__runDerive = function (D) {
+const head = `window.__runDerive = function (D, CP) {
   'use strict';
   var TERMS = {};
   Object.keys(D.terms).forEach(function (k) { TERMS[k] = { t: D.terms[k].t, c: D.terms[k].c }; });
@@ -110,6 +110,20 @@ const tailAt = body.lastIndexOf("  stageTitle.textContent = STAGES[0].hud;");
 if (tailAt < 0) throw new Error('tail not found');
 body = body.slice(0, tailAt) + gestures + body.slice(tailAt);
 
+// checkpoint: after every completed step the page around us is told where we are, so a lesson left half way resumes at the same step
+body = body.replace("    idx++;\n    var step = script()[idx]; if (!step) return;",
+  "    idx++;\n    try { if (idx >= 1 && idx < script().length - 1) parent.postMessage({ type: 'lm-derive-progress', cp: { idx: idx, collected: collected.slice(), held: held } }, location.origin); } catch (e) { /* standalone */ }\n    var step = script()[idx]; if (!step) return;");
+body = body.replace("  function restart() {\n", "  function restart() {\n    try { parent.postMessage({ type: 'lm-derive-progress', cp: null }, location.origin); } catch (e) { /* standalone */ }\n");
+const tailCall = "  setHeld(0); next(false);";
+const tc = body.lastIndexOf(tailCall);
+if (tc < 0 || body.indexOf("type: 'lm-derive-progress'") < 0) throw new Error('checkpoint hooks not found');
+body = body.slice(0, tc) + `  var resumed = false;
+  if (CP && typeof CP.idx === 'number' && CP.idx >= 1 && CP.idx < script().length - 1) {
+    (CP.collected || []).forEach(function (k) { if (TERMS[k]) collect(k); });
+    setHeld(CP.held || 0); idx = CP.idx - 1; resumed = true; next(false);
+  }
+  if (!resumed) { setHeld(0); next(false); }` + body.slice(tc + tailCall.length);
+
 // finish card: report completion to the page that embeds us
 const a = body.indexOf('  function buildDone() {');
 const b = body.indexOf('  var BUILDERS =');
@@ -138,7 +152,13 @@ window.addEventListener('message', function (e) {
   if (e.origin !== location.origin || !e.data) return;
   if (e.data.type === 'lm-derive-size') { var sb = document.getElementById('sizeBtn'); if (sb) sb.textContent = e.data.expanded ? 'Shrink' : 'Expand'; return; }
   if (e.data.type !== 'lm-derive-init' || window.__started) return;
-  window.__started = true; window.__runDerive(e.data.data);
+  if (e.data.look) {
+    var root = document.documentElement;
+    root.setAttribute('data-look', 'glass');
+    root.style.setProperty('--gtext', e.data.look.text);
+    root.style.setProperty('--pr', e.data.look.rgb);
+  }
+  window.__started = true; window.__runDerive(e.data.data, e.data.checkpoint);
 });
 (function () {
   var sb = document.getElementById('sizeBtn');

@@ -213,7 +213,7 @@ router.get('/derivation/stage/:stage', requireAuth, syncEndpointLimiter, (req: R
 // GET /derivation/my-map -> the key-term graphs of every lesson this student has completed (their own growing key-term map).
 router.get('/derivation/my-map', requireAuth, syncEndpointLimiter, async (req: Request, res: Response) => {
   try {
-    res.json({ graph: await derivationKeyTermGraph(req.userId as string) });
+    res.json({ stages: await derivationCompletedStages(req.userId as string) });
   } catch (err) {
     console.error('Key-term map lookup failed:', err);
     res.status(500).json({ error: 'could not load your key-term map' });

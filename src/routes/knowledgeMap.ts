@@ -33,7 +33,7 @@ import {
   assertAo1ReviewDue,
 } from '../services/nodeReviewService';
 import { getNodeNoteBaseline, getNodeNoteForUser, saveNodeNoteEdit, getNodeNotes, getEdgeNoteBaseline, getEdgeNoteForUser, saveEdgeNoteEdit, getEdgeNotes, getNotesIndexForUser, getPersonalNote, savePersonalNote, checkWorkedExampleStep, markEdgeExplanationSeen } from '../services/knowledgeMapNotesService';
-import { derivationQuick, ensureDerivationContent, derivationPlayerPayload, derivationConceptsOfStage, derivationNodeIds, derivationAnchorConcept, derivationSiblingConcepts } from '../services/derivationService';
+import { derivationCompletedStages, derivationQuick, ensureDerivationContent, derivationPlayerPayload, derivationConceptsOfStage, derivationNodeIds, derivationAnchorConcept, derivationSiblingConcepts } from '../services/derivationService';
 import { generateAndCacheNodeLesson, generateAndCacheEdgeLesson, needsQuestionUpgrade, upgradeLessonQuestions } from '../services/lessonGenerationService';
 import { isStructured, gradeStructured, clientView, lessonForClient, sealJson, openJson, closeEnough, StructuredQuestion } from '../services/questionFormats';
 import { pickRotatingQuestion, poolEntry, poolOf, rotationPick, immediatePool } from '../services/reviewQuestionPool';
@@ -208,6 +208,16 @@ router.get('/derivation/stage/:stage', requireAuth, syncEndpointLimiter, (req: R
   const payload = derivationPlayerPayload(Number(req.params.stage));
   if (!payload) return res.status(404).json({ error: 'lesson not found' });
   res.json(payload);
+});
+
+// GET /derivation/my-map -> the key-term graphs of every lesson this student has completed (their own growing key-term map).
+router.get('/derivation/my-map', requireAuth, syncEndpointLimiter, async (req: Request, res: Response) => {
+  try {
+    res.json({ stages: await derivationCompletedStages(req.userId as string) });
+  } catch (err) {
+    console.error('Key-term map lookup failed:', err);
+    res.status(500).json({ error: 'could not load your key-term map' });
+  }
 });
 
 // POST /knowledge-map-v2/derivation/complete { stage, retryCount? }

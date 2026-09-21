@@ -119,7 +119,9 @@ const done = `  function buildDone() {
     var wrap = stack('<span class="milestone">Lesson complete</span><p class="big">' + STAGES[0].title + '</p><p class="hint">Every term of this lesson is on your knowledge map now.</p>');
     var actions = el('div', 'actions'), go = el('button', 'btn', 'Continue'); go.type = 'button';
     go.addEventListener('click', function () { try { parent.postMessage({ type: 'lm-derive-continue' }, location.origin); } catch (e) { /* standalone */ } });
-    actions.appendChild(go); wrap.appendChild(actions); slide(wrap);
+    var mapBtn = el('button', 'btn', 'See it on my key-term map'); mapBtn.type = 'button';
+    mapBtn.addEventListener('click', function () { try { parent.postMessage({ type: 'lm-derive-open-map' }, location.origin); } catch (e) { /* standalone */ } });
+    actions.appendChild(mapBtn); actions.appendChild(go); wrap.appendChild(actions); slide(wrap);
     if (!window.__reported) { window.__reported = true; try { parent.postMessage({ type: 'lm-derive-complete' }, location.origin); } catch (e) { /* standalone */ } }
   }
 

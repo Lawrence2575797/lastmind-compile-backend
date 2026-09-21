@@ -241,3 +241,21 @@ export async function derivationQuick(nodeId: string): Promise<{ content: any; s
   ensureDerivationContent(nodeId).catch((e) => console.error('LastMind: derivation content refresh failed', nodeId, e));
   return { content, stage, payload };
 }
+
+// The student's own key-term map: every lesson they have completed (all of its concepts have a schedule entry), with its graph. It grows by
+// one lesson each time one is finished.
+export async function derivationCompletedStages(userId: string): Promise<any[]> {
+  const learned = new Set<string>();
+  for (let from = 0; ; from += 1000) {
+    const { data, error } = await supabaseAdmin.from('concept_reviews').select('concept_id').eq('user_id', userId).like('concept_id', 'economics:%').range(from, from + 999);
+    if (error) throw error;
+    (data || []).forEach((r: any) => learned.add(r.concept_id as string));
+    if (!data || data.length < 1000) break;
+  }
+  const out: any[] = [];
+  bundle.stages.forEach((s) => {
+    if (!s || !s.concepts.length || !s.concepts.every((c) => learned.has(c))) return;
+    out.push({ i: s.i, name: s.name, title: s.stage.title, sub: s.stage.sub, terms: s.terms, graph: { h: s.stage.graph.h, nodes: s.stage.graph.nodes, edges: s.stage.graph.edges, given: s.stage.graph.given } });
+  });
+  return out;
+}

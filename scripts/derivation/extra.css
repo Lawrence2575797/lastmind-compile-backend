@@ -2,3 +2,5 @@
 .sub { color: var(--muted); font-size: clamp(20px, 3.4vw, 26px); }
 .facts { display: grid; gap: 18px; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); }
 .chips { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 6px; }
+
+[hidden] { display: none !important; }

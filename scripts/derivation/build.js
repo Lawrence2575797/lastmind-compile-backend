@@ -154,6 +154,9 @@ function build(spec) {
     const intro = st.steps.filter((s) => s.type === 'read' || s.type === 'ask').map((s) => s.term);
     const given = st.given || [];
     const nodeKeys = [...given, ...intro];
+    // one arrow between a pair of terms, however many times the link was listed (map link, given link and added link can repeat it)
+    const seenPairs = new Set();
+    st.edges = (st.edges || []).filter(([x, y]) => { const k = x + '>' + y; if (x === y || seenPairs.has(k)) return false; seenPairs.add(k); return true; });
     const g = layout(nodeKeys, st.edges, labels, st.layout);
     const graph = { h: g.h, nodes: g.nodes, edges: g.edges, given, pairs: st.edges };
     const final = st.steps.findIndex((s) => s.type === 'derive');

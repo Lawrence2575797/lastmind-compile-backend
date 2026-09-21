@@ -17,13 +17,13 @@ router.get('/keys/balance', requireAuth, syncEndpointLimiter, async (req: Reques
 
 const BACKGROUND_REWARD_KEYS = new Set([
   'havnstad', 'wildwest', 'castle', 'riverside', 'space', 'tokyonight',
-  'cosycafe', 'samurai', 'scholarsdesk', 'ancientrome', 'sakuragarden',
+  'cosycafe', 'samurai', 'scholarsdesk', 'ancientrome', 'sakuragarden', 'minimalist',
   // Economics Drawing Tool backgrounds (equipped as the tool's default).
   'diagram-countryside', 'diagram-seventies', 'diagram-futuristic', 'diagram-football',
 ]);
 const DIAGRAM_BACKGROUND_COST = 25;
 const BACKGROUND_REWARD_COST = 75;
-const FREE_BACKGROUND_REWARD_KEYS = new Set(['cosycafe', 'diagram-seventies']);
+const FREE_BACKGROUND_REWARD_KEYS = new Set(['cosycafe', 'diagram-seventies', 'minimalist']);
 const backgroundRewardCost = (rewardKey: string): number => {
   if (FREE_BACKGROUND_REWARD_KEYS.has(rewardKey)) return 0;
   return rewardKey.startsWith('diagram-') ? DIAGRAM_BACKGROUND_COST : BACKGROUND_REWARD_COST;

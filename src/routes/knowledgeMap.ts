@@ -154,6 +154,40 @@ async function upgradeIfLaw(nodeId: string, userId: string, content: any): Promi
   return n && needsQuestionUpgrade(n.subject as string, content) ? upgradeLessonQuestions(nodeId, userId, content) : content;
 }
 
+// Every call site that (re)generates a node's lesson - not just the main lesson route - needs to prefer the on-demand derivation
+// format (Economics' precompiled bundle, or any other knowledge-mapped subject's stage generated on demand; see
+// derivationGenericService.ts) over the old per-node text-lesson generator. Without this, a Day-1 check or a Notes-page
+// regeneration for a node with no stored content yet would call the OLD generator directly and bring the old format straight
+// back for a subject this app now teaches by derivation - a real reported bug (GET /day1-checks/due's own regeneration branch,
+// below, used to do exactly that for Law, Biology, Chemistry, Maths, Italian and Spanish, not just Economics).
+async function generateNodeLessonPreferringDerivation(nodeId: string, userId: string, hooks: { before: () => Promise<void>; after?: () => Promise<void> }): Promise<any | null> {
+  const derived = await derivationQuick(nodeId);
+  if (derived) return derived.content;   // ensureDerivationContent already refreshes the stored row in the background here
+  try {
+    const generic = await derivationGenericLookup(nodeId);
+    if (generic) {
+      let stage = generic.cached;
+      if (!stage) {
+        await hooks.before();
+        stage = await derivationGenericGenerate(generic, userId);
+        if (hooks.after) await hooks.after();
+      }
+      const content = derivationContentForGenericNode(generic, stage);
+      if (content) {
+        await supabaseAdmin.from('knowledge_map_node_lessons').upsert({ node_id: nodeId, encoding_content: content }, { onConflict: 'node_id' });
+        return content;
+      }
+    }
+  } catch (err) {
+    if (err instanceof InsufficientLocksError || err instanceof GenerationCapExceededError) throw err;
+    console.error('Generic derivation generation failed - falling back to the plain lesson generator:', err);
+  }
+  await hooks.before();
+  const generated = await generateAndCacheNodeLesson(nodeId, userId);
+  if (hooks.after) await hooks.after();
+  return generated;
+}
+
 router.get('/knowledge-map-v2/node/:nodeId/lesson', requireAuth, syncEndpointLimiter, async (req: Request, res: Response) => {
   const { nodeId } = req.params;
   const userId = req.userId as string;
@@ -1299,9 +1333,10 @@ router.get('/day1-checks/due', requireAuth, syncEndpointLimiter, async (req: Req
       const regenerateNext = async () => {
         try {
           const [next] = await orderDay1ChecksByLessonOrder(missing.map((x) => ({ conceptId: x.r.concept_id as string, item: x })));
-          await assertFreshGenerationWithinCap(userId, await isUserPaid(userId), req.userCreatedAt ?? null, req.userEmail);
-          await generateAndCacheNodeLesson(next.item.info!.nodeId, userId);
-          await recordFreshGenerationEvent(userId);
+          await generateNodeLessonPreferringDerivation(next.item.info!.nodeId, userId, {
+            before: async () => { await assertFreshGenerationWithinCap(userId, await isUserPaid(userId), req.userCreatedAt ?? null, req.userEmail); },
+            after: () => recordFreshGenerationEvent(userId),
+          });
           next.item.question = await getQuestionForConceptId(next.item.r.concept_id as string, userId);
         } catch (err) {
           console.error('Regenerating a lesson for a Day-1 check failed (non-fatal):', err);
@@ -1846,8 +1881,8 @@ async function regenerateLessonForEncodedNode(nodeId: string, userId: string): P
   if (!node) return false;
   const { data: review } = await supabaseAdmin.from('concept_reviews').select('concept_id').eq('user_id', userId).eq('concept_id', node.concept_id as string).maybeSingle();
   if (!review) return false;
-  await assertLocksAvailable(userId);
-  return !!(await generateAndCacheNodeLesson(nodeId, userId));
+  const content = await generateNodeLessonPreferringDerivation(nodeId, userId, { before: () => assertLocksAvailable(userId) });
+  return !!content;
 }
 
 router.post('/knowledge-map-v2/node/:nodeId/notes/compile', requireAuth, async (req: Request, res: Response) => {

@@ -26,11 +26,14 @@ const IMAGE_BG_TEXTURES = [
 ];
 const VALID_BG_TEXTURES = ['plain', 'wood', 'minimalist', 'premium-gold', ...IMAGE_BG_TEXTURES];
 
+// Premium Gold is the default look for every account with no saved theme row yet - matches learn/index.html's own
+// THEME_DEFAULTS exactly, so a brand-new account's first fetch here agrees with what the frontend already shows it
+// before this even resolves (cached from THEME_DEFAULTS/localStorage).
 const DEFAULTS: ThemeSettings = {
-  textColor: '#E6D7B0',
-  panelColor: '#4E1B26',
-  bgColor: '#D9C398',
-  bgTexture: 'wood',
+  textColor: '#FFFFFF',
+  panelColor: '#B8860B',
+  bgColor: '#0B0B0C',
+  bgTexture: 'premium-gold',
 };
 
 // Stored as plain hex strings, not structured colour objects - the only

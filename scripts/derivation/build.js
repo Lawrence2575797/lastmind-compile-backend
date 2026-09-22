@@ -148,7 +148,9 @@ function build(spec) {
   if (errs.length) { const e = new Error('Spec invalid:\n - ' + errs.join('\n - ')); e.errs = errs; throw e; }
   const keys = Object.keys(spec.terms);
   const TERMS = {};
-  keys.forEach((k, i) => { TERMS[k] = { t: spec.terms[k].label, c: spec.terms[k].colour || PALETTE[i % PALETTE.length] }; });
+  // syn (optional): other genuinely correct phrasings of this term's idea, not just spelling variants - carried straight through
+  // into the Day-1 check's accepted answers (see derivationService.ts's labelAlts). Authored by the generation prompt or by hand.
+  keys.forEach((k, i) => { TERMS[k] = { t: spec.terms[k].label, c: spec.terms[k].colour || PALETTE[i % PALETTE.length], ...(spec.terms[k].syn ? { syn: spec.terms[k].syn } : {}) }; });
   const labels = {};
   keys.forEach((k) => { labels[k] = TERMS[k].t; });
 

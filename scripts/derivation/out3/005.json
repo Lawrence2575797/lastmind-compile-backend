@@ -1,0 +1,165 @@
+{
+ "id": "gen",
+ "subject": "Economics",
+ "title": "Specialisation and division of labour",
+ "terms": {
+  "SPECIALISATION_DIVISION_LABOUR": {
+   "label": "Specialisation & division of labour"
+  },
+  "repeated_task": {
+   "label": "Repeating one task",
+   "syn": ["doing the same task repeatedly", "repetition of one task", "performing one task over and over"]
+  },
+  "ADV_SPEC_PRODUCTIVITY": {
+   "label": "Higher productivity",
+   "syn": ["more output per worker", "increased output", "higher output per worker"]
+  },
+  "ADV_SPEC_TIME": {
+   "label": "Time saved switching tasks",
+   "syn": ["less time wasted switching tasks", "no time lost changing tasks", "time saved not switching tools"]
+  },
+  "ADV_SPEC_MACHINERY": {
+   "label": "Specialised machinery",
+   "syn": ["specialist machinery", "specialist equipment", "specialised equipment", "capital equipment"]
+  },
+  "ADV_SPEC_SKILL": {
+   "label": "Worker expertise",
+   "syn": ["worker skill", "greater skill", "increased skill", "improved skill"]
+  },
+  "CAPITAL_GOODS": {
+   "label": "Capital goods"
+  }
+ },
+ "stages": [
+  {
+   "name": "Specialisation and division of labour",
+   "title": "Specialisation and division of labour",
+   "sub": "Why breaking production into separate tasks makes workers more productive.",
+   "steps": [
+    {
+     "type": "ask",
+     "q": "One worker makes a whole pin, or ten workers each do one step. Which way makes more pins a day?",
+     "right": "Splitting the process into separate steps",
+     "wrong": "Each worker making a whole pin alone",
+     "hint": "Think about a worker who only ever does one simple step, over and over.",
+     "pre": "Breaking production into separate tasks done by different workers is",
+     "term": "SPECIALISATION_DIVISION_LABOUR"
+    },
+    {
+     "type": "ask",
+     "q": "Tasks are now split up. What does each worker end up doing all day?",
+     "right": "Performing one single step repeatedly",
+     "wrong": "Performing several different steps in turn",
+     "hint": "Splitting the process means each person keeps to one job, not many.",
+     "pre": "So each worker ends up",
+     "term": "repeated_task"
+    },
+    {
+     "type": "ask",
+     "q": "A worker doing every step walks between benches and swaps tools. Does a worker who stays at one bench lose that time?",
+     "right": "No, they save that time",
+     "wrong": "Yes, they lose the same amount of time",
+     "hint": "One worker moves between many tasks and tools, the other stays put.",
+     "pre": "So specialisation gives",
+     "term": "ADV_SPEC_TIME"
+    },
+    {
+     "type": "ask",
+     "q": "A costly machine does just one step of making a pin. Is it worth buying if that step is done all day?",
+     "right": "Yes, because that one step is done constantly",
+     "wrong": "No, it would sit idle most of the time",
+     "hint": "Think about who could keep a specialised machine busy: someone doing many jobs, or someone doing one job all day.",
+     "pre": "That constant, focused use is what",
+     "term": "ADV_SPEC_MACHINERY"
+    },
+    {
+     "type": "order",
+     "terms": [
+      "SPECIALISATION_DIVISION_LABOUR",
+      "repeated_task",
+      "ADV_SPEC_TIME",
+      "ADV_SPEC_MACHINERY"
+     ],
+     "prompt": "Drag and drop the 4 key terms in the order they build on each other."
+    },
+    {
+     "type": "ask",
+     "q": "One worker repeats a single step thousands of times; another does all ten steps alone. Who makes more pins an hour?",
+     "right": "The one repeating the single step",
+     "wrong": "The one doing all ten steps",
+     "hint": "Repetition of one simple task versus constantly changing tasks - which is faster per hour?",
+     "pre": "So specialisation raises output per worker, which is",
+     "term": "ADV_SPEC_PRODUCTIVITY"
+    },
+    {
+     "type": "ask",
+     "q": "After months of doing only one step, does a worker get better and faster at it than someone rotating through all ten?",
+     "right": "Yes, they become better at it",
+     "wrong": "No, both improve at the same rate",
+     "hint": "Practising one narrow task repeatedly versus spreading practice across ten tasks.",
+     "pre": "That growing ability at one task is the development of",
+     "term": "ADV_SPEC_SKILL"
+    },
+    {
+     "type": "derive"
+    }
+   ],
+   "given": [
+    "CAPITAL_GOODS"
+   ],
+   "needs": [
+    "CAPITAL_GOODS"
+   ],
+   "builds": [
+    "CAPITAL_GOODS"
+   ],
+   "nodes": [
+    "SPECIALISATION_DIVISION_LABOUR",
+    "ADV_SPEC_PRODUCTIVITY",
+    "ADV_SPEC_TIME",
+    "ADV_SPEC_MACHINERY",
+    "ADV_SPEC_SKILL"
+   ],
+   "dropped": [
+    [
+     "SPECIALISATION_DIVISION_LABOUR",
+     "ADV_SPEC_PRODUCTIVITY"
+    ],
+    [
+     "SPECIALISATION_DIVISION_LABOUR",
+     "ADV_SPEC_SKILL"
+    ]
+   ],
+   "edges": [
+    [
+     "SPECIALISATION_DIVISION_LABOUR",
+     "ADV_SPEC_TIME"
+    ],
+    [
+     "SPECIALISATION_DIVISION_LABOUR",
+     "ADV_SPEC_MACHINERY"
+    ],
+    [
+     "CAPITAL_GOODS",
+     "ADV_SPEC_MACHINERY"
+    ],
+    [
+     "SPECIALISATION_DIVISION_LABOUR",
+     "repeated_task"
+    ],
+    [
+     "repeated_task",
+     "ADV_SPEC_PRODUCTIVITY"
+    ],
+    [
+     "repeated_task",
+     "ADV_SPEC_SKILL"
+    ],
+    [
+     "CAPITAL_GOODS",
+     "ADV_SPEC_MACHINERY"
+    ]
+   ]
+  }
+ ]
+}

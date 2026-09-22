@@ -5,7 +5,10 @@ import { supabaseAdmin } from './supabaseAdmin';
 // offline, checked by code and compiled into src/data/derivationEconomics.json. This replaces the old per-node text lessons for the
 // Edexcel Economics map: those are never generated again, and any stored old lesson is overwritten with the content built here.
 
-export interface StageTerm { t: string; c: string }
+// syn: a few OTHER genuinely correct ways to phrase this term's core idea, not just spelling variants of the same words - "capital
+// equipment" or "specialist equipment" for "Specialised machinery", say. Authored once, offline (by the generation prompt, or by
+// hand for an existing stage), never guessed live: matching stays plain code (closeEnough), never a Claude call at grading time.
+export interface StageTerm { t: string; c: string; syn?: string[] }
 export interface Stage { i: number; name: string; edges: [string, string][]; nodes: string[]; concepts: string[]; terms: Record<string, StageTerm>; stage: any }
 interface Bundle { subject: string; qualification: string; examBoard: string; stages: (Stage | null)[]; byConcept: Record<string, number> }
 const bundle = bundleJson as unknown as Bundle;
@@ -173,10 +176,11 @@ function coreLabel(label: string): string {
   const m = label.match(/^(.*?)\s*\(([^)]*)\)\s*$/);
   return m && m[1].trim() ? m[1].trim() : label;
 }
-function labelAlts(label: string): string[] {
+function labelAlts(label: string, syn?: string[]): string[] {
   const alts = new Set([label.toLowerCase(), coreLabel(label).toLowerCase()]);
   const abbr = label.match(/\(([A-Z]{2,6})\b/);
   if (abbr) alts.add(abbr[1].toLowerCase());
+  (syn || []).forEach((s) => { const t = s.trim().toLowerCase(); if (t) alts.add(t); });
   return Array.from(alts);
 }
 
@@ -203,7 +207,7 @@ export function derivationSectionQuestion(stage: number): any | null {
     h: g.h,
     nodes: keys.map((k) => ({ id: k, x: g.nodes[k][0], y: g.nodes[k][1], w: g.nodes[k][2], hh: g.nodes[k][3], given: given.has(k), color: s.terms[k]?.c, label: given.has(k) ? label(k) : undefined })),
     edges: g.edges,
-    blanks: blankKeys.map((k) => ({ id: k, answer: coreLabel(label(k)), alt: labelAlts(label(k)) })),
+    blanks: blankKeys.map((k) => ({ id: k, answer: coreLabel(label(k)), alt: labelAlts(label(k), s.terms[k]?.syn) })),
   };
 }
 

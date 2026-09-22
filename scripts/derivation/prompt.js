@@ -93,7 +93,11 @@ COMMON REJECTIONS TO AVOID
 - A node id introduced twice, or a given term introduced again.
 
 OUTPUT (JSON only, no prose)
-{"terms": {"<id>": {"label": "<1 to 4 words>"}, ...},          every node id, plus support terms
+{"terms": {"<id>": {"label": "<1 to 4 words>", "syn": ["<other genuinely correct phrasing>", ...]}, ...},   every node id, plus support terms.
+ "syn" is optional (omit it when the label is already the only sensible wording): 1 to 3 OTHER ways a student who understands
+ the idea might correctly write it, not spelling variants of the same words - "specialist equipment" or "capital equipment"
+ for "Specialised machinery", "more output per worker" for "Higher productivity". A Day-1 check later marks the box right when
+ the student types the label OR any of these, so only include a phrasing that is genuinely, unambiguously the same idea.
  "extraEdges": [["<id>", "<id>"], ...],                        every link that involves a support term (either direction, including from a given term); node-to-node links come from the map
  "dropEdges": [["<id>", "<id>"], ...],                        optional: map links replaced by a longer path through support terms
  "stage": {"name": "...", "title": "<same>", "sub": "<one sentence: what the student can do after>", "steps": [ ... ]}}

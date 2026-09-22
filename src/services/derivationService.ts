@@ -5,8 +5,8 @@ import { supabaseAdmin } from './supabaseAdmin';
 // offline, checked by code and compiled into src/data/derivationEconomics.json. This replaces the old per-node text lessons for the
 // Edexcel Economics map: those are never generated again, and any stored old lesson is overwritten with the content built here.
 
-interface StageTerm { t: string; c: string }
-interface Stage { i: number; name: string; edges: [string, string][]; nodes: string[]; concepts: string[]; terms: Record<string, StageTerm>; stage: any }
+export interface StageTerm { t: string; c: string }
+export interface Stage { i: number; name: string; edges: [string, string][]; nodes: string[]; concepts: string[]; terms: Record<string, StageTerm>; stage: any }
 interface Bundle { subject: string; qualification: string; examBoard: string; stages: (Stage | null)[]; byConcept: Record<string, number> }
 const bundle = bundleJson as unknown as Bundle;
 
@@ -68,29 +68,25 @@ function chainThrough(s: Stage, key: string): string[] {
 }
 
 // The stored lesson content for one concept, in the format every existing reader (notes, ask, reviews, Day-1 checks) already understands.
-export function derivationContentForNode(n: NodeIdentity): any | null {
-  const i = derivationStageForNode(n);
-  if (i === null || !n.node_key) return null;
-  const s = bundle.stages[i] as Stage;
-  const term = s.terms[n.node_key];
+// Shared by the precompiled Economics bundle and by any other subject's stage generated on demand (see derivationGenericService.ts) -
+// `extraPool` is a bag of other terms' labels this subject can offer as multiple-choice distractors when the stage itself is too
+// small to have 3 of its own (the Economics bundle draws these from neighbouring stages; a generic stage has none to draw from).
+export function derivationContentForStage(s: Stage, nodeKey: string, stageRef: number | string, extraPool: string[] = []): any | null {
+  const term = s.terms[nodeKey];
   if (!term) return null;
-  const step = (s.stage.script as any[]).find((x) => (x.type === 'ask' || x.type === 'read') && x.term === n.node_key);
+  const step = (s.stage.script as any[]).find((x) => (x.type === 'ask' || x.type === 'read') && x.term === nodeKey);
   if (!step) return null;
   const label = term.t;
   const scenario = step.type === 'ask' ? `${step.q} ${cap(step.opts[0])}.` : `${step.text.trim()} ${labelAfterArticle(step.text, label)}.`;
   const statement = step.type === 'ask' ? `${step.pre.trim()} ${labelAfterArticle(step.pre, label)}.` : `${label}.`;
-  const chain = chainThrough(s, n.node_key).map((k) => s.terms[k]?.t).filter(Boolean);
+  const chain = chainThrough(s, nodeKey).map((k) => s.terms[k]?.t).filter(Boolean);
   const explanation = [scenario, statement, chain.length > 1 ? `This idea sits in a chain of ideas: ${chain.join(' → ')}.` : ''].filter(Boolean).join('\n\n');
 
-  // A multiple-choice check on this term: its own label against three others from the same lesson (or the wider map).
-  const others = Object.keys(s.terms).filter((k) => k !== n.node_key).map((k) => s.terms[k].t);
-  const pool: string[] = [...others];
-  for (let j = 1; pool.length < 3 && j < bundle.stages.length; j++) {
-    const t = bundle.stages[(i + j) % bundle.stages.length];
-    if (t) Object.values(t.terms).forEach((x) => { if (pool.length < 3 && x.t !== label && !pool.includes(x.t)) pool.push(x.t); });
-  }
+  // A multiple-choice check on this term: its own label against three others from the same lesson (or the wider pool).
+  const others = Object.keys(s.terms).filter((k) => k !== nodeKey).map((k) => s.terms[k].t);
+  const pool: string[] = [...others, ...extraPool.filter((t) => t !== label && !others.includes(t))];
   const options = [label, ...pool.slice(0, 3)];
-  const rot = i % 4;
+  const rot = (typeof stageRef === 'number' ? stageRef : options.length) % 4;
   const shuffled = options.map((_, k) => options[(k + rot) % 4]);
   const mc = {
     format: 'multiple_choice',
@@ -99,14 +95,26 @@ export function derivationContentForNode(n: NodeIdentity): any | null {
     correctOptionIndex: shuffled.indexOf(label),
   };
   const recallChecks: any[] = [mc];
-  const path = chainThrough(s, n.node_key);
+  const path = chainThrough(s, nodeKey);
   if (path.length >= 3 && path.length <= 6) {
     recallChecks.push({
       format: 'order', questionText: 'Put these ideas in the order they build on each other.',
       items: path.map((k) => s.terms[k]?.t).filter(Boolean),
     });
   }
-  return { explanation, practiceQuestion: mc, recallChecks, formatVersion: 2, derivation: true, stage: i };
+  return { explanation, practiceQuestion: mc, recallChecks, formatVersion: 2, derivation: true, stage: stageRef };
+}
+
+export function derivationContentForNode(n: NodeIdentity): any | null {
+  const i = derivationStageForNode(n);
+  if (i === null || !n.node_key) return null;
+  const s = bundle.stages[i] as Stage;
+  const extraPool: string[] = [];
+  for (let j = 1; extraPool.length < 3 && j < bundle.stages.length; j++) {
+    const t = bundle.stages[(i + j) % bundle.stages.length];
+    if (t) Object.values(t.terms).forEach((x) => { if (extraPool.length < 3 && !extraPool.includes(x.t)) extraPool.push(x.t); });
+  }
+  return derivationContentForStage(s, n.node_key, i, extraPool);
 }
 
 // Loads the node, and if the Economics derivation covers it, makes sure the stored lesson row holds the derivation-built content

@@ -34,6 +34,7 @@ import {
 } from '../services/nodeReviewService';
 import { getNodeNoteBaseline, getNodeNoteForUser, saveNodeNoteEdit, getNodeNotes, getEdgeNoteBaseline, getEdgeNoteForUser, saveEdgeNoteEdit, getEdgeNotes, getNotesIndexForUser, getPersonalNote, savePersonalNote, checkWorkedExampleStep, markEdgeExplanationSeen } from '../services/knowledgeMapNotesService';
 import { derivationKeyTermGraph, derivationCompletedStages, derivationQuick, ensureDerivationContent, derivationPlayerPayload, derivationConceptsOfStage, derivationNodeIds, derivationAnchorConcept, derivationSiblingConcepts } from '../services/derivationService';
+import { derivationGenericLookup, derivationGenericGenerate, derivationContentForGenericNode, genericStageKey, derivationGenericPayloadForKey } from '../services/derivationGenericService';
 import { generateAndCacheNodeLesson, generateAndCacheEdgeLesson, needsQuestionUpgrade, upgradeLessonQuestions } from '../services/lessonGenerationService';
 import { isStructured, gradeStructured, clientView, lessonForClient, sealJson, openJson, closeEnough, StructuredQuestion } from '../services/questionFormats';
 import { pickRotatingQuestion, poolEntry, poolOf, rotationPick, immediatePool } from '../services/reviewQuestionPool';
@@ -155,10 +156,36 @@ async function upgradeIfLaw(nodeId: string, userId: string, content: any): Promi
 
 router.get('/knowledge-map-v2/node/:nodeId/lesson', requireAuth, syncEndpointLimiter, async (req: Request, res: Response) => {
   const { nodeId } = req.params;
+  const userId = req.userId as string;
   try {
     // Economics: taught by a derivation lesson. The stored old text lesson is replaced, and nothing is generated.
     const derived = await derivationQuick(nodeId);
     if (derived) return res.json({ ...lessonForClient(derived.content), derivation: { stage: derived.stage, payload: derived.payload } });
+
+    // Any other subject with a real knowledge map: the same derivation lesson, generated live the first time a student reaches
+    // its stage (see derivationGenericService.ts) instead of precompiled offline - the checker, prompt and rules are identical.
+    try {
+      const generic = await derivationGenericLookup(nodeId);
+      if (generic) {
+        let stage = generic.cached;
+        if (!stage) {
+          await assertFreshGenerationWithinCap(userId, await isUserPaid(userId), req.userCreatedAt ?? null, req.userEmail);
+          stage = await derivationGenericGenerate(generic, userId);
+          await recordFreshGenerationEvent(userId);
+        }
+        const content = derivationContentForGenericNode(generic, stage);
+        if (content) {
+          await supabaseAdmin.from('knowledge_map_node_lessons').upsert({ node_id: nodeId, encoding_content: content }, { onConflict: 'node_id' });
+          return res.json({ ...lessonForClient(content), derivation: { stage: genericStageKey(generic.subject, generic.qualification, generic.examBoard, generic.stageIndex), payload: { terms: stage.terms, stage: stage.stage } } });
+        }
+      }
+    } catch (genErr) {
+      // A real cap/balance limit is a genuine stop, not something to silently paper over by falling back to the old
+      // generator (which would just spend another generation the student is already capped or out of Locks for).
+      if (genErr instanceof InsufficientLocksError || genErr instanceof GenerationCapExceededError) throw genErr;
+      console.error('Generic derivation generation failed - falling back to the plain lesson generator:', genErr);
+    }
+
     const { data, error } = await supabaseAdmin
       .from('knowledge_map_node_lessons')
       .select('encoding_content')
@@ -175,7 +202,6 @@ router.get('/knowledge-map-v2/node/:nodeId/lesson', requireAuth, syncEndpointLim
     // BEFORE generating, not after, for BOTH tiers (free used to bypass
     // this entirely - see generationCapService.ts's own comment on why
     // that changed) - a cache hit above never reaches this check at all.
-    const userId = req.userId as string;
     await assertFreshGenerationWithinCap(userId, await isUserPaid(userId), req.userCreatedAt ?? null, req.userEmail);
     const generated = await generateAndCacheNodeLesson(nodeId, userId);
     if (!generated) return res.status(404).json({ error: 'concept not found' });
@@ -203,8 +229,15 @@ router.get('/knowledge-map-v2/node/:nodeId/lesson', requireAuth, syncEndpointLim
   }
 });
 
-// GET /derivation/stage/:stage -> the compiled derivation lesson (terms, graph, steps) the client player teaches.
-router.get('/derivation/stage/:stage', requireAuth, syncEndpointLimiter, (req: Request, res: Response) => {
+// GET /derivation/stage/:stage -> the compiled derivation lesson (terms, graph, steps) the client player teaches. A generic (non-
+// Economics) stage's id is a "g:..." string rather than a bare index (see derivationGenericService.ts's genericStageKey) - this is
+// only ever hit as a fallback, since the lesson response already carries the payload inline the first time (see sfBuildDerivationSlides).
+router.get('/derivation/stage/:stage', requireAuth, syncEndpointLimiter, async (req: Request, res: Response) => {
+  if (req.params.stage.startsWith('g:')) {
+    const payload = await derivationGenericPayloadForKey(req.params.stage);
+    if (!payload) return res.status(404).json({ error: 'lesson not found' });
+    return res.json(payload);
+  }
   const payload = derivationPlayerPayload(Number(req.params.stage));
   if (!payload) return res.status(404).json({ error: 'lesson not found' });
   res.json(payload);

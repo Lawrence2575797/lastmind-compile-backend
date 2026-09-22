@@ -29,10 +29,11 @@ const VALID_BG_TEXTURES = ['plain', 'wood', 'minimalist', 'premium-gold', ...IMA
 // Premium Gold is the default look for every account with no saved theme row yet - matches learn/index.html's own
 // THEME_DEFAULTS exactly, so a brand-new account's first fetch here agrees with what the frontend already shows it
 // before this even resolves (cached from THEME_DEFAULTS/localStorage).
+// Matches the LastMind logo's own two colours exactly (icons/lastmind-logo.png): charcoal and a muted gold.
 const DEFAULTS: ThemeSettings = {
-  textColor: '#FFFFFF',
-  panelColor: '#D4AF37',
-  bgColor: '#0B0B0C',
+  textColor: '#C2A471',
+  panelColor: '#2B2A2C',
+  bgColor: '#FFFFFF',
   bgTexture: 'premium-gold',
 };
 

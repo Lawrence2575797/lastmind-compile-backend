@@ -117,8 +117,13 @@ export function clientView(q: any): Record<string, unknown> {
 
 export interface StructuredGrade { correct: boolean; feedback: string; detail?: boolean[]; reveal?: string }
 
-// Lower-case, accents and punctuation stripped, leading articles dropped: what a typed answer is compared on.
-const norm = (v: unknown) => String(v ?? '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().replace(/[^a-z0-9 ]+/g, ' ').replace(/\b(the|a|an)\b/g, ' ').replace(/\s+/g, ' ').trim();
+// Lower-case, accents and punctuation stripped, leading articles and a few meaning-preserving connector words dropped: what a
+// typed answer is compared on. "&" -> "and" BEFORE punctuation is stripped (real reported case: a term labelled "X & Y" typed
+// back as "X and Y" was marked wrong, since stripping "&" as punctuation alone throws the word away entirely rather than
+// treating it as what it actually is - the same word spelled differently). "between" is dropped for the same reason a typed
+// answer can genuinely, correctly insert it ("time saved BETWEEN switching tasks" for "time saved switching tasks") without
+// changing what's being said - unlike "of"/"to", which usually do carry the term's own meaning and stay.
+const norm = (v: unknown) => String(v ?? '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().replace(/&/g, ' and ').replace(/[^a-z0-9 ]+/g, ' ').replace(/\b(the|a|an|between)\b/g, ' ').replace(/\s+/g, ' ').trim();
 function within(a: string, b: string, max: number): boolean {
   if (Math.abs(a.length - b.length) > max) return false;
   const d: number[][] = Array.from({ length: a.length + 1 }, (_, i) => [i, ...Array(b.length).fill(0)]);

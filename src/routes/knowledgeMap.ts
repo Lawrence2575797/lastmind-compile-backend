@@ -1534,6 +1534,29 @@ router.post('/day1-checks/:id/submit', requireAuth, costlyEndpointLimiter, async
   }
 });
 
+// POST /day1-checks/:id/peek - a live, side-effect-free check of whatever the student has typed SO FAR into a cloze/diagram/steps
+// check, called as they type (debounced), not on demand. Pure code (gradeStructured - no Claude call, so this costs nothing and
+// never touches Locks), and deliberately never resolves the check, grades FSRS, or bumps any counter: only real Submit does that.
+// The response is used to quietly lock in a box the moment it's right; a wrong or still-empty box is never reported as wrong here
+// (the caller only ever acts on `detail[i] === true`) - that's a UI choice enforced by the frontend, not something this route
+// needs to hide, since detail is exactly the same per-index boolean array the real submit route already returns.
+router.post('/day1-checks/:id/peek', requireAuth, syncEndpointLimiter, async (req: Request, res: Response) => {
+  const { id } = req.params;
+  const { structured } = (req.body ?? {}) as { structured?: unknown };
+  try {
+    const userId = req.userId as string;
+    const { data: row } = await supabaseAdmin.from('day1_checks').select('concept_id, resolved').eq('id', id).eq('user_id', userId).maybeSingle();
+    if (!row || row.resolved) return res.json({ detail: [] });
+    const question = await getQuestionForConceptId(row.concept_id as string, userId);
+    if (!question?.structured) return res.json({ detail: [] });
+    const g = gradeStructured(question.structured, structured);
+    res.json({ detail: g.detail || [] });
+  } catch (err) {
+    console.error('Day-1 check peek failed:', err);
+    res.status(500).json({ error: 'could not check that' });
+  }
+});
+
 
 // ---- Node-level spaced review ----
 // Only nodes are ever launchable, never a link on its own (see

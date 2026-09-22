@@ -31,7 +31,7 @@ const VALID_BG_TEXTURES = ['plain', 'wood', 'minimalist', 'premium-gold', ...IMA
 // before this even resolves (cached from THEME_DEFAULTS/localStorage).
 const DEFAULTS: ThemeSettings = {
   textColor: '#FFFFFF',
-  panelColor: '#B8860B',
+  panelColor: '#D4AF37',
   bgColor: '#0B0B0C',
   bgTexture: 'premium-gold',
 };

@@ -120,7 +120,7 @@ function within(a: string, b: string, max: number): boolean {
   for (let i = 1; i <= a.length; i++) for (let j = 1; j <= b.length; j++) d[i][j] = Math.min(d[i - 1][j] + 1, d[i][j - 1] + 1, d[i - 1][j - 1] + (a[i - 1] === b[j - 1] ? 0 : 1));
   return d[a.length][b.length] <= max;
 }
-export const closeEnough = (given: string, target: string) => { const g = norm(given), t = norm(target); return !!g && (g === t || within(g, t, t.length >= 12 ? 2 : t.length >= 6 ? 1 : 0)); };
+export const closeEnough = (given: string, target: string) => { const g = norm(given), t = norm(target); return !!g && (g === t || within(g, t, t.length >= 10 ? 3 : t.length >= 5 ? 2 : t.length >= 3 ? 1 : 0)); };
 
 export function gradeStructured(q: StructuredQuestion, answer: any): StructuredGrade {
   if (q.format === 'cloze') {

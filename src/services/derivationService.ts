@@ -173,6 +173,19 @@ function mainChain(s: Stage): string[] {
   return best;
 }
 
+// A term's label can carry a formula or abbreviation in brackets ("Average variable cost (AVC = TVC/Q)") - nobody can type that from
+// memory, so the plain name in front of the brackets is what's actually asked for, with the full label and any abbreviation accepted too.
+function coreLabel(label: string): string {
+  const m = label.match(/^(.*?)\s*\(([^)]*)\)\s*$/);
+  return m && m[1].trim() ? m[1].trim() : label;
+}
+function labelAlts(label: string): string[] {
+  const alts = new Set([label.toLowerCase(), coreLabel(label).toLowerCase()]);
+  const abbr = label.match(/\(([A-Z]{2,6})\b/);
+  if (abbr) alts.add(abbr[1].toLowerCase());
+  return Array.from(alts);
+}
+
 // The Day-1 check for a whole lesson: fill in the key words of its main chain of ideas, in order. Typing the words fills them in, and where
 // each one goes puts them in order, so the one task is both. Graded exactly, no AI.
 export function derivationSectionQuestion(stage: number): any | null {
@@ -189,7 +202,7 @@ export function derivationSectionQuestion(stage: number): any | null {
     questionText: `"${s.stage.title}": fill in the key words of the chain, in order. Each blank is one key term, and each idea leads to the next.`,
     markScheme: chain.map(label).join(' → '),
     text,
-    blanks: blanks.map((k) => ({ answer: label(k), alt: [label(k).toLowerCase()] })),
+    blanks: blanks.map((k) => ({ answer: coreLabel(label(k)), alt: labelAlts(label(k)) })),
   };
 }
 

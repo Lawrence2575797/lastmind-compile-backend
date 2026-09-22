@@ -1508,8 +1508,15 @@ router.post('/day1-checks/:id/submit', requireAuth, costlyEndpointLimiter, async
 
     if (!retryAfterSillyMistake && sillyMistake) {
       // Deferred - not resolved, no Rb bump and no FSRS grade yet. The
-      // student gets one more attempt at the exact same question.
-      return res.json({ correct: false, sillyMistake: true, feedback, detail });
+      // student gets one more attempt at the exact same question. A cloze
+      // section check's first miss also gets a small nudge: the initial
+      // letter of each word of every still-wrong term ("Finite stock" ->
+      // "F    S"), enough to jog memory without just handing the answer
+      // over - never sent on the SECOND (final) attempt.
+      const hints = (question.structured?.format === 'cloze' || question.structured?.format === 'diagram') && detail
+        ? (question.structured.blanks || []).map((b: any, i: number) => (detail![i] ? null : String(b.answer || '').split(' ').map((w: string) => w[0] || '').join('    ')))
+        : undefined;
+      return res.json({ correct: false, sillyMistake: true, feedback, detail, hints });
     }
 
     // A genuine failure (or a still-wrong/second attempt after the one

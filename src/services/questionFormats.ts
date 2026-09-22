@@ -26,9 +26,12 @@ export function openJson<T>(sealed: unknown): T | null {
 
 // cloze   type the missing terms into a passage (graded exactly, with small typo tolerance)
 //   steps   type the steps of a process in order, one per line (each line must contain one of that step's key words)
-// Both make the student PRODUCE the answer, which is what the delayed checks are for; match and order can also carry decoys.
-export type StructuredFormat = 'spot_mistake' | 'match' | 'order' | 'cloze' | 'steps';
-export const STRUCTURED_FORMATS: StructuredFormat[] = ['spot_mistake', 'match', 'order', 'cloze', 'steps'];
+//   diagram type every blank box of a derivation lesson's own diagram from memory (see derivationService.ts's
+//           derivationSectionQuestion) - the same boxes/arrows/layout the lesson's own final "derive" step draws, so a whole-lesson
+//           Day-1 check can test every branch of the graph instead of one flattened chain that would have to skip some of them.
+// All of these make the student PRODUCE the answer, which is what the delayed checks are for; match and order can also carry decoys.
+export type StructuredFormat = 'spot_mistake' | 'match' | 'order' | 'cloze' | 'steps' | 'diagram';
+export const STRUCTURED_FORMATS: StructuredFormat[] = ['spot_mistake', 'match', 'order', 'cloze', 'steps', 'diagram'];
 
 export interface StructuredQuestion {
   format: StructuredFormat;
@@ -38,8 +41,9 @@ export interface StructuredQuestion {
   pairs?: { left: string; right: string }[];                              // match
   items?: string[];                                                       // order (already in the CORRECT order)
   decoys?: string[];                                                      // match / order: extra wrong pieces mixed into the pool
-  text?: string; blanks?: { answer: string; alt?: string[] }[];           // cloze: passage with ___ per blank
+  text?: string; blanks?: { id?: string; answer: string; alt?: string[] }[]; // cloze: passage with ___ per blank; diagram: one per blank box
   steps?: { text: string; keys: string[] }[];                             // steps: the correct steps and the key words that identify each
+  h?: number; nodes?: { id: string; x: number; y: number; w: number; hh: number; given: boolean; color?: string; label?: string }[]; edges?: [number, number][][]; // diagram: box geometry and arrows (see layout.js)
   [k: string]: unknown;
 }
 
@@ -106,6 +110,8 @@ export function clientView(q: any): Record<string, unknown> {
   if (q.format === 'match') { const rights = (q.pairs || []).map((p) => p.right); return { ...base, lefts: (q.pairs || []).map((p) => p.left), rights: shuffled([...rights, ...(q.decoys || [])], rights) }; }
   if (q.format === 'cloze') return { ...base, text: q.text, blanks: (q.blanks || []).length };
   if (q.format === 'steps') return { ...base, count: (q.steps || []).length };
+  // diagram: every box's geometry and colour, and a given box's real label - a blank box's id but never its answer/alt.
+  if (q.format === 'diagram') return { ...base, h: q.h, nodes: q.nodes, edges: q.edges, blanks: (q.blanks || []).map((b) => ({ id: b.id })) };
   return { ...base, items: shuffled([...(q.items || []), ...(q.decoys || [])], q.items), slots: (q.items || []).length };
 }
 
@@ -128,6 +134,12 @@ export function gradeStructured(q: StructuredQuestion, answer: any): StructuredG
     const detail = (q.blanks || []).map((b, i) => [b.answer, ...(b.alt || [])].some((t) => closeEnough(given[i], t)));
     const ok = detail.length > 0 && detail.every(Boolean);
     return ok ? { correct: true, feedback: 'Every term is right.' } : { correct: false, detail, feedback: `${detail.filter(Boolean).length} of ${detail.length} terms are right. Fix the ones marked and check again.` };
+  }
+  if (q.format === 'diagram') {
+    const given: string[] = Array.isArray(answer?.values) ? answer.values : [];
+    const detail = (q.blanks || []).map((b, i) => [b.answer, ...(b.alt || [])].some((t) => closeEnough(given[i], t)));
+    const ok = detail.length > 0 && detail.every(Boolean);
+    return ok ? { correct: true, feedback: 'Every box is right.' } : { correct: false, detail, feedback: `${detail.filter(Boolean).length} of ${detail.length} boxes are right. Fix the ones marked and check again.` };
   }
   if (q.format === 'steps') {
     const lines: string[] = Array.isArray(answer?.lines) ? answer.lines.map((l: unknown) => String(l ?? '')) : [];

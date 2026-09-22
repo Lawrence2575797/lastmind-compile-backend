@@ -167,20 +167,6 @@ function introOrder(s: Stage): string[] {
   return (s.stage.script as any[]).filter((x) => x.type === 'ask' || x.type === 'read').map((x) => x.term as string);
 }
 
-// The longest chain of ideas in the whole lesson (it always has at least three: the checker requires a chain of two links).
-function mainChain(s: Stage): string[] {
-  const out: Record<string, string[]> = {};
-  s.edges.forEach(([a, b]) => { (out[a] = out[a] || []).push(b); });
-  const from = (k: string, path: Set<string>): string[] => {
-    let best: string[] = [];
-    (out[k] || []).forEach((c) => { if (!path.has(c)) { const d = from(c, new Set([...path, c])); if (d.length > best.length) best = d; } });
-    return [k, ...best];
-  };
-  let best: string[] = [];
-  Object.keys(s.terms).forEach((k) => { const c = from(k, new Set([k])); if (c.length > best.length) best = c; });
-  return best;
-}
-
 // A term's label can carry a formula or abbreviation in brackets ("Average variable cost (AVC = TVC/Q)") - nobody can type that from
 // memory, so the plain name in front of the brackets is what's actually asked for, with the full label and any abbreviation accepted too.
 function coreLabel(label: string): string {
@@ -194,23 +180,30 @@ function labelAlts(label: string): string[] {
   return Array.from(alts);
 }
 
-// The Day-1 check for a whole lesson: fill in the key words of its main chain of ideas, in order. Typing the words fills them in, and where
-// each one goes puts them in order, so the one task is both. Graded exactly, no AI.
+// The Day-1 check for a whole lesson: fill in every box of its own diagram from memory - the exact same diagram (same boxes, same
+// arrows, same layout) the lesson's own final "derive" step already draws, reusing that stage's already-laid-out graph (s.stage.graph
+// - see layout.js) wholesale rather than flattening it into one linear chain. A single chosen path used to skip real branches (e.g.
+// "Renewable resources" and "Non-renewable resources" both come from "Finite stock" - a flattened chain could only ever ask about
+// one of them); testing every box tests the whole thing, branches included, and matches what the student actually sees drawn
+// elsewhere in the app (the Knowledge Map's own lesson diagram). Graded exactly, no AI.
 export function derivationSectionQuestion(stage: number): any | null {
   const s = derivationStage(stage);
   if (!s) return null;
-  const chain = mainChain(s);
-  if (chain.length < 3) return null;
-  const shown = chain.length > 7 ? chain.slice(0, chain.length - 6) : chain.slice(0, 1);
-  const blanks = chain.slice(shown.length);
+  const g = s.stage.graph as { h: number; nodes: Record<string, [number, number, number, number]>; edges: [number, number][][]; given: string[] } | undefined;
+  if (!g || !g.nodes) return null;
+  const keys = Object.keys(g.nodes);
+  const given = new Set(g.given || []);
+  const blankKeys = keys.filter((k) => !given.has(k));
+  if (blankKeys.length < 2) return null;
   const label = (k: string) => s.terms[k]?.t ?? k;
-  const text = [...shown.map(label), ...blanks.map(() => '___')].join(' → ');
   return {
-    format: 'cloze',
-    questionText: `"${s.stage.title}": fill in the key words of the chain, in order. Each blank is one key term, and each idea leads to the next.`,
-    markScheme: chain.map(label).join(' → '),
-    text,
-    blanks: blanks.map((k) => ({ answer: coreLabel(label(k)), alt: labelAlts(label(k)) })),
+    format: 'diagram',
+    questionText: `"${s.stage.title}": fill in every box of the diagram, from memory.`,
+    markScheme: keys.map(label).join(', '),
+    h: g.h,
+    nodes: keys.map((k) => ({ id: k, x: g.nodes[k][0], y: g.nodes[k][1], w: g.nodes[k][2], hh: g.nodes[k][3], given: given.has(k), color: s.terms[k]?.c, label: given.has(k) ? label(k) : undefined })),
+    edges: g.edges,
+    blanks: blankKeys.map((k) => ({ id: k, answer: coreLabel(label(k)), alt: labelAlts(label(k)) })),
   };
 }
 

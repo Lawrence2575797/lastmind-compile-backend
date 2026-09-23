@@ -184,6 +184,16 @@ function labelAlts(label: string, syn?: string[]): string[] {
   return Array.from(alts);
 }
 
+// Advantages (and disadvantages) listed alongside one another are commonly
+// valid in either visual branch. Preserve the diagram's causal structure for
+// every other term, but let those equivalent list points swap boxes during
+// marking. gradeBlankAnswers still enforces one distinct answer per box.
+function interchangeableGroup(key: string, label: string): string | undefined {
+  if (/^(ADV_|.*_ADV(?:_|$))/i.test(key) || /^advantage\b/i.test(label)) return 'advantages';
+  if (/^(DIS_|.*_DIS(?:_|$))/i.test(key) || /^disadvantage\b/i.test(label)) return 'disadvantages';
+  return undefined;
+}
+
 // The Day-1 check for a whole lesson: fill in every box of its own diagram from memory - the exact same diagram (same boxes, same
 // arrows, same layout) the lesson's own final "derive" step already draws, reusing that stage's already-laid-out graph (s.stage.graph
 // - see layout.js) wholesale rather than flattening it into one linear chain. A single chosen path used to skip real branches (e.g.
@@ -207,7 +217,12 @@ export function derivationSectionQuestion(stage: number): any | null {
     h: g.h,
     nodes: keys.map((k) => ({ id: k, x: g.nodes[k][0], y: g.nodes[k][1], w: g.nodes[k][2], hh: g.nodes[k][3], given: given.has(k), color: s.terms[k]?.c, label: given.has(k) ? label(k) : undefined })),
     edges: g.edges,
-    blanks: blankKeys.map((k) => ({ id: k, answer: coreLabel(label(k)), alt: labelAlts(label(k), s.terms[k]?.syn) })),
+    blanks: blankKeys.map((k) => ({
+      id: k,
+      answer: coreLabel(label(k)),
+      alt: labelAlts(label(k), s.terms[k]?.syn),
+      equivalentGroup: interchangeableGroup(k, label(k)),
+    })),
   };
 }
 

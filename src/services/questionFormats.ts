@@ -41,7 +41,7 @@ export interface StructuredQuestion {
   pairs?: { left: string; right: string }[];                              // match
   items?: string[];                                                       // order (already in the CORRECT order)
   decoys?: string[];                                                      // match / order: extra wrong pieces mixed into the pool
-  text?: string; blanks?: { id?: string; answer: string; alt?: string[] }[]; // cloze: passage with ___ per blank; diagram: one per blank box
+  text?: string; blanks?: { id?: string; answer: string; alt?: string[]; equivalentGroup?: string }[]; // cloze: passage with ___ per blank; diagram: one per blank box; parallel advantages/disadvantages may swap places
   steps?: { text: string; keys: string[] }[];                             // steps: the correct steps and the key words that identify each
   h?: number; nodes?: { id: string; x: number; y: number; w: number; hh: number; given: boolean; color?: string; label?: string }[]; edges?: [number, number][][]; // diagram: box geometry and arrows (see layout.js)
   [k: string]: unknown;
@@ -123,7 +123,32 @@ export interface StructuredGrade { correct: boolean; feedback: string; detail?: 
 // treating it as what it actually is - the same word spelled differently). "between" is dropped for the same reason a typed
 // answer can genuinely, correctly insert it ("time saved BETWEEN switching tasks" for "time saved switching tasks") without
 // changing what's being said - unlike "of"/"to", which usually do carry the term's own meaning and stay.
-const norm = (v: unknown) => String(v ?? '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().replace(/&/g, ' and ').replace(/[^a-z0-9 ]+/g, ' ').replace(/\b(the|a|an|between)\b/g, ' ').replace(/\s+/g, ' ').trim();
+const WORD_EQUIVALENTS: Record<string, string> = {
+  specialised: 'specialist', specialized: 'specialist', expert: 'specialist',
+  equipment: 'machinery', equipments: 'machinery', machines: 'machinery', machine: 'machinery',
+  labourers: 'workers', labourer: 'worker', employees: 'workers', employee: 'worker',
+  increased: 'higher', greater: 'higher', improved: 'higher',
+  saving: 'saved', saves: 'saved',
+};
+
+// Keep this deliberately conservative: it smooths wording that carries the
+// same idea, but does not attempt to turn arbitrary near-neighbours into the
+// same economics term. In particular, "expert machinery" is ordinary student
+// language for specialist/specialised machinery, and equipment/machinery are
+// interchangeable in this context. Word order is handled separately below.
+const norm = (v: unknown) => String(v ?? '')
+  .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+  .toLowerCase().replace(/&/g, ' and ')
+  .replace(/[^a-z0-9 ]+/g, ' ')
+  .replace(/\b(the|a|an|between)\b/g, ' ')
+  .replace(/\s+/g, ' ').trim()
+  .split(' ').map((word) => WORD_EQUIVALENTS[word] || word).join(' ');
+
+const sameWords = (a: string, b: string) => {
+  const words = (value: string) => value.split(' ').filter(Boolean).sort();
+  const aw = words(a); const bw = words(b);
+  return aw.length === bw.length && aw.every((word, i) => word === bw[i]);
+};
 function within(a: string, b: string, max: number): boolean {
   if (Math.abs(a.length - b.length) > max) return false;
   const d: number[][] = Array.from({ length: a.length + 1 }, (_, i) => [i, ...Array(b.length).fill(0)]);
@@ -131,18 +156,55 @@ function within(a: string, b: string, max: number): boolean {
   for (let i = 1; i <= a.length; i++) for (let j = 1; j <= b.length; j++) d[i][j] = Math.min(d[i - 1][j] + 1, d[i][j - 1] + 1, d[i - 1][j - 1] + (a[i - 1] === b[j - 1] ? 0 : 1));
   return d[a.length][b.length] <= max;
 }
-export const closeEnough = (given: string, target: string) => { const g = norm(given), t = norm(target); return !!g && (g === t || within(g, t, t.length >= 10 ? 3 : t.length >= 5 ? 2 : t.length >= 3 ? 1 : 0)); };
+export const closeEnough = (given: string, target: string) => {
+  const g = norm(given), t = norm(target);
+  return !!g && (g === t || sameWords(g, t) || within(g, t, t.length >= 10 ? 3 : t.length >= 5 ? 2 : t.length >= 3 ? 1 : 0));
+};
+
+function gradeBlankAnswers(blanks: NonNullable<StructuredQuestion['blanks']>, given: string[]): boolean[] {
+  const matches = (answerIndex: number, blankIndex: number) =>
+    [blanks[blankIndex].answer, ...(blanks[blankIndex].alt || [])].some((target) => closeEnough(given[answerIndex], target));
+  const detail = blanks.map((_blank, i) => matches(i, i));
+  const groups = new Map<string, number[]>();
+  blanks.forEach((blank, i) => {
+    if (blank.equivalentGroup) groups.set(blank.equivalentGroup, [...(groups.get(blank.equivalentGroup) || []), i]);
+  });
+
+  // Parallel advantages/disadvantages can be entered in any of their
+  // parallel boxes, but remain one-to-one: typing the same valid advantage
+  // twice cannot satisfy two different boxes. A tiny bipartite matcher keeps
+  // the per-box live feedback useful even before every box is complete.
+  groups.forEach((indices) => {
+    const targetToAnswer = new Map<number, number>();
+    const claim = (answerIndex: number, seen: Set<number>): boolean => {
+      for (const targetIndex of indices) {
+        if (seen.has(targetIndex) || !matches(answerIndex, targetIndex)) continue;
+        seen.add(targetIndex);
+        const previous = targetToAnswer.get(targetIndex);
+        if (previous === undefined || claim(previous, seen)) {
+          targetToAnswer.set(targetIndex, answerIndex);
+          return true;
+        }
+      }
+      return false;
+    };
+    indices.forEach((answerIndex) => claim(answerIndex, new Set<number>()));
+    const matchedAnswers = new Set(targetToAnswer.values());
+    indices.forEach((answerIndex) => { detail[answerIndex] = matchedAnswers.has(answerIndex); });
+  });
+  return detail;
+}
 
 export function gradeStructured(q: StructuredQuestion, answer: any): StructuredGrade {
   if (q.format === 'cloze') {
     const given: string[] = Array.isArray(answer?.answers) ? answer.answers : [];
-    const detail = (q.blanks || []).map((b, i) => [b.answer, ...(b.alt || [])].some((t) => closeEnough(given[i], t)));
+    const detail = gradeBlankAnswers(q.blanks || [], given);
     const ok = detail.length > 0 && detail.every(Boolean);
     return ok ? { correct: true, feedback: 'Every term is right.' } : { correct: false, detail, feedback: `${detail.filter(Boolean).length} of ${detail.length} terms are right. Fix the ones marked and check again.` };
   }
   if (q.format === 'diagram') {
     const given: string[] = Array.isArray(answer?.values) ? answer.values : [];
-    const detail = (q.blanks || []).map((b, i) => [b.answer, ...(b.alt || [])].some((t) => closeEnough(given[i], t)));
+    const detail = gradeBlankAnswers(q.blanks || [], given);
     const ok = detail.length > 0 && detail.every(Boolean);
     return ok ? { correct: true, feedback: 'Every box is right.' } : { correct: false, detail, feedback: `${detail.filter(Boolean).length} of ${detail.length} boxes are right. Fix the ones marked and check again.` };
   }

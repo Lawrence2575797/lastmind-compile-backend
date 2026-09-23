@@ -1,0 +1,2210 @@
+{
+  "nodes": [
+    {
+      "id": "p0_at1_length_mass_time",
+      "label": "AT1: measuring length, mass, time accurately",
+      "subtopic": "0.1",
+      "theme": "Topic 0",
+      "difficulty": 0.15,
+      "objective": "Use apparatus to make and record accurate measurements of length, mass and time.",
+      "essentialPoints": [
+        "Use rulers/calipers for length, balances for mass, timers for time",
+        "Read to appropriate precision and repeat for reliability"
+      ],
+      "specRefs": [
+        "8.1 AT1"
+      ],
+      "kind": "procedure",
+      "practicalIds": []
+    },
+    {
+      "id": "p0_at2_force_extension",
+      "label": "AT2: measuring force and extension of springs",
+      "subtopic": "0.1",
+      "theme": "Topic 0",
+      "difficulty": 0.2,
+      "objective": "Use appropriate apparatus to measure force and observe/measure spring extension.",
+      "essentialPoints": [
+        "Attach masses/newtonmeter to spring and measure length changes",
+        "Record force applied and resulting extension for a force-extension graph"
+      ],
+      "specRefs": [
+        "8.1 AT2"
+      ],
+      "kind": "procedure",
+      "practicalIds": [
+        6
+      ]
+    },
+    {
+      "id": "p0_at3_motion",
+      "label": "AT3: measuring motion (speed, acceleration)",
+      "subtopic": "0.1",
+      "theme": "Topic 0",
+      "difficulty": 0.25,
+      "objective": "Use appropriate apparatus and techniques to measure speed and rate of change of speed.",
+      "essentialPoints": [
+        "Use light gates, ticker timers or data loggers to record distance/time data",
+        "Calculate speed and acceleration from measured data"
+      ],
+      "specRefs": [
+        "8.1 AT3"
+      ],
+      "kind": "procedure",
+      "practicalIds": [
+        7
+      ]
+    },
+    {
+      "id": "p0_ms_change_subject",
+      "label": "MS: changing the subject of an equation",
+      "subtopic": "0.2",
+      "theme": "Topic 0",
+      "difficulty": 0.2,
+      "objective": "Rearrange equations to make a different variable the subject.",
+      "essentialPoints": [
+        "Manipulate algebraic equations to isolate the required variable"
+      ],
+      "specRefs": [
+        "MS 3b"
+      ],
+      "kind": "concept",
+      "practicalIds": []
+    },
+    {
+      "id": "p0_ms_substitute_units",
+      "label": "MS: substituting values into equations with units",
+      "subtopic": "0.2",
+      "theme": "Topic 0",
+      "difficulty": 0.15,
+      "objective": "Substitute numerical values with correct units into algebraic equations.",
+      "essentialPoints": [
+        "Insert given quantities with correct SI units into a formula and evaluate"
+      ],
+      "specRefs": [
+        "MS 3c"
+      ],
+      "kind": "concept",
+      "practicalIds": []
+    },
+    {
+      "id": "p0_ms_proportionality",
+      "label": "MS: proportionality symbol and direct proportion",
+      "subtopic": "0.2",
+      "theme": "Topic 0",
+      "difficulty": 0.2,
+      "objective": "Recognise and use the symbol for proportionality and understand direct proportion between two variables.",
+      "essentialPoints": [
+        "∝ symbol means 'is directly proportional to'",
+        "Doubling one variable doubles the other in direct proportion"
+      ],
+      "specRefs": [
+        "MS 3a"
+      ],
+      "kind": "concept",
+      "practicalIds": []
+    },
+    {
+      "id": "p0_ms_graphs_gradient",
+      "label": "MS: plotting graphs and determining gradient/intercept",
+      "subtopic": "0.2",
+      "theme": "Topic 0",
+      "difficulty": 0.25,
+      "objective": "Plot two variables from data and determine the gradient and intercept of a linear graph.",
+      "essentialPoints": [
+        "y = mx + c represents a linear relationship",
+        "Gradient calculated as change in y over change in x",
+        "Intercept read from where line crosses axis"
+      ],
+      "specRefs": [
+        "MS 4a-d"
+      ],
+      "kind": "concept",
+      "practicalIds": []
+    },
+    {
+      "id": "p0_ms_tangent",
+      "label": "MS: drawing a tangent to a curve",
+      "subtopic": "0.2",
+      "theme": "Topic 0",
+      "difficulty": 0.35,
+      "objective": "Draw a tangent to a curved graph at a point to find the gradient there.",
+      "essentialPoints": [
+        "A tangent is a straight line touching a curve at one point without crossing it",
+        "Gradient of tangent gives instantaneous rate of change"
+      ],
+      "specRefs": [
+        "MS 4"
+      ],
+      "kind": "concept",
+      "practicalIds": []
+    },
+    {
+      "id": "p0_ms_area_under_graph",
+      "label": "MS: finding area under a graph (counting squares)",
+      "subtopic": "0.2",
+      "theme": "Topic 0",
+      "difficulty": 0.3,
+      "objective": "Determine area under a graph including by counting squares for non-linear regions.",
+      "essentialPoints": [
+        "Area under a graph can represent a physical quantity",
+        "Count squares and use scale to estimate area under curved sections"
+      ],
+      "specRefs": [
+        "WS 3.3"
+      ],
+      "kind": "concept",
+      "practicalIds": []
+    },
+    {
+      "id": "p0_ms_sig_figs",
+      "label": "MS: using appropriate significant figures",
+      "subtopic": "0.2",
+      "theme": "Topic 0",
+      "difficulty": 0.15,
+      "objective": "Express calculated answers to an appropriate number of significant figures.",
+      "essentialPoints": [
+        "Round final answers to match precision of given data"
+      ],
+      "specRefs": [
+        "MS 2a"
+      ],
+      "kind": "concept",
+      "practicalIds": []
+    },
+    {
+      "id": "p0_ws_hypotheses_plan",
+      "label": "WS: developing hypotheses and planning investigations",
+      "subtopic": "0.3",
+      "theme": "Topic 0",
+      "difficulty": 0.2,
+      "objective": "Use scientific theories to develop hypotheses and plan a valid procedure.",
+      "essentialPoints": [
+        "A hypothesis is a testable prediction based on scientific reasoning",
+        "Planning involves identifying variables to control, change and measure"
+      ],
+      "specRefs": [
+        "WS 2.1, 2.2"
+      ],
+      "kind": "concept",
+      "practicalIds": []
+    },
+    {
+      "id": "p0_ws_evaluate_error",
+      "label": "WS: evaluating methods, accuracy, precision and error",
+      "subtopic": "0.3",
+      "theme": "Topic 0",
+      "difficulty": 0.3,
+      "objective": "Evaluate experimental methods identifying random and systematic errors and suggest improvements.",
+      "essentialPoints": [
+        "Accuracy vs precision vs repeatability vs reproducibility",
+        "Random error causes scatter; systematic error causes a consistent bias",
+        "Improvements target the specific source of error identified"
+      ],
+      "specRefs": [
+        "WS 3.7, 2.7"
+      ],
+      "kind": "concept",
+      "practicalIds": []
+    },
+    {
+      "id": "p5_scalar_vector",
+      "label": "Scalar and vector quantities",
+      "subtopic": "5.1",
+      "theme": "Topic 5",
+      "difficulty": 0.25,
+      "objective": "Distinguish scalar quantities (magnitude only) from vector quantities (magnitude and direction).",
+      "essentialPoints": [
+        "Scalar quantities have magnitude only (e.g. speed, distance)",
+        "Vector quantities have magnitude and direction (e.g. force, velocity)",
+        "A vector can be represented by an arrow: length = magnitude, direction = direction"
+      ],
+      "specRefs": [
+        "4.5.1.1"
+      ],
+      "kind": "concept",
+      "practicalIds": []
+    },
+    {
+      "id": "p5_contact_noncontact_forces",
+      "label": "Contact and non-contact forces",
+      "subtopic": "5.1",
+      "theme": "Topic 5",
+      "difficulty": 0.2,
+      "objective": "Define force and classify examples as contact or non-contact forces.",
+      "essentialPoints": [
+        "A force is a push or pull from an interaction between two objects",
+        "Contact forces require physical touching: friction, air resistance, tension, normal contact force",
+        "Non-contact forces act at a distance: gravitational, electrostatic, magnetic force"
+      ],
+      "specRefs": [
+        "4.5.1.2"
+      ],
+      "kind": "concept",
+      "practicalIds": []
+    },
+    {
+      "id": "p5_force_vector_interaction_pairs",
+      "label": "Interaction pairs of forces as vectors",
+      "subtopic": "5.1",
+      "theme": "Topic 5",
+      "difficulty": 0.35,
+      "objective": "Describe the interaction between pairs of objects producing a force on each, represented as vectors.",
+      "essentialPoints": [
+        "Two interacting objects each experience a force from the interaction",
+        "Both forces can be represented as vectors (magnitude and direction)"
+      ],
+      "specRefs": [
+        "4.5.1.2"
+      ],
+      "kind": "concept",
+      "practicalIds": []
+    },
+    {
+      "id": "p5_weight_gravity",
+      "label": "Weight as a force due to gravity",
+      "subtopic": "5.1",
+      "theme": "Topic 5",
+      "difficulty": 0.2,
+      "objective": "Define weight as the force on an object due to a gravitational field, distinct from mass.",
+      "essentialPoints": [
+        "Weight is the force acting on an object due to gravity",
+        "Gravity near Earth arises from the Earth's gravitational field",
+        "Weight depends on the gravitational field strength at that location"
+      ],
+      "specRefs": [
+        "4.5.1.3"
+      ],
+      "kind": "concept",
+      "practicalIds": []
+    },
+    {
+      "id": "p5_weight_equation",
+      "label": "Weight equation: W = mg",
+      "subtopic": "5.1",
+      "theme": "Topic 5",
+      "difficulty": 0.2,
+      "objective": "Recall and apply W = m × g to calculate weight.",
+      "essentialPoints": [
+        "weight (N) = mass (kg) × gravitational field strength (N/kg)",
+        "g is given in any calculation"
+      ],
+      "specRefs": [
+        "4.5.1.3"
+      ],
+      "kind": "concept",
+      "practicalIds": []
+    },
+    {
+      "id": "p5_weight_mass_proportional",
+      "label": "Weight and mass are directly proportional",
+      "subtopic": "5.1",
+      "theme": "Topic 5",
+      "difficulty": 0.15,
+      "objective": "Recognise that weight is directly proportional to mass for a given gravitational field strength.",
+      "essentialPoints": [
+        "W ∝ m when g is constant",
+        "Use the ∝ symbol to express this relationship"
+      ],
+      "specRefs": [
+        "4.5.1.3"
+      ],
+      "kind": "concept",
+      "practicalIds": []
+    },
+    {
+      "id": "p5_centre_of_mass",
+      "label": "Centre of mass",
+      "subtopic": "5.1",
+      "theme": "Topic 5",
+      "difficulty": 0.2,
+      "objective": "Understand that an object's weight may be considered to act at a single point, its centre of mass.",
+      "essentialPoints": [
+        "Centre of mass is the single point where an object's weight can be considered to act"
+      ],
+      "specRefs": [
+        "4.5.1.3"
+      ],
+      "kind": "concept",
+      "practicalIds": []
+    },
+    {
+      "id": "p5_newtonmeter",
+      "label": "Measuring weight with a newtonmeter",
+      "subtopic": "5.1",
+      "theme": "Topic 5",
+      "difficulty": 0.1,
+      "objective": "Know that weight is measured using a calibrated spring-balance (newtonmeter).",
+      "essentialPoints": [
+        "A newtonmeter is a calibrated spring balance used to measure force/weight"
+      ],
+      "specRefs": [
+        "4.5.1.3"
+      ],
+      "kind": "procedure",
+      "practicalIds": []
+    },
+    {
+      "id": "p5_resultant_force_1d",
+      "label": "Resultant force (forces in a straight line)",
+      "subtopic": "5.1",
+      "theme": "Topic 5",
+      "difficulty": 0.2,
+      "objective": "Calculate the resultant of two or more forces acting in a straight line.",
+      "essentialPoints": [
+        "Several forces acting on an object can be replaced by one resultant force with the same effect",
+        "Add forces in the same direction, subtract forces in opposite directions"
+      ],
+      "specRefs": [
+        "4.5.1.4"
+      ],
+      "kind": "concept",
+      "practicalIds": []
+    },
+    {
+      "id": "p5_free_body_diagrams_ht",
+      "label": "Free body diagrams and balanced forces (HT)",
+      "subtopic": "5.1",
+      "theme": "Topic 5",
+      "difficulty": 0.3,
+      "objective": "Use free body diagrams to describe forces on an isolated object, including balanced forces giving zero resultant.",
+      "essentialPoints": [
+        "A free body diagram shows all forces acting on an isolated object/system as arrows",
+        "Balanced forces produce a resultant force of zero"
+      ],
+      "specRefs": [
+        "4.5.1.4"
+      ],
+      "kind": "concept",
+      "practicalIds": []
+    },
+    {
+      "id": "p5_resolving_forces_ht",
+      "label": "Resolving a force into two components (HT)",
+      "subtopic": "5.1",
+      "theme": "Topic 5",
+      "difficulty": 0.45,
+      "objective": "Resolve a single force into two components acting at right angles using scale vector diagrams.",
+      "essentialPoints": [
+        "A single force can be resolved into two perpendicular components with the same combined effect",
+        "Use scale vector diagrams to find magnitude and direction of resultant/components"
+      ],
+      "specRefs": [
+        "4.5.1.4"
+      ],
+      "kind": "concept",
+      "practicalIds": []
+    },
+    {
+      "id": "p5_work_done_concept",
+      "label": "Work done by a force causing displacement",
+      "subtopic": "5.2",
+      "theme": "Topic 5",
+      "difficulty": 0.25,
+      "objective": "Understand that work is done on an object when a force causes it to move through a distance.",
+      "essentialPoints": [
+        "Work is done when a force causes a displacement of an object",
+        "Doing work transfers energy"
+      ],
+      "specRefs": [
+        "4.5.2"
+      ],
+      "kind": "concept",
+      "practicalIds": []
+    },
+    {
+      "id": "p5_work_done_equation",
+      "label": "Work done equation: W = Fs",
+      "subtopic": "5.2",
+      "theme": "Topic 5",
+      "difficulty": 0.2,
+      "objective": "Recall and apply work done = force × distance moved along the line of action of the force.",
+      "essentialPoints": [
+        "work done (J) = force (N) × distance moved along line of action (m)",
+        "1 joule = 1 newton-metre; can convert between Nm and J"
+      ],
+      "specRefs": [
+        "4.5.2"
+      ],
+      "kind": "concept",
+      "practicalIds": []
+    },
+    {
+      "id": "p5_work_energy_transfer_link",
+      "label": "Energy transfer associated with work done",
+      "subtopic": "5.2",
+      "theme": "Topic 5",
+      "difficulty": 0.25,
+      "objective": "Describe the energy transfer involved when work is done on an object.",
+      "essentialPoints": [
+        "Doing work on an object transfers energy to or from that object's energy stores"
+      ],
+      "specRefs": [
+        "4.5.2"
+      ],
+      "kind": "concept",
+      "practicalIds": []
+    },
+    {
+      "id": "p5_work_against_friction_heating",
+      "label": "Work done against friction raises temperature",
+      "subtopic": "5.2",
+      "theme": "Topic 5",
+      "difficulty": 0.2,
+      "objective": "Explain that work done against frictional forces causes a rise in temperature of an object.",
+      "essentialPoints": [
+        "Work done against friction transfers energy to the thermal energy store, raising temperature"
+      ],
+      "specRefs": [
+        "4.5.2"
+      ],
+      "kind": "concept",
+      "practicalIds": []
+    },
+    {
+      "id": "p5_forces_deformation_examples",
+      "label": "Forces involved in stretching, bending, compressing",
+      "subtopic": "5.3",
+      "theme": "Topic 5",
+      "difficulty": 0.15,
+      "objective": "Give examples of forces involved in stretching, bending or compressing an object.",
+      "essentialPoints": [
+        "Stretching, bending and compressing all involve forces applied to an object"
+      ],
+      "specRefs": [
+        "4.5.3"
+      ],
+      "kind": "concept",
+      "practicalIds": []
+    },
+    {
+      "id": "p5_more_than_one_force_needed",
+      "label": "Why more than one force is needed to change shape of a stationary object",
+      "subtopic": "5.3",
+      "theme": "Topic 5",
+      "difficulty": 0.3,
+      "objective": "Explain why changing the shape of a stationary object requires more than one force.",
+      "essentialPoints": [
+        "A stationary object needs balanced forces overall to remain stationary while deforming",
+        "A single unbalanced force would simply accelerate the object rather than deform it"
+      ],
+      "specRefs": [
+        "4.5.3"
+      ],
+      "kind": "concept",
+      "practicalIds": []
+    },
+    {
+      "id": "p5_elastic_inelastic_deformation",
+      "label": "Elastic vs inelastic deformation",
+      "subtopic": "5.3",
+      "theme": "Topic 5",
+      "difficulty": 0.2,
+      "objective": "Describe the difference between elastic and inelastic deformation caused by stretching forces.",
+      "essentialPoints": [
+        "Elastic deformation: object returns to its original shape/length when the force is removed",
+        "Inelastic deformation: object does not return to its original shape/length"
+      ],
+      "specRefs": [
+        "4.5.3"
+      ],
+      "kind": "concept",
+      "practicalIds": []
+    },
+    {
+      "id": "p5_hookes_law",
+      "label": "Hooke's law: extension proportional to force",
+      "subtopic": "5.3",
+      "theme": "Topic 5",
+      "difficulty": 0.25,
+      "objective": "State that extension is directly proportional to force applied, provided the limit of proportionality is not exceeded.",
+      "essentialPoints": [
+        "Extension ∝ force, up to the limit of proportionality",
+        "Beyond this limit the relationship is no longer proportional"
+      ],
+      "specRefs": [
+        "4.5.3"
+      ],
+      "kind": "concept",
+      "practicalIds": []
+    },
+    {
+      "id": "p5_spring_constant_equation",
+      "label": "Spring constant equation: F = ke",
+      "subtopic": "5.3",
+      "theme": "Topic 5",
+      "difficulty": 0.2,
+      "objective": "Recall and apply force = spring constant × extension, also applicable to compression.",
+      "essentialPoints": [
+        "force (N) = spring constant (N/m) × extension (m)",
+        "Same equation applies to compression, with e as compression"
+      ],
+      "specRefs": [
+        "4.5.3"
+      ],
+      "kind": "concept",
+      "practicalIds": []
+    },
+    {
+      "id": "p5_linear_nonlinear_force_extension",
+      "label": "Linear vs non-linear force-extension relationships",
+      "subtopic": "5.3",
+      "theme": "Topic 5",
+      "difficulty": 0.25,
+      "objective": "Describe the difference between a linear and non-linear relationship between force and extension, and calculate spring constant in linear cases.",
+      "essentialPoints": [
+        "A linear relationship gives a straight-line graph (constant spring constant)",
+        "A non-linear relationship curves once limit of proportionality is exceeded",
+        "Spring constant can be calculated from gradient in the linear region"
+      ],
+      "specRefs": [
+        "4.5.3"
+      ],
+      "kind": "concept",
+      "practicalIds": []
+    },
+    {
+      "id": "p5_epe_equation",
+      "label": "Elastic potential energy equation: Ee = ½ke²",
+      "subtopic": "5.3",
+      "theme": "Topic 5",
+      "difficulty": 0.3,
+      "objective": "Recall and apply elastic potential energy = 0.5 × spring constant × extension² up to the limit of proportionality.",
+      "essentialPoints": [
+        "Ee (J) = 0.5 × k (N/m) × e² (m²)",
+        "Only valid up to the limit of proportionality"
+      ],
+      "specRefs": [
+        "4.5.3"
+      ],
+      "kind": "concept",
+      "practicalIds": []
+    },
+    {
+      "id": "p5_work_epe_equivalence",
+      "label": "Work done on a spring equals elastic potential energy stored",
+      "subtopic": "5.3",
+      "theme": "Topic 5",
+      "difficulty": 0.25,
+      "objective": "Understand that provided the spring is not inelastically deformed, work done stretching/compressing it equals the elastic potential energy stored.",
+      "essentialPoints": [
+        "Work done on the spring transfers energy entirely into elastic potential energy store",
+        "Only true while deformation remains elastic (not inelastic)"
+      ],
+      "specRefs": [
+        "4.5.3"
+      ],
+      "kind": "concept",
+      "practicalIds": []
+    },
+    {
+      "id": "p5_rp6_procedure",
+      "label": "RP6 procedure: investigating force vs extension for a spring",
+      "subtopic": "5.3",
+      "theme": "Topic 5",
+      "difficulty": 0.25,
+      "objective": "Carry out the procedure to measure extension of a spring for a range of applied forces.",
+      "essentialPoints": [
+        "Measure natural length of spring, then add known masses/forces and measure new length",
+        "Calculate extension for each force and repeat for reliability",
+        "Plot force against extension"
+      ],
+      "specRefs": [
+        "8.2.6"
+      ],
+      "kind": "procedure",
+      "practicalIds": [
+        6
+      ]
+    },
+    {
+      "id": "p5_rp6_interpret_data",
+      "label": "Interpreting force-extension data from an investigation",
+      "subtopic": "5.3",
+      "theme": "Topic 5",
+      "difficulty": 0.3,
+      "objective": "Interpret data from an investigation of the relationship between force and extension, including identifying the limit of proportionality.",
+      "essentialPoints": [
+        "Identify the linear region and the point where the graph deviates from a straight line",
+        "Determine the spring constant from the gradient of the linear region"
+      ],
+      "specRefs": [
+        "4.5.3"
+      ],
+      "kind": "application",
+      "practicalIds": [
+        6
+      ]
+    },
+    {
+      "id": "p5_calc_epe_transfers",
+      "label": "Calculating stored energy and energy transfers for springs",
+      "subtopic": "5.3",
+      "theme": "Topic 5",
+      "difficulty": 0.3,
+      "objective": "Calculate relevant values of elastic potential energy stored and associated energy transfers using experimental or given data.",
+      "essentialPoints": [
+        "Apply Ee = ½ke² using measured/given extension and spring constant values",
+        "Relate stored energy to work done during stretching"
+      ],
+      "specRefs": [
+        "4.5.3"
+      ],
+      "kind": "application",
+      "practicalIds": [
+        6
+      ]
+    },
+    {
+      "id": "p5_moments_rotation_examples",
+      "label": "Forces causing rotation",
+      "subtopic": "5.4",
+      "theme": "Topic 5",
+      "difficulty": 0.15,
+      "objective": "Describe examples in which forces cause objects to rotate.",
+      "essentialPoints": [
+        "A force or system of forces can cause an object to rotate about a pivot"
+      ],
+      "specRefs": [
+        "4.5.4"
+      ],
+      "kind": "concept",
+      "practicalIds": []
+    },
+    {
+      "id": "p5_moment_equation",
+      "label": "Moment of a force equation: M = Fd",
+      "subtopic": "5.4",
+      "theme": "Topic 5",
+      "difficulty": 0.2,
+      "objective": "Recall and apply moment = force × perpendicular distance from pivot to line of action.",
+      "essentialPoints": [
+        "moment (Nm) = force (N) × perpendicular distance from pivot (m)"
+      ],
+      "specRefs": [
+        "4.5.4"
+      ],
+      "kind": "concept",
+      "practicalIds": []
+    },
+    {
+      "id": "p5_moments_balance_calc",
+      "label": "Balancing clockwise and anticlockwise moments",
+      "subtopic": "5.4",
+      "theme": "Topic 5",
+      "difficulty": 0.3,
+      "objective": "Calculate an unknown force or distance for a balanced object using the principle that total clockwise moment equals total anticlockwise moment.",
+      "essentialPoints": [
+        "For a balanced object, total clockwise moment = total anticlockwise moment about the pivot",
+        "Use this to solve for unknown force or distance"
+      ],
+      "specRefs": [
+        "4.5.4"
+      ],
+      "kind": "application",
+      "practicalIds": []
+    },
+    {
+      "id": "p5_levers_gears",
+      "label": "Levers and gears transmitting rotational effects",
+      "subtopic": "5.4",
+      "theme": "Topic 5",
+      "difficulty": 0.25,
+      "objective": "Explain how simple levers and gear systems transmit the rotational effects of forces.",
+      "essentialPoints": [
+        "A lever transmits and can amplify the turning effect of a force about a pivot",
+        "A gear system transmits rotational effects between meshed gears, changing force/speed of rotation"
+      ],
+      "specRefs": [
+        "4.5.4"
+      ],
+      "kind": "concept",
+      "practicalIds": []
+    },
+    {
+      "id": "p5_fluid_definition",
+      "label": "Fluids and pressure acting normal to a surface",
+      "subtopic": "5.5",
+      "theme": "Topic 5",
+      "difficulty": 0.15,
+      "objective": "Know that a fluid is a liquid or gas and that pressure in fluids acts normal (at right angles) to any surface.",
+      "essentialPoints": [
+        "A fluid is either a liquid or a gas",
+        "Pressure in a fluid produces a force perpendicular (normal) to any surface it acts on"
+      ],
+      "specRefs": [
+        "4.5.5.1.1"
+      ],
+      "kind": "concept",
+      "practicalIds": []
+    },
+    {
+      "id": "p5_pressure_equation",
+      "label": "Pressure equation: p = F/A",
+      "subtopic": "5.5",
+      "theme": "Topic 5",
+      "difficulty": 0.2,
+      "objective": "Recall and apply pressure = force normal to a surface / area of that surface.",
+      "essentialPoints": [
+        "pressure (Pa) = force normal to surface (N) / area of surface (m²)"
+      ],
+      "specRefs": [
+        "4.5.5.1.1"
+      ],
+      "kind": "concept",
+      "practicalIds": []
+    },
+    {
+      "id": "p5_liquid_pressure_equation_ht",
+      "label": "Pressure due to a column of liquid: p = hρg (HT)",
+      "subtopic": "5.5",
+      "theme": "Topic 5",
+      "difficulty": 0.3,
+      "objective": "Recall and apply pressure = height of column × density of liquid × gravitational field strength, and explain why pressure increases with depth and density.",
+      "essentialPoints": [
+        "pressure (Pa) = height of column (m) × density (kg/m³) × g (N/kg)",
+        "Pressure at a point increases with the height of liquid above it and with the liquid's density",
+        "Can calculate pressure differences at different depths"
+      ],
+      "specRefs": [
+        "4.5.5.1.2"
+      ],
+      "kind": "concept",
+      "practicalIds": []
+    },
+    {
+      "id": "p5_upthrust_ht",
+      "label": "Upthrust and floating/sinking (HT)",
+      "subtopic": "5.5",
+      "theme": "Topic 5",
+      "difficulty": 0.35,
+      "objective": "Explain that a submerged object experiences greater pressure on its bottom than top surface, creating an upward resultant force (upthrust), and describe factors influencing floating and sinking.",
+      "essentialPoints": [
+        "Greater pressure on the bottom surface than the top surface of a submerged object creates an upward resultant force called upthrust",
+        "An object floats if upthrust equals or exceeds its weight; sinks if weight exceeds upthrust",
+        "Factors influencing floating/sinking include object density relative to fluid density"
+      ],
+      "specRefs": [
+        "4.5.5.1.2"
+      ],
+      "kind": "concept",
+      "practicalIds": []
+    },
+    {
+      "id": "p5_atmosphere_model",
+      "label": "Simple model of the Earth's atmosphere",
+      "subtopic": "5.5",
+      "theme": "Topic 5",
+      "difficulty": 0.2,
+      "objective": "Describe a simple model of the Earth's atmosphere as a thin layer of air that becomes less dense with altitude.",
+      "essentialPoints": [
+        "The atmosphere is a thin layer of air surrounding the Earth relative to Earth's size",
+        "Atmospheric density decreases with increasing altitude"
+      ],
+      "specRefs": [
+        "4.5.5.2"
+      ],
+      "kind": "concept",
+      "practicalIds": []
+    },
+    {
+      "id": "p5_atmospheric_pressure_explanation",
+      "label": "Explaining why atmospheric pressure decreases with height",
+      "subtopic": "5.5",
+      "theme": "Topic 5",
+      "difficulty": 0.3,
+      "objective": "Explain why atmospheric pressure varies with height above a surface in terms of colliding air molecules.",
+      "essentialPoints": [
+        "Air molecules colliding with a surface create atmospheric pressure",
+        "The weight/number of air molecules above a surface decreases with increasing height, so atmospheric pressure decreases with height"
+      ],
+      "specRefs": [
+        "4.5.5.2"
+      ],
+      "kind": "concept",
+      "practicalIds": []
+    },
+    {
+      "id": "p5_distance_displacement",
+      "label": "Distance and displacement",
+      "subtopic": "5.6",
+      "theme": "Topic 5",
+      "difficulty": 0.2,
+      "objective": "Distinguish distance (scalar) from displacement (vector, with magnitude and direction).",
+      "essentialPoints": [
+        "Distance is how far an object moves, with no direction (scalar)",
+        "Displacement is the straight-line distance from start to finish plus direction (vector)"
+      ],
+      "specRefs": [
+        "4.5.6.1.1"
+      ],
+      "kind": "concept",
+      "practicalIds": []
+    },
+    {
+      "id": "p5_speed_concept",
+      "label": "Speed as a scalar quantity",
+      "subtopic": "5.6",
+      "theme": "Topic 5",
+      "difficulty": 0.15,
+      "objective": "Understand speed as a scalar quantity that is rarely constant in everyday motion.",
+      "essentialPoints": [
+        "Speed has magnitude only, no direction (scalar)",
+        "Real-world speeds (walking, running, driving) are rarely constant"
+      ],
+      "specRefs": [
+        "4.5.6.1.2"
+      ],
+      "kind": "concept",
+      "practicalIds": []
+    },
+    {
+      "id": "p5_typical_speed_values",
+      "label": "Typical speed values for people and transport",
+      "subtopic": "5.6",
+      "theme": "Topic 5",
+      "difficulty": 0.15,
+      "objective": "Recall typical values of speed for walking, running, cycling, sound in air, and transport systems.",
+      "essentialPoints": [
+        "Walking ≈ 1.5 m/s, running ≈ 3 m/s, cycling ≈ 6 m/s",
+        "Speed of sound in air ≈ 330 m/s",
+        "Speed of wind and transport systems also vary"
+      ],
+      "specRefs": [
+        "4.5.6.1.2"
+      ],
+      "kind": "concept",
+      "practicalIds": []
+    },
+    {
+      "id": "p5_distance_speed_time_equation",
+      "label": "Distance-speed-time equation: s = vt",
+      "subtopic": "5.6",
+      "theme": "Topic 5",
+      "difficulty": 0.2,
+      "objective": "Recall and apply distance travelled = speed × time for constant speed, and calculate average speed for non-uniform motion.",
+      "essentialPoints": [
+        "distance (m) = speed (m/s) × time (s), for constant speed",
+        "Average speed for non-uniform motion = total distance / total time"
+      ],
+      "specRefs": [
+        "4.5.6.1.2"
+      ],
+      "kind": "concept",
+      "practicalIds": []
+    },
+    {
+      "id": "p5_velocity_concept",
+      "label": "Velocity as speed in a given direction",
+      "subtopic": "5.6",
+      "theme": "Topic 5",
+      "difficulty": 0.2,
+      "objective": "Define velocity as speed in a given direction, a vector quantity, and apply the vector-scalar distinction consistently.",
+      "essentialPoints": [
+        "Velocity is speed in a given direction (vector)",
+        "Applies the scalar/vector distinction across distance, displacement, speed, velocity"
+      ],
+      "specRefs": [
+        "4.5.6.1.3"
+      ],
+      "kind": "concept",
+      "practicalIds": []
+    },
+    {
+      "id": "p5_circular_motion_velocity_ht",
+      "label": "Circular motion: constant speed, changing velocity (HT)",
+      "subtopic": "5.6",
+      "theme": "Topic 5",
+      "difficulty": 0.35,
+      "objective": "Explain qualitatively that motion in a circle involves constant speed but continuously changing velocity due to changing direction.",
+      "essentialPoints": [
+        "An object moving in a circle at constant speed has continuously changing direction",
+        "Since velocity is a vector, changing direction means velocity is always changing even if speed is constant"
+      ],
+      "specRefs": [
+        "4.5.6.1.3"
+      ],
+      "kind": "concept",
+      "practicalIds": []
+    },
+    {
+      "id": "p5_distance_time_graph",
+      "label": "Distance-time graphs and gradient as speed",
+      "subtopic": "5.6",
+      "theme": "Topic 5",
+      "difficulty": 0.25,
+      "objective": "Draw distance-time graphs from measurements and determine speed from the gradient.",
+      "essentialPoints": [
+        "Distance travelled along a straight line can be plotted as a distance-time graph",
+        "The gradient of a distance-time graph gives the speed"
+      ],
+      "specRefs": [
+        "4.5.6.1.4"
+      ],
+      "kind": "application",
+      "practicalIds": []
+    },
+    {
+      "id": "p5_distance_time_tangent_ht",
+      "label": "Instantaneous speed from tangent to distance-time graph (HT)",
+      "subtopic": "5.6",
+      "theme": "Topic 5",
+      "difficulty": 0.35,
+      "objective": "Determine the instantaneous speed of an accelerating object by drawing a tangent to a distance-time graph and measuring its gradient.",
+      "essentialPoints": [
+        "For an accelerating object, speed at an instant is found from the gradient of a tangent drawn at that point"
+      ],
+      "specRefs": [
+        "4.5.6.1.4"
+      ],
+      "kind": "application",
+      "practicalIds": []
+    },
+    {
+      "id": "p5_acceleration_equation",
+      "label": "Acceleration equation: a = Δv/t",
+      "subtopic": "5.6",
+      "theme": "Topic 5",
+      "difficulty": 0.2,
+      "objective": "Recall and apply average acceleration = change in velocity / time taken, and identify deceleration.",
+      "essentialPoints": [
+        "acceleration (m/s²) = change in velocity (m/s) / time taken (s)",
+        "An object that slows down is decelerating (negative acceleration)"
+      ],
+      "specRefs": [
+        "4.5.6.1.5"
+      ],
+      "kind": "concept",
+      "practicalIds": []
+    },
+    {
+      "id": "p5_estimate_accelerations",
+      "label": "Estimating magnitudes of everyday accelerations",
+      "subtopic": "5.6",
+      "theme": "Topic 5",
+      "difficulty": 0.2,
+      "objective": "Estimate the magnitude of accelerations in everyday situations.",
+      "essentialPoints": [
+        "Use knowledge of typical speeds and times to estimate realistic acceleration values"
+      ],
+      "specRefs": [
+        "4.5.6.1.5"
+      ],
+      "kind": "application",
+      "practicalIds": []
+    },
+    {
+      "id": "p5_velocity_time_graph_gradient",
+      "label": "Velocity-time graphs and gradient as acceleration",
+      "subtopic": "5.6",
+      "theme": "Topic 5",
+      "difficulty": 0.25,
+      "objective": "Draw velocity-time graphs from measurements and interpret gradient as acceleration.",
+      "essentialPoints": [
+        "A velocity-time graph can be drawn from measured data",
+        "The gradient of a velocity-time graph gives acceleration"
+      ],
+      "specRefs": [
+        "4.5.6.1.5"
+      ],
+      "kind": "application",
+      "practicalIds": []
+    },
+    {
+      "id": "p5_velocity_time_area_ht",
+      "label": "Area under velocity-time graph = distance/displacement (HT)",
+      "subtopic": "5.6",
+      "theme": "Topic 5",
+      "difficulty": 0.35,
+      "objective": "Interpret the enclosed area under a velocity-time graph as distance travelled or displacement, including by counting squares.",
+      "essentialPoints": [
+        "The area under a velocity-time graph represents distance travelled (or displacement)",
+        "For non-uniform (curved) sections, measure area by counting squares"
+      ],
+      "specRefs": [
+        "4.5.6.1.5"
+      ],
+      "kind": "application",
+      "practicalIds": []
+    },
+    {
+      "id": "p5_suvat_equation",
+      "label": "Uniform acceleration equation: v² − u² = 2as",
+      "subtopic": "5.6",
+      "theme": "Topic 5",
+      "difficulty": 0.3,
+      "objective": "Recall and apply v² − u² = 2as for uniformly accelerated motion.",
+      "essentialPoints": [
+        "(final velocity)² − (initial velocity)² = 2 × acceleration × distance",
+        "Applies only to uniform acceleration"
+      ],
+      "specRefs": [
+        "4.5.6.1.5"
+      ],
+      "kind": "concept",
+      "practicalIds": []
+    },
+    {
+      "id": "p5_freefall_g",
+      "label": "Acceleration of free fall near Earth's surface",
+      "subtopic": "5.6",
+      "theme": "Topic 5",
+      "difficulty": 0.15,
+      "objective": "Know that objects falling freely under gravity near Earth's surface accelerate at about 9.8 m/s².",
+      "essentialPoints": [
+        "Free-falling objects near Earth's surface accelerate at approximately 9.8 m/s²"
+      ],
+      "specRefs": [
+        "4.5.6.1.5"
+      ],
+      "kind": "concept",
+      "practicalIds": []
+    },
+    {
+      "id": "p5_terminal_velocity",
+      "label": "Terminal velocity of a falling object (physics only)",
+      "subtopic": "5.6",
+      "theme": "Topic 5",
+      "difficulty": 0.3,
+      "objective": "Explain that a falling object accelerates due to gravity until resultant force is zero, reaching terminal velocity, and interpret related velocity-time graphs.",
+      "essentialPoints": [
+        "An object falling through a fluid initially accelerates due to gravity",
+        "As speed increases, resistive force (e.g. air resistance/drag) increases until it balances weight, giving zero resultant force",
+        "At terminal velocity the object moves at constant speed"
+      ],
+      "specRefs": [
+        "4.5.6.1.5"
+      ],
+      "kind": "concept",
+      "practicalIds": []
+    },
+    {
+      "id": "p5_terminal_velocity_graph_interpret",
+      "label": "Drawing and interpreting velocity-time graphs for terminal velocity",
+      "subtopic": "5.6",
+      "theme": "Topic 5",
+      "difficulty": 0.3,
+      "objective": "Draw and interpret velocity-time graphs for objects reaching terminal velocity, relating the shape to the changing forces acting.",
+      "essentialPoints": [
+        "The graph curves as acceleration decreases, flattening to a horizontal line at terminal velocity",
+        "Interpret changing gradient in terms of the changing resultant force acting on the object"
+      ],
+      "specRefs": [
+        "4.5.6.1.5"
+      ],
+      "kind": "application",
+      "practicalIds": []
+    },
+    {
+      "id": "p5_rp_parachute_procedure",
+      "label": "Investigating air resistance on a falling object (e.g. model parachute)",
+      "subtopic": "5.6",
+      "theme": "Topic 5",
+      "difficulty": 0.25,
+      "objective": "Carry out an investigation to measure the effect of air resistance on a falling object such as a model parachute.",
+      "essentialPoints": [
+        "Vary a parameter (e.g. parachute area) and measure falling time/speed",
+        "Use timing apparatus to record how air resistance affects motion"
+      ],
+      "specRefs": [
+        "4.5.6.1.5"
+      ],
+      "kind": "procedure",
+      "practicalIds": []
+    },
+    {
+      "id": "p5_newton_first_law",
+      "label": "Newton's First Law",
+      "subtopic": "5.6",
+      "theme": "Topic 5",
+      "difficulty": 0.25,
+      "objective": "State and apply Newton's First Law: an object's velocity only changes if a resultant force acts on it.",
+      "essentialPoints": [
+        "If resultant force is zero and object is stationary, it stays stationary",
+        "If resultant force is zero and object is moving, it continues at the same velocity",
+        "Velocity only changes if a resultant force acts (e.g. steady speed means driving force balances resistive forces)"
+      ],
+      "specRefs": [
+        "4.5.6.2.1"
+      ],
+      "kind": "concept",
+      "practicalIds": []
+    },
+    {
+      "id": "p5_inertia_ht",
+      "label": "Inertia (HT)",
+      "subtopic": "5.6",
+      "theme": "Topic 5",
+      "difficulty": 0.2,
+      "objective": "Define inertia as the tendency of objects to continue in their state of rest or uniform motion.",
+      "essentialPoints": [
+        "Inertia is the tendency of an object to stay at rest or keep moving at constant velocity unless acted on by a resultant force"
+      ],
+      "specRefs": [
+        "4.5.6.2.1"
+      ],
+      "kind": "concept",
+      "practicalIds": []
+    },
+    {
+      "id": "p5_newton_second_law",
+      "label": "Newton's Second Law and F = ma",
+      "subtopic": "5.6",
+      "theme": "Topic 5",
+      "difficulty": 0.3,
+      "objective": "State Newton's Second Law and recall/apply resultant force = mass × acceleration.",
+      "essentialPoints": [
+        "Acceleration is proportional to resultant force and inversely proportional to mass",
+        "resultant force (N) = mass (kg) × acceleration (m/s²)"
+      ],
+      "specRefs": [
+        "4.5.6.2.2"
+      ],
+      "kind": "concept",
+      "practicalIds": []
+    },
+    {
+      "id": "p5_inertial_mass_ht",
+      "label": "Inertial mass (HT)",
+      "subtopic": "5.6",
+      "theme": "Topic 5",
+      "difficulty": 0.3,
+      "objective": "Explain inertial mass as a measure of how difficult it is to change an object's velocity, defined as the ratio of force to acceleration.",
+      "essentialPoints": [
+        "Inertial mass measures how difficult it is to change an object's velocity",
+        "Inertial mass = force / acceleration"
+      ],
+      "specRefs": [
+        "4.5.6.2.2"
+      ],
+      "kind": "concept",
+      "practicalIds": []
+    },
+    {
+      "id": "p5_estimate_road_transport_forces",
+      "label": "Estimating speeds, accelerations and forces for road transport",
+      "subtopic": "5.6",
+      "theme": "Topic 5",
+      "difficulty": 0.25,
+      "objective": "Estimate the speed, acceleration and forces involved in large accelerations for everyday road transport, using the approximation symbol.",
+      "essentialPoints": [
+        "Use F=ma and typical vehicle data to estimate realistic forces/accelerations",
+        "Recognise and use the approximation symbol ~"
+      ],
+      "specRefs": [
+        "4.5.6.2.2"
+      ],
+      "kind": "application",
+      "practicalIds": []
+    },
+    {
+      "id": "p5_rp7_procedure",
+      "label": "RP7 procedure: investigating force, mass and acceleration",
+      "subtopic": "5.6",
+      "theme": "Topic 5",
+      "difficulty": 0.3,
+      "objective": "Carry out an investigation into the effect of varying force on acceleration for constant mass, and varying mass on acceleration for constant force.",
+      "essentialPoints": [
+        "Use a trolley/track setup, varying the accelerating force while keeping mass constant, and measuring acceleration",
+        "Repeat while varying the mass and keeping force constant",
+        "Use light gates/ticker timer/data logger to record motion data"
+      ],
+      "specRefs": [
+        "8.2.7"
+      ],
+      "kind": "procedure",
+      "practicalIds": [
+        7
+      ]
+    },
+    {
+      "id": "p5_rp7_interpret_data",
+      "label": "Interpreting force-mass-acceleration data from RP7",
+      "subtopic": "5.6",
+      "theme": "Topic 5",
+      "difficulty": 0.3,
+      "objective": "Interpret RP7 results to confirm the relationships between force, mass and acceleration described by Newton's Second Law.",
+      "essentialPoints": [
+        "Identify that acceleration is proportional to force at constant mass",
+        "Identify that acceleration is inversely proportional to mass at constant force"
+      ],
+      "specRefs": [
+        "4.5.6.2.2"
+      ],
+      "kind": "application",
+      "practicalIds": [
+        7
+      ]
+    },
+    {
+      "id": "p5_newton_third_law",
+      "label": "Newton's Third Law",
+      "subtopic": "5.6",
+      "theme": "Topic 5",
+      "difficulty": 0.3,
+      "objective": "State Newton's Third Law and apply it to equilibrium situations.",
+      "essentialPoints": [
+        "Whenever two objects interact, the forces they exert on each other are equal and opposite",
+        "Apply this to examples of equilibrium (e.g. object resting on a surface)"
+      ],
+      "specRefs": [
+        "4.5.6.2.3"
+      ],
+      "kind": "concept",
+      "practicalIds": []
+    },
+    {
+      "id": "p5_stopping_distance_definition",
+      "label": "Stopping distance = thinking distance + braking distance",
+      "subtopic": "5.6",
+      "theme": "Topic 5",
+      "difficulty": 0.2,
+      "objective": "Define stopping distance as the sum of thinking distance and braking distance, increasing with speed.",
+      "essentialPoints": [
+        "Stopping distance = thinking distance + braking distance",
+        "For a given braking force, greater speed means greater stopping distance"
+      ],
+      "specRefs": [
+        "4.5.6.3.1"
+      ],
+      "kind": "concept",
+      "practicalIds": []
+    },
+    {
+      "id": "p5_stopping_distance_estimate_graphs",
+      "label": "Estimating and interpreting stopping distance vs speed",
+      "subtopic": "5.6",
+      "theme": "Topic 5",
+      "difficulty": 0.25,
+      "objective": "Estimate how emergency stopping distance varies with speed and interpret graphs of speed against stopping distance for different vehicles.",
+      "essentialPoints": [
+        "Estimate stopping distances across a typical range of speeds",
+        "Read and interpret graphs relating speed to stopping distance for different vehicles"
+      ],
+      "specRefs": [
+        "4.5.6.3.1"
+      ],
+      "kind": "application",
+      "practicalIds": []
+    },
+    {
+      "id": "p5_reaction_time_concept",
+      "label": "Reaction time and factors affecting it",
+      "subtopic": "5.6",
+      "theme": "Topic 5",
+      "difficulty": 0.2,
+      "objective": "Know typical reaction time values and describe factors affecting a driver's reaction time.",
+      "essentialPoints": [
+        "Typical reaction times range from 0.2 s to 0.9 s",
+        "Tiredness, drugs, alcohol and distractions can increase reaction time"
+      ],
+      "specRefs": [
+        "4.5.6.3.2"
+      ],
+      "kind": "concept",
+      "practicalIds": []
+    },
+    {
+      "id": "p5_measuring_reaction_time_procedure",
+      "label": "Measuring human reaction time (e.g. ruler drop test)",
+      "subtopic": "5.6",
+      "theme": "Topic 5",
+      "difficulty": 0.2,
+      "objective": "Explain and carry out simple methods used to measure human reaction times, including the effect of distractions.",
+      "essentialPoints": [
+        "Use a simple method (e.g. ruler drop test) to measure reaction time",
+        "Repeat measurements to test reliability and reduce anomalies"
+      ],
+      "specRefs": [
+        "4.5.6.3.2"
+      ],
+      "kind": "procedure",
+      "practicalIds": []
+    },
+    {
+      "id": "p5_reaction_time_data_evaluate",
+      "label": "Interpreting and evaluating reaction time data",
+      "subtopic": "5.6",
+      "theme": "Topic 5",
+      "difficulty": 0.3,
+      "objective": "Interpret and evaluate measurements from reaction time experiments and evaluate the effect of factors on thinking distance from given data.",
+      "essentialPoints": [
+        "Analyse collected reaction time data for patterns and reliability",
+        "Evaluate how factors like distraction affect thinking distance using given data"
+      ],
+      "specRefs": [
+        "4.5.6.3.2"
+      ],
+      "kind": "application",
+      "practicalIds": []
+    },
+    {
+      "id": "p5_braking_distance_factors",
+      "label": "Factors affecting braking distance: road, weather, vehicle condition",
+      "subtopic": "5.6",
+      "theme": "Topic 5",
+      "difficulty": 0.2,
+      "objective": "Explain how adverse road/weather conditions and poor vehicle condition (brakes/tyres) affect braking distance and safety implications.",
+      "essentialPoints": [
+        "Wet or icy road conditions increase braking distance",
+        "Poor condition of brakes or tyres increases braking distance",
+        "These factors have implications for road safety"
+      ],
+      "specRefs": [
+        "4.5.6.3.3"
+      ],
+      "kind": "concept",
+      "practicalIds": []
+    },
+    {
+      "id": "p5_braking_work_heat",
+      "label": "Braking converts kinetic energy via work done by friction, heating brakes",
+      "subtopic": "5.6",
+      "theme": "Topic 5",
+      "difficulty": 0.25,
+      "objective": "Explain that work done by friction between brakes and wheel reduces kinetic energy and raises brake temperature.",
+      "essentialPoints": [
+        "Work done by the friction force between brakes and wheel reduces the vehicle's kinetic energy",
+        "This energy transfer raises the temperature of the brakes"
+      ],
+      "specRefs": [
+        "4.5.6.3.4"
+      ],
+      "kind": "concept",
+      "practicalIds": []
+    },
+    {
+      "id": "p5_braking_force_speed_relationship",
+      "label": "Greater speed requires greater braking force for a given stopping distance",
+      "subtopic": "5.6",
+      "theme": "Topic 5",
+      "difficulty": 0.25,
+      "objective": "Explain that greater vehicle speed requires greater braking force to stop within a certain distance, and greater braking force gives greater deceleration.",
+      "essentialPoints": [
+        "Higher speed requires greater braking force to stop in the same distance",
+        "Greater braking force produces greater deceleration"
+      ],
+      "specRefs": [
+        "4.5.6.3.4"
+      ],
+      "kind": "concept",
+      "practicalIds": []
+    },
+    {
+      "id": "p5_large_deceleration_dangers",
+      "label": "Dangers of large decelerations",
+      "subtopic": "5.6",
+      "theme": "Topic 5",
+      "difficulty": 0.2,
+      "objective": "Explain the dangers caused by large decelerations, including brakes overheating and loss of control.",
+      "essentialPoints": [
+        "Large decelerations can cause brakes to overheat",
+        "Large decelerations can cause loss of vehicle control"
+      ],
+      "specRefs": [
+        "4.5.6.3.4"
+      ],
+      "kind": "concept",
+      "practicalIds": []
+    },
+    {
+      "id": "p5_estimate_deceleration_forces_ht",
+      "label": "Estimating deceleration forces for road vehicles (HT)",
+      "subtopic": "5.6",
+      "theme": "Topic 5",
+      "difficulty": 0.3,
+      "objective": "Estimate the forces involved in the deceleration of road vehicles in typical situations.",
+      "essentialPoints": [
+        "Apply F = ma with estimated/typical vehicle mass and deceleration values to estimate braking forces"
+      ],
+      "specRefs": [
+        "4.5.6.3.4"
+      ],
+      "kind": "application",
+      "practicalIds": []
+    },
+    {
+      "id": "p5_momentum_equation_ht",
+      "label": "Momentum equation: p = mv (HT)",
+      "subtopic": "5.7",
+      "theme": "Topic 5",
+      "difficulty": 0.25,
+      "objective": "Recall and apply momentum = mass × velocity.",
+      "essentialPoints": [
+        "momentum (kg m/s) = mass (kg) × velocity (m/s)"
+      ],
+      "specRefs": [
+        "4.5.7.1"
+      ],
+      "kind": "concept",
+      "practicalIds": []
+    },
+    {
+      "id": "p5_conservation_momentum_ht",
+      "label": "Conservation of momentum (HT)",
+      "subtopic": "5.7",
+      "theme": "Topic 5",
+      "difficulty": 0.35,
+      "objective": "State and apply the principle that in a closed system, total momentum before an event equals total momentum after.",
+      "essentialPoints": [
+        "In a closed system, total momentum before an event equals total momentum after the event",
+        "Use momentum conservation to describe and explain collisions"
+      ],
+      "specRefs": [
+        "4.5.7.2"
+      ],
+      "kind": "concept",
+      "practicalIds": []
+    },
+    {
+      "id": "p5_momentum_calculations_physics_ht",
+      "label": "Calculations involving conservation of momentum in collisions (physics only, HT)",
+      "subtopic": "5.7",
+      "theme": "Topic 5",
+      "difficulty": 0.4,
+      "objective": "Complete calculations involving momentum conservation in events such as collisions between two objects.",
+      "essentialPoints": [
+        "Apply p = mv and conservation of momentum to calculate unknown masses, velocities in collisions"
+      ],
+      "specRefs": [
+        "4.5.7.2"
+      ],
+      "kind": "application",
+      "practicalIds": []
+    },
+    {
+      "id": "p5_rp_trolley_momentum_procedure_ht",
+      "label": "Investigating collisions between trolleys to measure momentum (HT)",
+      "subtopic": "5.7",
+      "theme": "Topic 5",
+      "difficulty": 0.3,
+      "objective": "Investigate collisions between laboratory trolleys using light gates, data loggers or ticker timers to measure and record data for momentum calculations.",
+      "essentialPoints": [
+        "Set up trolleys with light gates/ticker timers to measure velocities before and after collision",
+        "Record mass and velocity data to test conservation of momentum"
+      ],
+      "specRefs": [
+        "4.5.7.2"
+      ],
+      "kind": "procedure",
+      "practicalIds": []
+    },
+    {
+      "id": "p5_rate_change_momentum_equation_physics_ht",
+      "label": "Force as rate of change of momentum: F = mΔv/Δt (physics only, HT)",
+      "subtopic": "5.7",
+      "theme": "Topic 5",
+      "difficulty": 0.4,
+      "objective": "Derive and apply F = mΔv/Δt by combining F=ma and a=Δv/Δt, understanding force equals rate of change of momentum.",
+      "essentialPoints": [
+        "Combining F=ma and a=Δv/Δt gives F = mΔv/Δt",
+        "Force equals the rate of change of momentum"
+      ],
+      "specRefs": [
+        "4.5.7.3"
+      ],
+      "kind": "concept",
+      "practicalIds": []
+    },
+    {
+      "id": "p5_safety_features_momentum_physics_ht",
+      "label": "Explaining safety features using rate of change of momentum (physics only, HT)",
+      "subtopic": "5.7",
+      "theme": "Topic 5",
+      "difficulty": 0.35,
+      "objective": "Explain safety features such as air bags, seat belts, crash mats, cycle helmets and cushioned playground surfaces in terms of rate of change of momentum.",
+      "essentialPoints": [
+        "Safety features increase the time over which momentum changes, reducing the force experienced",
+        "Examples: air bags, seat belts, crash mats, cycle helmets, cushioned playground surfaces"
+      ],
+      "specRefs": [
+        "4.5.7.3"
+      ],
+      "kind": "application",
+      "practicalIds": []
+    },
+    {
+      "id": "p5_apply_combined_force_equations_ht",
+      "label": "Applying combined force, mass, velocity and acceleration equations (HT)",
+      "subtopic": "5.7",
+      "theme": "Topic 5",
+      "difficulty": 0.4,
+      "objective": "Apply equations relating force, mass, velocity and acceleration together to explain how related changes are inter-related.",
+      "essentialPoints": [
+        "Combine F=ma, a=Δv/Δt, p=mv and F=mΔv/Δt to solve multi-step problems relating these quantities"
+      ],
+      "specRefs": [
+        "4.5.7.3"
+      ],
+      "kind": "application",
+      "practicalIds": []
+    }
+  ],
+  "edges": [
+    {
+      "from": "p5_scalar_vector",
+      "to": "p5_contact_noncontact_forces",
+      "difficulty": 0.2
+    },
+    {
+      "from": "p5_contact_noncontact_forces",
+      "to": "p5_force_vector_interaction_pairs",
+      "difficulty": 0.3
+    },
+    {
+      "from": "p5_scalar_vector",
+      "to": "p5_force_vector_interaction_pairs",
+      "difficulty": 0.25
+    },
+    {
+      "from": "p5_contact_noncontact_forces",
+      "to": "p5_weight_gravity",
+      "difficulty": 0.2
+    },
+    {
+      "from": "p5_weight_gravity",
+      "to": "p5_weight_equation",
+      "difficulty": 0.2
+    },
+    {
+      "from": "p0_ms_substitute_units",
+      "to": "p5_weight_equation",
+      "difficulty": 0.15
+    },
+    {
+      "from": "p5_weight_equation",
+      "to": "p5_weight_mass_proportional",
+      "difficulty": 0.15
+    },
+    {
+      "from": "p0_ms_proportionality",
+      "to": "p5_weight_mass_proportional",
+      "difficulty": 0.15
+    },
+    {
+      "from": "p5_weight_gravity",
+      "to": "p5_centre_of_mass",
+      "difficulty": 0.15
+    },
+    {
+      "from": "p5_weight_equation",
+      "to": "p5_newtonmeter",
+      "difficulty": 0.15
+    },
+    {
+      "from": "p5_scalar_vector",
+      "to": "p5_resultant_force_1d",
+      "difficulty": 0.2
+    },
+    {
+      "from": "p5_contact_noncontact_forces",
+      "to": "p5_resultant_force_1d",
+      "difficulty": 0.15
+    },
+    {
+      "from": "p5_resultant_force_1d",
+      "to": "p5_free_body_diagrams_ht",
+      "difficulty": 0.3
+    },
+    {
+      "from": "p5_free_body_diagrams_ht",
+      "to": "p5_resolving_forces_ht",
+      "difficulty": 0.35
+    },
+    {
+      "from": "p5_resultant_force_1d",
+      "to": "p5_work_done_concept",
+      "difficulty": 0.2
+    },
+    {
+      "from": "p5_work_done_concept",
+      "to": "p5_work_done_equation",
+      "difficulty": 0.2
+    },
+    {
+      "from": "p0_ms_substitute_units",
+      "to": "p5_work_done_equation",
+      "difficulty": 0.15
+    },
+    {
+      "from": "p5_work_done_equation",
+      "to": "p5_work_energy_transfer_link",
+      "difficulty": 0.25
+    },
+    {
+      "from": "p5_contact_noncontact_forces",
+      "to": "p5_work_against_friction_heating",
+      "difficulty": 0.2
+    },
+    {
+      "from": "p5_work_energy_transfer_link",
+      "to": "p5_work_against_friction_heating",
+      "difficulty": 0.2
+    },
+    {
+      "from": "p5_contact_noncontact_forces",
+      "to": "p5_forces_deformation_examples",
+      "difficulty": 0.15
+    },
+    {
+      "from": "p5_resultant_force_1d",
+      "to": "p5_more_than_one_force_needed",
+      "difficulty": 0.3
+    },
+    {
+      "from": "p5_forces_deformation_examples",
+      "to": "p5_more_than_one_force_needed",
+      "difficulty": 0.25
+    },
+    {
+      "from": "p5_forces_deformation_examples",
+      "to": "p5_elastic_inelastic_deformation",
+      "difficulty": 0.2
+    },
+    {
+      "from": "p5_elastic_inelastic_deformation",
+      "to": "p5_hookes_law",
+      "difficulty": 0.25
+    },
+    {
+      "from": "p0_ms_proportionality",
+      "to": "p5_hookes_law",
+      "difficulty": 0.2
+    },
+    {
+      "from": "p5_hookes_law",
+      "to": "p5_spring_constant_equation",
+      "difficulty": 0.2
+    },
+    {
+      "from": "p0_ms_substitute_units",
+      "to": "p5_spring_constant_equation",
+      "difficulty": 0.15
+    },
+    {
+      "from": "p5_spring_constant_equation",
+      "to": "p5_linear_nonlinear_force_extension",
+      "difficulty": 0.25
+    },
+    {
+      "from": "p0_ms_graphs_gradient",
+      "to": "p5_linear_nonlinear_force_extension",
+      "difficulty": 0.25
+    },
+    {
+      "from": "p5_work_done_equation",
+      "to": "p5_epe_equation",
+      "difficulty": 0.3
+    },
+    {
+      "from": "p5_spring_constant_equation",
+      "to": "p5_epe_equation",
+      "difficulty": 0.25
+    },
+    {
+      "from": "p5_epe_equation",
+      "to": "p5_work_epe_equivalence",
+      "difficulty": 0.25
+    },
+    {
+      "from": "p5_elastic_inelastic_deformation",
+      "to": "p5_work_epe_equivalence",
+      "difficulty": 0.2
+    },
+    {
+      "from": "p0_at2_force_extension",
+      "to": "p5_rp6_procedure",
+      "difficulty": 0.2
+    },
+    {
+      "from": "p5_hookes_law",
+      "to": "p5_rp6_procedure",
+      "difficulty": 0.2
+    },
+    {
+      "from": "p5_rp6_procedure",
+      "to": "p5_rp6_interpret_data",
+      "difficulty": 0.25
+    },
+    {
+      "from": "p5_linear_nonlinear_force_extension",
+      "to": "p5_rp6_interpret_data",
+      "difficulty": 0.25
+    },
+    {
+      "from": "p0_ms_graphs_gradient",
+      "to": "p5_rp6_interpret_data",
+      "difficulty": 0.2
+    },
+    {
+      "from": "p5_rp6_interpret_data",
+      "to": "p5_calc_epe_transfers",
+      "difficulty": 0.25
+    },
+    {
+      "from": "p5_epe_equation",
+      "to": "p5_calc_epe_transfers",
+      "difficulty": 0.25
+    },
+    {
+      "from": "p5_resultant_force_1d",
+      "to": "p5_moments_rotation_examples",
+      "difficulty": 0.2
+    },
+    {
+      "from": "p5_moments_rotation_examples",
+      "to": "p5_moment_equation",
+      "difficulty": 0.2
+    },
+    {
+      "from": "p0_ms_substitute_units",
+      "to": "p5_moment_equation",
+      "difficulty": 0.15
+    },
+    {
+      "from": "p5_moment_equation",
+      "to": "p5_moments_balance_calc",
+      "difficulty": 0.3
+    },
+    {
+      "from": "p5_moment_equation",
+      "to": "p5_levers_gears",
+      "difficulty": 0.25
+    },
+    {
+      "from": "p5_contact_noncontact_forces",
+      "to": "p5_fluid_definition",
+      "difficulty": 0.15
+    },
+    {
+      "from": "p5_fluid_definition",
+      "to": "p5_pressure_equation",
+      "difficulty": 0.2
+    },
+    {
+      "from": "p0_ms_substitute_units",
+      "to": "p5_pressure_equation",
+      "difficulty": 0.15
+    },
+    {
+      "from": "p5_pressure_equation",
+      "to": "p5_liquid_pressure_equation_ht",
+      "difficulty": 0.3
+    },
+    {
+      "from": "p5_weight_equation",
+      "to": "p5_liquid_pressure_equation_ht",
+      "difficulty": 0.25
+    },
+    {
+      "from": "p5_liquid_pressure_equation_ht",
+      "to": "p5_upthrust_ht",
+      "difficulty": 0.35
+    },
+    {
+      "from": "p5_resultant_force_1d",
+      "to": "p5_upthrust_ht",
+      "difficulty": 0.25
+    },
+    {
+      "from": "p5_fluid_definition",
+      "to": "p5_atmosphere_model",
+      "difficulty": 0.2
+    },
+    {
+      "from": "p5_atmosphere_model",
+      "to": "p5_atmospheric_pressure_explanation",
+      "difficulty": 0.3
+    },
+    {
+      "from": "p5_pressure_equation",
+      "to": "p5_atmospheric_pressure_explanation",
+      "difficulty": 0.2
+    },
+    {
+      "from": "p5_scalar_vector",
+      "to": "p5_distance_displacement",
+      "difficulty": 0.2
+    },
+    {
+      "from": "p5_scalar_vector",
+      "to": "p5_speed_concept",
+      "difficulty": 0.15
+    },
+    {
+      "from": "p5_speed_concept",
+      "to": "p5_typical_speed_values",
+      "difficulty": 0.1
+    },
+    {
+      "from": "p5_speed_concept",
+      "to": "p5_distance_speed_time_equation",
+      "difficulty": 0.2
+    },
+    {
+      "from": "p0_ms_substitute_units",
+      "to": "p5_distance_speed_time_equation",
+      "difficulty": 0.15
+    },
+    {
+      "from": "p5_distance_displacement",
+      "to": "p5_velocity_concept",
+      "difficulty": 0.2
+    },
+    {
+      "from": "p5_speed_concept",
+      "to": "p5_velocity_concept",
+      "difficulty": 0.2
+    },
+    {
+      "from": "p5_velocity_concept",
+      "to": "p5_circular_motion_velocity_ht",
+      "difficulty": 0.35
+    },
+    {
+      "from": "p5_distance_speed_time_equation",
+      "to": "p5_distance_time_graph",
+      "difficulty": 0.25
+    },
+    {
+      "from": "p0_ms_graphs_gradient",
+      "to": "p5_distance_time_graph",
+      "difficulty": 0.2
+    },
+    {
+      "from": "p5_distance_time_graph",
+      "to": "p5_distance_time_tangent_ht",
+      "difficulty": 0.3
+    },
+    {
+      "from": "p0_ms_tangent",
+      "to": "p5_distance_time_tangent_ht",
+      "difficulty": 0.25
+    },
+    {
+      "from": "p5_velocity_concept",
+      "to": "p5_acceleration_equation",
+      "difficulty": 0.25
+    },
+    {
+      "from": "p0_ms_substitute_units",
+      "to": "p5_acceleration_equation",
+      "difficulty": 0.15
+    },
+    {
+      "from": "p5_acceleration_equation",
+      "to": "p5_estimate_accelerations",
+      "difficulty": 0.2
+    },
+    {
+      "from": "p5_acceleration_equation",
+      "to": "p5_velocity_time_graph_gradient",
+      "difficulty": 0.25
+    },
+    {
+      "from": "p0_ms_graphs_gradient",
+      "to": "p5_velocity_time_graph_gradient",
+      "difficulty": 0.2
+    },
+    {
+      "from": "p5_velocity_time_graph_gradient",
+      "to": "p5_velocity_time_area_ht",
+      "difficulty": 0.3
+    },
+    {
+      "from": "p0_ms_area_under_graph",
+      "to": "p5_velocity_time_area_ht",
+      "difficulty": 0.25
+    },
+    {
+      "from": "p5_acceleration_equation",
+      "to": "p5_suvat_equation",
+      "difficulty": 0.3
+    },
+    {
+      "from": "p5_distance_speed_time_equation",
+      "to": "p5_suvat_equation",
+      "difficulty": 0.25
+    },
+    {
+      "from": "p5_suvat_equation",
+      "to": "p5_freefall_g",
+      "difficulty": 0.15
+    },
+    {
+      "from": "p5_freefall_g",
+      "to": "p5_terminal_velocity",
+      "difficulty": 0.25
+    },
+    {
+      "from": "p5_contact_noncontact_forces",
+      "to": "p5_terminal_velocity",
+      "difficulty": 0.2
+    },
+    {
+      "from": "p5_resultant_force_1d",
+      "to": "p5_terminal_velocity",
+      "difficulty": 0.25
+    },
+    {
+      "from": "p5_terminal_velocity",
+      "to": "p5_terminal_velocity_graph_interpret",
+      "difficulty": 0.25
+    },
+    {
+      "from": "p5_velocity_time_graph_gradient",
+      "to": "p5_terminal_velocity_graph_interpret",
+      "difficulty": 0.25
+    },
+    {
+      "from": "p0_at3_motion",
+      "to": "p5_rp_parachute_procedure",
+      "difficulty": 0.2
+    },
+    {
+      "from": "p5_terminal_velocity",
+      "to": "p5_rp_parachute_procedure",
+      "difficulty": 0.2
+    },
+    {
+      "from": "p5_resultant_force_1d",
+      "to": "p5_newton_first_law",
+      "difficulty": 0.25
+    },
+    {
+      "from": "p5_velocity_concept",
+      "to": "p5_newton_first_law",
+      "difficulty": 0.2
+    },
+    {
+      "from": "p5_newton_first_law",
+      "to": "p5_inertia_ht",
+      "difficulty": 0.2
+    },
+    {
+      "from": "p5_newton_first_law",
+      "to": "p5_newton_second_law",
+      "difficulty": 0.3
+    },
+    {
+      "from": "p5_acceleration_equation",
+      "to": "p5_newton_second_law",
+      "difficulty": 0.25
+    },
+    {
+      "from": "p0_ms_proportionality",
+      "to": "p5_newton_second_law",
+      "difficulty": 0.2
+    },
+    {
+      "from": "p5_newton_second_law",
+      "to": "p5_inertial_mass_ht",
+      "difficulty": 0.25
+    },
+    {
+      "from": "p5_newton_second_law",
+      "to": "p5_estimate_road_transport_forces",
+      "difficulty": 0.25
+    },
+    {
+      "from": "p0_ms_sig_figs",
+      "to": "p5_estimate_road_transport_forces",
+      "difficulty": 0.1
+    },
+    {
+      "from": "p0_at1_length_mass_time",
+      "to": "p5_rp7_procedure",
+      "difficulty": 0.2
+    },
+    {
+      "from": "p0_at2_force_extension",
+      "to": "p5_rp7_procedure",
+      "difficulty": 0.15
+    },
+    {
+      "from": "p0_at3_motion",
+      "to": "p5_rp7_procedure",
+      "difficulty": 0.2
+    },
+    {
+      "from": "p5_newton_second_law",
+      "to": "p5_rp7_procedure",
+      "difficulty": 0.2
+    },
+    {
+      "from": "p5_rp7_procedure",
+      "to": "p5_rp7_interpret_data",
+      "difficulty": 0.3
+    },
+    {
+      "from": "p0_ms_graphs_gradient",
+      "to": "p5_rp7_interpret_data",
+      "difficulty": 0.2
+    },
+    {
+      "from": "p0_ws_evaluate_error",
+      "to": "p5_rp7_interpret_data",
+      "difficulty": 0.25
+    },
+    {
+      "from": "p5_resultant_force_1d",
+      "to": "p5_newton_third_law",
+      "difficulty": 0.25
+    },
+    {
+      "from": "p5_force_vector_interaction_pairs",
+      "to": "p5_newton_third_law",
+      "difficulty": 0.3
+    },
+    {
+      "from": "p5_distance_speed_time_equation",
+      "to": "p5_stopping_distance_definition",
+      "difficulty": 0.2
+    },
+    {
+      "from": "p5_stopping_distance_definition",
+      "to": "p5_stopping_distance_estimate_graphs",
+      "difficulty": 0.25
+    },
+    {
+      "from": "p0_ms_graphs_gradient",
+      "to": "p5_stopping_distance_estimate_graphs",
+      "difficulty": 0.15
+    },
+    {
+      "from": "p5_stopping_distance_definition",
+      "to": "p5_reaction_time_concept",
+      "difficulty": 0.2
+    },
+    {
+      "from": "p5_reaction_time_concept",
+      "to": "p5_measuring_reaction_time_procedure",
+      "difficulty": 0.2
+    },
+    {
+      "from": "p0_at3_motion",
+      "to": "p5_measuring_reaction_time_procedure",
+      "difficulty": 0.15
+    },
+    {
+      "from": "p5_measuring_reaction_time_procedure",
+      "to": "p5_reaction_time_data_evaluate",
+      "difficulty": 0.25
+    },
+    {
+      "from": "p0_ws_evaluate_error",
+      "to": "p5_reaction_time_data_evaluate",
+      "difficulty": 0.25
+    },
+    {
+      "from": "p5_stopping_distance_definition",
+      "to": "p5_braking_distance_factors",
+      "difficulty": 0.2
+    },
+    {
+      "from": "p5_work_against_friction_heating",
+      "to": "p5_braking_work_heat",
+      "difficulty": 0.25
+    },
+    {
+      "from": "p5_braking_distance_factors",
+      "to": "p5_braking_work_heat",
+      "difficulty": 0.2
+    },
+    {
+      "from": "p5_newton_second_law",
+      "to": "p5_braking_force_speed_relationship",
+      "difficulty": 0.25
+    },
+    {
+      "from": "p5_braking_work_heat",
+      "to": "p5_braking_force_speed_relationship",
+      "difficulty": 0.2
+    },
+    {
+      "from": "p5_braking_force_speed_relationship",
+      "to": "p5_large_deceleration_dangers",
+      "difficulty": 0.2
+    },
+    {
+      "from": "p5_braking_force_speed_relationship",
+      "to": "p5_estimate_deceleration_forces_ht",
+      "difficulty": 0.3
+    },
+    {
+      "from": "p5_newton_second_law",
+      "to": "p5_estimate_deceleration_forces_ht",
+      "difficulty": 0.25
+    },
+    {
+      "from": "p5_velocity_concept",
+      "to": "p5_momentum_equation_ht",
+      "difficulty": 0.25
+    },
+    {
+      "from": "p0_ms_substitute_units",
+      "to": "p5_momentum_equation_ht",
+      "difficulty": 0.15
+    },
+    {
+      "from": "p5_momentum_equation_ht",
+      "to": "p5_conservation_momentum_ht",
+      "difficulty": 0.3
+    },
+    {
+      "from": "p5_newton_third_law",
+      "to": "p5_conservation_momentum_ht",
+      "difficulty": 0.3
+    },
+    {
+      "from": "p5_conservation_momentum_ht",
+      "to": "p5_momentum_calculations_physics_ht",
+      "difficulty": 0.35
+    },
+    {
+      "from": "p0_at3_motion",
+      "to": "p5_rp_trolley_momentum_procedure_ht",
+      "difficulty": 0.25
+    },
+    {
+      "from": "p5_momentum_equation_ht",
+      "to": "p5_rp_trolley_momentum_procedure_ht",
+      "difficulty": 0.25
+    },
+    {
+      "from": "p5_rp_trolley_momentum_procedure_ht",
+      "to": "p5_momentum_calculations_physics_ht",
+      "difficulty": 0.3
+    },
+    {
+      "from": "p5_newton_second_law",
+      "to": "p5_rate_change_momentum_equation_physics_ht",
+      "difficulty": 0.35
+    },
+    {
+      "from": "p5_acceleration_equation",
+      "to": "p5_rate_change_momentum_equation_physics_ht",
+      "difficulty": 0.3
+    },
+    {
+      "from": "p5_momentum_equation_ht",
+      "to": "p5_rate_change_momentum_equation_physics_ht",
+      "difficulty": 0.3
+    },
+    {
+      "from": "p5_rate_change_momentum_equation_physics_ht",
+      "to": "p5_safety_features_momentum_physics_ht",
+      "difficulty": 0.3
+    },
+    {
+      "from": "p5_rate_change_momentum_equation_physics_ht",
+      "to": "p5_apply_combined_force_equations_ht",
+      "difficulty": 0.35
+    },
+    {
+      "from": "p5_momentum_calculations_physics_ht",
+      "to": "p5_apply_combined_force_equations_ht",
+      "difficulty": 0.3
+    }
+  ]
+}

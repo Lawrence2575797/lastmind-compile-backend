@@ -1,0 +1,254 @@
+{
+  "nodes": 487,
+  "edges": 689,
+  "roots": [
+    {
+      "id": "p0_models",
+      "label": "Using scientific models to explain and predict"
+    },
+    {
+      "id": "p0_power_limits_science",
+      "label": "Power and limitations of science, and ethical issues"
+    },
+    {
+      "id": "p0_variables",
+      "label": "Independent, dependent and control variables"
+    },
+    {
+      "id": "p0_sci_vocab",
+      "label": "Using scientific vocabulary and definitions correctly"
+    },
+    {
+      "id": "p0_decimal_form",
+      "label": "Recognising and using decimal form"
+    },
+    {
+      "id": "p0_solve_algebraic",
+      "label": "Solving simple algebraic equations"
+    },
+    {
+      "id": "p0_math_symbols",
+      "label": "Understanding and using mathematical symbols (=, <, >, ∝, ~)"
+    },
+    {
+      "id": "p0_angles_degrees",
+      "label": "Using angular measures in degrees"
+    },
+    {
+      "id": "p0_2d_3d_forms",
+      "label": "Visualising and representing 2D and 3D forms"
+    },
+    {
+      "id": "p0_areas_volumes",
+      "label": "Calculating areas and volumes of simple shapes"
+    },
+    {
+      "id": "p0_ws_sig_figs",
+      "label": "Using an appropriate number of significant figures in calculations"
+    },
+    {
+      "id": "p0_ws_mean",
+      "label": "Finding arithmetic means from repeat readings"
+    },
+    {
+      "id": "p0_ms_rearrange",
+      "label": "Changing the subject of an equation"
+    },
+    {
+      "id": "p0_ms_substitute",
+      "label": "Substituting numerical values into equations with correct units"
+    },
+    {
+      "id": "p0_ms_graph_linear",
+      "label": "Understanding y = mx + c for a linear relationship"
+    },
+    {
+      "id": "p0_ms_plot_graph",
+      "label": "Plotting two variables from experimental data"
+    },
+    {
+      "id": "p0_ms_gradient",
+      "label": "Determining the gradient and intercept of a linear graph"
+    },
+    {
+      "id": "p0_ms_areas_volumes",
+      "label": "Calculating areas of rectangles/triangles and volumes of cubes"
+    },
+    {
+      "id": "p0_at1_mass_time_temp",
+      "label": "AT1: Using apparatus to measure mass, time and temperature accurately"
+    },
+    {
+      "id": "p0_at5_energy_apparatus",
+      "label": "AT5: Using apparatus safely to measure energy changes/transfers and work done"
+    },
+    {
+      "id": "p1_system_def",
+      "label": "A system as an object or group of objects"
+    },
+    {
+      "id": "p2_circuit_symbols",
+      "label": "Standard circuit diagram symbols"
+    },
+    {
+      "id": "p2_national_grid_structure",
+      "label": "The National Grid as a system of cables and transformers"
+    },
+    {
+      "id": "p2_static_charge_production",
+      "label": "Production of static charge and sparking by rubbing surfaces"
+    },
+    {
+      "id": "p0_at1_length_mass_time_volume_temp",
+      "label": "AT1: using apparatus to measure length, mass, time, volume and temperature accurately"
+    },
+    {
+      "id": "p0_at1_micrometer_vernier",
+      "label": "AT1: using a ruler, micrometer or Vernier calliper to measure small dimensions"
+    },
+    {
+      "id": "p0_at1_displacement_volume",
+      "label": "AT1: determining volume of an irregular solid by displacement"
+    },
+    {
+      "id": "p0_ms_significant_figures",
+      "label": "MS2a: using an appropriate number of significant figures"
+    },
+    {
+      "id": "p0_ms_mean",
+      "label": "MS2b: finding arithmetic means"
+    },
+    {
+      "id": "p0_ms_rearrange_equations",
+      "label": "MS3b: changing the subject of an equation"
+    },
+    {
+      "id": "p0_ms_substitute_units",
+      "label": "MS: substituting values into equations with units"
+    },
+    {
+      "id": "p0_ms_graph_plotting",
+      "label": "MS4c: plotting two variables from experimental data"
+    },
+    {
+      "id": "p0_ms_gradient_intercept",
+      "label": "MS4d: determining the gradient and intercept of a linear graph"
+    },
+    {
+      "id": "p0_ws_error_evaluation",
+      "label": "WS3.7: evaluating accuracy, precision, repeatability, reproducibility and identifying random/systematic error"
+    },
+    {
+      "id": "p0_ws_variables_controls",
+      "label": "WS2.2: planning experiments with controlled and independent/dependent variables"
+    },
+    {
+      "id": "p3_density_definition",
+      "label": "Density: definition and equation (ρ = m/V)"
+    },
+    {
+      "id": "p3_states_particle_model",
+      "label": "Particle model diagrams of solids, liquids and gases"
+    },
+    {
+      "id": "p3_work_definition",
+      "label": "Work: the transfer of energy by a force"
+    },
+    {
+      "id": "p4_atom_structure",
+      "label": "Basic structure of the atom: nucleus, protons, neutrons, electrons"
+    },
+    {
+      "id": "p4_model_indivisible",
+      "label": "Early model: atom as indivisible sphere"
+    },
+    {
+      "id": "p0_at1_length_mass_time",
+      "label": "AT1: measuring length, mass, time accurately"
+    },
+    {
+      "id": "p0_at2_force_extension",
+      "label": "AT2: measuring force and extension of springs"
+    },
+    {
+      "id": "p0_at3_motion",
+      "label": "AT3: measuring motion (speed, acceleration)"
+    },
+    {
+      "id": "p0_ms_change_subject",
+      "label": "MS: changing the subject of an equation"
+    },
+    {
+      "id": "p0_ms_proportionality",
+      "label": "MS: proportionality symbol and direct proportion"
+    },
+    {
+      "id": "p0_ms_graphs_gradient",
+      "label": "MS: plotting graphs and determining gradient/intercept"
+    },
+    {
+      "id": "p0_ms_tangent",
+      "label": "MS: drawing a tangent to a curve"
+    },
+    {
+      "id": "p0_ms_area_under_graph",
+      "label": "MS: finding area under a graph (counting squares)"
+    },
+    {
+      "id": "p0_ms_sig_figs",
+      "label": "MS: using appropriate significant figures"
+    },
+    {
+      "id": "p0_ws_hypotheses_plan",
+      "label": "WS: developing hypotheses and planning investigations"
+    },
+    {
+      "id": "p0_ws_evaluate_error",
+      "label": "WS: evaluating methods, accuracy, precision and error"
+    },
+    {
+      "id": "p5_scalar_vector",
+      "label": "Scalar and vector quantities"
+    },
+    {
+      "id": "p6_transverse_wave",
+      "label": "Transverse waves: definition and examples"
+    },
+    {
+      "id": "p6_longitudinal_wave",
+      "label": "Longitudinal waves: definition, compression and rarefaction"
+    },
+    {
+      "id": "p6_frequency",
+      "label": "Frequency of a wave"
+    },
+    {
+      "id": "p6_wave_speed_def",
+      "label": "Wave speed: definition"
+    },
+    {
+      "id": "p7_pole_forces",
+      "label": "Poles of a magnet: attraction and repulsion between like/unlike poles"
+    },
+    {
+      "id": "p8_solar_system_structure",
+      "label": "Structure of the solar system: Sun, planets, dwarf planets, natural satellites"
+    },
+    {
+      "id": "p8_velocity_vs_speed",
+      "label": "Distinction between speed (scalar) and velocity (vector)"
+    },
+    {
+      "id": "p8_wave_wavelength_definition",
+      "label": "Definition of wavelength"
+    },
+    {
+      "id": "p8_big_bang_theory",
+      "label": "The Big Bang theory: universe began from a small, hot, dense region"
+    }
+  ],
+  "usage": {
+    "calls": 11,
+    "estimatedUsd": 3.2302288499999996
+  }
+}

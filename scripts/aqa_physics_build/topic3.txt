@@ -1,0 +1,154 @@
+```json
+{
+  "nodes": [
+    {"id":"p0_at1_length_mass_time_volume_temp","label":"AT1: using apparatus to measure length, mass, time, volume and temperature accurately","subtopic":"0.1","theme":"Topic 0","difficulty":0.2,"objective":"Use appropriate apparatus (ruler, balance, stopwatch, measuring cylinder, thermometer) to make accurate measurements.","essentialPoints":["Select and read appropriate apparatus for length, mass, time, volume, temperature","Take readings avoiding parallax and zero errors","Record measurements with appropriate units and precision"],"specRefs":["AT1"],"kind":"procedure","practicalIds":[1,2,5,7,10]},
+    {"id":"p0_at1_micrometer_vernier","label":"AT1: using a ruler, micrometer or Vernier calliper to measure small dimensions","subtopic":"0.1","theme":"Topic 0","difficulty":0.35,"objective":"Use a micrometer or Vernier calliper to measure small lengths precisely.","essentialPoints":["Read a micrometer/Vernier calliper scale correctly including vernier subdivisions","Choose the appropriate instrument based on required precision"],"specRefs":["AT1"],"kind":"procedure","practicalIds":[5]},
+    {"id":"p0_at1_displacement_volume","label":"AT1: determining volume of an irregular solid by displacement","subtopic":"0.1","theme":"Topic 0","difficulty":0.3,"objective":"Use a displacement technique with a measuring cylinder to find the volume of an irregularly shaped object.","essentialPoints":["Submerge object fully in liquid in a measuring cylinder","Volume of object = change in liquid level reading","Read cylinder scale at eye level to avoid parallax"],"specRefs":["AT1"],"kind":"procedure","practicalIds":[5]},
+    {"id":"p0_ms_significant_figures","label":"MS2a: using an appropriate number of significant figures","subtopic":"0.2","theme":"Topic 0","difficulty":0.25,"objective":"Round calculated answers to an appropriate number of significant figures.","essentialPoints":["Identify significant figures in a given number","Round final answers to match precision of data given"],"specRefs":["MS2a"],"kind":"concept","practicalIds":[]},
+    {"id":"p0_ms_mean","label":"MS2b: finding arithmetic means","subtopic":"0.2","theme":"Topic 0","difficulty":0.15,"objective":"Calculate the mean of a set of repeated measurements.","essentialPoints":["Sum values and divide by number of readings","Use mean to reduce effect of random error"],"specRefs":["MS2b"],"kind":"concept","practicalIds":[]},
+    {"id":"p0_ms_rearrange_equations","label":"MS3b: changing the subject of an equation","subtopic":"0.2","theme":"Topic 0","difficulty":0.35,"objective":"Rearrange an algebraic equation to make a different variable the subject.","essentialPoints":["Apply inverse operations to isolate a variable","Rearrange equations with multiplication/division and squares"],"specRefs":["MS3b"],"kind":"concept","practicalIds":[]},
+    {"id":"p0_ms_substitute_units","label":"MS3c: substituting numerical values into algebraic equations with correct units","subtopic":"0.2","theme":"Topic 0","difficulty":0.25,"objective":"Substitute given numerical values, with correct SI units, into a physics equation.","essentialPoints":["Convert units to SI before substitution","Substitute values carefully into the correct positions in an equation"],"specRefs":["MS3c"],"kind":"concept","practicalIds":[]},
+    {"id":"p0_ms_graph_plotting","label":"MS4c: plotting two variables from experimental data","subtopic":"0.2","theme":"Topic 0","difficulty":0.25,"objective":"Plot a graph of one variable against another from a table of experimental results.","essentialPoints":["Choose sensible scales and axes with labels and units","Plot points accurately and draw a line/curve of best fit"],"specRefs":["MS4c"],"kind":"concept","practicalIds":[]},
+    {"id":"p0_ms_gradient_intercept","label":"MS4d: determining the gradient and intercept of a linear graph","subtopic":"0.2","theme":"Topic 0","difficulty":0.3,"objective":"Calculate the gradient and y-intercept of a straight-line graph and relate to y = mx + c.","essentialPoints":["Gradient = change in y / change in x using a large triangle","Intercept read from where line crosses the y-axis"],"specRefs":["MS4b","MS4d"],"kind":"concept","practicalIds":[]},
+    {"id":"p0_ws_error_evaluation","label":"WS3.7: evaluating accuracy, precision, repeatability, reproducibility and identifying random/systematic error","subtopic":"0.3","theme":"Topic 0","difficulty":0.4,"objective":"Evaluate an experimental method by identifying sources of random and systematic error and suggesting improvements.","essentialPoints":["Distinguish accuracy, precision, repeatability and reproducibility","Identify random error (scatter) vs systematic error (consistent offset)","Suggest specific improvements to reduce identified errors"],"specRefs":["WS3.7"],"kind":"concept","practicalIds":[]},
+    {"id":"p0_ws_variables_controls","label":"WS2.2: planning experiments with controlled and independent/dependent variables","subtopic":"0.3","theme":"Topic 0","difficulty":0.3,"objective":"Plan an experiment identifying the independent, dependent and control variables.","essentialPoints":["Identify the independent variable being changed","Identify the dependent variable being measured","Identify variables that must be controlled/kept constant"],"specRefs":["WS2.2"],"kind":"concept","practicalIds":[]},
+
+    {"id":"p3_density_definition","label":"Density: definition and equation (ρ = m/V)","subtopic":"3.1","theme":"Topic 3","difficulty":0.25,"objective":"Define density as mass per unit volume and state the equation linking density, mass and volume.","essentialPoints":["density = mass / volume, ρ = m/V","Units: kg/m³, mass in kg, volume in m³"],"specRefs":["4.3.1.1"],"kind":"concept","practicalIds":[]},
+    {"id":"p3_density_calc","label":"Calculating density, mass or volume using ρ = m/V","subtopic":"3.1","theme":"Topic 3","difficulty":0.3,"objective":"Apply and rearrange the density equation to find density, mass or volume, including where mass is conserved.","essentialPoints":["Rearrange ρ = m/V to find m or V","Apply equation to changes where mass is conserved"],"specRefs":["4.3.1.1"],"kind":"concept","practicalIds":[]},
+    {"id":"p3_states_particle_model","label":"Particle model diagrams of solids, liquids and gases","subtopic":"3.1","theme":"Topic 3","difficulty":0.2,"objective":"Recognise and draw simple diagrams representing the arrangement and spacing of particles in solids, liquids and gases.","essentialPoints":["Solids: particles closely packed, regular arrangement, vibrate in place","Liquids: particles close together but able to move/slide past each other","Gases: particles far apart, moving randomly at high speed"],"specRefs":["4.3.1.1"],"kind":"concept","practicalIds":[]},
+    {"id":"p3_density_states_explanation","label":"Explaining density differences between states using the particle model","subtopic":"3.1","theme":"Topic 3","difficulty":0.35,"objective":"Explain why solids, liquids and gases typically have different densities in terms of particle arrangement and spacing.","essentialPoints":["Closer particle packing gives higher density (more mass per volume)","Gases have low density because particles are widely spaced","Explains why solids/liquids are usually denser than gases"],"specRefs":["4.3.1.1"],"kind":"concept","practicalIds":[]},
+
+    {"id":"p3_rp5_procedure_regular","label":"RP5 procedure: measuring dimensions of a regular solid to find volume","subtopic":"3.1","theme":"Topic 3","difficulty":0.25,"objective":"Measure the dimensions of a regularly shaped solid using a ruler, micrometer or Vernier calliper and calculate its volume.","essentialPoints":["Measure length, width, height (or diameter) using appropriate apparatus","Calculate volume using the relevant geometric formula"],"specRefs":["RP5"],"kind":"procedure","practicalIds":[5]},
+    {"id":"p3_rp5_procedure_irregular","label":"RP5 procedure: finding volume of an irregular solid by displacement","subtopic":"3.1","theme":"Topic 3","difficulty":0.25,"objective":"Use the displacement technique to determine the volume of an irregularly shaped solid.","essentialPoints":["Lower object into a measuring cylinder of liquid","Record rise in liquid level as the object's volume"],"specRefs":["RP5"],"kind":"procedure","practicalIds":[5]},
+    {"id":"p3_rp5_procedure_liquid","label":"RP5 procedure: measuring mass and volume of a liquid sample","subtopic":"3.1","theme":"Topic 3","difficulty":0.2,"objective":"Measure the mass and volume of a liquid sample using a balance and measuring cylinder.","essentialPoints":["Measure mass of empty and filled container to find liquid mass","Read liquid volume directly from a measuring cylinder"],"specRefs":["RP5"],"kind":"procedure","practicalIds":[5]},
+    {"id":"p3_rp5_calc_density","label":"RP5 application: calculating densities of solids and liquids from measured mass and volume","subtopic":"3.1","theme":"Topic 3","difficulty":0.3,"objective":"Use measured mass and volume data to calculate the density of regular solids, irregular solids and liquids.","essentialPoints":["Apply ρ = m/V to collected data for each object/liquid","Compare calculated density to known material values to identify substances"],"specRefs":["RP5"],"kind":"application","practicalIds":[5]},
+    {"id":"p3_rp5_evaluation","label":"RP5 evaluation: sources of error in density measurements","subtopic":"3.1","theme":"Topic 3","difficulty":0.4,"objective":"Evaluate sources of error in measuring mass and volume when determining density, and suggest improvements.","essentialPoints":["Parallax error reading measuring cylinder scale affects volume for displacement method","Measurement precision of micrometer/Vernier vs ruler affects regular solid volume accuracy","Air bubbles or partially submerged objects cause displacement errors"],"specRefs":["RP5"],"kind":"evaluation","practicalIds":[5]},
+
+    {"id":"p3_change_of_state_mass_conservation","label":"Changes of state: mass is conserved","subtopic":"3.1","theme":"Topic 3","difficulty":0.2,"objective":"Describe that when a substance changes state (melting, freezing, boiling, evaporating, condensing, subliming), its total mass is conserved.","essentialPoints":["Named changes of state: melt, freeze, boil, evaporate, condense, sublimate","Total mass before and after a change of state is unchanged"],"specRefs":["4.3.1.2"],"kind":"concept","practicalIds":[]},
+    {"id":"p3_change_of_state_physical_vs_chemical","label":"Changes of state are physical changes, reversible with recovery of original properties","subtopic":"3.1","theme":"Topic 3","difficulty":0.2,"objective":"Explain that changes of state are physical changes, distinct from chemical changes, because the material recovers its original properties on reversal.","essentialPoints":["Physical change: no new substance formed","Original substance's properties are recovered if the change is reversed"],"specRefs":["4.3.1.2"],"kind":"concept","practicalIds":[]},
+
+    {"id":"p3_internal_energy","label":"Internal energy: total kinetic and potential energy of particles in a system","subtopic":"3.2","theme":"Topic 3","difficulty":0.35,"objective":"Define internal energy as the total kinetic energy and potential energy of all particles that make up a system.","essentialPoints":["Internal energy = sum of kinetic energy (particle motion) and potential energy (particle bonds/positions)","Energy is stored within a system by its particles"],"specRefs":["4.3.2.1"],"kind":"concept","practicalIds":[]},
+    {"id":"p3_heating_effect_on_system","label":"Heating a system: raising temperature or changing state","subtopic":"3.2","theme":"Topic 3","difficulty":0.3,"objective":"Explain that heating changes the internal energy of a system, which either raises its temperature or produces a change of state.","essentialPoints":["Heating increases the energy of particles in a system","This increase either raises temperature or causes a change of state, not both at once"],"specRefs":["4.3.2.1"],"kind":"concept","practicalIds":[]},
+
+    {"id":"p3_shc_definition","label":"Specific heat capacity: definition","subtopic":"3.2","theme":"Topic 3","difficulty":0.3,"objective":"Define specific heat capacity as the energy required to raise the temperature of one kilogram of a substance by one degree Celsius.","essentialPoints":["Specific heat capacity is energy needed per kg per °C rise","Different materials have different specific heat capacities"],"specRefs":["4.3.2.2"],"kind":"concept","practicalIds":[]},
+    {"id":"p3_shc_equation","label":"Specific heat capacity equation: ΔE = mcΔθ","subtopic":"3.2","theme":"Topic 3","difficulty":0.3,"objective":"State and apply the equation change in thermal energy = mass × specific heat capacity × temperature change.","essentialPoints":["ΔE = m c Δθ","ΔE in J, m in kg, c in J/kg°C, Δθ in °C"],"specRefs":["4.3.2.2"],"kind":"concept","practicalIds":[]},
+    {"id":"p3_shc_calc","label":"Calculating energy change, mass, specific heat capacity or temperature change using ΔE = mcΔθ","subtopic":"3.2","theme":"Topic 3","difficulty":0.35,"objective":"Rearrange and apply ΔE = mcΔθ to calculate any one variable given the others.","essentialPoints":["Rearrange equation to solve for m, c or Δθ","Substitute values with correct units to find ΔE"],"specRefs":["4.3.2.2"],"kind":"concept","practicalIds":[]},
+
+    {"id":"p3_rp1_procedure","label":"RP1 procedure: measuring temperature rise from energy input (work done/electrical) to determine specific heat capacity","subtopic":"3.2","theme":"Topic 3","difficulty":0.4,"objective":"Carry out an experiment linking the decrease of one energy store (or work done) to a measured temperature rise in a material.","essentialPoints":["Measure mass of the material sample using a balance","Supply a known amount of energy (electrical heater with known power and time, or work done) to the material","Measure the resulting temperature rise using a thermometer/temperature probe"],"specRefs":["RP1"],"kind":"procedure","practicalIds":[1]},
+    {"id":"p3_rp1_calc_shc","label":"RP1 application: calculating specific heat capacity from experimental data","subtopic":"3.2","theme":"Topic 3","difficulty":0.4,"objective":"Use measured mass, energy supplied and temperature rise to calculate the specific heat capacity of a material.","essentialPoints":["Rearrange ΔE = mcΔθ to find c = ΔE/(mΔθ)","Substitute experimental values to calculate specific heat capacity"],"specRefs":["RP1"],"kind":"application","practicalIds":[1]},
+    {"id":"p3_rp1_evaluation","label":"RP1 evaluation: sources of error in specific heat capacity measurement","subtopic":"3.2","theme":"Topic 3","difficulty":0.45,"objective":"Evaluate the RP1 method for sources of error, such as heat loss to the surroundings, and suggest improvements.","essentialPoints":["Heat loss to surroundings causes measured c to be too high (systematic error)","Insulating the sample and using a lid reduces heat loss","Delay in thermometer response affects accuracy of temperature readings"],"specRefs":["RP1"],"kind":"evaluation","practicalIds":[1]},
+
+    {"id":"p3_latent_heat_concept","label":"Latent heat: energy for a change of state without temperature change","subtopic":"3.2","theme":"Topic 3","difficulty":0.35,"objective":"Explain that energy supplied during a change of state changes the internal energy stored (via potential energy) but not the temperature.","essentialPoints":["Latent heat is energy needed for a substance to change state","During a change of state, temperature stays constant while internal energy changes"],"specRefs":["4.3.2.3"],"kind":"concept","practicalIds":[]},
+    {"id":"p3_specific_latent_heat_definition","label":"Specific latent heat: definition","subtopic":"3.2","theme":"Topic 3","difficulty":0.3,"objective":"Define specific latent heat as the energy required to change the state of one kilogram of a substance with no change in temperature.","essentialPoints":["Specific latent heat is energy per kg needed to change state at constant temperature"],"specRefs":["4.3.2.3"],"kind":"concept","practicalIds":[]},
+    {"id":"p3_latent_heat_fusion_vaporisation","label":"Specific latent heat of fusion vs specific latent heat of vaporisation","subtopic":"3.2","theme":"Topic 3","difficulty":0.3,"objective":"Distinguish between specific latent heat of fusion (solid to liquid) and specific latent heat of vaporisation (liquid to vapour).","essentialPoints":["Latent heat of fusion applies to solid-liquid change of state","Latent heat of vaporisation applies to liquid-vapour change of state"],"specRefs":["4.3.2.3"],"kind":"concept","practicalIds":[]},
+    {"id":"p3_latent_heat_equation","label":"Specific latent heat equation: E = mL","subtopic":"3.2","theme":"Topic 3","difficulty":0.3,"objective":"State and apply the equation energy for a change of state = mass × specific latent heat.","essentialPoints":["E = m L","E in J, m in kg, L in J/kg"],"specRefs":["4.3.2.3"],"kind":"concept","practicalIds":[]},
+    {"id":"p3_latent_heat_calc","label":"Calculating energy, mass or specific latent heat using E = mL","subtopic":"3.2","theme":"Topic 3","difficulty":0.35,"objective":"Rearrange and apply E = mL to calculate energy, mass or specific latent heat given the other two quantities.","essentialPoints":["Rearrange E = mL to solve for m or L","Substitute values with correct units to find E"],"specRefs":["4.3.2.3"],"kind":"concept","practicalIds":[]},
+
+    {"id":"p3_heating_cooling_graphs","label":"Interpreting heating and cooling graphs including changes of state","subtopic":"3.2","theme":"Topic 3","difficulty":0.4,"objective":"Interpret temperature-time graphs that show temperature rising, plateauing during a change of state, and rising again.","essentialPoints":["Sloped sections show temperature change (energy raising particle kinetic energy)","Flat sections show a change of state occurring at constant temperature (energy raising potential energy)"],"specRefs":["4.3.2.3"],"kind":"application","practicalIds":[]},
+    {"id":"p3_distinguish_shc_slh","label":"Distinguishing specific heat capacity from specific latent heat","subtopic":"3.2","theme":"Topic 3","difficulty":0.3,"objective":"Distinguish between specific heat capacity (temperature change, no state change) and specific latent heat (state change, no temperature change).","essentialPoints":["Specific heat capacity relates to energy causing temperature change","Specific latent heat relates to energy causing a change of state at constant temperature"],"specRefs":["4.3.2.3"],"kind":"concept","practicalIds":[]},
+
+    {"id":"p3_rp_latent_heat_fusion_procedure","label":"Practical: measuring the latent heat of fusion of water","subtopic":"3.2","theme":"Topic 3","difficulty":0.4,"objective":"Carry out an experiment to measure the specific latent heat of fusion of ice/water using a heater and measured mass of melted ice.","essentialPoints":["Supply known electrical energy to melt ice using an immersion heater","Measure mass of ice melted over a measured time period","Account for a control experiment without the heater to correct for background melting"],"specRefs":["AT5, latent heat of fusion practical"],"kind":"procedure","practicalIds":[]},
+    {"id":"p3_rp_latent_heat_fusion_calc","label":"Calculating specific latent heat of fusion of water from experimental data","subtopic":"3.2","theme":"Topic 3","difficulty":0.4,"objective":"Use measured energy supplied and mass of ice melted to calculate the specific latent heat of fusion of water.","essentialPoints":["Rearrange E = mL to find L = E/m","Substitute measured electrical energy and mass melted"],"specRefs":["AT5, latent heat of fusion practical"],"kind":"application","practicalIds":[]},
+
+    {"id":"p3_gas_particle_motion","label":"Molecules in a gas are in constant random motion","subtopic":"3.3","theme":"Topic 3","difficulty":0.2,"objective":"Describe that gas molecules move constantly and randomly in all directions.","essentialPoints":["Gas molecules move continuously and randomly","Molecules travel in straight lines between collisions"],"specRefs":["4.3.3.1"],"kind":"concept","practicalIds":[]},
+    {"id":"p3_temperature_kinetic_energy_link","label":"Temperature of a gas relates to the average kinetic energy of its molecules","subtopic":"3.3","theme":"Topic 3","difficulty":0.3,"objective":"Explain that the temperature of a gas is related to the average kinetic energy of its molecules.","essentialPoints":["Higher temperature means higher average molecular kinetic energy","This links macroscopic temperature to microscopic particle motion"],"specRefs":["4.3.3.1"],"kind":"concept","practicalIds":[]},
+    {"id":"p3_gas_pressure_explanation","label":"Explaining gas pressure in terms of particle collisions with container walls","subtopic":"3.3","theme":"Topic 3","difficulty":0.35,"objective":"Explain gas pressure as the result of gas molecules colliding with the walls of their container, producing a net force at right angles to the surface.","essentialPoints":["Pressure results from many molecular collisions with container walls","The collisions produce a net force acting at right angles to the wall/surface"],"specRefs":["4.3.3.1","4.3.3.2"],"kind":"concept","practicalIds":[]},
+    {"id":"p3_temp_pressure_constant_volume","label":"Effect of changing temperature on pressure of a gas at constant volume","subtopic":"3.3","theme":"Topic 3","difficulty":0.35,"objective":"Explain qualitatively that increasing the temperature of a gas held at constant volume increases its pressure.","essentialPoints":["Increasing temperature increases average molecular kinetic energy and collision frequency/force","This increases the pressure exerted by the gas at constant volume"],"specRefs":["4.3.3.1"],"kind":"concept","practicalIds":[]},
+
+    {"id":"p3_gas_compression_expansion","label":"Gases can be compressed or expanded by pressure changes","subtopic":"3.3","theme":"Topic 3","difficulty":0.2,"objective":"State that a gas can be compressed or expanded by changes in pressure.","essentialPoints":["A gas's volume can decrease (compression) or increase (expansion) when pressure changes"],"specRefs":["4.3.3.2"],"kind":"concept","practicalIds":[]},
+    {"id":"p3_volume_pressure_constant_temp","label":"Explaining how increasing volume decreases gas pressure at constant temperature","subtopic":"3.3","theme":"Topic 3","difficulty":0.4,"objective":"Use the particle model to explain how increasing the volume of a fixed mass of gas at constant temperature decreases its pressure.","essentialPoints":["Larger volume means molecules travel further between wall collisions","This reduces collision frequency on the walls, reducing pressure"],"specRefs":["4.3.3.2"],"kind":"concept","practicalIds":[]},
+    {"id":"p3_boyles_law_equation","label":"Boyle's Law equation: pV = constant","subtopic":"3.3","theme":"Topic 3","difficulty":0.35,"objective":"State the equation pressure × volume = constant for a fixed mass of gas at constant temperature.","essentialPoints":["pV = constant for fixed mass of gas at constant temperature","p in pascals (Pa), V in cubic metres (m³)"],"specRefs":["4.3.3.2"],"kind":"concept","practicalIds":[]},
+    {"id":"p3_boyles_law_calc","label":"Calculating pressure or volume changes using p1V1 = p2V2","subtopic":"3.3","theme":"Topic 3","difficulty":0.4,"objective":"Apply pV = constant to calculate the change in pressure or volume of a fixed mass of gas at constant temperature.","essentialPoints":["Use p1V1 = p2V2 to find an unknown pressure or volume","Rearrange the equation to isolate the required variable"],"specRefs":["4.3.3.2"],"kind":"concept","practicalIds":[]},
+
+    {"id":"p3_work_definition","label":"Work: the transfer of energy by a force","subtopic":"3.3","theme":"Topic 3","difficulty":0.2,"objective":"Define work as the transfer of energy by a force acting on an object.","essentialPoints":["Work is energy transferred when a force causes displacement","Work done on a gas transfers energy into it"],"specRefs":["4.3.3.3"],"kind":"concept","practicalIds":[]},
+    {"id":"p3_work_on_gas_increases_internal_energy","label":"Doing work on a gas increases its internal energy and can raise its temperature (HT)","subtopic":"3.3","theme":"Topic 3","difficulty":0.45,"objective":"Explain how doing work on an enclosed gas (e.g. compressing it with a bicycle pump) increases its internal energy and can cause a temperature increase.","essentialPoints":["Work done on the gas transfers energy to the gas particles, increasing internal energy","Increased internal energy can raise the gas's temperature","Example: compressing air in a bicycle pump makes it warmer"],"specRefs":["4.3.3.3"],"kind":"concept","practicalIds":[]}
+  ],
+  "edges": [
+    {"from":"p0_ms_rearrange_equations","to":"p3_density_calc","difficulty":0.2},
+    {"from":"p0_ms_substitute_units","to":"p3_density_calc","difficulty":0.2},
+    {"from":"p3_density_definition","to":"p3_density_calc","difficulty":0.2},
+
+    {"from":"p3_states_particle_model","to":"p3_density_states_explanation","difficulty":0.3},
+    {"from":"p3_density_definition","to":"p3_density_states_explanation","difficulty":0.25},
+
+    {"from":"p0_at1_length_mass_time_volume_temp","to":"p3_rp5_procedure_regular","difficulty":0.2},
+    {"from":"p0_at1_micrometer_vernier","to":"p3_rp5_procedure_regular","difficulty":0.25},
+    {"from":"p0_at1_displacement_volume","to":"p3_rp5_procedure_irregular","difficulty":0.2},
+    {"from":"p0_at1_length_mass_time_volume_temp","to":"p3_rp5_procedure_liquid","difficulty":0.2},
+
+    {"from":"p3_rp5_procedure_regular","to":"p3_rp5_calc_density","difficulty":0.25},
+    {"from":"p3_rp5_procedure_irregular","to":"p3_rp5_calc_density","difficulty":0.25},
+    {"from":"p3_rp5_procedure_liquid","to":"p3_rp5_calc_density","difficulty":0.25},
+    {"from":"p3_density_calc","to":"p3_rp5_calc_density","difficulty":0.25},
+
+    {"from":"p3_rp5_procedure_irregular","to":"p3_rp5_evaluation","difficulty":0.35},
+    {"from":"p3_rp5_procedure_regular","to":"p3_rp5_evaluation","difficulty":0.35},
+    {"from":"p0_ws_error_evaluation","to":"p3_rp5_evaluation","difficulty":0.3},
+
+    {"from":"p3_states_particle_model","to":"p3_change_of_state_mass_conservation","difficulty":0.2},
+    {"from":"p3_change_of_state_mass_conservation","to":"p3_change_of_state_physical_vs_chemical","difficulty":0.25},
+
+    {"from":"p3_states_particle_model","to":"p3_internal_energy","difficulty":0.3},
+    {"from":"p3_internal_energy","to":"p3_heating_effect_on_system","difficulty":0.3},
+
+    {"from":"p3_heating_effect_on_system","to":"p3_shc_definition","difficulty":0.25},
+    {"from":"p3_shc_definition","to":"p3_shc_equation","difficulty":0.2},
+    {"from":"p0_ms_rearrange_equations","to":"p3_shc_calc","difficulty":0.2},
+    {"from":"p0_ms_substitute_units","to":"p3_shc_calc","difficulty":0.2},
+    {"from":"p3_shc_equation","to":"p3_shc_calc","difficulty":0.25},
+
+    {"from":"p0_at1_length_mass_time_volume_temp","to":"p3_rp1_procedure","difficulty":0.2},
+    {"from":"p3_shc_definition","to":"p3_rp1_procedure","difficulty":0.3},
+    {"from":"p0_ws_variables_controls","to":"p3_rp1_procedure","difficulty":0.25},
+
+    {"from":"p3_rp1_procedure","to":"p3_rp1_calc_shc","difficulty":0.3},
+    {"from":"p3_shc_calc","to":"p3_rp1_calc_shc","difficulty":0.3},
+    {"from":"p0_ms_mean","to":"p3_rp1_calc_shc","difficulty":0.15},
+
+    {"from":"p3_rp1_procedure","to":"p3_rp1_evaluation","difficulty":0.35},
+    {"from":"p0_ws_error_evaluation","to":"p3_rp1_evaluation","difficulty":0.3},
+
+    {"from":"p3_heating_effect_on_system","to":"p3_latent_heat_concept","difficulty":0.35},
+    {"from":"p3_internal_energy","to":"p3_latent_heat_concept","difficulty":0.3},
+    {"from":"p3_latent_heat_concept","to":"p3_specific_latent_heat_definition","difficulty":0.25},
+    {"from":"p3_specific_latent_heat_definition","to":"p3_latent_heat_fusion_vaporisation","difficulty":0.2},
+    {"from":"p3_specific_latent_heat_definition","to":"p3_latent_heat_equation","difficulty":0.2},
+    {"from":"p0_ms_rearrange_equations","to":"p3_latent_heat_calc","difficulty":0.2},
+    {"from":"p0_ms_substitute_units","to":"p3_latent_heat_calc","difficulty":0.2},
+    {"from":"p3_latent_heat_equation","to":"p3_latent_heat_calc","difficulty":0.25},
+
+    {"from":"p3_shc_calc","to":"p3_heating_cooling_graphs","difficulty":0.35},
+    {"from":"p3_latent_heat_calc","to":"p3_heating_cooling_graphs","difficulty":0.35},
+    {"from":"p0_ms_graph_plotting","to":"p3_heating_cooling_graphs","difficulty":0.2},
+
+    {"from":"p3_shc_definition","to":"p3_distinguish_shc_slh","difficulty":0.25},
+    {"from":"p3_specific_latent_heat_definition","to":"p3_distinguish_shc_slh","difficulty":0.25},
+
+    {"from":"p3_latent_heat_fusion_vaporisation","to":"p3_rp_latent_heat_fusion_procedure","difficulty":0.3},
+    {"from":"p0_at1_length_mass_time_volume_temp","to":"p3_rp_latent_heat_fusion_procedure","difficulty":0.2},
+
+    {"from":"p3_rp_latent_heat_fusion_procedure","to":"p3_rp_latent_heat_fusion_calc","difficulty":0.3},
+    {"from":"p3_latent_heat_calc","to":"p3_rp_latent_heat_fusion_calc","difficulty":0.3},
+
+    {"from":"p3_states_particle_model","to":"p3_gas_particle_motion","difficulty":0.2},
+    {"from":"p3_gas_particle_motion","to":"p3_temperature_kinetic_energy_link","difficulty":0.3},
+    {"from":"p3_gas_particle_motion","to":"p3_gas_pressure_explanation","difficulty":0.3},
+    {"from":"p3_temperature_kinetic_energy_link","to":"p3_temp_pressure_constant_volume","difficulty":0.35},
+    {"from":"p3_gas_pressure_explanation","to":"p3_temp_pressure_constant_volume","difficulty":0.3},
+
+    {"from":"p3_gas_pressure_explanation","to":"p3_gas_compression_expansion","difficulty":0.25},
+    {"from":"p3_gas_compression_expansion","to":"p3_volume_pressure_constant_temp","difficulty":0.35},
+    {"from":"p3_gas_pressure_explanation","to":"p3_volume_pressure_constant_temp","difficulty":0.3},
+
+    {"from":"p3_volume_pressure_constant_temp","to":"p3_boyles_law_equation","difficulty":0.35},
+    {"from":"p0_ms_rearrange_equations","to":"p3_boyles_law_calc","difficulty":0.2},
+    {"from":"p0_ms_substitute_units","to":"p3_boyles_law_calc","difficulty":0.2},
+    {"from":"p3_boyles_law_equation","to":"p3_boyles_law_calc","difficulty":0.3},
+
+    {"from":"p3_boyles_law_equation","to":"p3_work_on_gas_increases_internal_energy","difficulty":0.4},
+    {"from":"p3_work_definition","to":"p3_work_on_gas_increases_internal_energy","difficulty":0.3},
+    {"from":"p3_internal_energy","to":"p3_work_on_gas_increases_internal_energy","difficulty":0.35},
+    {"from":"p3_heating_effect_on_system","to":"p3_work_on_gas_increases_internal_energy","difficulty":0.3}
+  ]
+}
+```

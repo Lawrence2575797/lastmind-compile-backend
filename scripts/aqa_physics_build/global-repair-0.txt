@@ -1,0 +1,238 @@
+```json
+{
+  "issues": [
+    {
+      "type": "missing_intermediate_node",
+      "affected_node": "p1_energy_change_description",
+      "explanation": "This node bundles five distinct named examples (projectile, collision, accelerating object, decelerating vehicle, heating water) into one node, violating the atomicity rule and the ~4-item chunk ceiling. Each example is independently testable.",
+      "fix": {
+        "new_nodes": [
+          {"id":"p1_energy_change_projectile","label":"Energy store changes for a projectile (kinetic to gravitational potential)","subtopic":"1.1","theme":"Topic 1","difficulty":0.3,"objective":"Describe the energy store changes when an object is projected upwards.","essentialPoints":["An object projected upwards: kinetic store transfers to gravitational potential store"],"specRefs":["4.1.1.1"],"kind":"concept","practicalIds":[]},
+          {"id":"p1_energy_change_collision","label":"Energy store changes in a collision (kinetic to thermal/sound)","subtopic":"1.1","theme":"Topic 1","difficulty":0.3,"objective":"Describe the energy store changes when a moving object hits an obstacle.","essentialPoints":["A moving object hitting an obstacle: kinetic store transfers to thermal/sound stores"],"specRefs":["4.1.1.1"],"kind":"concept","practicalIds":[]},
+          {"id":"p1_energy_change_accelerating","label":"Energy store changes for an object accelerated by a constant force","subtopic":"1.1","theme":"Topic 1","difficulty":0.3,"objective":"Describe the energy store changes when an object is accelerated by a constant force.","essentialPoints":["An object accelerated by a constant force: work done increases kinetic store"],"specRefs":["4.1.1.1"],"kind":"concept","practicalIds":[]},
+          {"id":"p1_energy_change_braking","label":"Energy store changes for a decelerating vehicle (kinetic to thermal)","subtopic":"1.1","theme":"Topic 1","difficulty":0.3,"objective":"Describe the energy store changes when a vehicle slows down using brakes.","essentialPoints":["A vehicle slowing down: kinetic store transfers to thermal store (brakes)"],"specRefs":["4.1.1.1"],"kind":"concept","practicalIds":[]},
+          {"id":"p1_energy_change_heating_water","label":"Energy store changes when heating water (e.g. in a kettle)","subtopic":"1.1","theme":"Topic 1","difficulty":0.3,"objective":"Describe the energy store changes when water is heated by an electrical device.","essentialPoints":["Heating water in a kettle: chemical/electrical transfer increases thermal store of water"],"specRefs":["4.1.1.1"],"kind":"concept","practicalIds":[]}
+        ],
+        "new_edges": [
+          ["p1_energy_stores","p1_energy_change_projectile"],
+          ["p1_energy_stores","p1_energy_change_collision"],
+          ["p1_energy_stores","p1_energy_change_accelerating"],
+          ["p1_energy_stores","p1_energy_change_braking"],
+          ["p1_energy_stores","p1_energy_change_heating_water"],
+          ["p1_energy_change_braking","p1_dissipation"],
+          ["p1_energy_change_collision","p1_dissipation"]
+        ],
+        "remove_edges": [
+          ["p1_energy_stores","p1_energy_change_description"],
+          ["p1_energy_change_description","p1_dissipation"]
+        ]
+      }
+    },
+    {
+      "type": "missing_edge",
+      "affected_node": "p1_gpe_ke_application",
+      "explanation": "This node references dissipation as a rationale for comparing GPE lost vs KE gained but the removal of p1_energy_change_description leaves this dependent on the correct specific example node (braking/collision dissipation) rather than the bundled node.",
+      "fix": {
+        "new_nodes": [],
+        "new_edges": [["p1_energy_change_collision","p1_gpe_ke_application"]],
+        "remove_edges": [["p1_energy_change_description","p1_gpe_ke_application"]]
+      }
+    },
+    {
+      "type": "duplicate_concept",
+      "affected_node": "p1_system_def_to_stores",
+      "explanation": "This is an empty placeholder 'link' node with no objective/essentialPoints/specRefs content and duplicates the prerequisite relationship already expressed by the edge p1_system_def -> p1_energy_stores. It should be removed as it's not a genuine testable concept.",
+      "fix": {
+        "new_nodes": [],
+        "new_edges": [],
+        "remove_edges": [["p1_system_def","p1_system_def_to_stores"],["p1_system_def_to_stores","p1_energy_stores"]]
+      }
+    },
+    {
+      "type": "duplicate_concept",
+      "affected_node": "p6_transverse_prereq",
+      "explanation": "This is an empty placeholder node with objective 'placeholder' and no essentialPoints/specRefs, duplicating the existing edges from p6_transverse_wave and p6_longitudinal_wave to p6_wave_medium_evidence. Should be removed.",
+      "fix": {
+        "new_nodes": [],
+        "new_edges": [],
+        "remove_edges": []
+      }
+    },
+    {
+      "type": "duplicate_concept",
+      "affected_node": "p4_alpha_particle_p4_beta_particle_evalsource",
+      "explanation": "Malformed ID concatenating two other node ids; this is an evaluation node about choosing a radiation source but its id is confusing/non-standard and should be renamed for clarity and consistency (p4_ prefix convention should not embed two other ids).",
+      "fix": {
+        "new_nodes": [{"id":"p4_eval_source_choice","label":"Evaluating best radiation source for a given situation","subtopic":"4.2","theme":"Topic 4","difficulty":0.55,"objective":"Apply knowledge of penetration, range and ionising power to evaluate the best type of radioactive source for a given use.","essentialPoints":["Choice of source depends on required penetration/ionising power for the application","Must weigh benefits (e.g. penetration for imaging) against hazards (e.g. high ionising power near living tissue)"],"specRefs":["4.4.2.1"],"kind":"evaluation","practicalIds":[]}],
+        "new_edges": [["p4_penetration_ionising","p4_eval_source_choice"],["p4_eval_source_choice","p4_eval_medical_exploration"],["p4_eval_source_choice","p4_eval_medical_treatment"]],
+        "remove_edges": [["p4_penetration_ionising","p4_alpha_particle_p4_beta_particle_evalsource"],["p4_alpha_particle_p4_beta_particle_evalsource","p4_eval_medical_exploration"],["p4_alpha_particle_p4_beta_particle_evalsource","p4_eval_medical_treatment"]]
+      }
+    },
+    {
+      "type": "duplicate_concept",
+      "affected_node": "p1_shc_definition",
+      "explanation": "Duplicate of p3_shc_definition (same label/objective/content: specific heat capacity definition) created independently in Topic 1 and Topic 3. Per the no-duplicate-id rule, these should be merged into one canonical node.",
+      "fix": {
+        "new_nodes": [],
+        "new_edges": [["p1_energy_stores","p3_shc_definition"],["p3_shc_definition","p1_shc_equation"]],
+        "remove_edges": [["p1_energy_stores","p1_shc_definition"],["p1_shc_definition","p1_shc_equation"]]
+      }
+    },
+    {
+      "type": "duplicate_concept",
+      "affected_node": "p1_shc_equation",
+      "explanation": "Duplicate of p3_shc_equation (same equation ΔE=mcΔθ) created independently in Topic 1 and Topic 3, and p1_rp1_procedure/p1_rp1_calculation duplicate p3_rp1_procedure/p3_rp1_calc_shc as the same RP1 practical. These parallel chains should be merged to avoid two disconnected copies of RP1.",
+      "fix": {
+        "new_nodes": [],
+        "new_edges": [
+          ["p3_shc_equation","p1_rp1_procedure"],
+          ["p0_at1_mass_time_temp","p3_rp1_procedure"],
+          ["p0_at5_energy_apparatus","p3_rp1_procedure"]
+        ],
+        "remove_edges": [
+          ["p1_shc_equation","p1_rp1_procedure"],
+          ["p1_shc_definition","p1_shc_equation"]
+        ]
+      }
+    },
+    {
+      "type": "missing_edge",
+      "affected_node": "p1_science_limits_policy",
+      "explanation": "This evaluation node about science's limits in resolving environmental issues from energy resource use is closely related to the general Topic 0 concept p0_power_limits_science (power and limitations of science) but has no edge to it, missing a genuine cross-topic prerequisite link.",
+      "fix": {
+        "new_nodes": [],
+        "new_edges": [["p0_power_limits_science","p1_science_limits_policy"]],
+        "remove_edges": []
+      }
+    },
+    {
+      "type": "missing_edge",
+      "affected_node": "p2_national_grid_efficiency",
+      "explanation": "The concept of efficiency (useful vs total energy/power) was already taught generically in Topic 1 (p1_efficiency_power_eq) but the National Grid efficiency explanation node in Topic 2 does not reference it, duplicating conceptual grounding instead of reusing the cross-topic prerequisite.",
+      "fix": {
+        "new_nodes": [],
+        "new_edges": [["p1_efficiency_power_eq","p2_national_grid_efficiency"]],
+        "remove_edges": []
+      }
+    },
+    {
+      "type": "missing_intermediate_node",
+      "affected_node": "p4_penetration_ionising",
+      "explanation": "This node bundles three separate radiation types' penetration/range/ionising comparisons (alpha, beta, gamma) as one node's essentialPoints, each of which is independently testable and exceeds atomic single-idea granularity in effect (three named properties for three named particles).",
+      "fix": {
+        "new_nodes": [
+          {"id":"p4_alpha_penetration","label":"Alpha radiation: penetration, range and ionising power","subtopic":"4.2","theme":"Topic 4","difficulty":0.35,"objective":"Describe the penetrating power, range in air and ionising power of alpha radiation.","essentialPoints":["Alpha: low penetration (stopped by paper/skin), short range in air, strongly ionising"],"specRefs":["4.4.2.1"],"kind":"concept","practicalIds":[]},
+          {"id":"p4_beta_penetration","label":"Beta radiation: penetration, range and ionising power","subtopic":"4.2","theme":"Topic 4","difficulty":0.35,"objective":"Describe the penetrating power, range in air and ionising power of beta radiation.","essentialPoints":["Beta: medium penetration (stopped by ~few mm aluminium), medium range, moderately ionising"],"specRefs":["4.4.2.1"],"kind":"concept","practicalIds":[]},
+          {"id":"p4_gamma_penetration","label":"Gamma radiation: penetration, range and ionising power","subtopic":"4.2","theme":"Topic 4","difficulty":0.35,"objective":"Describe the penetrating power, range in air and ionising power of gamma radiation.","essentialPoints":["Gamma: highly penetrating (needs thick lead/concrete), long range, weakly ionising"],"specRefs":["4.4.2.1"],"kind":"concept","practicalIds":[]}
+        ],
+        "new_edges": [
+          ["p4_alpha_particle","p4_alpha_penetration"],
+          ["p4_beta_particle","p4_beta_penetration"],
+          ["p4_gamma_ray","p4_gamma_penetration"],
+          ["p4_alpha_penetration","p4_eval_source_choice"],
+          ["p4_beta_penetration","p4_eval_source_choice"],
+          ["p4_gamma_penetration","p4_eval_source_choice"],
+          ["p4_alpha_penetration","p4_alpha_symbol"],
+          ["p4_beta_penetration","p4_beta_symbol"],
+          ["p4_gamma_penetration","p4_irradiation"],
+          ["p4_alpha_penetration","p4_halflife_range_hazard"],
+          ["p4_beta_penetration","p4_halflife_range_hazard"],
+          ["p4_gamma_penetration","p4_halflife_range_hazard"],
+          ["p4_gamma_penetration","p4_medical_exploration"],
+          ["p4_gamma_penetration","p4_medical_treatment"]
+        ],
+        "remove_edges": []
+      }
+    },
+    {
+      "type": "ordering_bug",
+      "affected_node": "batch-wide",
+      "explanation": "Difficulty values across the batch are differentiated and appear intentional (ranging widely e.g. 0.1 to 0.6), so no ordering_bug is flagged here; however AT1 procedure nodes in Topic 0 show near-duplicate near-identical content across multiple ids (p0_at1_measure_length_temp, p0_at1_mass_time_temp, p0_at1_length_mass_time_volume_temp, p0_at1_length_mass_time) which risks inconsistent difficulty/edge wiring for what should be one reusable AT1 node family; consolidate to reduce duplication risk.",
+      "fix": {
+        "new_nodes": [],
+        "new_edges": [],
+        "remove_edges": []
+      }
+    },
+    {
+      "type": "duplicate_concept",
+      "affected_node": "p0_at1_length_mass_time",
+      "explanation": "This node duplicates p0_at1_measure_length_temp and p0_at1_mass_time_temp and p0_at1_length_mass_time_volume_temp (all cover using apparatus to measure length/mass/time/temperature). Multiple near-identical AT1 nodes were generated across different batches, violating the no-duplicate-id/concept rule and fragmenting prerequisite wiring for downstream practicals.",
+      "fix": {
+        "new_nodes": [],
+        "new_edges": [
+          ["p0_at1_length_mass_time_volume_temp","p5_rp7_procedure"],
+          ["p0_at1_length_mass_time_volume_temp","p1_ws_gpe_ke_practical"]
+        ],
+        "remove_edges": [
+          ["p0_at1_length_mass_time","p5_rp7_procedure"],
+          ["p0_at1_mass_time_temp","p1_ws_gpe_ke_practical"]
+        ]
+      }
+    }
+  ],
+  "removeNodeIds": ["p1_system_def_to_stores","p6_transverse_prereq","p4_alpha_particle_p4_beta_particle_evalsource","p1_shc_definition","p1_shc_equation","p1_energy_change_description"],
+  "upsertNodes": [
+    {"id":"p1_energy_change_projectile","label":"Energy store changes for a projectile (kinetic to gravitational potential)","subtopic":"1.1","theme":"Topic 1","difficulty":0.3,"objective":"Describe the energy store changes when an object is projected upwards.","essentialPoints":["An object projected upwards: kinetic store transfers to gravitational potential store"],"specRefs":["4.1.1.1"],"kind":"concept","practicalIds":[]},
+    {"id":"p1_energy_change_collision","label":"Energy store changes in a collision (kinetic to thermal/sound)","subtopic":"1.1","theme":"Topic 1","difficulty":0.3,"objective":"Describe the energy store changes when a moving object hits an obstacle.","essentialPoints":["A moving object hitting an obstacle: kinetic store transfers to thermal/sound stores"],"specRefs":["4.1.1.1"],"kind":"concept","practicalIds":[]},
+    {"id":"p1_energy_change_accelerating","label":"Energy store changes for an object accelerated by a constant force","subtopic":"1.1","theme":"Topic 1","difficulty":0.3,"objective":"Describe the energy store changes when an object is accelerated by a constant force.","essentialPoints":["An object accelerated by a constant force: work done increases kinetic store"],"specRefs":["4.1.1.1"],"kind":"concept","practicalIds":[]},
+    {"id":"p1_energy_change_braking","label":"Energy store changes for a decelerating vehicle (kinetic to thermal)","subtopic":"1.1","theme":"Topic 1","difficulty":0.3,"objective":"Describe the energy store changes when a vehicle slows down using brakes.","essentialPoints":["A vehicle slowing down: kinetic store transfers to thermal store (brakes)"],"specRefs":["4.1.1.1"],"kind":"concept","practicalIds":[]},
+    {"id":"p1_energy_change_heating_water","label":"Energy store changes when heating water (e.g. in a kettle)","subtopic":"1.1","theme":"Topic 1","difficulty":0.3,"objective":"Describe the energy store changes when water is heated by an electrical device.","essentialPoints":["Heating water in a kettle: chemical/electrical transfer increases thermal store of water"],"specRefs":["4.1.1.1"],"kind":"concept","practicalIds":[]},
+    {"id":"p4_eval_source_choice","label":"Evaluating best radiation source for a given situation","subtopic":"4.2","theme":"Topic 4","difficulty":0.55,"objective":"Apply knowledge of penetration, range and ionising power to evaluate the best type of radioactive source for a given use.","essentialPoints":["Choice of source depends on required penetration/ionising power for the application","Must weigh benefits (e.g. penetration for imaging) against hazards (e.g. high ionising power near living tissue)"],"specRefs":["4.4.2.1"],"kind":"evaluation","practicalIds":[]},
+    {"id":"p4_alpha_penetration","label":"Alpha radiation: penetration, range and ionising power","subtopic":"4.2","theme":"Topic 4","difficulty":0.35,"objective":"Describe the penetrating power, range in air and ionising power of alpha radiation.","essentialPoints":["Alpha: low penetration (stopped by paper/skin), short range in air, strongly ionising"],"specRefs":["4.4.2.1"],"kind":"concept","practicalIds":[]},
+    {"id":"p4_beta_penetration","label":"Beta radiation: penetration, range and ionising power","subtopic":"4.2","theme":"Topic 4","difficulty":0.35,"objective":"Describe the penetrating power, range in air and ionising power of beta radiation.","essentialPoints":["Beta: medium penetration (stopped by ~few mm aluminium), medium range, moderately ionising"],"specRefs":["4.4.2.1"],"kind":"concept","practicalIds":[]},
+    {"id":"p4_gamma_penetration","label":"Gamma radiation: penetration, range and ionising power","subtopic":"4.2","theme":"Topic 4","difficulty":0.35,"objective":"Describe the penetrating power, range in air and ionising power of gamma radiation.","essentialPoints":["Gamma: highly penetrating (needs thick lead/concrete), long range, weakly ionising"],"specRefs":["4.4.2.1"],"kind":"concept","practicalIds":[]}
+  ],
+  "removeEdges": [
+    ["p1_system_def","p1_system_def_to_stores"],
+    ["p1_system_def_to_stores","p1_energy_stores"],
+    ["p4_penetration_ionising","p4_alpha_particle_p4_beta_particle_evalsource"],
+    ["p4_alpha_particle_p4_beta_particle_evalsource","p4_eval_medical_exploration"],
+    ["p4_alpha_particle_p4_beta_particle_evalsource","p4_eval_medical_treatment"],
+    ["p1_energy_stores","p1_energy_change_description"],
+    ["p1_energy_change_description","p1_dissipation"],
+    ["p1_energy_change_description","p1_gpe_ke_application"],
+    ["p1_energy_stores","p1_shc_definition"],
+    ["p1_shc_definition","p1_shc_equation"],
+    ["p1_shc_equation","p1_rp1_procedure"],
+    ["p0_at1_length_mass_time","p5_rp7_procedure"],
+    ["p0_at1_mass_time_temp","p1_ws_gpe_ke_practical"]
+  ],
+  "addEdges": [
+    ["p1_energy_stores","p1_energy_change_projectile"],
+    ["p1_energy_stores","p1_energy_change_collision"],
+    ["p1_energy_stores","p1_energy_change_accelerating"],
+    ["p1_energy_stores","p1_energy_change_heating_water"],
+    ["p1_energy_stores","p1_energy_change_braking"],
+    ["p1_energy_change_braking","p1_dissipation"],
+    ["p1_energy_change_collision","p1_dissipation"],
+    ["p1_energy_change_collision","p1_gpe_ke_application"],
+    ["p0_power_limits_science","p1_science_limits_policy"],
+    ["p1_efficiency_power_eq","p2_national_grid_efficiency"],
+    ["p3_shc_definition","p1_shc_equation"] ,
+    ["p1_energy_stores","p3_shc_definition"],
+    ["p3_shc_equation","p1_rp1_procedure"],
+    ["p4_alpha_particle","p4_alpha_penetration"],
+    ["p4_beta_particle","p4_beta_penetration"],
+    ["p4_gamma_ray","p4_gamma_penetration"],
+    ["p4_alpha_penetration","p4_eval_source_choice"],
+    ["p4_beta_penetration","p4_eval_source_choice"],
+    ["p4_gamma_penetration","p4_eval_source_choice"],
+    ["p4_eval_source_choice","p4_eval_medical_exploration"],
+    ["p4_eval_source_choice","p4_eval_medical_treatment"],
+    ["p4_gamma_penetration","p4_medical_exploration"],
+    ["p4_gamma_penetration","p4_medical_treatment"],
+    ["p4_alpha_penetration","p4_halflife_range_hazard"],
+    ["p4_beta_penetration","p4_halflife_range_hazard"],
+    ["p4_gamma_penetration","p4_halflife_range_hazard"],
+    ["p0_at1_length_mass_time_volume_temp","p5_rp7_procedure"],
+    ["p0_at1_length_mass_time_volume_temp","p1_ws_gpe_ke_practical"]
+  ],
+  "remainingProblems": [
+    "Multiple near-duplicate AT1 apparatus-measurement nodes exist across Topic 0 (p0_at1_measure_length_temp, p0_at1_mass_time_temp, p0_at1_length_mass_time_volume_temp, p0_at1_length_mass_time, p0_at1_timer, p0_at1_micrometer_vernier, p0_at1_displacement_volume) and should ideally be consolidated into one canonical AT1 node family; only partial rewiring was performed here to avoid destabilizing the graph further.",
+    "Multiple near-duplicate WS/MS foundation nodes exist in Topic 0 under different ids/subtopics (e.g. p0_rearrange_equations vs p0_ms_rearrange vs p0_ms_rearrange_equations; p0_mean_range vs p0_ws_mean vs p0_ms_mean; p0_plot_graphs vs p0_ms_plot_graph vs p0_ms_graph_plotting vs p0_ms_graphs_gradient) representing the same underlying skills generated redundantly - a full consolidation pass is recommended but out of scope for this patch to preserve DAG stability.",
+    "p3_shc_definition and p3_shc_equation are retained as canonical versions after merging with the Topic 1 duplicates; downstream Topic 1 edges were repointed but a full audit of all p1_shc_* references elsewhere should be done.",
+    "The AT1 consolidation edge fix only repoints two example downstream edges (p5_rp7_procedure, p1_ws_gpe_ke_practical); other practical procedure nodes still reference the fragmented p0_at1_* variants and should be reviewed for consistency."
+  ]
+}
+```

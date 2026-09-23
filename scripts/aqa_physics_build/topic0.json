@@ -1,0 +1,1341 @@
+{
+  "nodes": [
+    {
+      "id": "p0_dev_science",
+      "label": "Scientific methods and theories develop over time with new evidence",
+      "subtopic": "0.1",
+      "theme": "Topic 0",
+      "difficulty": 0.25,
+      "objective": "Understand that scientific models/theories change as new data emerges.",
+      "essentialPoints": [
+        "Theories are provisional and change when new data emerges",
+        "New observations/experiments can support or refute existing models"
+      ],
+      "specRefs": [
+        "WS1.1"
+      ],
+      "kind": "concept",
+      "practicalIds": []
+    },
+    {
+      "id": "p0_models",
+      "label": "Using scientific models to explain and predict",
+      "subtopic": "0.1",
+      "theme": "Topic 0",
+      "difficulty": 0.3,
+      "objective": "Use representational, spatial, descriptive, computational and mathematical models to explain and predict phenomena.",
+      "essentialPoints": [
+        "Models represent real phenomena to aid explanation and prediction",
+        "Models can be tested against experimental/observational data",
+        "Models have limitations and can be shown to break down"
+      ],
+      "specRefs": [
+        "WS1.2"
+      ],
+      "kind": "concept",
+      "practicalIds": []
+    },
+    {
+      "id": "p0_power_limits_science",
+      "label": "Power and limitations of science, and ethical issues",
+      "subtopic": "0.1",
+      "theme": "Topic 0",
+      "difficulty": 0.3,
+      "objective": "Appreciate that science cannot answer all questions and that some questions raise ethical issues.",
+      "essentialPoints": [
+        "Data may be uncertain, incomplete, or unavailable, limiting what science can answer",
+        "Some questions involve ethical judgements science alone cannot resolve"
+      ],
+      "specRefs": [
+        "WS1.3"
+      ],
+      "kind": "concept",
+      "practicalIds": []
+    },
+    {
+      "id": "p0_tech_applications",
+      "label": "Technological applications of science and their implications",
+      "subtopic": "0.1",
+      "theme": "Topic 0",
+      "difficulty": 0.3,
+      "objective": "Explain everyday/technological applications of science and evaluate personal, social, economic and environmental implications.",
+      "essentialPoints": [
+        "Scientific applications have personal, social, economic and environmental consequences",
+        "Evaluating an application means weighing these implications using evidence"
+      ],
+      "specRefs": [
+        "WS1.4"
+      ],
+      "kind": "concept",
+      "practicalIds": []
+    },
+    {
+      "id": "p0_risk",
+      "label": "Evaluating risk in practical science and society",
+      "subtopic": "0.1",
+      "theme": "Topic 0",
+      "difficulty": 0.3,
+      "objective": "Evaluate risks in practical science and in wider society, including differences between measured and perceived risk.",
+      "essentialPoints": [
+        "Hazards from science-based technology must be weighed against benefits",
+        "Perceived risk can differ from measured risk (e.g. voluntary vs imposed, familiar vs unfamiliar, visible vs invisible)"
+      ],
+      "specRefs": [
+        "WS1.5"
+      ],
+      "kind": "concept",
+      "practicalIds": []
+    },
+    {
+      "id": "p0_peer_review",
+      "label": "Peer review and communicating scientific results",
+      "subtopic": "0.1",
+      "theme": "Topic 0",
+      "difficulty": 0.2,
+      "objective": "Recognise the role of peer review in validating scientific claims and communicating findings.",
+      "essentialPoints": [
+        "Peer review checks results before publication to detect false claims and build consensus",
+        "Media reports of science are not peer reviewed and may be biased, oversimplified or inaccurate"
+      ],
+      "specRefs": [
+        "WS1.6"
+      ],
+      "kind": "concept",
+      "practicalIds": []
+    },
+    {
+      "id": "p0_hypothesis",
+      "label": "Developing a hypothesis from theory",
+      "subtopic": "0.2",
+      "theme": "Topic 0",
+      "difficulty": 0.3,
+      "objective": "Use scientific theories and explanations to develop a testable hypothesis.",
+      "essentialPoints": [
+        "A hypothesis is a testable proposed explanation derived from existing theory",
+        "Hypotheses must be capable of being supported or refuted by evidence"
+      ],
+      "specRefs": [
+        "WS2.1"
+      ],
+      "kind": "concept",
+      "practicalIds": []
+    },
+    {
+      "id": "p0_variables",
+      "label": "Independent, dependent and control variables",
+      "subtopic": "0.2",
+      "theme": "Topic 0",
+      "difficulty": 0.25,
+      "objective": "Identify and distinguish independent, dependent and control variables in an investigation.",
+      "essentialPoints": [
+        "Independent variable is changed/selected by the investigator",
+        "Dependent variable is measured for each change in the independent variable",
+        "Control variables are kept constant so comparisons are fair"
+      ],
+      "specRefs": [
+        "WS2.2"
+      ],
+      "kind": "concept",
+      "practicalIds": []
+    },
+    {
+      "id": "p0_plan_experiment",
+      "label": "Planning experiments and procedures",
+      "subtopic": "0.2",
+      "theme": "Topic 0",
+      "difficulty": 0.35,
+      "objective": "Devise and justify a procedure to test a hypothesis, manipulating and controlling variables appropriately.",
+      "essentialPoints": [
+        "A well-designed procedure controls variables and directly tests the hypothesis",
+        "Explaining why a procedure is well designed requires reference to variable control"
+      ],
+      "specRefs": [
+        "WS2.2"
+      ],
+      "kind": "concept",
+      "practicalIds": []
+    },
+    {
+      "id": "p0_select_apparatus",
+      "label": "Selecting appropriate apparatus, techniques and materials",
+      "subtopic": "0.2",
+      "theme": "Topic 0",
+      "difficulty": 0.3,
+      "objective": "Apply knowledge of apparatus, techniques and materials to select those appropriate for a given experimental purpose.",
+      "essentialPoints": [
+        "Choice of instrument/apparatus depends on the range and precision needed",
+        "Justification requires linking apparatus properties to the purpose of measurement"
+      ],
+      "specRefs": [
+        "WS2.3"
+      ],
+      "kind": "concept",
+      "practicalIds": []
+    },
+    {
+      "id": "p0_health_safety",
+      "label": "Health and safety: hazards and risk reduction",
+      "subtopic": "0.2",
+      "theme": "Topic 0",
+      "difficulty": 0.2,
+      "objective": "Identify hazards in practical contexts and suggest methods to reduce risk of harm.",
+      "essentialPoints": [
+        "A hazard is a source of potential harm; a risk is the chance of that harm occurring",
+        "Practical risks can be reduced by specific precautions (e.g. insulation, eye protection, safe handling)"
+      ],
+      "specRefs": [
+        "WS2.4"
+      ],
+      "kind": "concept",
+      "practicalIds": []
+    },
+    {
+      "id": "p0_sampling",
+      "label": "Sampling techniques for representative data",
+      "subtopic": "0.2",
+      "theme": "Topic 0",
+      "difficulty": 0.25,
+      "objective": "Recognise when and how to apply sampling techniques to ensure collected data is representative.",
+      "essentialPoints": [
+        "Sampling is needed when it is impractical to measure an entire population/data set",
+        "A representative sample avoids bias in the conclusions drawn"
+      ],
+      "specRefs": [
+        "WS2.5"
+      ],
+      "kind": "concept",
+      "practicalIds": []
+    },
+    {
+      "id": "p0_reading_scales",
+      "label": "Reading and recording measurements from a scale",
+      "subtopic": "0.2",
+      "theme": "Topic 0",
+      "difficulty": 0.2,
+      "objective": "Make and record observations and measurements accurately using a range of apparatus, reading scales correctly.",
+      "essentialPoints": [
+        "Measurements must be read to the resolution of the instrument's scale",
+        "Recorded values should include appropriate units and significant figures"
+      ],
+      "specRefs": [
+        "WS2.6"
+      ],
+      "kind": "procedure",
+      "practicalIds": []
+    },
+    {
+      "id": "p0_evaluate_method",
+      "label": "Evaluating methods and suggesting improvements",
+      "subtopic": "0.2",
+      "theme": "Topic 0",
+      "difficulty": 0.35,
+      "objective": "Evaluate an experimental method for validity and sufficiency of data, suggesting improvements and further investigations.",
+      "essentialPoints": [
+        "Assess whether enough precise measurements were taken to support a conclusion",
+        "A valid method tests only the intended variable and controls others properly"
+      ],
+      "specRefs": [
+        "WS2.7"
+      ],
+      "kind": "concept",
+      "practicalIds": []
+    },
+    {
+      "id": "p0_tables_charts",
+      "label": "Constructing and interpreting tables, bar charts and histograms",
+      "subtopic": "0.3",
+      "theme": "Topic 0",
+      "difficulty": 0.2,
+      "objective": "Present observations and data using frequency tables, bar charts and histograms.",
+      "essentialPoints": [
+        "Frequency tables organise raw data into categories or class intervals",
+        "Bar charts and histograms visually represent frequency data for interpretation"
+      ],
+      "specRefs": [
+        "WS3.1"
+      ],
+      "kind": "concept",
+      "practicalIds": []
+    },
+    {
+      "id": "p0_plot_graphs",
+      "label": "Plotting two variables from data",
+      "subtopic": "0.3",
+      "theme": "Topic 0",
+      "difficulty": 0.25,
+      "objective": "Plot two variables from experimental or other data on a graph with appropriate axes and scales.",
+      "essentialPoints": [
+        "Independent variable is plotted on the x-axis, dependent on the y-axis",
+        "Axes must be labelled with quantity and unit, with sensible scales"
+      ],
+      "specRefs": [
+        "WS3.1"
+      ],
+      "kind": "procedure",
+      "practicalIds": []
+    },
+    {
+      "id": "p0_data_translation",
+      "label": "Translating data between graphical and numeric forms",
+      "subtopic": "0.3",
+      "theme": "Topic 0",
+      "difficulty": 0.2,
+      "objective": "Convert data between tabular/numeric form and graphical representation.",
+      "essentialPoints": [
+        "Values from a table can be read directly onto a graph and vice versa",
+        "Graphical trends can be described in words or numbers"
+      ],
+      "specRefs": [
+        "WS3.2"
+      ],
+      "kind": "concept",
+      "practicalIds": []
+    },
+    {
+      "id": "p0_sig_figs",
+      "label": "Using appropriate significant figures",
+      "subtopic": "0.3",
+      "theme": "Topic 0",
+      "difficulty": 0.25,
+      "objective": "Express calculated and measured values to an appropriate number of significant figures.",
+      "essentialPoints": [
+        "The number of significant figures in an answer should reflect the precision of the data used",
+        "Rounding too early or reporting excess figures misrepresents precision"
+      ],
+      "specRefs": [
+        "WS3.3",
+        "WS4.6"
+      ],
+      "kind": "concept",
+      "practicalIds": []
+    },
+    {
+      "id": "p0_mean_range",
+      "label": "Calculating arithmetic mean and range",
+      "subtopic": "0.3",
+      "theme": "Topic 0",
+      "difficulty": 0.15,
+      "objective": "Find the arithmetic mean and range of a set of repeated measurements.",
+      "essentialPoints": [
+        "Mean is the sum of values divided by the number of values",
+        "Range is the difference between the largest and smallest value, used as a measure of spread"
+      ],
+      "specRefs": [
+        "WS3.3"
+      ],
+      "kind": "concept",
+      "practicalIds": []
+    },
+    {
+      "id": "p0_mode_median",
+      "label": "Understanding mean, mode and median",
+      "subtopic": "0.3",
+      "theme": "Topic 0",
+      "difficulty": 0.15,
+      "objective": "Understand and distinguish the statistical terms mean, mode and median.",
+      "essentialPoints": [
+        "Mode is the most frequently occurring value",
+        "Median is the middle value when data is ordered"
+      ],
+      "specRefs": [
+        "Maths 2f"
+      ],
+      "kind": "concept",
+      "practicalIds": []
+    },
+    {
+      "id": "p0_order_magnitude",
+      "label": "Order of magnitude calculations",
+      "subtopic": "0.3",
+      "theme": "Topic 0",
+      "difficulty": 0.3,
+      "objective": "Make order of magnitude estimates and comparisons using powers of ten.",
+      "essentialPoints": [
+        "An order of magnitude estimate rounds a quantity to the nearest power of ten",
+        "Comparing orders of magnitude allows quick estimation of scale differences"
+      ],
+      "specRefs": [
+        "WS3.3",
+        "Maths 2h"
+      ],
+      "kind": "concept",
+      "practicalIds": []
+    },
+    {
+      "id": "p0_rearrange_equations",
+      "label": "Changing the subject of an equation",
+      "subtopic": "0.3",
+      "theme": "Topic 0",
+      "difficulty": 0.35,
+      "objective": "Rearrange an algebraic equation to make a different quantity the subject.",
+      "essentialPoints": [
+        "Rearranging isolates the required unknown on one side of the equation",
+        "The same operation must be applied to both sides to preserve equality"
+      ],
+      "specRefs": [
+        "WS3.3",
+        "Maths 3b"
+      ],
+      "kind": "concept",
+      "practicalIds": []
+    },
+    {
+      "id": "p0_substitute_units",
+      "label": "Substituting values into equations with correct units",
+      "subtopic": "0.3",
+      "theme": "Topic 0",
+      "difficulty": 0.25,
+      "objective": "Substitute numerical values into algebraic equations using appropriate units for physical quantities.",
+      "essentialPoints": [
+        "Each value substituted must be in units consistent with the equation (e.g. SI base units)",
+        "The final answer's unit follows from the units of the substituted quantities"
+      ],
+      "specRefs": [
+        "WS3.3",
+        "Maths 3c"
+      ],
+      "kind": "concept",
+      "practicalIds": []
+    },
+    {
+      "id": "p0_slope_intercept",
+      "label": "Determining slope and intercept of a linear graph",
+      "subtopic": "0.3",
+      "theme": "Topic 0",
+      "difficulty": 0.35,
+      "objective": "Determine the gradient and y-intercept of a linear graph and relate them to y = mx + c.",
+      "essentialPoints": [
+        "Gradient is calculated as change in y divided by change in x between two points on the line",
+        "The y-intercept is the value of y where the line crosses the y-axis",
+        "y = mx + c represents a linear relationship where m is gradient and c is intercept"
+      ],
+      "specRefs": [
+        "WS3.3",
+        "Maths 4b",
+        "Maths 4d"
+      ],
+      "kind": "concept",
+      "practicalIds": []
+    },
+    {
+      "id": "p0_tangent_curve",
+      "label": "Using the tangent to a curve to find rate of change",
+      "subtopic": "0.3",
+      "theme": "Topic 0",
+      "difficulty": 0.45,
+      "objective": "Draw a tangent to a point on a curve and use its slope to determine an instantaneous rate of change.",
+      "essentialPoints": [
+        "A tangent is a straight line touching a curve at one point without crossing it",
+        "The gradient of the tangent equals the instantaneous rate of change at that point"
+      ],
+      "specRefs": [
+        "WS3.3",
+        "Maths 4e"
+      ],
+      "kind": "concept",
+      "practicalIds": []
+    },
+    {
+      "id": "p0_area_under_graph",
+      "label": "Finding the area between a curve and the x-axis",
+      "subtopic": "0.3",
+      "theme": "Topic 0",
+      "difficulty": 0.4,
+      "objective": "Determine the physical significance of the area under a graph and measure it by counting squares.",
+      "essentialPoints": [
+        "The area between a curve and the x-axis can represent a physical quantity (e.g. distance from a velocity-time graph)",
+        "Area under a curved graph can be estimated by counting the enclosed squares"
+      ],
+      "specRefs": [
+        "WS3.3",
+        "Maths 4f"
+      ],
+      "kind": "concept",
+      "practicalIds": []
+    },
+    {
+      "id": "p0_uncertainty",
+      "label": "Estimating uncertainty using the range about the mean",
+      "subtopic": "0.3",
+      "theme": "Topic 0",
+      "difficulty": 0.35,
+      "objective": "Represent distributions of results and estimate uncertainty using the range of measurements about the mean.",
+      "essentialPoints": [
+        "Every measurement has some associated uncertainty",
+        "The range of repeated measurements about the mean can be used as an estimate of uncertainty"
+      ],
+      "specRefs": [
+        "WS3.4"
+      ],
+      "kind": "concept",
+      "practicalIds": []
+    },
+    {
+      "id": "p0_interpret_data",
+      "label": "Interpreting data: patterns, trends, predictions and conclusions",
+      "subtopic": "0.3",
+      "theme": "Topic 0",
+      "difficulty": 0.3,
+      "objective": "Interpret data in various forms to identify patterns/trends, make predictions and draw conclusions.",
+      "essentialPoints": [
+        "Patterns and trends in data can be recognised across tabular, graphical and other forms",
+        "Conclusions must be drawn directly from, and be limited to, the evidence available"
+      ],
+      "specRefs": [
+        "WS3.5"
+      ],
+      "kind": "concept",
+      "practicalIds": []
+    },
+    {
+      "id": "p0_scatter_correlation",
+      "label": "Using scatter diagrams to identify correlation",
+      "subtopic": "0.3",
+      "theme": "Topic 0",
+      "difficulty": 0.3,
+      "objective": "Use a scatter diagram to identify whether a correlation exists between two variables.",
+      "essentialPoints": [
+        "A scatter diagram plots pairs of values to reveal a possible relationship",
+        "Correlation shown on a scatter diagram does not by itself prove causation"
+      ],
+      "specRefs": [
+        "Maths 2g"
+      ],
+      "kind": "concept",
+      "practicalIds": []
+    },
+    {
+      "id": "p0_reasoned_explanations",
+      "label": "Relating data to hypotheses in reasoned explanations",
+      "subtopic": "0.3",
+      "theme": "Topic 0",
+      "difficulty": 0.35,
+      "objective": "Present reasoned explanations relating data back to a hypothesis, comparing competing hypotheses.",
+      "essentialPoints": [
+        "The extent to which data supports a hypothesis must be explicitly justified using the evidence",
+        "Where multiple hypotheses exist, the one better supported by the data should be identified with reasons"
+      ],
+      "specRefs": [
+        "WS3.6"
+      ],
+      "kind": "concept",
+      "practicalIds": []
+    },
+    {
+      "id": "p0_accuracy_precision",
+      "label": "Accuracy and precision of measurements",
+      "subtopic": "0.3",
+      "theme": "Topic 0",
+      "difficulty": 0.3,
+      "objective": "Distinguish accuracy (closeness to true value) from precision (closeness of clustering of repeated measurements).",
+      "essentialPoints": [
+        "An accurate measurement is close to the true value",
+        "Measurements are precise if they cluster closely together, regardless of accuracy"
+      ],
+      "specRefs": [
+        "WS3.7"
+      ],
+      "kind": "concept",
+      "practicalIds": []
+    },
+    {
+      "id": "p0_repeatable_reproducible",
+      "label": "Repeatability and reproducibility of measurements",
+      "subtopic": "0.3",
+      "theme": "Topic 0",
+      "difficulty": 0.3,
+      "objective": "Distinguish repeatable results (same method/investigator) from reproducible results (different method/investigator).",
+      "essentialPoints": [
+        "Measurements are repeatable if the same investigator repeats the method under the same conditions and gets similar results",
+        "Measurements are reproducible if different investigators or different equipment give similar results"
+      ],
+      "specRefs": [
+        "WS3.7"
+      ],
+      "kind": "concept",
+      "practicalIds": []
+    },
+    {
+      "id": "p0_random_systematic_error",
+      "label": "Random and systematic error",
+      "subtopic": "0.3",
+      "theme": "Topic 0",
+      "difficulty": 0.35,
+      "objective": "Identify potential sources of random and systematic error and explain how each affects results.",
+      "essentialPoints": [
+        "Random error causes results to vary unpredictably and can be reduced by repeating measurements and averaging",
+        "Systematic error causes results to differ from the true value by a consistent amount and is not reduced by averaging"
+      ],
+      "specRefs": [
+        "WS3.7"
+      ],
+      "kind": "concept",
+      "practicalIds": []
+    },
+    {
+      "id": "p0_anomalies",
+      "label": "Identifying and handling anomalous results",
+      "subtopic": "0.3",
+      "theme": "Topic 0",
+      "difficulty": 0.25,
+      "objective": "Recognise anomalous values, investigate their cause, and exclude them if due to poor measurement.",
+      "essentialPoints": [
+        "An anomalous result lies clearly outside the pattern of the rest of the data set",
+        "An anomaly should be investigated and, if due to a measurement error, excluded before further analysis"
+      ],
+      "specRefs": [
+        "WS3.7"
+      ],
+      "kind": "concept",
+      "practicalIds": []
+    },
+    {
+      "id": "p0_communicate_findings",
+      "label": "Communicating scientific rationale, methods and conclusions",
+      "subtopic": "0.3",
+      "theme": "Topic 0",
+      "difficulty": 0.3,
+      "objective": "Present coherent, logically structured reports of investigations including rationale, method, findings and conclusions.",
+      "essentialPoints": [
+        "A scientific report should logically link rationale, method, results and conclusion",
+        "Presentation may use verbal, diagrammatic, graphical, numerical or symbolic forms as appropriate"
+      ],
+      "specRefs": [
+        "WS3.8"
+      ],
+      "kind": "concept",
+      "practicalIds": []
+    },
+    {
+      "id": "p0_sci_vocab",
+      "label": "Using scientific vocabulary and definitions correctly",
+      "subtopic": "0.4",
+      "theme": "Topic 0",
+      "difficulty": 0.15,
+      "objective": "Use correct scientific vocabulary, terminology and definitions in written and spoken explanations.",
+      "essentialPoints": [
+        "Precise scientific terms must be used with their exact accepted meaning",
+        "Definitions should be stated using established scientific vocabulary"
+      ],
+      "specRefs": [
+        "WS4.1"
+      ],
+      "kind": "concept",
+      "practicalIds": []
+    },
+    {
+      "id": "p0_quantities_units",
+      "label": "Scientific quantities and how they are determined",
+      "subtopic": "0.4",
+      "theme": "Topic 0",
+      "difficulty": 0.2,
+      "objective": "Recognise the importance of scientific quantities and understand how they are measured or determined.",
+      "essentialPoints": [
+        "A physical quantity consists of a numerical value and a unit",
+        "Quantities are determined by defined measurement procedures using appropriate instruments"
+      ],
+      "specRefs": [
+        "WS4.2"
+      ],
+      "kind": "concept",
+      "practicalIds": []
+    },
+    {
+      "id": "p0_si_units",
+      "label": "Using SI units correctly",
+      "subtopic": "0.4",
+      "theme": "Topic 0",
+      "difficulty": 0.2,
+      "objective": "Use SI units (e.g. kg, m, J) appropriately for physical quantities.",
+      "essentialPoints": [
+        "Each physical quantity has a standard SI unit (e.g. kilogram for mass, metre for length, joule for energy)",
+        "Consistent use of SI units allows valid calculation and comparison"
+      ],
+      "specRefs": [
+        "WS4.3"
+      ],
+      "kind": "concept",
+      "practicalIds": []
+    },
+    {
+      "id": "p0_prefixes",
+      "label": "Using prefixes and powers of ten for orders of magnitude",
+      "subtopic": "0.4",
+      "theme": "Topic 0",
+      "difficulty": 0.25,
+      "objective": "Use standard prefixes (tera, giga, mega, kilo, centi, milli, micro, nano) to express quantities across orders of magnitude.",
+      "essentialPoints": [
+        "Each prefix corresponds to a specific power of ten multiplier (e.g. kilo = 10^3, milli = 10^-3)",
+        "Prefixes allow convenient expression of very large or very small quantities"
+      ],
+      "specRefs": [
+        "WS4.4"
+      ],
+      "kind": "concept",
+      "practicalIds": []
+    },
+    {
+      "id": "p0_unit_conversion",
+      "label": "Interconverting units",
+      "subtopic": "0.4",
+      "theme": "Topic 0",
+      "difficulty": 0.3,
+      "objective": "Convert a quantity between different units, including using prefixes and standard form.",
+      "essentialPoints": [
+        "Converting units requires multiplying or dividing by the appropriate conversion factor",
+        "Prefix values must be applied consistently when converting between unit sizes"
+      ],
+      "specRefs": [
+        "WS4.5"
+      ],
+      "kind": "concept",
+      "practicalIds": []
+    },
+    {
+      "id": "p0_standard_form",
+      "label": "Using standard form for very large or small numbers",
+      "subtopic": "0.4",
+      "theme": "Topic 0",
+      "difficulty": 0.3,
+      "objective": "Recognise and use expressions in standard form (a × 10^n).",
+      "essentialPoints": [
+        "Standard form expresses a number as a value between 1 and 10 multiplied by a power of ten",
+        "Standard form is used to represent very large or very small physical quantities concisely"
+      ],
+      "specRefs": [
+        "Maths 1b"
+      ],
+      "kind": "concept",
+      "practicalIds": []
+    },
+    {
+      "id": "p0_decimal_form",
+      "label": "Recognising and using decimal form",
+      "subtopic": "0.4",
+      "theme": "Topic 0",
+      "difficulty": 0.1,
+      "objective": "Recognise and use expressions in decimal form.",
+      "essentialPoints": [
+        "Decimal form expresses quantities using place value with a decimal point"
+      ],
+      "specRefs": [
+        "Maths 1a"
+      ],
+      "kind": "concept",
+      "practicalIds": []
+    },
+    {
+      "id": "p0_ratios_percent",
+      "label": "Using ratios, fractions and percentages",
+      "subtopic": "0.4",
+      "theme": "Topic 0",
+      "difficulty": 0.25,
+      "objective": "Use ratios, fractions and percentages to solve numerical problems in physics contexts.",
+      "essentialPoints": [
+        "A ratio compares two or more quantities of the same kind",
+        "Percentages and fractions are used to express proportions of a whole, including efficiency-style calculations"
+      ],
+      "specRefs": [
+        "Maths 1c"
+      ],
+      "kind": "concept",
+      "practicalIds": []
+    },
+    {
+      "id": "p0_estimate_calc",
+      "label": "Making estimates of the results of calculations",
+      "subtopic": "0.4",
+      "theme": "Topic 0",
+      "difficulty": 0.25,
+      "objective": "Make sensible estimates of the results of simple calculations without full computation.",
+      "essentialPoints": [
+        "Estimation uses rounded values to quickly approximate a calculation's result",
+        "Estimates allow a check on whether a calculated answer is reasonable"
+      ],
+      "specRefs": [
+        "Maths 1d"
+      ],
+      "kind": "concept",
+      "practicalIds": []
+    },
+    {
+      "id": "p0_solve_algebraic",
+      "label": "Solving simple algebraic equations",
+      "subtopic": "0.4",
+      "theme": "Topic 0",
+      "difficulty": 0.3,
+      "objective": "Solve simple algebraic equations for an unknown quantity.",
+      "essentialPoints": [
+        "Solving an equation isolates the unknown value using valid algebraic steps"
+      ],
+      "specRefs": [
+        "Maths 3d"
+      ],
+      "kind": "concept",
+      "practicalIds": []
+    },
+    {
+      "id": "p0_math_symbols",
+      "label": "Understanding and using mathematical symbols (=, <, >, ∝, ~)",
+      "subtopic": "0.4",
+      "theme": "Topic 0",
+      "difficulty": 0.2,
+      "objective": "Understand and correctly use symbols including =, <, <<, >>, >, ∝, ~ in scientific contexts.",
+      "essentialPoints": [
+        "Each symbol has a precise mathematical meaning (e.g. ∝ means 'directly proportional to')",
+        "Correct use of these symbols allows concise expression of relationships between quantities"
+      ],
+      "specRefs": [
+        "Maths 3a"
+      ],
+      "kind": "concept",
+      "practicalIds": []
+    },
+    {
+      "id": "p0_angles_degrees",
+      "label": "Using angular measures in degrees",
+      "subtopic": "0.4",
+      "theme": "Topic 0",
+      "difficulty": 0.15,
+      "objective": "Use angular measures in degrees, including for reflection and refraction contexts.",
+      "essentialPoints": [
+        "Angles are measured in degrees from a specified reference line (e.g. the normal)"
+      ],
+      "specRefs": [
+        "Maths 5a"
+      ],
+      "kind": "concept",
+      "practicalIds": []
+    },
+    {
+      "id": "p0_2d_3d_forms",
+      "label": "Visualising and representing 2D and 3D forms",
+      "subtopic": "0.4",
+      "theme": "Topic 0",
+      "difficulty": 0.25,
+      "objective": "Visualise and represent 2D and 3D forms, including 2D representations of 3D objects, e.g. ray diagrams and field patterns.",
+      "essentialPoints": [
+        "3D physical situations are often represented using 2D diagrams (e.g. cross-sections, ray diagrams)",
+        "Interpreting such diagrams requires understanding the spatial relationships they represent"
+      ],
+      "specRefs": [
+        "Maths 5b"
+      ],
+      "kind": "concept",
+      "practicalIds": []
+    },
+    {
+      "id": "p0_areas_volumes",
+      "label": "Calculating areas and volumes of simple shapes",
+      "subtopic": "0.4",
+      "theme": "Topic 0",
+      "difficulty": 0.25,
+      "objective": "Calculate areas of triangles and rectangles, and surface areas and volumes of cubes, for use in physics calculations.",
+      "essentialPoints": [
+        "Area of a rectangle = length × width; area of a triangle = ½ × base × height",
+        "Volume of a cube = side³; surface area of a cube = 6 × side²"
+      ],
+      "specRefs": [
+        "Maths 5c"
+      ],
+      "kind": "concept",
+      "practicalIds": []
+    },
+    {
+      "id": "p0_at1_measure_length_temp",
+      "label": "AT1: Using measuring cylinders, thermometers, and length instruments",
+      "subtopic": "0.5",
+      "theme": "Topic 0",
+      "difficulty": 0.2,
+      "objective": "Use rulers, measuring cylinders, and thermometers correctly to measure length, volume and temperature.",
+      "essentialPoints": [
+        "Length is measured using a ruler with the eye positioned perpendicular to avoid parallax error",
+        "Volumes are read at eye level from the bottom of the meniscus",
+        "Temperature is read from a thermometer scale to its stated resolution"
+      ],
+      "specRefs": [
+        "AT1"
+      ],
+      "kind": "procedure",
+      "practicalIds": []
+    },
+    {
+      "id": "p0_at1_timer",
+      "label": "AT1: Using a stopwatch/timer for repeated readings",
+      "subtopic": "0.5",
+      "theme": "Topic 0",
+      "difficulty": 0.2,
+      "objective": "Use a stopwatch or timer to measure time intervals, taking repeat readings to improve reliability.",
+      "essentialPoints": [
+        "A stopwatch is started and stopped consistently at defined events to measure a time interval",
+        "Repeating timings and averaging reduces the effect of random error"
+      ],
+      "specRefs": [
+        "AT1"
+      ],
+      "kind": "procedure",
+      "practicalIds": []
+    },
+    {
+      "id": "p0_at2_electrical_circuits",
+      "label": "AT2: Constructing electrical circuits from circuit diagrams",
+      "subtopic": "0.5",
+      "theme": "Topic 0",
+      "difficulty": 0.3,
+      "objective": "Use circuit diagrams to construct and check series and parallel circuits, including ammeters and voltmeters.",
+      "essentialPoints": [
+        "Circuit symbols represent specific components and must be connected as shown in the diagram",
+        "Ammeters are connected in series and voltmeters in parallel with the component being measured"
+      ],
+      "specRefs": [
+        "AT2"
+      ],
+      "kind": "procedure",
+      "practicalIds": []
+    },
+    {
+      "id": "p0_at3_motion_measure",
+      "label": "AT3: Measuring distance, time and using light gates/motion sensors",
+      "subtopic": "0.5",
+      "theme": "Topic 0",
+      "difficulty": 0.3,
+      "objective": "Measure distance and time using appropriate apparatus (including light gates and data loggers where used) to determine motion quantities.",
+      "essentialPoints": [
+        "Distance travelled and corresponding time intervals are measured to calculate speed or acceleration",
+        "Light gates/data loggers can measure short time intervals more precisely than manual timing"
+      ],
+      "specRefs": [
+        "AT3"
+      ],
+      "kind": "procedure",
+      "practicalIds": []
+    },
+    {
+      "id": "p0_at4_wave_ripple",
+      "label": "AT4: Making observations of waves in a ripple tank or with a signal generator",
+      "subtopic": "0.5",
+      "theme": "Topic 0",
+      "difficulty": 0.3,
+      "objective": "Use a ripple tank, signal generator, and oscilloscope/microphone to observe and measure wave properties such as frequency and wavelength.",
+      "essentialPoints": [
+        "A ripple tank allows observation of wavefronts to measure wavelength directly",
+        "A signal generator and oscilloscope allow frequency and time period of a wave to be determined"
+      ],
+      "specRefs": [
+        "AT4"
+      ],
+      "kind": "procedure",
+      "practicalIds": []
+    },
+    {
+      "id": "p0_at5_forces_extension",
+      "label": "AT5: Measuring forces and extension using a newtonmeter and ruler",
+      "subtopic": "0.5",
+      "theme": "Topic 0",
+      "difficulty": 0.25,
+      "objective": "Use a newtonmeter to measure force and a ruler to measure the extension of a spring or material under load.",
+      "essentialPoints": [
+        "A newtonmeter (spring balance) measures force directly in newtons",
+        "Extension is calculated as the difference between stretched length and natural (unstretched) length"
+      ],
+      "specRefs": [
+        "AT5"
+      ],
+      "kind": "procedure",
+      "practicalIds": []
+    },
+    {
+      "id": "p0_at6_radiation_detect",
+      "label": "AT6: Using detectors to measure radioactive emissions",
+      "subtopic": "0.5",
+      "theme": "Topic 0",
+      "difficulty": 0.3,
+      "objective": "Use a Geiger-Muller tube/counter to detect and measure count rate of radioactive emissions, accounting for background radiation.",
+      "essentialPoints": [
+        "A Geiger-Muller tube detects ionising radiation and a counter records count rate",
+        "Background radiation must be measured separately and accounted for when interpreting readings"
+      ],
+      "specRefs": [
+        "AT6"
+      ],
+      "kind": "procedure",
+      "practicalIds": []
+    },
+    {
+      "id": "p0_at7_energy_temp",
+      "label": "AT7: Measuring energy changes/transfers using temperature and calorimetry apparatus",
+      "subtopic": "0.5",
+      "theme": "Topic 0",
+      "difficulty": 0.3,
+      "objective": "Use thermometers, insulated containers and heaters to measure temperature changes associated with energy transfers.",
+      "essentialPoints": [
+        "Temperature change over time is measured using a thermometer or temperature sensor while a known energy input is applied",
+        "Insulation is used to minimise unwanted energy transfer to the surroundings during the measurement"
+      ],
+      "specRefs": [
+        "AT7"
+      ],
+      "kind": "procedure",
+      "practicalIds": []
+    },
+    {
+      "id": "p0_at8_optics",
+      "label": "AT8 (physics only): Using ray boxes, mirrors, lenses and protractors for optics",
+      "subtopic": "0.5",
+      "theme": "Topic 0",
+      "difficulty": 0.3,
+      "objective": "Use a ray box, protractor, mirrors, and lenses to measure angles of incidence, reflection and refraction, and to trace ray paths.",
+      "essentialPoints": [
+        "A ray box produces a narrow visible beam of light for tracing on paper",
+        "A protractor measures angles of incidence, reflection and refraction relative to the normal"
+      ],
+      "specRefs": [
+        "AT8"
+      ],
+      "kind": "procedure",
+      "practicalIds": []
+    }
+  ],
+  "edges": [
+    {
+      "from": "p0_models",
+      "to": "p0_dev_science",
+      "difficulty": 0.2
+    },
+    {
+      "from": "p0_dev_science",
+      "to": "p0_peer_review",
+      "difficulty": 0.2
+    },
+    {
+      "from": "p0_power_limits_science",
+      "to": "p0_tech_applications",
+      "difficulty": 0.2
+    },
+    {
+      "from": "p0_tech_applications",
+      "to": "p0_risk",
+      "difficulty": 0.25
+    },
+    {
+      "from": "p0_variables",
+      "to": "p0_hypothesis",
+      "difficulty": 0.15
+    },
+    {
+      "from": "p0_hypothesis",
+      "to": "p0_plan_experiment",
+      "difficulty": 0.3
+    },
+    {
+      "from": "p0_variables",
+      "to": "p0_plan_experiment",
+      "difficulty": 0.25
+    },
+    {
+      "from": "p0_plan_experiment",
+      "to": "p0_select_apparatus",
+      "difficulty": 0.2
+    },
+    {
+      "from": "p0_select_apparatus",
+      "to": "p0_health_safety",
+      "difficulty": 0.15
+    },
+    {
+      "from": "p0_plan_experiment",
+      "to": "p0_sampling",
+      "difficulty": 0.2
+    },
+    {
+      "from": "p0_select_apparatus",
+      "to": "p0_reading_scales",
+      "difficulty": 0.2
+    },
+    {
+      "from": "p0_reading_scales",
+      "to": "p0_evaluate_method",
+      "difficulty": 0.3
+    },
+    {
+      "from": "p0_health_safety",
+      "to": "p0_evaluate_method",
+      "difficulty": 0.2
+    },
+    {
+      "from": "p0_reading_scales",
+      "to": "p0_tables_charts",
+      "difficulty": 0.2
+    },
+    {
+      "from": "p0_tables_charts",
+      "to": "p0_plot_graphs",
+      "difficulty": 0.2
+    },
+    {
+      "from": "p0_plot_graphs",
+      "to": "p0_data_translation",
+      "difficulty": 0.15
+    },
+    {
+      "from": "p0_reading_scales",
+      "to": "p0_sig_figs",
+      "difficulty": 0.2
+    },
+    {
+      "from": "p0_reading_scales",
+      "to": "p0_mean_range",
+      "difficulty": 0.2
+    },
+    {
+      "from": "p0_mean_range",
+      "to": "p0_mode_median",
+      "difficulty": 0.15
+    },
+    {
+      "from": "p0_standard_form",
+      "to": "p0_order_magnitude",
+      "difficulty": 0.25
+    },
+    {
+      "from": "p0_solve_algebraic",
+      "to": "p0_rearrange_equations",
+      "difficulty": 0.3
+    },
+    {
+      "from": "p0_rearrange_equations",
+      "to": "p0_substitute_units",
+      "difficulty": 0.25
+    },
+    {
+      "from": "p0_si_units",
+      "to": "p0_substitute_units",
+      "difficulty": 0.2
+    },
+    {
+      "from": "p0_plot_graphs",
+      "to": "p0_slope_intercept",
+      "difficulty": 0.3
+    },
+    {
+      "from": "p0_math_symbols",
+      "to": "p0_slope_intercept",
+      "difficulty": 0.15
+    },
+    {
+      "from": "p0_slope_intercept",
+      "to": "p0_tangent_curve",
+      "difficulty": 0.35
+    },
+    {
+      "from": "p0_plot_graphs",
+      "to": "p0_area_under_graph",
+      "difficulty": 0.3
+    },
+    {
+      "from": "p0_mean_range",
+      "to": "p0_uncertainty",
+      "difficulty": 0.3
+    },
+    {
+      "from": "p0_data_translation",
+      "to": "p0_interpret_data",
+      "difficulty": 0.25
+    },
+    {
+      "from": "p0_plot_graphs",
+      "to": "p0_scatter_correlation",
+      "difficulty": 0.25
+    },
+    {
+      "from": "p0_interpret_data",
+      "to": "p0_reasoned_explanations",
+      "difficulty": 0.3
+    },
+    {
+      "from": "p0_hypothesis",
+      "to": "p0_reasoned_explanations",
+      "difficulty": 0.25
+    },
+    {
+      "from": "p0_uncertainty",
+      "to": "p0_accuracy_precision",
+      "difficulty": 0.25
+    },
+    {
+      "from": "p0_accuracy_precision",
+      "to": "p0_repeatable_reproducible",
+      "difficulty": 0.25
+    },
+    {
+      "from": "p0_repeatable_reproducible",
+      "to": "p0_random_systematic_error",
+      "difficulty": 0.3
+    },
+    {
+      "from": "p0_mean_range",
+      "to": "p0_random_systematic_error",
+      "difficulty": 0.25
+    },
+    {
+      "from": "p0_random_systematic_error",
+      "to": "p0_anomalies",
+      "difficulty": 0.25
+    },
+    {
+      "from": "p0_anomalies",
+      "to": "p0_evaluate_method",
+      "difficulty": 0.25
+    },
+    {
+      "from": "p0_reasoned_explanations",
+      "to": "p0_communicate_findings",
+      "difficulty": 0.2
+    },
+    {
+      "from": "p0_evaluate_method",
+      "to": "p0_communicate_findings",
+      "difficulty": 0.2
+    },
+    {
+      "from": "p0_sci_vocab",
+      "to": "p0_quantities_units",
+      "difficulty": 0.15
+    },
+    {
+      "from": "p0_quantities_units",
+      "to": "p0_si_units",
+      "difficulty": 0.15
+    },
+    {
+      "from": "p0_si_units",
+      "to": "p0_prefixes",
+      "difficulty": 0.2
+    },
+    {
+      "from": "p0_prefixes",
+      "to": "p0_unit_conversion",
+      "difficulty": 0.3
+    },
+    {
+      "from": "p0_decimal_form",
+      "to": "p0_standard_form",
+      "difficulty": 0.2
+    },
+    {
+      "from": "p0_prefixes",
+      "to": "p0_standard_form",
+      "difficulty": 0.2
+    },
+    {
+      "from": "p0_standard_form",
+      "to": "p0_unit_conversion",
+      "difficulty": 0.25
+    },
+    {
+      "from": "p0_decimal_form",
+      "to": "p0_ratios_percent",
+      "difficulty": 0.15
+    },
+    {
+      "from": "p0_ratios_percent",
+      "to": "p0_estimate_calc",
+      "difficulty": 0.2
+    },
+    {
+      "from": "p0_order_magnitude",
+      "to": "p0_estimate_calc",
+      "difficulty": 0.2
+    },
+    {
+      "from": "p0_select_apparatus",
+      "to": "p0_at1_measure_length_temp",
+      "difficulty": 0.15
+    },
+    {
+      "from": "p0_reading_scales",
+      "to": "p0_at1_measure_length_temp",
+      "difficulty": 0.15
+    },
+    {
+      "from": "p0_reading_scales",
+      "to": "p0_at1_timer",
+      "difficulty": 0.15
+    },
+    {
+      "from": "p0_mean_range",
+      "to": "p0_at1_timer",
+      "difficulty": 0.2
+    },
+    {
+      "from": "p0_select_apparatus",
+      "to": "p0_at2_electrical_circuits",
+      "difficulty": 0.2
+    },
+    {
+      "from": "p0_2d_3d_forms",
+      "to": "p0_at2_electrical_circuits",
+      "difficulty": 0.2
+    },
+    {
+      "from": "p0_at1_measure_length_temp",
+      "to": "p0_at3_motion_measure",
+      "difficulty": 0.2
+    },
+    {
+      "from": "p0_at1_timer",
+      "to": "p0_at3_motion_measure",
+      "difficulty": 0.2
+    },
+    {
+      "from": "p0_at1_measure_length_temp",
+      "to": "p0_at4_wave_ripple",
+      "difficulty": 0.2
+    },
+    {
+      "from": "p0_at1_timer",
+      "to": "p0_at4_wave_ripple",
+      "difficulty": 0.2
+    },
+    {
+      "from": "p0_at1_measure_length_temp",
+      "to": "p0_at5_forces_extension",
+      "difficulty": 0.15
+    },
+    {
+      "from": "p0_at1_timer",
+      "to": "p0_at6_radiation_detect",
+      "difficulty": 0.2
+    },
+    {
+      "from": "p0_health_safety",
+      "to": "p0_at6_radiation_detect",
+      "difficulty": 0.25
+    },
+    {
+      "from": "p0_at1_measure_length_temp",
+      "to": "p0_at7_energy_temp",
+      "difficulty": 0.2
+    },
+    {
+      "from": "p0_health_safety",
+      "to": "p0_at7_energy_temp",
+      "difficulty": 0.2
+    },
+    {
+      "from": "p0_angles_degrees",
+      "to": "p0_at8_optics",
+      "difficulty": 0.2
+    },
+    {
+      "from": "p0_2d_3d_forms",
+      "to": "p0_at8_optics",
+      "difficulty": 0.25
+    },
+    {
+      "from": "p0_health_safety",
+      "to": "p0_at8_optics",
+      "difficulty": 0.15
+    }
+  ]
+}

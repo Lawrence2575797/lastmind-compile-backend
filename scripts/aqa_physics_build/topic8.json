@@ -1,0 +1,521 @@
+{
+  "nodes": [
+    {
+      "id": "p8_solar_system_structure",
+      "label": "Structure of the solar system: Sun, planets, dwarf planets, natural satellites",
+      "subtopic": "8.1",
+      "theme": "Topic 8",
+      "difficulty": 0.15,
+      "objective": "State the components of the solar system and their arrangement.",
+      "essentialPoints": [
+        "One star (the Sun) with eight planets and dwarf planets orbiting it",
+        "Natural satellites (moons) orbit planets",
+        "Solar system is part of the Milky Way galaxy"
+      ],
+      "specRefs": [
+        "4.8.1.1"
+      ],
+      "kind": "concept",
+      "practicalIds": []
+    },
+    {
+      "id": "p8_nebula_formation",
+      "label": "Formation of the Sun from a nebula by gravitational attraction",
+      "subtopic": "8.1",
+      "theme": "Topic 8",
+      "difficulty": 0.2,
+      "objective": "Explain that the Sun formed from a cloud of dust and gas pulled together by gravity.",
+      "essentialPoints": [
+        "A nebula is a cloud of dust and gas",
+        "Gravitational attraction pulls the nebula together to form a star"
+      ],
+      "specRefs": [
+        "4.8.1.1"
+      ],
+      "kind": "concept",
+      "practicalIds": []
+    },
+    {
+      "id": "p8_gravity_fusion_onset",
+      "label": "Gravitational collapse triggering fusion at a star's formation",
+      "subtopic": "8.1",
+      "theme": "Topic 8",
+      "difficulty": 0.35,
+      "objective": "Explain how gravitational collapse of the nebula causes conditions for fusion reactions to begin.",
+      "essentialPoints": [
+        "Gravity draws dust/gas together, increasing density and temperature at the core",
+        "When core temperature/pressure is high enough, fusion reactions begin"
+      ],
+      "specRefs": [
+        "4.8.1.1"
+      ],
+      "kind": "concept",
+      "practicalIds": []
+    },
+    {
+      "id": "p8_star_equilibrium",
+      "label": "Equilibrium between gravitational collapse and radiation/fusion expansion in a star",
+      "subtopic": "8.1",
+      "theme": "Topic 8",
+      "difficulty": 0.4,
+      "objective": "Explain how a main-sequence star remains stable due to a balance of forces.",
+      "essentialPoints": [
+        "Fusion energy creates outward pressure (expansion)",
+        "Gravity pulls inward (collapse)",
+        "Star is stable while these two effects balance"
+      ],
+      "specRefs": [
+        "4.8.1.1"
+      ],
+      "kind": "concept",
+      "practicalIds": []
+    },
+    {
+      "id": "p8_star_lifecycle_sunlike",
+      "label": "Life cycle of a star the size of the Sun",
+      "subtopic": "8.1",
+      "theme": "Topic 8",
+      "difficulty": 0.3,
+      "objective": "Describe the life cycle stages of a star similar in mass to the Sun.",
+      "essentialPoints": [
+        "Nebula -> main sequence star (stable) -> red giant",
+        "Red giant -> white dwarf -> black dwarf"
+      ],
+      "specRefs": [
+        "4.8.1.2"
+      ],
+      "kind": "concept",
+      "practicalIds": []
+    },
+    {
+      "id": "p8_star_lifecycle_massive",
+      "label": "Life cycle of a star much more massive than the Sun",
+      "subtopic": "8.1",
+      "theme": "Topic 8",
+      "difficulty": 0.3,
+      "objective": "Describe the life cycle stages of a massive star.",
+      "essentialPoints": [
+        "Nebula -> main sequence star (stable) -> red super giant",
+        "Red super giant -> supernova -> neutron star or black hole (depending on mass)"
+      ],
+      "specRefs": [
+        "4.8.1.2"
+      ],
+      "kind": "concept",
+      "practicalIds": []
+    },
+    {
+      "id": "p8_fusion_element_formation",
+      "label": "Fusion processes in stars forming new (naturally occurring) elements",
+      "subtopic": "8.1",
+      "theme": "Topic 8",
+      "difficulty": 0.45,
+      "objective": "Explain how fusion processes in stars during their life cycle lead to the formation of elements up to iron.",
+      "essentialPoints": [
+        "Fusion of lighter nuclei in stars produces progressively heavier elements",
+        "This process continues through a star's life cycle stages, producing elements up to iron"
+      ],
+      "specRefs": [
+        "4.8.1.2"
+      ],
+      "kind": "concept",
+      "practicalIds": []
+    },
+    {
+      "id": "p8_supernova_heavy_elements",
+      "label": "Formation of elements heavier than iron and their distribution by supernova",
+      "subtopic": "8.1",
+      "theme": "Topic 8",
+      "difficulty": 0.4,
+      "objective": "Explain that elements heavier than iron are produced in a supernova explosion, which distributes all elements through the universe.",
+      "essentialPoints": [
+        "Elements heavier than iron are only produced during a supernova explosion",
+        "The supernova explosion distributes elements throughout the universe, becoming raw material for new stars/planets"
+      ],
+      "specRefs": [
+        "4.8.1.2"
+      ],
+      "kind": "concept",
+      "practicalIds": []
+    },
+    {
+      "id": "p8_gravity_circular_orbit",
+      "label": "Gravity as the force maintaining circular orbits of planets and satellites",
+      "subtopic": "8.1",
+      "theme": "Topic 8",
+      "difficulty": 0.25,
+      "objective": "State that gravitational force provides the centripetal force keeping planets and satellites in circular orbits.",
+      "essentialPoints": [
+        "Gravity acts as a centripetal force pulling the orbiting body toward the central mass",
+        "This force allows planets, natural satellites and artificial satellites to maintain roughly circular orbits"
+      ],
+      "specRefs": [
+        "4.8.1.3"
+      ],
+      "kind": "concept",
+      "practicalIds": []
+    },
+    {
+      "id": "p8_planets_moons_satellites_compare",
+      "label": "Similarities and distinctions between planets, moons and artificial satellites",
+      "subtopic": "8.1",
+      "theme": "Topic 8",
+      "difficulty": 0.2,
+      "objective": "Describe similarities and differences between planets, their natural satellites (moons), and artificial satellites.",
+      "essentialPoints": [
+        "All orbit a larger body under gravity",
+        "Planets orbit stars, moons orbit planets, artificial satellites are human-made objects placed in orbit (often around Earth)",
+        "Artificial satellites differ in origin/purpose (e.g. communications, monitoring) from natural bodies"
+      ],
+      "specRefs": [
+        "4.8.1.3"
+      ],
+      "kind": "concept",
+      "practicalIds": []
+    },
+    {
+      "id": "p8_velocity_vs_speed",
+      "label": "Distinction between speed (scalar) and velocity (vector)",
+      "subtopic": "8.1",
+      "theme": "Topic 8",
+      "difficulty": 0.3,
+      "objective": "Distinguish velocity (speed with direction) from speed (magnitude only), as required to understand circular motion.",
+      "essentialPoints": [
+        "Speed is a scalar quantity (magnitude only)",
+        "Velocity is a vector quantity (magnitude and direction)",
+        "An object can change velocity while speed stays constant if direction changes"
+      ],
+      "specRefs": [
+        "4.8.1.3"
+      ],
+      "kind": "concept",
+      "practicalIds": []
+    },
+    {
+      "id": "p8_circular_orbit_changing_velocity",
+      "label": "HT: Circular orbits involve constantly changing velocity but constant speed",
+      "subtopic": "8.1",
+      "theme": "Topic 8",
+      "difficulty": 0.55,
+      "objective": "Explain qualitatively how gravity changes the direction (and hence velocity) of an orbiting body while its speed stays constant.",
+      "essentialPoints": [
+        "Gravity acts perpendicular to the direction of travel, continuously changing direction",
+        "Because direction changes but magnitude of speed does not, velocity changes even though speed is constant"
+      ],
+      "specRefs": [
+        "4.8.1.3"
+      ],
+      "kind": "concept",
+      "practicalIds": []
+    },
+    {
+      "id": "p8_stable_orbit_radius_speed",
+      "label": "HT: For a stable orbit, radius must change if speed changes",
+      "subtopic": "8.1",
+      "theme": "Topic 8",
+      "difficulty": 0.6,
+      "objective": "Explain qualitatively that maintaining a stable orbit requires the orbital radius to change if the orbital speed changes.",
+      "essentialPoints": [
+        "A given orbital radius corresponds to a particular stable orbital speed for a given central mass",
+        "If speed increases, a larger radius is needed to remain in a stable orbit (and vice versa)"
+      ],
+      "specRefs": [
+        "4.8.1.3"
+      ],
+      "kind": "concept",
+      "practicalIds": []
+    },
+    {
+      "id": "p8_wave_wavelength_definition",
+      "label": "Definition of wavelength",
+      "subtopic": "8.2",
+      "theme": "Topic 8",
+      "difficulty": 0.15,
+      "objective": "Recall wavelength as the distance between corresponding points on successive waves.",
+      "essentialPoints": [
+        "Wavelength is the distance between two corresponding points on adjacent waves (e.g. crest to crest)"
+      ],
+      "specRefs": [
+        "4.8.2"
+      ],
+      "kind": "concept",
+      "practicalIds": []
+    },
+    {
+      "id": "p8_redshift_definition",
+      "label": "Red-shift: observed increase in wavelength of light from receding galaxies",
+      "subtopic": "8.2",
+      "theme": "Topic 8",
+      "difficulty": 0.35,
+      "objective": "Describe red-shift as the observed increase in wavelength of light from distant galaxies moving away from us.",
+      "essentialPoints": [
+        "Light from most distant galaxies shows an increased wavelength (shifted toward red end of spectrum)",
+        "This is called red-shift"
+      ],
+      "specRefs": [
+        "4.8.2"
+      ],
+      "kind": "concept",
+      "practicalIds": []
+    },
+    {
+      "id": "p8_redshift_distance_relationship",
+      "label": "Relationship between galaxy distance and speed/size of red-shift",
+      "subtopic": "8.2",
+      "theme": "Topic 8",
+      "difficulty": 0.35,
+      "objective": "State that more distant galaxies show greater red-shift and are moving away faster.",
+      "essentialPoints": [
+        "The further away a galaxy is, the faster it is moving away",
+        "The further away a galaxy is, the greater the observed increase in wavelength (bigger red-shift)"
+      ],
+      "specRefs": [
+        "4.8.2"
+      ],
+      "kind": "concept",
+      "practicalIds": []
+    },
+    {
+      "id": "p8_redshift_explains_recession",
+      "label": "Explaining red-shift qualitatively as evidence galaxies are receding",
+      "subtopic": "8.2",
+      "theme": "Topic 8",
+      "difficulty": 0.4,
+      "objective": "Explain qualitatively why red-shift indicates galaxies are moving away from us.",
+      "essentialPoints": [
+        "Increase in observed wavelength is caused by the source (galaxy) moving away from the observer",
+        "This Doppler-type effect stretches the light's wavelength toward the red end of the spectrum"
+      ],
+      "specRefs": [
+        "4.8.2"
+      ],
+      "kind": "concept",
+      "practicalIds": []
+    },
+    {
+      "id": "p8_expanding_universe_evidence",
+      "label": "Red-shift as evidence for an expanding universe",
+      "subtopic": "8.2",
+      "theme": "Topic 8",
+      "difficulty": 0.4,
+      "objective": "Explain how the relationship between galaxy speed and distance provides evidence that the universe is expanding.",
+      "essentialPoints": [
+        "Galaxies further away recede faster, in all directions",
+        "This pattern is evidence that space itself is expanding, not just objects moving through static space"
+      ],
+      "specRefs": [
+        "4.8.2"
+      ],
+      "kind": "concept",
+      "practicalIds": []
+    },
+    {
+      "id": "p8_big_bang_theory",
+      "label": "The Big Bang theory: universe began from a small, hot, dense region",
+      "subtopic": "8.2",
+      "theme": "Topic 8",
+      "difficulty": 0.3,
+      "objective": "State the Big Bang theory of the origin of the universe.",
+      "essentialPoints": [
+        "The Big Bang theory proposes the universe began from a very small region",
+        "This region was extremely hot and dense",
+        "The universe has been expanding ever since"
+      ],
+      "specRefs": [
+        "4.8.2"
+      ],
+      "kind": "concept",
+      "practicalIds": []
+    },
+    {
+      "id": "p8_redshift_supports_bigbang",
+      "label": "How red-shift evidence supports the Big Bang model",
+      "subtopic": "8.2",
+      "theme": "Topic 8",
+      "difficulty": 0.4,
+      "objective": "Explain how the observation of an expanding universe (via red-shift) supports the Big Bang theory.",
+      "essentialPoints": [
+        "An expanding universe implies that, going backwards in time, everything was once concentrated in a small region",
+        "This is consistent with the Big Bang theory's starting conditions"
+      ],
+      "specRefs": [
+        "4.8.2"
+      ],
+      "kind": "concept",
+      "practicalIds": []
+    },
+    {
+      "id": "p8_science_observation_to_theory",
+      "label": "How scientists use observations to develop and support theories (e.g. the Big Bang)",
+      "subtopic": "8.2",
+      "theme": "Topic 8",
+      "difficulty": 0.35,
+      "objective": "Explain the process by which observations (such as red-shift) lead scientists to develop and support scientific theories like the Big Bang model.",
+      "essentialPoints": [
+        "Scientists collect observational data (e.g. red-shift measurements of galaxies)",
+        "Theories are developed/refined to explain patterns in the data, and are tested against further observations"
+      ],
+      "specRefs": [
+        "4.8.2"
+      ],
+      "kind": "concept",
+      "practicalIds": []
+    },
+    {
+      "id": "p8_supernovae_accelerating_expansion",
+      "label": "1998 supernova observations: accelerating recession of distant galaxies",
+      "subtopic": "8.2",
+      "theme": "Topic 8",
+      "difficulty": 0.35,
+      "objective": "State that observations of supernovae since 1998 suggest distant galaxies are receding at an increasing rate.",
+      "essentialPoints": [
+        "Observations of supernovae since 1998 show distant galaxies receding ever faster",
+        "This suggests the rate of expansion of the universe is increasing (accelerating)"
+      ],
+      "specRefs": [
+        "4.8.2"
+      ],
+      "kind": "concept",
+      "practicalIds": []
+    },
+    {
+      "id": "p8_dark_mass_energy_unknowns",
+      "label": "Unresolved questions: dark mass (dark matter) and dark energy",
+      "subtopic": "8.2",
+      "theme": "Topic 8",
+      "difficulty": 0.3,
+      "objective": "State that dark matter and dark energy remain not fully understood aspects of the universe.",
+      "essentialPoints": [
+        "Dark matter affects galaxies (e.g. bends light, holds galaxies together) but does not emit electromagnetic radiation, and its nature is not understood",
+        "Dark energy is a proposed explanation for the observed acceleration of the universe's expansion, and is not fully understood"
+      ],
+      "specRefs": [
+        "4.8.2"
+      ],
+      "kind": "concept",
+      "practicalIds": []
+    }
+  ],
+  "edges": [
+    {
+      "from": "p8_solar_system_structure",
+      "to": "p8_nebula_formation",
+      "difficulty": 0.15
+    },
+    {
+      "from": "p8_nebula_formation",
+      "to": "p8_gravity_fusion_onset",
+      "difficulty": 0.3
+    },
+    {
+      "from": "p8_gravity_fusion_onset",
+      "to": "p8_star_equilibrium",
+      "difficulty": 0.35
+    },
+    {
+      "from": "p8_star_equilibrium",
+      "to": "p8_star_lifecycle_sunlike",
+      "difficulty": 0.3
+    },
+    {
+      "from": "p8_star_equilibrium",
+      "to": "p8_star_lifecycle_massive",
+      "difficulty": 0.3
+    },
+    {
+      "from": "p8_star_lifecycle_sunlike",
+      "to": "p8_fusion_element_formation",
+      "difficulty": 0.35
+    },
+    {
+      "from": "p8_star_lifecycle_massive",
+      "to": "p8_fusion_element_formation",
+      "difficulty": 0.35
+    },
+    {
+      "from": "p8_fusion_element_formation",
+      "to": "p8_supernova_heavy_elements",
+      "difficulty": 0.35
+    },
+    {
+      "from": "p8_star_lifecycle_massive",
+      "to": "p8_supernova_heavy_elements",
+      "difficulty": 0.35
+    },
+    {
+      "from": "p8_solar_system_structure",
+      "to": "p8_gravity_circular_orbit",
+      "difficulty": 0.2
+    },
+    {
+      "from": "p8_gravity_circular_orbit",
+      "to": "p8_planets_moons_satellites_compare",
+      "difficulty": 0.2
+    },
+    {
+      "from": "p8_gravity_circular_orbit",
+      "to": "p8_circular_orbit_changing_velocity",
+      "difficulty": 0.45
+    },
+    {
+      "from": "p8_velocity_vs_speed",
+      "to": "p8_circular_orbit_changing_velocity",
+      "difficulty": 0.45
+    },
+    {
+      "from": "p8_circular_orbit_changing_velocity",
+      "to": "p8_stable_orbit_radius_speed",
+      "difficulty": 0.5
+    },
+    {
+      "from": "p8_wave_wavelength_definition",
+      "to": "p8_redshift_definition",
+      "difficulty": 0.25
+    },
+    {
+      "from": "p8_redshift_definition",
+      "to": "p8_redshift_distance_relationship",
+      "difficulty": 0.3
+    },
+    {
+      "from": "p8_redshift_definition",
+      "to": "p8_redshift_explains_recession",
+      "difficulty": 0.35
+    },
+    {
+      "from": "p8_redshift_distance_relationship",
+      "to": "p8_expanding_universe_evidence",
+      "difficulty": 0.4
+    },
+    {
+      "from": "p8_redshift_explains_recession",
+      "to": "p8_expanding_universe_evidence",
+      "difficulty": 0.35
+    },
+    {
+      "from": "p8_expanding_universe_evidence",
+      "to": "p8_redshift_supports_bigbang",
+      "difficulty": 0.4
+    },
+    {
+      "from": "p8_big_bang_theory",
+      "to": "p8_redshift_supports_bigbang",
+      "difficulty": 0.35
+    },
+    {
+      "from": "p8_redshift_supports_bigbang",
+      "to": "p8_science_observation_to_theory",
+      "difficulty": 0.3
+    },
+    {
+      "from": "p8_expanding_universe_evidence",
+      "to": "p8_supernovae_accelerating_expansion",
+      "difficulty": 0.35
+    },
+    {
+      "from": "p8_supernovae_accelerating_expansion",
+      "to": "p8_dark_mass_energy_unknowns",
+      "difficulty": 0.3
+    }
+  ]
+}

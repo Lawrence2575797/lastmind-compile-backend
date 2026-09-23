@@ -1,0 +1,205 @@
+{
+  "issues": [
+    {
+      "type": "duplicate_concept",
+      "affected_node": "p1_shc_equation",
+      "explanation": "Dangling edge references p1_shc_equation, which does not exist as a node; the real specific heat capacity equation node is p3_shc_equation. This is a duplicate/misreferenced concept causing a dangling edge.",
+      "fix": {
+        "remove_edges": [
+          [
+            "p3_shc_definition",
+            "p1_shc_equation"
+          ],
+          [
+            "p1_shc_equation",
+            "p1_rp1_procedure"
+          ]
+        ],
+        "new_edges": [
+          [
+            "p3_shc_equation",
+            "p1_rp1_procedure"
+          ]
+        ]
+      }
+    },
+    {
+      "type": "duplicate_concept",
+      "affected_node": "p1_rp1_procedure",
+      "explanation": "p1_rp1_procedure and p3_rp1_procedure both describe the RP1 specific heat capacity practical procedure (measuring mass, energy input, temperature change) with overlapping practicalIds:[1]; likewise p1_rp1_calculation duplicates p3_rp1_calc_shc. These should be merged into a single set of nodes (kept in Topic 3 alongside shc concepts) rather than existing as separate near-identical nodes in Topic 1 and Topic 3.",
+      "fix": {
+        "remove_edges": [
+          [
+            "p0_at1_mass_time_temp",
+            "p1_rp1_procedure"
+          ],
+          [
+            "p0_at5_energy_apparatus",
+            "p1_rp1_procedure"
+          ],
+          [
+            "p1_rp1_procedure",
+            "p1_rp1_calculation"
+          ],
+          [
+            "p0_ws_sig_figs",
+            "p1_rp1_calculation"
+          ],
+          [
+            "p0_ws_mean",
+            "p1_rp1_calculation"
+          ],
+          [
+            "p1_gpe_equation",
+            "p1_rp1_procedure"
+          ],
+          [
+            "p3_shc_equation",
+            "p1_rp1_procedure"
+          ]
+        ],
+        "new_edges": [
+          [
+            "p0_at1_length_mass_time_volume_temp",
+            "p3_rp1_procedure"
+          ],
+          [
+            "p3_shc_definition",
+            "p3_rp1_procedure"
+          ]
+        ]
+      }
+    },
+    {
+      "type": "wrong_edge",
+      "affected_node": "p1_ws_gpe_ke_practical",
+      "explanation": "This node duplicates the general falling-object GPE/KE practical concept; it has an edge from p0_at1_length_mass_time_volume_temp added redundantly alongside its original prerequisites p1_gpe_equation/p1_ke_equation, but never actually depends on AT1 measurement literacy directly being wired consistently. Keep single consistent prerequisite path.",
+      "fix": {
+        "remove_edges": [
+          [
+            "p0_at1_length_mass_time_volume_temp",
+            "p1_ws_gpe_ke_practical"
+          ]
+        ],
+        "new_edges": []
+      }
+    },
+    {
+      "type": "missing_intermediate_node",
+      "affected_node": "p0_at1_measure_length_temp",
+      "explanation": "There are multiple near-duplicate AT1 'measuring length/mass/time/temperature' nodes generated separately across the batch (p0_at1_measure_length_temp, p0_at1_mass_time_temp, p0_at1_length_mass_time_volume_temp, p0_at1_length_mass_time) which represent the same underlying apparatus-use skill and should be consolidated into one canonical AT1 node to avoid fragmented, redundant prerequisites across topics.",
+      "fix": {
+        "new_nodes": [],
+        "new_edges": [],
+        "remove_edges": []
+      }
+    },
+    {
+      "type": "ordering_bug",
+      "affected_node": "batch-wide",
+      "explanation": "Difficulty values are present and vary across nodes/edges, so no global default-value issue was found; however several duplicate-topic nodes (e.g. p1_rp1_procedure vs p3_rp1_procedure) carry inconsistent difficulty ratings (0.4 vs 0.4, 0.5 vs 0.4) for what should be the same lesson, which is a symptom of the duplication rather than genuine differentiated judgement.",
+      "fix": {}
+    }
+  ],
+  "removeNodeIds": [
+    "p1_rp1_procedure",
+    "p1_rp1_calculation"
+  ],
+  "upsertNodes": [
+    {
+      "id": "p3_rp1_procedure",
+      "label": "RP1 procedure: measuring temperature rise from energy input (work done/electrical) to determine specific heat capacity",
+      "subtopic": "3.2",
+      "theme": "Topic 3",
+      "difficulty": 0.4,
+      "objective": "Carry out an experiment linking the decrease of one energy store (or work done) to a measured temperature rise in a material.",
+      "essentialPoints": [
+        "Measure mass of the material sample using a balance",
+        "Supply a known amount of energy (electrical heater with known power and time, or work done) to the material",
+        "Measure the resulting temperature rise using a thermometer/temperature probe"
+      ],
+      "specRefs": [
+        "RP1"
+      ],
+      "kind": "procedure",
+      "practicalIds": [
+        1
+      ]
+    },
+    {
+      "id": "p3_rp1_calc_shc",
+      "label": "RP1 application: calculating specific heat capacity from experimental data",
+      "subtopic": "3.2",
+      "theme": "Topic 3",
+      "difficulty": 0.4,
+      "objective": "Use measured mass, energy supplied and temperature rise to calculate the specific heat capacity of a material.",
+      "essentialPoints": [
+        "Rearrange ΔE = mcΔθ to find c = ΔE/(mΔθ)",
+        "Substitute experimental values to calculate specific heat capacity"
+      ],
+      "specRefs": [
+        "RP1"
+      ],
+      "kind": "application",
+      "practicalIds": [
+        1
+      ]
+    }
+  ],
+  "removeEdges": [
+    [
+      "p3_shc_definition",
+      "p1_shc_equation"
+    ],
+    [
+      "p1_shc_equation",
+      "p1_rp1_procedure"
+    ],
+    [
+      "p0_at1_mass_time_temp",
+      "p1_rp1_procedure"
+    ],
+    [
+      "p0_at5_energy_apparatus",
+      "p1_rp1_procedure"
+    ],
+    [
+      "p1_rp1_procedure",
+      "p1_rp1_calculation"
+    ],
+    [
+      "p0_ws_sig_figs",
+      "p1_rp1_calculation"
+    ],
+    [
+      "p0_ws_mean",
+      "p1_rp1_calculation"
+    ],
+    [
+      "p1_gpe_equation",
+      "p1_rp1_procedure"
+    ],
+    [
+      "p3_shc_equation",
+      "p1_rp1_procedure"
+    ],
+    [
+      "p0_at1_length_mass_time_volume_temp",
+      "p1_ws_gpe_ke_practical"
+    ]
+  ],
+  "addEdges": [
+    [
+      "p0_at1_mass_time_temp",
+      "p3_rp1_procedure"
+    ],
+    [
+      "p0_at5_energy_apparatus",
+      "p3_rp1_procedure"
+    ]
+  ],
+  "remainingProblems": [
+    "Multiple near-duplicate AT1 apparatus-measurement nodes exist across topic 0 (p0_at1_measure_length_temp, p0_at1_mass_time_temp, p0_at1_length_mass_time_volume_temp, p0_at1_length_mass_time) that should ideally be merged into one canonical reusable node; left as-is here to avoid destabilizing many existing edges beyond the scope of this patch.",
+    "Several MS/WS foundation concepts (e.g. p0_ms_rearrange vs p0_ms_rearrange_equations vs p0_rearrange_equations) are duplicated with different ids across topic 0.1/0.2/0.3/0.4 subtopics; a full consolidation pass is recommended but not performed here to preserve DAG stability within this patch's scope."
+  ]
+}

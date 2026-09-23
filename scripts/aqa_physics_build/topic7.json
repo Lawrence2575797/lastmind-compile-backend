@@ -1,0 +1,842 @@
+{
+  "nodes": [
+    {
+      "id": "p7_pole_forces",
+      "label": "Poles of a magnet: attraction and repulsion between like/unlike poles",
+      "subtopic": "7.1",
+      "theme": "Topic 7",
+      "difficulty": 0.15,
+      "objective": "Describe attraction and repulsion between like and unlike magnetic poles.",
+      "essentialPoints": [
+        "The poles of a magnet are where magnetic force is strongest",
+        "Two like poles repel; two unlike poles attract",
+        "Attraction/repulsion between magnetic poles is a non-contact force"
+      ],
+      "specRefs": [
+        "4.7.1.1"
+      ],
+      "kind": "concept",
+      "practicalIds": []
+    },
+    {
+      "id": "p7_permanent_induced",
+      "label": "Permanent vs induced magnets",
+      "subtopic": "7.1",
+      "theme": "Topic 7",
+      "difficulty": 0.25,
+      "objective": "Distinguish permanent magnets from induced magnets.",
+      "essentialPoints": [
+        "A permanent magnet produces its own magnetic field",
+        "An induced magnet becomes magnetic only when placed in a magnetic field",
+        "Induced magnetism always causes a force of attraction",
+        "An induced magnet loses most/all magnetism quickly when removed from the field"
+      ],
+      "specRefs": [
+        "4.7.1.1"
+      ],
+      "kind": "concept",
+      "practicalIds": []
+    },
+    {
+      "id": "p7_magnetic_field_def",
+      "label": "Magnetic field: definition and magnetic materials",
+      "subtopic": "7.1",
+      "theme": "Topic 7",
+      "difficulty": 0.2,
+      "objective": "Define a magnetic field and identify magnetic materials.",
+      "essentialPoints": [
+        "A magnetic field is the region around a magnet where a force acts on another magnet or magnetic material",
+        "Magnetic materials include iron, steel, cobalt and nickel",
+        "The force between a magnet and a magnetic material is always attractive"
+      ],
+      "specRefs": [
+        "4.7.1.2"
+      ],
+      "kind": "concept",
+      "practicalIds": []
+    },
+    {
+      "id": "p7_field_strength_direction",
+      "label": "Magnetic field strength and direction",
+      "subtopic": "7.1",
+      "theme": "Topic 7",
+      "difficulty": 0.3,
+      "objective": "Describe how field strength varies with distance and how field direction is defined.",
+      "essentialPoints": [
+        "Field strength depends on distance from the magnet and is strongest at the poles",
+        "Field direction at a point is the direction of force on a north pole placed there",
+        "Field lines point from north to south pole of a magnet"
+      ],
+      "specRefs": [
+        "4.7.1.2"
+      ],
+      "kind": "concept",
+      "practicalIds": []
+    },
+    {
+      "id": "p7_plot_field_compass",
+      "label": "Procedure: plotting a magnetic field pattern using a compass",
+      "subtopic": "7.1",
+      "theme": "Topic 7",
+      "difficulty": 0.3,
+      "objective": "Describe the procedure for plotting the field pattern of a bar magnet using a plotting compass.",
+      "essentialPoints": [
+        "Place a compass near the magnet and mark the direction it points",
+        "Move the compass along the field line, marking successive positions, and join the marks",
+        "Repeat from different starting points to build up the full field pattern"
+      ],
+      "specRefs": [
+        "4.7.1.2"
+      ],
+      "kind": "procedure",
+      "practicalIds": []
+    },
+    {
+      "id": "p7_draw_bar_field",
+      "label": "Application: drawing the magnetic field pattern of a bar magnet",
+      "subtopic": "7.1",
+      "theme": "Topic 7",
+      "difficulty": 0.35,
+      "objective": "Draw the field pattern of a bar magnet showing how strength and direction vary from point to point.",
+      "essentialPoints": [
+        "Field lines drawn from N to S pole, closer together near poles (stronger field)",
+        "Direction shown by arrows on field lines",
+        "Spacing of lines indicates relative field strength at different points"
+      ],
+      "specRefs": [
+        "4.7.1.2"
+      ],
+      "kind": "application",
+      "practicalIds": []
+    },
+    {
+      "id": "p7_compass_earth",
+      "label": "Compass behaviour as evidence for Earth's magnetic core",
+      "subtopic": "7.1",
+      "theme": "Topic 7",
+      "difficulty": 0.4,
+      "objective": "Explain how the behaviour of a compass provides evidence that the Earth's core is magnetic.",
+      "essentialPoints": [
+        "A compass contains a small bar magnet that aligns with a magnetic field",
+        "A compass needle points in the direction of the Earth's magnetic field",
+        "This behaviour is evidence that the Earth's core must be magnetic"
+      ],
+      "specRefs": [
+        "4.7.1.2"
+      ],
+      "kind": "application",
+      "practicalIds": []
+    },
+    {
+      "id": "p7_electromagnetism_wire",
+      "label": "Magnetic field around a current-carrying wire",
+      "subtopic": "7.2",
+      "theme": "Topic 7",
+      "difficulty": 0.35,
+      "objective": "Describe the magnetic field produced around a current-carrying conductor.",
+      "essentialPoints": [
+        "A current flowing through a wire produces a magnetic field around it",
+        "Field strength depends on the current and the distance from the wire",
+        "This magnetic effect of current can be demonstrated experimentally (e.g. with iron filings or a compass)"
+      ],
+      "specRefs": [
+        "4.7.2.1"
+      ],
+      "kind": "concept",
+      "practicalIds": []
+    },
+    {
+      "id": "p7_draw_wire_field",
+      "label": "Application: drawing the field pattern for a straight current-carrying wire",
+      "subtopic": "7.2",
+      "theme": "Topic 7",
+      "difficulty": 0.35,
+      "objective": "Draw the magnetic field pattern for a straight wire carrying a current, showing direction.",
+      "essentialPoints": [
+        "Concentric circles around the wire represent the field",
+        "Direction of the field reverses if current direction reverses (right-hand grip rule convention)"
+      ],
+      "specRefs": [
+        "4.7.2.1"
+      ],
+      "kind": "application",
+      "practicalIds": []
+    },
+    {
+      "id": "p7_solenoid",
+      "label": "Solenoid: shape and field strength",
+      "subtopic": "7.2",
+      "theme": "Topic 7",
+      "difficulty": 0.35,
+      "objective": "Explain how shaping a wire into a solenoid affects the magnetic field.",
+      "essentialPoints": [
+        "Shaping a wire into a solenoid increases the strength of the magnetic field",
+        "The field inside a solenoid is strong and uniform",
+        "The field pattern around a solenoid resembles that of a bar magnet"
+      ],
+      "specRefs": [
+        "4.7.2.1"
+      ],
+      "kind": "concept",
+      "practicalIds": []
+    },
+    {
+      "id": "p7_draw_solenoid_field",
+      "label": "Application: drawing the field pattern for a solenoid",
+      "subtopic": "7.2",
+      "theme": "Topic 7",
+      "difficulty": 0.4,
+      "objective": "Draw the magnetic field pattern for a solenoid showing field direction.",
+      "essentialPoints": [
+        "Field lines inside the solenoid are parallel and close together (uniform, strong)",
+        "Field lines outside resemble a bar magnet's field, curving from one end to the other",
+        "Direction of field lines follows from the current direction in the coils"
+      ],
+      "specRefs": [
+        "4.7.2.1"
+      ],
+      "kind": "application",
+      "practicalIds": []
+    },
+    {
+      "id": "p7_electromagnet",
+      "label": "Electromagnet: iron core increases solenoid field strength",
+      "subtopic": "7.2",
+      "theme": "Topic 7",
+      "difficulty": 0.3,
+      "objective": "Explain how adding an iron core to a solenoid increases magnetic field strength to form an electromagnet.",
+      "essentialPoints": [
+        "Adding an iron core increases the strength of a solenoid's magnetic field",
+        "An electromagnet is defined as a solenoid with an iron core"
+      ],
+      "specRefs": [
+        "4.7.2.1"
+      ],
+      "kind": "concept",
+      "practicalIds": []
+    },
+    {
+      "id": "p7_electromagnetic_devices",
+      "label": "Interpreting diagrams of electromagnetic devices (physics only)",
+      "subtopic": "7.2",
+      "theme": "Topic 7",
+      "difficulty": 0.45,
+      "objective": "Interpret diagrams of electromagnetic devices to explain how they work.",
+      "essentialPoints": [
+        "Use knowledge of solenoids/electromagnets to explain the operation of devices shown in unfamiliar diagrams (e.g. relays, circuit breakers)"
+      ],
+      "specRefs": [
+        "4.7.2.1"
+      ],
+      "kind": "application",
+      "practicalIds": []
+    },
+    {
+      "id": "p7_motor_effect",
+      "label": "The motor effect",
+      "subtopic": "7.2",
+      "theme": "Topic 7",
+      "difficulty": 0.4,
+      "objective": "Describe the motor effect: force on a current-carrying conductor in a magnetic field.",
+      "essentialPoints": [
+        "When a current-carrying conductor is placed in a magnetic field, the magnet and conductor exert a force on each other",
+        "This is called the motor effect"
+      ],
+      "specRefs": [
+        "4.7.2.2"
+      ],
+      "kind": "concept",
+      "practicalIds": []
+    },
+    {
+      "id": "p7_flemings_left_hand",
+      "label": "Fleming's left-hand rule (HT only)",
+      "subtopic": "7.2",
+      "theme": "Topic 7",
+      "difficulty": 0.5,
+      "objective": "Use Fleming's left-hand rule to relate the directions of force, current and magnetic field.",
+      "essentialPoints": [
+        "Fleming's left-hand rule represents the relative orientation of force, current and magnetic field",
+        "Thumb = force (thrust), first finger = field, second finger = current"
+      ],
+      "specRefs": [
+        "4.7.2.2"
+      ],
+      "kind": "concept",
+      "practicalIds": []
+    },
+    {
+      "id": "p7_force_factors",
+      "label": "Factors affecting the size of the force on a current-carrying conductor (HT only)",
+      "subtopic": "7.2",
+      "theme": "Topic 7",
+      "difficulty": 0.35,
+      "objective": "Recall the factors affecting the size of the force on a conductor in a magnetic field.",
+      "essentialPoints": [
+        "Force depends on the magnetic flux density, the current, and the length of conductor in the field"
+      ],
+      "specRefs": [
+        "4.7.2.2"
+      ],
+      "kind": "concept",
+      "practicalIds": []
+    },
+    {
+      "id": "p7_force_equation",
+      "label": "Equation: F = BIl (HT only)",
+      "subtopic": "7.2",
+      "theme": "Topic 7",
+      "difficulty": 0.4,
+      "objective": "Apply the equation force = magnetic flux density × current × length.",
+      "essentialPoints": [
+        "F = B × I × l",
+        "force in newtons, N; magnetic flux density in tesla, T; current in amperes, A; length in metres, m",
+        "Given on the physics equation sheet"
+      ],
+      "specRefs": [
+        "4.7.2.2"
+      ],
+      "kind": "concept",
+      "practicalIds": []
+    },
+    {
+      "id": "p7_electric_motor",
+      "label": "Electric motors (HT only)",
+      "subtopic": "7.2",
+      "theme": "Topic 7",
+      "difficulty": 0.5,
+      "objective": "Explain how the motor effect causes rotation of a coil in an electric motor.",
+      "essentialPoints": [
+        "A coil carrying a current in a magnetic field experiences forces that tend to rotate it",
+        "Forces on opposite sides of the coil act in opposite directions (using Fleming's left-hand rule), producing a turning effect",
+        "This is the basis of an electric motor"
+      ],
+      "specRefs": [
+        "4.7.2.3"
+      ],
+      "kind": "concept",
+      "practicalIds": []
+    },
+    {
+      "id": "p7_loudspeakers",
+      "label": "Loudspeakers and headphones (physics only, HT only)",
+      "subtopic": "7.2",
+      "theme": "Topic 7",
+      "difficulty": 0.5,
+      "objective": "Explain how a moving-coil loudspeaker and headphones use the motor effect.",
+      "essentialPoints": [
+        "Variations in current in the coil, within a magnetic field, produce a varying force on the coil",
+        "This causes the coil and attached cone to vibrate, creating pressure variations (sound waves) that match the variations in current"
+      ],
+      "specRefs": [
+        "4.7.2.4"
+      ],
+      "kind": "application",
+      "practicalIds": []
+    },
+    {
+      "id": "p7_generator_effect",
+      "label": "The generator effect: induced potential difference and current (HT only)",
+      "subtopic": "7.3",
+      "theme": "Topic 7",
+      "difficulty": 0.5,
+      "objective": "Describe the generator effect: induced pd/current from relative motion or changing magnetic field.",
+      "essentialPoints": [
+        "A potential difference is induced across a conductor if it moves relative to a magnetic field, or if the magnetic field around it changes",
+        "If the conductor is part of a complete circuit, a current is induced",
+        "This is called the generator effect"
+      ],
+      "specRefs": [
+        "4.7.3.1"
+      ],
+      "kind": "concept",
+      "practicalIds": []
+    },
+    {
+      "id": "p7_lenz_opposition",
+      "label": "Induced current opposes the change that produced it (HT only)",
+      "subtopic": "7.3",
+      "theme": "Topic 7",
+      "difficulty": 0.55,
+      "objective": "State that an induced current generates a magnetic field that opposes the original change.",
+      "essentialPoints": [
+        "The magnetic field generated by an induced current opposes the change producing it (the motion of the conductor or the change in field)"
+      ],
+      "specRefs": [
+        "4.7.3.1"
+      ],
+      "kind": "concept",
+      "practicalIds": []
+    },
+    {
+      "id": "p7_induced_pd_factors",
+      "label": "Factors affecting size and direction of induced pd/current (HT only)",
+      "subtopic": "7.3",
+      "theme": "Topic 7",
+      "difficulty": 0.45,
+      "objective": "Recall the factors affecting the size and direction of induced potential difference/current.",
+      "essentialPoints": [
+        "Size depends on factors such as speed of relative motion, strength of magnetic field, number of turns/coil orientation",
+        "Direction depends on the direction of motion (or field change) and the orientation of the field, reversing if either reverses"
+      ],
+      "specRefs": [
+        "4.7.3.1"
+      ],
+      "kind": "concept",
+      "practicalIds": []
+    },
+    {
+      "id": "p7_generator_effect_apply",
+      "label": "Application: the generator effect in a given context (HT only)",
+      "subtopic": "7.3",
+      "theme": "Topic 7",
+      "difficulty": 0.55,
+      "objective": "Apply the principles of the generator effect to explain behaviour in unfamiliar contexts.",
+      "essentialPoints": [
+        "Use knowledge of induced pd/current, its size factors and direction factors, to explain or predict outcomes in new scenarios"
+      ],
+      "specRefs": [
+        "4.7.3.1"
+      ],
+      "kind": "application",
+      "practicalIds": []
+    },
+    {
+      "id": "p7_alternator",
+      "label": "Alternator: generating ac using the generator effect (HT only)",
+      "subtopic": "7.3",
+      "theme": "Topic 7",
+      "difficulty": 0.5,
+      "objective": "Explain how the generator effect is used in an alternator to generate alternating current.",
+      "essentialPoints": [
+        "A rotating coil in a magnetic field (or rotating magnet) continuously reverses the direction of induced current as it turns",
+        "This produces alternating current (ac)"
+      ],
+      "specRefs": [
+        "4.7.3.2"
+      ],
+      "kind": "concept",
+      "practicalIds": []
+    },
+    {
+      "id": "p7_dynamo",
+      "label": "Dynamo: generating dc using the generator effect (HT only)",
+      "subtopic": "7.3",
+      "theme": "Topic 7",
+      "difficulty": 0.5,
+      "objective": "Explain how the generator effect is used in a dynamo to generate direct current.",
+      "essentialPoints": [
+        "A dynamo uses a split-ring commutator to keep the current flowing in one direction",
+        "This produces direct current (dc), though its magnitude varies"
+      ],
+      "specRefs": [
+        "4.7.3.2"
+      ],
+      "kind": "concept",
+      "practicalIds": []
+    },
+    {
+      "id": "p7_pd_time_graphs",
+      "label": "Application: drawing/interpreting pd-time graphs for alternators and dynamos (HT only)",
+      "subtopic": "7.3",
+      "theme": "Topic 7",
+      "difficulty": 0.5,
+      "objective": "Draw and interpret graphs of potential difference generated in a coil against time for alternators and dynamos.",
+      "essentialPoints": [
+        "Alternator graph is a smooth sinusoidal wave (ac) alternating between positive and negative",
+        "Dynamo graph shows pd that stays one sign (all positive or all negative) but varies in magnitude, due to commutator action"
+      ],
+      "specRefs": [
+        "4.7.3.2"
+      ],
+      "kind": "application",
+      "practicalIds": []
+    },
+    {
+      "id": "p7_microphones",
+      "label": "Moving-coil microphones (physics only, HT only)",
+      "subtopic": "7.3",
+      "theme": "Topic 7",
+      "difficulty": 0.5,
+      "objective": "Explain how a moving-coil microphone uses the generator effect.",
+      "essentialPoints": [
+        "Sound waves cause a diaphragm and attached coil to vibrate within a magnetic field",
+        "This changing motion of the coil in the field induces a varying current, matching the sound wave's pressure variations"
+      ],
+      "specRefs": [
+        "4.7.3.3"
+      ],
+      "kind": "application",
+      "practicalIds": []
+    },
+    {
+      "id": "p7_transformer_structure",
+      "label": "Transformer structure: primary and secondary coils on an iron core",
+      "subtopic": "7.3",
+      "theme": "Topic 7",
+      "difficulty": 0.35,
+      "objective": "Describe the basic structure of a transformer.",
+      "essentialPoints": [
+        "A basic transformer has a primary coil and a secondary coil wound on an iron core",
+        "Iron is used because it is easily magnetised",
+        "Laminations and eddy currents in the core are not required knowledge"
+      ],
+      "specRefs": [
+        "4.7.3.4"
+      ],
+      "kind": "concept",
+      "practicalIds": []
+    },
+    {
+      "id": "p7_transformer_mechanism",
+      "label": "How a transformer induces current via alternating current (HT only)",
+      "subtopic": "7.3",
+      "theme": "Topic 7",
+      "difficulty": 0.55,
+      "objective": "Explain how an alternating current in the primary coil induces a current in the secondary coil.",
+      "essentialPoints": [
+        "Alternating current in the primary coil produces a changing magnetic field in the iron core",
+        "This changing magnetic field induces an alternating potential difference/current in the secondary coil (via the generator effect)"
+      ],
+      "specRefs": [
+        "4.7.3.4"
+      ],
+      "kind": "concept",
+      "practicalIds": []
+    },
+    {
+      "id": "p7_transformer_turns_equation",
+      "label": "Equation: transformer turns ratio (Vp/Vs = np/ns)",
+      "subtopic": "7.3",
+      "theme": "Topic 7",
+      "difficulty": 0.4,
+      "objective": "Apply the equation relating primary/secondary potential differences to the number of turns on each coil.",
+      "essentialPoints": [
+        "Vp/Vs = np/ns",
+        "Potential differences Vp and Vs measured in volts, V",
+        "Given on the physics equation sheet"
+      ],
+      "specRefs": [
+        "4.7.3.4"
+      ],
+      "kind": "concept",
+      "practicalIds": []
+    },
+    {
+      "id": "p7_step_up_down",
+      "label": "Step-up and step-down transformers",
+      "subtopic": "7.3",
+      "theme": "Topic 7",
+      "difficulty": 0.3,
+      "objective": "Distinguish step-up and step-down transformers by their turns/pd ratios.",
+      "essentialPoints": [
+        "In a step-up transformer, Vs > Vp (more turns on secondary than primary)",
+        "In a step-down transformer, Vs < Vp (fewer turns on secondary than primary)"
+      ],
+      "specRefs": [
+        "4.7.3.4"
+      ],
+      "kind": "concept",
+      "practicalIds": []
+    },
+    {
+      "id": "p7_transformer_power_equation",
+      "label": "Equation: transformer power (Vs Is = Vp Ip)",
+      "subtopic": "7.3",
+      "theme": "Topic 7",
+      "difficulty": 0.45,
+      "objective": "Apply the equation for power input/output of an ideal (100% efficient) transformer.",
+      "essentialPoints": [
+        "Vs × Is = Vp × Ip, assuming 100% efficiency",
+        "Vs×Is is power output (secondary), Vp×Ip is power input (primary)",
+        "Power measured in watts, W; given on the physics equation sheet"
+      ],
+      "specRefs": [
+        "4.7.3.4"
+      ],
+      "kind": "concept",
+      "practicalIds": []
+    },
+    {
+      "id": "p7_transformer_current_calc",
+      "label": "Application: calculating current drawn for a given power output",
+      "subtopic": "7.3",
+      "theme": "Topic 7",
+      "difficulty": 0.5,
+      "objective": "Calculate the current drawn from the input supply to provide a particular power output.",
+      "essentialPoints": [
+        "Rearrange Vp×Ip = Vs×Is to find Ip given the required output power and Vp",
+        "Use given values of voltages/turns ratio together with the power equation"
+      ],
+      "specRefs": [
+        "4.7.3.4"
+      ],
+      "kind": "application",
+      "practicalIds": []
+    },
+    {
+      "id": "p7_transformer_transmission_advantage",
+      "label": "Advantage: high-voltage power transmission reduces transmission losses",
+      "subtopic": "7.3",
+      "theme": "Topic 7",
+      "difficulty": 0.55,
+      "objective": "Relate the transformer equations to the advantages of transmitting power at high potential difference.",
+      "essentialPoints": [
+        "For a fixed power, higher transmission voltage means lower current is needed",
+        "Lower current reduces energy losses (heating) in transmission cables, since transformers can step voltage up for transmission and down for use"
+      ],
+      "specRefs": [
+        "4.7.3.4"
+      ],
+      "kind": "evaluation",
+      "practicalIds": []
+    }
+  ],
+  "edges": [
+    {
+      "from": "p7_pole_forces",
+      "to": "p7_permanent_induced",
+      "difficulty": 0.2
+    },
+    {
+      "from": "p7_pole_forces",
+      "to": "p7_magnetic_field_def",
+      "difficulty": 0.2
+    },
+    {
+      "from": "p7_permanent_induced",
+      "to": "p7_magnetic_field_def",
+      "difficulty": 0.15
+    },
+    {
+      "from": "p7_magnetic_field_def",
+      "to": "p7_field_strength_direction",
+      "difficulty": 0.25
+    },
+    {
+      "from": "p7_field_strength_direction",
+      "to": "p7_plot_field_compass",
+      "difficulty": 0.3
+    },
+    {
+      "from": "p7_plot_field_compass",
+      "to": "p7_draw_bar_field",
+      "difficulty": 0.3
+    },
+    {
+      "from": "p7_field_strength_direction",
+      "to": "p7_draw_bar_field",
+      "difficulty": 0.3
+    },
+    {
+      "from": "p7_field_strength_direction",
+      "to": "p7_compass_earth",
+      "difficulty": 0.35
+    },
+    {
+      "from": "p7_magnetic_field_def",
+      "to": "p7_electromagnetism_wire",
+      "difficulty": 0.3
+    },
+    {
+      "from": "p7_electromagnetism_wire",
+      "to": "p7_draw_wire_field",
+      "difficulty": 0.3
+    },
+    {
+      "from": "p7_electromagnetism_wire",
+      "to": "p7_solenoid",
+      "difficulty": 0.35
+    },
+    {
+      "from": "p7_draw_wire_field",
+      "to": "p7_draw_solenoid_field",
+      "difficulty": 0.35
+    },
+    {
+      "from": "p7_solenoid",
+      "to": "p7_draw_solenoid_field",
+      "difficulty": 0.35
+    },
+    {
+      "from": "p7_solenoid",
+      "to": "p7_electromagnet",
+      "difficulty": 0.3
+    },
+    {
+      "from": "p7_electromagnet",
+      "to": "p7_electromagnetic_devices",
+      "difficulty": 0.45
+    },
+    {
+      "from": "p7_draw_solenoid_field",
+      "to": "p7_electromagnetic_devices",
+      "difficulty": 0.4
+    },
+    {
+      "from": "p7_electromagnetism_wire",
+      "to": "p7_motor_effect",
+      "difficulty": 0.35
+    },
+    {
+      "from": "p7_field_strength_direction",
+      "to": "p7_motor_effect",
+      "difficulty": 0.3
+    },
+    {
+      "from": "p7_motor_effect",
+      "to": "p7_flemings_left_hand",
+      "difficulty": 0.4
+    },
+    {
+      "from": "p7_flemings_left_hand",
+      "to": "p7_force_factors",
+      "difficulty": 0.3
+    },
+    {
+      "from": "p7_force_factors",
+      "to": "p7_force_equation",
+      "difficulty": 0.35
+    },
+    {
+      "from": "p7_flemings_left_hand",
+      "to": "p7_electric_motor",
+      "difficulty": 0.45
+    },
+    {
+      "from": "p7_solenoid",
+      "to": "p7_electric_motor",
+      "difficulty": 0.35
+    },
+    {
+      "from": "p7_electric_motor",
+      "to": "p7_loudspeakers",
+      "difficulty": 0.45
+    },
+    {
+      "from": "p7_flemings_left_hand",
+      "to": "p7_loudspeakers",
+      "difficulty": 0.4
+    },
+    {
+      "from": "p7_field_strength_direction",
+      "to": "p7_generator_effect",
+      "difficulty": 0.4
+    },
+    {
+      "from": "p7_generator_effect",
+      "to": "p7_lenz_opposition",
+      "difficulty": 0.45
+    },
+    {
+      "from": "p7_generator_effect",
+      "to": "p7_induced_pd_factors",
+      "difficulty": 0.35
+    },
+    {
+      "from": "p7_lenz_opposition",
+      "to": "p7_induced_pd_factors",
+      "difficulty": 0.3
+    },
+    {
+      "from": "p7_generator_effect",
+      "to": "p7_generator_effect_apply",
+      "difficulty": 0.4
+    },
+    {
+      "from": "p7_induced_pd_factors",
+      "to": "p7_generator_effect_apply",
+      "difficulty": 0.4
+    },
+    {
+      "from": "p7_generator_effect",
+      "to": "p7_alternator",
+      "difficulty": 0.4
+    },
+    {
+      "from": "p7_induced_pd_factors",
+      "to": "p7_alternator",
+      "difficulty": 0.35
+    },
+    {
+      "from": "p7_generator_effect",
+      "to": "p7_dynamo",
+      "difficulty": 0.4
+    },
+    {
+      "from": "p7_induced_pd_factors",
+      "to": "p7_dynamo",
+      "difficulty": 0.35
+    },
+    {
+      "from": "p7_alternator",
+      "to": "p7_pd_time_graphs",
+      "difficulty": 0.4
+    },
+    {
+      "from": "p7_dynamo",
+      "to": "p7_pd_time_graphs",
+      "difficulty": 0.4
+    },
+    {
+      "from": "p7_generator_effect",
+      "to": "p7_microphones",
+      "difficulty": 0.45
+    },
+    {
+      "from": "p7_flemings_left_hand",
+      "to": "p7_microphones",
+      "difficulty": 0.35
+    },
+    {
+      "from": "p7_electromagnet",
+      "to": "p7_transformer_structure",
+      "difficulty": 0.3
+    },
+    {
+      "from": "p7_transformer_structure",
+      "to": "p7_transformer_mechanism",
+      "difficulty": 0.4
+    },
+    {
+      "from": "p7_generator_effect",
+      "to": "p7_transformer_mechanism",
+      "difficulty": 0.45
+    },
+    {
+      "from": "p7_transformer_mechanism",
+      "to": "p7_transformer_turns_equation",
+      "difficulty": 0.35
+    },
+    {
+      "from": "p7_transformer_turns_equation",
+      "to": "p7_step_up_down",
+      "difficulty": 0.25
+    },
+    {
+      "from": "p7_transformer_turns_equation",
+      "to": "p7_transformer_power_equation",
+      "difficulty": 0.35
+    },
+    {
+      "from": "p7_transformer_power_equation",
+      "to": "p7_transformer_current_calc",
+      "difficulty": 0.4
+    },
+    {
+      "from": "p7_transformer_turns_equation",
+      "to": "p7_transformer_current_calc",
+      "difficulty": 0.35
+    },
+    {
+      "from": "p7_transformer_power_equation",
+      "to": "p7_transformer_transmission_advantage",
+      "difficulty": 0.5
+    },
+    {
+      "from": "p7_step_up_down",
+      "to": "p7_transformer_transmission_advantage",
+      "difficulty": 0.45
+    }
+  ]
+}

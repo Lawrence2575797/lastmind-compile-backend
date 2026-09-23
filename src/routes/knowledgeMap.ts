@@ -1025,7 +1025,7 @@ router.get('/immediate-recalls/due', requireAuth, syncEndpointLimiter, async (re
     const conceptIds = stillCatchable.map((r) => r.concept_id as string);
     const { data: nodes, error: nodeError } = await supabaseAdmin
       .from('knowledge_map_nodes')
-      .select('id, concept_id, label, subject')
+      .select('id, concept_id, label, subject, qualification, exam_board')
       .in('concept_id', conceptIds);
     if (nodeError) throw nodeError;
     const nodeByConceptId = new Map((nodes || []).map((n) => [n.concept_id as string, n]));
@@ -1049,7 +1049,7 @@ router.get('/immediate-recalls/due', requireAuth, syncEndpointLimiter, async (re
         ]);
         if (!info || !question) return null;
         return {
-          recallId: r.id, nodeId: info.nodeId, label: info.label, subject: info.subject, dueAt: r.due_at,
+          recallId: r.id, nodeId: info.nodeId, label: info.label, subject: info.subject, qualification: info.qualification, examBoard: info.examBoard, dueAt: r.due_at,
           recallCheckIndex: -1, format: 'free_text' as const, questionText: question.questionText, options: undefined,
         };
       }));
@@ -1086,7 +1086,7 @@ router.get('/immediate-recalls/due', requireAuth, syncEndpointLimiter, async (re
           return null; // nothing generated yet for this node at all
         }
         return {
-          recallId: r.id, nodeId: node.id, conceptId: node.concept_id, label: node.label, subject: node.subject, dueAt: r.due_at,
+          recallId: r.id, nodeId: node.id, conceptId: node.concept_id, label: node.label, subject: node.subject, qualification: node.qualification || '', examBoard: node.exam_board || '', dueAt: r.due_at,
           recallCheckIndex, format: check.format, questionText: check.questionText,
           options: check.format === 'multiple_choice' ? check.options : undefined,
           // Interactive formats send the puzzle (segments / lefts and shuffled rights / shuffled items), never the key.
@@ -1350,7 +1350,7 @@ router.get('/day1-checks/due', requireAuth, syncEndpointLimiter, async (req: Req
     }
     const withDisplay = infos.map(({ r, info, question }) => {
       if (!info || !question) return null;
-      return { checkId: r.id, conceptId: r.concept_id, nodeId: info.nodeId, label: info.label, subject: info.subject, dueDate: r.due_date, questionText: question.questionText, ...(question.structured ? clientView(question.structured) : {}) };
+      return { checkId: r.id, conceptId: r.concept_id, nodeId: info.nodeId, label: info.label, subject: info.subject, qualification: info.qualification, examBoard: info.examBoard, dueDate: r.due_date, questionText: question.questionText, ...(question.structured ? clientView(question.structured) : {}) };
     });
     const usable = withDisplay.filter((c): c is NonNullable<typeof c> => c !== null);
     // Ordered by where each concept sits in its subject's own teaching

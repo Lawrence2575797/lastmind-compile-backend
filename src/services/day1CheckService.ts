@@ -36,6 +36,8 @@ export interface Day1Question {
 export interface ConceptDisplayInfo {
   label: string;
   subject: string;
+  qualification: string;
+  examBoard: string;
   nodeId: string;
 }
 
@@ -58,15 +60,15 @@ export async function getConceptDisplayInfo(conceptId: string): Promise<ConceptD
     const fromConceptId = withoutSuffix.slice(0, arrowIndex);
     const toConceptId = withoutSuffix.slice(arrowIndex + 2);
     const [{ data: fromNode }, { data: toNode }] = await Promise.all([
-      supabaseAdmin.from('knowledge_map_nodes').select('id, label, subject').eq('concept_id', fromConceptId).maybeSingle(),
-      supabaseAdmin.from('knowledge_map_nodes').select('id, label, subject').eq('concept_id', toConceptId).maybeSingle(),
+      supabaseAdmin.from('knowledge_map_nodes').select('id, label, subject, qualification, exam_board').eq('concept_id', fromConceptId).maybeSingle(),
+      supabaseAdmin.from('knowledge_map_nodes').select('id, label, subject, qualification, exam_board').eq('concept_id', toConceptId).maybeSingle(),
     ]);
     if (!fromNode || !toNode) return null;
-    return { label: `${fromNode.label} → ${toNode.label}`, subject: fromNode.subject as string, nodeId: toNode.id as string };
+    return { label: `${fromNode.label} → ${toNode.label}`, subject: fromNode.subject as string, qualification: (fromNode.qualification as string) || '', examBoard: (fromNode.exam_board as string) || '', nodeId: toNode.id as string };
   }
-  const { data: node } = await supabaseAdmin.from('knowledge_map_nodes').select('id, label, subject').eq('concept_id', conceptId).maybeSingle();
+  const { data: node } = await supabaseAdmin.from('knowledge_map_nodes').select('id, label, subject, qualification, exam_board').eq('concept_id', conceptId).maybeSingle();
   if (!node) return null;
-  return { label: node.label as string, subject: node.subject as string, nodeId: node.id as string };
+  return { label: node.label as string, subject: node.subject as string, qualification: (node.qualification as string) || '', examBoard: (node.exam_board as string) || '', nodeId: node.id as string };
 }
 
 // A concept_id is either a plain node concept (practiceQuestion) or an

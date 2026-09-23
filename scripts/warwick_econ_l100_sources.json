@@ -1,0 +1,101 @@
+{
+  "institution": "University of Warwick",
+  "programme": "BSc Economics (L100)",
+  "year": "Year 1 (2025-26 core module list, confirmed unchanged since 2023-24)",
+  "sourceUrl": "https://warwick.ac.uk/fac/soc/economics/current/ug/handbook/bsc_economics_l100_regulations_updated_14-10-2025.pdf",
+  "modules": [
+    {
+      "code": "EC104",
+      "title": "The World Economy: History and Theory",
+      "cats": 30,
+      "url": "https://courses.warwick.ac.uk/modules/2025/EC104-30",
+      "aims": "Understanding of global economic development over the past millennium, examining forces explaining regional economic success and obstacles to advancement, emphasising the interaction between rich countries and the rest of the world, and developing research and analytical capabilities.",
+      "learningOutcomes": "Familiarity with world economic evolution; understanding of economic trends, measurement challenges, and contemporary empirical debates; ability to approach economic problems using modern research methodologies.",
+      "syllabus": [
+        "Introduction and Pre-Modern Growth: pre-1500",
+        "Early Modern Period: 1500-1750",
+        "The British Industrial Revolution: 1750-1850",
+        "Living Standards: 1750-1870",
+        "Globalisation and Industrialisation: 1870-1914",
+        "The Interwar Economy: 1914-1939",
+        "War, Recovery, and Decolonisation: 1939-1961",
+        "Planning, Divergence, and Inflation: 1961-1979",
+        "Economic Reform: 1979-2001",
+        "The Contemporary World Economy: 2001-present"
+      ]
+    },
+    {
+      "code": "EC108",
+      "title": "Macroeconomics 1",
+      "cats": 30,
+      "url": "https://courses.warwick.ac.uk/modules/2025/EC108-30",
+      "aims": "To introduce the student to the fundamental determinants of national income, employment, the price level and the foreign balance in the short and long run.",
+      "learningOutcomes": "Understanding of macroeconomic issues, measurement of aggregates, current policy trends, and capacity to apply theory through structural models using mathematical and graphical techniques.",
+      "syllabus": [
+        "Macroeconomic data: National Accounts, Output, Value Added, GDP, Unemployment, Inflation",
+        "Financial Markets",
+        "Consumption theories",
+        "Theories of Investment",
+        "Government Spending",
+        "Demand side policies",
+        "Phillips Curve",
+        "The International Market",
+        "Inequality"
+      ]
+    },
+    {
+      "code": "EC109",
+      "title": "Microeconomics 1",
+      "cats": 30,
+      "url": "https://courses.warwick.ac.uk/modules/2025/EC109-30",
+      "aims": "A thorough grounding in the basic principles of microeconomics, with emphasis on consumer and producer theory application, developing analytical skills across mathematical, graphical, and intuitive approaches to address real-world economic problems.",
+      "learningOutcomes": "Solid grasp of the basic theoretical material in microeconomics; application to policy analysis and practical scenarios; explanation of concepts using mathematical, graphical and intuitive analysis; understanding of economic model construction and their inherent limitations.",
+      "syllabus": [
+        "Supply and Demand: market equilibrium, elasticities, government intervention",
+        "Consumer Theory: preferences, utility, budget constraints, demand, substitution/income effects, revealed preferences, behavioural economics",
+        "Production: technology, isoquants, marginal products, cost curves, returns to scale, profit and cost minimisation",
+        "Perfect Competition: profit maximisation, market equilibrium, consumer/producer welfare",
+        "Imperfect Competition & Game Theory: oligopoly models (Cournot, Stackelberg, Bertrand), collusive equilibria, Nash equilibria"
+      ]
+    },
+    {
+      "code": "EC124",
+      "title": "Statistical Techniques B",
+      "cats": 15,
+      "url": "https://courses.warwick.ac.uk/modules/2025/EC124-15",
+      "aims": "To develop undergraduate students' statistical and computing capabilities for analysing real-world data, gaining exposure to statistical software while learning data description and analysis techniques, providing the quantitative foundation for econometric methods and applied economics.",
+      "learningOutcomes": "Acquire statistical techniques necessary for first and second year economics modules; develop knowledge of statistical methods and statistical modelling; develop awareness of data handling through statistical software use.",
+      "syllabus": [
+        "Descriptive statistics",
+        "Probability",
+        "Discrete random variables",
+        "Binomial and Poisson distributions",
+        "Bivariate distributions; covariance and correlation",
+        "Continuous random variables; uniform and normal distributions",
+        "Limit theorems",
+        "Sampling and sampling distributions",
+        "Hypothesis testing and confidence intervals",
+        "Non-parametric testing"
+      ]
+    },
+    {
+      "code": "EC140",
+      "title": "Mathematical Techniques B",
+      "cats": 15,
+      "url": "https://courses.warwick.ac.uk/modules/2025/EC140-15",
+      "aims": "To develop the requisite mathematical and quantitative skills for a rigorous study of contemporary economics, including econometric methods and applied economics.",
+      "learningOutcomes": "Acquire quantitative tools for first and second year economics modules; develop programming ability in statistical software for graphing and mathematical methods; apply systematic quantitative approaches to economic problems.",
+      "syllabus": [
+        "Calculus of functions of two or more variables",
+        "Unconstrained and constrained optimisation",
+        "Comparative statics",
+        "Matrix algebra",
+        "Financial mathematics",
+        "Introduction to difference equations",
+        "Illustrative applications of all techniques in economics",
+        "Mathematical computing skills"
+      ],
+      "prerequisiteNote": "Strong A-level algebra and calculus knowledge (differentiation and integration rules) assumed."
+    }
+  ]
+}

@@ -1,0 +1,293 @@
+{
+  "issues": [
+    {
+      "type": "missing_intermediate_node",
+      "affected_node": "ec124_nonparametric_rationale",
+      "explanation": "This entry in the nodes array is a malformed/duplicate object: a stray edge-like fragment {from,to,specRefs,practicalIds} with no id/label/subtopic/etc, incorrectly merged into the nodes list alongside the real ec124_nonparametric_rationale node defined later. This is the 'Invalid atomic node undefined' structural problem - the dangling fragment must be removed and replaced by a proper edge.",
+      "fix": {
+        "new_nodes": [],
+        "new_edges": [
+          [
+            "ec124_nonparametric_rationale",
+            "ec124_spearman"
+          ]
+        ],
+        "remove_edges": []
+      }
+    },
+    {
+      "type": "missing_edge",
+      "affected_node": "ec109_utility_maximisation",
+      "explanation": "Rule 18: this node's content assumes constrained optimisation/Lagrangian method (an EC140 taught concept) but only has an externalPrerequisites annotation, not an actual graph edge from ec140_lagrange_method. Must be wired as a real prerequisite edge.",
+      "fix": {
+        "new_nodes": [],
+        "new_edges": [
+          [
+            "ec140_lagrange_method",
+            "ec109_utility_maximisation"
+          ]
+        ],
+        "remove_edges": []
+      }
+    },
+    {
+      "type": "missing_edge",
+      "affected_node": "ec109_cost_minimisation",
+      "explanation": "Rule 18: this node assumes constrained optimisation (Lagrangian) from EC140 but only lists it in externalPrerequisites metadata, not as an actual edge in the graph.",
+      "fix": {
+        "new_nodes": [],
+        "new_edges": [
+          [
+            "ec140_lagrange_method",
+            "ec109_cost_minimisation"
+          ]
+        ],
+        "remove_edges": []
+      }
+    },
+    {
+      "type": "missing_edge",
+      "affected_node": "ec108_consumption_intertemporal_choice",
+      "explanation": "Rule 18: this node assumes constrained optimisation (utility maximisation subject to intertemporal budget constraint) from EC140 but only lists it in externalPrerequisites metadata, not as an actual edge.",
+      "fix": {
+        "new_nodes": [],
+        "new_edges": [
+          [
+            "ec140_lagrange_method",
+            "ec108_consumption_intertemporal_choice"
+          ]
+        ],
+        "remove_edges": []
+      }
+    },
+    {
+      "type": "missing_edge",
+      "affected_node": "ec109_utility_maximisation",
+      "explanation": "Cross-module check (rule for quantitative prerequisite layer): EC124/EC140 content should ground EC109's optimisation but the diagram/tangency-condition node also needs the multivariable calculus foundation (partial derivatives) genuinely used to derive MRS=price ratio, not just the Lagrangian entry point which already covers this - however the level_curves node (which teaches the slope of a level curve = MRS/MRTS interpretation) is also directly relevant and not linked.",
+      "fix": {
+        "new_nodes": [],
+        "new_edges": [
+          [
+            "ec140_level_curves",
+            "ec109_utility_maximisation"
+          ]
+        ],
+        "remove_edges": []
+      }
+    },
+    {
+      "type": "missing_edge",
+      "affected_node": "ec109_cost_minimisation",
+      "explanation": "Same as utility maximisation: the tangency condition (MRTS = price ratio) is directly the level-curve slope application taught in EC140, so this edge is missing alongside the Lagrangian edge.",
+      "fix": {
+        "new_nodes": [],
+        "new_edges": [
+          [
+            "ec140_level_curves",
+            "ec109_cost_minimisation"
+          ]
+        ],
+        "remove_edges": []
+      }
+    },
+    {
+      "type": "missing_intermediate_node",
+      "affected_node": "ec108_fiscal_policy_advantages",
+      "explanation": "Rule 19/breadth check: only 3 advantage points bundled in one node and only one disadvantage-side counterpart set; a real mark scheme for fiscal policy advantages typically credits more distinct points (e.g. targeting specific sectors is separate from multiplier effects; no exchange rate side effects; can address specific market failures/inequality directly). Currently only 3 points with no separate breadth - borderline but the disadvantages side has 4 points while advantages has 3, and both are single monolithic nodes rather than split by distinct justification (rule 7). Recommend splitting into separate advantage nodes.",
+      "fix": {
+        "new_nodes": [
+          {
+            "id": "ec108_fiscal_policy_advantage_targeting",
+            "label": "Advantage of fiscal policy: ability to target specific sectors/groups",
+            "subtopic": "EC108 - Demand side policies",
+            "theme": "EC108: Macroeconomics 1",
+            "difficulty": 0.35,
+            "objective": "Understand fiscal policy's ability to direct spending at specific sectors or groups.",
+            "essentialPoints": [
+              "Government spending can be directed at specific industries, regions, or income groups in need"
+            ],
+            "specRefs": [
+              "EC108 syllabus: Demand side policies"
+            ],
+            "kind": "evaluation",
+            "practicalIds": []
+          },
+          {
+            "id": "ec108_fiscal_policy_advantage_multiplier",
+            "label": "Advantage of fiscal policy: multiplier effect amplifies impact",
+            "subtopic": "EC108 - Demand side policies",
+            "theme": "EC108: Macroeconomics 1",
+            "difficulty": 0.4,
+            "objective": "Understand how the multiplier amplifies the initial fiscal impulse.",
+            "essentialPoints": [
+              "Multiplier effect means the eventual rise in output exceeds the initial government spending increase"
+            ],
+            "specRefs": [
+              "EC108 syllabus: Demand side policies"
+            ],
+            "kind": "evaluation",
+            "practicalIds": []
+          }
+        ],
+        "new_edges": [
+          [
+            "ec108_fiscal_policy_reasons",
+            "ec108_fiscal_policy_advantage_targeting"
+          ],
+          [
+            "ec108_multiplier_derivation",
+            "ec108_fiscal_policy_advantage_multiplier"
+          ]
+        ],
+        "remove_edges": []
+      }
+    },
+    {
+      "type": "missing_edge",
+      "affected_node": "ec108_floating_advantages",
+      "explanation": "Cross-subtopic check: floating exchange rate advantage of 'automatically adjusts to correct trade imbalances' relies on the net exports/real exchange rate depreciation mechanism, which is present, but it should also depend on the balance of payments concept it is correcting - this edge is missing.",
+      "fix": {
+        "new_nodes": [],
+        "new_edges": [
+          [
+            "ec108_balance_of_payments",
+            "ec108_floating_advantages"
+          ]
+        ],
+        "remove_edges": []
+      }
+    },
+    {
+      "type": "missing_intermediate_node",
+      "affected_node": "ec109_pc_efficiency_evaluation",
+      "explanation": "Rule 15: this node bundles two independently markable properties - allocative efficiency (P=MC) and productive efficiency (production at minimum ATC) - as one evaluation node, rather than splitting into two distinct evaluable claims each with their own essential points and potential separate exam marks.",
+      "fix": {
+        "new_nodes": [
+          {
+            "id": "ec109_pc_allocative_efficiency",
+            "label": "Allocative efficiency of perfect competition (P=MC)",
+            "subtopic": "EC109 - Perfect Competition",
+            "theme": "EC109: Microeconomics 1",
+            "difficulty": 0.3,
+            "objective": "Evaluate perfect competition's allocative efficiency property.",
+            "essentialPoints": [
+              "Perfect competition achieves allocative efficiency because price equals marginal cost",
+              "Maximises total surplus absent externalities"
+            ],
+            "specRefs": [
+              "EC109 syllabus: Perfect Competition - consumer/producer welfare"
+            ],
+            "kind": "evaluation",
+            "practicalIds": []
+          },
+          {
+            "id": "ec109_pc_productive_efficiency",
+            "label": "Productive efficiency of perfect competition (minimum ATC)",
+            "subtopic": "EC109 - Perfect Competition",
+            "theme": "EC109: Microeconomics 1",
+            "difficulty": 0.3,
+            "objective": "Evaluate perfect competition's productive efficiency property.",
+            "essentialPoints": [
+              "Long-run competitive firms produce at minimum long-run average total cost",
+              "This is distinct from allocative efficiency and reflects efficient use of resources within the firm"
+            ],
+            "specRefs": [
+              "EC109 syllabus: Perfect Competition - consumer/producer welfare"
+            ],
+            "kind": "evaluation",
+            "practicalIds": []
+          }
+        ],
+        "new_edges": [
+          [
+            "ec109_pc_long_run_equilibrium",
+            "ec109_pc_allocative_efficiency"
+          ],
+          [
+            "ec109_total_welfare",
+            "ec109_pc_allocative_efficiency"
+          ],
+          [
+            "ec109_pc_long_run_equilibrium",
+            "ec109_pc_productive_efficiency"
+          ]
+        ],
+        "remove_edges": []
+      }
+    },
+    {
+      "type": "missing_intermediate_node",
+      "affected_node": "ec109_market_structures_overview",
+      "explanation": "Rule 19/adv-dis breadth check: monopoly gets only one dedicated evaluation node (ec109_monopoly_welfare_loss) covering deadweight loss; a real spec would also credit monopoly's other distinguishing features (e.g. potential for economies of scale/innovation incentive, or X-inefficiency) as separate advantage/disadvantage points, and no adv/dis breakdown exists for monopoly at all versus the thorough treatment given to oligopoly models.",
+      "fix": {
+        "new_nodes": [
+          {
+            "id": "ec109_monopoly_advantages",
+            "label": "Potential advantages of monopoly (economies of scale, innovation incentive)",
+            "subtopic": "EC109 - Imperfect Competition & Game Theory",
+            "theme": "EC109: Microeconomics 1",
+            "difficulty": 0.35,
+            "objective": "Evaluate possible efficiency benefits monopolies can generate despite market power.",
+            "essentialPoints": [
+              "Large scale may allow monopolists to exploit economies of scale unavailable to smaller competitive firms",
+              "Guaranteed profits may fund research and innovation (Schumpeterian argument)"
+            ],
+            "specRefs": [
+              "EC109 syllabus: Imperfect Competition"
+            ],
+            "kind": "evaluation",
+            "practicalIds": []
+          },
+          {
+            "id": "ec109_monopoly_x_inefficiency",
+            "label": "X-inefficiency under monopoly",
+            "subtopic": "EC109 - Imperfect Competition & Game Theory",
+            "theme": "EC109: Microeconomics 1",
+            "difficulty": 0.35,
+            "objective": "Understand the concept of X-inefficiency as an additional cost of monopoly beyond allocative deadweight loss.",
+            "essentialPoints": [
+              "Lack of competitive pressure may allow costs to rise above the minimum feasible level (X-inefficiency)",
+              "Distinct from allocative deadweight loss - a productive inefficiency argument"
+            ],
+            "specRefs": [
+              "EC109 syllabus: Imperfect Competition"
+            ],
+            "kind": "evaluation",
+            "practicalIds": []
+          }
+        ],
+        "new_edges": [
+          [
+            "ec109_monopoly_profit_max",
+            "ec109_monopoly_advantages"
+          ],
+          [
+            "ec109_monopoly_profit_max",
+            "ec109_monopoly_x_inefficiency"
+          ]
+        ],
+        "remove_edges": []
+      }
+    },
+    {
+      "type": "ordering_bug",
+      "affected_node": "ec108_fiscal_policy_reasons",
+      "explanation": "Batch-wide check: difficulty values are present and vary across nodes/edges reasonably, but many closely related concept/application/evaluation nodes share identical difficulty values (e.g. many fiscal/monetary policy nodes clustered at exactly 0.35, 0.4, 0.45) without clear differentiation reflecting genuine relative difficulty judgments - e.g. ec108_fiscal_policy_advantages (0.4) and ec108_monetary_policy_advantages (0.4) are identical despite covering different content depth, suggesting difficulty was defaulted rather than individually judged in places.",
+      "fix": {
+        "new_nodes": [],
+        "new_edges": [],
+        "remove_edges": []
+      }
+    },
+    {
+      "type": "missing_edge",
+      "affected_node": "ec109_tax_incidence_elasticity",
+      "explanation": "Cross-module check: government/fiscal use of taxation for revenue/policy purposes is discussed in EC108 (ec108_taxation_types) but EC109's tax incidence and DWL nodes have no link back showing shared context; more importantly, ec109_tax_dwl and its policy relevance to EC108's fiscal policy discussion is a legitimate cross-module link that is currently absent, though not strictly required - flagging for completeness is optional. Primary genuine issue: no missing edge strictly required here beyond what's already listed.",
+      "fix": {
+        "new_nodes": [],
+        "new_edges": [],
+        "remove_edges": []
+      }
+    }
+  ]
+}

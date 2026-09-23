@@ -1,0 +1,1730 @@
+{
+  "nodes": [
+    {
+      "id": "ec108_circular_flow",
+      "label": "Circular flow of income",
+      "subtopic": "EC108 - Macroeconomic data",
+      "theme": "EC108: Macroeconomics 1",
+      "difficulty": 0.2,
+      "objective": "Understand the basic circular flow of income between households, firms, government, and abroad",
+      "essentialPoints": [
+        "Households supply factors of production to firms, firms pay income",
+        "Leakages: savings, taxes, imports; injections: investment, government spending, exports"
+      ],
+      "specRefs": [
+        "EC108 syllabus: Macroeconomic data"
+      ],
+      "kind": "concept",
+      "practicalIds": []
+    },
+    {
+      "id": "ec108_gdp_definition",
+      "label": "GDP: definition and measurement",
+      "subtopic": "EC108 - Macroeconomic data",
+      "theme": "EC108: Macroeconomics 1",
+      "difficulty": 0.3,
+      "objective": "Define GDP as total value of output produced in an economy over a period",
+      "essentialPoints": [
+        "GDP = total market value of final goods and services produced within a country in a given period",
+        "Distinguishes final goods from intermediate goods to avoid double counting"
+      ],
+      "specRefs": [
+        "EC108 syllabus: National Accounts, Output, GDP"
+      ],
+      "kind": "concept",
+      "practicalIds": []
+    },
+    {
+      "id": "ec108_value_added",
+      "label": "Value added and avoiding double counting",
+      "subtopic": "EC108 - Macroeconomic data",
+      "theme": "EC108: Macroeconomics 1",
+      "difficulty": 0.35,
+      "objective": "Understand value added as the sum method of calculating GDP without double counting intermediate goods",
+      "essentialPoints": [
+        "Value added = value of output minus value of intermediate inputs",
+        "Summing value added across all stages of production equals GDP"
+      ],
+      "specRefs": [
+        "EC108 syllabus: Value Added"
+      ],
+      "kind": "concept",
+      "practicalIds": []
+    },
+    {
+      "id": "ec108_three_measures_gdp",
+      "label": "Three measures of GDP: output, income, expenditure",
+      "subtopic": "EC108 - Macroeconomic data",
+      "theme": "EC108: Macroeconomics 1",
+      "difficulty": 0.4,
+      "objective": "Understand that GDP can be measured via output, income, or expenditure approaches and these are theoretically equivalent",
+      "essentialPoints": [
+        "Output approach sums value added across sectors",
+        "Income approach sums factor incomes (wages, profits, rent)",
+        "Expenditure approach sums C+I+G+(X-M)"
+      ],
+      "specRefs": [
+        "EC108 syllabus: National Accounts, GDP"
+      ],
+      "kind": "concept",
+      "practicalIds": []
+    },
+    {
+      "id": "ec108_nominal_real_gdp",
+      "label": "Nominal vs real GDP and GDP deflator",
+      "subtopic": "EC108 - Macroeconomic data",
+      "theme": "EC108: Macroeconomics 1",
+      "difficulty": 0.4,
+      "objective": "Distinguish nominal GDP (current prices) from real GDP (constant prices) and use the GDP deflator to convert between them",
+      "essentialPoints": [
+        "Nominal GDP measured at current prices, real GDP at constant base-year prices",
+        "GDP deflator = (Nominal GDP/Real GDP) x 100",
+        "Real GDP growth isolates changes in output from changes in prices"
+      ],
+      "specRefs": [
+        "EC108 syllabus: GDP"
+      ],
+      "kind": "concept",
+      "practicalIds": []
+    },
+    {
+      "id": "ec108_gdp_limitations",
+      "label": "Limitations of GDP as a welfare measure",
+      "subtopic": "EC108 - Macroeconomic data",
+      "theme": "EC108: Macroeconomics 1",
+      "difficulty": 0.3,
+      "objective": "Evaluate GDP's shortcomings as a measure of wellbeing",
+      "essentialPoints": [
+        "Excludes non-market activity (household production, informal economy)",
+        "Ignores distribution of income across population",
+        "Ignores externalities such as environmental degradation",
+        "Does not capture leisure time or quality of life"
+      ],
+      "specRefs": [
+        "EC108 syllabus: GDP"
+      ],
+      "kind": "evaluation",
+      "practicalIds": []
+    },
+    {
+      "id": "ec108_unemployment_definition",
+      "label": "Unemployment: definition and measurement",
+      "subtopic": "EC108 - Macroeconomic data",
+      "theme": "EC108: Macroeconomics 1",
+      "difficulty": 0.3,
+      "objective": "Define unemployment and the labour force, and understand the unemployment rate calculation",
+      "essentialPoints": [
+        "Unemployed: without work, available for work, actively seeking work",
+        "Labour force = employed + unemployed",
+        "Unemployment rate = unemployed / labour force"
+      ],
+      "specRefs": [
+        "EC108 syllabus: Unemployment"
+      ],
+      "kind": "concept",
+      "practicalIds": []
+    },
+    {
+      "id": "ec108_types_unemployment",
+      "label": "Types of unemployment: frictional, structural, cyclical",
+      "subtopic": "EC108 - Macroeconomic data",
+      "theme": "EC108: Macroeconomics 1",
+      "difficulty": 0.4,
+      "objective": "Distinguish frictional, structural, and cyclical (demand-deficient) unemployment as separate causes",
+      "essentialPoints": [
+        "Frictional: short-term search/matching unemployment between jobs",
+        "Structural: mismatch of skills/location with available jobs, often persistent",
+        "Cyclical: arises from deficient aggregate demand during downturns"
+      ],
+      "specRefs": [
+        "EC108 syllabus: Unemployment"
+      ],
+      "kind": "concept",
+      "practicalIds": []
+    },
+    {
+      "id": "ec108_natural_rate_unemployment",
+      "label": "Natural rate of unemployment",
+      "subtopic": "EC108 - Macroeconomic data",
+      "theme": "EC108: Macroeconomics 1",
+      "difficulty": 0.45,
+      "objective": "Understand the natural rate of unemployment as the rate consistent with stable inflation, comprising frictional and structural unemployment",
+      "essentialPoints": [
+        "Natural rate = frictional + structural unemployment, excludes cyclical component",
+        "Economy at natural rate is at potential/full-employment output"
+      ],
+      "specRefs": [
+        "EC108 syllabus: Unemployment"
+      ],
+      "kind": "concept",
+      "practicalIds": []
+    },
+    {
+      "id": "ec108_inflation_definition",
+      "label": "Inflation: definition and price indices (CPI)",
+      "subtopic": "EC108 - Macroeconomic data",
+      "theme": "EC108: Macroeconomics 1",
+      "difficulty": 0.3,
+      "objective": "Define inflation as a sustained rise in the general price level and understand how CPI is constructed",
+      "essentialPoints": [
+        "Inflation = sustained increase in the general price level over time",
+        "CPI measured via a weighted basket of goods and services representative of typical consumption"
+      ],
+      "specRefs": [
+        "EC108 syllabus: Inflation"
+      ],
+      "kind": "concept",
+      "practicalIds": []
+    },
+    {
+      "id": "ec108_costs_inflation",
+      "label": "Costs of inflation",
+      "subtopic": "EC108 - Macroeconomic data",
+      "theme": "EC108: Macroeconomics 1",
+      "difficulty": 0.4,
+      "objective": "Identify the economic costs associated with inflation",
+      "essentialPoints": [
+        "Menu costs: firms incur costs of repricing goods",
+        "Shoe-leather costs: costs of holding less cash and more frequent bank visits",
+        "Redistributive effects between creditors and debtors under unexpected inflation",
+        "Uncertainty discourages investment and long-term planning"
+      ],
+      "specRefs": [
+        "EC108 syllabus: Inflation"
+      ],
+      "kind": "evaluation",
+      "practicalIds": []
+    },
+    {
+      "id": "ec108_money_definition",
+      "label": "Money: definition and functions",
+      "subtopic": "EC108 - Financial Markets",
+      "theme": "EC108: Macroeconomics 1",
+      "difficulty": 0.25,
+      "objective": "Define money and its functions in the economy",
+      "essentialPoints": [
+        "Medium of exchange, unit of account, store of value",
+        "Money supply measured via monetary aggregates (e.g. narrow vs broad money)"
+      ],
+      "specRefs": [
+        "EC108 syllabus: Financial Markets"
+      ],
+      "kind": "concept",
+      "practicalIds": []
+    },
+    {
+      "id": "ec108_money_demand",
+      "label": "Demand for money",
+      "subtopic": "EC108 - Financial Markets",
+      "theme": "EC108: Macroeconomics 1",
+      "difficulty": 0.4,
+      "objective": "Understand the motives for holding money and factors determining money demand",
+      "essentialPoints": [
+        "Transactions motive, precautionary motive, speculative motive for holding money",
+        "Money demand negatively related to interest rate, positively related to income"
+      ],
+      "specRefs": [
+        "EC108 syllabus: Financial Markets"
+      ],
+      "kind": "concept",
+      "practicalIds": []
+    },
+    {
+      "id": "ec108_money_market_equilibrium",
+      "label": "Money market equilibrium and the LM relationship",
+      "subtopic": "EC108 - Financial Markets",
+      "theme": "EC108: Macroeconomics 1",
+      "difficulty": 0.5,
+      "objective": "Determine the equilibrium interest rate where money demand equals money supply, and derive the LM relationship between income and interest rate",
+      "essentialPoints": [
+        "Equilibrium interest rate equates money demand to fixed money supply",
+        "Higher income raises money demand, requiring higher interest rate to restore equilibrium (LM curve)"
+      ],
+      "specRefs": [
+        "EC108 syllabus: Financial Markets"
+      ],
+      "kind": "concept",
+      "practicalIds": []
+    },
+    {
+      "id": "ec108_lm_diagram",
+      "label": "Money market diagram: constructing and reading equilibrium",
+      "subtopic": "EC108 - Financial Markets",
+      "theme": "EC108: Macroeconomics 1",
+      "difficulty": 0.45,
+      "objective": "Construct and interpret the money supply-demand diagram to find equilibrium interest rate",
+      "essentialPoints": [
+        "Vertical money supply curve, downward-sloping money demand curve against interest rate",
+        "Shifts in money supply or demand change equilibrium interest rate"
+      ],
+      "specRefs": [
+        "EC108 syllabus: Financial Markets"
+      ],
+      "kind": "application",
+      "practicalIds": []
+    },
+    {
+      "id": "ec108_bonds_interest_rates",
+      "label": "Bond prices and interest rates: inverse relationship",
+      "subtopic": "EC108 - Financial Markets",
+      "theme": "EC108: Macroeconomics 1",
+      "difficulty": 0.4,
+      "objective": "Understand why bond prices and interest rates move inversely",
+      "essentialPoints": [
+        "Bond yield determined by fixed coupon payment relative to price paid",
+        "Higher bond price implies lower yield for a given coupon, and vice versa"
+      ],
+      "specRefs": [
+        "EC108 syllabus: Financial Markets"
+      ],
+      "kind": "concept",
+      "practicalIds": []
+    },
+    {
+      "id": "ec108_central_bank_role",
+      "label": "Role of the central bank and monetary policy tools",
+      "subtopic": "EC108 - Financial Markets",
+      "theme": "EC108: Macroeconomics 1",
+      "difficulty": 0.35,
+      "objective": "Understand the central bank's control of money supply/interest rates via policy tools",
+      "essentialPoints": [
+        "Central bank sets policy interest rate and/or controls money supply",
+        "Tools include open market operations, reserve requirements, and (unconventional) quantitative easing"
+      ],
+      "specRefs": [
+        "EC108 syllabus: Financial Markets"
+      ],
+      "kind": "concept",
+      "practicalIds": []
+    },
+    {
+      "id": "ec108_consumption_keynesian",
+      "label": "Keynesian consumption function",
+      "subtopic": "EC108 - Consumption theories",
+      "theme": "EC108: Macroeconomics 1",
+      "difficulty": 0.35,
+      "objective": "Understand the Keynesian consumption function relating consumption to current disposable income",
+      "essentialPoints": [
+        "C = a + bYd, where a is autonomous consumption and b is the marginal propensity to consume",
+        "MPC assumed constant and between 0 and 1, average propensity to consume falls as income rises"
+      ],
+      "specRefs": [
+        "EC108 syllabus: Consumption theories"
+      ],
+      "kind": "concept",
+      "practicalIds": []
+    },
+    {
+      "id": "ec108_mpc_mps",
+      "label": "Marginal propensity to consume and save",
+      "subtopic": "EC108 - Consumption theories",
+      "theme": "EC108: Macroeconomics 1",
+      "difficulty": 0.3,
+      "objective": "Define MPC and MPS and their relationship",
+      "essentialPoints": [
+        "MPC = change in consumption / change in disposable income",
+        "MPS = change in saving / change in disposable income, and MPC + MPS = 1"
+      ],
+      "specRefs": [
+        "EC108 syllabus: Consumption theories"
+      ],
+      "kind": "concept",
+      "practicalIds": []
+    },
+    {
+      "id": "ec108_consumption_puzzle",
+      "label": "The consumption puzzle: cross-section vs time-series evidence",
+      "subtopic": "EC108 - Consumption theories",
+      "theme": "EC108: Macroeconomics 1",
+      "difficulty": 0.5,
+      "objective": "Understand the empirical puzzle that the Keynesian function fits cross-section/short-run data but not long-run time-series data (stable APC)",
+      "essentialPoints": [
+        "Cross-section and short-run time series data show APC falling with income, consistent with Keynesian function",
+        "Long-run time series data show a roughly constant APC, inconsistent with simple Keynesian function"
+      ],
+      "specRefs": [
+        "EC108 syllabus: Consumption theories"
+      ],
+      "kind": "evaluation",
+      "practicalIds": []
+    },
+    {
+      "id": "ec108_permanent_income",
+      "label": "Permanent income hypothesis",
+      "subtopic": "EC108 - Consumption theories",
+      "theme": "EC108: Macroeconomics 1",
+      "difficulty": 0.55,
+      "objective": "Understand Friedman's permanent income hypothesis distinguishing permanent from transitory income",
+      "essentialPoints": [
+        "Consumption depends on permanent (long-run expected) income, not current income",
+        "Transitory income fluctuations are largely saved rather than consumed",
+        "Resolves the consumption puzzle by explaining stable long-run APC"
+      ],
+      "specRefs": [
+        "EC108 syllabus: Consumption theories"
+      ],
+      "kind": "concept",
+      "practicalIds": []
+    },
+    {
+      "id": "ec108_life_cycle_hypothesis",
+      "label": "Life-cycle hypothesis of consumption",
+      "subtopic": "EC108 - Consumption theories",
+      "theme": "EC108: Macroeconomics 1",
+      "difficulty": 0.55,
+      "objective": "Understand Modigliani's life-cycle hypothesis where individuals smooth consumption over their lifetime based on lifetime resources",
+      "essentialPoints": [
+        "Individuals plan consumption to smooth it across working life and retirement using saving and borrowing",
+        "Consumption depends on expected lifetime income/wealth, not just current income",
+        "Also resolves the consumption puzzle via aggregation across age cohorts"
+      ],
+      "specRefs": [
+        "EC108 syllabus: Consumption theories"
+      ],
+      "kind": "concept",
+      "practicalIds": []
+    },
+    {
+      "id": "ec108_consumption_intertemporal_choice",
+      "label": "Intertemporal consumption choice and consumption smoothing",
+      "subtopic": "EC108 - Consumption theories",
+      "theme": "EC108: Macroeconomics 1",
+      "difficulty": 0.5,
+      "objective": "Understand that rational consumers use saving/borrowing to smooth consumption in response to income fluctuations",
+      "essentialPoints": [
+        "Consumers can borrow or save to shift consumption between periods",
+        "Optimal consumption choice arises from maximising utility subject to intertemporal budget constraint"
+      ],
+      "specRefs": [
+        "EC108 syllabus: Consumption theories"
+      ],
+      "kind": "concept",
+      "practicalIds": [],
+      "externalPrerequisites": [
+        {
+          "to": "ec108_consumption_intertemporal_choice",
+          "prerequisiteConcept": "EC140 constrained optimisation"
+        }
+      ]
+    },
+    {
+      "id": "ec108_investment_definition",
+      "label": "Investment: definition and types",
+      "subtopic": "EC108 - Theories of Investment",
+      "theme": "EC108: Macroeconomics 1",
+      "difficulty": 0.25,
+      "objective": "Define investment as an addition to the capital stock, distinguishing fixed investment and inventory investment",
+      "essentialPoints": [
+        "Investment = spending on new capital goods (fixed investment) or changes in inventories",
+        "Gross investment vs net investment (net of depreciation)"
+      ],
+      "specRefs": [
+        "EC108 syllabus: Theories of Investment"
+      ],
+      "kind": "concept",
+      "practicalIds": []
+    },
+    {
+      "id": "ec108_mec_investment",
+      "label": "Marginal efficiency of capital / net present value approach to investment",
+      "subtopic": "EC108 - Theories of Investment",
+      "theme": "EC108: Macroeconomics 1",
+      "difficulty": 0.5,
+      "objective": "Understand how firms decide on investment by comparing expected returns to the cost of capital via NPV/MEC",
+      "essentialPoints": [
+        "Firms invest in projects where expected discounted returns exceed the cost of the project",
+        "Marginal efficiency of capital equates discounted expected returns to cost of investment",
+        "Investment demand is inversely related to the interest rate"
+      ],
+      "specRefs": [
+        "EC108 syllabus: Theories of Investment"
+      ],
+      "kind": "concept",
+      "practicalIds": []
+    },
+    {
+      "id": "ec108_investment_interest_sensitivity",
+      "label": "Investment demand curve and sensitivity to interest rates",
+      "subtopic": "EC108 - Theories of Investment",
+      "theme": "EC108: Macroeconomics 1",
+      "difficulty": 0.4,
+      "objective": "Understand the downward-sloping investment demand curve against the interest rate",
+      "essentialPoints": [
+        "As interest rate falls, more investment projects become profitable, raising desired investment",
+        "Diagram shows investment on horizontal axis and interest rate on vertical axis with a downward slope"
+      ],
+      "specRefs": [
+        "EC108 syllabus: Theories of Investment"
+      ],
+      "kind": "application",
+      "practicalIds": []
+    },
+    {
+      "id": "ec108_accelerator_theory",
+      "label": "Accelerator theory of investment",
+      "subtopic": "EC108 - Theories of Investment",
+      "theme": "EC108: Macroeconomics 1",
+      "difficulty": 0.5,
+      "objective": "Understand the accelerator model linking investment to the rate of change of output",
+      "essentialPoints": [
+        "Investment depends on the change in output/demand, not its level",
+        "Small changes in output growth can cause large swings in investment (accelerator effect)"
+      ],
+      "specRefs": [
+        "EC108 syllabus: Theories of Investment"
+      ],
+      "kind": "concept",
+      "practicalIds": []
+    },
+    {
+      "id": "ec108_investment_volatility_evaluation",
+      "label": "Why investment is the most volatile component of aggregate demand",
+      "subtopic": "EC108 - Theories of Investment",
+      "theme": "EC108: Macroeconomics 1",
+      "difficulty": 0.45,
+      "objective": "Evaluate why investment fluctuates more than consumption",
+      "essentialPoints": [
+        "Investment decisions depend on volatile expectations about future profitability",
+        "Accelerator effect amplifies small output changes into large investment swings",
+        "Irreversibility and uncertainty make investment sensitive to confidence shocks"
+      ],
+      "specRefs": [
+        "EC108 syllabus: Theories of Investment"
+      ],
+      "kind": "evaluation",
+      "practicalIds": []
+    },
+    {
+      "id": "ec108_gov_spending_components",
+      "label": "Government spending and the government budget",
+      "subtopic": "EC108 - Government Spending",
+      "theme": "EC108: Macroeconomics 1",
+      "difficulty": 0.25,
+      "objective": "Understand government spending as a component of aggregate demand and the government budget balance",
+      "essentialPoints": [
+        "Government spending (G) includes purchases of goods/services and transfer payments",
+        "Budget balance = taxes minus government spending; deficit when spending exceeds tax revenue"
+      ],
+      "specRefs": [
+        "EC108 syllabus: Government Spending"
+      ],
+      "kind": "concept",
+      "practicalIds": []
+    },
+    {
+      "id": "ec108_taxation_types",
+      "label": "Types of taxation and their effect on disposable income",
+      "subtopic": "EC108 - Government Spending",
+      "theme": "EC108: Macroeconomics 1",
+      "difficulty": 0.3,
+      "objective": "Understand how taxes reduce disposable income and affect consumption via the consumption function",
+      "essentialPoints": [
+        "Direct taxes on income reduce disposable income directly",
+        "Taxes can be lump-sum or proportional to income, affecting the slope of the consumption function differently"
+      ],
+      "specRefs": [
+        "EC108 syllabus: Government Spending"
+      ],
+      "kind": "concept",
+      "practicalIds": []
+    },
+    {
+      "id": "ec108_public_debt",
+      "label": "Public debt and deficit financing",
+      "subtopic": "EC108 - Government Spending",
+      "theme": "EC108: Macroeconomics 1",
+      "difficulty": 0.4,
+      "objective": "Understand how persistent deficits accumulate into public debt and the concept of debt sustainability",
+      "essentialPoints": [
+        "Government deficit financed by borrowing (issuing bonds), accumulating as public debt",
+        "Debt-to-GDP ratio used to assess fiscal sustainability"
+      ],
+      "specRefs": [
+        "EC108 syllabus: Government Spending"
+      ],
+      "kind": "concept",
+      "practicalIds": []
+    },
+    {
+      "id": "ec108_45_degree_diagram",
+      "label": "Keynesian cross (45-degree) diagram: aggregate expenditure and equilibrium output",
+      "subtopic": "EC108 - Government Spending",
+      "theme": "EC108: Macroeconomics 1",
+      "difficulty": 0.5,
+      "objective": "Construct and use the Keynesian cross diagram to determine equilibrium income where planned expenditure equals output",
+      "essentialPoints": [
+        "Aggregate expenditure line = C + I + G + (X-M) plotted against income",
+        "Equilibrium output where the expenditure line intersects the 45-degree line (Y = AE)"
+      ],
+      "specRefs": [
+        "EC108 syllabus: Government Spending"
+      ],
+      "kind": "application",
+      "practicalIds": []
+    },
+    {
+      "id": "ec108_multiplier_derivation",
+      "label": "The multiplier: derivation and formula",
+      "subtopic": "EC108 - Government Spending",
+      "theme": "EC108: Macroeconomics 1",
+      "difficulty": 0.55,
+      "objective": "Derive the government spending multiplier from the equilibrium condition and MPC",
+      "essentialPoints": [
+        "An increase in autonomous spending raises income by more than the initial increase, via successive rounds of spending",
+        "Simple multiplier = 1/(1-MPC) in a closed economy with no taxes",
+        "Multiplier reduced by taxes and imports leaking out of the spending stream"
+      ],
+      "specRefs": [
+        "EC108 syllabus: Government Spending"
+      ],
+      "kind": "concept",
+      "practicalIds": []
+    },
+    {
+      "id": "ec108_fiscal_policy_definition",
+      "label": "Fiscal policy: definition and tools",
+      "subtopic": "EC108 - Government Spending",
+      "theme": "EC108: Macroeconomics 1",
+      "difficulty": 0.3,
+      "objective": "Define fiscal policy as the use of government spending and taxation to influence aggregate demand",
+      "essentialPoints": [
+        "Fiscal policy involves changing G and/or taxes to influence the economy",
+        "Expansionary fiscal policy raises G or cuts taxes; contractionary does the reverse"
+      ],
+      "specRefs": [
+        "EC108 syllabus: Demand side policies"
+      ],
+      "kind": "concept",
+      "practicalIds": []
+    },
+    {
+      "id": "ec108_fiscal_policy_reasons",
+      "label": "Reasons for using fiscal policy to manage demand",
+      "subtopic": "EC108 - Demand side policies",
+      "theme": "EC108: Macroeconomics 1",
+      "difficulty": 0.35,
+      "objective": "Understand the motivation for fiscal intervention: closing output gaps and stabilising the economy",
+      "essentialPoints": [
+        "Aggregate demand can fall short of potential output, creating unemployment (recessionary gap)",
+        "Government can use fiscal policy to close output gaps and stabilise fluctuations"
+      ],
+      "specRefs": [
+        "EC108 syllabus: Demand side policies"
+      ],
+      "kind": "concept",
+      "practicalIds": []
+    },
+    {
+      "id": "ec108_fiscal_policy_advantages",
+      "label": "Advantages of fiscal policy",
+      "subtopic": "EC108 - Demand side policies",
+      "theme": "EC108: Macroeconomics 1",
+      "difficulty": 0.4,
+      "objective": "Evaluate the benefits of fiscal policy as a demand management tool",
+      "essentialPoints": [
+        "Directly and immediately increases aggregate demand via government purchases",
+        "Can be targeted at specific sectors or groups in need",
+        "Multiplier effect amplifies the initial impact on output"
+      ],
+      "specRefs": [
+        "EC108 syllabus: Demand side policies"
+      ],
+      "kind": "evaluation",
+      "practicalIds": []
+    },
+    {
+      "id": "ec108_fiscal_policy_disadvantages",
+      "label": "Disadvantages of fiscal policy",
+      "subtopic": "EC108 - Demand side policies",
+      "theme": "EC108: Macroeconomics 1",
+      "difficulty": 0.45,
+      "objective": "Evaluate the drawbacks and limitations of fiscal policy",
+      "essentialPoints": [
+        "Implementation and recognition lags mean policy may act too slowly to be effective",
+        "Crowding out: government borrowing may raise interest rates and reduce private investment",
+        "Increases public debt, raising future sustainability concerns",
+        "Subject to political constraints and time inconsistency"
+      ],
+      "specRefs": [
+        "EC108 syllabus: Demand side policies"
+      ],
+      "kind": "evaluation",
+      "practicalIds": []
+    },
+    {
+      "id": "ec108_crowding_out_mechanism",
+      "label": "Crowding-out mechanism: government borrowing raises interest rates and reduces private investment",
+      "subtopic": "EC108 - Demand side policies",
+      "theme": "EC108: Macroeconomics 1",
+      "difficulty": 0.5,
+      "objective": "Trace the mechanism by which expansionary fiscal policy financed by borrowing can reduce private investment",
+      "essentialPoints": [
+        "Government borrows to finance deficit, increasing demand for loanable funds",
+        "Increased borrowing raises interest rates in the money/bond market",
+        "Higher interest rates reduce private investment, offsetting some of the initial demand boost"
+      ],
+      "specRefs": [
+        "EC108 syllabus: Demand side policies"
+      ],
+      "kind": "concept",
+      "practicalIds": []
+    },
+    {
+      "id": "ec108_monetary_policy_definition",
+      "label": "Monetary policy: definition and transmission tools",
+      "subtopic": "EC108 - Demand side policies",
+      "theme": "EC108: Macroeconomics 1",
+      "difficulty": 0.3,
+      "objective": "Define monetary policy as central bank actions to influence money supply and interest rates to affect demand",
+      "essentialPoints": [
+        "Monetary policy changes interest rates or money supply to influence aggregate demand",
+        "Expansionary monetary policy lowers interest rates to stimulate borrowing and spending"
+      ],
+      "specRefs": [
+        "EC108 syllabus: Demand side policies"
+      ],
+      "kind": "concept",
+      "practicalIds": []
+    },
+    {
+      "id": "ec108_monetary_transmission_mechanism",
+      "label": "Monetary policy transmission mechanism",
+      "subtopic": "EC108 - Demand side policies",
+      "theme": "EC108: Macroeconomics 1",
+      "difficulty": 0.5,
+      "objective": "Trace the causal chain from a change in interest rates to a change in aggregate demand",
+      "essentialPoints": [
+        "Central bank changes policy interest rate",
+        "Change in interest rate affects cost of borrowing, saving incentives, and asset prices",
+        "Changes in borrowing/saving and asset prices alter consumption and investment spending",
+        "Change in C and I feeds through the multiplier to change equilibrium output"
+      ],
+      "specRefs": [
+        "EC108 syllabus: Demand side policies"
+      ],
+      "kind": "concept",
+      "practicalIds": []
+    },
+    {
+      "id": "ec108_monetary_policy_advantages",
+      "label": "Advantages of monetary policy",
+      "subtopic": "EC108 - Demand side policies",
+      "theme": "EC108: Macroeconomics 1",
+      "difficulty": 0.4,
+      "objective": "Evaluate the benefits of monetary policy as a demand management tool",
+      "essentialPoints": [
+        "Can be adjusted quickly and frequently compared to fiscal policy",
+        "Operationally independent central banks reduce political interference/time inconsistency",
+        "Does not directly add to government debt"
+      ],
+      "specRefs": [
+        "EC108 syllabus: Demand side policies"
+      ],
+      "kind": "evaluation",
+      "practicalIds": []
+    },
+    {
+      "id": "ec108_monetary_policy_disadvantages",
+      "label": "Disadvantages of monetary policy",
+      "subtopic": "EC108 - Demand side policies",
+      "theme": "EC108: Macroeconomics 1",
+      "difficulty": 0.45,
+      "objective": "Evaluate the limitations of monetary policy",
+      "essentialPoints": [
+        "Long and variable transmission lags before effects are felt",
+        "Ineffective at the zero lower bound on interest rates",
+        "Effectiveness depends on interest-sensitivity of investment and consumption, which may be weak",
+        "Cannot target specific sectors or regions as precisely as fiscal policy"
+      ],
+      "specRefs": [
+        "EC108 syllabus: Demand side policies"
+      ],
+      "kind": "evaluation",
+      "practicalIds": []
+    },
+    {
+      "id": "ec108_ad_curve_construction",
+      "label": "Aggregate demand curve: construction",
+      "subtopic": "EC108 - Demand side policies",
+      "theme": "EC108: Macroeconomics 1",
+      "difficulty": 0.5,
+      "objective": "Derive the downward-sloping aggregate demand curve relating price level to equilibrium output",
+      "essentialPoints": [
+        "Higher price level reduces real money balances, raising interest rates and reducing spending (via money market and Keynesian cross)",
+        "AD curve plots equilibrium output against price level, downward sloping"
+      ],
+      "specRefs": [
+        "EC108 syllabus: Demand side policies"
+      ],
+      "kind": "application",
+      "practicalIds": []
+    },
+    {
+      "id": "ec108_ad_shifts",
+      "label": "Shifts in the aggregate demand curve",
+      "subtopic": "EC108 - Demand side policies",
+      "theme": "EC108: Macroeconomics 1",
+      "difficulty": 0.4,
+      "objective": "Understand how fiscal and monetary policy, and other autonomous demand changes, shift the AD curve",
+      "essentialPoints": [
+        "Expansionary fiscal or monetary policy shifts AD rightward",
+        "Changes in autonomous consumption, investment, or net exports also shift AD"
+      ],
+      "specRefs": [
+        "EC108 syllabus: Demand side policies"
+      ],
+      "kind": "application",
+      "practicalIds": []
+    },
+    {
+      "id": "ec108_as_curve_short_long_run",
+      "label": "Aggregate supply curve: short-run and long-run",
+      "subtopic": "EC108 - Demand side policies",
+      "theme": "EC108: Macroeconomics 1",
+      "difficulty": 0.5,
+      "objective": "Distinguish the upward-sloping short-run aggregate supply curve from the vertical long-run aggregate supply curve at potential output",
+      "essentialPoints": [
+        "Short-run AS slopes upward as sticky wages/prices mean higher prices raise firm output incentives",
+        "Long-run AS is vertical at potential output, determined by factors of production and technology, independent of price level"
+      ],
+      "specRefs": [
+        "EC108 syllabus: Demand side policies"
+      ],
+      "kind": "concept",
+      "practicalIds": []
+    },
+    {
+      "id": "ec108_ad_as_equilibrium",
+      "label": "AD-AS equilibrium and adjustment to shocks",
+      "subtopic": "EC108 - Demand side policies",
+      "theme": "EC108: Macroeconomics 1",
+      "difficulty": 0.55,
+      "objective": "Use the AD-AS model to determine short-run and long-run equilibrium price level and output following demand shocks",
+      "essentialPoints": [
+        "Short-run equilibrium at intersection of AD and short-run AS",
+        "A demand shock moves output and prices in the short run but the economy adjusts back to potential output in the long run via wage/price adjustment"
+      ],
+      "specRefs": [
+        "EC108 syllabus: Demand side policies"
+      ],
+      "kind": "application",
+      "practicalIds": []
+    },
+    {
+      "id": "ec108_phillips_curve_original",
+      "label": "Original (short-run) Phillips curve: trade-off between inflation and unemployment",
+      "subtopic": "EC108 - Phillips Curve",
+      "theme": "EC108: Macroeconomics 1",
+      "difficulty": 0.45,
+      "objective": "Understand the empirical negative relationship observed between unemployment and inflation (wage inflation)",
+      "essentialPoints": [
+        "Phillips curve shows an inverse relationship between unemployment and (wage/price) inflation",
+        "Interpreted as a policy trade-off: lower unemployment achievable at the cost of higher inflation"
+      ],
+      "specRefs": [
+        "EC108 syllabus: Phillips Curve"
+      ],
+      "kind": "concept",
+      "practicalIds": []
+    },
+    {
+      "id": "ec108_stagflation_breakdown",
+      "label": "Breakdown of the Phillips curve: stagflation of the 1970s",
+      "subtopic": "EC108 - Phillips Curve",
+      "theme": "EC108: Macroeconomics 1",
+      "difficulty": 0.45,
+      "objective": "Understand the empirical breakdown of the simple Phillips curve relationship during periods of simultaneous high inflation and high unemployment",
+      "essentialPoints": [
+        "1970s oil price shocks caused simultaneous rising inflation and rising unemployment (stagflation)",
+        "This contradicted the stable trade-off implied by the original Phillips curve"
+      ],
+      "specRefs": [
+        "EC108 syllabus: Phillips Curve"
+      ],
+      "kind": "evaluation",
+      "practicalIds": []
+    },
+    {
+      "id": "ec108_expectations_augmented_phillips",
+      "label": "Expectations-augmented Phillips curve",
+      "subtopic": "EC108 - Phillips Curve",
+      "theme": "EC108: Macroeconomics 1",
+      "difficulty": 0.55,
+      "objective": "Understand how incorporating expected inflation resolves the breakdown of the simple Phillips curve",
+      "essentialPoints": [
+        "Inflation depends on unemployment gap plus expected inflation: pi = pi^e - a(u - u*)",
+        "Shifts in expected inflation shift the short-run Phillips curve, explaining stagflation"
+      ],
+      "specRefs": [
+        "EC108 syllabus: Phillips Curve"
+      ],
+      "kind": "concept",
+      "practicalIds": []
+    },
+    {
+      "id": "ec108_adaptive_expectations",
+      "label": "Adaptive expectations of inflation",
+      "subtopic": "EC108 - Phillips Curve",
+      "theme": "EC108: Macroeconomics 1",
+      "difficulty": 0.4,
+      "objective": "Understand adaptive expectations as expectations formed by extrapolating from past inflation",
+      "essentialPoints": [
+        "Expected inflation set equal to (or based on) past observed inflation",
+        "Expectations adjust gradually as actual inflation is observed"
+      ],
+      "specRefs": [
+        "EC108 syllabus: Phillips Curve"
+      ],
+      "kind": "concept",
+      "practicalIds": []
+    },
+    {
+      "id": "ec108_long_run_phillips_curve",
+      "label": "Long-run Phillips curve: vertical at the natural rate",
+      "subtopic": "EC108 - Phillips Curve",
+      "theme": "EC108: Macroeconomics 1",
+      "difficulty": 0.55,
+      "objective": "Understand that in the long run there is no trade-off, and the Phillips curve is vertical at the natural rate of unemployment",
+      "essentialPoints": [
+        "Once expectations fully adjust, unemployment returns to the natural rate regardless of inflation",
+        "Long-run Phillips curve is vertical at u*, implying no permanent trade-off between inflation and unemployment"
+      ],
+      "specRefs": [
+        "EC108 syllabus: Phillips Curve"
+      ],
+      "kind": "concept",
+      "practicalIds": []
+    },
+    {
+      "id": "ec108_nairu",
+      "label": "NAIRU: non-accelerating inflation rate of unemployment",
+      "subtopic": "EC108 - Phillips Curve",
+      "theme": "EC108: Macroeconomics 1",
+      "difficulty": 0.5,
+      "objective": "Understand NAIRU as the unemployment rate consistent with stable (non-accelerating) inflation",
+      "essentialPoints": [
+        "NAIRU is the unemployment rate at which actual inflation equals expected inflation",
+        "Unemployment below NAIRU causes accelerating inflation, above it causes decelerating inflation"
+      ],
+      "specRefs": [
+        "EC108 syllabus: Phillips Curve"
+      ],
+      "kind": "concept",
+      "practicalIds": []
+    },
+    {
+      "id": "ec108_exchange_rates_definition",
+      "label": "Exchange rates: definition and nominal vs real",
+      "subtopic": "EC108 - The International Market",
+      "theme": "EC108: Macroeconomics 1",
+      "difficulty": 0.35,
+      "objective": "Define the nominal exchange rate and the real exchange rate adjusting for relative price levels",
+      "essentialPoints": [
+        "Nominal exchange rate is the price of one currency in terms of another",
+        "Real exchange rate = nominal exchange rate adjusted by relative price levels between countries"
+      ],
+      "specRefs": [
+        "EC108 syllabus: The International Market"
+      ],
+      "kind": "concept",
+      "practicalIds": []
+    },
+    {
+      "id": "ec108_forex_market",
+      "label": "The foreign exchange market and exchange rate determination",
+      "subtopic": "EC108 - The International Market",
+      "theme": "EC108: Macroeconomics 1",
+      "difficulty": 0.45,
+      "objective": "Understand how supply and demand for currency determine the exchange rate in the forex market",
+      "essentialPoints": [
+        "Demand for a currency arises from exports, capital inflows, and demand for domestic assets",
+        "Exchange rate determined by equilibrium in the market for foreign exchange"
+      ],
+      "specRefs": [
+        "EC108 syllabus: The International Market"
+      ],
+      "kind": "concept",
+      "practicalIds": []
+    },
+    {
+      "id": "ec108_floating_exchange_rate",
+      "label": "Floating exchange rate regime",
+      "subtopic": "EC108 - The International Market",
+      "theme": "EC108: Macroeconomics 1",
+      "difficulty": 0.35,
+      "objective": "Define a floating exchange rate as one determined freely by market forces of supply and demand",
+      "essentialPoints": [
+        "Exchange rate adjusts continuously to equate supply and demand for the currency",
+        "No direct government/central bank intervention to fix the rate"
+      ],
+      "specRefs": [
+        "EC108 syllabus: The International Market"
+      ],
+      "kind": "concept",
+      "practicalIds": []
+    },
+    {
+      "id": "ec108_fixed_exchange_rate",
+      "label": "Fixed exchange rate regime",
+      "subtopic": "EC108 - The International Market",
+      "theme": "EC108: Macroeconomics 1",
+      "difficulty": 0.4,
+      "objective": "Define a fixed exchange rate as one pegged by the central bank to another currency or basket",
+      "essentialPoints": [
+        "Central bank commits to buying/selling its currency to maintain a set exchange rate",
+        "Requires holding foreign exchange reserves to defend the peg"
+      ],
+      "specRefs": [
+        "EC108 syllabus: The International Market"
+      ],
+      "kind": "concept",
+      "practicalIds": []
+    },
+    {
+      "id": "ec108_floating_advantages",
+      "label": "Advantages of a floating exchange rate",
+      "subtopic": "EC108 - The International Market",
+      "theme": "EC108: Macroeconomics 1",
+      "difficulty": 0.4,
+      "objective": "Evaluate the benefits of a floating exchange rate regime",
+      "essentialPoints": [
+        "Automatically adjusts to correct trade imbalances (depreciation boosts exports)",
+        "Frees monetary policy to target domestic objectives rather than defending a peg",
+        "No need to hold large foreign exchange reserves"
+      ],
+      "specRefs": [
+        "EC108 syllabus: The International Market"
+      ],
+      "kind": "evaluation",
+      "practicalIds": []
+    },
+    {
+      "id": "ec108_floating_disadvantages",
+      "label": "Disadvantages of a floating exchange rate",
+      "subtopic": "EC108 - The International Market",
+      "theme": "EC108: Macroeconomics 1",
+      "difficulty": 0.45,
+      "objective": "Evaluate the costs of a floating exchange rate regime",
+      "essentialPoints": [
+        "Exchange rate volatility creates uncertainty for trade and investment",
+        "Can be subject to speculative attacks and excessive volatility unrelated to fundamentals",
+        "Depreciation can be inflationary via higher import prices"
+      ],
+      "specRefs": [
+        "EC108 syllabus: The International Market"
+      ],
+      "kind": "evaluation",
+      "practicalIds": []
+    },
+    {
+      "id": "ec108_fixed_advantages",
+      "label": "Advantages of a fixed exchange rate",
+      "subtopic": "EC108 - The International Market",
+      "theme": "EC108: Macroeconomics 1",
+      "difficulty": 0.4,
+      "objective": "Evaluate the benefits of a fixed exchange rate regime",
+      "essentialPoints": [
+        "Provides certainty for international trade and investment planning",
+        "Can act as a nominal anchor to control domestic inflation",
+        "Reduces speculative currency volatility"
+      ],
+      "specRefs": [
+        "EC108 syllabus: The International Market"
+      ],
+      "kind": "evaluation",
+      "practicalIds": []
+    },
+    {
+      "id": "ec108_fixed_disadvantages",
+      "label": "Disadvantages of a fixed exchange rate",
+      "subtopic": "EC108 - The International Market",
+      "theme": "EC108: Macroeconomics 1",
+      "difficulty": 0.45,
+      "objective": "Evaluate the costs of a fixed exchange rate regime",
+      "essentialPoints": [
+        "Loss of independent monetary policy, as interest rates must defend the peg",
+        "Requires large foreign exchange reserves to maintain credibility",
+        "Vulnerable to speculative attacks if the peg is seen as unsustainable",
+        "Cannot use exchange rate adjustment to correct trade imbalances"
+      ],
+      "specRefs": [
+        "EC108 syllabus: The International Market"
+      ],
+      "kind": "evaluation",
+      "practicalIds": []
+    },
+    {
+      "id": "ec108_balance_of_payments",
+      "label": "Balance of payments: current account and capital/financial account",
+      "subtopic": "EC108 - The International Market",
+      "theme": "EC108: Macroeconomics 1",
+      "difficulty": 0.4,
+      "objective": "Understand the structure of the balance of payments and its component accounts",
+      "essentialPoints": [
+        "Current account records trade in goods/services, income flows, and transfers",
+        "Capital/financial account records cross-border asset and investment flows",
+        "Overall balance of payments must balance (current account balanced by capital/financial account, subject to reserve changes)"
+      ],
+      "specRefs": [
+        "EC108 syllabus: The International Market"
+      ],
+      "kind": "concept",
+      "practicalIds": []
+    },
+    {
+      "id": "ec108_net_exports_determinants",
+      "label": "Determinants of net exports",
+      "subtopic": "EC108 - The International Market",
+      "theme": "EC108: Macroeconomics 1",
+      "difficulty": 0.4,
+      "objective": "Understand the factors determining a country's net exports (exports minus imports)",
+      "essentialPoints": [
+        "Net exports depend on the real exchange rate, domestic and foreign income levels",
+        "A real depreciation makes exports cheaper and imports dearer, raising net exports"
+      ],
+      "specRefs": [
+        "EC108 syllabus: The International Market"
+      ],
+      "kind": "concept",
+      "practicalIds": []
+    },
+    {
+      "id": "ec108_open_economy_multiplier",
+      "label": "Open economy: net exports in the Keynesian cross and the import leakage",
+      "subtopic": "EC108 - The International Market",
+      "theme": "EC108: Macroeconomics 1",
+      "difficulty": 0.5,
+      "objective": "Extend the Keynesian cross/multiplier to an open economy including imports as a leakage",
+      "essentialPoints": [
+        "Imports rise with income, acting as a leakage from the circular flow like saving and taxes",
+        "Open economy multiplier is smaller than the closed economy multiplier due to the import leakage"
+      ],
+      "specRefs": [
+        "EC108 syllabus: The International Market"
+      ],
+      "kind": "concept",
+      "practicalIds": []
+    },
+    {
+      "id": "ec108_income_inequality_measurement",
+      "label": "Measuring income inequality: the Lorenz curve and Gini coefficient",
+      "subtopic": "EC108 - Inequality",
+      "theme": "EC108: Macroeconomics 1",
+      "difficulty": 0.5,
+      "objective": "Understand the Lorenz curve as a graphical representation of income distribution and the Gini coefficient as a summary measure",
+      "essentialPoints": [
+        "Lorenz curve plots cumulative share of income against cumulative share of population",
+        "Perfect equality is the diagonal line; greater bowing away from the diagonal indicates greater inequality",
+        "Gini coefficient = area between Lorenz curve and line of equality, divided by total area under the equality line; ranges from 0 (perfect equality) to 1 (perfect inequality)"
+      ],
+      "specRefs": [
+        "EC108 syllabus: Inequality"
+      ],
+      "kind": "concept",
+      "practicalIds": []
+    },
+    {
+      "id": "ec108_causes_of_inequality",
+      "label": "Causes of income inequality",
+      "subtopic": "EC108 - Inequality",
+      "theme": "EC108: Macroeconomics 1",
+      "difficulty": 0.4,
+      "objective": "Identify the main drivers of income inequality within an economy",
+      "essentialPoints": [
+        "Differences in human capital and education driving wage differentials",
+        "Technological change favouring skilled over unskilled labour (skill-biased technical change)",
+        "Globalisation and trade affecting relative demand for different types of labour",
+        "Differences in capital ownership and returns to capital versus labour"
+      ],
+      "specRefs": [
+        "EC108 syllabus: Inequality"
+      ],
+      "kind": "concept",
+      "practicalIds": []
+    },
+    {
+      "id": "ec108_inequality_growth_tradeoff",
+      "label": "Inequality and growth: the equity-efficiency debate",
+      "subtopic": "EC108 - Inequality",
+      "theme": "EC108: Macroeconomics 1",
+      "difficulty": 0.5,
+      "objective": "Evaluate the relationship between inequality and economic growth/efficiency",
+      "essentialPoints": [
+        "Some inequality may be necessary to incentivise effort, innovation, and investment",
+        "Excessive inequality can reduce aggregate demand, human capital investment, and social/political stability, harming long-run growth"
+      ],
+      "specRefs": [
+        "EC108 syllabus: Inequality"
+      ],
+      "kind": "evaluation",
+      "practicalIds": []
+    },
+    {
+      "id": "ec108_redistribution_policies",
+      "label": "Policies to reduce inequality: redistribution via taxes and transfers",
+      "subtopic": "EC108 - Inequality",
+      "theme": "EC108: Macroeconomics 1",
+      "difficulty": 0.4,
+      "objective": "Understand how progressive taxation and transfer payments can be used to redistribute income",
+      "essentialPoints": [
+        "Progressive taxation takes a higher proportion of income from higher earners",
+        "Transfer payments (welfare benefits) redistribute income towards lower-income households"
+      ],
+      "specRefs": [
+        "EC108 syllabus: Inequality"
+      ],
+      "kind": "concept",
+      "practicalIds": []
+    },
+    {
+      "id": "ec108_redistribution_evaluation",
+      "label": "Evaluating redistribution policy: efficiency costs versus equity gains",
+      "subtopic": "EC108 - Inequality",
+      "theme": "EC108: Macroeconomics 1",
+      "difficulty": 0.5,
+      "objective": "Evaluate the trade-offs involved in using taxes and transfers to reduce inequality",
+      "essentialPoints": [
+        "Redistribution can reduce poverty and social harms associated with high inequality",
+        "High marginal tax rates may reduce incentives to work, save, and invest, creating efficiency costs",
+        "Administrative and implementation costs of redistribution schemes"
+      ],
+      "specRefs": [
+        "EC108 syllabus: Inequality"
+      ],
+      "kind": "evaluation",
+      "practicalIds": []
+    }
+  ],
+  "edges": [
+    {
+      "from": "ec108_circular_flow",
+      "to": "ec108_gdp_definition",
+      "difficulty": 0.25
+    },
+    {
+      "from": "ec108_gdp_definition",
+      "to": "ec108_value_added",
+      "difficulty": 0.3
+    },
+    {
+      "from": "ec108_value_added",
+      "to": "ec108_three_measures_gdp",
+      "difficulty": 0.35
+    },
+    {
+      "from": "ec108_gdp_definition",
+      "to": "ec108_nominal_real_gdp",
+      "difficulty": 0.3
+    },
+    {
+      "from": "ec108_gdp_definition",
+      "to": "ec108_gdp_limitations",
+      "difficulty": 0.3
+    },
+    {
+      "from": "ec108_gdp_definition",
+      "to": "ec108_unemployment_definition",
+      "difficulty": 0.2
+    },
+    {
+      "from": "ec108_unemployment_definition",
+      "to": "ec108_types_unemployment",
+      "difficulty": 0.3
+    },
+    {
+      "from": "ec108_types_unemployment",
+      "to": "ec108_natural_rate_unemployment",
+      "difficulty": 0.4
+    },
+    {
+      "from": "ec108_nominal_real_gdp",
+      "to": "ec108_inflation_definition",
+      "difficulty": 0.25
+    },
+    {
+      "from": "ec108_inflation_definition",
+      "to": "ec108_costs_inflation",
+      "difficulty": 0.35
+    },
+    {
+      "from": "ec108_money_definition",
+      "to": "ec108_money_demand",
+      "difficulty": 0.3
+    },
+    {
+      "from": "ec108_money_demand",
+      "to": "ec108_money_market_equilibrium",
+      "difficulty": 0.45
+    },
+    {
+      "from": "ec108_money_market_equilibrium",
+      "to": "ec108_lm_diagram",
+      "difficulty": 0.4
+    },
+    {
+      "from": "ec108_money_market_equilibrium",
+      "to": "ec108_bonds_interest_rates",
+      "difficulty": 0.4
+    },
+    {
+      "from": "ec108_money_definition",
+      "to": "ec108_central_bank_role",
+      "difficulty": 0.3
+    },
+    {
+      "from": "ec108_central_bank_role",
+      "to": "ec108_money_market_equilibrium",
+      "difficulty": 0.35
+    },
+    {
+      "from": "ec108_gdp_definition",
+      "to": "ec108_consumption_keynesian",
+      "difficulty": 0.3
+    },
+    {
+      "from": "ec108_consumption_keynesian",
+      "to": "ec108_mpc_mps",
+      "difficulty": 0.25
+    },
+    {
+      "from": "ec108_consumption_keynesian",
+      "to": "ec108_consumption_puzzle",
+      "difficulty": 0.45
+    },
+    {
+      "from": "ec108_consumption_puzzle",
+      "to": "ec108_permanent_income",
+      "difficulty": 0.5
+    },
+    {
+      "from": "ec108_consumption_puzzle",
+      "to": "ec108_life_cycle_hypothesis",
+      "difficulty": 0.5
+    },
+    {
+      "from": "ec108_permanent_income",
+      "to": "ec108_consumption_intertemporal_choice",
+      "difficulty": 0.45
+    },
+    {
+      "from": "ec108_life_cycle_hypothesis",
+      "to": "ec108_consumption_intertemporal_choice",
+      "difficulty": 0.45
+    },
+    {
+      "from": "ec108_gdp_definition",
+      "to": "ec108_investment_definition",
+      "difficulty": 0.2
+    },
+    {
+      "from": "ec108_investment_definition",
+      "to": "ec108_mec_investment",
+      "difficulty": 0.45
+    },
+    {
+      "from": "ec108_bonds_interest_rates",
+      "to": "ec108_mec_investment",
+      "difficulty": 0.4
+    },
+    {
+      "from": "ec108_mec_investment",
+      "to": "ec108_investment_interest_sensitivity",
+      "difficulty": 0.35
+    },
+    {
+      "from": "ec108_investment_definition",
+      "to": "ec108_accelerator_theory",
+      "difficulty": 0.4
+    },
+    {
+      "from": "ec108_mec_investment",
+      "to": "ec108_investment_volatility_evaluation",
+      "difficulty": 0.4
+    },
+    {
+      "from": "ec108_accelerator_theory",
+      "to": "ec108_investment_volatility_evaluation",
+      "difficulty": 0.45
+    },
+    {
+      "from": "ec108_gdp_definition",
+      "to": "ec108_gov_spending_components",
+      "difficulty": 0.2
+    },
+    {
+      "from": "ec108_gov_spending_components",
+      "to": "ec108_taxation_types",
+      "difficulty": 0.3
+    },
+    {
+      "from": "ec108_gov_spending_components",
+      "to": "ec108_public_debt",
+      "difficulty": 0.35
+    },
+    {
+      "from": "ec108_consumption_keynesian",
+      "to": "ec108_45_degree_diagram",
+      "difficulty": 0.4
+    },
+    {
+      "from": "ec108_investment_interest_sensitivity",
+      "to": "ec108_45_degree_diagram",
+      "difficulty": 0.4
+    },
+    {
+      "from": "ec108_gov_spending_components",
+      "to": "ec108_45_degree_diagram",
+      "difficulty": 0.3
+    },
+    {
+      "from": "ec108_taxation_types",
+      "to": "ec108_45_degree_diagram",
+      "difficulty": 0.35
+    },
+    {
+      "from": "ec108_45_degree_diagram",
+      "to": "ec108_multiplier_derivation",
+      "difficulty": 0.5
+    },
+    {
+      "from": "ec108_mpc_mps",
+      "to": "ec108_multiplier_derivation",
+      "difficulty": 0.4
+    },
+    {
+      "from": "ec108_gov_spending_components",
+      "to": "ec108_fiscal_policy_definition",
+      "difficulty": 0.25
+    },
+    {
+      "from": "ec108_multiplier_derivation",
+      "to": "ec108_fiscal_policy_definition",
+      "difficulty": 0.3
+    },
+    {
+      "from": "ec108_ad_as_equilibrium",
+      "to": "ec108_fiscal_policy_reasons",
+      "difficulty": 0.4
+    },
+    {
+      "from": "ec108_fiscal_policy_reasons",
+      "to": "ec108_fiscal_policy_advantages",
+      "difficulty": 0.35
+    },
+    {
+      "from": "ec108_multiplier_derivation",
+      "to": "ec108_fiscal_policy_advantages",
+      "difficulty": 0.35
+    },
+    {
+      "from": "ec108_fiscal_policy_reasons",
+      "to": "ec108_fiscal_policy_disadvantages",
+      "difficulty": 0.4
+    },
+    {
+      "from": "ec108_crowding_out_mechanism",
+      "to": "ec108_fiscal_policy_disadvantages",
+      "difficulty": 0.45
+    },
+    {
+      "from": "ec108_public_debt",
+      "to": "ec108_fiscal_policy_disadvantages",
+      "difficulty": 0.4
+    },
+    {
+      "from": "ec108_fiscal_policy_advantages",
+      "to": "ec108_fiscal_policy_disadvantages",
+      "difficulty": 0.4
+    },
+    {
+      "from": "ec108_public_debt",
+      "to": "ec108_crowding_out_mechanism",
+      "difficulty": 0.4
+    },
+    {
+      "from": "ec108_money_market_equilibrium",
+      "to": "ec108_crowding_out_mechanism",
+      "difficulty": 0.45
+    },
+    {
+      "from": "ec108_investment_interest_sensitivity",
+      "to": "ec108_crowding_out_mechanism",
+      "difficulty": 0.45
+    },
+    {
+      "from": "ec108_central_bank_role",
+      "to": "ec108_monetary_policy_definition",
+      "difficulty": 0.3
+    },
+    {
+      "from": "ec108_ad_as_equilibrium",
+      "to": "ec108_monetary_policy_definition",
+      "difficulty": 0.35
+    },
+    {
+      "from": "ec108_money_market_equilibrium",
+      "to": "ec108_monetary_transmission_mechanism",
+      "difficulty": 0.45
+    },
+    {
+      "from": "ec108_investment_interest_sensitivity",
+      "to": "ec108_monetary_transmission_mechanism",
+      "difficulty": 0.4
+    },
+    {
+      "from": "ec108_consumption_intertemporal_choice",
+      "to": "ec108_monetary_transmission_mechanism",
+      "difficulty": 0.4
+    },
+    {
+      "from": "ec108_multiplier_derivation",
+      "to": "ec108_monetary_transmission_mechanism",
+      "difficulty": 0.4
+    },
+    {
+      "from": "ec108_monetary_policy_definition",
+      "to": "ec108_monetary_transmission_mechanism",
+      "difficulty": 0.35
+    },
+    {
+      "from": "ec108_monetary_policy_definition",
+      "to": "ec108_monetary_policy_advantages",
+      "difficulty": 0.3
+    },
+    {
+      "from": "ec108_monetary_transmission_mechanism",
+      "to": "ec108_monetary_policy_advantages",
+      "difficulty": 0.35
+    },
+    {
+      "from": "ec108_monetary_transmission_mechanism",
+      "to": "ec108_monetary_policy_disadvantages",
+      "difficulty": 0.4
+    },
+    {
+      "from": "ec108_monetary_policy_advantages",
+      "to": "ec108_monetary_policy_disadvantages",
+      "difficulty": 0.4
+    },
+    {
+      "from": "ec108_45_degree_diagram",
+      "to": "ec108_ad_curve_construction",
+      "difficulty": 0.5
+    },
+    {
+      "from": "ec108_money_market_equilibrium",
+      "to": "ec108_ad_curve_construction",
+      "difficulty": 0.5
+    },
+    {
+      "from": "ec108_ad_curve_construction",
+      "to": "ec108_ad_shifts",
+      "difficulty": 0.35
+    },
+    {
+      "from": "ec108_fiscal_policy_definition",
+      "to": "ec108_ad_shifts",
+      "difficulty": 0.35
+    },
+    {
+      "from": "ec108_monetary_policy_definition",
+      "to": "ec108_ad_shifts",
+      "difficulty": 0.35
+    },
+    {
+      "from": "ec108_natural_rate_unemployment",
+      "to": "ec108_as_curve_short_long_run",
+      "difficulty": 0.4
+    },
+    {
+      "from": "ec108_ad_curve_construction",
+      "to": "ec108_ad_as_equilibrium",
+      "difficulty": 0.45
+    },
+    {
+      "from": "ec108_as_curve_short_long_run",
+      "to": "ec108_ad_as_equilibrium",
+      "difficulty": 0.45
+    },
+    {
+      "from": "ec108_ad_shifts",
+      "to": "ec108_ad_as_equilibrium",
+      "difficulty": 0.4
+    },
+    {
+      "from": "ec108_types_unemployment",
+      "to": "ec108_phillips_curve_original",
+      "difficulty": 0.4
+    },
+    {
+      "from": "ec108_inflation_definition",
+      "to": "ec108_phillips_curve_original",
+      "difficulty": 0.35
+    },
+    {
+      "from": "ec108_phillips_curve_original",
+      "to": "ec108_stagflation_breakdown",
+      "difficulty": 0.4
+    },
+    {
+      "from": "ec108_stagflation_breakdown",
+      "to": "ec108_expectations_augmented_phillips",
+      "difficulty": 0.5
+    },
+    {
+      "from": "ec108_natural_rate_unemployment",
+      "to": "ec108_expectations_augmented_phillips",
+      "difficulty": 0.45
+    },
+    {
+      "from": "ec108_expectations_augmented_phillips",
+      "to": "ec108_adaptive_expectations",
+      "difficulty": 0.4
+    },
+    {
+      "from": "ec108_expectations_augmented_phillips",
+      "to": "ec108_long_run_phillips_curve",
+      "difficulty": 0.5
+    },
+    {
+      "from": "ec108_adaptive_expectations",
+      "to": "ec108_long_run_phillips_curve",
+      "difficulty": 0.45
+    },
+    {
+      "from": "ec108_long_run_phillips_curve",
+      "to": "ec108_nairu",
+      "difficulty": 0.45
+    },
+    {
+      "from": "ec108_nominal_real_gdp",
+      "to": "ec108_exchange_rates_definition",
+      "difficulty": 0.3
+    },
+    {
+      "from": "ec108_exchange_rates_definition",
+      "to": "ec108_forex_market",
+      "difficulty": 0.4
+    },
+    {
+      "from": "ec108_forex_market",
+      "to": "ec108_floating_exchange_rate",
+      "difficulty": 0.3
+    },
+    {
+      "from": "ec108_forex_market",
+      "to": "ec108_fixed_exchange_rate",
+      "difficulty": 0.35
+    },
+    {
+      "from": "ec108_floating_exchange_rate",
+      "to": "ec108_floating_advantages",
+      "difficulty": 0.35
+    },
+    {
+      "from": "ec108_net_exports_determinants",
+      "to": "ec108_floating_advantages",
+      "difficulty": 0.4
+    },
+    {
+      "from": "ec108_monetary_policy_definition",
+      "to": "ec108_floating_advantages",
+      "difficulty": 0.35
+    },
+    {
+      "from": "ec108_floating_exchange_rate",
+      "to": "ec108_floating_disadvantages",
+      "difficulty": 0.35
+    },
+    {
+      "from": "ec108_floating_advantages",
+      "to": "ec108_floating_disadvantages",
+      "difficulty": 0.4
+    },
+    {
+      "from": "ec108_fixed_exchange_rate",
+      "to": "ec108_fixed_advantages",
+      "difficulty": 0.35
+    },
+    {
+      "from": "ec108_inflation_definition",
+      "to": "ec108_fixed_advantages",
+      "difficulty": 0.3
+    },
+    {
+      "from": "ec108_fixed_exchange_rate",
+      "to": "ec108_fixed_disadvantages",
+      "difficulty": 0.4
+    },
+    {
+      "from": "ec108_monetary_policy_definition",
+      "to": "ec108_fixed_disadvantages",
+      "difficulty": 0.4
+    },
+    {
+      "from": "ec108_fixed_advantages",
+      "to": "ec108_fixed_disadvantages",
+      "difficulty": 0.4
+    },
+    {
+      "from": "ec108_exchange_rates_definition",
+      "to": "ec108_balance_of_payments",
+      "difficulty": 0.35
+    },
+    {
+      "from": "ec108_exchange_rates_definition",
+      "to": "ec108_net_exports_determinants",
+      "difficulty": 0.35
+    },
+    {
+      "from": "ec108_net_exports_determinants",
+      "to": "ec108_open_economy_multiplier",
+      "difficulty": 0.45
+    },
+    {
+      "from": "ec108_multiplier_derivation",
+      "to": "ec108_open_economy_multiplier",
+      "difficulty": 0.45
+    },
+    {
+      "from": "ec108_balance_of_payments",
+      "to": "ec108_open_economy_multiplier",
+      "difficulty": 0.4
+    },
+    {
+      "from": "ec108_gdp_definition",
+      "to": "ec108_income_inequality_measurement",
+      "difficulty": 0.3
+    },
+    {
+      "from": "ec108_income_inequality_measurement",
+      "to": "ec108_causes_of_inequality",
+      "difficulty": 0.35
+    },
+    {
+      "from": "ec108_causes_of_inequality",
+      "to": "ec108_inequality_growth_tradeoff",
+      "difficulty": 0.45
+    },
+    {
+      "from": "ec108_income_inequality_measurement",
+      "to": "ec108_redistribution_policies",
+      "difficulty": 0.35
+    },
+    {
+      "from": "ec108_taxation_types",
+      "to": "ec108_redistribution_policies",
+      "difficulty": 0.3
+    },
+    {
+      "from": "ec108_redistribution_policies",
+      "to": "ec108_redistribution_evaluation",
+      "difficulty": 0.4
+    },
+    {
+      "from": "ec108_inequality_growth_tradeoff",
+      "to": "ec108_redistribution_evaluation",
+      "difficulty": 0.45
+    }
+  ]
+}

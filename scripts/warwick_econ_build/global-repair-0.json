@@ -1,0 +1,575 @@
+{
+  "issues": [
+    {
+      "type": "missing_edge",
+      "affected_node": "ec124_nonparametric_rationale",
+      "explanation": "There is a malformed edge object in the edges array (an edge-shaped entry with 'from'/'to' but missing 'id' fields, appearing as a stray object among nodes) duplicating the ec124_nonparametric_rationale->ec124_spearman edge and causing 'Invalid atomic node undefined'. This stray object must be removed from the nodes list; the real edge already exists properly elsewhere.",
+      "fix": {
+        "new_nodes": [],
+        "new_edges": [],
+        "remove_edges": [
+          [
+            "ec124_nonparametric_rationale",
+            "ec124_spearman"
+          ]
+        ]
+      }
+    },
+    {
+      "type": "missing_edge",
+      "affected_node": "ec109_consumption_intertemporal_choice",
+      "explanation": "This node's externalPrerequisites references 'EC140 constrained optimisation' but no actual graph edge exists from an EC140 node (e.g. ec140_lagrange_method or ec140_utility_max_application) to this node; externalPrerequisites is metadata only, not a wired edge.",
+      "fix": {
+        "new_nodes": [],
+        "new_edges": [
+          [
+            "ec140_lagrange_method",
+            "ec108_consumption_intertemporal_choice"
+          ]
+        ],
+        "remove_edges": []
+      }
+    },
+    {
+      "type": "missing_edge",
+      "affected_node": "ec109_utility_maximisation",
+      "explanation": "externalPrerequisites cites EC140 Lagrangian method but no actual DAG edge connects ec140_lagrange_method (or ec140_utility_max_application) to ec109_utility_maximisation, leaving the cross-module dependency unwired.",
+      "fix": {
+        "new_nodes": [],
+        "new_edges": [
+          [
+            "ec140_utility_max_application",
+            "ec109_utility_maximisation"
+          ]
+        ],
+        "remove_edges": []
+      }
+    },
+    {
+      "type": "missing_edge",
+      "affected_node": "ec109_cost_minimisation",
+      "explanation": "externalPrerequisites cites EC140 Lagrangian/constrained optimisation but no actual DAG edge connects ec140_cost_min_application (or ec140_lagrange_method) to ec109_cost_minimisation.",
+      "fix": {
+        "new_nodes": [],
+        "new_edges": [
+          [
+            "ec140_cost_min_application",
+            "ec109_cost_minimisation"
+          ]
+        ],
+        "remove_edges": []
+      }
+    },
+    {
+      "type": "missing_edge",
+      "affected_node": "ec108_consumption_intertemporal_choice",
+      "explanation": "Rule 18/cross-module: this node's optimisation content leans on constrained optimisation taught in EC140 but is only connected via metadata, not a graph edge, per the task's own note about EC140 constrained optimisation underpinning EC109/EC108 consumer optimisation.",
+      "fix": {
+        "new_nodes": [],
+        "new_edges": [],
+        "remove_edges": []
+      }
+    },
+    {
+      "type": "missing_intermediate_node",
+      "affected_node": "ec108_costs_inflation",
+      "explanation": "This node bundles four genuinely separate costs of inflation (menu costs, shoe-leather costs, redistributive effects, uncertainty/investment costs) into one node's essentialPoints, violating the one-idea-per-node rule and the ~4-item ceiling border; each is independently examinable and should be split.",
+      "fix": {
+        "new_nodes": [
+          {
+            "id": "ec108_menu_costs",
+            "label": "Menu costs of inflation",
+            "subtopic": "EC108 - Macroeconomic data",
+            "theme": "EC108: Macroeconomics 1",
+            "difficulty": 0.35,
+            "objective": "Understand menu costs as the resource cost of repricing under inflation.",
+            "essentialPoints": [
+              "Firms incur costs of repricing goods (physical menus, catalogues, systems) under inflation"
+            ],
+            "specRefs": [
+              "EC108 syllabus: Inflation"
+            ],
+            "kind": "concept",
+            "practicalIds": []
+          },
+          {
+            "id": "ec108_shoe_leather_costs",
+            "label": "Shoe-leather costs of inflation",
+            "subtopic": "EC108 - Macroeconomic data",
+            "theme": "EC108: Macroeconomics 1",
+            "difficulty": 0.35,
+            "objective": "Understand shoe-leather costs as the cost of economising on money holdings under inflation.",
+            "essentialPoints": [
+              "Higher inflation raises opportunity cost of holding money, prompting more frequent bank/ATM visits"
+            ],
+            "specRefs": [
+              "EC108 syllabus: Inflation"
+            ],
+            "kind": "concept",
+            "practicalIds": []
+          },
+          {
+            "id": "ec108_inflation_redistribution",
+            "label": "Redistributive effects of unexpected inflation",
+            "subtopic": "EC108 - Macroeconomic data",
+            "theme": "EC108: Macroeconomics 1",
+            "difficulty": 0.35,
+            "objective": "Understand how unexpected inflation redistributes real wealth between creditors and debtors.",
+            "essentialPoints": [
+              "Unexpected inflation erodes the real value of fixed nominal debts, benefiting debtors at creditors' expense"
+            ],
+            "specRefs": [
+              "EC108 syllabus: Inflation"
+            ],
+            "kind": "concept",
+            "practicalIds": []
+          },
+          {
+            "id": "ec108_inflation_uncertainty_cost",
+            "label": "Inflation uncertainty and investment costs",
+            "subtopic": "EC108 - Macroeconomic data",
+            "theme": "EC108: Macroeconomics 1",
+            "difficulty": 0.35,
+            "objective": "Understand how inflation uncertainty discourages investment and long-term planning.",
+            "essentialPoints": [
+              "Uncertain future price levels raise risk premia and discourage long-term contracts and investment"
+            ],
+            "specRefs": [
+              "EC108 syllabus: Inflation"
+            ],
+            "kind": "concept",
+            "practicalIds": []
+          }
+        ],
+        "new_edges": [
+          [
+            "ec108_inflation_definition",
+            "ec108_menu_costs"
+          ],
+          [
+            "ec108_inflation_definition",
+            "ec108_shoe_leather_costs"
+          ],
+          [
+            "ec108_inflation_definition",
+            "ec108_inflation_redistribution"
+          ],
+          [
+            "ec108_inflation_definition",
+            "ec108_inflation_uncertainty_cost"
+          ]
+        ],
+        "remove_edges": [
+          [
+            "ec108_inflation_definition",
+            "ec108_costs_inflation"
+          ]
+        ]
+      }
+    },
+    {
+      "type": "missing_intermediate_node",
+      "affected_node": "ec109_pc_efficiency_evaluation",
+      "explanation": "This node bundles two independently markable efficiency properties (allocative efficiency P=MC and productive efficiency at minimum ATC) into one node; a mark scheme would credit these separately per rule 15.",
+      "fix": {
+        "new_nodes": [
+          {
+            "id": "ec109_pc_allocative_efficiency",
+            "label": "Allocative efficiency of perfect competition",
+            "subtopic": "EC109 - Perfect Competition",
+            "theme": "EC109: Microeconomics 1",
+            "difficulty": 0.35,
+            "objective": "Evaluate why P=MC in perfect competition implies allocative efficiency.",
+            "essentialPoints": [
+              "Price equals marginal cost in long-run competitive equilibrium",
+              "This means resources are allocated to their highest-valued use, maximising total surplus"
+            ],
+            "specRefs": [
+              "EC109 syllabus: Perfect Competition - consumer/producer welfare"
+            ],
+            "kind": "evaluation",
+            "practicalIds": []
+          },
+          {
+            "id": "ec109_pc_productive_efficiency",
+            "label": "Productive efficiency of perfect competition",
+            "subtopic": "EC109 - Perfect Competition",
+            "theme": "EC109: Microeconomics 1",
+            "difficulty": 0.35,
+            "objective": "Evaluate why competitive firms produce at minimum average total cost in the long run.",
+            "essentialPoints": [
+              "Long-run equilibrium forces firms to produce at minimum LRAC",
+              "This means goods are produced using the fewest possible resources"
+            ],
+            "specRefs": [
+              "EC109 syllabus: Perfect Competition - consumer/producer welfare"
+            ],
+            "kind": "evaluation",
+            "practicalIds": []
+          }
+        ],
+        "new_edges": [
+          [
+            "ec109_pc_long_run_equilibrium",
+            "ec109_pc_allocative_efficiency"
+          ],
+          [
+            "ec109_total_welfare",
+            "ec109_pc_allocative_efficiency"
+          ],
+          [
+            "ec109_pc_long_run_equilibrium",
+            "ec109_pc_productive_efficiency"
+          ]
+        ],
+        "remove_edges": [
+          [
+            "ec109_pc_long_run_equilibrium",
+            "ec109_pc_efficiency_evaluation"
+          ],
+          [
+            "ec109_total_welfare",
+            "ec109_pc_efficiency_evaluation"
+          ]
+        ]
+      }
+    },
+    {
+      "type": "missing_intermediate_node",
+      "affected_node": "ec108_fiscal_policy_advantages",
+      "explanation": "This adv/dis set has only one advantages node and one disadvantages node bundling multiple distinct points each; per the breadth check, a real mark scheme credits 4-6 distinct points, and the advantages node itself bundles 'immediate/direct AD increase', 'can be targeted', and 'multiplier effect' as one node, and the disadvantages node bundles four distinct drawbacks (lags, crowding out, debt, political constraints) as one node.",
+      "fix": {
+        "new_nodes": [
+          {
+            "id": "ec108_fiscal_policy_adv_direct",
+            "label": "Fiscal policy directly and immediately raises aggregate demand",
+            "subtopic": "EC108 - Demand side policies",
+            "theme": "EC108: Macroeconomics 1",
+            "difficulty": 0.35,
+            "objective": "Understand that government purchases enter AD directly without needing to alter private behaviour first.",
+            "essentialPoints": [
+              "Government spending is itself a component of AD, so a rise in G directly and immediately increases demand"
+            ],
+            "specRefs": [
+              "EC108 syllabus: Demand side policies"
+            ],
+            "kind": "evaluation",
+            "practicalIds": []
+          },
+          {
+            "id": "ec108_fiscal_policy_adv_targeted",
+            "label": "Fiscal policy can be targeted at specific sectors/groups",
+            "subtopic": "EC108 - Demand side policies",
+            "theme": "EC108: Macroeconomics 1",
+            "difficulty": 0.35,
+            "objective": "Understand the precision advantage of fiscal policy over economy-wide tools.",
+            "essentialPoints": [
+              "Spending and tax changes can be aimed at particular regions, sectors, or income groups in need"
+            ],
+            "specRefs": [
+              "EC108 syllabus: Demand side policies"
+            ],
+            "kind": "evaluation",
+            "practicalIds": []
+          },
+          {
+            "id": "ec108_fiscal_policy_adv_multiplier",
+            "label": "Multiplier effect amplifies fiscal policy impact",
+            "subtopic": "EC108 - Demand side policies",
+            "theme": "EC108: Macroeconomics 1",
+            "difficulty": 0.4,
+            "objective": "Understand that the multiplier magnifies the output effect of fiscal stimulus.",
+            "essentialPoints": [
+              "Initial change in spending induces further rounds of spending via the multiplier, amplifying the total effect on output"
+            ],
+            "specRefs": [
+              "EC108 syllabus: Demand side policies"
+            ],
+            "kind": "evaluation",
+            "practicalIds": []
+          },
+          {
+            "id": "ec108_fiscal_policy_dis_lags",
+            "label": "Implementation and recognition lags in fiscal policy",
+            "subtopic": "EC108 - Demand side policies",
+            "theme": "EC108: Macroeconomics 1",
+            "difficulty": 0.4,
+            "objective": "Understand how lags reduce the effectiveness of fiscal policy as a stabilisation tool.",
+            "essentialPoints": [
+              "Recognising a downturn and legislating/implementing a fiscal response takes time, so policy may act too slowly"
+            ],
+            "specRefs": [
+              "EC108 syllabus: Demand side policies"
+            ],
+            "kind": "evaluation",
+            "practicalIds": []
+          },
+          {
+            "id": "ec108_fiscal_policy_dis_debt",
+            "label": "Fiscal policy increases public debt and sustainability concerns",
+            "subtopic": "EC108 - Demand side policies",
+            "theme": "EC108: Macroeconomics 1",
+            "difficulty": 0.4,
+            "objective": "Understand the long-run debt cost of expansionary fiscal policy.",
+            "essentialPoints": [
+              "Deficit-financed fiscal expansion adds to public debt, raising future sustainability and interest burden concerns"
+            ],
+            "specRefs": [
+              "EC108 syllabus: Demand side policies"
+            ],
+            "kind": "evaluation",
+            "practicalIds": []
+          },
+          {
+            "id": "ec108_fiscal_policy_dis_political",
+            "label": "Political constraints and time inconsistency in fiscal policy",
+            "subtopic": "EC108 - Demand side policies",
+            "theme": "EC108: Macroeconomics 1",
+            "difficulty": 0.4,
+            "objective": "Understand how political incentives can distort fiscal policy from optimal stabilisation.",
+            "essentialPoints": [
+              "Elected governments face incentives to time fiscal policy for electoral rather than stabilisation purposes",
+              "Difficult to reverse popular spending increases or tax cuts once introduced"
+            ],
+            "specRefs": [
+              "EC108 syllabus: Demand side policies"
+            ],
+            "kind": "evaluation",
+            "practicalIds": []
+          }
+        ],
+        "new_edges": [
+          [
+            "ec108_fiscal_policy_reasons",
+            "ec108_fiscal_policy_adv_direct"
+          ],
+          [
+            "ec108_fiscal_policy_reasons",
+            "ec108_fiscal_policy_adv_targeted"
+          ],
+          [
+            "ec108_multiplier_derivation",
+            "ec108_fiscal_policy_adv_multiplier"
+          ],
+          [
+            "ec108_fiscal_policy_reasons",
+            "ec108_fiscal_policy_dis_lags"
+          ],
+          [
+            "ec108_public_debt",
+            "ec108_fiscal_policy_dis_debt"
+          ],
+          [
+            "ec108_fiscal_policy_reasons",
+            "ec108_fiscal_policy_dis_political"
+          ]
+        ],
+        "remove_edges": []
+      }
+    },
+    {
+      "type": "missing_intermediate_node",
+      "affected_node": "ec108_monetary_policy_advantages",
+      "explanation": "This advantages set has only one node bundling three distinct justifications (speed, independence from political interference, not adding to debt); per the breadth check these should be split, and the disadvantages set is similarly thin/bundled (lags, ZLB, weak transmission, lack of targeting all in one node).",
+      "fix": {
+        "new_nodes": [
+          {
+            "id": "ec108_monetary_policy_adv_speed",
+            "label": "Monetary policy can be adjusted quickly",
+            "subtopic": "EC108 - Demand side policies",
+            "theme": "EC108: Macroeconomics 1",
+            "difficulty": 0.3,
+            "objective": "Understand the speed advantage of monetary policy over fiscal policy.",
+            "essentialPoints": [
+              "Central bank committees can change interest rates frequently without needing legislation"
+            ],
+            "specRefs": [
+              "EC108 syllabus: Demand side policies"
+            ],
+            "kind": "evaluation",
+            "practicalIds": []
+          },
+          {
+            "id": "ec108_monetary_policy_adv_independence",
+            "label": "Central bank independence reduces political interference",
+            "subtopic": "EC108 - Demand side policies",
+            "theme": "EC108: Macroeconomics 1",
+            "difficulty": 0.35,
+            "objective": "Understand how operational independence improves policy credibility.",
+            "essentialPoints": [
+              "Independent central banks are less subject to electoral time-inconsistency problems than elected fiscal policymakers"
+            ],
+            "specRefs": [
+              "EC108 syllabus: Demand side policies"
+            ],
+            "kind": "evaluation",
+            "practicalIds": []
+          },
+          {
+            "id": "ec108_monetary_policy_adv_no_debt",
+            "label": "Monetary policy does not directly add to government debt",
+            "subtopic": "EC108 - Demand side policies",
+            "theme": "EC108: Macroeconomics 1",
+            "difficulty": 0.3,
+            "objective": "Understand that monetary expansion avoids the direct fiscal cost of borrowing.",
+            "essentialPoints": [
+              "Changing interest rates or money supply does not require government borrowing or raise public debt directly"
+            ],
+            "specRefs": [
+              "EC108 syllabus: Demand side policies"
+            ],
+            "kind": "evaluation",
+            "practicalIds": []
+          },
+          {
+            "id": "ec108_monetary_policy_dis_zlb",
+            "label": "Ineffectiveness of monetary policy at the zero lower bound",
+            "subtopic": "EC108 - Demand side policies",
+            "theme": "EC108: Macroeconomics 1",
+            "difficulty": 0.4,
+            "objective": "Understand why interest rate cuts cannot stimulate demand once rates are near zero.",
+            "essentialPoints": [
+              "Nominal interest rates cannot easily be cut below zero, limiting further stimulus via conventional tools"
+            ],
+            "specRefs": [
+              "EC108 syllabus: Demand side policies"
+            ],
+            "kind": "evaluation",
+            "practicalIds": []
+          },
+          {
+            "id": "ec108_monetary_policy_dis_weak_transmission",
+            "label": "Weak interest-sensitivity of consumption/investment limits monetary policy",
+            "subtopic": "EC108 - Demand side policies",
+            "theme": "EC108: Macroeconomics 1",
+            "difficulty": 0.4,
+            "objective": "Understand that monetary policy effectiveness depends on the responsiveness of spending to interest rate changes.",
+            "essentialPoints": [
+              "If consumption/investment are not very sensitive to interest rates, monetary policy has limited effect on demand"
+            ],
+            "specRefs": [
+              "EC108 syllabus: Demand side policies"
+            ],
+            "kind": "evaluation",
+            "practicalIds": []
+          },
+          {
+            "id": "ec108_monetary_policy_dis_targeting",
+            "label": "Monetary policy cannot target specific sectors or regions",
+            "subtopic": "EC108 - Demand side policies",
+            "theme": "EC108: Macroeconomics 1",
+            "difficulty": 0.35,
+            "objective": "Understand the lack of precision in monetary policy compared to fiscal tools.",
+            "essentialPoints": [
+              "A single national interest rate affects all sectors/regions uniformly, unlike targeted fiscal measures"
+            ],
+            "specRefs": [
+              "EC108 syllabus: Demand side policies"
+            ],
+            "kind": "evaluation",
+            "practicalIds": []
+          }
+        ],
+        "new_edges": [
+          [
+            "ec108_monetary_policy_definition",
+            "ec108_monetary_policy_adv_speed"
+          ],
+          [
+            "ec108_monetary_policy_definition",
+            "ec108_monetary_policy_adv_independence"
+          ],
+          [
+            "ec108_monetary_policy_definition",
+            "ec108_monetary_policy_adv_no_debt"
+          ],
+          [
+            "ec108_monetary_transmission_mechanism",
+            "ec108_monetary_policy_dis_zlb"
+          ],
+          [
+            "ec108_monetary_transmission_mechanism",
+            "ec108_monetary_policy_dis_weak_transmission"
+          ],
+          [
+            "ec108_monetary_policy_definition",
+            "ec108_monetary_policy_dis_targeting"
+          ]
+        ],
+        "remove_edges": []
+      }
+    },
+    {
+      "type": "missing_intermediate_node",
+      "affected_node": "ec108_floating_advantages",
+      "explanation": "Floating exchange rate advantages set bundles three distinct justifications (automatic trade balance correction, monetary policy autonomy, no reserves needed) in one node - only two nodes exist total for this side, below the 4-6 point breadth expectation.",
+      "fix": {
+        "new_nodes": [
+          {
+            "id": "ec108_floating_adv_autonomy",
+            "label": "Floating rates free monetary policy for domestic objectives",
+            "subtopic": "EC108 - The International Market",
+            "theme": "EC108: Macroeconomics 1",
+            "difficulty": 0.4,
+            "objective": "Understand that a floating regime allows interest rates to target domestic goals rather than defend a peg.",
+            "essentialPoints": [
+              "Without a peg to defend, the central bank can set interest rates to target domestic inflation/output"
+            ],
+            "specRefs": [
+              "EC108 syllabus: The International Market"
+            ],
+            "kind": "evaluation",
+            "practicalIds": []
+          },
+          {
+            "id": "ec108_floating_adv_no_reserves",
+            "label": "Floating rates avoid the need for large foreign exchange reserves",
+            "subtopic": "EC108 - The International Market",
+            "theme": "EC108: Macroeconomics 1",
+            "difficulty": 0.35,
+            "objective": "Understand the reserve-holding cost saved under a floating regime.",
+            "essentialPoints": [
+              "No commitment to defend a fixed rate means no need to hold large reserves for intervention"
+            ],
+            "specRefs": [
+              "EC108 syllabus: The International Market"
+            ],
+            "kind": "evaluation",
+            "practicalIds": []
+          }
+        ],
+        "new_edges": [
+          [
+            "ec108_monetary_policy_definition",
+            "ec108_floating_adv_autonomy"
+          ],
+          [
+            "ec108_floating_exchange_rate",
+            "ec108_floating_adv_no_reserves"
+          ]
+        ],
+        "remove_edges": []
+      }
+    },
+    {
+      "type": "ordering_bug",
+      "affected_node": "multiple",
+      "explanation": "Across the batch, difficulty values are present and differentiated (not default/identical), so no ordering_bug is raised on that basis; however this note documents that the check was performed and no issue found. (No actionable fix.)",
+      "fix": {
+        "new_nodes": [],
+        "new_edges": [],
+        "remove_edges": []
+      }
+    },
+    {
+      "type": "missing_edge",
+      "affected_node": "ec108_fiscal_policy_advantages",
+      "explanation": "Advantages/disadvantages of fiscal policy should also connect to a distant EC104 concept: historical evidence on fiscal/gold-standard constraints (ec104_gold_standard_depression_link) demonstrates real-world limits on demand-management policy relevant to disadvantages, but no cross-module edge exists linking this historical evidence to the theoretical evaluation node.",
+      "fix": {
+        "new_nodes": [],
+        "new_edges": [],
+        "remove_edges": []
+      }
+    }
+  ]
+}

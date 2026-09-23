@@ -34,7 +34,7 @@ import {
 } from '../services/nodeReviewService';
 import { getNodeNoteBaseline, getNodeNoteForUser, saveNodeNoteEdit, getNodeNotes, getEdgeNoteBaseline, getEdgeNoteForUser, saveEdgeNoteEdit, getEdgeNotes, getNotesIndexForUser, getPersonalNote, savePersonalNote, checkWorkedExampleStep, markEdgeExplanationSeen } from '../services/knowledgeMapNotesService';
 import { derivationKeyTermGraph, derivationCompletedStages, derivationQuick, ensureDerivationContent, derivationPlayerPayload, derivationConceptsOfStage, derivationNodeIds, derivationAnchorConcept, derivationSiblingConcepts } from '../services/derivationService';
-import { derivationGenericLookup, derivationGenericGenerate, derivationContentForGenericNode, genericStageKey, derivationGenericPayloadForKey } from '../services/derivationGenericService';
+import { derivationGenericLookup, derivationGenericGenerate, derivationContentForGenericNode, genericStageKey, derivationGenericPayloadForKey, derivationGenericConceptsForKey } from '../services/derivationGenericService';
 import { generateAndCacheNodeLesson, generateAndCacheEdgeLesson, needsQuestionUpgrade, upgradeLessonQuestions } from '../services/lessonGenerationService';
 import { isStructured, gradeStructured, clientView, lessonForClient, sealJson, openJson, closeEnough, StructuredQuestion } from '../services/questionFormats';
 import { pickRotatingQuestion, poolEntry, poolOf, rotationPick, immediatePool } from '../services/reviewQuestionPool';
@@ -291,8 +291,12 @@ router.get('/derivation/my-map', requireAuth, syncEndpointLimiter, async (req: R
 // The student rebuilt the whole derivation from memory (its final test), so every concept in that stage counts as taught: each gets its
 // first schedule entry exactly as a correct first attempt at the old practice question did.
 router.post('/knowledge-map-v2/derivation/complete', requireAuth, syncEndpointLimiter, async (req: Request, res: Response) => {
-  const stage = Number((req.body ?? {}).stage);
-  const concepts = derivationConceptsOfStage(stage);
+  const rawStage = (req.body ?? {}).stage;
+  const genericStage = typeof rawStage === 'string' && rawStage.startsWith('g:');
+  const stage = genericStage ? rawStage : Number(rawStage);
+  const concepts = genericStage
+    ? await derivationGenericConceptsForKey(stage as string)
+    : derivationConceptsOfStage(stage as number);
   if (!concepts.length) return res.status(404).json({ error: 'lesson not found' });
   try {
     const userId = req.userId as string;
@@ -301,13 +305,14 @@ router.post('/knowledge-map-v2/derivation/complete', requireAuth, syncEndpointLi
       try {
         const graded = await gradeCorrectness(userId, conceptId, true, Number((req.body ?? {}).retryCount) || 0);
         // Economics has no quick (2-minute) recall. The Day-1 check belongs to the whole lesson, so only its anchor concept carries it.
-        if (!graded.previousRow && conceptId === derivationAnchorConcept(stage)) await scheduleDay1Check(userId, conceptId);
+        const anchor = genericStage ? concepts[0] : derivationAnchorConcept(stage as number);
+        if (!graded.previousRow && conceptId === anchor) await scheduleDay1Check(userId, conceptId);
         schedules.push(scheduleWithMastery(conceptId, graded));
       } catch (err) {
         if (!(err instanceof ReviewNotDueError)) throw err; // already learned and not due yet: nothing to record
       }
     }
-    (await derivationNodeIds(stage)).forEach((id) => { ensureDerivationContent(id).catch((e) => console.error('LastMind: derivation content refresh failed', id, e)); });
+    if (!genericStage) (await derivationNodeIds(stage as number)).forEach((id) => { ensureDerivationContent(id).catch((e) => console.error('LastMind: derivation content refresh failed', id, e)); });
     res.json({ schedules });
   } catch (err) {
     console.error('Derivation completion failed:', err);

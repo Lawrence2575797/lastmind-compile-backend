@@ -1474,7 +1474,8 @@ router.post('/day1-checks/:id/submit', requireAuth, costlyEndpointLimiter, async
     if (question.structured) {
       // An interactive check is graded exactly. The first miss gets one re-ask (a mis-tap is a slip); the second is final.
       const g = gradeStructured(question.structured, structured);
-      correct = g.correct; feedback = g.feedback; sillyMistake = !g.correct; detail = g.detail;
+      const gaveUp = !!(structured && typeof structured === 'object' && (structured as any).gaveUp);
+      correct = g.correct; feedback = gaveUp && !g.correct ? "That's fine — the boxes you didn't know will return in a later review." : g.feedback; sillyMistake = !g.correct && !gaveUp; detail = g.detail;
     } else {
       const raw = await callClaudeJSON({
         model: MODELS.simpleQuestion,

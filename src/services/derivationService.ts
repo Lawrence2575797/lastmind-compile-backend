@@ -85,19 +85,19 @@ export function derivationContentForStage(s: Stage, nodeKey: string, stageRef: n
   const chain = chainThrough(s, nodeKey).map((k) => s.terms[k]?.t).filter(Boolean);
   const explanation = [scenario, statement, chain.length > 1 ? `This idea sits in a chain of ideas: ${chain.join(' → ')}.` : ''].filter(Boolean).join('\n\n');
 
-  // A multiple-choice check on this term: its own label against three others from the same lesson (or the wider pool).
-  const others = Object.keys(s.terms).filter((k) => k !== nodeKey).map((k) => s.terms[k].t);
-  const pool: string[] = [...others, ...extraPool.filter((t) => t !== label && !others.includes(t))];
-  const options = [label, ...pool.slice(0, 3)];
-  const rot = (typeof stageRef === 'number' ? stageRef : options.length) % 4;
-  const shuffled = options.map((_, k) => options[(k + rot) % 4]);
-  const mc = {
-    format: 'multiple_choice',
-    questionText: step.type === 'ask' ? `${step.q} ${cap(step.opts[0])}. What is this idea called?` : `${step.text.trim()} ___. What is this idea called?`,
-    options: shuffled,
-    correctOptionIndex: shuffled.indexOf(label),
+  // A recall check on this term: fill in what the blank refers to, from the lead-in phrase already written for it -
+  // NOT step.q/step.opts (a real reported bug: those are a yes/no-style pair for a DIFFERENT, already-answered
+  // question, and concatenating step.opts[0] - the correct answer - straight into the question text produced a
+  // garbled prompt that told the student the answer, then asked an unrelated second question underneath it). Day-1
+  // checks are free-text/open-recall by design (see getQuestionForConceptId's own comment on preferring that over
+  // recognition-based formats), so this is written and graded as free text rather than forcing multiple-choice
+  // through a pipeline that has never actually rendered it as clickable options.
+  const fillIn = {
+    format: 'free_text',
+    questionText: step.type === 'ask' ? `${step.pre.trim()} ___. What is this called?` : `${step.text.trim()} ___. What is this called?`,
+    markScheme: label,
   };
-  const recallChecks: any[] = [mc];
+  const recallChecks: any[] = [fillIn];
   const path = chainThrough(s, nodeKey);
   if (path.length >= 3 && path.length <= 6) {
     recallChecks.push({
@@ -105,7 +105,7 @@ export function derivationContentForStage(s: Stage, nodeKey: string, stageRef: n
       items: path.map((k) => s.terms[k]?.t).filter(Boolean),
     });
   }
-  return { explanation, practiceQuestion: mc, recallChecks, formatVersion: 2, derivation: true, stage: stageRef };
+  return { explanation, practiceQuestion: fillIn, recallChecks, formatVersion: 2, derivation: true, stage: stageRef };
 }
 
 export function derivationContentForNode(n: NodeIdentity): any | null {

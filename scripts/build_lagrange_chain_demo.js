@@ -45,9 +45,9 @@ const spec = {
       edges: [[SV, F2], [F2, PD], [PD, XP], [PD, TOTDIFF]],
       steps: [
         {
-          type: 'ask', term: SV,
+          type: 'calc', term: SV,
           q: "For y = 3x^2, the ordinary derivative rule gives dy/dx = 6x. At x = 4, what is dy/dx?",
-          right: "24", wrong: "48", hint: "6x with x = 4 is 6 times 4.",
+          answer: 24, hint: "6x with x = 4 is 6 times 4.",
           pre: "Applying the power rule term by term is exactly",
         },
         {
@@ -59,9 +59,9 @@ const spec = {
           pre: "Q(K, L) is an example of a",
         },
         {
-          type: 'ask', term: PD,
+          type: 'calc', term: PD,
           q: "For Q = K^0.5 * L^0.5, hold L fixed at L = 4 and differentiate with respect to K only, treating L^0.5 = 2 as a constant multiplier: dQ/dK = 0.5*K^(-0.5)*2 = K^(-0.5). At K = 4, what is dQ/dK?",
-          right: "0.5", wrong: "2", hint: "K^(-0.5) at K = 4 is 1 / sqrt(4).",
+          answer: 0.5, hint: "K^(-0.5) at K = 4 is 1 / sqrt(4).",
           pre: "Differentiating with every other variable held fixed is a",
         },
         {
@@ -74,9 +74,9 @@ const spec = {
         },
         { type: 'order', terms: [SV, F2, PD, XP], prompt: 'Drag and drop the 4 key terms in the order they build on each other.' },
         {
-          type: 'ask', term: TOTDIFF,
+          type: 'calc', term: TOTDIFF,
           q: "For Q = K^0.5*L^0.5 near K = 4, L = 4 (so dQ/dK = 0.5, dQ/dL = 0.5 by symmetry), suppose K rises by 0.2 and L rises by 0.1 at the same time. Adding each input's own partial-derivative effect gives DeltaQ = (dQ/dK)*DeltaK + (dQ/dL)*DeltaL = 0.5*0.2 + 0.5*0.1. What does this approximate as the change in Q?",
-          right: "0.15", wrong: "0.30", hint: "0.5 times 0.2 is 0.1, plus 0.5 times 0.1 is 0.05 - add the two.",
+          answer: 0.15, hint: "0.5 times 0.2 is 0.1, plus 0.5 times 0.1 is 0.05 - add the two.",
           pre: "Adding up every input's own effect this way is the",
         },
         { type: 'derive' },
@@ -89,19 +89,15 @@ const spec = {
       edges: [[OPT1, OPTM], [OPTM, LAG], [LAG, SHAD], [SHAD, KT], [PD, OPTM], [TOTDIFF, LAG]],
       steps: [
         {
-          type: 'ask', term: OPT1,
-          q: "A firm's profit is π(Q) = 100Q - 2Q^2. Setting dπ/dQ = 100 - 4Q equal to zero gives Q = 25. Checking the second derivative, d^2π/dQ^2 = -4, which is negative. Does a negative second derivative at a stationary point confirm it is a maximum rather than a minimum?",
-          right: "Yes - a negative second derivative means profit curves downward there, so the stationary point is a maximum",
-          wrong: "No - the sign of the second derivative never distinguishes a maximum from a minimum",
-          hint: "A curve bending downward around a flat point is a peak; bending upward around one is a trough.",
-          pre: "Finding where the first derivative is zero, then checking the second derivative's sign, is exactly",
+          type: 'calc', term: OPT1,
+          q: "A firm's profit is π(Q) = 100Q - 2Q^2. Setting dπ/dQ = 100 - 4Q equal to zero and solving for Q gives the profit-maximising output (check: d^2π/dQ^2 = -4, negative, confirming a maximum). What is Q?",
+          answer: 25, hint: "Solve 100 - 4Q = 0 for Q.",
+          pre: "Finding where the first derivative is zero, then checking a negative second derivative, is exactly",
         },
         {
-          type: 'ask', term: OPTM,
-          q: "For π(x, y) = 10x - x^2 + 8y - y^2, the partial derivative rules you already used on K^0.5*L^0.5 give dπ/dx = 10 - 2x and dπ/dy = 8 - 2y. Setting BOTH equal to zero gives x = 5 and y = 4 together. Is it necessary that every partial derivative equals zero at once, not just one of them?",
-          right: "Yes - a true maximum needs the slope to be flat in every direction at once, so every partial derivative must be zero simultaneously",
-          wrong: "No - as long as one partial derivative is zero, the point is already a maximum regardless of the others",
-          hint: "If the slope in the y-direction were still positive, moving along y would raise profit further - it isn't a peak yet.",
+          type: 'calc', term: OPTM,
+          q: "For π(x, y) = 10x - x^2 + 8y - y^2, the partial derivative rules you already used on K^0.5*L^0.5 give dπ/dx = 10 - 2x and dπ/dy = 8 - 2y. Both must equal zero at once (y works out to 4). Solving dπ/dx = 0, what is x?",
+          answer: 5, hint: "Solve 10 - 2x = 0 for x.",
           pre: "Solving every partial derivative equal to zero at the same time is",
         },
         {

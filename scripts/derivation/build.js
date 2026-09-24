@@ -40,13 +40,23 @@ function validate(spec, known) {
     let chunk = 0, lastMilestone = -1, ended = false, asked = false;
     st.steps.forEach((s, i) => {
       const at = `${where}, step ${i + 1}`;
-      if (s.type === 'read' || s.type === 'ask') {
+      if (s.type === 'read' || s.type === 'ask' || s.type === 'calc') {
         if (!spec.terms[s.term]) err(`${at}: unknown term "${s.term}"`);
         if (intro.has(s.term) || given.includes(s.term)) err(`${at}: term "${s.term}" is introduced twice or is already given`);
         intro.add(s.term); chunk++;
         if (chunk > CAP) err(`${at}: more than ${CAP} new terms since the last milestone`);
         if (s.type === 'read' && asked) err(`${at}: a read step after the first question; every later term must be introduced by a question`);
-        if (s.type === 'ask') {
+        if (s.type === 'calc') {
+          // a calc step swaps the two-option choice for a typed numeric answer - for a genuine arithmetic result
+          // (a derivative, an elasticity, a solved FOC), not a reasoning judgement, so it checks "answer" instead
+          // of right/wrong, but is otherwise held to the same situation/hint/pre/leak rules as ask.
+          asked = true;
+          ['q', 'answer', 'hint', 'pre'].forEach((f) => { if (s[f] == null || s[f] === '') err(`${at}: calc is missing "${f}"`); });
+          if (typeof s.answer !== 'number' || Number.isNaN(s.answer)) err(`${at}: calc's "answer" must be a number`);
+          if (!spec.noLengthCap) { const n = String(s.q || '').trim().split(/\s+/).filter(Boolean).length; if (n > MAX_Q_WORDS) err(`${at}: the question is ${n} words; keep it to ${MAX_Q_WORDS} or fewer (aim for about 20)`); }
+          const label = (spec.terms[s.term] || {}).label;
+          if (label && !spec.noLeakCheck && s.q && s.q.toLowerCase().includes(label.toLowerCase())) err(`${at}: "q" contains the term "${label}" it is about to reveal`);
+        } else if (s.type === 'ask') {
           asked = true;
           ['q', 'right', 'wrong', 'hint', 'pre'].forEach((f) => { if (!s[f]) err(`${at}: ask is missing "${f}"`); });
           if (s.right && s.wrong && s.right === s.wrong) err(`${at}: right and wrong options are identical`);
@@ -62,7 +72,8 @@ function validate(spec, known) {
           if (!spec.noLeakCheck) {
             const stems = (t) => String(t).toLowerCase().replace(/[^a-z ]+/g, ' ').split(/\s+/).filter((w) => w.length > 2 && !['the', 'and', 'for', 'from', 'with', 'are', 'its', 'that'].includes(w)).map((w) => w.slice(0, 6));
             const nrm = (t) => ' ' + String(t).toLowerCase().replace(/[^a-z0-9]+/g, ' ').trim() + ' ';
-            const ahead = st.steps.filter((x) => x.type === 'ask' || x.type === 'read').slice(st.steps.filter((x) => x.type === 'ask' || x.type === 'read').indexOf(s)).map((x) => x.term);
+            const introducing = (x) => x.type === 'ask' || x.type === 'read' || x.type === 'calc';
+            const ahead = st.steps.filter(introducing).slice(st.steps.filter(introducing).indexOf(s)).map((x) => x.term);
             ahead.forEach((t) => {
               const lab = (spec.terms[t] || {}).label; if (!lab) return;
               const ls = stems(lab);
@@ -173,7 +184,7 @@ function build(spec) {
 
   const nStages = spec.stages.length;
   const stages = spec.stages.map((st, si) => {
-    const intro = st.steps.filter((s) => s.type === 'read' || s.type === 'ask').map((s) => s.term);
+    const intro = st.steps.filter((s) => s.type === 'read' || s.type === 'ask' || s.type === 'calc').map((s) => s.term);
     const given = st.given || [];
     const nodeKeys = [...given, ...intro];
     // one arrow between a pair of terms, however many times the link was listed (map link, given link and added link can repeat it)
@@ -188,6 +199,8 @@ function build(spec) {
       else if (s.type === 'ask') {
         const o = { type: 'ask', q: s.q, opts: [s.right, s.wrong], ok: 0, hint: s.hint, pre: s.pre, term: s.term };
         if (s.fig) o.fig = s.fig; if (s.diagram) o.diagram = s.diagram; steps.push(o);
+      } else if (s.type === 'calc') {
+        steps.push({ type: 'calc', q: s.q, answer: s.answer, tol: s.tol, hint: s.hint, pre: s.pre, term: s.term });
       } else if (s.type === 'order') {
         // only links the knowledge map itself states (both ends are map concepts) count as a real sequence; links added between building-block terms do not
         const pairs = (st.edges || []).filter(([x, y]) => s.terms.includes(x) && s.terms.includes(y) && (!st.nodes || (st.nodes.includes(x) && st.nodes.includes(y))));
@@ -282,7 +295,7 @@ function build(spec) {
   }
 `;
   const map = `
-  var BUILDERS = { title: buildTitle, read: buildRead, ask: buildAsk, order: buildOrder, chains: buildChains, derive: buildDerive, done: buildDone };
+  var BUILDERS = { title: buildTitle, read: buildRead, ask: buildAsk, calc: buildCalc, order: buildOrder, chains: buildChains, derive: buildDerive, done: buildDone };
   if (typeof buildShow === 'function') BUILDERS.show = buildShow;
   if (typeof buildDraw === 'function') BUILDERS.draw = buildDraw;
 `;

@@ -44,19 +44,17 @@ const spec = {
     edges: [[OPT1, OPTM], [OPTM, LAG], [LAG, SHAD], [SHAD, KT], [PD, OPTM], [TOTDIFF, LAG]],
     steps: [
       {
-        type: 'ask', term: OPT1,
-        q: "A firm's profit is π(Q) = 100Q - 2Q^2. Setting dπ/dQ = 100 - 4Q equal to zero gives Q = 25. Checking the second derivative, d^2π/dQ^2 = -4, which is negative. Does a negative second derivative at a stationary point confirm it is a maximum rather than a minimum?",
-        right: "Yes - a negative second derivative means profit curves downward there, so the stationary point is a maximum",
-        wrong: "No - the sign of the second derivative never distinguishes a maximum from a minimum",
-        hint: "A curve bending downward around a flat point is a peak; bending upward around one is a trough.",
-        pre: "Finding where the first derivative is zero, then checking the second derivative's sign, is exactly",
+        type: 'calc', term: OPT1,
+        q: "A firm's profit is π(Q) = 100Q - 2Q^2. Setting dπ/dQ = 100 - 4Q equal to zero and solving for Q gives the profit-maximising output (check: d^2π/dQ^2 = -4, negative, confirming a maximum). What is Q?",
+        answer: 25,
+        hint: "Solve 100 - 4Q = 0 for Q.",
+        pre: "Finding where the first derivative is zero, then checking a negative second derivative, is exactly",
       },
       {
-        type: 'ask', term: OPTM,
-        q: "For π(x, y) = 10x - x^2 + 8y - y^2, the partial derivative rules you already used on K^0.5*L^0.5 give dπ/dx = 10 - 2x and dπ/dy = 8 - 2y. Setting BOTH equal to zero gives x = 5 and y = 4 together. Is it necessary that every partial derivative equals zero at once, not just one of them?",
-        right: "Yes - a true maximum needs the slope to be flat in every direction at once, so every partial derivative must be zero simultaneously",
-        wrong: "No - as long as one partial derivative is zero, the point is already a maximum regardless of the others",
-        hint: "If the slope in the y-direction were still positive, moving along y would raise profit further - it isn't a peak yet.",
+        type: 'calc', term: OPTM,
+        q: "For π(x, y) = 10x - x^2 + 8y - y^2, the partial derivative rules you already used on K^0.5*L^0.5 give dπ/dx = 10 - 2x and dπ/dy = 8 - 2y. Both must equal zero at once (y works out to 4). Solving dπ/dx = 0, what is x?",
+        answer: 5,
+        hint: "Solve 10 - 2x = 0 for x.",
         pre: "Solving every partial derivative equal to zero at the same time is",
       },
       {

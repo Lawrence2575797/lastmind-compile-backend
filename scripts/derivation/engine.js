@@ -4,6 +4,21 @@
 
   function el(tag, cls, html) { var e = document.createElement(tag); if (cls) e.className = cls; if (html != null) e.innerHTML = html; return e; }
   function termHtml(k, extra) { return '<span class="term ' + (extra || '') + '" style="--tc:' + TERMS[k].c + '">' + TERMS[k].t + '</span>'; }
+  /* typesets the plain-text maths conventions authored content uses (K^0.5, dQ/dK, lambda, sqrt(4), px) into real
+     superscripts, a stacked fraction and proper symbols, so a question reads like real maths, not source code. */
+  function mathify(s) {
+    if (!s) return s;
+    return String(s)
+      .replace(/\bd([A-Za-zπΔλ][A-Za-z0-9]*)\s*\/\s*d([A-Za-zπΔλ][A-Za-z0-9]*)\b/g,
+        '<span class="mfrac"><span class="n">d$1</span><span class="d">d$2</span></span>')
+      .replace(/\^\((-?[0-9.]+)\)/g, '<sup>$1</sup>')
+      .replace(/\^(-?[0-9.]+)/g, '<sup>$1</sup>')
+      .replace(/\blambda\*/gi, 'λ*').replace(/\blambda\b/gi, 'λ')
+      .replace(/\bDelta\s*([A-Za-z])/g, 'Δ$1')
+      .replace(/\bpi\b(?=\s*[\(\s])/gi, 'π')
+      .replace(/\bsqrt\(([^)]+)\)/gi, '√($1)')
+      .replace(/\bp([xy])\b/g, 'p<sub>$1</sub>');
+  }
   function shuffle(a) { var b = a.slice(); for (var i = b.length - 1; i > 0; i--) { var j = Math.floor(Math.random() * (i + 1)); var t = b[i]; b[i] = b[j]; b[j] = t; } if (b.join() === a.join() && b.length > 2) b.push(b.shift()); return b; }
   function script() { return STAGES[stageIdx].script; }
 
@@ -35,7 +50,7 @@
   }
 
   function buildTitle() {
-    var st = STAGES[stageIdx], count = script().filter(function (s) { return (s.type === 'read' || s.type === 'ask') && s.term; }).length;
+    var st = STAGES[stageIdx], count = script().filter(function (s) { return (s.type === 'read' || s.type === 'ask' || s.type === 'calc') && s.term; }).length;
     var builds = st.builds.length ? st.builds.map(function (k) { return termHtml(k); }).join(' ') : '<span class="hint">nothing: this is where the course starts</span>';
     var wrap = stack('<span class="milestone">Lesson ' + (stageIdx + 1) + ' of ' + STAGES.length + '</span><h2 class="title">' + st.title + '</h2><p class="big sub">' + st.sub + '</p>' +
       '<div class="facts"><div><span class="eyebrow">Builds on</span><div class="chips">' + builds + '</div></div><div><span class="eyebrow">You will derive</span><div class="hint">' + count + ' key terms, in chunks of no more than four</div></div></div><div class="down">Scroll ↓</div>');
@@ -45,7 +60,7 @@
   }
 
   function buildRead(step) {
-    var wrap = stack('<div class="eyebrow">Read</div><p class="big">' + step.text + termHtml(step.term, 'pop') + '.</p><div class="down">Scroll ↓</div>');
+    var wrap = stack('<div class="eyebrow">Read</div><p class="big">' + mathify(step.text) + termHtml(step.term, 'pop') + '.</p><div class="down">Scroll ↓</div>');
     var s = slide(wrap), done = false;
     var io = new IntersectionObserver(function (es) {
       es.forEach(function (e) { if (e.isIntersecting && e.intersectionRatio > 0.6 && !done) { done = true; io.disconnect(); chunk(step.term); next(false); } });
@@ -54,21 +69,65 @@
   }
 
   function buildAsk(step) {
-    var wrap = stack('<div class="eyebrow">What follows?</div><p class="big">' + step.q + '</p>');
+    var wrap = stack('<div class="eyebrow">What follows?</div><p class="big">' + mathify(step.q) + '</p>');
     var opts = el('div', 'opts'), note = el('div', 'note'), out = el('div', 'reveal'); out.hidden = true;
     (Math.random() < 0.5 ? [0, 1] : [1, 0]).forEach(function (i) {
-      var b = el('button', 'opt', step.opts[i]); b.type = 'button';
+      var b = el('button', 'opt', mathify(step.opts[i])); b.type = 'button';
       b.addEventListener('click', function () {
         if (i !== step.ok) { b.classList.add('wrong'); note.textContent = step.hint; setTimeout(function () { b.classList.remove('wrong'); }, 500); return; }
         b.classList.add('right'); note.textContent = '';
         Array.prototype.forEach.call(opts.children, function (o) { o.disabled = true; });
-        out.hidden = false; out.innerHTML = '<span>' + step.pre + '</span>' + termHtml(step.term, 'pop');
+        out.hidden = false; out.innerHTML = '<span>' + mathify(step.pre) + '</span>' + termHtml(step.term, 'pop');
         chunk(step.term);
         setTimeout(function () { next(true); }, 1500);
       });
       opts.appendChild(b);
     });
     wrap.appendChild(opts); wrap.appendChild(note); wrap.appendChild(out);
+    slide(wrap);
+  }
+
+  /* the maths tool: a numeric keypad instead of two options, for a step with a genuine computed answer
+     (step.answer, optionally step.tol - default 0.01) rather than a reasoning choice. */
+  function buildCalc(step) {
+    var wrap = stack('<div class="eyebrow">Work it out</div><p class="big">' + mathify(step.q) + '</p>');
+    var pad = el('div', 'calcpad');
+    var disp = el('div', 'calcdisplay', '<span class="ph">answer</span>');
+    var keys = el('div', 'keys');
+    var note = el('div', 'note'), out = el('div', 'reveal'); out.hidden = true;
+    var buf = '', solved = false;
+    function paint() { disp.innerHTML = buf ? buf.replace(/-/g, '−') : '<span class="ph">answer</span>'; }
+    [['7', '8', '9', '⌫'], ['4', '5', '6', '−'], ['1', '2', '3', '.'], ['0']].forEach(function (row) {
+      row.forEach(function (k) {
+        var b = el('button', 'key' + (k === '0' ? ' wide' : ''), k); b.type = 'button';
+        b.addEventListener('click', function () {
+          if (solved) return;
+          if (k === '⌫') buf = buf.slice(0, -1);
+          else if (k === '−') { if (buf.indexOf('-') !== 0) buf = '-' + buf; }
+          else buf += k;
+          paint();
+        });
+        keys.appendChild(b);
+      });
+    });
+    var go = el('button', 'key go wide', 'Check'); go.type = 'button';
+    go.addEventListener('click', function () {
+      if (solved) return;
+      var val = parseFloat(buf), tol = step.tol != null ? step.tol : 0.01;
+      if (!isNaN(val) && Math.abs(val - step.answer) <= tol) {
+        solved = true; disp.classList.add('right'); note.textContent = '';
+        Array.prototype.forEach.call(keys.children, function (b) { b.disabled = true; });
+        out.hidden = false; out.innerHTML = '<span>' + mathify(step.pre) + '</span>' + termHtml(step.term, 'pop');
+        chunk(step.term);
+        setTimeout(function () { next(true); }, 1500);
+      } else {
+        disp.classList.add('wrong'); note.textContent = step.hint;
+        setTimeout(function () { disp.classList.remove('wrong'); }, 500);
+      }
+    });
+    keys.appendChild(go);
+    pad.appendChild(disp); pad.appendChild(keys);
+    wrap.appendChild(pad); wrap.appendChild(note); wrap.appendChild(out);
     slide(wrap);
   }
 

@@ -22,3 +22,18 @@ html[data-look="glass"] .svgwrap, html[data-look="glass"] .bank { background: rg
 .opt { display: flex; align-items: center; gap: 14px; }
 .opt::before { counter-increment: opt; content: counter(opt, upper-alpha); flex: none; display: grid; place-items: center; width: 28px; height: 28px; border-radius: 50%; font: 700 13px var(--sans); color: var(--accent-ink); background: var(--accent); }
 .opt.right::before { background: var(--good); color: #fff; } .opt.wrong::before { background: var(--bad); color: #fff; }
+
+/* the maths tool: a numeric keypad for a calc step, instead of picking between two options - real superscripts and
+   a stacked fraction come from mathify() reformatting the plain-text authoring convention (K^0.5, dQ/dK, lambda, ...) */
+.mfrac { display: inline-flex; flex-direction: column; vertical-align: middle; text-align: center; line-height: 1.05; margin: 0 2px; font-style: italic; }
+.mfrac .n, .mfrac .d { padding: 0 2px; }
+.mfrac .n { border-bottom: 1.4px solid currentColor; }
+.calcpad { display: grid; gap: 14px; max-width: 360px; }
+.calcdisplay { font: 600 26px var(--mono, monospace); background: var(--panel); border: 1.5px solid var(--line); border-radius: 14px; padding: 14px 18px; min-height: 30px; color: var(--ink); letter-spacing: .02em; transition: border-color .15s; }
+.calcdisplay .ph { color: var(--muted); font-weight: 400; }
+.calcdisplay.wrong { border-color: var(--bad); } .calcdisplay.right { border-color: var(--good); }
+.keys { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
+.key { font: 600 17px var(--sans); padding: 14px 0; border-radius: 12px; border: 1px solid var(--line); background: var(--panel); color: var(--ink); cursor: pointer; }
+.key:hover { border-color: var(--accent); }
+.key.wide { grid-column: span 2; }
+.key.go { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); }

@@ -74,6 +74,12 @@ const LANGUAGE_SUBJECTS = new Set(['Spanish', 'Italian']);
 // list lines, "X = Y" definitions, and total words.
 // The three questions should be three different kinds of puzzle: the same interactive format twice is sent back once.
 export function lessonFormatProblem(content: any): string | null {
+  const cards = Array.isArray(content?.teachingCards) ? content.teachingCards : [];
+  if (cards.length < 2 || cards.length > 5) return `the lesson needs 2 to 5 teaching cards; it has ${cards.length}`;
+  if (cards.some((card: any) => !card?.title || !card?.body)) return 'every teaching card needs a title and body';
+  const oversized = cards.find((card: any) => ((String(card?.body || '').match(/\S+/g) || []).length > 130));
+  if (oversized) return `the teaching card "${String(oversized.title || '').slice(0, 60)}" is over 130 words`;
+  if (content?.practiceQuestion?.answerInputType === 'math' && !cards.some((card: any) => card.kind === 'worked_example')) return 'a mathematical lesson needs a worked_example teaching card';
   const pqx = content?.practiceQuestion;
   if (pqx && (pqx.format === 'free_text' || !pqx.format) && pqx.answerInputType !== 'math' && !(Array.isArray(pqx.blanks) && pqx.blanks.length)) return 'the practice question is open text; it must be an interactive or typed-cloze question (open recall is only for later)';
   if ((Array.isArray(content?.recallChecks) ? content.recallChecks : []).some((q: any) => q?.format === 'free_text')) return 'a recall check is open text; use cloze, steps, fill_blank, multiple_choice or an interactive format';
@@ -83,6 +89,12 @@ export function lessonFormatProblem(content: any): string | null {
 }
 
 export function lessonSizeProblem(content: any): string | null {
+  // Card lessons are deliberately fuller than the retired one-card
+  // summary, but each individual card is bounded by lessonFormatProblem.
+  if (Array.isArray(content?.teachingCards) && content.teachingCards.length) {
+    const totalWords = content.teachingCards.reduce((sum: number, card: any) => sum + (String(card?.body || '').match(/\S+/g) || []).length, 0);
+    return totalWords > 450 ? `${totalWords} words across the teaching cards, the limit is 450` : null;
+  }
   const text: string = typeof content?.explanation === 'string' ? content.explanation : '';
   const lines = text.split(/\r?\n/);
   const listLines = lines.filter((l) => /^\s*(?:\d+[.)]|[*\-•])\s+/.test(l)).length;
@@ -98,7 +110,14 @@ export function lessonSizeProblem(content: any): string | null {
 // questions are kept in all, and the lesson is stamped so it is known to be in the new format.
 export function normaliseLessonQuestions(content: any, label: string): any {
   const c = content && typeof content === 'object' ? content : {};
-  const explanation = typeof c.explanation === 'string' ? c.explanation : '';
+  const teachingCards = (Array.isArray(c.teachingCards) ? c.teachingCards : []).slice(0, 5).map((card: any) => ({
+    title: String(card?.title || '').trim().slice(0, 100),
+    kind: ['theory', 'worked_example', 'application'].includes(card?.kind) ? card.kind : 'theory',
+    body: String(card?.body || '').trim(),
+  })).filter((card: any) => card.title && card.body);
+  const explanation = teachingCards.length
+    ? teachingCards.map((card: any) => card.body).join('\n\n')
+    : (typeof c.explanation === 'string' ? c.explanation : '');
   const strip = (q: any) => { ['segments', 'errorIndex', 'correction', 'pairs', 'items'].forEach((k) => { delete q[k]; }); q.format = 'free_text'; return q; };
   const pq = c.practiceQuestion && typeof c.practiceQuestion === 'object' ? c.practiceQuestion : null;
   if (pq) {
@@ -117,7 +136,7 @@ export function normaliseLessonQuestions(content: any, label: string): any {
   }).filter(Boolean);
   // Open recall is for later (spaced review): a recall check is never free text when another kind is available.
   const cued = checks.filter((q: any) => q.format !== 'free_text');
-  return { ...c, practiceQuestion: pq || c.practiceQuestion, recallChecks: cued.length ? cued : checks, formatVersion: 2 };
+  return { ...c, explanation, teachingCards, practiceQuestion: pq || c.practiceQuestion, recallChecks: cued.length ? cued : checks, formatVersion: 3 };
 }
 
 // Law lessons written before the question formats existed keep their explanation exactly and get new-format questions, once,
@@ -249,7 +268,7 @@ YOUR PREVIOUS ANSWER COULD NOT BE USED (${String((err as Error)?.message || err)
     console.warn(`LastMind: lesson for "${typedNode.label}" broke a size limit (${problem}); asking for a shorter rewrite (attempt ${attempt}).`);
     correction = `
 
-YOUR PREVIOUS ATTEMPT NEEDS FIXING (${problem}). Rewrite it so every rule is met: at most FOUR chunks in the explanation, three different question formats, and every question answerable from the explanation you write.`;
+YOUR PREVIOUS ATTEMPT NEEDS FIXING (${problem}). Rewrite it so every rule is met: 2 to 5 focused teachingCards, no card over 130 words, three different question formats, and every question answerable from the cards you write. For mathematical content, include theory, a complete worked example, and a new solve-it-yourself maths question.`;
   }
 
   // Diagram-spec classification needs the ACTUAL practice question this

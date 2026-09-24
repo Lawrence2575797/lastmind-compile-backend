@@ -102,16 +102,24 @@ function shuffled<T>(list: T[], notEqualTo?: T[]): T[] {
   return a;
 }
 
+// A deliberately incomplete cue safe to include in the client view:
+// "finite stock of resources" becomes "F    S    O    R". Full answers
+// and accepted alternatives remain server-side.
+const initialLetters = (value: unknown): string => String(value ?? '')
+  .trim().split(/\s+/)
+  .map((word) => (word.match(/[a-z0-9]/i) || [''])[0].toUpperCase())
+  .filter(Boolean).join('    ');
+
 // What the page is allowed to see: the puzzle, never the key.
 export function clientView(q: any): Record<string, unknown> {
   if (!isStructured(q)) return q;
   const base = { format: q.format, questionText: q.questionText };
   if (q.format === 'spot_mistake') return { ...base, segments: q.segments };
   if (q.format === 'match') { const rights = (q.pairs || []).map((p) => p.right); return { ...base, lefts: (q.pairs || []).map((p) => p.left), rights: shuffled([...rights, ...(q.decoys || [])], rights) }; }
-  if (q.format === 'cloze') return { ...base, text: q.text, blanks: (q.blanks || []).length };
-  if (q.format === 'steps') return { ...base, count: (q.steps || []).length };
+  if (q.format === 'cloze') return { ...base, text: q.text, blanks: (q.blanks || []).length, hints: (q.blanks || []).map((b) => initialLetters(b.answer)) };
+  if (q.format === 'steps') return { ...base, count: (q.steps || []).length, hints: (q.steps || []).map((step) => initialLetters(step.text)) };
   // diagram: every box's geometry and colour, and a given box's real label - a blank box's id but never its answer/alt.
-  if (q.format === 'diagram') return { ...base, h: q.h, nodes: q.nodes, edges: q.edges, blanks: (q.blanks || []).map((b) => ({ id: b.id })) };
+  if (q.format === 'diagram') return { ...base, h: q.h, nodes: q.nodes, edges: q.edges, blanks: (q.blanks || []).map((b) => ({ id: b.id })), hints: (q.blanks || []).map((b) => initialLetters(b.answer)) };
   return { ...base, items: shuffled([...(q.items || []), ...(q.decoys || [])], q.items), slots: (q.items || []).length };
 }
 

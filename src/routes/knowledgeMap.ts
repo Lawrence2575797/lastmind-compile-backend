@@ -1540,6 +1540,57 @@ router.post('/day1-checks/:id/submit', requireAuth, costlyEndpointLimiter, async
   }
 });
 
+// POST /day1-checks/:id/skip - deliberately contains no model call. A
+// skipped Day-1 check is a real failed retrieval for scheduling purposes,
+// but should never spend Locks merely to manufacture feedback for an answer
+// the student has explicitly said they cannot give.
+router.post('/day1-checks/:id/skip', requireAuth, syncEndpointLimiter, async (req: Request, res: Response) => {
+  const { id } = req.params;
+  try {
+    const userId = req.userId as string;
+    const { data: row, error: rowError } = await supabaseAdmin
+      .from('day1_checks')
+      .select('id, concept_id, resolved')
+      .eq('id', id)
+      .eq('user_id', userId)
+      .maybeSingle();
+    if (rowError) throw rowError;
+    if (!row) return res.status(404).json({ error: 'check not found' });
+    if (row.resolved) return res.json({ skipped: true, alreadyResolved: true });
+
+    const conceptId = row.concept_id as string;
+    const graded = await gradeCorrectness(userId, conceptId, false, 0);
+    const schedules: any[] = [];
+    for (const siblingId of derivationSiblingConcepts(conceptId)) {
+      if (siblingId === conceptId) continue;
+      try {
+        schedules.push(scheduleWithMastery(siblingId, await gradeCorrectness(userId, siblingId, false, 0)));
+      } catch (err) {
+        if (!(err instanceof ReviewNotDueError)) throw err;
+      }
+    }
+
+    const { error: updateError } = await supabaseAdmin
+      .from('day1_checks')
+      .update({ resolved: true })
+      .eq('id', id)
+      .eq('user_id', userId);
+    if (updateError) throw updateError;
+    await bumpBaseRecalls(userId);
+
+    return res.json({
+      skipped: true,
+      correct: false,
+      feedback: "Skipped — that's okay. This will return in a later review.",
+      schedule: scheduleWithMastery(conceptId, graded),
+      schedules,
+    });
+  } catch (err) {
+    console.error('Skipping Day-1 check failed:', err);
+    return res.status(500).json({ error: 'could not skip this check' });
+  }
+});
+
 // POST /day1-checks/:id/peek - a live, side-effect-free check of whatever the student has typed SO FAR into a cloze/diagram/steps
 // check, called as they type (debounced), not on demand. Pure code (gradeStructured - no Claude call, so this costs nothing and
 // never touches Locks), and deliberately never resolves the check, grades FSRS, or bumps any counter: only real Submit does that.

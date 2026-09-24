@@ -270,7 +270,7 @@ export async function getStoredLessonPlan(rawSubject: string, qualification: str
   const { subject } = await resolveSubjectTriple(rawSubject, qualification, examBoard);
   const { data, error } = await supabaseAdmin
     .from('spec_lesson_plans')
-    .select('subject, qualification, exam_board, subtopic, concept, lesson_order')
+    .select('subject, qualification, exam_board, theme, subtopic, concept, lesson_order')
     .ilike('subject', subject)
     .order('subtopic', { ascending: true })
     .order('lesson_order', { ascending: true });
@@ -289,11 +289,38 @@ export async function getStoredLessonPlan(rawSubject: string, qualification: str
   if (!matched.length) return null;
 
   const bySubtopic = new Map<string, string[]>();
+  const themeOfSubtopic = new Map<string, string>();
   for (const row of matched) {
     const subtopic = row.subtopic as string;
     if (!bySubtopic.has(subtopic)) bySubtopic.set(subtopic, []);
     bySubtopic.get(subtopic)!.push(row.concept as string);
+    if (row.theme) themeOfSubtopic.set(subtopic, row.theme as string);
   }
+
+  // A UNIVERSITY course is often several genuinely separate modules taught in parallel (e.g. Warwick's Economics
+  // Undergraduate Year 1: EC104, EC108, EC109, EC124, EC140, each its own module with its own code, not one linear
+  // spec) - groups its own subject-level theme rows the same way every seed script already tags them
+  // (spec_lesson_plans.theme = "EC<code>: <module title>", identical across every row belonging to that module).
+  // Grouping the folder's own subfolders by that theme instead of by the much finer subtopic keeps a 5-module
+  // course as 5 clearly-named subfolders a student can pick between, rather than 40+ flat, ungrouped subtopics with
+  // no sense of which module each belongs to.
+  // Deliberately gated on qualification being university-level (the same UNIVERSITY_LEVELS check the folder-
+  // creation form already uses to decide institution/module-code fields apply) rather than a bare theme/subtopic
+  // count - an A-Level spec's "Theme 1-4" are topics WITHIN one course, not separate modules, and grouping by them
+  // the same way would silently reshuffle a subject nobody asked to have touched.
+  const universityQualification = /^(undergraduate|masters|phd)\b/i.test(qualification.trim());
+  const distinctThemes = new Set(themeOfSubtopic.values());
+  const distinctSubtopics = bySubtopic.size;
+  if (universityQualification && distinctThemes.size > 1 && distinctSubtopics > distinctThemes.size * 3) {
+    const byTheme = new Map<string, string[]>();
+    for (const [subtopic, concepts] of bySubtopic) {
+      const theme = themeOfSubtopic.get(subtopic) || subtopic;
+      if (!byTheme.has(theme)) byTheme.set(theme, []);
+      byTheme.get(theme)!.push(...concepts);
+    }
+    return Array.from(byTheme.entries()).map(([subtopic, concepts]) => ({ subtopic, concepts }));
+  }
+
   return Array.from(bySubtopic.entries()).map(([subtopic, concepts]) => ({ subtopic, concepts }));
 }
 

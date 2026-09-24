@@ -86,6 +86,19 @@ function validate(spec, known) {
         all.forEach((t) => { if (!intro.has(t)) err(`${at}: "${t}" not introduced yet`); });
         if (!(s.prompt || '').startsWith(`Drag and drop the ${all.length} key terms`)) err(`${at}: prompt must start "Drag and drop the ${all.length} key terms"`);
         chunk = 0; lastMilestone = i;
+      } else if (s.type === 'recap') {
+        // Alternative to order/chains for a chunk whose terms genuinely do NOT build on each other or converge -
+        // forcing a drag-into-order puzzle onto unrelated facts would claim a relationship that isn't there. Same
+        // chunk-closing role (resets the 4-term counter) but asks one more ask-shaped question that distinguishes
+        // two of the terms just introduced, instead of a sequencing/convergence claim.
+        const n = s.terms.length;
+        if (n > CAP) err(`${at}: recap milestone has ${n} terms (max ${CAP})`);
+        if (n !== chunk) err(`${at}: recap covers ${n} terms but ${chunk} were introduced since the last milestone`);
+        s.terms.forEach((t) => { if (!intro.has(t)) err(`${at}: "${t}" not introduced yet`); });
+        ['q', 'right', 'wrong', 'hint'].forEach((f) => { if (!s[f]) err(`${at}: recap is missing "${f}"`); });
+        if (s.right && s.wrong && s.right === s.wrong) err(`${at}: right and wrong options are identical`);
+        if (!spec.noLengthCap) { const wc = String(s.q || '').trim().split(/\s+/).filter(Boolean).length; if (wc > MAX_Q_WORDS) err(`${at}: the question is ${wc} words; keep it to ${MAX_Q_WORDS} or fewer`); }
+        chunk = 0; lastMilestone = i;
       } else if (s.type === 'derive') {
         if (i !== st.steps.length - 1 && st.steps[i + 1].type !== 'done') err(`${at}: derive must be the last step`);
         ended = true;
@@ -120,7 +133,11 @@ function validate(spec, known) {
       };
       const longest = Math.max(0, ...[...all].map(f));
       if (cyclic) err(`${where}: the links between terms form a loop; every link must point from an earlier idea to a later one`);
-      if (longest < 2) err(`${where}: not atomic: the longest chain of ideas is ${longest} link(s); a concept must be built up from at least 2 steps`);
+      // A "recap" milestone (see the recap branch above) is exactly the declaration that these terms genuinely do
+      // NOT build on each other - requiring a chain of 2+ links regardless would force the same fabricated
+      // dependency the recap milestone exists to avoid, for content that's honestly just several independent facts.
+      const hasRecap = st.steps.some((s) => s.type === 'recap');
+      if (!hasRecap && longest < 2) err(`${where}: not atomic: the longest chain of ideas is ${longest} link(s); a concept must be built up from at least 2 steps`);
     }
     // parallel members taught as a leading run of reads must not chain into each other: each links straight into the concept they build
     const lead = [];

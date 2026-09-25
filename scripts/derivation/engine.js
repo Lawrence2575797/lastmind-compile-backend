@@ -87,48 +87,200 @@
     slide(wrap);
   }
 
-  /* the maths tool: a numeric keypad instead of two options, for a step with a genuine computed answer
-     (step.answer, optionally step.tol - default 0.01) rather than a reasoning choice. */
+  /* ── the real maths answer box, ported verbatim from learn/index.html's createMathShortcutEditor - same
+     contenteditable editor and keyboard shortcuts as node-review/lesson calculation answers site-wide. */
+  var MATH_SHORTCUT_GREEK_MAP = {
+    'a': { lower: 'α', upper: 'Α' }, 'b': { lower: 'β', upper: 'Β' },
+    'd': { lower: 'δ', upper: 'Δ' }, 'y': { lower: 'γ', upper: 'Γ' },
+    'u': { lower: 'μ', upper: 'Μ' }, 'p': { lower: 'π', upper: 'Π' },
+    't': { lower: 'θ', upper: 'Θ' }, 's': { lower: 'σ', upper: 'Σ' },
+    'l': { lower: 'λ', upper: 'Λ' }, 'w': { lower: 'ω', upper: 'Ω' },
+    'x': { lower: 'χ', upper: 'Χ' },
+  };
+  var MATH_SHORTCUT_TWO_CHAR = { '<=': '≤', '>=': '≥', '!=': '≠' };
+  var MATH_SHORTCUT_ZWS = '​';
+
+  function createMathShortcutEditor(placeholder) {
+    var wrap = el('div', 'math-shortcut-wrap');
+    var editor = document.createElement('div');
+    editor.className = 'math-shortcut-editor';
+    editor.contentEditable = 'true';
+    editor.dataset.placeholder = placeholder || 'Type your answer…';
+    wrap.appendChild(editor);
+    var hint = el('div', 'math-shortcut-hint', 'Shortcuts: ^ power, _ subscript, / fraction, Shift+letter Greek, * ×, ~ √');
+    wrap.appendChild(hint);
+
+    function insertStyledSymbol(text) {
+      var sel = window.getSelection(); if (!sel.rangeCount) return null;
+      var range = sel.getRangeAt(0); range.deleteContents();
+      var span = document.createElement('i'); span.className = 'math-symbol'; span.textContent = text;
+      var landing = document.createTextNode(MATH_SHORTCUT_ZWS);
+      var frag = document.createDocumentFragment(); frag.appendChild(span); frag.appendChild(landing);
+      range.insertNode(frag);
+      var after = document.createRange(); after.setStart(landing, 1); after.collapse(true);
+      sel.removeAllRanges(); sel.addRange(after);
+      return span;
+    }
+    function startZone(tag) {
+      var sel = window.getSelection(); if (!sel.rangeCount) return;
+      var range = sel.getRangeAt(0); range.deleteContents();
+      var zone = document.createElement(tag); zone.appendChild(document.createTextNode(MATH_SHORTCUT_ZWS));
+      range.insertNode(zone);
+      var inner = document.createRange(); inner.setStart(zone.firstChild, 1); inner.collapse(true);
+      sel.removeAllRanges(); sel.addRange(inner);
+    }
+    function currentZone() {
+      var sel = window.getSelection(); if (!sel.rangeCount) return null;
+      var node = sel.getRangeAt(0).startContainer;
+      while (node && node !== editor) { if (node.nodeType === 1 && (node.tagName === 'SUP' || node.tagName === 'SUB')) return node; node = node.parentNode; }
+      return null;
+    }
+    function exitZoneAfter(zoneEl) {
+      var parent = zoneEl.parentNode, nextSibling = zoneEl.nextSibling;
+      if (zoneEl.textContent === MATH_SHORTCUT_ZWS) { zoneEl.remove(); }
+      else { zoneEl.normalize && zoneEl.normalize(); var zw = zoneEl.firstChild; if (zw && zw.nodeType === 3 && zw.textContent.charAt(0) === MATH_SHORTCUT_ZWS) zw.textContent = zw.textContent.slice(1); }
+      var landing = document.createTextNode(MATH_SHORTCUT_ZWS);
+      (parent || editor).insertBefore(landing, nextSibling || null);
+      var sel = window.getSelection(); var range = document.createRange();
+      range.setStart(landing, 1); range.collapse(true); sel.removeAllRanges(); sel.addRange(range);
+    }
+    function findTokenBeforeCaret() {
+      var sel = window.getSelection(); if (!sel.rangeCount || !sel.isCollapsed) return null;
+      var range = sel.getRangeAt(0); var node = range.startContainer, offset = range.startOffset;
+      if (node.nodeType !== 3) return null;
+      var text = node.textContent; var start = offset;
+      while (start > 0 && /[0-9a-zA-Z.]/.test(text.charAt(start - 1))) start--;
+      if (start === offset) return null;
+      return { node: node, start: start, end: offset, text: text.slice(start, offset) };
+    }
+    function makeFraction(numText) {
+      var sel = window.getSelection(); if (!sel.rangeCount) return;
+      var range = sel.getRangeAt(0); range.deleteContents();
+      var frac = document.createElement('span'); frac.className = 'frac';
+      var num = document.createElement('span'); num.className = 'frac-num';
+      var den = document.createElement('span'); den.className = 'frac-den';
+      num.appendChild(document.createTextNode(numText || MATH_SHORTCUT_ZWS));
+      den.appendChild(document.createTextNode(MATH_SHORTCUT_ZWS));
+      frac.appendChild(num); frac.appendChild(den);
+      range.insertNode(frac);
+      var inner = document.createRange();
+      if (numText) inner.setStart(den.firstChild, 1); else inner.setStart(num.firstChild, 1);
+      inner.collapse(true); sel.removeAllRanges(); sel.addRange(inner);
+    }
+    function currentFracPart() {
+      var sel = window.getSelection(); if (!sel.rangeCount) return null;
+      var node = sel.getRangeAt(0).startContainer;
+      while (node && node !== editor) { if (node.nodeType === 1 && (node.className === 'frac-num' || node.className === 'frac-den')) return node; node = node.parentNode; }
+      return null;
+    }
+    function advanceFracNumToDen(numEl) {
+      numEl.normalize && numEl.normalize();
+      var first = numEl.firstChild;
+      if (first && first.nodeType === 3 && first.textContent.charAt(0) === MATH_SHORTCUT_ZWS && first.textContent.length > 1) first.textContent = first.textContent.slice(1);
+      var den = numEl.parentNode.querySelector('.frac-den');
+      var sel = window.getSelection(); var range = document.createRange();
+      range.setStart(den.firstChild, 1); range.collapse(true); sel.removeAllRanges(); sel.addRange(range);
+    }
+    function maybeConvertTwoChar() {
+      var sel = window.getSelection(); if (!sel.rangeCount || !sel.isCollapsed) return;
+      var node = sel.getRangeAt(0).startContainer; var offset = sel.getRangeAt(0).startOffset;
+      if (node.nodeType !== 3 || offset < 2) return;
+      var last2 = node.textContent.slice(offset - 2, offset);
+      var symbol = MATH_SHORTCUT_TWO_CHAR[last2]; if (!symbol) return;
+      node.textContent = node.textContent.slice(0, offset - 2) + symbol + node.textContent.slice(offset);
+      var range = document.createRange(); range.setStart(node, offset - 1); range.collapse(true);
+      sel.removeAllRanges(); sel.addRange(range);
+    }
+
+    editor.addEventListener('keydown', function (ev) {
+      if (ev.key === '*') { ev.preventDefault(); insertStyledSymbol('×'); return; }
+      if (ev.key === '~') { ev.preventDefault(); insertStyledSymbol('√'); return; }
+      if (ev.key === '^') { ev.preventDefault(); startZone('sup'); return; }
+      if (ev.key === '_') { ev.preventDefault(); startZone('sub'); return; }
+      if (ev.shiftKey && !ev.ctrlKey && !ev.metaKey && !ev.altKey) {
+        var lower = ev.key.toLowerCase();
+        if (MATH_SHORTCUT_GREEK_MAP[lower] && ev.key.length === 1) {
+          ev.preventDefault();
+          var capsOn = ev.getModifierState && ev.getModifierState('CapsLock');
+          insertStyledSymbol(capsOn ? MATH_SHORTCUT_GREEK_MAP[lower].upper : MATH_SHORTCUT_GREEK_MAP[lower].lower);
+          return;
+        }
+      }
+      if (ev.key === '/') {
+        var fracPart = currentFracPart();
+        if (fracPart && fracPart.className === 'frac-num') { ev.preventDefault(); advanceFracNumToDen(fracPart); return; }
+        if (fracPart && fracPart.className === 'frac-den') return;
+        ev.preventDefault();
+        var token = findTokenBeforeCaret();
+        if (token) {
+          var delRange = document.createRange();
+          delRange.setStart(token.node, token.start); delRange.setEnd(token.node, token.end);
+          delRange.deleteContents();
+          var sel0 = window.getSelection(); sel0.removeAllRanges(); sel0.addRange(delRange);
+          makeFraction(token.text);
+        } else { makeFraction(null); }
+        return;
+      }
+      var zone = currentZone();
+      if (zone && (ev.key === 'ArrowRight' || ev.key === ' ')) { ev.preventDefault(); exitZoneAfter(zone); return; }
+      var denPart = currentFracPart();
+      if (denPart && denPart.className === 'frac-den' && (ev.key === 'ArrowRight' || ev.key === ' ')) { ev.preventDefault(); exitZoneAfter(denPart.parentNode); return; }
+    });
+    editor.addEventListener('paste', function (e) { e.preventDefault(); });
+    editor.addEventListener('drop', function (e) { e.preventDefault(); });
+    editor.addEventListener('input', function () { maybeConvertTwoChar(); });
+
+    function serializeNode(node) {
+      if (node.nodeType === 3) return node.textContent.replace(/​/g, '');
+      if (node.nodeType !== 1) return '';
+      if (node.classList && node.classList.contains('frac')) {
+        var num = serializeChildren(node.querySelector('.frac-num'));
+        var den = serializeChildren(node.querySelector('.frac-den'));
+        if (!num && !den) return '';
+        return '(' + num + ')/(' + den + ')';
+      }
+      if (node.tagName === 'SUP') { var innerU = serializeChildren(node); return innerU ? '^(' + innerU + ')' : ''; }
+      if (node.tagName === 'SUB') { var innerD = serializeChildren(node); return innerD ? '_(' + innerD + ')' : ''; }
+      return serializeChildren(node);
+    }
+    function serializeChildren(node) { if (!node) return ''; return Array.prototype.map.call(node.childNodes, serializeNode).join(''); }
+
+    return {
+      container: wrap, editorEl: editor,
+      getValue: function () { return serializeChildren(editor).trim(); },
+      isEmpty: function () { return !serializeChildren(editor).trim(); },
+      focus: function () { editor.focus(); },
+    };
+  }
+
+  /* a step with a genuine computed answer (step.answer, optionally step.tol - default 0.01) rather than a
+     reasoning choice: the same maths answer box as everywhere else on the site, checked locally against the
+     number since this offline player has no server round-trip. */
   function buildCalc(step) {
     var wrap = stack('<div class="eyebrow">Work it out</div><p class="big">' + mathify(step.q) + '</p>');
-    var pad = el('div', 'calcpad');
-    var disp = el('div', 'calcdisplay', '<span class="ph">answer</span>');
-    var keys = el('div', 'keys');
+    var mathEditor = createMathShortcutEditor('Type your answer…');
     var note = el('div', 'note'), out = el('div', 'reveal'); out.hidden = true;
-    var buf = '', solved = false;
-    function paint() { disp.innerHTML = buf ? buf.replace(/-/g, '−') : '<span class="ph">answer</span>'; }
-    [['7', '8', '9', '⌫'], ['4', '5', '6', '−'], ['1', '2', '3', '.'], ['0']].forEach(function (row) {
-      row.forEach(function (k) {
-        var b = el('button', 'key' + (k === '0' ? ' wide' : ''), k); b.type = 'button';
-        b.addEventListener('click', function () {
-          if (solved) return;
-          if (k === '⌫') buf = buf.slice(0, -1);
-          else if (k === '−') { if (buf.indexOf('-') !== 0) buf = '-' + buf; }
-          else buf += k;
-          paint();
-        });
-        keys.appendChild(b);
-      });
-    });
-    var go = el('button', 'key go wide', 'Check'); go.type = 'button';
+    var solved = false;
+    var go = el('button', 'mathgo', 'Check'); go.type = 'button';
     go.addEventListener('click', function () {
       if (solved) return;
-      var val = parseFloat(buf), tol = step.tol != null ? step.tol : 0.01;
+      var raw = mathEditor.getValue();
+      var val = parseFloat(raw), tol = step.tol != null ? step.tol : 0.01;
+      var editorEl = mathEditor.editorEl;
       if (!isNaN(val) && Math.abs(val - step.answer) <= tol) {
-        solved = true; disp.classList.add('right'); note.textContent = '';
-        Array.prototype.forEach.call(keys.children, function (b) { b.disabled = true; });
+        solved = true; editorEl.classList.remove('wrong'); editorEl.classList.add('right'); note.textContent = '';
+        editorEl.contentEditable = 'false'; go.disabled = true;
         out.hidden = false; out.innerHTML = '<span>' + mathify(step.pre) + '</span>' + termHtml(step.term, 'pop');
         chunk(step.term);
         setTimeout(function () { next(true); }, 1500);
       } else {
-        disp.classList.add('wrong'); note.textContent = step.hint;
-        setTimeout(function () { disp.classList.remove('wrong'); }, 500);
+        editorEl.classList.add('wrong'); note.textContent = step.hint;
+        setTimeout(function () { editorEl.classList.remove('wrong'); }, 500);
       }
     });
-    keys.appendChild(go);
-    pad.appendChild(disp); pad.appendChild(keys);
-    wrap.appendChild(pad); wrap.appendChild(note); wrap.appendChild(out);
+    wrap.appendChild(mathEditor.container); wrap.appendChild(go); wrap.appendChild(note); wrap.appendChild(out);
     slide(wrap);
+    setTimeout(function () { mathEditor.focus(); }, 50);
   }
 
   /* ---- a shared board: tap a term then a box, or drag it across; every box knows what it expects ---- */

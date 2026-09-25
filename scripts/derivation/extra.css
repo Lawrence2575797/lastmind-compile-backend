@@ -23,17 +23,24 @@ html[data-look="glass"] .svgwrap, html[data-look="glass"] .bank { background: rg
 .opt::before { counter-increment: opt; content: counter(opt, upper-alpha); flex: none; display: grid; place-items: center; width: 28px; height: 28px; border-radius: 50%; font: 700 13px var(--sans); color: var(--accent-ink); background: var(--accent); }
 .opt.right::before { background: var(--good); color: #fff; } .opt.wrong::before { background: var(--bad); color: #fff; }
 
-/* the maths tool: a numeric keypad for a calc step, instead of picking between two options - real superscripts and
-   a stacked fraction come from mathify() reformatting the plain-text authoring convention (K^0.5, dQ/dK, lambda, ...) */
+/* the question text's own typeset fraction (from mathify()'s dQ/dK -> stacked-fraction conversion) - distinct from
+   the answer editor's own .frac/.frac-num/.frac-den, which the student builds themselves while typing. */
 .mfrac { display: inline-flex; flex-direction: column; vertical-align: middle; text-align: center; line-height: 1.05; margin: 0 2px; font-style: italic; }
 .mfrac .n, .mfrac .d { padding: 0 2px; }
 .mfrac .n { border-bottom: 1.4px solid currentColor; }
-.calcpad { display: grid; gap: 14px; max-width: 360px; }
-.calcdisplay { font: 600 26px var(--mono, monospace); background: var(--panel); border: 1.5px solid var(--line); border-radius: 14px; padding: 14px 18px; min-height: 30px; color: var(--ink); letter-spacing: .02em; transition: border-color .15s; }
-.calcdisplay .ph { color: var(--muted); font-weight: 400; }
-.calcdisplay.wrong { border-color: var(--bad); } .calcdisplay.right { border-color: var(--good); }
-.keys { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
-.key { font: 600 17px var(--sans); padding: 14px 0; border-radius: 12px; border: 1px solid var(--line); background: var(--panel); color: var(--ink); cursor: pointer; }
-.key:hover { border-color: var(--accent); }
-.key.wide { grid-column: span 2; }
-.key.go { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); }
+
+/* the real maths answer box, ported verbatim from learn/index.html's createMathShortcutEditor, for a calc step -
+   same contenteditable editor and keyboard shortcuts as node-review/lesson calculation answers everywhere else */
+.math-shortcut-wrap { display: flex; flex-direction: column; gap: 6px; margin-top: 6px; max-width: 420px; }
+.math-shortcut-editor { white-space: pre-wrap; font-family: 'Courier New', monospace; font-size: 15px; line-height: 1.7; color: var(--ink); background: var(--panel); border: 1.5px solid var(--line); border-radius: 6px; padding: 10px 12px; min-height: 50px; outline: none; caret-color: var(--accent); width: 100%; box-sizing: border-box; }
+.math-shortcut-editor:focus { border-color: var(--accent); }
+.math-shortcut-editor:empty::before { content: attr(data-placeholder); color: var(--ink); opacity: 0.4; font-style: normal; }
+.math-shortcut-editor.wrong { border-color: var(--bad); } .math-shortcut-editor.right { border-color: var(--good); }
+.math-shortcut-editor sup, .math-shortcut-editor sub { color: var(--accent); font-weight: 500; }
+.math-shortcut-editor .math-symbol { font-style: italic; color: var(--accent); }
+.math-shortcut-editor .frac { display: inline-flex; flex-direction: column; align-items: center; vertical-align: middle; margin: 0 0.2em; font-size: 0.82em; line-height: 1.15; }
+.math-shortcut-editor .frac-num { padding: 0 0.2em 0.12em; border-bottom: 1.5px solid var(--ink); }
+.math-shortcut-editor .frac-den { padding: 0.12em 0.2em 0; }
+.math-shortcut-hint { font-size: 11.5px; color: var(--ink); margin-top: 2px; padding: 10px 12px; border: 1px solid var(--line); border-radius: 8px; background: color-mix(in srgb, var(--accent) 6%, transparent); }
+.mathgo { justify-self: start; border: 0; border-radius: 999px; padding: 10px 22px; font: 600 14px var(--sans); background: var(--accent); color: var(--accent-ink); cursor: pointer; }
+.mathgo:disabled { opacity: .5; cursor: default; }

@@ -198,9 +198,9 @@ function build(spec) {
       if (s.type === 'read') steps.push({ type: 'read', term: s.term, text: s.text });
       else if (s.type === 'ask') {
         const o = { type: 'ask', q: s.q, opts: [s.right, s.wrong], ok: 0, hint: s.hint, pre: s.pre, term: s.term };
-        if (s.fig) o.fig = s.fig; if (s.diagram) o.diagram = s.diagram; steps.push(o);
+        if (s.fig) o.fig = s.fig; if (s.diagram) o.diagram = s.diagram; if (s.eq) o.eq = s.eq; steps.push(o);
       } else if (s.type === 'calc') {
-        steps.push({ type: 'calc', q: s.q, answer: s.answer, tol: s.tol, hint: s.hint, pre: s.pre, term: s.term });
+        steps.push({ type: 'calc', q: s.q, eq: s.eq, answer: s.answer, tol: s.tol, hint: s.hint, pre: s.pre, term: s.term });
       } else if (s.type === 'order') {
         // only links the knowledge map itself states (both ends are map concepts) count as a real sequence; links added between building-block terms do not
         const pairs = (st.edges || []).filter(([x, y]) => s.terms.includes(x) && s.terms.includes(y) && (!st.nodes || (st.nodes.includes(x) && st.nodes.includes(y))));

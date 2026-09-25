@@ -42,5 +42,14 @@ html[data-look="glass"] .svgwrap, html[data-look="glass"] .bank { background: rg
 .math-shortcut-editor .frac-num { padding: 0 0.2em 0.12em; border-bottom: 1.5px solid var(--ink); }
 .math-shortcut-editor .frac-den { padding: 0.12em 0.2em 0; }
 .math-shortcut-hint { font-size: 11.5px; color: var(--ink); margin-top: 2px; padding: 10px 12px; border: 1px solid var(--line); border-radius: 8px; background: color-mix(in srgb, var(--accent) 6%, transparent); }
+.math-shortcut-editor { border-width: 2px; box-shadow: 0 2px 0 var(--line); font-size: 19px; padding: 14px 16px; }
+.math-shortcut-editor:focus { box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 25%, transparent); }
+.mathlabel { font: 700 11px var(--sans); letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
 .mathgo { justify-self: start; border: 0; border-radius: 999px; padding: 10px 22px; font: 600 14px var(--sans); background: var(--accent); color: var(--accent-ink); cursor: pointer; }
 .mathgo:disabled { opacity: .5; cursor: default; }
+
+/* the equation itself, in its own plain box, set apart from the (now much shorter) prose question - large,
+   centred, unambiguous, so the maths is the thing you read, not a clause buried in a sentence. */
+.eqbox { background: var(--panel); border: 1px solid var(--line); border-radius: 14px; padding: 18px 22px; text-align: center; }
+.eqline { font-family: 'Courier New', monospace; font-size: clamp(19px, 3.2vw, 25px); color: var(--ink); line-height: 1.6; }
+.eqline + .eqline { margin-top: 4px; border-top: 1px dashed var(--line); padding-top: 8px; }

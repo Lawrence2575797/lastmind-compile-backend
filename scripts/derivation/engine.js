@@ -11,8 +11,8 @@
     return String(s)
       .replace(/\bd([A-Za-zπΔλ][A-Za-z0-9]*)\s*\/\s*d([A-Za-zπΔλ][A-Za-z0-9]*)\b/g,
         '<span class="mfrac"><span class="n">d$1</span><span class="d">d$2</span></span>')
-      .replace(/\^\((-?[0-9.]+)\)/g, '<sup>$1</sup>')
-      .replace(/\^(-?[0-9.]+)/g, '<sup>$1</sup>')
+      .replace(/\^\(([^()]+)\)/g, '<sup>$1</sup>')
+      .replace(/\^(-?[A-Za-z0-9.]+)/g, '<sup>$1</sup>')
       .replace(/\blambda\*/gi, 'λ*').replace(/\blambda\b/gi, 'λ')
       .replace(/\bDelta\s*([A-Za-z])/g, 'Δ$1')
       .replace(/\bpi\b(?=\s*[\(\s])/gi, 'π')
@@ -68,8 +68,16 @@
     io.observe(s);
   }
 
+  /* renders step.eq (a string, or an array of lines) as its own plain boxed display, set apart from the short
+     prose question - the maths is the thing to read, not a clause inside a sentence. */
+  function eqBoxHtml(eq) {
+    if (!eq) return '';
+    var lines = Array.isArray(eq) ? eq : [eq];
+    return '<div class="eqbox">' + lines.map(function (l) { return '<div class="eqline">' + mathify(l) + '</div>'; }).join('') + '</div>';
+  }
+
   function buildAsk(step) {
-    var wrap = stack('<div class="eyebrow">What follows?</div><p class="big">' + mathify(step.q) + '</p>');
+    var wrap = stack('<div class="eyebrow">What follows?</div>' + eqBoxHtml(step.eq) + '<p class="big">' + mathify(step.q) + '</p>');
     var opts = el('div', 'opts'), note = el('div', 'note'), out = el('div', 'reveal'); out.hidden = true;
     (Math.random() < 0.5 ? [0, 1] : [1, 0]).forEach(function (i) {
       var b = el('button', 'opt', mathify(step.opts[i])); b.type = 'button';
@@ -257,7 +265,7 @@
      reasoning choice: the same maths answer box as everywhere else on the site, checked locally against the
      number since this offline player has no server round-trip. */
   function buildCalc(step) {
-    var wrap = stack('<div class="eyebrow">Work it out</div><p class="big">' + mathify(step.q) + '</p>');
+    var wrap = stack('<div class="eyebrow">Work it out</div>' + eqBoxHtml(step.eq) + '<p class="big">' + mathify(step.q) + '</p><div class="mathlabel">Your answer</div>');
     var mathEditor = createMathShortcutEditor('Type your answer…');
     var note = el('div', 'note'), out = el('div', 'reveal'); out.hidden = true;
     var solved = false;

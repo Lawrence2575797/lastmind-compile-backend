@@ -120,7 +120,12 @@
      "wrong": "Yes, whatever it needs",
      "hint": "Picture one factory. Could it have endless land, endless workers, endless machines and endless organisers?",
      "pre": "So they are limited. They are",
-     "term": "finres"
+     "term": "finres",
+     "why": [
+      "The factory has one plot of land, a fixed workforce, a set of machines, and one organiser running it.",
+      "None of the four can simply appear in unlimited amounts on demand.",
+      "Every business, in every industry, runs into exactly this same ceiling."
+     ]
     },
     {
      "type": "ask",
@@ -129,7 +134,11 @@
      "wrong": "There is no limit",
      "hint": "If the resources are limited, what happens to the bottles made from them?",
      "pre": "So the bottles, and every good and service, are",
-     "term": "fings"
+     "term": "fings",
+     "why": [
+      "Limited land, labour, capital and enterprise can only ever produce a limited number of bottles.",
+      "The same is true of any good or service made from finite resources, not just bottled water."
+     ]
     },
     {
      "type": "ask",
@@ -138,7 +147,11 @@
      "wrong": "Yes, I will never want anything again",
      "hint": "Think about the last thing you really wanted. Did wanting stop?",
      "pre": "So people have",
-     "term": "wants"
+     "term": "wants",
+     "why": [
+      "Getting the phone didn't end your wanting - a new want simply took its place.",
+      "This isn't a personal flaw; it's true of almost everyone, which is exactly why economics treats it as a starting fact, not an exception."
+     ]
     },
     {
      "type": "chains",
@@ -166,7 +179,14 @@
      "wrong": "Yes, everyone can",
      "hint": "Limited goods on one side, unlimited wants on the other. What happens when they meet?",
      "pre": "This is the problem of",
-     "term": "scarcity"
+     "term": "scarcity",
+     "why": [
+      "Goods and services are limited by finite resources, but what people want never runs out.",
+      "Since both can't be satisfied at once, not everyone can have everything they want."
+     ],
+     "whyMatters": [
+      "Scarcity is the reason economics exists at all: if resources could meet every want, there would be no choices left to study."
+     ]
     },
     {
      "type": "derive"
@@ -220,7 +240,11 @@
      "wrong": "Wait until there is enough for everyone",
      "hint": "If everything cannot be had at once, what is left to do?",
      "pre": "They have to make a",
-     "term": "choice"
+     "term": "choice",
+     "why": [
+      "Scarcity means the options on offer exceed what can actually be afforded.",
+      "The only way forward is to pick some options and leave the rest."
+     ]
     },
     {
      "type": "ask",
@@ -229,7 +253,11 @@
      "wrong": "Yes, all of them",
      "hint": "You chose the phone. Can you also spend that same money on the holiday?",
      "pre": "So every choice is a",
-     "term": "tradeoff"
+     "term": "tradeoff",
+     "why": [
+      "Choosing the phone uses up the money and time that the holiday would have needed.",
+      "Picking one option always means giving up the others - that's what makes it a trade-off, not just a preference."
+     ]
     },
     {
      "type": "ask",
@@ -238,7 +266,11 @@
      "wrong": "No, only one thing",
      "hint": "Could the bottling factory make juice or fizzy drinks with the very same resources?",
      "pre": "So resources have",
-     "term": "altuses"
+     "term": "altuses",
+     "why": [
+      "The same land, workers and machines that bottle water could just as easily bottle juice.",
+      "Almost every resource can be redirected to more than one use - that flexibility is exactly what makes a trade-off possible."
+     ]
     },
     {
      "type": "chains",
@@ -266,7 +298,11 @@
      "wrong": "All of them added together",
      "hint": "You can only have one thing instead. Which of the things you gave up would you actually have picked?",
      "pre": "That is the",
-     "term": "nextbest"
+     "term": "nextbest",
+     "why": [
+      "You gave up several alternatives, but only one of them was ever really in the running.",
+      "That single runner-up - not everything else you didn't pick - is what actually measures what the choice cost you."
+     ]
     },
     {
      "type": "ask",
@@ -275,7 +311,14 @@
      "wrong": "The money you pay, plus the time it takes",
      "hint": "Money is only one way of counting. What did you actually give up?",
      "pre": "That is the",
-     "term": "oppcost"
+     "term": "oppcost",
+     "why": [
+      "The real cost of any choice isn't the price tag - it's the next best alternative you had to walk away from.",
+      "Two choices with identical price tags can have very different real costs, depending on what else you gave up."
+     ],
+     "whyMatters": [
+      "This is why economists say \"there's no such thing as a free lunch\": even a gift has an opportunity cost, in the time or attention spent instead of something else."
+     ]
     },
     {
      "type": "derive"

@@ -28,6 +28,13 @@ export interface TopicMapNode {
   conceptId: string;
   label: string;
   description: string;
+  // The generation prompt requires the LAST node in its own output to be the
+  // final task/worked-example - but a DB read has no guaranteed row order
+  // (no ORDER BY would reliably reconstruct "the model's last array
+  // element" anyway, since a bulk insert can land several rows in the same
+  // instant), so this is marked explicitly via the `theme` column at
+  // insert time rather than left for a caller to infer from array position.
+  isFinalTask: boolean;
 }
 export interface TopicMapEdge {
   from: string; // node id (not conceptId/uuid — matches the shape the frontend map UI already works with)
@@ -45,7 +52,10 @@ export interface TopicKnowledgeMap {
 // Same convention as ingest_knowledge_map.js's clean()/conceptId, so a
 // topic map's concept ids resolve through the exact same
 // mastery/FSRS/practice-question lookups every other subject's nodes do.
-function clean(s: string): string {
+// exported for knowledgeMapAskService.ts's own additive-only gap-node
+// insertion, which needs the identical concept_id convention when it adds
+// a single new node to an existing (qualification: 'Other' only) map.
+export function clean(s: string): string {
   return (s || '').trim().toLowerCase().replace(/[^a-z0-9]+/g, '_');
 }
 
@@ -140,7 +150,7 @@ async function generateTopicGraph(topic: string, userId: string): Promise<{ node
 async function findExistingTopicMap(subject: string): Promise<TopicKnowledgeMap | null> {
   const { data: nodeRows, error: nodeErr } = await supabaseAdmin
     .from('knowledge_map_nodes')
-    .select('id, concept_id, node_key, label, subtopic')
+    .select('id, concept_id, node_key, label, subtopic, theme')
     .ilike('subject', subject)
     .eq('qualification', TOPIC_QUALIFICATION)
     .eq('exam_board', TOPIC_EXAM_BOARD);
@@ -158,7 +168,7 @@ async function findExistingTopicMap(subject: string): Promise<TopicKnowledgeMap 
     subject,
     qualification: TOPIC_QUALIFICATION,
     examBoard: TOPIC_EXAM_BOARD,
-    nodes: nodeRows.map((r: any) => ({ id: r.node_key as string, conceptId: r.concept_id as string, label: r.label as string, description: (r.subtopic as string) || '' })),
+    nodes: nodeRows.map((r: any) => ({ id: r.node_key as string, conceptId: r.concept_id as string, label: r.label as string, description: (r.subtopic as string) || '', isFinalTask: r.theme === 'final_task' })),
     edges: (edgeRows || [])
       .map((e: any) => ({ from: idByDbId.get(e.from_node_id), to: idByDbId.get(e.to_node_id) }))
       .filter((e: any): e is TopicMapEdge => !!e.from && !!e.to),
@@ -175,7 +185,7 @@ async function findExistingTopicMap(subject: string): Promise<TopicKnowledgeMap 
 // subtopic to group by), so it's a safe, honest reuse rather than a new
 // migration for a single extra string field.
 async function insertTopicGraph(subject: string, nodes: { id: string; label: string; description: string }[], edges: { from: string; to: string }[]): Promise<TopicKnowledgeMap> {
-  const nodeRows = nodes.map((n) => ({
+  const nodeRows = nodes.map((n, i) => ({
     concept_id: `${clean(subject)}:${clean(n.id)}`,
     subject,
     qualification: TOPIC_QUALIFICATION,
@@ -183,7 +193,7 @@ async function insertTopicGraph(subject: string, nodes: { id: string; label: str
     node_key: n.id,
     label: n.label,
     subtopic: n.description,
-    theme: null,
+    theme: i === nodes.length - 1 ? 'final_task' : null,
     difficulty: null,
   }));
   const { error: insertNodesErr } = await supabaseAdmin.from('knowledge_map_nodes').insert(nodeRows);
@@ -208,7 +218,7 @@ async function insertTopicGraph(subject: string, nodes: { id: string; label: str
     subject,
     qualification: TOPIC_QUALIFICATION,
     examBoard: TOPIC_EXAM_BOARD,
-    nodes: nodes.map((n) => ({ id: n.id, conceptId: `${clean(subject)}:${clean(n.id)}`, label: n.label, description: n.description })),
+    nodes: nodes.map((n, i) => ({ id: n.id, conceptId: `${clean(subject)}:${clean(n.id)}`, label: n.label, description: n.description, isFinalTask: i === nodes.length - 1 })),
     edges,
     cached: false,
   };

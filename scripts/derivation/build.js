@@ -13,6 +13,18 @@ const MAX_Q_WORDS = 28;
 const WORDS = ['zero', 'one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine', 'ten'];
 const PALETTE = ['#cfe8c8', '#cfe3f6', '#f6ecb9', '#f8d9c4', '#cfd9e8', '#dccff0', '#f8d3d3', '#f4a9a8', '#d5e8d0', '#f2dcc0', '#e9d0d8', '#f3b8a0', '#d0d6ee', '#e8e0b8', '#c9e5da', '#e6cfe0', '#e2e6b9', '#f5d0a9', '#f0a7b8', '#e6cfe0'];
 
+// step.why (a deep explanation, shown after a correct answer, before the student can move on) and step.whyMatters
+// (an optional real-world stakes note) are each either a single string or an array of strings - one sentence per
+// array entry, never one dense paragraph. Both are optional (an already-authored spec or an already-generated,
+// cached stage with neither still validates fine - see engine.js's own why-gated fallback to the old auto-advance),
+// but if present must actually contain real sentences, not an empty array/string.
+function explanationErrors(value, field) {
+  if (value == null) return [];
+  const arr = Array.isArray(value) ? value : [value];
+  if (!arr.length || arr.some((s) => typeof s !== 'string' || !s.trim())) return [`"${field}" must be a non-empty string or array of non-empty strings`];
+  return [];
+}
+
 function diagramErrors(d) {
   const e = [];
   const okPt = (p) => Array.isArray(p) && p.length === 2 && p.every((v) => typeof v === 'number' && v >= 0 && v <= 1);
@@ -56,6 +68,9 @@ function validate(spec, known) {
           if (!spec.noLengthCap) { const n = String(s.q || '').trim().split(/\s+/).filter(Boolean).length; if (n > MAX_Q_WORDS) err(`${at}: the question is ${n} words; keep it to ${MAX_Q_WORDS} or fewer (aim for about 20)`); }
           const label = (spec.terms[s.term] || {}).label;
           if (label && !spec.noLeakCheck && s.q && s.q.toLowerCase().includes(label.toLowerCase())) err(`${at}: "q" contains the term "${label}" it is about to reveal`);
+          explanationErrors(s.why, 'why').forEach((m) => err(`${at}: ${m}`));
+          explanationErrors(s.whyMatters, 'whyMatters').forEach((m) => err(`${at}: ${m}`));
+          if (st.nodes && s.why == null) err(`${at}: calc is missing "why" (a deep explanation shown after the answer, required for generated content)`);
         } else if (s.type === 'ask') {
           asked = true;
           ['q', 'right', 'wrong', 'hint', 'pre'].forEach((f) => { if (!s[f]) err(`${at}: ask is missing "${f}"`); });
@@ -63,6 +78,9 @@ function validate(spec, known) {
           // a question is a situation and one thing to decide, not a paragraph: 28 words at most, and the prompt asks for about 20
           if (!spec.noLengthCap) { const n = String(s.q || '').trim().split(/\s+/).filter(Boolean).length; if (n > MAX_Q_WORDS) err(`${at}: the question is ${n} words; keep it to ${MAX_Q_WORDS} or fewer (aim for about 20)`); }
           if (s.diagram) diagramErrors(s.diagram).forEach((m) => err(`${at}: diagram: ${m}`));
+          explanationErrors(s.why, 'why').forEach((m) => err(`${at}: ${m}`));
+          explanationErrors(s.whyMatters, 'whyMatters').forEach((m) => err(`${at}: ${m}`));
+          if (st.nodes && s.why == null) err(`${at}: ask is missing "why" (a deep explanation shown after the answer, required for generated content)`);
           const label = (spec.terms[s.term] || {}).label;
           if (label) [['q', s.q], ['right', s.right], ['wrong', s.wrong], ['hint', s.hint]].forEach(([f, v]) => {
             if (!spec.noLeakCheck && v && v.toLowerCase().includes(label.toLowerCase())) err(`${at}: "${f}" contains the term "${label}" it is about to reveal`);
@@ -198,9 +216,13 @@ function build(spec) {
       if (s.type === 'read') steps.push({ type: 'read', term: s.term, text: s.text });
       else if (s.type === 'ask') {
         const o = { type: 'ask', q: s.q, opts: [s.right, s.wrong], ok: 0, hint: s.hint, pre: s.pre, term: s.term };
-        if (s.fig) o.fig = s.fig; if (s.diagram) o.diagram = s.diagram; if (s.eq) o.eq = s.eq; steps.push(o);
+        if (s.fig) o.fig = s.fig; if (s.diagram) o.diagram = s.diagram; if (s.eq) o.eq = s.eq;
+        if (s.why) o.why = s.why; if (s.whyMatters) o.whyMatters = s.whyMatters;
+        steps.push(o);
       } else if (s.type === 'calc') {
-        steps.push({ type: 'calc', q: s.q, eq: s.eq, answer: s.answer, tol: s.tol, hint: s.hint, pre: s.pre, term: s.term });
+        const o = { type: 'calc', q: s.q, eq: s.eq, answer: s.answer, tol: s.tol, hint: s.hint, pre: s.pre, term: s.term };
+        if (s.why) o.why = s.why; if (s.whyMatters) o.whyMatters = s.whyMatters;
+        steps.push(o);
       } else if (s.type === 'order') {
         // only links the knowledge map itself states (both ends are map concepts) count as a real sequence; links added between building-block terms do not
         const pairs = (st.edges || []).filter(([x, y]) => s.terms.includes(x) && s.terms.includes(y) && (!st.nodes || (st.nodes.includes(x) && st.nodes.includes(y))));

@@ -78,7 +78,11 @@
      "wrong": "Money from selling it on",
      "hint": "Think about why anyone eats the pizza in the first place.",
      "pre": "The satisfaction you get from consuming a good or service is called",
-     "term": "util"
+     "term": "util",
+     "why": [
+      "Eating the pizza didn't give you money or a physical asset back - it gave you satisfaction.",
+      "Economists give that satisfaction a name so it can be reasoned about like any other quantity."
+     ]
     },
     {
      "type": "ask",
@@ -87,7 +91,11 @@
      "wrong": "Spend as little as possible",
      "hint": "Think about why anyone spends money at all: what do they want out of it?",
      "pre": "So consumers are assumed to aim for",
-     "term": "umax"
+     "term": "umax",
+     "why": [
+      "With limited money, every pound spent on one thing is a pound not spent on something else.",
+      "Economists model consumers as spreading that limited money to get the greatest total satisfaction it can buy."
+     ]
     },
     {
      "type": "ask",
@@ -96,7 +104,11 @@
      "wrong": "Sellers' willingness to supply at each price",
      "hint": "Are we looking at the buyers' side of the market, or the sellers' side?",
      "pre": "That quantity, at each price, is",
-     "term": "demand"
+     "term": "demand",
+     "why": [
+      "At a low price buyers might want a lot; at a high price, far less.",
+      "Listing that quantity at every possible price describes the buyers' side of the market specifically, not the sellers'."
+     ]
     },
     {
      "type": "ask",
@@ -105,7 +117,14 @@
      "wrong": "It rises",
      "hint": "Would you buy more or fewer pizzas at double the price?",
      "pre": "So price and quantity demanded move in opposite directions. That is the",
-     "term": "law"
+     "term": "law",
+     "why": [
+      "Doubling the price makes pizza a worse deal relative to everything else you could buy instead, so less gets bought.",
+      "This inverse relationship between price and quantity demanded holds for almost every good."
+     ],
+     "whyMatters": [
+      "It's why a shop expects sales to drop after a price rise, and expects a sale to boost volume."
+     ]
     },
     {
      "type": "order",
@@ -124,7 +143,11 @@
      "wrong": "A bigger change in the price",
      "hint": "Price is what is on the axis. What else could change how much people want pizza?",
      "pre": "Price changes slide you along the curve, other changes shift it. That is the distinction between a",
-     "term": "move"
+     "term": "move",
+     "why": [
+      "The demand curve itself already shows how quantity responds to price - so a price change just moves you along the same curve.",
+      "Anything else that changes buying behaviour has to move the whole curve, since price alone can't be the explanation."
+     ]
     },
     {
      "type": "ask",
@@ -133,7 +156,11 @@
      "wrong": "It slides along",
      "hint": "The price did not change, so the curve cannot slide along itself.",
      "pre": "Income, tastes, the prices of related goods and population are the",
-     "term": "cond"
+     "term": "cond",
+     "why": [
+      "Pizza's own price stayed fixed, so the extra buying has to come from something else changing.",
+      "Income, tastes, related-good prices and population are exactly the \"something elses\" that shift the whole curve rather than sliding along it."
+     ]
     },
     {
      "type": "derive"

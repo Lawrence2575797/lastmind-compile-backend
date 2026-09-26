@@ -4,6 +4,16 @@
 .chips { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 6px; }
 
 [hidden] { display: none !important; }
+/* a deep explanation (step.why) and/or a real-stakes note (step.whyMatters) shown after a correct answer, below
+   the short "pre + term pill" reveal line - flex-basis:100% forces each onto its own row inside .reveal's flex
+   row rather than wrapping inline after the term pill. */
+.revwhy, .revmatters { flex-basis: 100%; font-size: 16px; line-height: 1.6; font-weight: 400; }
+.revwhy { color: var(--ink); }
+.revwhy .ln, .revmatters .ln { display: block; margin-top: 6px; }
+.revwhy .ln:first-child, .revmatters .ln:first-child { margin-top: 10px; }
+.revmatters { padding: 14px 16px; border-radius: 12px; background: color-mix(in srgb, var(--accent) 10%, var(--panel)); border: 1px solid var(--accent); }
+.revmatters-tag { font: 700 11px var(--sans); letter-spacing: .08em; text-transform: uppercase; color: var(--accent); }
+.reveal .btn { flex-basis: 100%; width: fit-content; margin-top: 4px; }
 /* outside Minimalist the lesson takes the page background, panel colour and text colour */
 html[data-look="glass"], html[data-look="glass"] body { background: transparent; }
 html[data-look="glass"] { --ground: transparent; --panel: rgba(var(--pr), 0.32); --ink: var(--gtext); --muted: color-mix(in srgb, var(--gtext) 72%, transparent); --line: color-mix(in srgb, var(--gtext) 26%, transparent); --accent: var(--gtext); --accent-ink: rgb(var(--pr)); --edge: var(--gtext); --node-dash: color-mix(in srgb, var(--gtext) 45%, transparent); --hud: rgba(var(--pr), 0.94); }

@@ -19,6 +19,14 @@
       .replace(/\bsqrt\(([^)]+)\)/gi, '√($1)')
       .replace(/\bp([xy])\b/g, 'p<sub>$1</sub>');
   }
+  /* a deep explanation (step.why) or a real-world stakes note (step.whyMatters) is authored as one string per
+     sentence, one sentence per line on screen - never one dense paragraph. Accepts a single string too (split on
+     sentence boundaries) so a hand-authored spec that wrote one string still renders one sentence per line. */
+  function linesHtml(x) {
+    if (!x) return '';
+    var arr = Array.isArray(x) ? x : String(x).split(/(?<=[.!?])\s+(?=\S)/);
+    return arr.map(function (s) { return s && s.trim() ? '<span class="ln">' + mathify(s.trim()) + '</span>' : ''; }).join('');
+  }
   function shuffle(a) { var b = a.slice(); for (var i = b.length - 1; i > 0; i--) { var j = Math.floor(Math.random() * (i + 1)); var t = b[i]; b[i] = b[j]; b[j] = t; } if (b.join() === a.join() && b.length > 2) b.push(b.shift()); return b; }
   function script() { return STAGES[stageIdx].script; }
 
@@ -85,9 +93,22 @@
         if (i !== step.ok) { b.classList.add('wrong'); note.textContent = step.hint; setTimeout(function () { b.classList.remove('wrong'); }, 500); return; }
         b.classList.add('right'); note.textContent = '';
         Array.prototype.forEach.call(opts.children, function (o) { o.disabled = true; });
-        out.hidden = false; out.innerHTML = '<span>' + mathify(step.pre) + '</span>' + termHtml(step.term, 'pop');
+        out.hidden = false;
+        out.innerHTML = '<span>' + mathify(step.pre) + '</span>' + termHtml(step.term, 'pop')
+          + (step.why ? '<div class="revwhy">' + linesHtml(step.why) + '</div>' : '')
+          + (step.whyMatters ? '<div class="revmatters"><div class="revmatters-tag">Why this matters</div>' + linesHtml(step.whyMatters) + '</div>' : '');
         chunk(step.term);
-        setTimeout(function () { next(true); }, 1500);
+        // A step with a deep explanation (step.why) waits for the student to actually read it - a Continue button,
+        // not an auto-advance timer, since 1.5s is nowhere near enough to read several sentences of explanation.
+        // A step with no "why" (any already-cached stage generated before this field existed) keeps the original
+        // auto-advance exactly as before, so nothing already live changes behaviour with no new content to show.
+        if (step.why) {
+          var cont = el('button', 'btn', 'Continue'); cont.type = 'button';
+          cont.addEventListener('click', function () { if (cont.disabled) return; cont.disabled = true; next(true); });
+          wrap.appendChild(cont);
+        } else {
+          setTimeout(function () { next(true); }, 1500);
+        }
       });
       opts.appendChild(b);
     });
@@ -278,9 +299,18 @@
       if (!isNaN(val) && Math.abs(val - step.answer) <= tol) {
         solved = true; editorEl.classList.remove('wrong'); editorEl.classList.add('right'); note.textContent = '';
         editorEl.contentEditable = 'false'; go.disabled = true;
-        out.hidden = false; out.innerHTML = '<span>' + mathify(step.pre) + '</span>' + termHtml(step.term, 'pop');
+        out.hidden = false;
+        out.innerHTML = '<span>' + mathify(step.pre) + '</span>' + termHtml(step.term, 'pop')
+          + (step.why ? '<div class="revwhy">' + linesHtml(step.why) + '</div>' : '')
+          + (step.whyMatters ? '<div class="revmatters"><div class="revmatters-tag">Why this matters</div>' + linesHtml(step.whyMatters) + '</div>' : '');
         chunk(step.term);
-        setTimeout(function () { next(true); }, 1500);
+        if (step.why) {
+          var cont = el('button', 'btn', 'Continue'); cont.type = 'button';
+          cont.addEventListener('click', function () { if (cont.disabled) return; cont.disabled = true; next(true); });
+          wrap.appendChild(cont);
+        } else {
+          setTimeout(function () { next(true); }, 1500);
+        }
       } else {
         editorEl.classList.add('wrong'); note.textContent = step.hint;
         setTimeout(function () { editorEl.classList.remove('wrong'); }, 500);

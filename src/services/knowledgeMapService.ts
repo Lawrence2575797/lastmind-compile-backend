@@ -500,11 +500,23 @@ export interface UnifiedMapResult {
  * exactly the "some things link together, others won't" shape this view
  * is meant to show, not a bug to fix.
  */
+// This view only started existing today - every account's concept_reviews
+// table already had months of rows from the OLD per-subject teaching flow,
+// which would otherwise all show up here at once the moment this shipped,
+// rather than the map growing from empty as new lessons are actually
+// completed going forward. gradeAndRecordReview stamps updated_at on every
+// grading event, including a concept's very first one (see reviewService.ts's
+// own upsert), so it's a reliable "was this touched on/after X" filter with
+// no new column needed. Not a per-user preference - a fixed cutoff at the
+// moment this view shipped, the same for everyone.
+const UNIFIED_MAP_COVERAGE_CUTOFF = '2026-09-27T08:54:57.000Z';
+
 export async function getUnifiedKnowledgeMapForUser(userId: string): Promise<UnifiedMapResult> {
   const { data: reviewRows, error: reviewErr } = await supabaseAdmin
     .from('concept_reviews')
     .select('concept_id')
-    .eq('user_id', userId);
+    .eq('user_id', userId)
+    .gte('updated_at', UNIFIED_MAP_COVERAGE_CUTOFF);
   if (reviewErr) throw reviewErr;
   const conceptIds = [...new Set((reviewRows || []).map((r) => r.concept_id as string))];
   if (!conceptIds.length) return { nodes: [], edges: [], mastery: {}, masteryDetail: {} };

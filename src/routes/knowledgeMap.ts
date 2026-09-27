@@ -34,7 +34,7 @@ import {
 } from '../services/nodeReviewService';
 import { getNodeNoteBaseline, getNodeNoteForUser, saveNodeNoteEdit, getNodeNotes, getEdgeNoteBaseline, getEdgeNoteForUser, saveEdgeNoteEdit, getEdgeNotes, getNotesIndexForUser, getPersonalNote, savePersonalNote, checkWorkedExampleStep, markEdgeExplanationSeen } from '../services/knowledgeMapNotesService';
 import { derivationKeyTermGraph, derivationCompletedStages, derivationQuick, ensureDerivationContent, derivationPlayerPayload, derivationConceptsOfStage, derivationNodeIds, derivationAnchorConcept, derivationSiblingConcepts } from '../services/derivationService';
-import { derivationGenericLookup, derivationGenericGenerate, derivationContentForGenericNode, genericStageKey, derivationGenericPayloadForKey, derivationGenericConceptsForKey } from '../services/derivationGenericService';
+import { derivationGenericLookup, derivationGenericGenerate, derivationContentForGenericNode, genericStageKey, derivationGenericPayloadForKey, derivationGenericConceptsForKey, DerivationStageNotReadyError } from '../services/derivationGenericService';
 import { generateAndCacheNodeLesson, generateAndCacheEdgeLesson, needsQuestionUpgrade, upgradeLessonQuestions } from '../services/lessonGenerationService';
 import { isStructured, gradeStructured, clientView, lessonForClient, sealJson, openJson, closeEnough, StructuredQuestion } from '../services/questionFormats';
 import { pickRotatingQuestion, poolEntry, poolOf, rotationPick, immediatePool } from '../services/reviewQuestionPool';
@@ -216,26 +216,46 @@ router.get('/knowledge-map-v2/node/:nodeId/lesson', requireAuth, syncEndpointLim
 
     // Any other subject with a real knowledge map: the same derivation lesson, generated live the first time a student reaches
     // its stage (see derivationGenericService.ts) instead of precompiled offline - the checker, prompt and rules are identical.
-    try {
-      const generic = await derivationGenericLookup(nodeId);
-      if (generic) {
-        let stage = generic.cached;
-        if (!stage) {
+    //
+    // Once derivationGenericLookup finds this node ON a real derivation
+    // plan (`generic` truthy), it is COMMITTED to being taught that way -
+    // any failure past this point (not ready yet, or a genuine checker
+    // rejection after real generation attempts) must NOT fall through to
+    // the plain-lesson generator below. That generator is a second,
+    // completely separate, real paid Claude call, for a format the
+    // frontend's derivation player can't even use - falling back to it
+    // here used to mean every out-of-order or genuinely-failed derivation
+    // request quietly spent money twice for nothing usable. Only a node
+    // derivationGenericLookup itself says isn't on a derivation plan at
+    // all (`generic` falsy) reaches the plain generator now.
+    const generic = await derivationGenericLookup(nodeId);
+    if (generic) {
+      let stage = generic.cached;
+      if (!stage) {
+        try {
           await assertFreshGenerationWithinCap(userId, await isUserPaid(userId), req.userCreatedAt ?? null, req.userEmail);
           stage = await derivationGenericGenerate(generic, userId);
           await recordFreshGenerationEvent(userId);
-        }
-        const content = derivationContentForGenericNode(generic, stage);
-        if (content) {
-          await supabaseAdmin.from('knowledge_map_node_lessons').upsert({ node_id: nodeId, encoding_content: content }, { onConflict: 'node_id' });
-          return res.json({ ...lessonForClient(content), derivation: { stage: genericStageKey(generic.subject, generic.qualification, generic.examBoard, generic.stageIndex), payload: { terms: stage.terms, stage: stage.stage } } });
+        } catch (genErr) {
+          if (genErr instanceof InsufficientLocksError || genErr instanceof GenerationCapExceededError) throw genErr;
+          if (genErr instanceof DerivationStageNotReadyError) {
+            // Free to report - no Claude call happened (see
+            // DerivationStageNotReadyError's own comment).
+            return res.status(409).json({ error: 'not ready yet', code: 'DERIVATION_NOT_READY' });
+          }
+          // A genuine checker rejection after real (paid) generation
+          // attempts - already logged inside derivationGenericGenerate's
+          // own 3-attempt loop; surfaced plainly here rather than spending
+          // a second, differently-shaped generation on top of it.
+          console.error('Derivation generation failed the checker:', genErr);
+          return res.status(500).json({ error: 'could not generate this lesson' });
         }
       }
-    } catch (genErr) {
-      // A real cap/balance limit is a genuine stop, not something to silently paper over by falling back to the old
-      // generator (which would just spend another generation the student is already capped or out of Locks for).
-      if (genErr instanceof InsufficientLocksError || genErr instanceof GenerationCapExceededError) throw genErr;
-      console.error('Generic derivation generation failed - falling back to the plain lesson generator:', genErr);
+      const content = derivationContentForGenericNode(generic, stage);
+      if (content) {
+        await supabaseAdmin.from('knowledge_map_node_lessons').upsert({ node_id: nodeId, encoding_content: content }, { onConflict: 'node_id' });
+        return res.json({ ...lessonForClient(content), derivation: { stage: genericStageKey(generic.subject, generic.qualification, generic.examBoard, generic.stageIndex), payload: { terms: stage.terms, stage: stage.stage } } });
+      }
     }
 
     const { data, error } = await supabaseAdmin

@@ -60,11 +60,15 @@ export interface CortexHistoryTurn {
   content: string;
 }
 
-// Deliberately just a conversational reply now - see cortexPrompts.ts's
-// own top comment for why the structural "actions" system (folder/page/
-// review manipulation, curriculum layout-and-creation) was removed
-// entirely, by explicit product decision. Cortex is general learning
-// assistance only; it no longer does anything to the student's account.
+// Deliberately just a conversational reply, plus two narrow declared-
+// intent fields - see cortexPrompts.ts's own top comment for why the old,
+// broad structural "actions" system (folder/page/review manipulation,
+// curriculum layout-and-creation) stays removed, and why startTopic/
+// retryFailedLesson are a different, bounded thing rather than a
+// reintroduction of it: Cortex only ever RECOGNIZES one of these two
+// specific intents from natural phrasing, it never carries either out -
+// the frontend's own deterministic code does that (see
+// cortex/index.html's startTopicLearnFlow/pendingLessonRetry).
 export interface CortexResult {
   reply: string;
   // True only when the student's own message explicitly asked for the
@@ -73,6 +77,16 @@ export interface CortexResult {
   // CORTEX_INTENT_PROMPT's speakAloud rule). Every reply still gets its
   // own manual "read aloud" button regardless of this flag.
   speakAloud: boolean;
+  // Set only when the student's message (in whatever phrasing) is asking
+  // to start learning a brand-new topic - the topic itself, phrased the
+  // way it'd be typed into a "teach me ___" box. The frontend builds that
+  // topic's knowledge map when this is present; absent otherwise.
+  startTopic?: string;
+  // Set only when the most recent thing that happened was a lesson that
+  // failed to generate (see the bracket-note convention) and the
+  // student's message is asking to retry it. The frontend retries that
+  // specific lesson when this is true; absent/false otherwise.
+  retryFailedLesson?: boolean;
 }
 
 /**

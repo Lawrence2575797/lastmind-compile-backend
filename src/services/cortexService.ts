@@ -1,8 +1,23 @@
 import { callClaudeJSON, MODELS } from './claudeClient';
 import { CORTEX_INTENT_PROMPT } from '../constants/cortexPrompts';
 
+// Beyond stripping a code fence, also falls back to the substring between
+// the first "{" and the last "}" - covers the model adding a stray
+// sentence of commentary before or after the JSON object despite rule 1,
+// which plain fence-stripping doesn't touch. Doesn't fix an unescaped
+// quote/newline INSIDE the object (that's a genuinely malformed string,
+// not surrounding noise) - see CORTEX_INTENT_PROMPT's rule 1 for that.
 function stripCodeFences(text: string): string {
-  return text.trim().replace(/^```(?:json)?\s*/i, '').replace(/```\s*$/, '').trim();
+  const fenced = text.trim().replace(/^```(?:json)?\s*/i, '').replace(/```\s*$/, '').trim();
+  try {
+    JSON.parse(fenced);
+    return fenced;
+  } catch {
+    const first = fenced.indexOf('{');
+    const last = fenced.lastIndexOf('}');
+    if (first !== -1 && last > first) return fenced.slice(first, last + 1);
+    return fenced;
+  }
 }
 
 // Thrown specifically when the reply call's response couldn't be parsed as

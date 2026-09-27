@@ -463,3 +463,90 @@ export async function getKnowledgeMapForSubject(
       .map((r) => r.id as string),
   };
 }
+
+export interface UnifiedMapNode {
+  id: string; // knowledge_map_nodes.id (uuid)
+  conceptId: string;
+  label: string;
+  subtopic: string;
+  // Present (unlike SubjectMapNode) because this graph spans every subject/
+  // topic the student has ever touched at once - a click handler needs
+  // these three to know which folder a node actually belongs to.
+  subject: string;
+  qualification: string;
+  examBoard: string;
+}
+
+export interface UnifiedMapResult {
+  nodes: UnifiedMapNode[];
+  edges: KnowledgeMapEdge[];
+  mastery: Record<string, 0 | 1 | 2>;
+  masteryDetail: Record<string, MasteryDetail>;
+}
+
+/**
+ * One graph of every concept this student has ever actually been graded
+ * on, across every subject and every Cortex-generated custom topic alike -
+ * concept_reviews carries no subject/qualification dimension of its own
+ * (see reviewService.ts), so it's the one true "what has this student
+ * covered" list regardless of which folder taught it. Deliberately NOT
+ * scoped to one (subject, qualification, examBoard) triple, unlike
+ * getKnowledgeMapForSubject above - this is the "Knowledge Map" sidebar
+ * tab's own data source, replacing the old per-subject folder picker.
+ *
+ * An edge is kept only when BOTH ends are something the student has
+ * covered - most won't share an edge at all (edges don't span subjects by
+ * design; see getKnowledgeMapForSubject's own comment on that), which is
+ * exactly the "some things link together, others won't" shape this view
+ * is meant to show, not a bug to fix.
+ */
+export async function getUnifiedKnowledgeMapForUser(userId: string): Promise<UnifiedMapResult> {
+  const { data: reviewRows, error: reviewErr } = await supabaseAdmin
+    .from('concept_reviews')
+    .select('concept_id')
+    .eq('user_id', userId);
+  if (reviewErr) throw reviewErr;
+  const conceptIds = [...new Set((reviewRows || []).map((r) => r.concept_id as string))];
+  if (!conceptIds.length) return { nodes: [], edges: [], mastery: {}, masteryDetail: {} };
+
+  const nodeRows = await selectRowsByIdChunked<{
+    id: string; concept_id: string; label: string; subtopic: string | null;
+    subject: string; qualification: string; exam_board: string;
+  }>('knowledge_map_nodes', 'id, concept_id, label, subtopic, subject, qualification, exam_board', 'concept_id', conceptIds);
+  if (!nodeRows.length) return { nodes: [], edges: [], mastery: {}, masteryDetail: {} };
+
+  const nodeIds = nodeRows.map((r) => r.id as string);
+  const nodeIdSet = new Set(nodeIds);
+  const edgeRows = await selectRowsByIdChunked<{ from_node_id: string; to_node_id: string }>(
+    'knowledge_map_edges', 'from_node_id, to_node_id', 'from_node_id', nodeIds
+  );
+  const coveredEdgeRows = edgeRows.filter((e) => nodeIdSet.has(e.to_node_id));
+
+  const masteryDetailByConcept = await getMasteryDetailsForConcepts(userId, nodeRows.map((r) => r.concept_id as string));
+  const mastery: Record<string, 0 | 1 | 2> = {};
+  const masteryDetail: Record<string, MasteryDetail> = {};
+  nodeRows.forEach((r) => {
+    const detail = masteryDetailByConcept.get(r.concept_id as string);
+    // Present in concept_reviews at all (this query's own starting point)
+    // but absent from getMasteryDetailsForConcepts is not expected in
+    // practice - falls back to "seen, not yet mastered" rather than 0
+    // ("never covered"), since a row here means it genuinely was.
+    mastery[r.id as string] = detail?.state ?? 1;
+    if (detail) masteryDetail[r.id as string] = detail;
+  });
+
+  return {
+    nodes: nodeRows.map((r) => ({
+      id: r.id as string,
+      conceptId: r.concept_id as string,
+      label: r.label as string,
+      subtopic: r.subtopic || '',
+      subject: r.subject as string,
+      qualification: r.qualification as string,
+      examBoard: r.exam_board as string,
+    })),
+    edges: coveredEdgeRows.map((e) => ({ source: e.from_node_id, target: e.to_node_id })),
+    mastery,
+    masteryDetail,
+  };
+}

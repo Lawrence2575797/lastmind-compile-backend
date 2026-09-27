@@ -2,7 +2,7 @@ import { Router, Request, Response } from 'express';
 import { openFollowUp, followUpFromGrading } from '../services/followUp';
 import { requireAuth, requirePaidTier, isUserPaid } from '../services/authMiddleware';
 import { costlyEndpointLimiter, syncEndpointLimiter } from '../services/rateLimiters';
-import { getKnowledgeMapForFolder, getKnowledgeMapForSubject, FolderConcept } from '../services/knowledgeMapService';
+import { getKnowledgeMapForFolder, getKnowledgeMapForSubject, getUnifiedKnowledgeMapForUser, FolderConcept } from '../services/knowledgeMapService';
 import { supabaseAdmin } from '../services/supabaseAdmin';
 import {
   findPrerequisiteGap,
@@ -131,6 +131,24 @@ router.get('/knowledge-map-v2', requireAuth, syncEndpointLimiter, async (req: Re
   } catch (err) {
     console.error('Subject knowledge map lookup failed:', err);
     res.status(500).json({ error: 'could not load the knowledge map' });
+  }
+});
+
+// GET /knowledge-map-v2/mine -> { nodes, edges, mastery, masteryDetail }
+// spanning every subject/topic this student has ever actually covered, not
+// scoped to one folder - see getUnifiedKnowledgeMapForUser's own comment.
+// Backs the "Knowledge Map" sidebar tab, replacing the old per-subject
+// folder picker. syncEndpointLimiter, same reasoning as GET
+// /knowledge-map-v2 above: a plain DB read (concept_reviews + a
+// concept_id-scoped node/edge lookup), no Claude call, no reason to sit
+// behind the tighter "every call costs money" limiter.
+router.get('/knowledge-map-v2/mine', requireAuth, syncEndpointLimiter, async (req: Request, res: Response) => {
+  try {
+    const result = await getUnifiedKnowledgeMapForUser(req.userId as string);
+    res.json(result);
+  } catch (err) {
+    console.error('Unified knowledge map lookup failed:', err);
+    res.status(500).json({ error: 'could not load your knowledge map' });
   }
 });
 

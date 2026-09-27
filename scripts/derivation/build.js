@@ -146,7 +146,13 @@ function validate(spec, known) {
     if (st.nodes) {
       const support = [...intro].filter((t) => !st.nodes.includes(t));
       if (intro.size < 4) err(`${where}: not atomic: only ${intro.size} new terms. A lesson needs at least 4 (map nodes plus the building blocks they rest on)`);
-      if (support.length > 5) err(`${where}: ${support.length} support terms (max 5)`);
+      // 6, not 5 - a closed set a node itself represents (prompt.js's own
+      // rule 1a: a 6-person pronoun paradigm, a 6-form conjugation table)
+      // is a real, common case that genuinely needs one support term per
+      // item, and 6 is the largest such set this codebase currently
+      // teaches this way. Still a real ceiling against a runaway stage,
+      // just not tight enough to reject a legitimate closed set.
+      if (support.length > 6) err(`${where}: ${support.length} support terms (max 6)`);
       st.nodes.forEach((n) => { if (!intro.has(n)) err(`${where}: map node "${n}" is never introduced`); });
       const adj = {};
       (st.edges || []).forEach(([x, y]) => { (adj[x] = adj[x] || []).push(y); });

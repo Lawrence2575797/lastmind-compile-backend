@@ -2,6 +2,7 @@ import { Router, Request, Response } from 'express';
 import { requireAuth, requirePaidTier } from '../services/authMiddleware';
 import { costlyEndpointLimiter } from '../services/rateLimiters';
 import { decideCortexAction, CortexResponseTruncatedError } from '../services/cortexService';
+import { assertLocksAvailable, InsufficientLocksError } from '../services/lockService';
 
 const router = Router();
 
@@ -24,6 +25,15 @@ router.post('/cortex/message', async (req: Request, res: Response) => {
   }
 
   try {
+    // Every other metered AI feature in this app refuses upfront when a
+    // student's Locks balance is already at zero (see knowledgeMap.ts's own
+    // InsufficientLocksError handling) - this route was the one exception,
+    // charging normally per message (see cortexService.ts's own
+    // callClaudeJSON({ userId, meteredReason: 'cortex-chat' }) - real
+    // response.usage, not a flat guess) but with nothing stopping a student
+    // already out of Locks from continuing to chat and just going further
+    // negative. Real reported gap, fixed to match every other route.
+    await assertLocksAvailable(req.userId as string);
     const result = await decideCortexAction(
       message,
       Array.isArray(history) ? history : [],
@@ -33,6 +43,9 @@ router.post('/cortex/message', async (req: Request, res: Response) => {
     );
     res.json(result);
   } catch (err) {
+    if (err instanceof InsufficientLocksError) {
+      return res.status(402).json({ error: 'Lock limit reached', code: 'LOCK_LIMIT_REACHED', detail: "You're out of Locks for now." });
+    }
     console.error('Cortex message handling failed:', err);
     if (err instanceof CortexResponseTruncatedError) {
       res.status(500).json({ error: err.message });

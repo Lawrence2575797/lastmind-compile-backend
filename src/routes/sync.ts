@@ -2,6 +2,7 @@ import { Router, Request, Response } from 'express';
 import { requireAuth } from '../services/authMiddleware';
 import { syncEndpointLimiter } from '../services/rateLimiters';
 import { listUserFolders, upsertUserFolder, deleteUserFolder } from '../services/folderSyncService';
+import { listUserChatSessions, upsertUserChatSession, deleteUserChatSession } from '../services/chatSyncService';
 import { resetConceptProgress, resetSubjectProgress } from '../services/progressResetService';
 
 const router = Router();
@@ -56,6 +57,49 @@ router.post('/sync/folders/delete', async (req: Request, res: Response) => {
   } catch (err) {
     console.error('Folder sync delete failed:', err);
     res.status(500).json({ error: 'could not delete this synced folder' });
+  }
+});
+
+// GET /sync/chats -> { chats: [{ chatId, data, updatedAt, deletedAt }] }
+// The full per-account chat-session set, for Cortex's boot-time reconcile pass.
+router.get('/sync/chats', async (req: Request, res: Response) => {
+  try {
+    const chats = await listUserChatSessions(req.userId as string);
+    res.json({ chats });
+  } catch (err) {
+    console.error('Chat sync list failed:', err);
+    res.status(500).json({ error: 'could not load synced chats' });
+  }
+});
+
+// POST /sync/chats  { chatId, data, updatedAt }
+// Upserts one chat session's full blob (id/title/createdAt/updatedAt/messages) - called after every local IndexedDB write.
+router.post('/sync/chats', async (req: Request, res: Response) => {
+  const { chatId, data, updatedAt } = req.body ?? {};
+  if (typeof chatId !== 'string' || !chatId || !data || typeof updatedAt !== 'string') {
+    return res.status(400).json({ error: 'chatId, data, and updatedAt are all required' });
+  }
+  try {
+    await upsertUserChatSession(req.userId as string, chatId, data, updatedAt);
+    res.json({ ok: true });
+  } catch (err) {
+    console.error('Chat sync upsert failed:', err);
+    res.status(500).json({ error: 'could not sync this chat' });
+  }
+});
+
+// POST /sync/chats/delete  { chatId }
+router.post('/sync/chats/delete', async (req: Request, res: Response) => {
+  const { chatId } = req.body ?? {};
+  if (typeof chatId !== 'string' || !chatId) {
+    return res.status(400).json({ error: 'chatId is required' });
+  }
+  try {
+    await deleteUserChatSession(req.userId as string, chatId);
+    res.json({ ok: true });
+  } catch (err) {
+    console.error('Chat sync delete failed:', err);
+    res.status(500).json({ error: 'could not delete this synced chat' });
   }
 });
 

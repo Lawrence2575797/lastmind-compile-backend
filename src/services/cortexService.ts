@@ -87,6 +87,17 @@ export interface CortexResult {
   // student's message is asking to retry it. The frontend retries that
   // specific lesson when this is true; absent/false otherwise.
   retryFailedLesson?: boolean;
+  // Set only when a topic map already exists in this chat (see the
+  // bracket-note convention's own "[Built a knowledge map for ...]" note)
+  // and the student's message (in whatever phrasing) is asking to begin or
+  // continue its lessons - "start the lessons", "can we start with the
+  // lessons then please", "generate the first one", "let's carry on". Real,
+  // reported gap this closes: the client's own free fast-path only catches
+  // a narrow set of exact phrasings for this, and unlike startTopic/
+  // retryFailedLesson above, there was previously no general fallback for
+  // it at all, so anything outside that narrow set fell through to a plain
+  // chat reply that could not actually start anything.
+  beginQueuedLessons?: boolean;
 }
 
 /**

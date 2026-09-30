@@ -131,9 +131,23 @@ function validate(spec, known) {
       } else if (s.type === 'derive') {
         if (i !== st.steps.length - 1 && st.steps[i + 1].type !== 'done') err(`${at}: derive must be the last step`);
         ended = true;
+      } else if (s.type === 'translate') {
+        // Alternative final capstone to "derive", for content that's
+        // fundamentally vocabulary/phrases rather than a concept built up
+        // through a reasoning chain (a language, a set of terms with no
+        // real causal link between them) - real, reported problem this
+        // fixes: forcing a "drag concepts into a chain that converges"
+        // claim onto independent vocabulary items (pronouns, greetings)
+        // misrepresents the content entirely. Compiled into an ordinary
+        // "order" step by build() below - the model only supplies the
+        // correct word sequence, not an id per word.
+        if (i !== st.steps.length - 1 && st.steps[i + 1].type !== 'done') err(`${at}: translate must be the last step`);
+        if (!Array.isArray(s.answer) || s.answer.length < 3 || s.answer.length > 15 || s.answer.some((w) => typeof w !== 'string' || !w.trim())) err(`${at}: translate needs an "answer" array of 3-15 non-empty word/phrase strings, in the correct order`);
+        if (typeof s.prompt !== 'string' || !s.prompt.trim()) err(`${at}: translate is missing "prompt"`);
+        ended = true;
       }
     });
-    if (!ended) err(`${where}: no final derive step`);
+    if (!ended) err(`${where}: no final derive/translate step`);
     const all = new Set([...given, ...intro]);
     (st.edges || []).forEach(([a, b]) => {
       if (!all.has(a) || !all.has(b)) err(`${where}: edge ${a} -> ${b} uses a term that is not in this stage`);
@@ -198,6 +212,24 @@ function validate(spec, known) {
 function build(spec) {
   const errs = validate(spec, spec.known);
   if (errs.length) { const e = new Error('Spec invalid:\n - ' + errs.join('\n - ')); e.errs = errs; throw e; }
+  // A "translate" step's own words aren't map concepts or support terms -
+  // they're just the words of one sentence - so the model only supplies the
+  // word strings themselves (already validated above), not an id per word.
+  // Registered into spec.terms here (after validation, before TERMS is
+  // built below) purely so the shared chip-rendering registry (TERMS) and
+  // the existing drag-into-slots engine (board()/buildOrder, reused as-is -
+  // see the 'translate' branch below) can display them like any other term.
+  let wordCounter = 0;
+  spec.stages.forEach((st) => {
+    st.steps.forEach((s) => {
+      if (s.type !== 'translate') return;
+      s._wordIds = s.answer.map((word) => {
+        const id = `__w${wordCounter++}`;
+        spec.terms[id] = { label: word };
+        return id;
+      });
+    });
+  });
   const keys = Object.keys(spec.terms);
   const TERMS = {};
   // syn (optional): other genuinely correct phrasings of this term's idea, not just spelling variants - carried straight through
@@ -252,6 +284,24 @@ function build(spec) {
         const o = { type: 'derive', title: 'Final test: the whole derivation', prompt: `${opener}Drag and drop the ${open} key term${open === 1 ? '' : 's'} into the boxes to rebuild ${rest} from memory. Chains meet at the concept.` };
         if (nextSt) o.bridge = `${lastT} is on your map. Next on the schedule: ${nextSt.name}. Every prerequisite it needs is met, so it starts now.`;
         steps.push(o);
+      } else if (s.type === 'translate') {
+        // Compiled into a plain "order" step, reusing the existing drag-
+        // into-slots engine and UI as-is - see validate()'s own comment.
+        // pairs = every (earlier word, later word) combination, which
+        // forces the EXACT given sequence rather than "order"'s normal
+        // partial-credit "just respect these specific links" behaviour -
+        // a translation only has one correct word order, unlike a set of
+        // concepts that can genuinely be recalled in more than one order.
+        const ids = s._wordIds;
+        const pairs = [];
+        for (let a = 0; a < ids.length; a++) for (let b = a + 1; b < ids.length; b++) pairs.push([ids[a], ids[b]]);
+        // buildOrder's own onSolved (unlike buildDerive's) only ever shows
+        // "done" and auto-advances - it never reads ".bridge" - so the
+        // next-stage context is folded into "done" itself here instead of
+        // being set on a field that would silently do nothing.
+        const nextSt2 = spec.stages[si + 1];
+        const done2 = nextSt2 ? `Nicely put together. Next on the schedule: ${nextSt2.name}.` : 'Nicely put together.';
+        steps.push({ type: 'order', title: 'Final test: put it together', prompt: s.prompt, pairs, order: ids, done: done2 });
       } else steps.push(s);
     });
     if (si === nStages - 1) steps.push({ type: 'done' });

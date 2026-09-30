@@ -56,6 +56,34 @@ function example3() {
   return JSON.stringify({ terms: Object.fromEntries([...ids].map((t) => [t, markets.terms[t]])), extraEdges: [], stage: { name, title, sub, steps } });
 }
 
+// Example 4: a language-vocabulary stage - independent facts (a greeting, a
+// pronoun, a politeness marker), no real causal chain between them, closed
+// with "translate" instead of a fabricated concept-chain "derive".
+function example4() {
+  return JSON.stringify({
+    terms: {
+      time_of_day: { label: 'Time of day' },
+      greet: { label: 'Buongiorno', syn: ['Good morning'] },
+      pronoun_io: { label: 'Io', syn: ['I'] },
+      politeness: { label: 'Per favore', syn: ['Please'] },
+    },
+    extraEdges: [],
+    stage: {
+      name: 'Greetings and requests',
+      title: 'Greetings and requests',
+      sub: 'Greet someone and make a polite request in Italian.',
+      steps: [
+        { type: 'read', term: 'time_of_day', text: "It's 9am in Rome - the sun is up, the cafes are filling with people starting their day." },
+        { type: 'ask', term: 'greet', q: 'You pass a neighbour on the street at 9am. What do you say to greet them?', right: 'Buongiorno', wrong: 'Buonasera', hint: "It's morning, not evening.", pre: 'You say', why: ['Buongiorno is the standard morning greeting, used until early afternoon.', 'Buonasera would be for the evening instead.'] },
+        { type: 'ask', term: 'pronoun_io', q: "You're about to talk about yourself - what you want, what you think. Which word do you start with?", right: 'Io', wrong: 'Tu', hint: 'Yourself, not the person you are talking to.', pre: 'You use', why: ['Io means "I" and refers to the speaker.', 'Tu would refer to the other person instead.'] },
+        { type: 'ask', term: 'politeness', q: "You're asking a waiter for something. What do you add to sound polite, not demanding?", right: 'Per favore', wrong: 'Grazie', hint: "A request word, not a thank-you word.", pre: 'You add', why: ['Per favore means "please" and softens a request.', 'Grazie means "thank you", used after you receive something, not while asking.'] },
+        { type: 'recap', terms: ['time_of_day', 'greet', 'pronoun_io', 'politeness'], q: 'Which of these four actually names a person, rather than a greeting, a time, or a politeness marker?', right: 'Io', wrong: 'Buongiorno', hint: 'One of these refers to who is speaking.' },
+        { type: 'translate', prompt: 'Drag the words into order to say this in Italian: "I would like a coffee, please."', answer: ['Vorrei', 'un', 'caffè', 'per favore'] },
+      ],
+    },
+  });
+}
+
 const SYSTEM = `You write one short lesson stage for a "derivation" learning feed. The student never reads definitions. They are shown a small concrete situation and asked what follows, and answering that question is how they learn the term. You are given the knowledge-map nodes for the stage (each node is one key term) and the prerequisite links between them. You return JSON only.
 
 THE PRINCIPLE: MORE QUESTIONING, LESS TELLING
@@ -73,7 +101,8 @@ STRUCTURE
    PARALLEL BLOCKS CONVERGE. When several building blocks are members of one category (land, labour, capital and enterprise are all resources), each one links DIRECTLY into the concept they build (all four link to Finite resources). They are never chained one after another. If the idea runs on through a further support term (Finite resources -> Finite goods and services -> Scarcity, alongside Unlimited wants), add it, and list any map link it replaces (Finite resources -> Scarcity) in dropEdges.
 5. Order: every prerequisite is taught before the term that depends on it. Independent branches are taught one branch at a time.
 6. Milestones. An "order" or "chains" milestone claims a real relationship exists between the terms it lists (a build-on-each-other sequence, or two branches converging on one idea) - only use one where that relationship is actually true. If a chunk holds two branches that each lead into one later concept, use "chains" (lanes = the branches). If the four terms genuinely build on each other in one sequence, use "order", listing exactly those four, immediately after the 4th new term (steps 1-4 introduce them, step 5 is the milestone). Support terms count as new terms too: with 3 support terms and 3 map nodes, the milestone comes after the 4th of those six, and the remaining two follow it.
-   NO FORCED LINK. When a chunk's terms do NOT genuinely build on each other or converge on anything (e.g. several independent named facts about one topic, with no real dependency between them), do not force an "order" or "chains" milestone onto them - that misrepresents the relationship. Use a {"type":"recap"} milestone instead: {"type":"recap","terms":[exactly the terms introduced since the last milestone],"q":"...","right":"...","wrong":"...","hint":"..."} - same fields as an "ask" step (q/right/wrong/hint), but the question distinguishes or compares two of the terms just introduced rather than introducing a new one (e.g. "X changed prices across the Atlantic; Y changed how fast ships crossed it - which one is Y?"). This closes the chunk exactly like order/chains do (the next 4-term counter resets after it) - it just doesn't claim a sequence or convergence that isn't real. There are never more than 4 new terms between milestones. The last step is {"type":"derive"}.
+   NO FORCED LINK. When a chunk's terms do NOT genuinely build on each other or converge on anything (e.g. several independent named facts about one topic, with no real dependency between them), do not force an "order" or "chains" milestone onto them - that misrepresents the relationship. Use a {"type":"recap"} milestone instead: {"type":"recap","terms":[exactly the terms introduced since the last milestone],"q":"...","right":"...","wrong":"...","hint":"..."} - same fields as an "ask" step (q/right/wrong/hint), but the question distinguishes or compares two of the terms just introduced rather than introducing a new one (e.g. "X changed prices across the Atlantic; Y changed how fast ships crossed it - which one is Y?"). This closes the chunk exactly like order/chains do (the next 4-term counter resets after it) - it just doesn't claim a sequence or convergence that isn't real. There are never more than 4 new terms between milestones.
+6a. THE FINAL STEP: "derive" vs "translate". The last step is {"type":"derive"} for content that's genuinely a concept built up through a reasoning chain (economics, science, most named theories - the kind of content worked examples 1-2 show) - it drags the stage's own map-node/support terms into the graph that was actually taught. Use {"type":"translate","prompt":"...","answer":["word 1","word 2",...]} INSTEAD, as the last step, when this stage is fundamentally vocabulary or phrases with no real causal chain between them - most commonly a foreign language, but also any set of terms that are just independent facts to recall rather than ideas that build on each other (worked example 4 shows this). "answer" is the correct, in-order sequence of words/short fixed phrases (a fixed multi-word phrase like "per favore" may be one entry) forming one natural sentence in the target language that uses several of THIS stage's own taught vocabulary - "prompt" states what to translate, exactly in the form "Drag the words into order to say this in <language>: \"<the English meaning>\"". Never force a "derive" concept-chain onto vocabulary that doesn't have one - that was a real, reported failure (a set of independent pronouns/greetings dragged into a fabricated converging chain makes no sense as an exercise). Pick whichever of the two actually matches what this stage's content really is.
 
 QUESTION RULES (checked by code; a failing stage is rejected)
 - Every ask has q, right, wrong, hint, pre, term. Exactly two options.
@@ -114,7 +143,7 @@ OUTPUT (JSON only, no prose)
  "extraEdges": [["<id>", "<id>"], ...],                        every link that involves a support term (either direction, including from a given term); node-to-node links come from the map
  "dropEdges": [["<id>", "<id>"], ...],                        optional: map links replaced by a longer path through support terms
  "stage": {"name": "...", "title": "<same>", "sub": "<one sentence: what the student can do after>", "steps": [ ... ]}}
-Steps: {"type":"read","term":id,"text":"..."} | {"type":"ask","q":"...","eq":"... or [line1,line2]","right":"...","wrong":"...","hint":"...","pre":"...","term":id,"why":["sentence 1","sentence 2",...],"whyMatters":["sentence",...] (optional),"diagram":{...optional}} | {"type":"calc","q":"...","eq":"... or [line1,line2]","answer":<number>,"tol":<optional>,"hint":"...","pre":"...","term":id,"why":["sentence 1","sentence 2",...],"whyMatters":["sentence",...] (optional)} (a typed numeric answer - see CALCULATION STEPS and MATHS DISPLAY above) | {"type":"order","terms":[ids],"prompt":"..."} | {"type":"chains","lanes":[{"label":"Chain 1","terms":[ids]},{"label":"Chain 2","terms":[ids]}],"prompt":"...","then":"what do they lead to?"} | {"type":"recap","terms":[ids],"q":"...","right":"...","wrong":"...","hint":"..."} (use instead of order/chains when the terms genuinely do not build on each other or converge - see rule 6) | {"type":"derive"}
+Steps: {"type":"read","term":id,"text":"..."} | {"type":"ask","q":"...","eq":"... or [line1,line2]","right":"...","wrong":"...","hint":"...","pre":"...","term":id,"why":["sentence 1","sentence 2",...],"whyMatters":["sentence",...] (optional),"diagram":{...optional}} | {"type":"calc","q":"...","eq":"... or [line1,line2]","answer":<number>,"tol":<optional>,"hint":"...","pre":"...","term":id,"why":["sentence 1","sentence 2",...],"whyMatters":["sentence",...] (optional)} (a typed numeric answer - see CALCULATION STEPS and MATHS DISPLAY above) | {"type":"order","terms":[ids],"prompt":"..."} | {"type":"chains","lanes":[{"label":"Chain 1","terms":[ids]},{"label":"Chain 2","terms":[ids]}],"prompt":"...","then":"what do they lead to?"} | {"type":"recap","terms":[ids],"q":"...","right":"...","wrong":"...","hint":"..."} (use instead of order/chains when the terms genuinely do not build on each other or converge - see rule 6) | {"type":"derive"} (concept-chain content - see rule 6a) | {"type":"translate","prompt":"Drag the words into order to say this in <language>: \\"<English meaning>\\"","answer":["word 1","word 2",...]} (vocabulary/phrase content with no real causal chain - see rule 6a; exactly one of derive/translate ends the stage, never both)
 "why" is REQUIRED on every ask/calc step (see DEEP EXPLANATION AFTER THE ANSWER above) - never omit it.
 
 WORKED EXAMPLE 1 (Scarcity: the four factors each link into finite resources, which leads on to scarcity alongside unlimited wants)
@@ -124,7 +153,10 @@ WORKED EXAMPLE 2 (Opportunity cost: one map node, four support terms that build 
 ${example2()}
 
 WORKED EXAMPLE 3 (Utility and demand: the first term is a question too, and the law of demand is shown on a diagram)
-${example3()}`;
+${example3()}
+
+WORKED EXAMPLE 4 (Language/vocabulary content: a greeting, a pronoun and a politeness marker are independent facts, not a causal chain - closed with "translate" instead of "derive")
+${example4()}`;
 
 function user(stage, byId, givenLabels) {
   const nodes = stage.nodes.map((id) => `- ${id}: ${byId[id].label}`).join('\n');

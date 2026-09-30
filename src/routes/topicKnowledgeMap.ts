@@ -8,6 +8,7 @@ import { requireAuth, isUserPaid } from '../services/authMiddleware';
 import { costlyEndpointLimiter, syncEndpointLimiter } from '../services/rateLimiters';
 import { getOrCreateTopicKnowledgeMap } from '../services/topicKnowledgeMapService';
 import { getSuggestedNextTopics } from '../services/suggestNextTopicsService';
+import { getMasteryDetailsForConcepts } from '../services/reviewService';
 import { InsufficientLocksError } from '../services/lockService';
 import { GenerationCapExceededError } from '../services/generationCapService';
 
@@ -47,7 +48,18 @@ router.post('/knowledge-map-v2/topic', requireAuth, costlyEndpointLimiter, async
   const userId = req.userId as string;
   try {
     const result = await getOrCreateTopicKnowledgeMap(topic, userId, await isUserPaid(userId), req.userCreatedAt ?? null, req.userEmail);
-    res.json(result);
+    // Real, reported problem this fixes: whether a node has already been
+    // taught used to live only in a client-side reconstruction (scanning
+    // this session's own chat history for past completions) - fragile, and
+    // useless the moment a completion predated that tracking existing at
+    // all, or came from a different device/session. concept_reviews is the
+    // same real, durable progress table every lesson completion already
+    // writes to (see POST /knowledge-map-v2/derivation/complete) - a row
+    // existing for a concept here means it has genuinely been taught at
+    // least once, regardless of which device or session did it.
+    const masteryByConcept = await getMasteryDetailsForConcepts(userId, result.nodes.map((n) => n.conceptId));
+    const nodes = result.nodes.map((n) => ({ ...n, completed: masteryByConcept.has(n.conceptId) }));
+    res.json({ ...result, nodes });
   } catch (err) {
     if (err instanceof InsufficientLocksError) {
       return res.status(402).json({ error: 'Lock limit reached', code: 'LOCK_LIMIT_REACHED', detail: "You're out of Locks for now." });

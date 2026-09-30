@@ -244,11 +244,18 @@ router.get('/knowledge-map-v2/node/:nodeId/lesson', requireAuth, syncEndpointLim
             return res.status(409).json({ error: 'not ready yet', code: 'DERIVATION_NOT_READY' });
           }
           // A genuine checker rejection after real (paid) generation
-          // attempts - already logged inside derivationGenericGenerate's
-          // own 3-attempt loop; surfaced plainly here rather than spending
-          // a second, differently-shaped generation on top of it.
+          // attempts - surfaced plainly here rather than spending a second,
+          // differently-shaped generation on top of it. genErr.message (see
+          // derivationGenericGenerate) carries the actual structural
+          // validate() failures (e.g. "not atomic: only 3 new terms") -
+          // real, reported problem this fixes: that detail used to be
+          // logged server-side only and replaced with a flat generic
+          // message here, so a repeated failure could never actually be
+          // diagnosed from what the student (or a developer without server
+          // log access) could see. Purely structural/pedagogical text about
+          // the lesson's own shape, nothing sensitive - safe to return.
           console.error('Derivation generation failed the checker:', genErr);
-          return res.status(500).json({ error: 'could not generate this lesson' });
+          return res.status(500).json({ error: 'could not generate this lesson', detail: genErr instanceof Error ? genErr.message : String(genErr) });
         }
       }
       const content = derivationContentForGenericNode(generic, stage);

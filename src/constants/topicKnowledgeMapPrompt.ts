@@ -1,5 +1,5 @@
 // System prompt for generating a small knowledge-map graph for an
-// arbitrary, free-text topic a student types into Cortex (e.g. "the
+// arbitrary, free-text topic a student types into LastMind (e.g. "the
 // envelope theorem", "ordering a meal in Italian", "the causes of the
 // French Revolution") — a single live call, not the offline per-subject
 // batch pipeline in scripts/generate_knowledge_map.js (that pipeline

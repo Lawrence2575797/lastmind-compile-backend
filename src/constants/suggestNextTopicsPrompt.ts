@@ -1,4 +1,4 @@
-// Backs the "learn something new" suggestion chips shown in Cortex's own
+// Backs the "learn something new" suggestion chips shown in LastMind's own
 // empty state (see suggestNextTopicsService.ts) - a cheap, low-stakes
 // nudge, not a real teaching decision, so a small model and a short
 // prompt are the right amount of effort for it.

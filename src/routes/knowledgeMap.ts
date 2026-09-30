@@ -261,7 +261,17 @@ router.get('/knowledge-map-v2/node/:nodeId/lesson', requireAuth, syncEndpointLim
       const content = derivationContentForGenericNode(generic, stage);
       if (content) {
         await supabaseAdmin.from('knowledge_map_node_lessons').upsert({ node_id: nodeId, encoding_content: content }, { onConflict: 'node_id' });
-        return res.json({ ...lessonForClient(content), derivation: { stage: genericStageKey(generic.subject, generic.qualification, generic.examBoard, generic.stageIndex), payload: { terms: stage.terms, stage: stage.stage } } });
+        // Real, reported bug this "concepts" field fixes: a stage now
+        // commonly covers SEVERAL map nodes at once (see plan_stages.js's
+        // subtopic-merge fix), but the frontend's teach queue advances one
+        // map NODE at a time - asking for the very next node in that queue
+        // right after finishing this lesson could land on a DIFFERENT node
+        // that happens to share this exact same stage, which is already
+        // cached, so the student just saw the identical lesson repeat.
+        // Telling the client every concept id this one stage actually
+        // covers lets it skip the rest of them, not just the one it asked
+        // for.
+        return res.json({ ...lessonForClient(content), derivation: { stage: genericStageKey(generic.subject, generic.qualification, generic.examBoard, generic.stageIndex), concepts: stage.concepts, payload: { terms: stage.terms, stage: stage.stage } } });
       }
     }
 

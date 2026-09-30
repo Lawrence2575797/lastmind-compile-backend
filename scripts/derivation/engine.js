@@ -4,11 +4,34 @@
 
   function el(tag, cls, html) { var e = document.createElement(tag); if (cls) e.className = cls; if (html != null) e.innerHTML = html; return e; }
   function termHtml(k, extra) { return '<span class="term ' + (extra || '') + '" style="--tc:' + TERMS[k].c + '">' + TERMS[k].t + '</span>'; }
+  // A vector/matrix row - "2, 0" (already stripped of its own brackets) -
+  // into a run of grid cells; used by bracketGroupHtml below for both a
+  // plain vector and each row of a matrix. Kept in sync with the identical
+  // copy in learn/derive/player.html (the live derivation player this
+  // offline-compile path doesn't share code with directly).
+  function matrixCellsHtml(str) {
+    return str.split(',').map(function (c) { return '<span class="matrix-cell">' + c.trim() + '</span>'; }).join('');
+  }
+  function bracketGroupHtml(rowsStr) {
+    var rowMatches = rowsStr.match(/\[[^\[\]]*\]/g);
+    if (rowMatches) {
+      var rows = rowMatches.map(function (r) { return r.slice(1, -1).split(',').map(function (x) { return x.trim(); }); });
+      var cols = rows.reduce(function (m, r) { return Math.max(m, r.length); }, 1);
+      var cellsHtml = rows.map(function (r) { return r.map(function (c) { return '<span class="matrix-cell">' + c + '</span>'; }).join(''); }).join('');
+      return '<span class="matrix"><span class="matrix-grid" style="grid-template-columns:repeat(' + cols + ',minmax(1.4em,auto))">' + cellsHtml + '</span></span>';
+    }
+    var cellCount = rowsStr.split(',').length;
+    return '<span class="matrix"><span class="matrix-grid" style="grid-template-columns:repeat(' + cellCount + ',minmax(1.4em,auto))">' + matrixCellsHtml(rowsStr) + '</span></span>';
+  }
   /* typesets the plain-text maths conventions authored content uses (K^0.5, dQ/dK, lambda, sqrt(4), px) into real
      superscripts, a stacked fraction and proper symbols, so a question reads like real maths, not source code. */
   function mathify(s) {
     if (!s) return s;
     return String(s)
+      // Matrices/vectors ([2,0], [[2,0],[0,3]]) - see the CSS comment above
+      // .matrix in the player's own <style> for how these actually render.
+      .replace(/\[(?:\[[^\[\]]*\],?)+\]/g, function (m) { return bracketGroupHtml(m.slice(1, -1)); })
+      .replace(/\[([^\[\]]+)\]/g, function (m, inner) { return bracketGroupHtml(inner); })
       .replace(/\bd([A-Za-zπΔλ][A-Za-z0-9]*)\s*\/\s*d([A-Za-zπΔλ][A-Za-z0-9]*)\b/g,
         '<span class="mfrac"><span class="n">d$1</span><span class="d">d$2</span></span>')
       .replace(/\^\(([^()]+)\)/g, '<sup>$1</sup>')

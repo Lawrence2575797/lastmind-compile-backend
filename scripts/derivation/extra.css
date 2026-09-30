@@ -39,6 +39,17 @@ html[data-look="glass"] .svgwrap, html[data-look="glass"] .bank { background: rg
 .mfrac .n, .mfrac .d { padding: 0 2px; }
 .mfrac .n { border-bottom: 1.4px solid currentColor; }
 
+/* A vector/matrix written in the authored plain-text convention ([2,0], or
+   [[2,0],[0,3]] - see engine.js's mathify()) as a real bracketed grid, not
+   literal bracket-and-comma text. Kept in sync with the identical rule in
+   learn/derive/player.html's own <style>. */
+.matrix { display: inline-flex; align-items: center; vertical-align: middle; margin: 0 3px; }
+.matrix-grid { position: relative; display: inline-grid; gap: 2px 14px; padding: 3px 12px; }
+.matrix-grid::before, .matrix-grid::after { content: ''; position: absolute; top: 1px; bottom: 1px; width: 5px; border-top: 1.4px solid currentColor; border-bottom: 1.4px solid currentColor; }
+.matrix-grid::before { left: 0; border-left: 1.4px solid currentColor; }
+.matrix-grid::after { right: 0; border-right: 1.4px solid currentColor; }
+.matrix-cell { text-align: center; }
+
 /* the real maths answer box, ported verbatim from learn/index.html's createMathShortcutEditor, for a calc step -
    same contenteditable editor and keyboard shortcuts as node-review/lesson calculation answers everywhere else */
 .math-shortcut-wrap { display: flex; flex-direction: column; gap: 6px; margin-top: 6px; max-width: 420px; }

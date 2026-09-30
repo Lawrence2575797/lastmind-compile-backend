@@ -367,6 +367,26 @@ export async function callClaudeJSON(params: {
   return text;
 }
 
+// Same call as callClaudeJSON, but charges NOTHING itself - for a call site
+// that makes several attempts at one deliverable (e.g. derivationGenericGenerate's
+// up-to-3-try loop) and wants to charge once, for the accumulated real usage,
+// ONLY if a usable result actually comes out the other end. Real, reported
+// problem this exists to fix: a student was being charged Locks for every
+// failed attempt even when all of them failed and nothing was ever
+// delivered - a paid-for API cost with literally nothing to show for it.
+// The caller is responsible for calling chargeForClaudeCall itself (summing
+// usage across every attempt actually made) once it knows the outcome.
+export async function callClaudeJSONUnmetered(params: {
+  model: string;
+  systemPrompt: string;
+  userContent: string;
+  maxTokens?: number;
+  temperature?: number;
+  cacheSystemPrompt?: boolean;
+}): Promise<{ text: string; usage: ClaudeCallUsage }> {
+  return sendWithTemperatureRetry(params.model, params.systemPrompt, sanitizeForClaude(params.userContent), params.maxTokens, params.temperature, params.cacheSystemPrompt);
+}
+
 // Same call and same Locks charge as callClaudeJSON, but also hands back the usage so the caller can keep a
 // dollar budget (LastMind Create's hard testing cap). Thinking stays off for the models that default to it
 // (see modelThinksByDefault) - every call here is a structured JSON task.

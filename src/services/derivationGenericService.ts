@@ -11,7 +11,8 @@
 // so every rule already enforced for Economics (no leaked answers, atomicity/microatomic chunks, the 28-word question cap, one
 // milestone per 4 new terms, ...) applies here for free, because it's the same checker rejecting the same mistakes.
 import { supabaseAdmin } from './supabaseAdmin';
-import { callClaudeJSON, MODELS } from './claudeClient';
+import { callClaudeJSONUnmetered, MODELS, ClaudeCallUsage } from './claudeClient';
+import { chargeForClaudeCall } from './generationCostService';
 import { Stage, StageTerm, derivationContentForStage } from './derivationService';
 
 // scripts/derivation is plain JS, outside src/ (see tsconfig's rootDir) - required at runtime like any other JS module, not compiled
@@ -239,23 +240,35 @@ export async function derivationGenericGenerate(info: GenericLookup, userId: str
   }
 
   let prompt = userPrompt(stage, info.byId, {});
-  let messages: { prompt: string; text?: string }[] = [];
   let result: { spec?: any; errs?: string[] } = {};
+  // Real, reported billing bug: this used to call the metered callClaudeJSON
+  // on every attempt, so a stage that failed the checker on all 3 tries
+  // charged the student's Locks 3 times for a lesson that was never
+  // actually delivered - a real API cost, but one that should never have
+  // been passed through for a product that didn't work. Now accumulates
+  // usage across every attempt unmetered, and charges exactly once, only if
+  // a usable lesson actually comes out the other end (below) - for the
+  // total real cost of however many tries it took to get the one that
+  // worked, never for a total failure.
+  const totalUsage: ClaudeCallUsage = { input_tokens: 0, output_tokens: 0, cache_creation_input_tokens: 0, cache_read_input_tokens: 0 };
   for (let attempt = 0; attempt < 3; attempt++) {
     const userContent = attempt === 0 ? prompt : `${prompt}\n\nA previous attempt at this stage was rejected by the checker for:\n- ${(result.errs || []).join('\n- ')}\nReturn the corrected JSON only.`;
-    const text = await callClaudeJSON({
+    const { text, usage } = await callClaudeJSONUnmetered({
       model: MODELS.diagnosticTree,
       systemPrompt: SYSTEM,
       userContent,
       maxTokens: 4000,
       cacheSystemPrompt: true,
-      userId,
-      meteredReason: 'derivation-lesson-generation',
     });
+    totalUsage.input_tokens += usage.input_tokens || 0;
+    totalUsage.output_tokens += usage.output_tokens || 0;
+    totalUsage.cache_creation_input_tokens = (totalUsage.cache_creation_input_tokens || 0) + (usage.cache_creation_input_tokens || 0);
+    totalUsage.cache_read_input_tokens = (totalUsage.cache_read_input_tokens || 0) + (usage.cache_read_input_tokens || 0);
     result = check(stage, text, info.byId);
     if (result.spec) break;
   }
   if (!result.spec) throw new Error('derivation generation failed the checker after 3 attempts: ' + (result.errs || []).join('; '));
+  await chargeForClaudeCall(userId, MODELS.diagnosticTree, totalUsage, 'derivation-lesson-generation');
   if (stage.given?.length) result.spec.known = known;
   const built = build(result.spec);
   const terms: Record<string, StageTerm> = {};

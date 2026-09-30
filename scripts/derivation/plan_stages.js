@@ -62,13 +62,25 @@ function plan(map) {
   // fabricated "building block" terms for what is honestly just one trivial opening fact, the same failure mode the subtopic fix above
   // exists to prevent. For a genuinely multi-subtopic curated subject this stays exactly as strict as before.
   const singleSubtopic = new Set(nodes.map((n) => n.subtopic)).size <= 1;
+  // Real, reported failure this caps: a single-subtopic merge (above) has no
+  // edge requirement to hold it back, so a thin stage could merge all the
+  // way up to the general 6-node cap even when one of the nodes being
+  // merged is itself a "closed set" prompt.js's own rule 1a has to expand
+  // into several steps (a 6-person pronoun paradigm, a conjugation table) -
+  // stacking that expansion on top of several OTHER unrelated map nodes in
+  // the same stage produces an unusually long, multi-milestone generation
+  // target that's genuinely harder for one Claude call to get exactly right
+  // across every rule at once. Capped lower ONLY for a single-subtopic
+  // (custom-topic) merge, where nothing but this cap was ever limiting it -
+  // a curated subject's own edge-gated merges are unaffected either way.
+  const mergeCap = singleSubtopic ? 4 : 6;
   const linkedStages = (A, B) => A.nodes.some((x) => B.nodes.some((y) => kids[x].has(y) || kids[y].has(x)));
   for (let i = 0; i < stages.length; i++) {
     const st = stages[i];
     if (st.nodes.length > 2) continue;
     const prev = stages[i - 1], nextS = stages[i + 1];
-    if (prev && prev.subtopic === st.subtopic && prev.nodes.length + st.nodes.length <= 6 && (singleSubtopic || linkedStages(prev, st))) { prev.nodes.push(...st.nodes); stages.splice(i, 1); i--; }
-    else if (nextS && nextS.subtopic === st.subtopic && nextS.nodes.length + st.nodes.length <= 6 && (singleSubtopic || linkedStages(st, nextS))) { nextS.nodes.unshift(...st.nodes); stages.splice(i, 1); i--; }
+    if (prev && prev.subtopic === st.subtopic && prev.nodes.length + st.nodes.length <= mergeCap && (singleSubtopic || linkedStages(prev, st))) { prev.nodes.push(...st.nodes); stages.splice(i, 1); i--; }
+    else if (nextS && nextS.subtopic === st.subtopic && nextS.nodes.length + st.nodes.length <= mergeCap && (singleSubtopic || linkedStages(st, nextS))) { nextS.nodes.unshift(...st.nodes); stages.splice(i, 1); i--; }
   }
   const stageOf = {};
   stages.forEach((s, si) => s.nodes.forEach((id) => { stageOf[id] = si; }));

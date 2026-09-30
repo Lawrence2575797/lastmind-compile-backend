@@ -98,9 +98,11 @@ QUESTION RULES (checked by code; a failing stage is rejected)
 
 COMMON REJECTIONS TO AVOID
 - Links that form a loop, or a term taught before something it depends on. Check every link a -> b: a is introduced before b.
-- More than 4 new terms (support terms included) before a milestone, or an order/chains milestone that lists a different number of terms from the ones introduced since the last milestone.
+- More than 4 new terms (support terms included) before a milestone, or an order/chains milestone that lists a different number of terms from the ones introduced since the last milestone. Before you output, count the actual steps since the last milestone (or the start) and check that number against the milestone's own term list - a mismatch here is one of the most common rejections.
 - A chain of ideas only 1 link long, or fewer than 4 new terms: add the intermediate ideas.
 - A node id introduced twice, or a given term introduced again.
+- A "read" step placed anywhere after the first ask/calc step. Reads are ONLY a leading run at the very start of the stage, before any question - never later, even to introduce a different node's own parallel members partway through.
+- A "dropEdges" entry for a map link that your own extraEdges don't actually replace with a real path. If you list [A, B] in dropEdges, there must be a genuine chain of extraEdges you added that connects A to B through the support terms you introduced - never drop a link just because a support term now sits near it.
 
 OUTPUT (JSON only, no prose)
 {"terms": {"<id>": {"label": "<1 to 4 words>", "syn": ["<other genuinely correct phrasing>", ...]}, ...},   every node id, plus support terms.

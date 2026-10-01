@@ -1,5 +1,6 @@
 import { callClaudeJSON, MODELS } from './claudeClient';
 import { CORTEX_INTENT_PROMPT } from '../constants/cortexPrompts';
+import { checkTopicScope } from './topicScopeService';
 
 // Beyond stripping a code fence, also falls back to the substring between
 // the first "{" and the last "}" - covers the model adding a stray
@@ -164,5 +165,26 @@ export async function decideCortexAction(
     console.error('LastMind: Cortex reply call returned invalid JSON (likely truncated).', { raw });
     throw new CortexResponseTruncatedError();
   }
+
+  // Cheap (Haiku) pre-flight gate before a real (Sonnet) map generation:
+  // "teach me linear algebra" or "teach me chemistry" is broad enough that
+  // building a map for it right away tends to either run too shallow or
+  // assume the wrong starting point - asking a couple of genuinely useful,
+  // topic-specific questions first (never a fixed checklist - see
+  // topicScopePrompt.ts) produces a far better map once it actually
+  // generates. Only ever gates startTopic, never blocks anything else Cortex
+  // can already do - and fails open (see checkTopicScope) so a scope-check
+  // problem can never be the reason a student can't start learning
+  // something. The student's next reply (answering these questions) is
+  // ordinary chat history by the time it comes back - rule in
+  // CORTEX_INTENT_PROMPT tells Cortex to fold the answer into a re-scoped
+  // startTopic itself, no separate state needs tracking here.
+  if (parsed.startTopic) {
+    const scope = await checkTopicScope(parsed.startTopic, userId);
+    if (!scope.specific) {
+      parsed = { ...parsed, reply: `${parsed.reply}\n\n${scope.questions.join(' ')}`, startTopic: undefined };
+    }
+  }
+
   return parsed;
 }

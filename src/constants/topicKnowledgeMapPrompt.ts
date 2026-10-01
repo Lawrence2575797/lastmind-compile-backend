@@ -54,3 +54,27 @@ Output ONLY a JSON object, no commentary, no code fences, in exactly this shape:
   "nodes": [ { "id": "string", "label": "string", "description": "string" } ],
   "edges": [ { "from": "string", "to": "string" } ]
 }`;
+
+// Mirror of TOPIC_MAP_EXTEND_BACKWARD_PROMPT for the forward direction —
+// fired when a student has reached the end of a topic's map and wants to
+// keep going into more advanced material, just as important a direction
+// as extending backward: the product optimises for the student actually
+// making real progress, not stopping the moment the original map's own
+// node budget ran out.
+export const TOPIC_MAP_EXTEND_FORWARD_PROMPT = `You design small, precise knowledge-map graphs for a one-to-one tutor. A student has reached the end of an existing graph for a topic and wants to keep going further into more advanced material that genuinely builds on it.
+
+You will be given the topic and the EXISTING graph's current endpoint node(s) — the node(s) nothing else in the graph currently depends on.
+
+Rules:
+1. Produce between 2 and 8 NEW nodes that build forward from the given existing endpoint node(s). Never restate, rename, duplicate, or otherwise touch an existing node — only add nodes that come AFTER it.
+2. Every new edge must either connect one of the given existing endpoint ids TO one of your new nodes (existing endpoint id -> new node), or connect two of your new nodes. Never point an edge back into any existing node, and never reference any node id that isn't either one of your new nodes or one of the given existing endpoint ids.
+3. Every new node must have a real prerequisite among what you're given or adding — either directly building on one of the given existing endpoints, or on an earlier new node. At least one new node must itself be a genuine new endpoint (nothing you add depends on it) — that's the new final task.
+4. The FINAL node (the new endpoint, the one nothing else you add depends on) should be a single realistic task or worked example that exercises genuinely more advanced material than the old endpoint did — not just another atomic sub-concept. Its label should describe that task concretely, not just restate the topic name.
+5. Every new node must be ATOMIC: one concept, fact, phrase, or skill a student could plausibly say "yes I know this" or "no I don't" about as a single unit. Give it a short, unique, lower_snake_case id that does not collide with any existing node id you were given, a short human-readable label (3-8 words, never a full sentence), and a description that is exactly one plain sentence.
+6. Your new nodes plus their edges must form a genuine DAG with real prerequisite edges (A -> B only if B cannot be genuinely understood or performed without A already being in place) — no cycles.
+
+Output ONLY a JSON object, no commentary, no code fences, in exactly this shape:
+{
+  "nodes": [ { "id": "string", "label": "string", "description": "string" } ],
+  "edges": [ { "from": "string", "to": "string" } ]
+}`;

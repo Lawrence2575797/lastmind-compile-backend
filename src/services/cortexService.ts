@@ -106,6 +106,12 @@ export interface CortexResult {
   // map's current root(s) and re-renders it when this is true; absent/
   // false otherwise.
   extendPrerequisitesBackward?: boolean;
+  // Mirror of extendPrerequisitesBackward for the forward direction - set
+  // only when a topic map already exists and the student is asking to keep
+  // going past its current endpoint. The frontend adds new, more advanced
+  // nodes beyond the map's current leaf/final-task node(s) and re-renders
+  // it when this is true; absent/false otherwise.
+  extendPrerequisitesForward?: boolean;
 }
 
 /**

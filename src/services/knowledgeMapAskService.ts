@@ -6,7 +6,7 @@ import { supabaseAdmin } from './supabaseAdmin';
 import { callClaudeJSON, MODELS } from './claudeClient';
 import { parseModelJson } from './jsonParsing';
 import { KNOWLEDGE_MAP_ASK_PROMPT } from '../constants/knowledgeMapAskPrompt';
-import { clean, TOPIC_QUALIFICATION, TOPIC_EXAM_BOARD } from './topicKnowledgeMapService';
+import { clean, TOPIC_QUALIFICATION } from './topicKnowledgeMapService';
 
 interface NodeEncodingContentForAsk {
   explanation?: string;
@@ -28,14 +28,19 @@ export interface KnowledgeMapAskResult {
 interface RawGapNode { id?: unknown; label?: unknown; description?: unknown }
 
 // Wires a proposed gap-fill node into an EXISTING custom-topic map, purely
-// additively: a new node (or an already-existing one with the same id, so
-// two students asking about the same gap converge on one node rather than
-// duplicating it) plus exactly one new edge into the node the question was
-// asked from. Never touches any other node or edge. Silently declines (does
-// not throw) for anything that isn't a Cortex-generated custom topic
-// (qualification !== 'Other') - the curated official subject maps
-// (Economics, AQA Biology, ...) are never mutated by a student's own
-// question, no matter what the model proposes.
+// additively: a new node (or an already-existing one with the same id,
+// within this SAME map instance, so two questions about the same gap in
+// the same map converge on one node rather than duplicating it) plus
+// exactly one new edge into the node the question was asked from. Never
+// touches any other node or edge. Silently declines (does not throw) for
+// anything that isn't a Cortex-generated custom topic (qualification !==
+// 'Other') - the curated official subject maps (Economics, AQA Biology,
+// ...) are never mutated by a student's own question, no matter what the
+// model proposes. Does NOT also require a specific exam_board any more:
+// since topic-map generation stopped being cached/shared, exam_board is
+// now a random per-generation instance token rather than a stable
+// marker of "this is a custom topic" - qualification alone is already the
+// complete, correct signal for that.
 async function maybeAddGapNode(
   targetNodeId: string,
   subject: string,
@@ -43,7 +48,7 @@ async function maybeAddGapNode(
   examBoard: string,
   raw: RawGapNode | undefined
 ): Promise<{ id: string; label: string } | null> {
-  if (!raw || qualification !== TOPIC_QUALIFICATION || examBoard !== TOPIC_EXAM_BOARD) return null;
+  if (!raw || qualification !== TOPIC_QUALIFICATION) return null;
   const id = typeof raw.id === 'string' ? raw.id.trim() : '';
   const label = typeof raw.label === 'string' ? raw.label.trim() : '';
   const description = typeof raw.description === 'string' ? raw.description.trim() : '';
@@ -86,7 +91,7 @@ async function maybeAddGapNode(
   } else {
     const { data: inserted, error: insertErr } = await supabaseAdmin
       .from('knowledge_map_nodes')
-      .insert({ concept_id: `${clean(subject)}:${clean(id)}`, subject, qualification, exam_board: examBoard, node_key: id, label, subtopic: description, theme: null, difficulty: null })
+      .insert({ concept_id: `${clean(subject)}:${examBoard}:${clean(id)}`, subject, qualification, exam_board: examBoard, node_key: id, label, subtopic: description, theme: null, difficulty: null })
       .select('id, label').single();
     if (insertErr || !inserted) { console.error('Gap-node insert failed:', insertErr); return null; }
     gapDbId = inserted.id as string; gapLabel = inserted.label as string;

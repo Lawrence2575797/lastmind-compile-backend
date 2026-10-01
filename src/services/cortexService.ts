@@ -98,6 +98,14 @@ export interface CortexResult {
   // it at all, so anything outside that narrow set fell through to a plain
   // chat reply that could not actually start anything.
   beginQueuedLessons?: boolean;
+  // Set only when a topic map already exists in this chat and the
+  // student's message (in whatever phrasing) is asking to extend its
+  // prerequisites further back - "I don't understand the first concepts",
+  // "can you extend the prerequisite chain backwards", "go back further
+  // before that". The frontend adds new, earlier nodes feeding into the
+  // map's current root(s) and re-renders it when this is true; absent/
+  // false otherwise.
+  extendPrerequisitesBackward?: boolean;
 }
 
 /**

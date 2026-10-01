@@ -6,7 +6,7 @@
 import { Router, Request, Response } from 'express';
 import { requireAuth, isUserPaid } from '../services/authMiddleware';
 import { costlyEndpointLimiter, syncEndpointLimiter } from '../services/rateLimiters';
-import { getOrCreateTopicKnowledgeMap } from '../services/topicKnowledgeMapService';
+import { getOrCreateTopicKnowledgeMap, extendTopicMapBackward } from '../services/topicKnowledgeMapService';
 import { getSuggestedNextTopics } from '../services/suggestNextTopicsService';
 import { getMasteryDetailsForConcepts } from '../services/reviewService';
 import { InsufficientLocksError } from '../services/lockService';
@@ -69,6 +69,35 @@ router.post('/knowledge-map-v2/topic', requireAuth, costlyEndpointLimiter, async
     }
     console.error('Topic knowledge map generation failed:', err);
     res.status(500).json({ error: 'could not build a knowledge map for that topic' });
+  }
+});
+
+// Adds new, earlier prerequisite nodes in front of an existing topic map's
+// current root(s) - fired when a student says the map/lessons assume too
+// much and they don't understand the starting concepts (see
+// extendPrerequisitesBackward in cortexPrompts.ts/cortex/index.html).
+// costlyEndpointLimiter for the same reason as the route above: this can
+// trigger a real Claude generation.
+router.post('/knowledge-map-v2/topic/extend-backward', requireAuth, costlyEndpointLimiter, async (req: Request, res: Response) => {
+  const { topic } = req.body ?? {};
+  if (typeof topic !== 'string' || !topic.trim()) {
+    return res.status(400).json({ error: 'topic is required' });
+  }
+  const userId = req.userId as string;
+  try {
+    const result = await extendTopicMapBackward(topic, userId, await isUserPaid(userId), req.userCreatedAt ?? null, req.userEmail);
+    const masteryByConcept = await getMasteryDetailsForConcepts(userId, result.nodes.map((n) => n.conceptId));
+    const nodes = result.nodes.map((n) => ({ ...n, completed: masteryByConcept.has(n.conceptId) }));
+    res.json({ ...result, nodes });
+  } catch (err) {
+    if (err instanceof InsufficientLocksError) {
+      return res.status(402).json({ error: 'Lock limit reached', code: 'LOCK_LIMIT_REACHED', detail: "You're out of Locks for now." });
+    }
+    if (err instanceof GenerationCapExceededError) {
+      return res.status(429).json({ error: 'Generation limit reached', code: 'GENERATION_RATE_LIMIT', window: err.window, limit: err.limit });
+    }
+    console.error('Topic knowledge map backward-extension failed:', err);
+    res.status(500).json({ error: 'could not extend the knowledge map backward for that topic' });
   }
 });
 

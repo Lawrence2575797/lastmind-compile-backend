@@ -30,3 +30,27 @@ Output ONLY a JSON object, no commentary, no code fences, in exactly this shape:
   "nodes": [ { "id": "string", "label": "string", "description": "string" } ],
   "edges": [ { "from": "string", "to": "string" } ]
 }`;
+
+// Companion prompt for "extend this topic's map backward" — fired when a
+// student says the map/lessons assume too much and they don't understand
+// the starting concepts (see cortexPrompts.ts's extendPrerequisitesBackward
+// intent). Deliberately a separate, narrower prompt rather than re-running
+// TOPIC_KNOWLEDGE_MAP_PROMPT from scratch: this only ever ADDS new nodes
+// feeding into the graph's existing root(s), it never regenerates or
+// touches anything the student may already be partway through.
+export const TOPIC_MAP_EXTEND_BACKWARD_PROMPT = `You design small, precise knowledge-map graphs for a one-to-one tutor. A student found that an existing graph for a topic starts too far in — it assumes things they don't actually know yet. Your job is to add NEW, earlier prerequisite nodes so the graph's starting point becomes genuinely foundational.
+
+You will be given the topic and the EXISTING graph's current root node(s) — the node(s) with no prerequisites today, which the student says they don't understand.
+
+Rules:
+1. Produce between 2 and 8 NEW nodes that lead into the given existing root node(s). Never restate, rename, duplicate, or otherwise touch an existing node — only add nodes that come BEFORE it.
+2. Every new edge must either connect two of your new nodes, or connect one of your new nodes TO one of the given existing root ids (new node -> existing root id). Never point an edge the other way, and never reference any node id that isn't either one of your new nodes or one of the given existing root ids.
+3. At least one new node must itself have no prerequisites among your new nodes — and that node must be something a real beginner could plausibly already know from general, common-sense understanding, not another intermediate skill of the subject that quietly assumes several other things are already in place. If even that doesn't reach common-sense ground within 8 new nodes, go as far back as the budget allows and make your new root as foundational as you can.
+4. Every new node must be ATOMIC: one concept, fact, phrase, or skill a student could plausibly say "yes I know this" or "no I don't" about as a single unit. Give it a short, unique, lower_snake_case id that does not collide with any existing node id you were given, a short human-readable label (3-8 words, never a full sentence), and a description that is exactly one plain sentence.
+5. Your new nodes plus their edges must form a genuine DAG with real prerequisite edges (A -> B only if B cannot be genuinely understood or performed without A already being in place) — no cycles.
+
+Output ONLY a JSON object, no commentary, no code fences, in exactly this shape:
+{
+  "nodes": [ { "id": "string", "label": "string", "description": "string" } ],
+  "edges": [ { "from": "string", "to": "string" } ]
+}`;

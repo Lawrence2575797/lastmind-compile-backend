@@ -128,6 +128,18 @@ function validate(spec, known) {
         if (s.right && s.wrong && s.right === s.wrong) err(`${at}: right and wrong options are identical`);
         if (!spec.noLengthCap) { const wc = String(s.q || '').trim().split(/\s+/).filter(Boolean).length; if (wc > MAX_Q_WORDS) err(`${at}: the question is ${wc} words; keep it to ${MAX_Q_WORDS} or fewer`); }
         chunk = 0; lastMilestone = i;
+        // A recap that's also the stage's own final step is itself a
+        // valid ending - real, confirmed generation-blocking bug this
+        // fixes: content that's genuinely independent facts (the whole
+        // reason recap exists - see this branch's own comment above) was
+        // still forced into a fabricated derive/translate capstone
+        // afterward, which has no honest answer for a purely
+        // definitional/notational concept with no real mechanism to
+        // derive and no vocabulary to translate (e.g. "what a matrix
+        // is" as its own atomic root). Only applies when recap is
+        // genuinely the LAST step - a mid-stage recap still requires a
+        // real derive/translate capstone afterward, same as before.
+        if (i === st.steps.length - 1) ended = true;
       } else if (s.type === 'derive') {
         if (i !== st.steps.length - 1 && st.steps[i + 1].type !== 'done') err(`${at}: derive must be the last step`);
         ended = true;
@@ -147,7 +159,7 @@ function validate(spec, known) {
         ended = true;
       }
     });
-    if (!ended) err(`${where}: no final derive/translate step`);
+    if (!ended) err(`${where}: no final derive/translate step (or a recap step as the stage's own last step)`);
     const all = new Set([...given, ...intro]);
     (st.edges || []).forEach(([a, b]) => {
       if (!all.has(a) || !all.has(b)) err(`${where}: edge ${a} -> ${b} uses a term that is not in this stage`);

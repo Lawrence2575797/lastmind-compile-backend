@@ -117,10 +117,15 @@
         b.classList.add('right'); note.textContent = '';
         Array.prototype.forEach.call(opts.children, function (o) { o.disabled = true; });
         out.hidden = false;
-        out.innerHTML = '<span>' + mathify(step.pre) + '</span>' + termHtml(step.term, 'pop')
+        // A recap step (see build.js's own compile comment) is compiled
+        // into this exact same "ask" shape but with no `term` - it tests
+        // recall of terms already introduced earlier in the stage, it
+        // doesn't introduce a new one, so there is nothing to reveal or
+        // re-collect here.
+        out.innerHTML = '<span>' + mathify(step.pre || '') + '</span>' + (step.term ? termHtml(step.term, 'pop') : '')
           + (step.why ? '<div class="revwhy">' + linesHtml(step.why) + '</div>' : '')
           + (step.whyMatters ? '<div class="revmatters"><div class="revmatters-tag">Why this matters</div>' + linesHtml(step.whyMatters) + '</div>' : '');
-        chunk(step.term);
+        if (step.term) chunk(step.term);
         // A step with a deep explanation (step.why) waits for the student to actually read it - a Continue button,
         // not an auto-advance timer, since 1.5s is nowhere near enough to read several sentences of explanation.
         // A step with no "why" (any already-cached stage generated before this field existed) keeps the original

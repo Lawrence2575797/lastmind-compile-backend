@@ -170,13 +170,19 @@ async function generateTopicGraph(topic: string, userId: string): Promise<{ node
       systemPrompt: TOPIC_KNOWLEDGE_MAP_PROMPT,
       userContent,
       maxTokens: 4000,
-      temperature: 0.3,
+      // Bumped on retry, not static across both attempts - real,
+      // confirmed reliability problem: reusing the identical temperature
+      // gives a model that mis-shaped the graph structurally (the wrong
+      // atomicity, a bad root) no actual incentive to try a different
+      // approach, only to patch the literally-cited error on top of the
+      // same underlying attempt.
+      temperature: attempt === 0 ? 0.3 : 0.6,
       userId,
       meteredReason: 'topic-knowledge-map-generation',
     });
     const parsed = parseModelJson<RawTopicGraph>(raw);
     const { nodes, edges } = coerceGraph(parsed);
-    if (nodes.length < 6) { lastError = `only ${nodes.length} valid node(s) were returned — need at least 8`; continue; }
+    if (nodes.length < 6) { lastError = `only ${nodes.length} valid node(s) were returned — need at least 6`; continue; }
     const problem = validateGraph(nodes, edges);
     if (!problem) return { nodes, edges };
     lastError = problem;

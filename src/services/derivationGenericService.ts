@@ -45,6 +45,47 @@ const stageCache = new Map<string, Stage>();
 // stop it).
 export class DerivationStageNotReadyError extends Error {}
 
+// Real, confirmed reliability problem this fixes: a transient failure (a
+// network blip, a Claude 5xx/timeout) thrown by the API call itself used to
+// propagate straight out of the generation loop below, aborting ALL
+// remaining attempts immediately - burning the whole retry budget on one
+// bad network moment, then surfacing to the student as the exact same
+// "couldn't generate this lesson yet" message as a genuine 3x content
+// rejection. Thrown only when every transient retry for one content
+// attempt is exhausted (see derivationGenericGenerate), so the route can
+// tell a student "try again in a moment" (an infra problem) apart from
+// "try an earlier concept" (the content genuinely didn't work out).
+export class DerivationGenerationInfraError extends Error {
+  constructor(message: string, public readonly cause?: unknown) {
+    super(message);
+  }
+}
+
+function sleep(ms: number): Promise<void> {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+// Real, confirmed gap this fixes: a failed generation previously vanished
+// into a plain console.error with no persisted trace at all - every past
+// reliability fix in this file had to be found by reading code, never by
+// looking at real failure data, because none existed. Logged to a plain
+// table (see scripts/add_generation_failures_table.sql), never throws
+// itself - a logging failure must never be the reason a real error doesn't
+// reach the student.
+async function logGenerationFailure(info: GenericLookup, reason: string): Promise<void> {
+  try {
+    await supabaseAdmin.from('generation_failures').insert({
+      subject: info.subject,
+      qualification: info.qualification,
+      exam_board: info.examBoard,
+      stage_index: info.stageIndex,
+      reason,
+    });
+  } catch (err) {
+    console.error('LastMind: could not log a generation failure (non-fatal).', err);
+  }
+}
+
 function mapKey(subject: string, qualification: string, examBoard: string): string {
   return `${subject}|${qualification}|${examBoard}`;
 }
@@ -283,23 +324,59 @@ export async function derivationGenericGenerate(info: GenericLookup, userId: str
   // total real cost of however many tries it took to get the one that
   // worked, never for a total failure.
   const totalUsage: ClaudeCallUsage = { input_tokens: 0, output_tokens: 0, cache_creation_input_tokens: 0, cache_read_input_tokens: 0 };
-  for (let attempt = 0; attempt < 3; attempt++) {
+  const CONTENT_ATTEMPTS = 3;
+  const TRANSIENT_RETRIES_PER_ATTEMPT = 2;
+  for (let attempt = 0; attempt < CONTENT_ATTEMPTS; attempt++) {
     const userContent = attempt === 0 ? prompt : `${prompt}\n\nA previous attempt at this stage was rejected by the checker for:\n- ${(result.errs || []).join('\n- ')}\nReturn the corrected JSON only.`;
-    const { text, usage } = await callClaudeJSONUnmetered({
-      model: MODELS.diagnosticTree,
-      systemPrompt: SYSTEM,
-      userContent,
-      maxTokens: 4000,
-      cacheSystemPrompt: true,
-    });
-    totalUsage.input_tokens += usage.input_tokens || 0;
-    totalUsage.output_tokens += usage.output_tokens || 0;
-    totalUsage.cache_creation_input_tokens = (totalUsage.cache_creation_input_tokens || 0) + (usage.cache_creation_input_tokens || 0);
-    totalUsage.cache_read_input_tokens = (totalUsage.cache_read_input_tokens || 0) + (usage.cache_read_input_tokens || 0);
-    result = check(stage, text, info.byId);
+    // Real, confirmed reliability bug this fixes: a transient failure here
+    // (a network blip, a Claude 5xx/timeout) used to propagate straight out
+    // of this loop, aborting every remaining content attempt immediately -
+    // one bad network moment burned the whole retry budget. Retried up to
+    // TRANSIENT_RETRIES_PER_ATTEMPT times, with a short backoff, before
+    // counting this as a real content attempt at all - only genuine
+    // checker rejections (a real response that `check()` validates and
+    // rejects) consume the CONTENT_ATTEMPTS budget.
+    let text: string | undefined, usage: ClaudeCallUsage | undefined;
+    let lastTransientErr: unknown = null;
+    for (let transientTry = 0; transientTry <= TRANSIENT_RETRIES_PER_ATTEMPT; transientTry++) {
+      try {
+        // Slightly higher temperature on each successive CONTENT attempt
+        // (not transient retry) - real, confirmed problem: every retry
+        // reused the exact same temperature, so a model that mis-shaped
+        // the stage structurally (wrong capstone type, wrong grouping) had
+        // no actual signal to try a different approach, only to patch the
+        // literally-cited error on top of the same underlying attempt.
+        ({ text, usage } = await callClaudeJSONUnmetered({
+          model: MODELS.diagnosticTree,
+          systemPrompt: SYSTEM,
+          userContent,
+          maxTokens: 4000,
+          temperature: attempt === 0 ? undefined : Math.min(0.3 + attempt * 0.2, 0.7),
+          cacheSystemPrompt: true,
+        }));
+        lastTransientErr = null;
+        break;
+      } catch (err) {
+        lastTransientErr = err;
+        console.error(`LastMind: derivation generation call failed (content attempt ${attempt + 1}/${CONTENT_ATTEMPTS}, transient retry ${transientTry + 1}/${TRANSIENT_RETRIES_PER_ATTEMPT + 1}).`, err);
+        if (transientTry < TRANSIENT_RETRIES_PER_ATTEMPT) await sleep(500 * (transientTry + 1));
+      }
+    }
+    if (lastTransientErr) {
+      await logGenerationFailure(info, `infra error after ${TRANSIENT_RETRIES_PER_ATTEMPT + 1} tries: ${lastTransientErr instanceof Error ? lastTransientErr.message : String(lastTransientErr)}`);
+      throw new DerivationGenerationInfraError('Could not reach the generation service after several tries.', lastTransientErr);
+    }
+    totalUsage.input_tokens += usage!.input_tokens || 0;
+    totalUsage.output_tokens += usage!.output_tokens || 0;
+    totalUsage.cache_creation_input_tokens = (totalUsage.cache_creation_input_tokens || 0) + (usage!.cache_creation_input_tokens || 0);
+    totalUsage.cache_read_input_tokens = (totalUsage.cache_read_input_tokens || 0) + (usage!.cache_read_input_tokens || 0);
+    result = check(stage, text!, info.byId);
     if (result.spec) break;
   }
-  if (!result.spec) throw new Error('derivation generation failed the checker after 3 attempts: ' + (result.errs || []).join('; '));
+  if (!result.spec) {
+    await logGenerationFailure(info, `checker rejected after ${CONTENT_ATTEMPTS} attempts: ${(result.errs || []).join('; ')}`);
+    throw new Error('derivation generation failed the checker after 3 attempts: ' + (result.errs || []).join('; '));
+  }
   await chargeForClaudeCall(userId, MODELS.diagnosticTree, totalUsage, 'derivation-lesson-generation');
   if (stage.given?.length) result.spec.known = known;
   const built = build(result.spec);

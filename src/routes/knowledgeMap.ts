@@ -34,7 +34,7 @@ import {
 } from '../services/nodeReviewService';
 import { getNodeNoteBaseline, getNodeNoteForUser, saveNodeNoteEdit, getNodeNotes, getEdgeNoteBaseline, getEdgeNoteForUser, saveEdgeNoteEdit, getEdgeNotes, getNotesIndexForUser, getPersonalNote, savePersonalNote, checkWorkedExampleStep, markEdgeExplanationSeen } from '../services/knowledgeMapNotesService';
 import { derivationKeyTermGraph, derivationCompletedStages, derivationQuick, ensureDerivationContent, derivationPlayerPayload, derivationConceptsOfStage, derivationNodeIds, derivationAnchorConcept, derivationSiblingConcepts } from '../services/derivationService';
-import { derivationGenericLookup, derivationGenericGenerate, derivationContentForGenericNode, genericStageKey, derivationGenericPayloadForKey, derivationGenericConceptsForKey, DerivationStageNotReadyError } from '../services/derivationGenericService';
+import { derivationGenericLookup, derivationGenericGenerate, derivationContentForGenericNode, genericStageKey, derivationGenericPayloadForKey, derivationGenericConceptsForKey, DerivationStageNotReadyError, DerivationGenerationInfraError } from '../services/derivationGenericService';
 import { generateAndCacheNodeLesson, generateAndCacheEdgeLesson, needsQuestionUpgrade, upgradeLessonQuestions } from '../services/lessonGenerationService';
 import { isStructured, gradeStructured, clientView, lessonForClient, sealJson, openJson, closeEnough, StructuredQuestion } from '../services/questionFormats';
 import { pickRotatingQuestion, poolEntry, poolOf, rotationPick, immediatePool } from '../services/reviewQuestionPool';
@@ -242,6 +242,20 @@ router.get('/knowledge-map-v2/node/:nodeId/lesson', requireAuth, syncEndpointLim
             // Free to report - no Claude call happened (see
             // DerivationStageNotReadyError's own comment).
             return res.status(409).json({ error: 'not ready yet', code: 'DERIVATION_NOT_READY' });
+          }
+          // Real, confirmed reliability problem this fixes: an infra/
+          // network error (exhausted every transient retry - see
+          // DerivationGenerationInfraError's own comment) used to surface
+          // to the student as the exact same "couldn't generate this
+          // lesson yet, try an earlier concept" message as a genuine 3x
+          // content rejection - actively misleading, since trying an
+          // earlier concept does nothing for a connection problem. A
+          // distinct, honest message and a different code so the frontend
+          // can offer "try again" without implying the content itself was
+          // the issue.
+          if (genErr instanceof DerivationGenerationInfraError) {
+            console.error('Derivation generation hit an infra error:', genErr);
+            return res.status(503).json({ error: 'generation service unavailable', code: 'DERIVATION_INFRA_ERROR', detail: 'Having trouble reaching the generation service right now - try again in a moment.' });
           }
           // A genuine checker rejection after real (paid) generation
           // attempts - surfaced plainly here rather than spending a second,

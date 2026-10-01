@@ -36,19 +36,25 @@ export class CortexResponseTruncatedError extends Error {
   }
 }
 
-export interface CortexPageSummary {
-  title: string;
-  done: boolean;
-}
-
+// Real, confirmed cost problem this fixes: the previous shape serialized
+// EVERY subfolder and EVERY page's own title into this one request's
+// userContent - uncached, on every single Cortex message regardless of
+// what it was actually about - for a real account with a real course
+// (hundreds of lesson pages across several subjects), that was the actual
+// dominant cost of a Cortex conversation, dwarfing the map/lesson
+// generation calls students were blaming instead. Cortex's own job here
+// (general conversational grounding - "since you're doing AQA Biology...")
+// never needed the full page list, just what's being studied and roughly
+// how far into it the student is - counts, not titles.
 export interface CortexFolderSummary {
   name: string;
   qualification: string;
   examBoard?: string;
   institution?: string;
   moduleCode?: string;
-  subfolders: { name: string; pages: CortexPageSummary[] }[];
-  pages: CortexPageSummary[];
+  subfolderCount: number;
+  pageCount: number;
+  completedPageCount: number;
 }
 
 export interface CortexDueReview {

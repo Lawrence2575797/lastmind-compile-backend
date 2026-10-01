@@ -49,6 +49,38 @@ function mapKey(subject: string, qualification: string, examBoard: string): stri
   return `${subject}|${qualification}|${examBoard}`;
 }
 
+// Real, confirmed bug this fixes: extending a topic map backward/forward
+// (see topicKnowledgeMapService.ts's extendTopicMapBackward/Forward) adds
+// real new rows to knowledge_map_nodes/edges, but planFor's own 15-minute
+// TTL cache had no way to know that - a student who extended a map within
+// that window kept getting the STALE pre-extension plan, so the newly
+// taught concept and its genuine neighbours (e.g. "eigenvalues and
+// eigenvectors" after a backward extension added "matrices as arrays" in
+// front of it) weren't in any planned stage at all, and derivationGenericLookup
+// fell through to the unrelated old per-node generator - the actual cause
+// of "Couldn't generate an interactive lesson for this yet", not a genuine
+// generation failure. Called right after a successful extension insert, so
+// the very next lesson request re-plans against the extended graph.
+//
+// Also clears any already-compiled stages for this (subject, qualification,
+// examBoard) - both the in-memory stageCache and the persisted
+// derivation_generated_stages rows - since an extension renumbers stage
+// indices (stage 0's own concept grouping genuinely changes once earlier
+// nodes exist), so a stale row at the same index would otherwise be
+// served back under a now-wrong concept set. Nothing is lost: each stage
+// is just regenerated once, on its next real request, same as any other
+// fresh generation.
+export async function invalidatePlanCache(subject: string, qualification: string, examBoard: string): Promise<void> {
+  planCache.delete(mapKey(subject, qualification, examBoard));
+  const prefix = `${subject}|${qualification}|${examBoard}|`;
+  Array.from(stageCache.keys()).forEach((k) => { if (k.startsWith(prefix)) stageCache.delete(k); });
+  const { error } = await supabaseAdmin
+    .from('derivation_generated_stages')
+    .delete()
+    .eq('subject', subject).eq('qualification', qualification).eq('exam_board', examBoard);
+  if (error) console.error('LastMind: could not clear stale compiled stages after a map extension.', error);
+}
+
 // A generic stage's public id, threaded through the frontend exactly like Economics' own bare numeric stage index (see
 // sfBuildDerivationSlides' Number.isInteger check and the checkpoint key it builds from `stage`) - a plain string works for both.
 export function genericStageKey(subject: string, qualification: string, examBoard: string, stageIndex: number): string {

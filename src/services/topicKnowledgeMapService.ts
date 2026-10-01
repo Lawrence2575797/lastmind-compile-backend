@@ -27,6 +27,7 @@ import { callClaudeJSON, MODELS } from './claudeClient';
 import { parseModelJson } from './jsonParsing';
 import { TOPIC_KNOWLEDGE_MAP_PROMPT, TOPIC_MAP_EXTEND_BACKWARD_PROMPT, TOPIC_MAP_EXTEND_FORWARD_PROMPT } from '../constants/topicKnowledgeMapPrompt';
 import { assertFreshGenerationWithinCap, recordFreshGenerationEvent } from './generationCapService';
+import { invalidatePlanCache } from './derivationGenericService';
 
 export const TOPIC_QUALIFICATION = 'Other';
 // Legacy constant: every topic map generated before caching was removed
@@ -488,6 +489,7 @@ export async function extendTopicMapBackward(
   const existingRootDbIdByNodeKey = new Map((rootRows || []).map((r: any) => [r.node_key as string, r.id as string]));
 
   await insertBackwardExtension(subject, examBoard, userId, nodes, edges, existingRootDbIdByNodeKey);
+  await invalidatePlanCache(subject, TOPIC_QUALIFICATION, examBoard);
   await recordFreshGenerationEvent(userId);
 
   const updated = await findExistingTopicMap(subject, examBoard);
@@ -532,6 +534,7 @@ export async function extendTopicMapForward(
   const oldFinalTaskDbId = oldFinalTaskRow ? (oldFinalTaskRow.id as string) : null;
 
   await insertForwardExtension(subject, examBoard, userId, nodes, edges, existingLeafDbIdByNodeKey, oldFinalTaskDbId);
+  await invalidatePlanCache(subject, TOPIC_QUALIFICATION, examBoard);
   await recordFreshGenerationEvent(userId);
 
   const updated = await findExistingTopicMap(subject, examBoard);

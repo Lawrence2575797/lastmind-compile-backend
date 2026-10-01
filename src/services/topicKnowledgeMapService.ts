@@ -353,6 +353,7 @@ async function generateForwardExtension(
 async function insertBackwardExtension(
   subject: string,
   examBoard: string,
+  ownerUserId: string,
   nodes: { id: string; label: string; description: string }[],
   edges: { from: string; to: string }[],
   existingRootDbIdByNodeKey: Map<string, string>
@@ -362,6 +363,7 @@ async function insertBackwardExtension(
     subject,
     qualification: TOPIC_QUALIFICATION,
     exam_board: examBoard,
+    owner_user_id: ownerUserId,
     node_key: n.id,
     label: n.label,
     subtopic: n.description,
@@ -396,6 +398,7 @@ async function insertBackwardExtension(
 async function insertForwardExtension(
   subject: string,
   examBoard: string,
+  ownerUserId: string,
   nodes: { id: string; label: string; description: string }[],
   edges: { from: string; to: string }[],
   existingLeafDbIdByNodeKey: Map<string, string>,
@@ -412,6 +415,7 @@ async function insertForwardExtension(
     subject,
     qualification: TOPIC_QUALIFICATION,
     exam_board: examBoard,
+    owner_user_id: ownerUserId,
     node_key: n.id,
     label: n.label,
     subtopic: n.description,
@@ -483,7 +487,7 @@ export async function extendTopicMapBackward(
   if (rootErr) throw rootErr;
   const existingRootDbIdByNodeKey = new Map((rootRows || []).map((r: any) => [r.node_key as string, r.id as string]));
 
-  await insertBackwardExtension(subject, examBoard, nodes, edges, existingRootDbIdByNodeKey);
+  await insertBackwardExtension(subject, examBoard, userId, nodes, edges, existingRootDbIdByNodeKey);
   await recordFreshGenerationEvent(userId);
 
   const updated = await findExistingTopicMap(subject, examBoard);
@@ -527,7 +531,7 @@ export async function extendTopicMapForward(
   const oldFinalTaskRow = (leafRows || []).find((r: any) => r.theme === 'final_task');
   const oldFinalTaskDbId = oldFinalTaskRow ? (oldFinalTaskRow.id as string) : null;
 
-  await insertForwardExtension(subject, examBoard, nodes, edges, existingLeafDbIdByNodeKey, oldFinalTaskDbId);
+  await insertForwardExtension(subject, examBoard, userId, nodes, edges, existingLeafDbIdByNodeKey, oldFinalTaskDbId);
   await recordFreshGenerationEvent(userId);
 
   const updated = await findExistingTopicMap(subject, examBoard);
@@ -572,12 +576,13 @@ async function findExistingTopicMap(subject: string, examBoard: string): Promise
 // its own, and subtopic is unused/empty for an ad-hoc topic anyway (there's
 // no real curriculum subtopic to group by), so it's a safe, honest reuse
 // rather than a new migration for a single extra string field.
-async function insertTopicGraph(subject: string, examBoard: string, nodes: { id: string; label: string; description: string }[], edges: { from: string; to: string }[]): Promise<TopicKnowledgeMap> {
+async function insertTopicGraph(subject: string, examBoard: string, ownerUserId: string, nodes: { id: string; label: string; description: string }[], edges: { from: string; to: string }[]): Promise<TopicKnowledgeMap> {
   const nodeRows = nodes.map((n, i) => ({
     concept_id: conceptId(subject, examBoard, n.id),
     subject,
     qualification: TOPIC_QUALIFICATION,
     exam_board: examBoard,
+    owner_user_id: ownerUserId,
     node_key: n.id,
     label: n.label,
     subtopic: n.description,
@@ -633,7 +638,40 @@ export async function getOrCreateTopicKnowledgeMap(
   await assertFreshGenerationWithinCap(userId, isPaid, accountCreatedAt, email);
   const examBoard = generateInstanceToken();
   const { nodes, edges } = await generateTopicGraph(subject, userId);
-  const result = await insertTopicGraph(subject, examBoard, nodes, edges);
+  const result = await insertTopicGraph(subject, examBoard, userId, nodes, edges);
   await recordFreshGenerationEvent(userId);
   return result;
+}
+
+export interface MyCustomTopicSummary {
+  subject: string;
+  examBoard: string;
+  nodeCount: number;
+}
+
+// Lists this student's own Cortex-built custom topics, so they can be
+// surfaced in the "Your Mind" tab even before any real progress
+// (concept_reviews rows) exists for them - the unified cross-subject view
+// (getUnifiedKnowledgeMapForUser) only shows concepts with actual review
+// history, so a freshly-built, not-yet-started map would otherwise be
+// invisible outside the Cortex chat that built it. Grouped by (subject,
+// examBoard) since each generation is now its own private instance (see
+// this file's own top comment) - the same subject text typed twice is two
+// separate rows here, not one.
+export async function listMyCustomTopics(userId: string): Promise<MyCustomTopicSummary[]> {
+  const { data, error } = await supabaseAdmin
+    .from('knowledge_map_nodes')
+    .select('subject, exam_board')
+    .eq('qualification', TOPIC_QUALIFICATION)
+    .eq('owner_user_id', userId);
+  if (error) throw error;
+
+  const counts = new Map<string, MyCustomTopicSummary>();
+  (data || []).forEach((r: any) => {
+    const key = `${r.subject}\u0000${r.exam_board}`;
+    const existing = counts.get(key);
+    if (existing) existing.nodeCount += 1;
+    else counts.set(key, { subject: r.subject as string, examBoard: r.exam_board as string, nodeCount: 1 });
+  });
+  return Array.from(counts.values()).sort((a, b) => b.nodeCount - a.nodeCount);
 }

@@ -5,7 +5,7 @@
 import { Router, Request, Response } from 'express';
 import { requireAuth, isUserPaid } from '../services/authMiddleware';
 import { costlyEndpointLimiter, syncEndpointLimiter } from '../services/rateLimiters';
-import { getOrCreateTopicKnowledgeMap, extendTopicMapBackward, extendTopicMapForward } from '../services/topicKnowledgeMapService';
+import { getOrCreateTopicKnowledgeMap, extendTopicMapBackward, extendTopicMapForward, listMyCustomTopics } from '../services/topicKnowledgeMapService';
 import { getSuggestedNextTopics } from '../services/suggestNextTopicsService';
 import { getMasteryDetailsForConcepts } from '../services/reviewService';
 import { InsufficientLocksError } from '../services/lockService';
@@ -132,6 +132,19 @@ router.post('/knowledge-map-v2/topic/extend-forward', requireAuth, costlyEndpoin
     }
     console.error('Topic knowledge map forward-extension failed:', err);
     res.status(500).json({ error: 'could not extend the knowledge map forward for that topic' });
+  }
+});
+
+// Lists this student's own Cortex-built custom topics, so the "Your Mind"
+// tab (learn/index.html) can offer them even before any real progress
+// exists in them. syncEndpointLimiter: a plain DB read, no Claude call.
+router.get('/knowledge-map-v2/topic/mine', requireAuth, syncEndpointLimiter, async (req: Request, res: Response) => {
+  try {
+    const topics = await listMyCustomTopics(req.userId as string);
+    res.json({ topics });
+  } catch (err) {
+    console.error('Listing custom topics failed:', err);
+    res.status(500).json({ error: 'could not load your topics' });
   }
 });
 

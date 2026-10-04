@@ -1,7 +1,7 @@
 import { Router, Request, Response } from 'express';
 import { requireAuth, requirePaidTier } from '../services/authMiddleware';
 import { costlyEndpointLimiter } from '../services/rateLimiters';
-import { decideCortexAction, CortexResponseTruncatedError, CortexUnavailableError } from '../services/cortexService';
+import { decideCortexAction, describeCortexError, CortexResponseTruncatedError, CortexUnavailableError } from '../services/cortexService';
 import { assertLocksAvailable, InsufficientLocksError } from '../services/lockService';
 
 const router = Router();
@@ -50,7 +50,8 @@ router.post('/cortex/message', async (req: Request, res: Response) => {
     if (err instanceof CortexResponseTruncatedError || err instanceof CortexUnavailableError) {
       res.status(500).json({ error: err.message });
     } else {
-      res.status(500).json({ error: 'Something went wrong processing that message. Please try again.' });
+      // The real reason, not a vague apology: it is what the chat shows.
+      res.status(500).json({ error: `Cortex chat failed: ${describeCortexError(err)}` });
     }
   }
 });

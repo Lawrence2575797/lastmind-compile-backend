@@ -36,10 +36,29 @@ export class CortexResponseTruncatedError extends Error {
 // real cause is logged where it happens. This message says what is actually
 // true, instead of blaming the student's message for a service problem.
 export class CortexUnavailableError extends Error {
-  constructor() {
-    super("LastMind couldn't reply just now. Please try again in a moment.");
+  constructor(detail?: string) {
+    super(detail ? `LastMind couldn't reply: ${detail}` : "LastMind couldn't reply just now. Please try again in a moment.");
     this.name = 'CortexUnavailableError';
   }
+}
+
+// One readable line saying what actually went wrong, for the message the
+// student (and we) see instead of a vague apology: the HTTP status and the
+// provider's own wording when there is one ("credit balance is too low",
+// "model not found", "overloaded"). Anything that looks like a key or token
+// is removed first, and the length is capped.
+export function describeCortexError(err: unknown): string {
+  const e = err as { status?: number; message?: string; error?: { error?: { message?: string } } } | undefined;
+  const status = e && typeof e.status === 'number' ? `HTTP ${e.status}` : '';
+  const raw = (e && (e.error?.error?.message || e.message)) || String(err);
+  const msg = String(raw)
+    .replace(/sk-[A-Za-z0-9_-]{8,}/g, '[key]')
+    .replace(/eyJ[A-Za-z0-9_-]{20,}\.[A-Za-z0-9_.-]+/g, '[token]')
+    .replace(/Bearer\s+\S+/gi, 'Bearer [token]')
+    .replace(/\s+/g, ' ')
+    .trim()
+    .slice(0, 300);
+  return [status, msg].filter(Boolean).join(': ') || 'unknown error';
 }
 
 // Real, confirmed cost problem this fixes: the previous shape serialized
@@ -198,6 +217,8 @@ export async function decideCortexAction(
 
   const attempts = [MODELS.chat, MODELS.chat, MODELS.diagnosticTree];
   let parsed: CortexResult | null = null;
+  const details: string[] = [];
+  const note = (d: string) => { if (!details.includes(d)) details.push(d); };
   for (let i = 0; i < attempts.length && !parsed; i++) {
     try {
       const raw = await callClaudeJSON({
@@ -210,12 +231,13 @@ export async function decideCortexAction(
         meteredReason: 'cortex-chat',
       });
       parsed = parseCortexReply(raw);
-      if (!parsed) console.error(`LastMind: Cortex reply from "${attempts[i]}" had no text (attempt ${i + 1} of ${attempts.length}).`, { raw });
+      if (!parsed) { note(`the model (${attempts[i]}) returned an empty reply`); console.error(`LastMind: Cortex reply from "${attempts[i]}" had no text (attempt ${i + 1} of ${attempts.length}).`, { raw }); }
     } catch (err) {
+      note(`${attempts[i]} - ${describeCortexError(err)}`);
       console.error(`LastMind: Cortex reply call to "${attempts[i]}" failed (attempt ${i + 1} of ${attempts.length}).`, err);
     }
   }
-  if (!parsed) throw new CortexUnavailableError();
+  if (!parsed) throw new CortexUnavailableError(details.join(' | ').slice(0, 600));
 
   // Cheap (Haiku) pre-flight gate before a real (Sonnet) map generation:
   // "teach me linear algebra" or "teach me chemistry" is broad enough that

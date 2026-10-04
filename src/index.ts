@@ -16,7 +16,6 @@ import topicKnowledgeMapRouter from './routes/topicKnowledgeMap';
 import createSimulationRouter from './routes/createSimulation';
 import playtestRouter from './routes/playtest';
 import createProjectsRouter from './routes/createProjects';
-import lifeOnMarsRouter from './routes/lifeOnMars';
 import chancellorRouter from './routes/chancellor';
 import { screenRequestBody } from './services/contentFilter';
 // Peer-to-peer student tutoring (opt-in, matching, request/response, ratings).
@@ -121,7 +120,6 @@ app.use('/', playtestRouter);
 app.use('/', createProjectsRouter);
 app.use('/', chancellorRouter);
 app.use('/', keysRouter);
-app.use('/', lifeOnMarsRouter);
 
 app.get('/health', (_req, res) => res.send('ok'));
 

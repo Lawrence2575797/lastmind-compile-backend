@@ -83,6 +83,10 @@ export const MODELS = {
   // the careless-slip micro-probe. Runs on every diagnostic event, so
   // savings here compound across the whole user base.
   simpleQuestion: 'claude-haiku-4-5-20251001',
+  // General chat with LastMind (Cortex): a conversation, not a structured
+  // generation, so it runs on the small fast model. Can be overridden with
+  // CLAUDE_CHAT_MODEL without a code change.
+  chat: process.env.CLAUDE_CHAT_MODEL || 'claude-haiku-4-5-20251001',
 } as const;
 
 const TUTOR_SYSTEM_PROMPT =

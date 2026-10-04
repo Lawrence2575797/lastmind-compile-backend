@@ -1,7 +1,7 @@
 import { Router, Request, Response } from 'express';
 import { requireAuth, requirePaidTier } from '../services/authMiddleware';
 import { costlyEndpointLimiter } from '../services/rateLimiters';
-import { decideCortexAction, CortexResponseTruncatedError } from '../services/cortexService';
+import { decideCortexAction, CortexResponseTruncatedError, CortexUnavailableError } from '../services/cortexService';
 import { assertLocksAvailable, InsufficientLocksError } from '../services/lockService';
 
 const router = Router();
@@ -47,7 +47,7 @@ router.post('/cortex/message', async (req: Request, res: Response) => {
       return res.status(402).json({ error: 'Lock limit reached', code: 'LOCK_LIMIT_REACHED', detail: "You're out of Locks for now." });
     }
     console.error('Cortex message handling failed:', err);
-    if (err instanceof CortexResponseTruncatedError) {
+    if (err instanceof CortexResponseTruncatedError || err instanceof CortexUnavailableError) {
       res.status(500).json({ error: err.message });
     } else {
       res.status(500).json({ error: 'Something went wrong processing that message. Please try again.' });

@@ -45,6 +45,10 @@ const stageCache = new Map<string, Stage>();
 // stop it).
 export class DerivationStageNotReadyError extends Error {}
 
+// Thrown when the student (or their browser) gave up while a lesson was being generated: nothing more is spent on it, and nothing is
+// charged. Distinct from a failure so the route does not report it as one.
+export class DerivationGenerationAbortedError extends Error {}
+
 // Real, confirmed reliability problem this fixes: a transient failure (a
 // network blip, a Claude 5xx/timeout) thrown by the API call itself used to
 // propagate straight out of the generation loop below, aborting ALL
@@ -355,7 +359,44 @@ export function checkDerivationText(stage: PlannedStage, text: string, byId: Rec
 // the same shape generate.js's offline sequential mode uses), validates it with the exact same checker Economics is held to, then
 // caches the compiled result forever. Charged to the requesting student's Locks like any other generation (see callClaudeJSON) -
 // the route calling this is responsible for the same fresh-generation rate cap the old per-node generator already enforces.
-export async function derivationGenericGenerate(info: GenericLookup, userId: string): Promise<Stage> {
+// One generation per stage at a time. A second request for a stage that is already being generated (a double click, "try again" pressed
+// while it is still working, two tabs) shares the one in flight instead of starting - and paying for - another. If every request waiting
+// on it goes away, the generation itself is stopped.
+const inFlight = new Map<string, { promise: Promise<Stage>; waiters: number; controller: AbortController }>();
+
+export async function derivationGenericGenerate(info: GenericLookup, userId: string, signal?: AbortSignal): Promise<Stage> {
+  const key = stageKeyRow(info.subject, info.qualification, info.examBoard, info.stageIndex);
+  if (signal?.aborted) throw new DerivationGenerationAbortedError('cancelled before it started');
+  let entry = inFlight.get(key);
+  if (!entry) {
+    const controller = new AbortController();
+    const promise = derivationGenericGenerateOnce(info, userId, controller.signal).finally(() => { inFlight.delete(key); });
+    promise.catch(() => { /* reported to every waiter below; this only stops an unhandled-rejection warning when nobody is left waiting */ });
+    entry = { promise, waiters: 0, controller };
+    inFlight.set(key, entry);
+  } else {
+    console.log(`LastMind: derivation stage ${info.stageIndex} for "${info.subject}" is already being generated; sharing it rather than starting another.`);
+  }
+  const shared = entry;
+  shared.waiters++;
+  let released = false;
+  const release = () => { if (released) return; released = true; shared.waiters--; if (shared.waiters <= 0) shared.controller.abort(); };
+  let onAbort: (() => void) | undefined;
+  const gone = new Promise<never>((_, reject) => {
+    if (!signal) return;
+    onAbort = () => { release(); reject(new DerivationGenerationAbortedError('the student stopped waiting')); };
+    signal.addEventListener('abort', onAbort, { once: true });
+  });
+  gone.catch(() => { /* handled by the race below */ });
+  try {
+    return await Promise.race([shared.promise, gone]);
+  } finally {
+    if (signal && onAbort) signal.removeEventListener('abort', onAbort);
+    release();
+  }
+}
+
+async function derivationGenericGenerateOnce(info: GenericLookup, userId: string, signal: AbortSignal): Promise<Stage> {
   const key = stageKeyRow(info.subject, info.qualification, info.examBoard, info.stageIndex);
   const stage = info.stages[info.stageIndex];
 
@@ -397,6 +438,7 @@ export async function derivationGenericGenerate(info: GenericLookup, userId: str
   const CONTENT_ATTEMPTS = 3;
   const TRANSIENT_RETRIES_PER_ATTEMPT = 2;
   for (let attempt = 0; attempt < CONTENT_ATTEMPTS; attempt++) {
+    if (signal.aborted) throw new DerivationGenerationAbortedError('stopped before attempt ' + (attempt + 1));
     const userContent = attempt === 0 ? prompt : `${prompt}\n\nA previous attempt at this stage was rejected by the checker for:\n- ${(result.errs || []).join('\n- ')}${retryAdvice(result.errs || [], (result as any).out)}\n\nReturn the corrected JSON only.`;
     const attemptStarted = Date.now();
     // Real, confirmed reliability bug this fixes: a transient failure here
@@ -424,10 +466,12 @@ export async function derivationGenericGenerate(info: GenericLookup, userId: str
           maxTokens: 4000,
           temperature: attempt === 0 ? undefined : Math.min(0.3 + attempt * 0.2, 0.7),
           cacheSystemPrompt: true,
+          signal,
         }));
         lastTransientErr = null;
         break;
       } catch (err) {
+        if (signal.aborted) throw new DerivationGenerationAbortedError('stopped while waiting for Claude');
         lastTransientErr = err;
         console.error(`LastMind: derivation generation call failed (content attempt ${attempt + 1}/${CONTENT_ATTEMPTS}, transient retry ${transientTry + 1}/${TRANSIENT_RETRIES_PER_ATTEMPT + 1}).`, err);
         if (transientTry < TRANSIENT_RETRIES_PER_ATTEMPT) await sleep(500 * (transientTry + 1));

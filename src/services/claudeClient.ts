@@ -167,11 +167,12 @@ function isTransientClaudeError(err: unknown): boolean {
 
 const TRANSIENT_RETRY_DELAYS_MS = [500, 1500, 4000];
 
-async function withTransientRetry<T>(fn: () => Promise<T>): Promise<T> {
+async function withTransientRetry<T>(fn: () => Promise<T>, signal?: AbortSignal): Promise<T> {
   for (let attempt = 0; ; attempt++) {
     try {
       return await fn();
     } catch (err) {
+      if (signal?.aborted) throw err; // the caller gave up: never spend another call on it
       if (!isTransientClaudeError(err) || attempt >= TRANSIENT_RETRY_DELAYS_MS.length) throw err;
       const delay = TRANSIENT_RETRY_DELAYS_MS[attempt];
       console.warn(`Claude API call hit a transient error — retrying in ${delay}ms (attempt ${attempt + 1}/${TRANSIENT_RETRY_DELAYS_MS.length}).`, err);
@@ -260,7 +261,8 @@ async function makeMessageRequest(
   maxTokens: number | undefined,
   temperature: number | undefined,
   includeTemperature: boolean,
-  cacheSystemPrompt: boolean
+  cacheSystemPrompt: boolean,
+  signal?: AbortSignal
 ) {
   const params = {
     model,
@@ -292,10 +294,10 @@ async function makeMessageRequest(
       .stream({
         ...params,
         system: [{ type: 'text', text: systemPrompt, cache_control: { type: 'ephemeral' } }],
-      })
+      }, signal ? { signal } : undefined)
       .finalMessage();
   }
-  return anthropic.messages.stream({ ...params, system: systemPrompt }).finalMessage();
+  return anthropic.messages.stream({ ...params, system: systemPrompt }, signal ? { signal } : undefined).finalMessage();
 }
 
 async function sendWithTemperatureRetry(
@@ -304,15 +306,16 @@ async function sendWithTemperatureRetry(
   content: string | Array<Anthropic.Messages.TextBlockParam | Anthropic.Messages.ImageBlockParam>,
   maxTokens: number | undefined,
   temperature: number | undefined,
-  cacheSystemPrompt = false
+  cacheSystemPrompt = false,
+  signal?: AbortSignal
 ): Promise<{ text: string; usage: ClaudeCallUsage }> {
   let response;
   try {
-    response = await withTransientRetry(() => makeMessageRequest(model, systemPrompt, content, maxTokens, temperature, true, cacheSystemPrompt));
+    response = await withTransientRetry(() => makeMessageRequest(model, systemPrompt, content, maxTokens, temperature, true, cacheSystemPrompt, signal), signal);
   } catch (err) {
-    if (!isTemperatureDeprecatedError(err)) throw err;
+    if (signal?.aborted || !isTemperatureDeprecatedError(err)) throw err;
     console.warn(`Claude call to "${model}" rejected temperature — retrying without it.`);
-    response = await withTransientRetry(() => makeMessageRequest(model, systemPrompt, content, maxTokens, temperature, false, cacheSystemPrompt));
+    response = await withTransientRetry(() => makeMessageRequest(model, systemPrompt, content, maxTokens, temperature, false, cacheSystemPrompt, signal), signal);
   }
 
   const textBlock = response.content.find((block) => block.type === 'text');
@@ -387,8 +390,10 @@ export async function callClaudeJSONUnmetered(params: {
   maxTokens?: number;
   temperature?: number;
   cacheSystemPrompt?: boolean;
+  // Aborting stops the request to Claude (and any retry of it), so generation nobody is waiting for stops costing money.
+  signal?: AbortSignal;
 }): Promise<{ text: string; usage: ClaudeCallUsage }> {
-  return sendWithTemperatureRetry(params.model, params.systemPrompt, sanitizeForClaude(params.userContent), params.maxTokens, params.temperature, params.cacheSystemPrompt);
+  return sendWithTemperatureRetry(params.model, params.systemPrompt, sanitizeForClaude(params.userContent), params.maxTokens, params.temperature, params.cacheSystemPrompt, params.signal);
 }
 
 // Same call and same Locks charge as callClaudeJSON, but also hands back the usage so the caller can keep a

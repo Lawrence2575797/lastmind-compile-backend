@@ -34,7 +34,7 @@ import {
 } from '../services/nodeReviewService';
 import { getNodeNoteBaseline, getNodeNoteForUser, saveNodeNoteEdit, getNodeNotes, getEdgeNoteBaseline, getEdgeNoteForUser, saveEdgeNoteEdit, getEdgeNotes, getNotesIndexForUser, getPersonalNote, savePersonalNote, checkWorkedExampleStep, markEdgeExplanationSeen } from '../services/knowledgeMapNotesService';
 import { derivationKeyTermGraph, derivationCompletedStages, derivationQuick, ensureDerivationContent, derivationPlayerPayload, derivationConceptsOfStage, derivationNodeIds, derivationAnchorConcept, derivationSiblingConcepts } from '../services/derivationService';
-import { derivationGenericLookup, derivationGenericGenerate, derivationContentForGenericNode, genericStageKey, derivationGenericPayloadForKey, derivationGenericConceptsForKey, DerivationStageNotReadyError, DerivationGenerationInfraError } from '../services/derivationGenericService';
+import { derivationGenericLookup, derivationGenericGenerate, derivationContentForGenericNode, genericStageKey, derivationGenericPayloadForKey, derivationGenericConceptsForKey, DerivationStageNotReadyError, DerivationGenerationInfraError, DerivationGenerationAbortedError } from '../services/derivationGenericService';
 import { generateAndCacheNodeLesson, generateAndCacheEdgeLesson, needsQuestionUpgrade, upgradeLessonQuestions } from '../services/lessonGenerationService';
 import { isStructured, gradeStructured, clientView, lessonForClient, sealJson, openJson, closeEnough, StructuredQuestion } from '../services/questionFormats';
 import { pickRotatingQuestion, poolEntry, poolOf, rotationPick, immediatePool } from '../services/reviewQuestionPool';
@@ -234,9 +234,13 @@ router.get('/knowledge-map-v2/node/:nodeId/lesson', requireAuth, syncEndpointLim
       if (!stage) {
         try {
           await assertFreshGenerationWithinCap(userId, await isUserPaid(userId), req.userCreatedAt ?? null, req.userEmail);
-          stage = await derivationGenericGenerate(generic, userId);
+          // If the student cancels, closes the tab or navigates away, the connection drops and generation stops (and costs nothing more).
+          const ac = new AbortController();
+          res.on('close', () => { if (!res.writableEnded) ac.abort(); });
+          stage = await derivationGenericGenerate(generic, userId, ac.signal);
           await recordFreshGenerationEvent(userId);
         } catch (genErr) {
+          if (genErr instanceof DerivationGenerationAbortedError) return; // nobody is listening any more
           if (genErr instanceof InsufficientLocksError || genErr instanceof GenerationCapExceededError) throw genErr;
           if (genErr instanceof DerivationStageNotReadyError) {
             // Free to report - no Claude call happened (see

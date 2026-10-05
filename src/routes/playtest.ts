@@ -9,7 +9,7 @@ import { InsufficientLocksError } from '../services/lockService';
 import { startJob } from './createSimulation';
 import { generatePortraitCutout, generateEvidencePicture, downloadAsDataUrl } from '../services/createImages';
 import { createDuel, getDuel, claimSeat, saveResult, listDuels, sideOf, resultOf, otherSide, cleanCode, DuelRow, Side } from '../services/duelStore';
-import { CASE_GRAPH_COMPILE_PROMPT, CHARACTER_TURN_PROMPT, CLOSING_ASSESSMENT_PROMPT, COMPILE_SPEECH_PROMPT } from '../constants/playtestPrompts';
+import { CASE_GRAPH_COMPILE_PROMPT, CHARACTER_TURN_PROMPT, CLOSING_ASSESSMENT_PROMPT, COMPILE_SPEECH_PROMPT, COMPILE_QUESTION_PROMPT } from '../constants/playtestPrompts';
 
 const router = Router();
 router.use('/playtest', requireAuth);
@@ -434,12 +434,16 @@ router.post('/playtest/compile-speech', costlyEndpointLimiter, async (req: Reque
   const session = sessions.get(str(b.sessionId, 40));
   if (!session || session.userId !== userId) return res.status(409).json({ error: 'session expired', code: 'SESSION_EXPIRED' });
   const notes = str(b.notes, 3000);
-  if (notes.split(/\s+/).filter(Boolean).length < 5) return res.status(400).json({ error: 'Jot down at least a few points first.' });
+  if (notes.split(/\s+/).filter(Boolean).length < (b.kind === 'question' ? 3 : 5)) return res.status(400).json({ error: 'Jot down at least a few points first.' });
   const graph = session.graph;
+  const isQuestion = b.kind === 'question';
   const kind = b.kind === 'closing' ? 'closing' : 'opening';
   const side = b.side === 'prosecution' ? 'prosecution' : 'defence';
   const heard = new Set<string>(arr<string>(b.establishedFactIds, 60).map((x) => str(x, 20)));
-  const input = {
+  const input = isQuestion ? {
+    questionTo: str(b.witness, 80), examination: b.examination === 'cross' ? 'cross' : 'chief', youAreCounselFor: side,
+    theTraineesNotes: notes, caseSummary: str(graph.caseFile?.summary, 900),
+  } : {
     speech: kind, youAreCounselFor: side,
     theTraineesNotes: notes,
     caseSummary: str(graph.caseFile?.summary, 900),
@@ -448,7 +452,7 @@ router.post('/playtest/compile-speech', costlyEndpointLimiter, async (req: Reque
   };
   try {
     const { text, spend } = await createAiCall({
-      userId, systemPrompt: COMPILE_SPEECH_PROMPT, userContent: JSON.stringify(input), maxTokens: 1100, temperature: 0.5,
+      userId, systemPrompt: isQuestion ? COMPILE_QUESTION_PROMPT : COMPILE_SPEECH_PROMPT, userContent: JSON.stringify(input), maxTokens: isQuestion ? 300 : 1100, temperature: 0.5,
       reason: 'playtest-compile-speech', cacheSystemPrompt: false, clientUsedUsd: Number(b.clientUsedUsd) || undefined,
     });
     const p = parseModelJson<any>(text);

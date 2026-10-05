@@ -39,6 +39,27 @@ function diagramErrors(d) {
   return e;
 }
 
+// Whole-word matching for the leak rules: a label only counts as "shown" when it appears as its own word(s), ignoring case, accents and punctuation
+// ("Inflation" is not leaked by "inflationary", and an Italian "ci" is not found inside "pronuncia"). Labels with no letters or digits fall back to
+// a plain substring check.
+const normWords = (t) => String(t == null ? '' : t).normalize('NFD').replace(/\p{M}+/gu, '').toLowerCase().replace(/[^\p{L}\p{N}]+/gu, ' ').trim();
+const hasWord = (text, label) => {
+  const l = normWords(label);
+  if (!l) return String(text || '').toLowerCase().includes(String(label || '').toLowerCase());
+  return (' ' + normWords(text) + ' ').includes(' ' + l + ' ');
+};
+// Problems about HOW a lesson is worded or how it reads, which a student can still learn from. Everything else (a missing field, an unknown term, a
+// milestone that lists the wrong terms, a bad diagram) would break the lesson player, so it always stops a lesson. A soft problem may be let through
+// after the retries are used up (see derivationGenericService), flagged on the spec as allowSoft.
+const SOFT_PATTERNS = [
+  /contains the term "/,
+  /option just names "/,
+  /shows ".*", a term that comes later/,
+  /right and wrong options differ too much in length/,
+  /the question is \d+ words/,
+];
+const isSoftError = (msg) => SOFT_PATTERNS.some((re) => re.test(String(msg)));
+
 function validate(spec, known) {
   const errs = [];
   const err = (m) => errs.push(m);
@@ -67,7 +88,7 @@ function validate(spec, known) {
           if (typeof s.answer !== 'number' || Number.isNaN(s.answer)) err(`${at}: calc's "answer" must be a number`);
           if (!spec.noLengthCap) { const n = String(s.q || '').trim().split(/\s+/).filter(Boolean).length; if (n > MAX_Q_WORDS) err(`${at}: the question is ${n} words; keep it to ${MAX_Q_WORDS} or fewer (aim for about 20)`); }
           const label = (spec.terms[s.term] || {}).label;
-          if (label && !spec.noLeakCheck && s.q && s.q.toLowerCase().includes(label.toLowerCase())) err(`${at}: "q" contains the term "${label}" it is about to reveal`);
+          if (label && !spec.noLeakCheck && s.q && hasWord(s.q, label)) err(`${at}: "q" contains the term "${label}" it is about to reveal`);
           explanationErrors(s.why, 'why').forEach((m) => err(`${at}: ${m}`));
           explanationErrors(s.whyMatters, 'whyMatters').forEach((m) => err(`${at}: ${m}`));
           if (st.nodes && s.why == null) err(`${at}: calc is missing "why" (a deep explanation shown after the answer, required for generated content)`);
@@ -83,7 +104,7 @@ function validate(spec, known) {
           if (st.nodes && s.why == null) err(`${at}: ask is missing "why" (a deep explanation shown after the answer, required for generated content)`);
           const label = (spec.terms[s.term] || {}).label;
           if (label) [['q', s.q], ['right', s.right], ['wrong', s.wrong], ['hint', s.hint]].forEach(([f, v]) => {
-            if (!spec.noLeakCheck && v && v.toLowerCase().includes(label.toLowerCase())) err(`${at}: "${f}" contains the term "${label}" it is about to reveal`);
+            if (!spec.noLeakCheck && v && hasWord(v, label)) err(`${at}: "${f}" contains the term "${label}" it is about to reveal`);
           });
           // The answer must be something the student reasons out, never a new term handed over in an option: no option may simply name this
           // term or any term still to come, and the wording may not show a later term's full label.
@@ -227,7 +248,8 @@ function validate(spec, known) {
 
 function build(spec) {
   const errs = validate(spec, spec.known);
-  if (errs.length) { const e = new Error('Spec invalid:\n - ' + errs.join('\n - ')); e.errs = errs; throw e; }
+  const blocking = spec.allowSoft ? errs.filter((m) => !isSoftError(m)) : errs;
+  if (blocking.length) { const e = new Error('Spec invalid:\n - ' + blocking.join('\n - ')); e.errs = blocking; throw e; }
   // A "translate" step's own words aren't map concepts or support terms -
   // they're just the words of one sentence - so the model only supplies the
   // word strings themselves (already validated above), not an id per word.
@@ -412,4 +434,4 @@ if (require.main === module) {
   } catch (e) { console.error(e.message); process.exit(1); }
 }
 
-module.exports = { build, validate };
+module.exports = { build, validate, isSoftError, hasWord };

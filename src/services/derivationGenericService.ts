@@ -21,7 +21,7 @@ import { Stage, StageTerm, derivationContentForStage } from './derivationService
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const { plan } = require('../../scripts/derivation/plan_stages');
 // eslint-disable-next-line @typescript-eslint/no-var-requires
-const { validate, build } = require('../../scripts/derivation/build');
+const { validate, build, isSoftError } = require('../../scripts/derivation/build');
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const { SYSTEM, user: userPrompt } = require('../../scripts/derivation/prompt');
 
@@ -260,12 +260,18 @@ function stageKeyRow(subject: string, qualification: string, examBoard: string, 
   return `${subject}|${qualification}|${examBoard}|${stageIndex}`;
 }
 
+// Lessons in a language teach the target-language words themselves, so those words necessarily appear in the situations and the answers; the leak
+// rules would reject nearly every natural example, so they are switched off for language subjects. The structural checks and the reading-length
+// rules still apply.
+const LANGUAGE_SUBJECT = /\b(italian|french|spanish|german|latin|greek|mandarin|chinese|cantonese|japanese|korean|arabic|russian|portuguese|welsh|dutch|polish|turkish|hindi|urdu|hebrew|swedish|norwegian|danish|irish|gaelic|language)\b/i;
+export const isLanguageSubject = (subject?: string): boolean => LANGUAGE_SUBJECT.test(String(subject || ''));
+
 function toSpec(stage: PlannedStage, out: any, byId: Record<string, MapNode>) {
   const terms: Record<string, { label: string }> = { ...out.terms };
   (stage.given || []).forEach((g) => { terms[g] = terms[g] || { label: byId[g].label }; });
   const given = (stage.given || []).slice(0, 4);
   return {
-    id: 'gen', subject: stage.subject, title: out.stage.title, terms,
+    id: 'gen', subject: stage.subject, title: out.stage.title, terms, noLeakCheck: isLanguageSubject(stage.subject),
     stages: [{
       ...out.stage, given, needs: stage.given, builds: given, nodes: stage.nodes,
       dropped: out.dropEdges || [],
@@ -339,20 +345,69 @@ function retryAdvice(errs: string[], out: any): string {
   return tips.length ? '\n\nHow to fix it:\n' + tips.join('\n') : '';
 }
 
-export function checkDerivationText(stage: PlannedStage, text: string, byId: Record<string, MapNode>): { spec?: any; errs?: string[]; out?: any } {
+export function checkDerivationText(stage: PlannedStage, text: string, byId: Record<string, MapNode>): { spec?: any; errs?: string[]; out?: any; softSpec?: any } {
   try {
     const out = JSON.parse(text.slice(text.indexOf('{'), text.lastIndexOf('}') + 1));
     const spec = toSpec(stage, out, byId);
     const errs = validate(spec, stage.given);
     if (!errs.length) return { spec, out };
+    let bestOut = out, bestSpec = spec, bestErrs: string[] = errs;
     // Bookkeeping slips are repaired in code rather than spending another long generation on them.
     const repaired = repairMilestones(out);
     if (repaired) {
-      const spec2 = toSpec(stage, repaired, byId), errs2 = validate(spec2, stage.given);
-      if (errs2.length < errs.length) return errs2.length ? { errs: errs2, out: repaired } : { spec: spec2, out: repaired };
+      const spec2 = toSpec(stage, repaired, byId), errs2: string[] = validate(spec2, stage.given);
+      if (errs2.length < errs.length) {
+        if (!errs2.length) return { spec: spec2, out: repaired };
+        bestOut = repaired; bestSpec = spec2; bestErrs = errs2;
+      }
     }
-    return { errs, out };
+    // Only wording problems left (never a structural one): the lesson would still work, so a usable spec is handed back for the caller to accept.
+    const hard = bestErrs.filter((m) => !isSoftError(m));
+    return { errs: bestErrs, out: bestOut, ...(hard.length ? {} : { softSpec: bestSpec }) };
   } catch (e: any) { return { errs: ['not valid JSON: ' + e.message] }; }
+}
+
+// Errors about the shape of the whole lesson (milestone bookkeeping, unknown or repeated terms, a bad diagram...) cannot be cured by rewriting one step.
+const STRUCTURAL_ERR = /milestone|covers \d+ terms|not introduced yet|introduced twice|new terms since|unknown term|prompt must start|read step after the first question|diagram/i;
+
+// Which steps to rewrite when ONLY individual steps broke a rule (each error names its step and none is structural), or null when the whole
+// stage has to be generated again. Rewriting 1-8 steps costs a fraction of a whole new stage.
+export function patchableSteps(errs: string[], out: any): number[] | null {
+  const steps = out && out.stage && out.stage.steps;
+  if (!Array.isArray(steps) || !errs.length) return null;
+  const nums = new Set<number>();
+  for (const e of errs) {
+    const m = /step (\d+):/.exec(e);
+    if (!m || STRUCTURAL_ERR.test(e)) return null;
+    const n = Number(m[1]);
+    if (n < 1 || n > steps.length) return null;
+    nums.add(n);
+  }
+  return nums.size >= 1 && nums.size <= 8 ? [...nums].sort((x, y) => x - y) : null;
+}
+
+// What the model is asked to do instead of regenerating: the earlier output goes back with just the broken steps to redo.
+export function patchPrompt(prompt: string, out: any, errs: string[], steps: number[]): string {
+  const list = steps.map((n) => `Step ${n}: ${errs.filter((e) => new RegExp(`step ${n}:`).test(e)).map((e) => e.replace(/^.*?step \d+:\s*/, '')).join('; ')}`).join('\n');
+  return `${prompt}\n\nYour previous output for this stage is below. Its structure is fine, but the checker rejected the individual steps listed after it. Do NOT rewrite the stage. Rewrite ONLY the listed steps: fix exactly the stated problems and change nothing else in them (keep each step's "type" and "term"). For this request ignore the usual output shape and return JSON only, in exactly this form: {"steps": {"<step number>": { ...the complete corrected step object... }}}\n\nPREVIOUS OUTPUT:\n${JSON.stringify(out)}\n\nSTEPS TO FIX:\n${list}`;
+}
+
+// Puts the rewritten steps back into the earlier output (type and term are never taken from the model's reply). Null when nothing usable came back.
+export function applyStepPatch(out: any, patchText: string): any | null {
+  try {
+    const patch = JSON.parse(patchText.slice(patchText.indexOf('{'), patchText.lastIndexOf('}') + 1));
+    const incoming = patch && (patch.steps && typeof patch.steps === 'object' ? patch.steps : patch);
+    if (!incoming || typeof incoming !== 'object') return null;
+    const fixed = JSON.parse(JSON.stringify(out));
+    let changed = 0;
+    for (const [k, v] of Object.entries(incoming)) {
+      const i = Number(k) - 1, old = fixed.stage.steps[i];
+      if (!old || !v || typeof v !== 'object') continue;
+      fixed.stage.steps[i] = { ...old, ...(v as object), type: old.type, term: old.term };
+      changed++;
+    }
+    return changed ? fixed : null;
+  } catch { return null; }
 }
 
 // Generates one stage live (2-3 short Claude calls at most: one attempt, then up to two retries with the checker's own feedback -
@@ -424,7 +479,8 @@ async function derivationGenericGenerateOnce(info: GenericLookup, userId: string
   }
 
   let prompt = userPrompt(stage, info.byId, {});
-  let result: { spec?: any; errs?: string[] } = {};
+  let result: { spec?: any; errs?: string[]; out?: any; softSpec?: any } = {};
+  let best: { spec: any; errs: string[] } | null = null;
   // Real, reported billing bug: this used to call the metered callClaudeJSON
   // on every attempt, so a stage that failed the checker on all 3 tries
   // charged the student's Locks 3 times for a lesson that was never
@@ -435,11 +491,15 @@ async function derivationGenericGenerateOnce(info: GenericLookup, userId: string
   // total real cost of however many tries it took to get the one that
   // worked, never for a total failure.
   const totalUsage: ClaudeCallUsage = { input_tokens: 0, output_tokens: 0, cache_creation_input_tokens: 0, cache_read_input_tokens: 0 };
-  const CONTENT_ATTEMPTS = 3;
+  const CONTENT_ATTEMPTS = 2;
   const TRANSIENT_RETRIES_PER_ATTEMPT = 2;
   for (let attempt = 0; attempt < CONTENT_ATTEMPTS; attempt++) {
     if (signal.aborted) throw new DerivationGenerationAbortedError('stopped before attempt ' + (attempt + 1));
-    const userContent = attempt === 0 ? prompt : `${prompt}\n\nA previous attempt at this stage was rejected by the checker for:\n- ${(result.errs || []).join('\n- ')}${retryAdvice(result.errs || [], (result as any).out)}\n\nReturn the corrected JSON only.`;
+    const patchSteps = attempt === 0 ? null : patchableSteps(result.errs || [], result.out);
+    const mode: 'full' | 'patch' = patchSteps ? 'patch' : 'full';
+    const userContent = attempt === 0 ? prompt
+      : mode === 'patch' ? patchPrompt(prompt, result.out, result.errs || [], patchSteps!)
+      : `${prompt}\n\nA previous attempt at this stage was rejected by the checker for:\n- ${(result.errs || []).join('\n- ')}${retryAdvice(result.errs || [], result.out)}\n\nReturn the corrected JSON only.`;
     const attemptStarted = Date.now();
     // Real, confirmed reliability bug this fixes: a transient failure here
     // (a network blip, a Claude 5xx/timeout) used to propagate straight out
@@ -463,8 +523,8 @@ async function derivationGenericGenerateOnce(info: GenericLookup, userId: string
           model: MODELS.diagnosticTree,
           systemPrompt: SYSTEM,
           userContent,
-          maxTokens: 4000,
-          temperature: attempt === 0 ? undefined : Math.min(0.3 + attempt * 0.2, 0.7),
+          maxTokens: mode === 'patch' ? 1800 : 4000,
+          temperature: attempt === 0 ? undefined : mode === 'patch' ? 0.2 : Math.min(0.3 + attempt * 0.2, 0.7),
           cacheSystemPrompt: true,
           signal,
         }));
@@ -485,13 +545,24 @@ async function derivationGenericGenerateOnce(info: GenericLookup, userId: string
     totalUsage.output_tokens += usage!.output_tokens || 0;
     totalUsage.cache_creation_input_tokens = (totalUsage.cache_creation_input_tokens || 0) + (usage!.cache_creation_input_tokens || 0);
     totalUsage.cache_read_input_tokens = (totalUsage.cache_read_input_tokens || 0) + (usage!.cache_read_input_tokens || 0);
-    result = checkDerivationText(stage, text!, info.byId);
-    console.log(`LastMind: derivation attempt ${attempt + 1}/${CONTENT_ATTEMPTS} for "${info.subject}" stage ${info.stageIndex} took ${((Date.now() - attemptStarted) / 1000).toFixed(1)}s, ${usage!.output_tokens} output tokens, ${result.spec ? 'accepted' : 'rejected: ' + (result.errs || []).length + ' problem(s)'}.`);
+    if (mode === 'patch') {
+      const merged = applyStepPatch(result.out, text!);
+      // An unusable reply leaves the earlier attempt (and its problems) as it was.
+      if (merged) result = checkDerivationText(stage, JSON.stringify(merged), info.byId);
+    } else result = checkDerivationText(stage, text!, info.byId);
+    if (!result.spec && result.softSpec && (!best || (result.errs || []).length < best.errs.length)) best = { spec: result.softSpec, errs: result.errs || [] };
+    console.log(`LastMind: derivation attempt ${attempt + 1}/${CONTENT_ATTEMPTS} (${mode === 'patch' ? 'rewriting ' + patchSteps!.length + ' step(s)' : 'whole stage'}) for "${info.subject}" stage ${info.stageIndex} took ${((Date.now() - attemptStarted) / 1000).toFixed(1)}s, ${usage!.output_tokens} output tokens, ${result.spec ? 'accepted' : 'rejected: ' + (result.errs || []).length + ' problem(s)'}.`);
     if (result.spec) break;
+  }
+  // Only wording problems (never a structural one) left in the closest attempt: a lesson that works beats no lesson, so it is kept and the problems logged.
+  if (!result.spec && best) {
+    best.spec.allowSoft = true;
+    await logGenerationFailure(info, `accepted after ${CONTENT_ATTEMPTS} attempts with ${best.errs.length} wording problem(s): ${best.errs.join('; ')}`);
+    result = { spec: best.spec, errs: best.errs };
   }
   if (!result.spec) {
     await logGenerationFailure(info, `checker rejected after ${CONTENT_ATTEMPTS} attempts: ${(result.errs || []).join('; ')}`);
-    throw new Error('derivation generation failed the checker after 3 attempts: ' + (result.errs || []).join('; '));
+    throw new Error(`derivation generation failed the checker after ${CONTENT_ATTEMPTS} attempts: ` + (result.errs || []).join('; '));
   }
   await chargeForClaudeCall(userId, MODELS.diagnosticTree, totalUsage, 'derivation-lesson-generation');
   if (stage.given?.length) result.spec.known = known;

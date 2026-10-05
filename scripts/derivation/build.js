@@ -133,6 +133,9 @@ function validate(spec, known) {
         s.terms.forEach((t) => { if (!intro.has(t)) err(`${at}: "${t}" not introduced yet`); });
         if (!(s.prompt || '').startsWith(`Drag and drop the ${n} key terms`)) err(`${at}: prompt must start "Drag and drop the ${n} key terms"`);
         chunk = 0; lastMilestone = i;
+        // An order milestone as the stage's last step is a valid ending (it is what a translate step compiles to), so a stage of
+        // plain vocabulary or sounds that closes on a drag-into-order is not rejected for lacking a derive capstone.
+        if (i === st.steps.length - 1 || st.steps[i + 1].type === 'done') ended = true;
       } else if (s.type === 'chains') {
         const all = s.lanes.flatMap((l) => l.terms);
         if (all.length > CAP) err(`${at}: chains milestone has ${all.length} terms (max ${CAP})`);

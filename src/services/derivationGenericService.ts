@@ -272,12 +272,82 @@ function toSpec(stage: PlannedStage, out: any, byId: Record<string, MapNode>) {
   };
 }
 
-function check(stage: PlannedStage, text: string, byId: Record<string, MapNode>): { spec?: any; errs?: string[] } {
+const INTRO_TYPES = new Set(['read', 'ask', 'calc']);
+const MILESTONE_TYPES = new Set(['order', 'chains', 'recap']);
+const milestoneTerms = (s: any): string[] => (s.type === 'chains' ? (s.lanes || []).flatMap((l: any) => l.terms || []) : (s.terms || []));
+
+// Repairs the one kind of mistake the model makes over and over and that is pure bookkeeping, not teaching: a milestone placed after the
+// 5th new term when it covers the first 4 (so "more than 4 new terms since the last milestone" and "covers 4 terms but 5 were
+// introduced"), or a milestone whose list of terms is not exactly the terms introduced since the last one. In the first case the extra
+// step is moved to just after the milestone; in the second the list is corrected. Only kept if it leaves fewer errors than before.
+export function repairMilestones(out: any): any | null {
+  const fixed = JSON.parse(JSON.stringify(out));
+  if (!fixed || !fixed.stage || !Array.isArray(fixed.stage.steps)) return null;
+  const sameSet = (a: string[], b: string[]) => a.length === b.length && a.every((t) => b.includes(t));
+  let changedAny = false;
+  for (let pass = 0; pass < 8; pass++) {
+    let steps: any[] = fixed.stage.steps, chunk: number[] = [], changed = false;
+    for (let i = 0; i < steps.length && !changed; i++) {
+      const s = steps[i];
+      if (INTRO_TYPES.has(s.type)) { chunk.push(i); continue; }
+      if (!MILESTONE_TYPES.has(s.type)) continue;
+      const listed = milestoneTerms(s), introduced = chunk.map((k) => steps[k].term);
+      if (!sameSet(listed, introduced)) {
+        const n = listed.length;
+        if (n >= 1 && n < introduced.length && sameSet(listed, introduced.slice(0, n))) {
+          const late = new Set(chunk.slice(n));
+          const moving = steps.filter((_, idx) => late.has(idx));
+          const keep = steps.filter((_, idx) => !late.has(idx));
+          keep.splice(keep.indexOf(s) + 1, 0, ...moving);
+          fixed.stage.steps = keep; changed = true;
+        } else if (introduced.length >= 1 && introduced.length <= 4 && s.type !== 'chains') {
+          s.terms = introduced;
+          if (s.type === 'order' && typeof s.prompt === 'string') s.prompt = s.prompt.replace(/^Drag and drop the \d+ key terms/, `Drag and drop the ${introduced.length} key terms`);
+          changed = true;
+        }
+      }
+      chunk = [];
+    }
+    if (!changed) break;
+    changedAny = true;
+  }
+  return changedAny ? fixed : null;
+}
+
+// A plain, numbered account of a rejected attempt: each step, what it introduces, and the running count of new terms since the last
+// milestone. Handed back with the checker's complaint so a retry can see exactly where the count went wrong instead of guessing.
+export function stepLedger(out: any): string {
+  const steps = out && out.stage && out.stage.steps;
+  if (!Array.isArray(steps)) return '';
+  let chunk = 0;
+  return steps.map((s: any, i: number) => {
+    if (INTRO_TYPES.has(s.type)) { chunk++; return `${i + 1}. ${s.type} introduces "${s.term}" (new term ${chunk} since the last milestone)`; }
+    if (MILESTONE_TYPES.has(s.type)) { const line = `${i + 1}. ${s.type} milestone listing [${milestoneTerms(s).join(', ')}] - ${chunk} new term(s) were actually introduced since the last milestone`; chunk = 0; return line; }
+    return `${i + 1}. ${s.type}`;
+  }).join('\n');
+}
+
+// What to do about the specific complaints that keep recurring, so a retry fixes the cause and not only the wording of the one cited.
+function retryAdvice(errs: string[], out: any): string {
+  const all = errs.join('\n'), tips: string[] = [];
+  if (/just names|shows ".*", a term that comes later|contains the term/.test(all)) tips.push('An option was rejected for naming a term. Rewrite that option as what the student would observe, hear, see or do in the situation (for a pronunciation, how it sounds compared with a familiar word), never as the term\'s label or a phrase containing all of its words. Both options must still be the same length and shape.');
+  if (/new terms since the last milestone|introduced since the last milestone/.test(all)) tips.push('Milestone counting went wrong. A milestone must come immediately after the 4th new term since the previous one, and list exactly those terms. Here is your last attempt, step by step:\n' + stepLedger(out));
+  return tips.length ? '\n\nHow to fix it:\n' + tips.join('\n') : '';
+}
+
+export function checkDerivationText(stage: PlannedStage, text: string, byId: Record<string, MapNode>): { spec?: any; errs?: string[]; out?: any } {
   try {
     const out = JSON.parse(text.slice(text.indexOf('{'), text.lastIndexOf('}') + 1));
     const spec = toSpec(stage, out, byId);
     const errs = validate(spec, stage.given);
-    return errs.length ? { errs } : { spec };
+    if (!errs.length) return { spec, out };
+    // Bookkeeping slips are repaired in code rather than spending another long generation on them.
+    const repaired = repairMilestones(out);
+    if (repaired) {
+      const spec2 = toSpec(stage, repaired, byId), errs2 = validate(spec2, stage.given);
+      if (errs2.length < errs.length) return errs2.length ? { errs: errs2, out: repaired } : { spec: spec2, out: repaired };
+    }
+    return { errs, out };
   } catch (e: any) { return { errs: ['not valid JSON: ' + e.message] }; }
 }
 
@@ -327,7 +397,8 @@ export async function derivationGenericGenerate(info: GenericLookup, userId: str
   const CONTENT_ATTEMPTS = 3;
   const TRANSIENT_RETRIES_PER_ATTEMPT = 2;
   for (let attempt = 0; attempt < CONTENT_ATTEMPTS; attempt++) {
-    const userContent = attempt === 0 ? prompt : `${prompt}\n\nA previous attempt at this stage was rejected by the checker for:\n- ${(result.errs || []).join('\n- ')}\nReturn the corrected JSON only.`;
+    const userContent = attempt === 0 ? prompt : `${prompt}\n\nA previous attempt at this stage was rejected by the checker for:\n- ${(result.errs || []).join('\n- ')}${retryAdvice(result.errs || [], (result as any).out)}\n\nReturn the corrected JSON only.`;
+    const attemptStarted = Date.now();
     // Real, confirmed reliability bug this fixes: a transient failure here
     // (a network blip, a Claude 5xx/timeout) used to propagate straight out
     // of this loop, aborting every remaining content attempt immediately -
@@ -370,7 +441,8 @@ export async function derivationGenericGenerate(info: GenericLookup, userId: str
     totalUsage.output_tokens += usage!.output_tokens || 0;
     totalUsage.cache_creation_input_tokens = (totalUsage.cache_creation_input_tokens || 0) + (usage!.cache_creation_input_tokens || 0);
     totalUsage.cache_read_input_tokens = (totalUsage.cache_read_input_tokens || 0) + (usage!.cache_read_input_tokens || 0);
-    result = check(stage, text!, info.byId);
+    result = checkDerivationText(stage, text!, info.byId);
+    console.log(`LastMind: derivation attempt ${attempt + 1}/${CONTENT_ATTEMPTS} for "${info.subject}" stage ${info.stageIndex} took ${((Date.now() - attemptStarted) / 1000).toFixed(1)}s, ${usage!.output_tokens} output tokens, ${result.spec ? 'accepted' : 'rejected: ' + (result.errs || []).length + ' problem(s)'}.`);
     if (result.spec) break;
   }
   if (!result.spec) {

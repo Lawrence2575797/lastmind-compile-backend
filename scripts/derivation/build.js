@@ -88,7 +88,11 @@ function validate(spec, known) {
           // The answer must be something the student reasons out, never a new term handed over in an option: no option may simply name this
           // term or any term still to come, and the wording may not show a later term's full label.
           if (!spec.noLeakCheck) {
-            const stems = (t) => String(t).toLowerCase().replace(/[^a-z ]+/g, ' ').split(/\s+/).filter((w) => w.length > 2 && !['the', 'and', 'for', 'from', 'with', 'are', 'its', 'that'].includes(w)).map((w) => w.slice(0, 6));
+            // Words of two letters count too, unless they are plain small words: "Gn sound" and "Sc sound" are told apart ONLY by
+            // "gn" and "sc", so dropping every word of two letters left both reduced to "sound", and any short option that said
+            // "sound" was then rejected as naming the term - impossible to avoid when teaching letter sounds.
+            const SMALL = ['the', 'and', 'for', 'from', 'with', 'are', 'its', 'that', 'of', 'to', 'in', 'is', 'an', 'on', 'at', 'as', 'by', 'it', 'or', 'be', 'do', 'if', 'so', 'no', 'my', 'we', 'he', 'me'];
+            const stems = (t) => String(t).toLowerCase().replace(/[^a-z ]+/g, ' ').split(/\s+/).filter((w) => w.length >= 2 && !SMALL.includes(w)).map((w) => w.slice(0, 6));
             const nrm = (t) => ' ' + String(t).toLowerCase().replace(/[^a-z0-9]+/g, ' ').trim() + ' ';
             const introducing = (x) => x.type === 'ask' || x.type === 'read' || x.type === 'calc';
             const ahead = st.steps.filter(introducing).slice(st.steps.filter(introducing).indexOf(s)).map((x) => x.term);

@@ -25,7 +25,7 @@ router.post('/notes-assistant/chat', async (req: Request, res: Response) => {
   const message = clip(req.body?.message, 2000);
   if (!message) return res.status(400).json({ error: 'message is required' });
   const notes = clip(req.body?.notes, MAX_NOTES_CHARS), title = clip(req.body?.title, 200);
-  const history = (Array.isArray(req.body?.history) ? req.body.history : []).slice(-10)
+  const history = (Array.isArray(req.body?.history) ? req.body.history : []).slice(-4)
     .map((m: any) => ({ role: (m && m.role === 'assistant' ? 'assistant' : 'user') as 'user' | 'assistant', content: clip(m && m.content, 2000) })).filter((m: any) => m.content);
   try {
     await assertLocksAvailable(req.userId as string);

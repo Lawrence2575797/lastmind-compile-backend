@@ -25,6 +25,22 @@ const { validate, build, isSoftError } = require('../../scripts/derivation/build
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const { SYSTEM, user: userPrompt } = require('../../scripts/derivation/prompt');
 
+// Languages are acquisition/practice subjects, not mechanisms to derive.
+// This tail deliberately overrides the general derivation instructions
+// above while retaining the same validated player-compatible JSON shape.
+const LANGUAGE_SYSTEM = `${SYSTEM}
+
+LANGUAGE LESSON OVERRIDE — THESE RULES SUPERSEDE EVERY CONFLICTING DERIVATION RULE ABOVE.
+This is a language-acquisition lesson. Do NOT manufacture a causal chain, ask the learner to derive vocabulary from common sense, or hide a word until after a mechanistic question. The learner needs comprehensible INPUT first, followed by active practice.
+
+1. Begin with 2-4 consecutive "read" steps. Each read is a clean model-language input card: show one useful word, phrase, sound, or grammar pattern in a short natural example, with its English meaning and a concise usage/pronunciation note in "text". Keep it visually scannable; one item or contrast per card. These read cards must cover every item that later questions test.
+2. Follow those input cards with a "recap" question covering exactly the terms just introduced. Make it genuine language practice: choosing the word/form that completes a visible gap; choosing the natural agreement; spotting which short sentence fits an English meaning; or selecting the correct response in a mini-dialogue. Put the target-language sentence with ___ directly in "q" when doing a gap. "right" and "wrong" are short candidate words/phrases, not abstract explanations. This question closes the input chunk without pretending its words form a causal chain.
+3. Then finish vocabulary/phrase stages with "translate", using 3-10 supplied words or fixed phrases that the learner drags into one natural target-language sentence. This gives the learner a second, productive question after the gap/comprehension question. It is sentence building, not a concept-chain milestone. Never finish a language lesson with "derive".
+4. Do not create filler support terms merely to reach an atomicity count. Use the real words/forms in the supplied nodes; when a node is a closed set, split its actual members into separate input cards. Use "recap" only as another language question, never to imply a causal relationship.
+5. Title and subtitle describe what the learner will understand or SAY (for example, "Ordering politely"), never what they will derive. Keep the lesson short: input, then practice.
+
+The required JSON schema and term bookkeeping remain unchanged. Return JSON only.`;
+
 interface MapNode { id: string; label: string; subtopic: string }
 interface MapEdge { from: string; to: string }
 interface PlannedStage { subtopic: string; nodes: string[]; edges: [string, string][]; given: string[]; givenEdges: [string, string][]; later: number; subject?: string }
@@ -248,6 +264,10 @@ export async function derivationGenericLookup(nodeId: string): Promise<GenericLo
       .maybeSingle();
     if (row?.compiled) { cached = row.compiled as Stage; stageCache.set(key, cached); }
   }
+  // Old language stages used the general mechanistic prompt. Treat them as
+  // cache misses once so the next request replaces them with input-first
+  // language lessons; the marker is stored on every new compiled stage.
+  if (cached && isLanguageSubject(node.subject as string) && !(cached as any).languageInputV2) cached = null;
   return {
     subject: node.subject as string, qualification: node.qualification as string, examBoard: node.exam_board as string,
     stageIndex, stages: planned.stages, byId: planned.byId,
@@ -271,7 +291,7 @@ function toSpec(stage: PlannedStage, out: any, byId: Record<string, MapNode>) {
   (stage.given || []).forEach((g) => { terms[g] = terms[g] || { label: byId[g].label }; });
   const given = (stage.given || []).slice(0, 4);
   return {
-    id: 'gen', subject: stage.subject, title: out.stage.title, terms, noLeakCheck: isLanguageSubject(stage.subject),
+    id: 'gen', subject: stage.subject, title: out.stage.title, terms, noLeakCheck: isLanguageSubject(stage.subject), languageLesson: isLanguageSubject(stage.subject),
     stages: [{
       ...out.stage, given, needs: stage.given, builds: given, nodes: stage.nodes,
       dropped: out.dropEdges || [],
@@ -521,7 +541,7 @@ async function derivationGenericGenerateOnce(info: GenericLookup, userId: string
         // literally-cited error on top of the same underlying attempt.
         ({ text, usage } = await callClaudeJSONUnmetered({
           model: MODELS.diagnosticTree,
-          systemPrompt: SYSTEM,
+          systemPrompt: isLanguageSubject(info.subject) ? LANGUAGE_SYSTEM : SYSTEM,
           userContent,
           maxTokens: mode === 'patch' ? 1800 : 4000,
           temperature: attempt === 0 ? undefined : mode === 'patch' ? 0.2 : Math.min(0.3 + attempt * 0.2, 0.7),
@@ -569,7 +589,7 @@ async function derivationGenericGenerateOnce(info: GenericLookup, userId: string
   const built = build(result.spec);
   const terms: Record<string, StageTerm> = {};
   Object.keys(built.TERMS).forEach((k) => { terms[k] = built.TERMS[k]; });
-  const compiled: Stage = { i: info.stageIndex, name: stage.nodes.join(','), edges: stage.edges, nodes: stage.nodes, concepts: stage.nodes, terms, stage: built.stages[0] };
+  const compiled: Stage = { i: info.stageIndex, name: stage.nodes.join(','), edges: stage.edges, nodes: stage.nodes, concepts: stage.nodes, terms, stage: built.stages[0], ...(isLanguageSubject(info.subject) ? { languageInputV2: true } : {}) } as Stage;
   const { error } = await supabaseAdmin.from('derivation_generated_stages').upsert({
     subject: info.subject, qualification: info.qualification, exam_board: info.examBoard, stage_index: info.stageIndex,
     concept_ids: stage.nodes, compiled,
@@ -586,7 +606,7 @@ export function derivationContentForGenericNode(info: GenericLookup, stage: Stag
 
 // GET /derivation/stage/:key fallback path for a generic key (see routes/knowledgeMap.ts) - the payload is normally sent inline
 // with the lesson itself, so this is only ever hit if the frontend has to re-fetch it separately.
-export async function derivationGenericPayloadForKey(key: string): Promise<{ terms: Record<string, StageTerm>; stage: any } | null> {
+export async function derivationGenericPayloadForKey(key: string): Promise<{ terms: Record<string, StageTerm>; stage: any; languageInputV2?: boolean } | null> {
   const parsed = parseGenericStageKey(key);
   if (!parsed) return null;
   const cacheKey = stageKeyRow(parsed.subject, parsed.qualification, parsed.examBoard, parsed.stageIndex);
@@ -600,7 +620,7 @@ export async function derivationGenericPayloadForKey(key: string): Promise<{ ter
     stage = row.compiled as Stage;
     stageCache.set(cacheKey, stage);
   }
-  return { terms: stage.terms, stage: stage.stage };
+  return { terms: stage.terms, stage: stage.stage, ...((stage as any).languageInputV2 ? { languageInputV2: true } : {}) };
 }
 
 // Completion uses the same public g:... key as the player. Return every

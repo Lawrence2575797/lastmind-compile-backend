@@ -16,6 +16,7 @@ const head = `window.__runDerive = function (D, CP) {
   var TERMS = {};
   Object.keys(D.terms).forEach(function (k) { TERMS[k] = { t: D.terms[k].t, c: D.terms[k].c }; });
   var CAP = 4, DAY = 86400000;
+  var LANGUAGE_LESSON = !!D.languageInputV2;
   var STAGES = [D.stage];
   STAGES[0].hud = D.stage.title;
   var PLAN = [{ name: D.stage.name, needs: D.stage.given || [] }];
@@ -26,6 +27,10 @@ let body = js.slice(i);
 // a single lesson, so the title slide says just "Lesson"
 body = body.replaceAll("Lesson ' + (stageIdx + 1) + ' of ' + STAGES.length + '", "Lesson' + '");
 if (body.includes("(stageIdx + 1) + ' of '")) throw new Error('title label not patched');
+// Language payloads use the same reliable scrolling player, but their
+// opening frame describes input-and-practice rather than derivation.
+body = body.replaceAll('<span class="eyebrow">You will derive</span><div class="hint">\' + count + \' key terms, in chunks of no more than four</div>', '<span class="eyebrow">\' + (LANGUAGE_LESSON ? \'You will practise\' : \'You will derive\') + \'</span><div class="hint">\' + (LANGUAGE_LESSON ? count + \' useful language items, then questions\' : count + \' key terms, in chunks of no more than four\') + \'</div>');
+if (!body.includes('LANGUAGE_LESSON ?')) throw new Error('language title patch failed');
 
 // Moving on no longer depends only on scrolling: a "Next" hint you can click, and a lower visibility threshold (the lesson can sit partly
 // below the visible edge when embedded, which used to keep the next step from ever being built).

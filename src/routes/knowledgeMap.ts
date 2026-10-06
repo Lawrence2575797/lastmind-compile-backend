@@ -289,7 +289,7 @@ router.get('/knowledge-map-v2/node/:nodeId/lesson', requireAuth, syncEndpointLim
         // Telling the client every concept id this one stage actually
         // covers lets it skip the rest of them, not just the one it asked
         // for.
-        return res.json({ ...lessonForClient(content), derivation: { stage: genericStageKey(generic.subject, generic.qualification, generic.examBoard, generic.stageIndex), concepts: stage.concepts, payload: { terms: stage.terms, stage: stage.stage } } });
+        return res.json({ ...lessonForClient(content), derivation: { stage: genericStageKey(generic.subject, generic.qualification, generic.examBoard, generic.stageIndex), concepts: stage.concepts, payload: { terms: stage.terms, stage: stage.stage, ...((stage as any).languageInputV2 ? { languageInputV2: true } : {}) } } });
       }
     }
 

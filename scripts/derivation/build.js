@@ -199,7 +199,10 @@ function validate(spec, known) {
     // ---- atomicity: only for generated stages (they carry the map node ids); hand-written specs are exempt
     if (st.nodes) {
       const support = [...intro].filter((t) => !st.nodes.includes(t));
-      if (intro.size < 4) err(`${where}: not atomic: only ${intro.size} new terms. A lesson needs at least 4 (map nodes plus the building blocks they rest on)`);
+      // A language lesson is intentionally allowed to teach a small real
+      // set. Padding three useful words into a four-link "mechanism" is the
+      // exact category error the input-first language mode removes.
+      if (!spec.languageLesson && intro.size < 4) err(`${where}: not atomic: only ${intro.size} new terms. A lesson needs at least 4 (map nodes plus the building blocks they rest on)`);
       // 6, not 5 - a closed set a node itself represents (prompt.js's own
       // rule 1a: a 6-person pronoun paradigm, a 6-form conjugation table)
       // is a real, common case that genuinely needs one support term per
@@ -226,12 +229,12 @@ function validate(spec, known) {
       // NOT build on each other - requiring a chain of 2+ links regardless would force the same fabricated
       // dependency the recap milestone exists to avoid, for content that's honestly just several independent facts.
       const hasRecap = st.steps.some((s) => s.type === 'recap');
-      if (!hasRecap && longest < 2) err(`${where}: not atomic: the longest chain of ideas is ${longest} link(s); a concept must be built up from at least 2 steps`);
+      if (!spec.languageLesson && !hasRecap && longest < 2) err(`${where}: not atomic: the longest chain of ideas is ${longest} link(s); a concept must be built up from at least 2 steps`);
     }
     // parallel members taught as a leading run of reads must not chain into each other: each links straight into the concept they build
     const lead = [];
     for (const s of st.steps) { if (s.type === 'read') lead.push(s.term); else break; }
-    if (lead.length >= 2) {
+    if (lead.length >= 2 && !spec.languageLesson) {
       const es = st.edges || [];
       if (es.some(([x, y]) => lead.includes(x) && lead.includes(y))) err(`${where}: the parallel terms ${lead.join(', ')} are linked to each other; each must link directly into the concept they build`);
       const targets = lead.map((t) => new Set(es.filter(([x]) => x === t).map(([, y]) => y)));

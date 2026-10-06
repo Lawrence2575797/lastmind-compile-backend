@@ -184,6 +184,16 @@ function validate(spec, known) {
         if (i !== st.steps.length - 1 && st.steps[i + 1].type !== 'done') err(`${at}: translate must be the last step`);
         if (!Array.isArray(s.answer) || s.answer.length < 3 || s.answer.length > 15 || s.answer.some((w) => typeof w !== 'string' || !w.trim())) err(`${at}: translate needs an "answer" array of 3-15 non-empty word/phrase strings, in the correct order`);
         if (typeof s.prompt !== 'string' || !s.prompt.trim()) err(`${at}: translate is missing "prompt"`);
+        if (spec.languageLesson && Array.isArray(s.answer)) {
+          const normaliseLanguage = (value) => String(value || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().replace(/[^a-z0-9' ]+/g, ' ').replace(/\s+/g, ' ').trim();
+          const taughtInput = normaliseLanguage(st.steps.slice(0, i).filter((step) => step.type === 'read').map((step) => step.text || '').join(' '));
+          s.answer.forEach((word) => {
+            const item = normaliseLanguage(word);
+            if (item && !(` ${taughtInput} `).includes(` ${item} `)) err(`${at}: translate uses untaught word/phrase "${word}"; every answer item must appear in a preceding read card`);
+          });
+          const readText = st.steps.slice(0, i).filter((step) => step.type === 'read').map((step) => step.text || '').join(' ');
+          if (/pronounc|sounds? like|reads? (?:more )?like|letter sound|spelling pattern/i.test(readText)) err(`${at}: pronunciation/sound lessons must end with a comprehensive recap, not sentence ordering`);
+        }
         ended = true;
       }
     });

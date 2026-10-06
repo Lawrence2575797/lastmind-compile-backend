@@ -34,8 +34,8 @@ LANGUAGE LESSON OVERRIDE — THESE RULES SUPERSEDE EVERY CONFLICTING DERIVATION 
 This is a language-acquisition lesson. Do NOT manufacture a causal chain, ask the learner to derive vocabulary from common sense, or hide a word until after a mechanistic question. The learner needs comprehensible INPUT first, followed by active practice.
 
 1. Begin with 2-4 consecutive "read" steps. Each read is a clean model-language input card covering ONE useful word, phrase, sound, or grammar pattern. Its "text" MUST be 3-5 short teaching lines separated by literal newline characters, never one paragraph. Put one idea on each line and keep each line to roughly 18 words or fewer. For pronunciation, use this exact progression: (1) introduce the target word and its English meaning; (2) identify the relevant letters and compare their sound with familiar English; (3) give a plain-English approximation of how the whole word sounds; (4) finish with the reusable pronunciation rule. Example structure: "Take the word 'bagno'. This means bathroom in Italian.\nThe 'gn' in 'bagno' is pronounced like the 'ny' in 'canyon'.\nSo it reads more like 'banyo'.\nSo 'gn' in Italian sounds like 'ny' in English." For vocabulary or grammar, adapt the same reveal order: target example and meaning; what its parts do; when it is used; reusable pattern. These read cards must cover every item that later questions test.
-2. Follow those input cards with a "recap" question covering exactly the terms just introduced. Make it genuine language practice: choosing the word/form that completes a visible gap; choosing the natural agreement; spotting which short sentence fits an English meaning; or selecting the correct response in a mini-dialogue. Put the target-language sentence with ___ directly in "q" when doing a gap. "right" and "wrong" are short candidate words/phrases, not abstract explanations. This question closes the input chunk without pretending its words form a causal chain.
-3. Then finish vocabulary/phrase stages with "translate", using 3-10 supplied words or fixed phrases that the learner drags into one natural target-language sentence. This gives the learner a second, productive question after the gap/comprehension question. It is sentence building, not a concept-chain milestone. Never finish a language lesson with "derive".
+2. Follow those input cards with a "recap" question covering EVERY item just introduced, not a single convenient example. For a pronunciation/sound stage, the right and wrong options must each display a complete set of all introduced spellings mapped to their English-like sounds, with at least one plausible mismatch in the wrong set. For vocabulary or grammar, make it genuine language practice: choosing the word/form that completes a visible gap; choosing natural agreement; spotting which short sentence fits an English meaning; or selecting the correct response in a mini-dialogue. Put the target-language sentence with ___ directly in "q" when doing a gap. This closes the input chunk without pretending its items form a causal chain.
+3. Use "translate" ONLY for a vocabulary/phrase stage that has explicitly taught enough words or fixed phrases to assemble one natural sentence. Every entry in "answer" must be a word or fixed phrase visibly introduced in the preceding read cards; never import an untaught article, pronoun, verb, preposition, ending, or filler word just to make the sentence grammatical. A pronunciation, spelling, alphabet, isolated-sound, or letter-pattern lesson MUST end on its comprehensive recap and MUST NOT contain sentence ordering at all. Sentence building is a useful activity only when sentence-ready language was actually taught; it is not a compulsory ending for every language lesson. Never finish a language lesson with "derive".
 4. Do not create filler support terms merely to reach an atomicity count. Use the real words/forms in the supplied nodes; when a node is a closed set, split its actual members into separate input cards. Use "recap" only as another language question, never to imply a causal relationship.
 5. Title and subtitle describe what the learner will understand or SAY (for example, "Ordering politely"), never what they will derive. Keep the lesson short: input, then practice.
 
@@ -266,8 +266,9 @@ export async function derivationGenericLookup(nodeId: string): Promise<GenericLo
   }
   // Earlier language stages either used the mechanistic prompt or packed
   // their input into one dense paragraph. Treat them as cache misses once
-  // so the next request replaces them with the line-by-line V3 cards.
-  if (cached && isLanguageSubject(node.subject as string) && !(cached as any).languageInputV3) cached = null;
+  // so the next request replaces them with the line-by-line V4 cards and
+  // the corrected practice rules (no untaught sentence construction).
+  if (cached && isLanguageSubject(node.subject as string) && !(cached as any).languageInputV4) cached = null;
   return {
     subject: node.subject as string, qualification: node.qualification as string, examBoard: node.exam_board as string,
     stageIndex, stages: planned.stages, byId: planned.byId,
@@ -589,7 +590,7 @@ async function derivationGenericGenerateOnce(info: GenericLookup, userId: string
   const built = build(result.spec);
   const terms: Record<string, StageTerm> = {};
   Object.keys(built.TERMS).forEach((k) => { terms[k] = built.TERMS[k]; });
-  const compiled: Stage = { i: info.stageIndex, name: stage.nodes.join(','), edges: stage.edges, nodes: stage.nodes, concepts: stage.nodes, terms, stage: built.stages[0], ...(isLanguageSubject(info.subject) ? { languageInputV2: true, languageInputV3: true } : {}) } as Stage;
+  const compiled: Stage = { i: info.stageIndex, name: stage.nodes.join(','), edges: stage.edges, nodes: stage.nodes, concepts: stage.nodes, terms, stage: built.stages[0], ...(isLanguageSubject(info.subject) ? { languageInputV2: true, languageInputV3: true, languageInputV4: true } : {}) } as Stage;
   const { error } = await supabaseAdmin.from('derivation_generated_stages').upsert({
     subject: info.subject, qualification: info.qualification, exam_board: info.examBoard, stage_index: info.stageIndex,
     concept_ids: stage.nodes, compiled,
@@ -606,7 +607,7 @@ export function derivationContentForGenericNode(info: GenericLookup, stage: Stag
 
 // GET /derivation/stage/:key fallback path for a generic key (see routes/knowledgeMap.ts) - the payload is normally sent inline
 // with the lesson itself, so this is only ever hit if the frontend has to re-fetch it separately.
-export async function derivationGenericPayloadForKey(key: string): Promise<{ terms: Record<string, StageTerm>; stage: any; languageInputV2?: boolean; languageInputV3?: boolean } | null> {
+export async function derivationGenericPayloadForKey(key: string): Promise<{ terms: Record<string, StageTerm>; stage: any; languageInputV2?: boolean; languageInputV3?: boolean; languageInputV4?: boolean } | null> {
   const parsed = parseGenericStageKey(key);
   if (!parsed) return null;
   const cacheKey = stageKeyRow(parsed.subject, parsed.qualification, parsed.examBoard, parsed.stageIndex);
@@ -620,7 +621,7 @@ export async function derivationGenericPayloadForKey(key: string): Promise<{ ter
     stage = row.compiled as Stage;
     stageCache.set(cacheKey, stage);
   }
-  return { terms: stage.terms, stage: stage.stage, ...((stage as any).languageInputV2 ? { languageInputV2: true } : {}), ...((stage as any).languageInputV3 ? { languageInputV3: true } : {}) };
+  return { terms: stage.terms, stage: stage.stage, ...((stage as any).languageInputV2 ? { languageInputV2: true } : {}), ...((stage as any).languageInputV3 ? { languageInputV3: true } : {}), ...((stage as any).languageInputV4 ? { languageInputV4: true } : {}) };
 }
 
 // Completion uses the same public g:... key as the player. Return every

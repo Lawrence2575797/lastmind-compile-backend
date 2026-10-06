@@ -30,7 +30,7 @@ router.post('/notes-assistant/chat', async (req: Request, res: Response) => {
   try {
     await assertLocksAvailable(req.userId as string);
     const userContent = `The student's notes${title ? ` (page: ${title})` : ''}:\n"""\n${notes || '(nothing written yet)'}\n"""\n\nConversation so far:\n${history.map((m: any) => `${m.role}: ${m.content}`).join('\n\n') || '(none)'}\n\nStudent's latest message:\n${message}`;
-    const reply = await callClaudeJSON({ model: MODELS.chat, systemPrompt: NOTES_ASSISTANT_CHAT_PROMPT, userContent, maxTokens: 900, temperature: 0.4, userId: req.userId as string, meteredReason: 'notes-assistant-chat' });
+    const reply = await callClaudeJSON({ model: MODELS.chat, systemPrompt: NOTES_ASSISTANT_CHAT_PROMPT, userContent, maxTokens: 1000, temperature: 0.2, userId: req.userId as string, meteredReason: 'notes-assistant-chat' });
     res.json({ reply: reply.trim() });
   } catch (err) {
     if (err instanceof InsufficientLocksError) return res.status(402).json({ error: 'Lock limit reached', code: 'LOCK_LIMIT_REACHED', detail: "You're out of Locks for now." });

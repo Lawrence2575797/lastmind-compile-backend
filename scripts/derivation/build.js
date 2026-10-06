@@ -67,6 +67,21 @@ function validate(spec, known) {
   spec.stages.forEach((st, si) => {
     const where = `stage ${si + 1} (${st.name})`;
     const given = st.given || [];
+    if (spec.languageLesson) {
+      // A sentence-ordering finish in a language lesson is only fair when every word in it was taught by an earlier read card, and never
+      // after a pronunciation lesson. Rather than reject the whole lesson (the model kept repeating this mistake), drop that step and let
+      // the stage end on its recap, which the rules below already accept as a valid ending.
+      const norm = (v) => String(v || '').normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase().replace(/[^a-z0-9' ]+/g, ' ').replace(/\s+/g, ' ').trim();
+      const orig = st.steps;
+      st.steps = orig.filter((s, i) => {
+        if (s.type !== 'translate') return true;
+        const reads = orig.slice(0, i).filter((x) => x.type === 'read');
+        const taught = ` ${norm(reads.map((x) => x.text || '').join(' '))} `;
+        const untaught = !Array.isArray(s.answer) || s.answer.some((w) => { const it = norm(w); return it && !taught.includes(` ${it} `); });
+        const sound = /pronounc|sounds? like|reads? (?:more )?like|letter sound|spelling pattern/i.test(reads.map((x) => x.text || '').join(' '));
+        return !(untaught || sound);
+      });
+    }
     if (given.length > 5) err(`${where}: more than 5 given terms; put the rest in "needs"`);
     [...given, ...(st.needs || [])].forEach((g) => { if (!seen.has(g)) err(`${where}: given term "${g}" was not introduced by an earlier stage`); });
     const intro = new Set();
@@ -167,7 +182,7 @@ function validate(spec, known) {
         // is" as its own atomic root). Only applies when recap is
         // genuinely the LAST step - a mid-stage recap still requires a
         // real derive/translate capstone afterward, same as before.
-        if (i === st.steps.length - 1) ended = true;
+        if (i === st.steps.length - 1 || (st.steps[i + 1] && st.steps[i + 1].type === 'done')) ended = true;
       } else if (s.type === 'derive') {
         if (i !== st.steps.length - 1 && st.steps[i + 1].type !== 'done') err(`${at}: derive must be the last step`);
         ended = true;

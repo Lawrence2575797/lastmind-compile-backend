@@ -1,7 +1,7 @@
 import { Router, Request, Response } from 'express';
 import { requireAuth } from '../services/authMiddleware';
 import { costlyEndpointLimiter } from '../services/rateLimiters';
-import { callClaudeJSON, MODELS } from '../services/claudeClient';
+import { callClaudeJSON, callClaudeChatCached, MODELS } from '../services/claudeClient';
 import { assertLocksAvailable, InsufficientLocksError } from '../services/lockService';
 import { NOTES_ASSISTANT_CHAT_PROMPT, NOTES_ASSISTANT_REVIEW_PROMPT } from '../constants/notesAssistantPrompts';
 
@@ -26,11 +26,15 @@ router.post('/notes-assistant/chat', async (req: Request, res: Response) => {
   if (!message) return res.status(400).json({ error: 'message is required' });
   const notes = clip(req.body?.notes, MAX_NOTES_CHARS), title = clip(req.body?.title, 200);
   const history = (Array.isArray(req.body?.history) ? req.body.history : []).slice(-10)
-    .map((m: any) => ({ role: m && m.role === 'assistant' ? 'LastMind' : 'Student', content: clip(m && m.content, 2000) })).filter((m: any) => m.content);
+    .map((m: any) => ({ role: (m && m.role === 'assistant' ? 'assistant' : 'user') as 'user' | 'assistant', content: clip(m && m.content, 2000) })).filter((m: any) => m.content);
   try {
     await assertLocksAvailable(req.userId as string);
-    const userContent = `The student's notes${title ? ` (page: ${title})` : ''}:\n"""\n${notes || '(nothing written yet)'}\n"""\n\nConversation so far:\n${history.map((m: any) => `${m.role}: ${m.content}`).join('\n\n') || '(none)'}\n\nStudent's latest message:\n${message}`;
-    const reply = await callClaudeJSON({ model: MODELS.chat, systemPrompt: NOTES_ASSISTANT_CHAT_PROMPT, userContent, maxTokens: 1000, temperature: 0.2, userId: req.userId as string, meteredReason: 'notes-assistant-chat' });
+    const pageContext = `The student's notes${title ? ` (page: ${title})` : ''}:
+"""
+${notes || '(nothing written yet)'}
+"""`;
+    // The page and the conversation so far are cacheable (see callClaudeChatCached); only the new question changes between turns.
+    const reply = await callClaudeChatCached({ model: MODELS.chat, systemPrompt: NOTES_ASSISTANT_CHAT_PROMPT, pageContext, messages: [...history, { role: 'user', content: message }], maxTokens: 1000, temperature: 0.2, userId: req.userId as string, meteredReason: 'notes-assistant-chat' });
     res.json({ reply: reply.trim() });
   } catch (err) {
     if (err instanceof InsufficientLocksError) return res.status(402).json({ error: 'Lock limit reached', code: 'LOCK_LIMIT_REACHED', detail: "You're out of Locks for now." });

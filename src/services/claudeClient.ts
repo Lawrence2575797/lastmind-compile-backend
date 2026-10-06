@@ -374,6 +374,68 @@ export async function callClaudeJSON(params: {
   return text;
 }
 
+// A chat about one piece of text (the Notes page's side panel): the same page is sent with every question, so the page and the conversation so far
+// are marked cacheable and only the newest question is new. Haiku 4.5 only caches a prefix of at least 4096 tokens (Anthropic's per-model minimum),
+// so a short page in a short chat is simply not cached and costs what it always did; a long page, or a chat that has built up, reads the repeated
+// part at a tenth of the price. The marker is harmless below the minimum, and the charge follows the real usage (cache reads and writes included).
+export function buildCachedChatParams(params: {
+  model: string;
+  systemPrompt: string;
+  pageContext: string;
+  messages: { role: 'user' | 'assistant'; content: string }[];
+  maxTokens?: number;
+  temperature?: number;
+}) {
+  const turns = params.messages.map((m) => ({ role: m.role, text: sanitizeForClaude(m.content) })).filter((m) => m.text.trim());
+  while (turns.length && turns[0].role !== 'user') turns.shift();          // a conversation has to open with the student
+  const last = turns.length - 1;
+  const messages = turns.map((m, i) => ({
+    role: m.role,
+    // The breakpoint sits on the last message before the newest question, so the next turn can reuse everything up to there.
+    content: [{ type: 'text' as const, text: m.text, ...(i === last - 1 && last > 0 ? { cache_control: { type: 'ephemeral' as const } } : {}) }],
+  }));
+  return {
+    model: params.model,
+    max_tokens: params.maxTokens ?? 1024,
+    ...(params.temperature != null ? { temperature: params.temperature } : {}),
+    ...(modelThinksByDefault(params.model) ? { thinking: { type: 'disabled' as const } } : {}),
+    system: [
+      { type: 'text' as const, text: params.systemPrompt },
+      { type: 'text' as const, text: sanitizeForClaude(params.pageContext), cache_control: { type: 'ephemeral' as const } },
+    ],
+    messages,
+  };
+}
+
+export async function callClaudeChatCached(params: {
+  model: string;
+  systemPrompt: string;
+  pageContext: string;
+  messages: { role: 'user' | 'assistant'; content: string }[];
+  maxTokens?: number;
+  temperature?: number;
+  userId: string;
+  meteredReason: string;
+}): Promise<string> {
+  let response;
+  const send = (withTemperature: boolean) => withTransientRetry(() => anthropic.beta.promptCaching.messages
+    .stream(buildCachedChatParams({ ...params, temperature: withTemperature ? params.temperature : undefined }) as any)
+    .finalMessage());
+  try {
+    response = await send(true);
+  } catch (err) {
+    if (!isTemperatureDeprecatedError(err)) throw err;
+    console.warn(`Claude call to "${params.model}" rejected temperature - retrying without it.`);
+    response = await send(false);
+  }
+  const textBlock = response.content.find((block: any) => block.type === 'text') as any;
+  if (!textBlock || textBlock.type !== 'text') {
+    throw new Error(`Claude response contained no text content (model=${params.model}, stop_reason=${response.stop_reason}, output_tokens=${response.usage?.output_tokens})`);
+  }
+  await chargeForClaudeCall(params.userId, params.model, response.usage as ClaudeCallUsage, params.meteredReason);
+  return textBlock.text;
+}
+
 // Same call as callClaudeJSON, but charges NOTHING itself - for a call site
 // that makes several attempts at one deliverable (e.g. derivationGenericGenerate's
 // up-to-3-try loop) and wants to charge once, for the accumulated real usage,

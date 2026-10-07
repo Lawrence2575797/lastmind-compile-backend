@@ -220,19 +220,20 @@ router.get('/knowledge-map-v2/node/:nodeId/lesson', requireAuth, syncEndpointLim
   const { nodeId } = req.params;
   const userId = req.userId as string;
   try {
-    await assertFreeLessonAvailable(userId, nodeId);
-    // Economics: taught by a derivation lesson. The stored old text lesson is replaced, and nothing is generated.
-    const derived = await derivationQuick(nodeId);
-    if (derived) return res.json({ ...lessonForClient(derived.content), derivation: { stage: derived.stage, payload: derived.payload } });
+    // The authored Italian course is already bundled in memory. Resolve it
+    // alongside the Free-plan allowance check so opening a static lesson
+    // does not wait for two independent database reads in sequence.
+    const [italian, _freeLessonAllowed] = await Promise.all([
+      italianAuthoredLookup(nodeId),
+      assertFreeLessonAvailable(userId, nodeId),
+    ]);
 
-    // Every Italian map node has a checked static lesson. This lookup is
-    // intentionally before the generic service and before every generation
-    // cap/Locks check: opening or repeating Italian costs nothing.
-    const italian = await italianAuthoredLookup(nodeId);
+    // Every Italian map node has a checked static lesson. Keep this before
+    // derivationQuick: the generic/economics lookup performs database work
+    // that an authored Italian lesson never needs.
     if (italian) {
       const content = italianAuthoredContent(italian);
       if (!content) return res.status(404).json({ error: 'lesson not found' });
-      await supabaseAdmin.from('knowledge_map_node_lessons').upsert({ node_id: nodeId, encoding_content: content }, { onConflict: 'node_id' });
       return res.json({
         ...lessonForClient(content),
         derivation: {
@@ -242,6 +243,10 @@ router.get('/knowledge-map-v2/node/:nodeId/lesson', requireAuth, syncEndpointLim
         },
       });
     }
+
+    // Economics: taught by a derivation lesson. The stored old text lesson is replaced, and nothing is generated.
+    const derived = await derivationQuick(nodeId);
+    if (derived) return res.json({ ...lessonForClient(derived.content), derivation: { stage: derived.stage, payload: derived.payload } });
 
     // Any other subject with a real knowledge map: the same derivation lesson, generated live the first time a student reaches
     // its stage (see derivationGenericService.ts) instead of precompiled offline - the checker, prompt and rules are identical.

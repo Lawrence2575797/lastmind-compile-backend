@@ -106,6 +106,73 @@ const SPECIAL_LINES = {
   ESSERE_NATIONALITY: ['Italian uses essere, “to be”, before a nationality.', 'Sono italiano means “I am Italian”; sono is the io form.', 'The nationality adjective changes to agree with the person described.', 'This is why nationality uses essere: it describes what somebody is.'],
   ESSERE_CHARACTERISTICS: ['Italian uses essere, “to be”, to describe a characteristic.', 'È simpatico means “he is nice” or “it is pleasant”, depending on context.', 'The adjective agrees with the person or thing described.', 'Use this pattern for what somebody or something is like.'],
   ESSERE_LOCATION: ['Italian uses essere, “to be”, to say where somebody or something is.', 'Use a for a point such as a town; use in for countries, regions and many places.', 'Sono a Roma means “I am in Rome”; sono in Italia means “I am in Italy”.', 'Here a and in introduce the location; essere supplies “am/is/are”.'],
+  intro_self: ['Mi chiamo means “my name is” or, literally, “I call myself”.', 'Mi means “myself” here; chiamo is the io form meaning “I call”.', 'Say Mi chiamo followed by your name: Mi chiamo Marco means “My name is Marco”.', 'Learn the words and their job before using the complete introduction.'],
+  ask_name_informal: ['Come ti chiami? means “What is your name?” when speaking informally to one person.', 'Come literally means “how”; ti means “yourself”; chiami is the tu form meaning “you call”.', 'The literal structure is “How do you call yourself?”, but natural English says “What is your name?”.', 'Every word in the question has now been introduced before the check.'],
+  ask_name_formal: ['Come si chiama? means “What is your name?” when speaking formally.', 'Come means “how”; si means “yourself” in this formal pattern; chiama is the Lei form meaning “you call”.', 'Use this with somebody you address as formal Lei.', 'The complete phrase is taught before you are asked to form or recognise it.'],
+  ask_origin_informal: ['Di dove sei? means “Where are you from?” when speaking informally to one person.', 'Di means “from”; dove means “where”; sei is the tu form of essere, “you are”.', 'Italian asks, literally, “From where are you?”.', 'Because each word is explained here, the question never relies on an unseen use of sei.'],
+  ask_origin_formal: ['Di dov’è? means “Where are you from?” when speaking formally.', 'Di means “from”; dove means “where”; è is the Lei form of essere, “you are”.', 'Dove and è join as dov’è, with an apostrophe.', 'The formal form is explained before it appears in the check.'],
+  state_origin: ['Sono di means “I am from”.', 'Sono is the io form of essere, “I am”; di means “from”.', 'Add a place: Sono di Roma means “I am from Rome”.', 'This answer now uses only words explained before the sentence-building check.'],
+};
+
+// Sentence and conversation construction begins only after every required
+// word or pattern has appeared in this authored sequence. `requires` is
+// validated below, so a future curriculum edit cannot accidentally move a
+// construction exercise ahead of one of its ingredients.
+const FORMATION_PRACTICE = {
+  intro_self: {
+    kind: 'sentence',
+    prompt: 'Build the introduction “My name is Marco”.',
+    parts: ['Mi', 'chiamo', 'Marco.'],
+    requires: ['intro_self'],
+  },
+  ask_name_informal: {
+    kind: 'sentence',
+    prompt: 'Build the informal question “What is your name?”.',
+    parts: ['Come', 'ti', 'chiami?'],
+    requires: ['question_words', 'intro_self', 'ask_name_informal'],
+  },
+  ask_name_formal: {
+    kind: 'sentence',
+    prompt: 'Build the formal question “What is your name?”.',
+    parts: ['Come', 'si', 'chiama?'],
+    requires: ['lei_formal', 'question_words', 'ask_name_formal'],
+  },
+  ask_origin_informal: {
+    kind: 'sentence',
+    prompt: 'Build the informal question “Where are you from?”.',
+    parts: ['Di', 'dove', 'sei?'],
+    requires: ['question_words', 'ask_origin_informal'],
+  },
+  state_origin: {
+    kind: 'conversation',
+    prompt: 'Put this short first conversation in a natural order.',
+    parts: ['Ciao!', 'Come ti chiami?', 'Mi chiamo Marco.', 'Piacere!'],
+    requires: ['greet_casual', 'intro_self', 'ask_name_informal', 'piacere'],
+  },
+  NEGATION_NON: {
+    kind: 'sentence',
+    prompt: 'Build “I am not Italian”.',
+    parts: ['Io', 'non', 'sono', 'italiano.'],
+    requires: ['PRON_IO', 'nationality_agree', 'ESSERE_SG', 'NEGATION_NON'],
+  },
+  ESSERE_NATIONALITY: {
+    kind: 'sentence',
+    prompt: 'Build “I am Italian”.',
+    parts: ['Io', 'sono', 'italiano.'],
+    requires: ['PRON_IO', 'nationality_agree', 'ESSERE_SG', 'ESSERE_NATIONALITY'],
+  },
+  AVERE_AGE: {
+    kind: 'sentence',
+    prompt: 'Build “I am twenty years old” using the Italian avere pattern.',
+    parts: ['Io', 'ho', 'venti', 'anni.'],
+    requires: ['PRON_IO', 'NUM_0_20__11', 'AVERE_SG', 'AVERE_AGE'],
+  },
+  POSS_ADJ_EXCEPTION: {
+    kind: 'sentence',
+    prompt: 'Build “My mother is Italian”.',
+    parts: ['Mia', 'madre', 'è', 'italiana.'],
+    requires: ['nationality_agree', 'ESSERE_SG__2', 'FAM_1', 'POSS_ADJ_FORMS', 'POSS_ADJ_EXCEPTION'],
+  },
 };
 
 function teachingLines(node) {
@@ -145,13 +212,35 @@ function lessonFor(node, index) {
   const wrong = forms ? 'A different set of forms that was not introduced here.' : 'The opposite rule, which was not introduced here.';
   const question = forms ? `Which answer accurately recalls the ${idea.toLowerCase()} from this lesson?` : `Which answer accurately recalls this lesson's key point?`;
   const term = { t: node.label, c: colours[index % colours.length] };
+  const terms = { [node.id]: term };
+  const script = [
+    { type: 'title' },
+    { type: 'read', text: lines.join('\n'), term: node.id },
+  ];
+  const formation = FORMATION_PRACTICE[node.id];
+  if (formation) {
+    const tokenIds = formation.parts.map((part, tokenIndex) => `${node.id}__formation_${tokenIndex}`);
+    tokenIds.forEach((id, tokenIndex) => { terms[id] = { t: formation.parts[tokenIndex], c: colours[(index + tokenIndex + 1) % colours.length] }; });
+    script.push({
+      type: 'order',
+      title: formation.kind === 'conversation' ? 'Build the conversation' : 'Build the sentence',
+      prompt: formation.prompt,
+      order: tokenIds,
+      pairs: tokenIds.slice(0, -1).map((id, tokenIndex) => [id, tokenIds[tokenIndex + 1]]),
+      done: formation.kind === 'conversation' ? 'The conversation now uses only language you have already met.' : 'The sentence is complete, using only language already introduced.',
+    });
+  }
+  script.push(
+    { type: 'recap', q: question, right, wrong, hint: `Read the explanation of ${idea.toLowerCase()} once more.`, terms: [node.id] },
+    { type: 'done' },
+  );
   return {
     i: index,
     name: node.id,
     edges: [],
     nodes: [node.id],
     concepts: [node.id],
-    terms: { [node.id]: term },
+    terms,
     languageInputV2: true,
     languageInputV3: true,
     languageInputV4: true,
@@ -164,12 +253,7 @@ function lessonFor(node, index) {
       sub: forms ? `Learn and recognise ${forms}.` : `Understand ${node.label.toLowerCase()}.`,
       builds: [],
       graph: { h: 140, nodes: { [node.id]: [390, 38, 260, 64] }, edges: [], given: [], pairs: [] },
-      script: [
-        { type: 'title' },
-        { type: 'read', text: lines.join('\n'), term: node.id },
-        { type: 'recap', q: question, right, wrong, hint: `Read the explanation of ${idea.toLowerCase()} once more.`, terms: [node.id] },
-        { type: 'done' },
-      ],
+      script,
     },
   };
 }
@@ -191,12 +275,21 @@ if (stages.length !== map.nodes.length) errors.push(`expected ${map.nodes.length
 if (new Set(Object.keys(byConcept)).size !== map.nodes.length) errors.push('duplicate or missing concept ids');
 stages.forEach((s, i) => {
   const script = s.stage.script;
-  if (script.map((x) => x.type).join(',') !== 'title,read,recap,done') errors.push(`${s.name}: unexpected script shape`);
+  const shape = script.map((x) => x.type).join(',');
+  if (shape !== 'title,read,recap,done' && shape !== 'title,read,order,recap,done') errors.push(`${s.name}: unexpected script shape`);
   if (i && sectionNumber(order[i - 1].subtopic) > sectionNumber(order[i].subtopic)) errors.push(`${s.name}: CEFR section moved backwards`);
   const disclosed = splitLabel(order[i].label).forms || order[i].label;
   const disclosureTokens = clean(disclosed).toLowerCase().replace(/e\.g\./g, '').split(/[^\p{L}\p{N}']+/u).filter((x) => x.length > 1);
   const read = script[1].text.toLowerCase();
   if (!SPECIAL_LINES[s.name] && !disclosureTokens.every((token) => read.includes(token))) errors.push(`${s.name}: read card does not disclose tested content`);
+  const formation = FORMATION_PRACTICE[s.name];
+  if (formation) {
+    formation.requires.forEach((requiredId) => {
+      const requiredIndex = byConcept[requiredId];
+      if (!Number.isInteger(requiredIndex)) errors.push(`${s.name}: formation prerequisite ${requiredId} is missing`);
+      else if (requiredIndex > i) errors.push(`${s.name}: formation tests ${requiredId} before lesson ${requiredIndex} introduces it`);
+    });
+  }
 });
 if (errors.length) throw new Error(`Italian authored-course validation failed:\n- ${errors.join('\n- ')}`);
 

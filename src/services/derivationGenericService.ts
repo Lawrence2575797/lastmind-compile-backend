@@ -38,6 +38,11 @@ This is a language-acquisition lesson. Do NOT manufacture a causal chain, ask th
 3. Use "translate" ONLY for a vocabulary/phrase stage that has explicitly taught enough words or fixed phrases to assemble one natural sentence. Every entry in "answer" must be a word or fixed phrase visibly introduced in the preceding read cards; never import an untaught article, pronoun, verb, preposition, ending, or filler word just to make the sentence grammatical. A pronunciation, spelling, alphabet, isolated-sound, or letter-pattern lesson MUST end on its comprehensive recap and MUST NOT contain sentence ordering at all. Sentence building is a useful activity only when sentence-ready language was actually taught; it is not a compulsory ending for every language lesson. Never finish a language lesson with "derive".
 4. Do not create filler support terms merely to reach an atomicity count. Use the real words/forms in the supplied nodes; when a node is a closed set, split its actual members into separate input cards. Use "recap" only as another language question, never to imply a causal relationship.
 5. Title and subtitle describe what the learner will understand or SAY (for example, "Ordering politely"), never what they will derive. Keep the lesson short: input, then practice.
+6. Maintain a strict taught-item ledger while writing the lesson. A target-language word, pronoun, conjugated form, preposition, article, adjective, idiom, ending, or construction counts as taught ONLY when an earlier read card explicitly names it and explains its meaning or job. Merely placing it inside a translated example sentence does NOT teach it. No question, answer option, distractor, or surrounding sentence may introduce or test an item that is absent from that ledger.
+7. Explain WHY a grammar form is the right one, not just the mapping. For example, explain that English "am" is a form of "to be", so Italian uses the matching first-person form of "essere"; "sono" is that form for "io". Also explain natural omissions, such as Italian often dropping "io" because "sono" already identifies the speaker. Do not state "essere becomes sono" without making this grammatical connection clear.
+8. Treat expressions as expressions. Every meaningful new part of an example must be glossed, and non-literal combinations must be identified explicitly. For example, teach "in ritardo" together as the normal expression meaning "late" or "behind schedule"; explain that "in" often means "in", but Italian packages this idea as the fixed phrase "in ritardo". Never leave a small word unexplained or imply that a whole expression translates word-for-word when it does not.
+9. For a conjugation set, introduce EVERY pronoun/form pair before practice uses that pair. For Italian "essere", for example, io/sono, tu/sei, lui or lei/è, noi/siamo, voi/siete, and loro/sono must each be explicitly taught before a recap can mention it. Never ask about "loro" (or any other member of a paradigm) before its own explanation. For a set larger than four, teach the first four, recap only those four, then teach the remaining items and recap only that new block. This preserves the four-item milestone limit without testing later forms early.
+10. Before returning JSON, audit every target-language token in every question and option against the taught-item ledger. If any item is new, either add an earlier explanation or remove it from the practice. Questions test only established language; they never teach by surprise.
 
 The required JSON schema and term bookkeeping remain unchanged. Return JSON only.`;
 
@@ -266,9 +271,9 @@ export async function derivationGenericLookup(nodeId: string): Promise<GenericLo
   }
   // Earlier language stages either used the mechanistic prompt or packed
   // their input into one dense paragraph. Treat them as cache misses once
-  // so the next request replaces them with the line-by-line V4 cards and
-  // the corrected practice rules (no untaught sentence construction).
-  if (cached && isLanguageSubject(node.subject as string) && !(cached as any).languageInputV4) cached = null;
+  // so the next request replaces them with the line-by-line V5 cards and
+  // the strict taught-item ledger (including every conjugation and phrase part).
+  if (cached && isLanguageSubject(node.subject as string) && !(cached as any).languageInputV5) cached = null;
   return {
     subject: node.subject as string, qualification: node.qualification as string, examBoard: node.exam_board as string,
     stageIndex, stages: planned.stages, byId: planned.byId,
@@ -590,7 +595,7 @@ async function derivationGenericGenerateOnce(info: GenericLookup, userId: string
   const built = build(result.spec);
   const terms: Record<string, StageTerm> = {};
   Object.keys(built.TERMS).forEach((k) => { terms[k] = built.TERMS[k]; });
-  const compiled: Stage = { i: info.stageIndex, name: stage.nodes.join(','), edges: stage.edges, nodes: stage.nodes, concepts: stage.nodes, terms, stage: built.stages[0], ...(isLanguageSubject(info.subject) ? { languageInputV2: true, languageInputV3: true, languageInputV4: true } : {}) } as Stage;
+  const compiled: Stage = { i: info.stageIndex, name: stage.nodes.join(','), edges: stage.edges, nodes: stage.nodes, concepts: stage.nodes, terms, stage: built.stages[0], ...(isLanguageSubject(info.subject) ? { languageInputV2: true, languageInputV3: true, languageInputV4: true, languageInputV5: true } : {}) } as Stage;
   const { error } = await supabaseAdmin.from('derivation_generated_stages').upsert({
     subject: info.subject, qualification: info.qualification, exam_board: info.examBoard, stage_index: info.stageIndex,
     concept_ids: stage.nodes, compiled,
@@ -607,7 +612,7 @@ export function derivationContentForGenericNode(info: GenericLookup, stage: Stag
 
 // GET /derivation/stage/:key fallback path for a generic key (see routes/knowledgeMap.ts) - the payload is normally sent inline
 // with the lesson itself, so this is only ever hit if the frontend has to re-fetch it separately.
-export async function derivationGenericPayloadForKey(key: string): Promise<{ terms: Record<string, StageTerm>; stage: any; languageInputV2?: boolean; languageInputV3?: boolean; languageInputV4?: boolean } | null> {
+export async function derivationGenericPayloadForKey(key: string): Promise<{ terms: Record<string, StageTerm>; stage: any; languageInputV2?: boolean; languageInputV3?: boolean; languageInputV4?: boolean; languageInputV5?: boolean } | null> {
   const parsed = parseGenericStageKey(key);
   if (!parsed) return null;
   const cacheKey = stageKeyRow(parsed.subject, parsed.qualification, parsed.examBoard, parsed.stageIndex);
@@ -621,7 +626,7 @@ export async function derivationGenericPayloadForKey(key: string): Promise<{ ter
     stage = row.compiled as Stage;
     stageCache.set(cacheKey, stage);
   }
-  return { terms: stage.terms, stage: stage.stage, ...((stage as any).languageInputV2 ? { languageInputV2: true } : {}), ...((stage as any).languageInputV3 ? { languageInputV3: true } : {}), ...((stage as any).languageInputV4 ? { languageInputV4: true } : {}) };
+  return { terms: stage.terms, stage: stage.stage, ...((stage as any).languageInputV2 ? { languageInputV2: true } : {}), ...((stage as any).languageInputV3 ? { languageInputV3: true } : {}), ...((stage as any).languageInputV4 ? { languageInputV4: true } : {}), ...((stage as any).languageInputV5 ? { languageInputV5: true } : {}) };
 }
 
 // Completion uses the same public g:... key as the player. Return every

@@ -241,8 +241,15 @@ router.get('/knowledge-map-v2/node/:nodeId/lesson', requireAuth, syncEndpointLim
           await recordFreshGenerationEvent(userId);
         } catch (genErr) {
           if (genErr instanceof DerivationGenerationAbortedError) return; // nobody is listening any more
-          if (genErr instanceof InsufficientLocksError || genErr instanceof GenerationCapExceededError) throw genErr;
-          if (genErr instanceof DerivationStageNotReadyError) {
+          // A language prompt/version upgrade is best-effort. The previous
+          // compiled stage is still a valid playable lesson, so a rate cap,
+          // temporary generation outage or checker rejection must not make
+          // the knowledge-map node stop loading altogether.
+          if (generic.staleCached) {
+            console.warn(`LastMind: language lesson upgrade failed for "${generic.node.label}"; serving the previous playable version.`, genErr);
+            stage = generic.staleCached;
+          } else if (genErr instanceof InsufficientLocksError || genErr instanceof GenerationCapExceededError) throw genErr;
+          else if (genErr instanceof DerivationStageNotReadyError) {
             // Free to report - no Claude call happened (see
             // DerivationStageNotReadyError's own comment).
             return res.status(409).json({ error: 'not ready yet', code: 'DERIVATION_NOT_READY' });
@@ -257,23 +264,24 @@ router.get('/knowledge-map-v2/node/:nodeId/lesson', requireAuth, syncEndpointLim
           // distinct, honest message and a different code so the frontend
           // can offer "try again" without implying the content itself was
           // the issue.
-          if (genErr instanceof DerivationGenerationInfraError) {
+          else if (genErr instanceof DerivationGenerationInfraError) {
             console.error('Derivation generation hit an infra error:', genErr);
             return res.status(503).json({ error: 'generation service unavailable', code: 'DERIVATION_INFRA_ERROR', detail: 'Having trouble reaching the generation service right now - try again in a moment.' });
+          } else {
+            // A genuine checker rejection after real (paid) generation
+            // attempts - surfaced plainly here rather than spending a second,
+            // differently-shaped generation on top of it. genErr.message (see
+            // derivationGenericGenerate) carries the actual structural
+            // validate() failures (e.g. "not atomic: only 3 new terms") -
+            // real, reported problem this fixes: that detail used to be
+            // logged server-side only and replaced with a flat generic
+            // message here, so a repeated failure could never actually be
+            // diagnosed from what the student (or a developer without server
+            // log access) could see. Purely structural/pedagogical text about
+            // the lesson's own shape, nothing sensitive - safe to return.
+            console.error('Derivation generation failed the checker:', genErr);
+            return res.status(500).json({ error: 'could not generate this lesson', detail: genErr instanceof Error ? genErr.message : String(genErr) });
           }
-          // A genuine checker rejection after real (paid) generation
-          // attempts - surfaced plainly here rather than spending a second,
-          // differently-shaped generation on top of it. genErr.message (see
-          // derivationGenericGenerate) carries the actual structural
-          // validate() failures (e.g. "not atomic: only 3 new terms") -
-          // real, reported problem this fixes: that detail used to be
-          // logged server-side only and replaced with a flat generic
-          // message here, so a repeated failure could never actually be
-          // diagnosed from what the student (or a developer without server
-          // log access) could see. Purely structural/pedagogical text about
-          // the lesson's own shape, nothing sensitive - safe to return.
-          console.error('Derivation generation failed the checker:', genErr);
-          return res.status(500).json({ error: 'could not generate this lesson', detail: genErr instanceof Error ? genErr.message : String(genErr) });
         }
       }
       const content = derivationContentForGenericNode(generic, stage);

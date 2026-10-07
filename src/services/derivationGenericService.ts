@@ -239,6 +239,7 @@ export interface GenericLookup {
   stageIndex: number; stages: PlannedStage[]; byId: Record<string, MapNode>;
   node: { id: string; concept_id: string; label: string };
   cached: Stage | null;
+  staleCached: Stage | null;
 }
 
 // Finds which stage (if any) a node belongs to, and whether that stage has already been generated - null means this subject has
@@ -273,12 +274,15 @@ export async function derivationGenericLookup(nodeId: string): Promise<GenericLo
   // their input into one dense paragraph. Treat them as cache misses once
   // so the next request replaces them with the line-by-line V5 cards and
   // the strict taught-item ledger (including every conjugation and phrase part).
-  if (cached && isLanguageSubject(node.subject as string) && !(cached as any).languageInputV5) cached = null;
+  // Keep the old compiled stage as a playable fallback: a content upgrade
+  // must never turn a lesson that used to open into a dead knowledge-map node.
+  const staleCached = cached && isLanguageSubject(node.subject as string) && !(cached as any).languageInputV5 ? cached : null;
+  if (staleCached) cached = null;
   return {
     subject: node.subject as string, qualification: node.qualification as string, examBoard: node.exam_board as string,
     stageIndex, stages: planned.stages, byId: planned.byId,
     node: { id: node.id as string, concept_id: node.concept_id as string, label: node.label as string },
-    cached,
+    cached, staleCached,
   };
 }
 

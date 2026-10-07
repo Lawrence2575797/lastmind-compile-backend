@@ -34,9 +34,11 @@ router.post('/football/compile-instruction', async (req: Request, res: Response)
   const text = clip(req.body?.text, 3000);
   if (text.length < 3) return res.status(400).json({ error: 'Write the instruction first.' });
   const own = readSquad(req.body?.squad), opp = readSquad(req.body?.opponent);
+  const stage = ['build', 'final', 'transAtt', 'transDef', 'press', 'without'].includes(req.body?.stage) ? req.body.stage : '';
+  const stageNote = stage ? `\nThe manager is writing these instructions for one stage of play only: "${stage}". The game applies that stage to every rule, so do not repeat it in "when"; write the rest of the situation as usual.\n` : '';
   try {
     await assertLocksAvailable(req.userId as string);
-    const userContent = `Our squad:\n${own.map(line).join('\n') || '(not given)'}\n\nThe opposition's squad:\n${opp.map(line).join('\n') || '(not given)'}\n\nThe manager's instructions:\n"""\n${text}\n"""`;
+    const userContent = `${stageNote}Our squad:\n${own.map(line).join('\n') || '(not given)'}\n\nThe opposition's squad:\n${opp.map(line).join('\n') || '(not given)'}\n\nThe manager's instructions:\n"""\n${text}\n"""`;
     let parsed: any = null, lastErr: unknown = null;
     for (let attempt = 0; attempt < 2 && !parsed; attempt++) {
       try {

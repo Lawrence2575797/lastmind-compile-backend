@@ -1,5 +1,5 @@
 import { Router, Request, Response } from 'express';
-import { requireAuth, requirePaidTier } from '../services/authMiddleware';
+import { requireAuth } from '../services/authMiddleware';
 import { costlyEndpointLimiter } from '../services/rateLimiters';
 import { decideCortexAction, describeCortexError, CortexResponseTruncatedError, CortexUnavailableError } from '../services/cortexService';
 import { assertLocksAvailable, InsufficientLocksError } from '../services/lockService';
@@ -7,7 +7,7 @@ import { conversationTurn, validLanguage, ConversationTurn } from '../services/c
 
 const router = Router();
 
-router.use('/cortex', requireAuth, requirePaidTier, costlyEndpointLimiter);
+router.use('/cortex', requireAuth, costlyEndpointLimiter);
 
 // POST /cortex/message  { message, history, folders, dueReviews }
 // { reply, speakAloud, actions }

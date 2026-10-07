@@ -1,5 +1,5 @@
 import { Router, Request, Response } from 'express';
-import { requireAuth, isAdminEmail } from '../services/authMiddleware';
+import { requireAuth, requirePaidTier, isAdminEmail } from '../services/authMiddleware';
 import { syncEndpointLimiter, actionEndpointLimiter } from '../services/rateLimiters';
 import { supabaseAdmin } from '../services/supabaseAdmin';
 
@@ -7,7 +7,7 @@ import { supabaseAdmin } from '../services/supabaseAdmin';
 // Case Graph (with portraits) and the last playtest result. A finished case can be marked as a reference example that
 // every creator can open (only an admin can set that flag).
 const router = Router();
-router.use('/create/projects', requireAuth);
+router.use('/create/projects', requireAuth, requirePaidTier);
 
 const MAX_BYTES = 5_000_000;
 

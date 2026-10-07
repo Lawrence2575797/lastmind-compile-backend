@@ -3,12 +3,14 @@
 // So: $0.25/month = 2,500 locks, $1.50/month = 15,000 locks, $3.00/month = 30,000 locks
 // Extra locks (Max tier only): $1 = 4,500 locks
 
-export type SubscriptionTier = 'free' | 'light' | 'max';
+export type SubscriptionTier = 'free' | 'premium' | 'light' | 'max';
 
 export const MONTHLY_LOCK_ALLOTMENTS: Record<SubscriptionTier, number> = {
-  free: 2_500,    // $0.25/month
-  light: 15_000,  // $1.50/month
-  max: 30_000,    // $3.00/month
+  free: 0,
+  premium: 50_000,
+  // Legacy rows retain full access while Stripe migrations settle.
+  light: 50_000,
+  max: 50_000,
 };
 
 export const EXTRA_LOCKS_PER_DOLLAR = 4_500; // $1 = 4,500 locks for Max tier

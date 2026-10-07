@@ -41,6 +41,7 @@ import { isStructured, gradeStructured, clientView, lessonForClient, sealJson, o
 import { pickRotatingQuestion, poolEntry, poolOf, rotationPick, immediatePool } from '../services/reviewQuestionPool';
 import { answerKnowledgeMapQuestion } from '../services/knowledgeMapAskService';
 import { assertFreshGenerationWithinCap, recordFreshGenerationEvent, GenerationCapExceededError } from '../services/generationCapService';
+import { assertFreeLessonAvailable, FreePlanLimitError } from '../services/freePlanService';
 import { InsufficientLocksError, assertLocksAvailable } from '../services/lockService';
 import { recordPairwiseIntegrationOutcome } from '../services/chainMasteryService';
 import { getOrCreateUserRecallTuning, getDifficultyAndCapability, nextRecallDelayMinutes, updateGammaAfterRecall, bumpBaseRecalls } from '../services/recallTuningService';
@@ -219,6 +220,7 @@ router.get('/knowledge-map-v2/node/:nodeId/lesson', requireAuth, syncEndpointLim
   const { nodeId } = req.params;
   const userId = req.userId as string;
   try {
+    await assertFreeLessonAvailable(userId, nodeId);
     // Economics: taught by a derivation lesson. The stored old text lesson is replaced, and nothing is generated.
     const derived = await derivationQuick(nodeId);
     if (derived) return res.json({ ...lessonForClient(derived.content), derivation: { stage: derived.stage, payload: derived.payload } });
@@ -350,6 +352,7 @@ router.get('/knowledge-map-v2/node/:nodeId/lesson', requireAuth, syncEndpointLim
     await recordFreshGenerationEvent(userId);
     res.json(lessonForClient(generated));
   } catch (err) {
+    if (err instanceof FreePlanLimitError) return res.status(403).json({ error: err.message, code: err.code });
     if (err instanceof InsufficientLocksError) {
       return res.status(402).json({ error: 'Lock limit reached', code: 'LOCK_LIMIT_REACHED', detail: "You're out of Locks for now." });
     }

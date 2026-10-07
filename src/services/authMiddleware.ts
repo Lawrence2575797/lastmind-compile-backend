@@ -78,6 +78,13 @@ export function requireAdmin(req: Request, res: Response, next: NextFunction) {
 // stay reachable on both tiers but need to know WHICH tier applies — e.g.
 // the knowledge-map Verify route's free/premium credit coefficient.
 export async function isUserPaid(userId: string): Promise<boolean> {
+  const { data: modern, error: modernError } = await supabaseAdmin
+    .from('user_subscriptions')
+    .select('tier')
+    .eq('user_id', userId)
+    .maybeSingle();
+  if (modernError) throw modernError;
+  if (modern) return modern.tier === 'premium' || modern.tier === 'light' || modern.tier === 'max';
   const { data, error } = await supabaseAdmin
     .from('subscriptions')
     .select('status')
@@ -98,14 +105,13 @@ export async function isUserPaid(userId: string): Promise<boolean> {
 // commented, not deleted, specifically so this is a one-line flip back
 // rather than reconstructing it from memory).
 export async function requirePaidTier(req: Request, res: Response, next: NextFunction) {
-  next();
-  // try {
-  //   if (!(await isUserPaid(req.userId as string))) {
-  //     return res.status(403).json({ error: 'this feature requires LastMind Premium' });
-  //   }
-  //   next();
-  // } catch (err) {
-  //   console.error('Paid-tier check failed:', err);
-  //   res.status(500).json({ error: 'could not verify your subscription' });
-  // }
+  try {
+    if (!(await isUserPaid(req.userId as string))) {
+      return res.status(403).json({ error: 'this feature requires LastMind+' });
+    }
+    next();
+  } catch (err) {
+    console.error('Paid-tier check failed:', err);
+    res.status(500).json({ error: 'could not verify your subscription' });
+  }
 }

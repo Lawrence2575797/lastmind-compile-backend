@@ -25,7 +25,7 @@ export async function getOrCreateSubscription(userId: string): Promise<UserSubsc
   const { data: legacy, error: legacyError } = await supabaseAdmin.from('subscriptions')
     .select('status,stripe_subscription_id,stripe_customer_id').eq('user_id', userId).maybeSingle();
   if (legacyError) throw legacyError;
-  const initial = { user_id: userId, tier: legacy?.status === 'active' ? 'max' : 'free',
+  const initial = { user_id: userId, tier: legacy?.status === 'active' ? 'premium' : 'free',
     stripe_subscription_id: legacy?.stripe_subscription_id || null,
     stripe_customer_id: legacy?.stripe_customer_id || null, ...monthlyPeriod() };
   const { error: insertError } = await supabaseAdmin.from('user_subscriptions')

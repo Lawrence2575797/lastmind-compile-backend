@@ -1,6 +1,6 @@
 import { Router, Request, Response } from 'express';
 import crypto from 'crypto';
-import { requireAuth } from '../services/authMiddleware';
+import { requireAuth, requirePaidTier } from '../services/authMiddleware';
 import { costlyEndpointLimiter, syncEndpointLimiter } from '../services/rateLimiters';
 import { createAiCall } from '../services/createAi';
 import { CreateCapError, getUsedUsd, setUsedUsd, spendSummary } from '../services/createSpend';
@@ -9,7 +9,7 @@ import { InsufficientLocksError, assertLocksAvailable } from '../services/lockSe
 import { CRIMINAL_TRIAL_BUILD_PROMPT, CRIMINAL_TRIAL_VALIDATE_PROMPT, CRIMINAL_TRIAL_APPLY_FIXES_PROMPT } from '../constants/createSimulationPrompts';
 
 const router = Router();
-router.use('/create', requireAuth);
+router.use('/create', requireAuth, requirePaidTier);
 
 // Building or checking a whole case is one long Claude call (tens of seconds), longer than is safe to hold
 // an HTTP request open through a proxy. So each is run as a job: POST starts it and returns an id at once,

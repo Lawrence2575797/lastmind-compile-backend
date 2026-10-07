@@ -1,5 +1,5 @@
 import { Router, Request, Response } from 'express';
-import { requireAuth } from '../services/authMiddleware';
+import { requireAuth, requirePaidTier } from '../services/authMiddleware';
 import { costlyEndpointLimiter } from '../services/rateLimiters';
 import { callClaudeJSON, callClaudeChatCached, MODELS } from '../services/claudeClient';
 import { assertLocksAvailable, InsufficientLocksError } from '../services/lockService';
@@ -11,7 +11,7 @@ import { newCard, gradeReview, Rating } from '../services/fsrsService';
 // Stateless: the page sends the notes text, and for chat the recent messages, on every call. Nothing here is graded or written to FSRS.
 
 const router = Router();
-router.use('/notes-assistant', requireAuth, costlyEndpointLimiter);
+router.use('/notes-assistant', requireAuth, requirePaidTier, costlyEndpointLimiter);
 
 const MAX_NOTES_CHARS = 14000;
 const clip = (s: unknown, n: number) => (typeof s === 'string' ? s.trim().slice(0, n) : '');

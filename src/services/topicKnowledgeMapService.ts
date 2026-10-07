@@ -28,6 +28,7 @@ import { parseModelJson } from './jsonParsing';
 import { TOPIC_KNOWLEDGE_MAP_PROMPT, TOPIC_MAP_EXTEND_BACKWARD_PROMPT, TOPIC_MAP_EXTEND_FORWARD_PROMPT } from '../constants/topicKnowledgeMapPrompt';
 import { assertFreshGenerationWithinCap, recordFreshGenerationEvent } from './generationCapService';
 import { invalidatePlanCache } from './derivationGenericService';
+import { FreePlanLimitError } from './freePlanService';
 
 export const TOPIC_QUALIFICATION = 'Other';
 // Legacy constant: every topic map generated before caching was removed
@@ -473,6 +474,7 @@ export async function extendTopicMapBackward(
 ): Promise<TopicKnowledgeMap> {
   const subject = normalizeTopicSubject(rawTopic);
   if (!subject) throw new Error('topic is required');
+
   if (!examBoard) throw new Error('a specific map instance is required');
 
   const existing = await findExistingTopicMap(subject, examBoard);
@@ -644,9 +646,16 @@ export async function getOrCreateTopicKnowledgeMap(
   const subject = normalizeTopicSubject(rawTopic);
   if (!subject) throw new Error('topic is required');
 
+  if (!isPaid && (await listMyCustomTopics(userId)).length >= 1) {
+    throw new FreePlanLimitError('FREE_MAP_LIMIT', 'The Free plan includes one knowledge map. Upgrade to LastMind+ to create more.');
+  }
+
   await assertFreshGenerationWithinCap(userId, isPaid, accountCreatedAt, email);
   const examBoard = generateInstanceToken();
-  const { nodes, edges } = await generateTopicGraph(subject, userId);
+  const generated = await generateTopicGraph(subject, userId);
+  const nodes = isPaid ? generated.nodes : generated.nodes.slice(0, 3);
+  const nodeIds = new Set(nodes.map((n) => n.id));
+  const edges = generated.edges.filter((e) => nodeIds.has(e.from) && nodeIds.has(e.to));
   const result = await insertTopicGraph(subject, examBoard, userId, nodes, edges);
   await recordFreshGenerationEvent(userId);
   return result;

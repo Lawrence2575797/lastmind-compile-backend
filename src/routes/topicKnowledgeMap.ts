@@ -10,6 +10,7 @@ import { getSuggestedNextTopics } from '../services/suggestNextTopicsService';
 import { getMasteryDetailsForConcepts } from '../services/reviewService';
 import { InsufficientLocksError } from '../services/lockService';
 import { GenerationCapExceededError } from '../services/generationCapService';
+import { FreePlanLimitError } from '../services/freePlanService';
 
 const router = Router();
 
@@ -58,8 +59,9 @@ router.post('/knowledge-map-v2/topic', requireAuth, costlyEndpointLimiter, async
     // least once, regardless of which device or session did it.
     const masteryByConcept = await getMasteryDetailsForConcepts(userId, result.nodes.map((n) => n.conceptId));
     const nodes = result.nodes.map((n) => ({ ...n, completed: masteryByConcept.has(n.conceptId) }));
-    res.json({ ...result, nodes });
+    res.json({ ...result, nodes, freeLimited: !(await isUserPaid(userId)) });
   } catch (err) {
+    if (err instanceof FreePlanLimitError) return res.status(403).json({ error: err.message, code: err.code });
     if (err instanceof InsufficientLocksError) {
       return res.status(402).json({ error: 'Lock limit reached', code: 'LOCK_LIMIT_REACHED', detail: "You're out of Locks for now." });
     }

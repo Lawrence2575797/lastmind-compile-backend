@@ -144,6 +144,9 @@ export interface CortexResult {
   // nodes beyond the map's current leaf/final-task node(s) and re-renders
   // it when this is true; absent/false otherwise.
   extendPrerequisitesForward?: boolean;
+  // Set only when the student asks to practise a conversation in a language they are learning. The frontend opens the practice
+  // conversation (see /cortex/conversation); the value is the language's name.
+  startConversation?: string;
 }
 
 // The reply is ordinary text. When the message is one of the few recognized
@@ -167,6 +170,7 @@ export function parseCortexReply(raw: string): CortexResult | null {
     if (flags.retryFailedLesson === true) out.retryFailedLesson = true;
     if (flags.extendPrerequisitesBackward === true) out.extendPrerequisitesBackward = true;
     if (flags.extendPrerequisitesForward === true) out.extendPrerequisitesForward = true;
+    if (typeof flags.startConversation === 'string' && /^[A-Za-z][A-Za-z '\-]{1,30}$/.test(flags.startConversation.trim())) out.startConversation = flags.startConversation.trim();
     return out;
   };
   const jsonish = stripCodeFences(text);

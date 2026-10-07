@@ -3,6 +3,7 @@ import { requireAuth, requirePaidTier } from '../services/authMiddleware';
 import { costlyEndpointLimiter } from '../services/rateLimiters';
 import { decideCortexAction, describeCortexError, CortexResponseTruncatedError, CortexUnavailableError } from '../services/cortexService';
 import { assertLocksAvailable, InsufficientLocksError } from '../services/lockService';
+import { conversationTurn, validLanguage, ConversationTurn } from '../services/conversationService';
 
 const router = Router();
 
@@ -53,6 +54,29 @@ router.post('/cortex/message', async (req: Request, res: Response) => {
       // The real reason, not a vague apology: it is what the chat shows.
       res.status(500).json({ error: `Cortex chat failed: ${describeCortexError(err)}` });
     }
+  }
+});
+
+// POST /cortex/conversation  { language, history, message }
+// One turn of a practice conversation in the language the student is learning (message empty = open it). Built from what they have
+// completed in that language. Stateless like /cortex/message: the frontend holds and resends the turns.
+router.post('/cortex/conversation', async (req: Request, res: Response) => {
+  const { language, history, message } = req.body ?? {};
+  const lang = validLanguage(language);
+  if (!lang) return res.status(400).json({ error: 'a language is required' });
+  const text = typeof message === 'string' ? message.trim() : '';
+  const turns: ConversationTurn[] = (Array.isArray(history) ? history : [])
+    .filter((h: any) => h && (h.role === 'user' || h.role === 'assistant') && typeof h.content === 'string')
+    .slice(-14);
+  try {
+    await assertLocksAvailable(req.userId as string);
+    res.json(await conversationTurn(req.userId as string, lang, turns, text));
+  } catch (err) {
+    if (err instanceof InsufficientLocksError) {
+      return res.status(402).json({ error: 'Lock limit reached', code: 'LOCK_LIMIT_REACHED', detail: "You're out of Locks for now." });
+    }
+    console.error('Cortex conversation turn failed:', err);
+    res.status(500).json({ error: `The conversation could not continue: ${describeCortexError(err)}` });
   }
 });
 

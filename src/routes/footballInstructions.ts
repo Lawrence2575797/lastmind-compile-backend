@@ -69,13 +69,13 @@ router.post('/football/review-instructions', async (req: Request, res: Response)
   const plan = req.body?.opponent && req.body.opponent.plan ? req.body.opponent.plan : null;
   try {
     await assertLocksAvailable(req.userId as string);
-    const likely = plan ? `${clip(plan.rationale, 500)} The alternative he weighed: ${clip(plan.alternative, 300) || '(none given)'}` : '(no scouting yet)';
+    const likely = plan ? clip(plan.rationale, 600) : '(no build-up tests run yet, so nothing has been seen of how they set up)';
     const userContent = [
       `Stage under review: ${stage} (${clip(req.body?.stageName, 40)}). Review this stage only.`,
       `Formation: ${formation || '(unknown)'}`,
       `Our squad:\n${own.map(line).join('\n') || '(not given)'}`,
       `The next opponent: ${oppName || '(unknown)'}\n${opp.map(line).join('\n')}`,
-      `What their manager is likely to do: ${likely}`,
+      `How they have set up against you so far (only what showed on the pitch): ${likely}`,
       `The manager's instructions for this stage as the game understood them (one per line):\n${instructions.map((t: string, i: number) => `${i + 1}. ${t}`).join('\n')}`,
     ].join('\n\n');
     let parsed: any = null, lastErr: unknown = null;

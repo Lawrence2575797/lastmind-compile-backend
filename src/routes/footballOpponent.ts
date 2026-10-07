@@ -53,7 +53,7 @@ router.post('/football/opponent-plan', async (req: Request, res: Response) => {
     }
     if (!parsed) throw lastErr || new Error('no usable answer');
     const rationale = clip(parsed.rationale, 700);
-    const { rules } = validateRules(parsed.rules, numbers, { kind: 'team' }, rationale, opponent);
+    const { rules } = validateRules(parsed.rules, squad.map((p: any) => ({ number: p.number, name: p.name })), { kind: 'team' }, rationale, opponent);
     const scouted = (Array.isArray(parsed.scouted) ? parsed.scouted : []).map((x: unknown) => clip(x, 200)).filter(Boolean).slice(0, 4);
     res.json({ rules, rationale, scouted });
   } catch (err) {

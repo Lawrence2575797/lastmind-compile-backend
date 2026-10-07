@@ -4,6 +4,8 @@
   "description": "PII-filtering, harmful-content-cleaning, and FSRS-scheduling backend for LastMind, calling Claude only on sanitized text.",
   "main": "dist/index.js",
   "scripts": {
+    "build:italian": "node scripts/build_italian_authored_course.js",
+    "prebuild": "npm run build:italian",
     "build": "tsc",
     "start": "node dist/index.js",
     "dev": "ts-node-dev --respawn src/index.ts"

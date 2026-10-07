@@ -7,6 +7,7 @@ import { selectAllRows, selectRowsByIdChunked } from './supabasePagination';
 import { resolveSubjectTriple } from './subjectResolution';
 import { compareSubtopics, getOrComputeSubtopicOrder } from './knowledgeMapNotesService';
 import { topologicalNodeOrder } from './nodeOrdering';
+import { italianAuthoredOrder } from './italianAuthoredCourseService';
 import { getExternalCoveredConceptIds } from './externalCoverageService';
 
 // One concept the student has actually added to a folder (a single-lesson
@@ -408,20 +409,31 @@ export async function getKnowledgeMapForSubject(
     list.push(r);
     bySubtopic.set(subtopic, list);
   });
-  const subtopicOrders = new Map<string, string[]>(
-    await Promise.all(
-      Array.from(bySubtopic.entries()).map(async ([subtopic, rows]) => {
-        const order = await getOrComputeSubtopicOrder(
-          subject,
-          qualification,
-          examBoard,
-          subtopic,
-          rows.map((r) => ({ id: r.id as string, label: r.label as string }))
-        );
-        return [subtopic, order] as [string, string[]];
-      })
-    )
-  );
+  const authoredItalianOrder = subject.toLowerCase() === 'italian' && qualification.toLowerCase() === 'other'
+    ? italianAuthoredOrder(nodeRows.map((r) => r.concept_id as string))
+    : null;
+  const authoredItalianRank = authoredItalianOrder
+    ? new Map(authoredItalianOrder.map((conceptId, index) => [conceptId, index]))
+    : null;
+  const subtopicOrders = new Map<string, string[]>(authoredItalianRank
+    ? Array.from(bySubtopic.entries()).map(([subtopic, rows]) => [
+        subtopic,
+        rows.slice()
+          .sort((a, b) => (authoredItalianRank.get(a.concept_id as string) ?? Number.MAX_SAFE_INTEGER) - (authoredItalianRank.get(b.concept_id as string) ?? Number.MAX_SAFE_INTEGER))
+          .map((r) => r.id as string),
+      ] as [string, string[]])
+    : await Promise.all(
+        Array.from(bySubtopic.entries()).map(async ([subtopic, rows]) => {
+          const order = await getOrComputeSubtopicOrder(
+            subject,
+            qualification,
+            examBoard,
+            subtopic,
+            rows.map((r) => ({ id: r.id as string, label: r.label as string }))
+          );
+          return [subtopic, order] as [string, string[]];
+        })
+      ));
   const orderedSubtopics = Array.from(bySubtopic.keys()).sort(compareSubtopics);
   const orderedNodeRows = orderedSubtopics.flatMap((subtopic) => {
     const rows = bySubtopic.get(subtopic)!;

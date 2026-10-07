@@ -183,7 +183,11 @@ async function loadGraph(subject: string, qualification: string, examBoard: stri
   // test used to catch the earlier rule-1a bug) regrouped it into 4
   // properly-sized stages instead, using plan_stages.js's real edge-
   // connectivity chunking the way it works for every curated subject.
-  const isCustomTopic = examBoard === '';
+  // Curated language courses intentionally use a blank exam board too; that
+  // does not make them one-off custom topics. Collapsing Italian/Spanish here
+  // erased their A1/A2/B1 grouping and was the root cause of advanced forms
+  // being planned before greetings and foundations.
+  const isCustomTopic = examBoard === '' && !isLanguageSubject(subject);
   const nodes: MapNode[] = [];
   for (let from = 0; ; from += 1000) {
     const { data, error } = await supabaseAdmin

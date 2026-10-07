@@ -35,6 +35,7 @@ import {
 import { getNodeNoteBaseline, getNodeNoteForUser, saveNodeNoteEdit, getNodeNotes, getEdgeNoteBaseline, getEdgeNoteForUser, saveEdgeNoteEdit, getEdgeNotes, getNotesIndexForUser, getPersonalNote, savePersonalNote, checkWorkedExampleStep, markEdgeExplanationSeen } from '../services/knowledgeMapNotesService';
 import { derivationKeyTermGraph, derivationCompletedStages, derivationQuick, ensureDerivationContent, derivationPlayerPayload, derivationConceptsOfStage, derivationNodeIds, derivationAnchorConcept, derivationSiblingConcepts } from '../services/derivationService';
 import { derivationGenericLookup, derivationGenericGenerate, derivationContentForGenericNode, genericStageKey, derivationGenericPayloadForKey, derivationGenericConceptsForKey, DerivationStageNotReadyError, DerivationGenerationInfraError, DerivationGenerationAbortedError } from '../services/derivationGenericService';
+import { italianAuthoredLookup, italianAuthoredContent, italianAuthoredStageKey, italianAuthoredPayload, italianAuthoredConcepts } from '../services/italianAuthoredCourseService';
 import { generateAndCacheNodeLesson, generateAndCacheEdgeLesson, needsQuestionUpgrade, upgradeLessonQuestions } from '../services/lessonGenerationService';
 import { isStructured, gradeStructured, clientView, lessonForClient, sealJson, openJson, closeEnough, StructuredQuestion } from '../services/questionFormats';
 import { pickRotatingQuestion, poolEntry, poolOf, rotationPick, immediatePool } from '../services/reviewQuestionPool';
@@ -181,6 +182,14 @@ async function upgradeIfLaw(nodeId: string, userId: string, content: any): Promi
 async function generateNodeLessonPreferringDerivation(nodeId: string, userId: string, hooks: { before: () => Promise<void>; after?: () => Promise<void> }): Promise<any | null> {
   const derived = await derivationQuick(nodeId);
   if (derived) return derived.content;   // ensureDerivationContent already refreshes the stored row in the background here
+  // Italian is fully authored in-repo. It must never fall through to either
+  // paid generator, including from background Day-1/review code paths.
+  const italian = await italianAuthoredLookup(nodeId);
+  if (italian) {
+    const content = italianAuthoredContent(italian);
+    if (content) await supabaseAdmin.from('knowledge_map_node_lessons').upsert({ node_id: nodeId, encoding_content: content }, { onConflict: 'node_id' });
+    return content;
+  }
   try {
     const generic = await derivationGenericLookup(nodeId);
     if (generic) {
@@ -213,6 +222,24 @@ router.get('/knowledge-map-v2/node/:nodeId/lesson', requireAuth, syncEndpointLim
     // Economics: taught by a derivation lesson. The stored old text lesson is replaced, and nothing is generated.
     const derived = await derivationQuick(nodeId);
     if (derived) return res.json({ ...lessonForClient(derived.content), derivation: { stage: derived.stage, payload: derived.payload } });
+
+    // Every Italian map node has a checked static lesson. This lookup is
+    // intentionally before the generic service and before every generation
+    // cap/Locks check: opening or repeating Italian costs nothing.
+    const italian = await italianAuthoredLookup(nodeId);
+    if (italian) {
+      const content = italianAuthoredContent(italian);
+      if (!content) return res.status(404).json({ error: 'lesson not found' });
+      await supabaseAdmin.from('knowledge_map_node_lessons').upsert({ node_id: nodeId, encoding_content: content }, { onConflict: 'node_id' });
+      return res.json({
+        ...lessonForClient(content),
+        derivation: {
+          stage: italianAuthoredStageKey(italian.stageIndex),
+          concepts: italian.stage.concepts,
+          payload: italianAuthoredPayload(italianAuthoredStageKey(italian.stageIndex)),
+        },
+      });
+    }
 
     // Any other subject with a real knowledge map: the same derivation lesson, generated live the first time a student reaches
     // its stage (see derivationGenericService.ts) instead of precompiled offline - the checker, prompt and rules are identical.
@@ -348,6 +375,11 @@ router.get('/knowledge-map-v2/node/:nodeId/lesson', requireAuth, syncEndpointLim
 // Economics) stage's id is a "g:..." string rather than a bare index (see derivationGenericService.ts's genericStageKey) - this is
 // only ever hit as a fallback, since the lesson response already carries the payload inline the first time (see sfBuildDerivationSlides).
 router.get('/derivation/stage/:stage', requireAuth, syncEndpointLimiter, async (req: Request, res: Response) => {
+  if (req.params.stage.startsWith('italian-authored:')) {
+    const payload = italianAuthoredPayload(req.params.stage);
+    if (!payload) return res.status(404).json({ error: 'lesson not found' });
+    return res.json(payload);
+  }
   if (req.params.stage.startsWith('g:')) {
     const payload = await derivationGenericPayloadForKey(req.params.stage);
     if (!payload) return res.status(404).json({ error: 'lesson not found' });
@@ -374,10 +406,13 @@ router.get('/derivation/my-map', requireAuth, syncEndpointLimiter, async (req: R
 router.post('/knowledge-map-v2/derivation/complete', requireAuth, syncEndpointLimiter, async (req: Request, res: Response) => {
   const rawStage = (req.body ?? {}).stage;
   const genericStage = typeof rawStage === 'string' && rawStage.startsWith('g:');
-  const stage = genericStage ? rawStage : Number(rawStage);
-  const concepts = genericStage
-    ? await derivationGenericConceptsForKey(stage as string)
-    : derivationConceptsOfStage(stage as number);
+  const authoredItalianStage = typeof rawStage === 'string' && rawStage.startsWith('italian-authored:');
+  const stage = genericStage || authoredItalianStage ? rawStage : Number(rawStage);
+  const concepts = authoredItalianStage
+    ? italianAuthoredConcepts(stage as string)
+    : genericStage
+      ? await derivationGenericConceptsForKey(stage as string)
+      : derivationConceptsOfStage(stage as number);
   if (!concepts.length) return res.status(404).json({ error: 'lesson not found' });
   try {
     const userId = req.userId as string;
@@ -386,14 +421,14 @@ router.post('/knowledge-map-v2/derivation/complete', requireAuth, syncEndpointLi
       try {
         const graded = await gradeCorrectness(userId, conceptId, true, Number((req.body ?? {}).retryCount) || 0);
         // Economics has no quick (2-minute) recall. The Day-1 check belongs to the whole lesson, so only its anchor concept carries it.
-        const anchor = genericStage ? concepts[0] : derivationAnchorConcept(stage as number);
+        const anchor = genericStage || authoredItalianStage ? concepts[0] : derivationAnchorConcept(stage as number);
         if (!graded.previousRow && conceptId === anchor) await scheduleDay1Check(userId, conceptId);
         schedules.push(scheduleWithMastery(conceptId, graded));
       } catch (err) {
         if (!(err instanceof ReviewNotDueError)) throw err; // already learned and not due yet: nothing to record
       }
     }
-    if (!genericStage) (await derivationNodeIds(stage as number)).forEach((id) => { ensureDerivationContent(id).catch((e) => console.error('LastMind: derivation content refresh failed', id, e)); });
+    if (!genericStage && !authoredItalianStage) (await derivationNodeIds(stage as number)).forEach((id) => { ensureDerivationContent(id).catch((e) => console.error('LastMind: derivation content refresh failed', id, e)); });
     res.json({ schedules });
   } catch (err) {
     console.error('Derivation completion failed:', err);

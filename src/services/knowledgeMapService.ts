@@ -330,6 +330,18 @@ export async function getKnowledgeMapForSubject(
   rawQualification: string,
   rawExamBoard: string
 ): Promise<SubjectMapResult> {
+  // Older Italian maps were created as small, private free-text topics (for
+  // example "Italian basics for A1...") before the complete authored A1-B1
+  // course existed. Keep the user's existing folder, but let that folder read
+  // the full authored course. This avoids a second Italian entry in Your Mind
+  // and makes every prebuilt lesson a separate selectable node immediately.
+  const isItalianTopic = rawQualification.trim().toLowerCase() === 'other'
+    && /(^|\s|\W)italian(\s|\W|$)/i.test(rawSubject);
+  if (isItalianTopic) {
+    rawSubject = 'Italian';
+    rawQualification = 'Other';
+    rawExamBoard = '';
+  }
   // Resolves a misspelled/abbreviated typed triple ("Maths", "Edexcell")
   // to the real one it's closest to before doing anything else - see
   // resolveSubjectTriple's own comment. Case-only differences ("economics"

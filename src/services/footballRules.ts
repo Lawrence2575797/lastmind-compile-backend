@@ -11,6 +11,7 @@ const SCORES = ['winning', 'drawing', 'losing'] as const;
 const STAGES = ['build', 'final', 'transAtt', 'transDef', 'press', 'without'] as const;
 
 export type Scope = { kind: 'team' } | { kind: 'line'; line: string } | { kind: 'group'; group: string } | { kind: 'player'; number: number };
+export type Opp = { number: number; name: string };
 export type Rule = { id: string; text: string; scope: Scope; when: Record<string, unknown>; effects: Record<string, unknown>[] };
 
 const num = (v: unknown, lo: number, hi: number): number | null => { const n = Number(v); return Number.isFinite(n) ? Math.max(lo, Math.min(hi, n)) : null; };
@@ -37,7 +38,7 @@ function cleanTarget(raw: any, numbers: number[]): Record<string, unknown> | nul
 }
 
 // One effect, or null when it is not something the engine can do.
-export function cleanEffect(raw: any, numbers: number[]): Record<string, unknown> | null {
+export function cleanEffect(raw: any, numbers: number[], opp: Opp[] = []): Record<string, unknown> | null {
   if (!raw || typeof raw !== 'object') return null;
   switch (raw.type) {
     case 'passLength': { const pref = inList(raw.pref, ['short', 'long'] as const), s = num(raw.strength, 0, 1); return pref && s != null ? { type: 'passLength', pref, strength: r2(s) } : null; }
@@ -53,7 +54,16 @@ export function cleanEffect(raw: any, numbers: number[]): Record<string, unknown
       const f = num(raw.forward ?? 0, -15, 15), w = num(raw.wide ?? 0, -12, 12), ph = inList(raw.phase ?? 'both', ['with', 'without', 'both'] as const);
       return f != null && w != null && ph && (f !== 0 || w !== 0) ? { type: 'position', forward: r2(f), wide: r2(w), phase: ph } : null;
     }
-    case 'mark': { const target = cleanTarget(raw.target, []); return target && !('number' in target) ? { type: 'mark', target, tight: raw.tight !== false } : null; }
+    case 'mark': {
+      const t = raw.target && typeof raw.target === 'object' ? raw.target : {};
+      const byNum = t.number != null ? opp.find((o) => o.number === Math.round(Number(t.number))) : undefined;
+      const nm = typeof t.name === 'string' ? t.name.trim().toLowerCase() : '';
+      const byName = nm ? opp.find((o) => o.name.toLowerCase() === nm || o.name.toLowerCase().split(' ').slice(-1)[0] === nm) : undefined;
+      const one = byName || byNum;
+      if (one) return { type: 'mark', target: { number: one.number, name: one.name }, tight: true };
+      const target = cleanTarget(t, []);
+      return target && !('number' in target) ? { type: 'mark', target, tight: raw.tight !== false } : null;
+    }
     default: return null;
   }
 }
@@ -75,11 +85,11 @@ export function cleanWhen(raw: any): Record<string, unknown> {
 }
 
 let seq = 0;
-export function validateRules(raw: any, numbers: number[], fallbackScope: Scope, textFallback: string): { rules: Rule[]; dropped: string[] } {
+export function validateRules(raw: any, numbers: number[], fallbackScope: Scope, textFallback: string, opp: Opp[] = []): { rules: Rule[]; dropped: string[] } {
   const list: any[] = Array.isArray(raw) ? raw : [];
   const rules: Rule[] = [], dropped: string[] = [];
   list.slice(0, 4).forEach((r) => {
-    const effects = (Array.isArray(r && r.effects) ? r.effects : []).slice(0, 6).map((e: any) => cleanEffect(e, numbers)).filter(Boolean) as Record<string, unknown>[];
+    const effects = (Array.isArray(r && r.effects) ? r.effects : []).slice(0, 6).map((e: any) => cleanEffect(e, numbers, opp)).filter(Boolean) as Record<string, unknown>[];
     if (!effects.length) { dropped.push(String((r && r.summary) || 'an instruction')); return; }
     // A rule that names a scope must name a real one: a player who is not in the squad must not quietly turn into an instruction for everyone.
     const scope = r.scope == null ? fallbackScope : cleanScope(r.scope, numbers);

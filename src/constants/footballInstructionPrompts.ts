@@ -42,13 +42,14 @@ EFFECTS (1 to 6 per rule). Each has a "type" and these fields only:
   { "type": "closeDown", "delta": -1 to 1 }                                            how far he chases the ball carrier
   { "type": "tackle", "delta": -1 to 1 }
   { "type": "stepUp", "on": true }                                                     a defender steps up to follow a forward who drops deep
-  { "type": "mark", "target": { "group"? , "line"? }, "tight": true }                  follow the nearest opponent of that kind instead of holding a zone
+  { "type": "mark", "target": { "group"?, "line"?, "number"?, "name"? }, "tight": true }   follow the nearest opponent of that kind, or one named opposition player (give his shirt number and name from the opposition squad), instead of holding a zone
 
 HOW TO TRANSLATE
 - Use the smallest rule that carries the meaning. "Play out from the back" is { passLength short, strength about 0.7 } for the defence and goalkeeper, usually with "when": { "zone": ["own_third"] }.
 - Strength and weight express how strongly: "always" or "never" is 0.9 to 1, "prefer" or "try to" is 0.4 to 0.6, "a bit" is 0.2 to 0.3.
 - "Pressed" means under pressure from an opponent. "Free" means nobody close.
-- Players named in the text must be found in the squad by name, number or position. If you cannot tell who is meant, use the scope you were given and say so in notIncluded.
+- Players named in the text must be found in the squad by name, number or position. Managers may write a surname, a full name or a shirt number: map every one of them to the shirt number in the squad. For the opposition, use the opposition squad list the same way.
+- Anything the manager does not mention stays as it is. Do not add effects they did not ask for. If you cannot tell who is meant, use the scope you were given and say so in notIncluded.
 - If part of the instruction is about something the vocabulary cannot do (a specific opponent's name, how a player feels, a set-piece routine, a formation change, a substitution), do NOT approximate it: leave it out and put it in notIncluded.
 - If nothing in the text can be expressed, return "rules": [] and explain in notIncluded.
 - Write each summary in plain words a manager would say. No jargon about weights or deltas.

@@ -4,7 +4,7 @@ import { costlyEndpointLimiter } from '../services/rateLimiters';
 import { callClaudeJSON, MODELS } from '../services/claudeClient';
 import { assertLocksAvailable, InsufficientLocksError } from '../services/lockService';
 import { FOOTBALL_INSTRUCTION_PROMPT } from '../constants/footballInstructionPrompts';
-import { cleanScope, validateRules, GROUPS, Scope } from '../services/footballRules';
+import { cleanScope, validateRules, GROUPS, Scope, Opp } from '../services/footballRules';
 
 // The football manager game: a manager types an instruction in their own words, for the team, a line or one player, and Haiku turns it into the
 // fixed rules the match engine runs. One call when the instruction is saved; nothing here runs during a match. Whatever the model returns is
@@ -29,10 +29,11 @@ router.post('/football/compile-instruction', async (req: Request, res: Response)
     number: Math.round(Number(p && p.number)), name: clip(p && p.name, 40), group: (GROUPS as readonly string[]).includes(p && p.group) ? p.group : '', role: clip(p && p.role, 40),
   })).filter((p: any) => Number.isFinite(p.number) && p.number > 0 && p.group);
   const numbers: number[] = squad.map((p: any) => p.number);
+  const opponent: Opp[] = (Array.isArray(req.body?.opponent) ? req.body.opponent : []).slice(0, 22).map((p: any) => ({ number: Math.round(Number(p && p.number)), name: clip(p && p.name, 40) })).filter((p: Opp) => Number.isFinite(p.number) && p.number > 0 && p.name);
   const scope: Scope = cleanScope(req.body?.scope, numbers) || { kind: 'team' };
   try {
     await assertLocksAvailable(req.userId as string);
-    const userContent = `Scope the manager is writing this for: ${JSON.stringify(scope)}\n\nSquad:\n${squad.map((p: any) => `#${p.number} ${p.name} (${p.group}${p.role ? ', ' + p.role : ''})`).join('\n') || '(not given)'}\n\nThe manager's instruction:\n"""\n${text}\n"""`;
+    const userContent = `Scope the manager is writing this for: ${JSON.stringify(scope)}\n\nSquad:\n${squad.map((p: any) => `#${p.number} ${p.name} (${p.group}${p.role ? ', ' + p.role : ''})`).join('\n') || '(not given)'}\n\nThe opposition's squad (for marking a named player):\n${opponent.map((p) => `#${p.number} ${p.name}`).join('\n') || '(not given)'}\n\nThe manager's instruction:\n"""\n${text}\n"""`;
     let parsed: any = null, lastErr: unknown = null;
     for (let attempt = 0; attempt < 2 && !parsed; attempt++) {
       try {
@@ -41,7 +42,7 @@ router.post('/football/compile-instruction', async (req: Request, res: Response)
       } catch (e) { lastErr = e; }
     }
     if (!parsed) throw lastErr || new Error('no usable answer');
-    const { rules, dropped } = validateRules(parsed.rules, numbers, scope, text);
+    const { rules, dropped } = validateRules(parsed.rules, numbers, scope, text, opponent);
     const notIncluded = (Array.isArray(parsed.notIncluded) ? parsed.notIncluded : []).map((s: unknown) => clip(s, 240)).filter(Boolean).slice(0, 6)
       .concat(dropped.map((d) => 'Could not turn into something the game can do: ' + d));
     res.json({ rules, notIncluded });

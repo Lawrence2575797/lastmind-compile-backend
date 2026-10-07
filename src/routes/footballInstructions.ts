@@ -65,23 +65,33 @@ router.post('/football/review-instructions', async (req: Request, res: Response)
   const instructions = (Array.isArray(req.body?.instructions) ? req.body.instructions : []).slice(0, 30).map((s: unknown) => clip(s, 400)).filter(Boolean);
   if (!instructions.length) return res.status(400).json({ error: 'There are no instructions to review yet.' });
   const formation = clip(req.body?.formation, 20), oppName = clip(req.body?.opponent && req.body.opponent.name, 60);
+  const stage = ['build', 'final', 'transAtt', 'transDef', 'press', 'without'].includes(req.body?.stage) ? req.body.stage : 'build';
+  const plan = req.body?.opponent && req.body.opponent.plan ? req.body.opponent.plan : null;
   try {
     await assertLocksAvailable(req.userId as string);
-    const userContent = `Formation: ${formation || '(unknown)'}\n\nOur squad:\n${own.map(line).join('\n') || '(not given)'}\n\nThe next opponent: ${oppName || '(unknown)'}\n${opp.map(line).join('\n')}\n\nThe manager's instructions as the game understood them (one per line):\n${instructions.map((t: string, i: number) => `${i + 1}. ${t}`).join('\n')}`;
+    const likely = plan ? `${clip(plan.rationale, 500)} The alternative he weighed: ${clip(plan.alternative, 300) || '(none given)'}` : '(no scouting yet)';
+    const userContent = [
+      `Stage under review: ${stage} (${clip(req.body?.stageName, 40)}). Review this stage only.`,
+      `Formation: ${formation || '(unknown)'}`,
+      `Our squad:\n${own.map(line).join('\n') || '(not given)'}`,
+      `The next opponent: ${oppName || '(unknown)'}\n${opp.map(line).join('\n')}`,
+      `What their manager is likely to do: ${likely}`,
+      `The manager's instructions for this stage as the game understood them (one per line):\n${instructions.map((t: string, i: number) => `${i + 1}. ${t}`).join('\n')}`,
+    ].join('\n\n');
     let parsed: any = null, lastErr: unknown = null;
     for (let attempt = 0; attempt < 2 && !parsed; attempt++) {
       try {
-        const raw = await callClaudeJSON({ model: MODELS.chat, systemPrompt: FOOTBALL_REVIEW_PROMPT, userContent, maxTokens: 2200, temperature: 0.2, userId: req.userId as string, meteredReason: 'football-review' });
+        const raw = await callClaudeJSON({ model: MODELS.chat, systemPrompt: FOOTBALL_REVIEW_PROMPT, userContent, maxTokens: 1600, temperature: 0.4, userId: req.userId as string, meteredReason: 'football-review' });
         parsed = parseJsonLoose(raw);
       } catch (e) { lastErr = e; }
     }
     if (!parsed) throw lastErr || new Error('no usable answer');
     const item = (x: any, keys: string[]) => { const o: Record<string, string> = {}; keys.forEach((k) => { o[k] = clip(x && x[k], 500); }); return o; };
     res.json({
-      summary: clip(parsed.summary, 800),
-      effects: (Array.isArray(parsed.effects) ? parsed.effects : []).slice(0, 8).map((x: any) => item(x, ['who', 'what'])).filter((x: any) => x.what),
-      concerns: (Array.isArray(parsed.concerns) ? parsed.concerns : []).slice(0, 5).map((x: any) => item(x, ['title', 'why', 'fix'])).filter((x: any) => x.title),
-      improvements: (Array.isArray(parsed.improvements) ? parsed.improvements : []).slice(0, 5).map((x: any) => item(x, ['title', 'suggestion', 'instruction'])).filter((x: any) => x.title),
+      summary: clip(parsed.summary, 600),
+      concerns: (Array.isArray(parsed.concerns) ? parsed.concerns : []).slice(0, 3).map((x: any) => item(x, ['title', 'why', 'fix'])).filter((x: any) => x.title),
+      ifOpposite: parsed.ifOpposite && typeof parsed.ifOpposite === 'object' ? item(parsed.ifOpposite, ['what', 'instruction']) : null,
+      improvements: (Array.isArray(parsed.improvements) ? parsed.improvements : []).slice(0, 3).map((x: any) => item(x, ['title', 'suggestion', 'instruction'])).filter((x: any) => x.title),
     });
   } catch (err) {
     if (err instanceof InsufficientLocksError) return res.status(402).json({ error: 'Lock limit reached', code: 'LOCK_LIMIT_REACHED', detail: "You're out of Locks for now." });

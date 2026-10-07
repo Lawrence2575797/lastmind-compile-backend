@@ -14,12 +14,14 @@ Return ONLY valid JSON in exactly this shape:
 {
   "rules": [ { "summary": "the rule in one plain sentence", "scope": { ... }, "when": { ... }, "effects": [ { ... } ] } ],
   "rationale": "two or three plain sentences, as the manager would say them to the press: what you saw about them and what you are doing about it",
+  "alternative": "one sentence: the other plan you weighed and why you did not choose it",
   "scouted": ["each thing you noticed about them, in plain words, at most four"]
 }
 
 ${FOOTBALL_VOCABULARY}
 
 HOW TO DECIDE
+- Always weigh the opposite plan before you choose. Pressing a team that builds from the back is one answer; sitting off is the other (keep a compact shape in the middle, shut the middle and the lanes to the full-backs, and let the keeper and centre-backs have the ball so the press cannot be beaten and no space is left behind it). If they are good at playing out, or keep most of the ball, pressing may only get you beaten; if they lose it under pressure, sitting off wastes the chance. Say in "alternative" which one you set aside and why.
 - Respond to what the figures show, and say so. A team that mostly builds short through its centre-backs invites a press on the centre-backs and on the passing lanes to its full-backs and defensive midfielders. A team that goes long a lot is better met by a deeper line and fewer pressers. A team with a lot of the ball and few shots can be allowed it in front of your box but not in the final third. A team that attacks down one side can be met with an overload on that side.
 - Use only the vocabulary above. Your rules are for your own team (shirt numbers from your squad). You may mark a named player of theirs: use his shirt number and name from their squad.
 - At most 4 rules, each with 1 to 4 effects. Prefer a few well-chosen rules to many small ones. Strength and weight values of 0.4 to 0.7 are normal; use more than 0.8 only for a clear reason.

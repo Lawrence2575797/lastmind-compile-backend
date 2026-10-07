@@ -55,7 +55,7 @@ router.post('/football/opponent-plan', async (req: Request, res: Response) => {
     const rationale = clip(parsed.rationale, 700);
     const { rules } = validateRules(parsed.rules, squad.map((p: any) => ({ number: p.number, name: p.name, slot: p.slot, group: p.group })), { kind: 'team' }, rationale, opponent);
     const scouted = (Array.isArray(parsed.scouted) ? parsed.scouted : []).map((x: unknown) => clip(x, 200)).filter(Boolean).slice(0, 4);
-    res.json({ rules, rationale, scouted });
+    res.json({ rules, rationale, alternative: clip(parsed.alternative, 400), scouted });
   } catch (err) {
     if (err instanceof InsufficientLocksError) return res.status(402).json({ error: 'Lock limit reached', code: 'LOCK_LIMIT_REACHED', detail: "You're out of Locks for now." });
     console.error('Football opponent plan failed:', err);

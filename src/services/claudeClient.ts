@@ -20,6 +20,26 @@ function sanitizeForClaude(text: string): string {
   return applyContextualPIIFilter(applyStructuredPIIFilter(text));
 }
 
+// One voice for every piece of generated copy a learner can see. Keeping
+// this at the shared model boundary means a new lesson, simulation or
+// assistant route cannot quietly fall back to generic AI prose just because
+// its author forgot to repeat the style rules in one local prompt.
+const USER_FACING_VOICE = `
+
+GLOBAL USER-FACING VOICE — apply this to every string the learner/player will see, while preserving the requested JSON schema, factual constraints, labels and machine-only fields.
+- Write to the person using the product, never to the developer who wrote the request and never about "the user", "the student", "the prompt", "the input" or "the response".
+- Sound like a thoughtful human teacher, coach, analyst or editor who cares whether the person genuinely understands. Be warm, candid and specific without becoming sentimental, theatrical or over-familiar.
+- Do not echo or paraphrase the request before answering. Do not say "as requested", "based on your prompt", "I generated", "the AI", "great question", "I'd be happy to help", or other assistant boilerplate.
+- Prefer concrete, natural sentences and contractions over templated headings, corporate language, vague praise and stock transitions. Say what matters first.
+- Address the learner as "you" only when it feels natural. In simulations, stay inside the world and speak in the role the interface establishes; do not mention models, prompts, schemas or simulation machinery.
+- Praise only when it is earned and name what was good. When something is wrong or risky, say so kindly and plainly, then give a useful next step.
+- Explanations should feel written for many real learners, not as a private reply to whoever commissioned the feature. Never refer to product-development instructions or the conversation that created the content.
+- Do not make factual, marking or safety language less precise in pursuit of warmth. Human means clear, attentive and honest, not wordier.`;
+
+function withUserFacingVoice(systemPrompt: string): string {
+  return systemPrompt.includes('GLOBAL USER-FACING VOICE') ? systemPrompt : systemPrompt + USER_FACING_VOICE;
+}
+
 const CLAUDE_API_KEY = process.env.CLAUDE_API_KEY;
 
 if (!CLAUDE_API_KEY) {
@@ -90,7 +110,7 @@ export const MODELS = {
 } as const;
 
 const TUTOR_SYSTEM_PROMPT =
-  "You are an AI tutor. The following text is a student's notes. Improve them into clear, structured revision notes.";
+  "You are a thoughtful tutor helping someone turn their own notes into clear, structured revision material. Preserve their meaning, make difficult ideas easier to follow, and write for the learner who will revise from the finished page.";
 
 const FALLBACK_MESSAGE = 'There was an issue processing your notes. Please try again.';
 
@@ -105,7 +125,7 @@ export async function processNotes(safeText: string, userId: string): Promise<st
     const response = await anthropic.messages.create({
       model: MODELS.compile,
       max_tokens: 1024,
-      system: TUTOR_SYSTEM_PROMPT,
+      system: withUserFacingVoice(TUTOR_SYSTEM_PROMPT),
       // This call is a raw SDK call rather than going through
       // makeMessageRequest below, so it doesn't get that function's own
       // modelThinksByDefault handling for free - needs the same explicit
@@ -264,6 +284,7 @@ async function makeMessageRequest(
   cacheSystemPrompt: boolean,
   signal?: AbortSignal
 ) {
+  systemPrompt = withUserFacingVoice(systemPrompt);
   const params = {
     model,
     max_tokens: maxTokens ?? 2048,
@@ -400,7 +421,7 @@ export function buildCachedChatParams(params: {
     ...(params.temperature != null ? { temperature: params.temperature } : {}),
     ...(modelThinksByDefault(params.model) ? { thinking: { type: 'disabled' as const } } : {}),
     system: [
-      { type: 'text' as const, text: params.systemPrompt },
+      { type: 'text' as const, text: withUserFacingVoice(params.systemPrompt) },
       { type: 'text' as const, text: sanitizeForClaude(params.pageContext), cache_control: { type: 'ephemeral' as const } },
     ],
     messages,

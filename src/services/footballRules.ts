@@ -8,6 +8,7 @@ const ZONES = ['own_third', 'middle_third', 'final_third'] as const;
 const SIDES = ['left', 'centre', 'right', 'wide'] as const;
 const POSSESSION = ['with', 'without', 'any'] as const;
 const SCORES = ['winning', 'drawing', 'losing'] as const;
+const STAGES = ['build', 'final', 'transAtt', 'transDef', 'press', 'without'] as const;
 
 export type Scope = { kind: 'team' } | { kind: 'line'; line: string } | { kind: 'group'; group: string } | { kind: 'player'; number: number };
 export type Rule = { id: string; text: string; scope: Scope; when: Record<string, unknown>; effects: Record<string, unknown>[] };
@@ -63,6 +64,7 @@ export function cleanWhen(raw: any): Record<string, unknown> {
   const p = inList(raw.possession, POSSESSION); if (p && p !== 'any') w.possession = p;
   if (Array.isArray(raw.zone)) { const z = raw.zone.map((x: unknown) => inList(x, ZONES)).filter(Boolean); if (z.length && z.length < 3) w.zone = z; }
   else { const z = inList(raw.zone, ZONES); if (z) w.zone = [z]; }
+  const stg = (Array.isArray(raw.stage) ? raw.stage : raw.stage ? [raw.stage] : []).map((x: unknown) => inList(x, STAGES)).filter(Boolean); if (stg.length && stg.length < STAGES.length) w.stage = stg;
   const pr = inList(raw.pressed, ['pressed', 'free'] as const); if (pr) w.pressed = pr;
   const sd = inList(raw.side, SIDES); if (sd) w.side = sd;
   const sc = inList(raw.score, SCORES); if (sc) w.score = sc;

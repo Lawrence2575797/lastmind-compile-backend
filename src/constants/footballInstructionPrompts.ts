@@ -20,6 +20,7 @@ SCOPE (who the rule is for). Use the scope you are given unless the text clearly
 
 WHEN (all optional, all must hold; leave out what the text does not say):
   "possession": "with" | "without"
+  "stage": ["build","final","transAtt","transDef","press","without"] (the stage of play: build = the team has the ball in its own half building up; final = it has the ball near their goal; transAtt = the few seconds after winning the ball; transDef = the few seconds after losing it; press = pressing them while they build from their own end; without = defending otherwise)
   "zone": ["own_third","middle_third","final_third"] (the third the ball is in, from the manager's own goal: own_third is nearest it)
   "pressed": "pressed" (an opponent within about 4 m of the ball carrier) | "free" (nobody close)
   "side": "left" | "centre" | "right" | "wide" (where the ball is, from the manager's team's left)

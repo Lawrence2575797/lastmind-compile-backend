@@ -503,8 +503,16 @@ async function derivationGenericGenerateOnce(info: GenericLookup, userId: string
       .lt('stage_index', info.stageIndex);
     const knownSet = new Set<string>();
     (priorStages || []).forEach((row: any) => (row.concept_ids || []).forEach((c: string) => knownSet.add(c)));
-    const missing = stage.given.filter((g: string) => !knownSet.has(g));
+    // A prerequisite counts as known when an EARLIER PLANNED stage teaches it, whether or not anyone has had that earlier lesson generated yet.
+    // The lesson only treats the given concepts as assumed knowledge (toSpec lists them as given terms, and the prompt never reads the earlier
+    // lesson), so insisting that the earlier lesson already exists made a student who had marked those concepts as already covered, or who
+    // skipped one that would not build, unable to open any lesson that depended on it ("try an earlier concept first", forever). Only a
+    // given concept that NO earlier stage teaches is a genuine ordering problem.
+    const plannedEarlier = new Set<string>();
+    info.stages.slice(0, info.stageIndex).forEach((s) => (s.nodes || []).forEach((n: string) => plannedEarlier.add(n)));
+    const missing = stage.given.filter((g: string) => !knownSet.has(g) && !plannedEarlier.has(g));
     if (missing.length) throw new DerivationStageNotReadyError(`Cannot generate stage ${info.stageIndex} yet - its prerequisite stage(s) for [${missing.join(', ')}] have not been generated first.`);
+    stage.given.forEach((g: string) => { if (plannedEarlier.has(g)) knownSet.add(g); });
     known = [...knownSet];
   }
 

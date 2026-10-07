@@ -23,9 +23,9 @@ function parseJsonLoose(text: string): any {
 // "squad" is the AI club's own players; "opponent" is the user's club; the rules that come back are for the AI club.
 router.post('/football/opponent-plan', async (req: Request, res: Response) => {
   const squad = (Array.isArray(req.body?.squad) ? req.body.squad : []).slice(0, 22).map((p: any) => ({
-    number: Math.round(Number(p && p.number)), name: clip(p && p.name, 40), group: (GROUPS as readonly string[]).includes(p && p.group) ? p.group : '', role: clip(p && p.role, 40),
+    number: Math.round(Number(p && p.number)), name: clip(p && p.name, 40), group: (GROUPS as readonly string[]).includes(p && p.group) ? p.group : '', role: clip(p && p.role, 40), slot: clip(p && p.slot, 6),
   })).filter((p: any) => Number.isFinite(p.number) && p.number > 0 && p.group);
-  const opponent: Opp[] = (Array.isArray(req.body?.opponent) ? req.body.opponent : []).slice(0, 22).map((p: any) => ({ number: Math.round(Number(p && p.number)), name: clip(p && p.name, 40) })).filter((p: Opp) => Number.isFinite(p.number) && p.number > 0 && p.name);
+  const opponent: Opp[] = (Array.isArray(req.body?.opponent) ? req.body.opponent : []).slice(0, 22).map((p: any) => ({ number: Math.round(Number(p && p.number)), name: clip(p && p.name, 40), slot: clip(p && p.slot, 6), group: clip(p && p.group, 4) })).filter((p: Opp) => Number.isFinite(p.number) && p.number > 0 && p.name);
   if (!squad.length) return res.status(400).json({ error: 'squad is required' });
   const numbers: number[] = squad.map((p: any) => p.number);
   const stage = ['prematch', 'halftime', 'goal_for', 'goal_against', 'checkin'].includes(req.body?.stage) ? req.body.stage : 'prematch';
@@ -53,7 +53,7 @@ router.post('/football/opponent-plan', async (req: Request, res: Response) => {
     }
     if (!parsed) throw lastErr || new Error('no usable answer');
     const rationale = clip(parsed.rationale, 700);
-    const { rules } = validateRules(parsed.rules, squad.map((p: any) => ({ number: p.number, name: p.name })), { kind: 'team' }, rationale, opponent);
+    const { rules } = validateRules(parsed.rules, squad.map((p: any) => ({ number: p.number, name: p.name, slot: p.slot, group: p.group })), { kind: 'team' }, rationale, opponent);
     const scouted = (Array.isArray(parsed.scouted) ? parsed.scouted : []).map((x: unknown) => clip(x, 200)).filter(Boolean).slice(0, 4);
     res.json({ rules, rationale, scouted });
   } catch (err) {

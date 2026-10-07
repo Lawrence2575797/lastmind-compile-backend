@@ -27,7 +27,7 @@ const readSquad = (raw: unknown): P[] => (Array.isArray(raw) ? raw : []).slice(0
   number: Math.round(Number(p && p.number)), name: clip(p && p.name, 40), group: (GROUPS as readonly string[]).includes(p && p.group) ? p.group : '', role: clip(p && p.role, 40), slot: clip(p && p.slot, 6),
 })).filter((p: P) => Number.isFinite(p.number) && p.number > 0 && p.name);
 const line = (p: P) => `#${p.number} ${p.name} (${p.group}${p.slot ? ', ' + p.slot : ''}${p.role ? ', ' + p.role : ''})`;
-const asOpp = (l: P[]): Opp[] => l.map((p) => ({ number: p.number, name: p.name }));
+const asOpp = (l: P[]): Opp[] => l.map((p) => ({ number: p.number, name: p.name, slot: p.slot, group: p.group }));
 
 // POST /football/compile-instruction { text, squad, opponent } -> { rules, notIncluded }
 router.post('/football/compile-instruction', async (req: Request, res: Response) => {

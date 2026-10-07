@@ -12,8 +12,8 @@ const POSSESSION = ['with', 'without', 'any'] as const;
 const SCORES = ['winning', 'drawing', 'losing'] as const;
 const STAGES = ['build', 'final', 'transAtt', 'transDef', 'press', 'without'] as const;
 
-export type Scope = { kind: 'team' } | { kind: 'line'; line: string } | { kind: 'group'; group: string } | { kind: 'player'; number: number };
-export type Opp = { number: number; name: string };
+export type Scope = { kind: 'team' } | { kind: 'line'; line: string } | { kind: 'group'; group: string } | { kind: 'slot'; slot: string } | { kind: 'player'; number: number };
+export type Opp = { number: number; name: string; slot?: string; group?: string };
 export type Rule = { id: string; text: string; scope: Scope; when: Record<string, unknown>; effects: Record<string, unknown>[] };
 type Squads = { own: Opp[]; opp: Opp[] };
 
@@ -22,8 +22,11 @@ const inList = <T extends string>(v: unknown, list: readonly T[]): T | null => (
 const r2 = (n: number) => Math.round(n * 100) / 100;
 const surname = (n: string) => n.toLowerCase().split(' ').slice(-1)[0];
 
-// A player of one club, found by shirt number or by name (full name or surname).
+// A position on the pitch as the formation names it: LB, RCB, LAM, RST and so on. A player of one club is found by position, shirt number or name.
+const slotOk = (list: Opp[], v: unknown): string | null => (typeof v === 'string' && list.some((o) => (o.slot || '').toUpperCase() === v.trim().toUpperCase()) ? v.trim().toUpperCase() : null);
 function findPlayer(list: Opp[], raw: any): Opp | undefined {
+  const bySlot = raw && typeof raw.slot === 'string' ? list.find((o) => (o.slot || '').toUpperCase() === raw.slot.trim().toUpperCase()) : undefined;
+  if (bySlot && raw.number == null && !raw.name) return bySlot;
   const byNum = raw && raw.number != null ? list.find((o) => o.number === Math.round(Number(raw.number))) : undefined;
   const nm = raw && typeof raw.name === 'string' ? raw.name.trim().toLowerCase() : '';
   const byName = nm ? list.find((o) => o.name.toLowerCase() === nm || surname(o.name) === nm) : undefined;
@@ -35,6 +38,7 @@ export function cleanScope(raw: any, own: Opp[]): Scope | null {
   if (raw.kind === 'team') return { kind: 'team' };
   if (raw.kind === 'line') { const line = inList(raw.line, LINES); return line ? { kind: 'line', line } : null; }
   if (raw.kind === 'group') { const group = inList(raw.group, GROUPS); return group ? { kind: 'group', group } : null; }
+  if (raw.kind === 'slot') { const slot = slotOk(own, raw.slot); return slot ? { kind: 'slot', slot } : null; }
   if (raw.kind === 'player') { const p = findPlayer(own, raw); return p ? { kind: 'player', number: p.number } : null; }
   return null;
 }
@@ -45,6 +49,7 @@ function cleanTarget(raw: any, own: Opp[]): Record<string, unknown> | null {
   const g = inList(raw.group, GROUPS); if (g) t.group = g;
   const l = inList(raw.line, LINES); if (l) t.line = l;
   if (raw.number != null || raw.name != null) { const p = findPlayer(own, raw); if (p) t.number = p.number; }
+  const sl = slotOk(own, raw.slot); if (sl) t.slot = sl;
   if (typeof raw.side === 'string' && ['same', 'opposite', 'left', 'centre', 'right', 'wide'].includes(raw.side)) t.side = raw.side;
   return Object.keys(t).length ? t : null;
 }
@@ -60,6 +65,15 @@ function cleanEntity(raw: any, sq: Squads, depth = 0): Record<string, unknown> |
   if (e === 'player') {
     const side = raw.side === 'opp' ? 'opp' : 'own', p = findPlayer(side === 'opp' ? sq.opp : sq.own, raw);
     return p ? { e: 'player', side, number: p.number, name: p.name } : null;
+  }
+  if (e === 'slot') {
+    const side = raw.side === 'opp' ? 'opp' : 'own', list = side === 'opp' ? sq.opp : sq.own, slot = slotOk(list, raw.slot);
+    return slot ? { e: 'slot', side, slot } : null;
+  }
+  if (e === 'group' || e === 'line') {
+    const side = raw.side === 'opp' ? 'opp' : 'own', agg = inList(raw.agg ?? 'avg', ['avg', 'min', 'max'] as const);
+    if (e === 'group') { const g = inList(raw.group, GROUPS); return g && agg ? { e: 'group', side, group: g, agg } : null; }
+    const l = inList(raw.line, LINES); return l && agg ? { e: 'line', side, line: l, agg } : null;
   }
   if (e === 'nearest') {
     const side = raw.side === 'own' ? 'own' : 'opp', group = inList(raw.group, GROUPS), to = raw.to ? cleanEntity(raw.to, sq, depth + 1) : null;
@@ -95,6 +109,7 @@ function cleanPred(raw: any, sq: Squads, c: Counter, depth = 0): any {
     return cmp && a != null && b != null ? { cmp, a, b } : null;
   }
   if (raw.is === 'group') { const of = cleanEntity(raw.of, sq), v = inList(raw.value, GROUPS); return of && v ? { is: 'group', of, value: v } : null; }
+  if (raw.is === 'slot') { const of = cleanEntity(raw.of, sq), v = slotOk([...sq.own, ...sq.opp], raw.value); return of && v ? { is: 'slot', of, value: v } : null; }
   if (raw.is === 'player') {
     const of = cleanEntity(raw.of, sq), side = raw.side === 'opp' ? 'opp' : 'own', p = findPlayer(side === 'opp' ? sq.opp : sq.own, raw);
     return of && p ? { is: 'player', of, number: p.number, name: p.name, side } : null;

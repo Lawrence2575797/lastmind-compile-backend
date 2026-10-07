@@ -350,9 +350,9 @@ export async function getKnowledgeMapForSubject(
   // isn't actually a close match (falls through to the typed value, same
   // "no map generated yet" result as before this existed).
   const { subject, qualification, examBoard } = await resolveSubjectTriple(rawSubject, rawQualification, rawExamBoard);
-  const nodeRows = await selectAllRows<{ id: string; concept_id: string; label: string; subtopic: string; theme: string | null }>(
+  const nodeRows = await selectAllRows<{ id: string; node_key: string; concept_id: string; label: string; subtopic: string; theme: string | null }>(
     'knowledge_map_nodes',
-    'id, concept_id, label, subtopic, theme',
+    'id, node_key, concept_id, label, subtopic, theme',
     (q) => q.ilike('subject', subject.trim()).ilike('qualification', qualification.trim()).ilike('exam_board', examBoard.trim())
   );
   if (!nodeRows.length) {
@@ -421,17 +421,17 @@ export async function getKnowledgeMapForSubject(
     list.push(r);
     bySubtopic.set(subtopic, list);
   });
-  const authoredItalianOrder = subject.toLowerCase() === 'italian' && qualification.toLowerCase() === 'other'
-    ? italianAuthoredOrder(nodeRows.map((r) => r.concept_id as string))
+  const authoredItalianOrder = subject.toLowerCase() === 'italian'
+    ? italianAuthoredOrder(nodeRows.map((r) => r.node_key as string))
     : null;
   const authoredItalianRank = authoredItalianOrder
-    ? new Map(authoredItalianOrder.map((conceptId, index) => [conceptId, index]))
+    ? new Map(authoredItalianOrder.map((nodeKey, index) => [nodeKey, index]))
     : null;
   const subtopicOrders = new Map<string, string[]>(authoredItalianRank
     ? Array.from(bySubtopic.entries()).map(([subtopic, rows]) => [
         subtopic,
         rows.slice()
-          .sort((a, b) => (authoredItalianRank.get(a.concept_id as string) ?? Number.MAX_SAFE_INTEGER) - (authoredItalianRank.get(b.concept_id as string) ?? Number.MAX_SAFE_INTEGER))
+          .sort((a, b) => (authoredItalianRank.get(a.node_key as string) ?? Number.MAX_SAFE_INTEGER) - (authoredItalianRank.get(b.node_key as string) ?? Number.MAX_SAFE_INTEGER))
           .map((r) => r.id as string),
       ] as [string, string[]])
     : await Promise.all(

@@ -234,12 +234,14 @@ router.get('/knowledge-map-v2/node/:nodeId/lesson', requireAuth, syncEndpointLim
     if (italian) {
       const content = italianAuthoredContent(italian);
       if (!content) return res.status(404).json({ error: 'lesson not found' });
+      const payload = italianAuthoredPayload(italianAuthoredStageKey(italian.stageIndex));
+      if (payload) payload.stage = { ...payload.stage, nodes: [italian.conceptId] };
       return res.json({
         ...lessonForClient(content),
         derivation: {
           stage: italianAuthoredStageKey(italian.stageIndex),
-          concepts: italian.stage.concepts,
-          payload: italianAuthoredPayload(italianAuthoredStageKey(italian.stageIndex)),
+          concepts: [italian.conceptId],
+          payload,
         },
       });
     }
@@ -417,7 +419,7 @@ router.post('/knowledge-map-v2/derivation/complete', requireAuth, syncEndpointLi
   const authoredItalianStage = typeof rawStage === 'string' && rawStage.startsWith('italian-authored:');
   const stage = genericStage || authoredItalianStage ? rawStage : Number(rawStage);
   const concepts = authoredItalianStage
-    ? italianAuthoredConcepts(stage as string)
+    ? await italianAuthoredConcepts(stage as string)
     : genericStage
       ? await derivationGenericConceptsForKey(stage as string)
       : derivationConceptsOfStage(stage as number);

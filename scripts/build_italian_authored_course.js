@@ -12,6 +12,9 @@ const sourcePath = path.join(__dirname, 'knowledge_map_italian_other.json');
 const outputPath = path.join(root, 'src', 'data', 'italianAuthoredCourse.json');
 const map = JSON.parse(fs.readFileSync(sourcePath, 'utf8'));
 
+// Hand-written lessons (see italian_lessons/helpers.js). A node without an entry falls back to the plain template below.
+const SPECS = require('./italian_lessons');
+
 const colours = ['#cfe8c8', '#cfe3f6', '#f6ecb9', '#f8d9c4', '#cfd9e8', '#dccff0'];
 
 const sectionNumber = (subtopic) => {
@@ -212,9 +215,29 @@ function teachingLines(node) {
   return lines;
 }
 
+const cap1 = (t) => t.charAt(0).toUpperCase() + t.slice(1);
+
+// A written lesson: what it teaches, the typed "how do you say..." checks, the multiple-choice questions, and the questions kept for later review.
+function specParts(spec) {
+  const lines = [];
+  (spec.vocab || []).forEach((v) => lines.push(`${cap1(v.it)} means “${v.en}”.`));
+  (spec.teach || []).forEach((l) => lines.push(l));
+  (spec.notes || []).forEach((l) => lines.push(l));
+  const says = spec.say
+    ? spec.say.map(([q, ...answer]) => ({ q, answer }))
+    : (spec.vocab || []).slice(0, spec.max || 3).map((v) => ({ q: `How do you say “${v.en}” in Italian?`, answer: [v.it] }));
+  const quiz = (spec.quiz || []).map(([q, right, ...wrongs]) => ({ q, right, wrongs }));
+  const recall = says.length
+    ? says.slice(0, 2).map((x) => ({ q: x.q, a: x.answer[0] }))
+    : quiz.slice(0, 2).map((x) => ({ q: x.q, a: x.right }));
+  return { lines, says, quiz, recall };
+}
+
 function lessonFor(node, index) {
   const { idea, forms } = splitLabel(node.label);
-  const lines = teachingLines(node);
+  const spec = SPECS[node.id];
+  const parts = spec ? specParts(spec) : null;
+  const lines = parts ? parts.lines : teachingLines(node);
   const right = forms ? `${forms} — these are the forms just introduced.` : `${node.label} — this matches the rule just introduced.`;
   const wrong = forms ? 'A different set of forms that was not introduced here.' : 'The opposite rule, which was not introduced here.';
   const question = forms ? `Which answer accurately recalls the ${idea.toLowerCase()} from this lesson?` : `Which answer accurately recalls this lesson's key point?`;
@@ -237,10 +260,16 @@ function lessonFor(node, index) {
       done: formation.kind === 'conversation' ? 'The conversation now uses only language you have already met.' : 'The sentence is complete, using only language already introduced.',
     });
   }
-  script.push(
-    { type: 'recap', q: question, right, wrong, hint: `Read the explanation of ${idea.toLowerCase()} once more.`, terms: [node.id] },
-    { type: 'done' },
-  );
+  if (parts) {
+    parts.says.forEach((x) => script.push({ type: 'say', q: x.q, answer: x.answer, hint: 'Not quite. Look back at the card above.', term: node.id }));
+    parts.quiz.forEach((x) => script.push({ type: 'recap', q: x.q, right: x.right, wrongs: x.wrongs, hint: 'Not quite. Look back at the card above.', terms: [node.id] }));
+    script.push({ type: 'done' });
+  } else {
+    script.push(
+      { type: 'recap', q: question, right, wrong, hint: `Read the explanation of ${idea.toLowerCase()} once more.`, terms: [node.id] },
+      { type: 'done' },
+    );
+  }
   return {
     i: index,
     name: node.id,
@@ -258,6 +287,7 @@ function lessonFor(node, index) {
       hud: `${node.subtopic.split(' ')[0]} · ${idea}`,
       title: idea,
       sub: forms ? `Learn and recognise ${forms}.` : `Understand ${node.label.toLowerCase()}.`,
+      ...(parts && parts.recall.length ? { recall: parts.recall } : {}),
       builds: [],
       graph: { h: 140, nodes: { [node.id]: [390, 38, 260, 64] }, edges: [], given: [], pairs: [] },
       script,
@@ -283,12 +313,22 @@ if (new Set(Object.keys(byConcept)).size !== map.nodes.length) errors.push('dupl
 stages.forEach((s, i) => {
   const script = s.stage.script;
   const shape = script.map((x) => x.type).join(',');
-  if (shape !== 'title,read,recap,done' && shape !== 'title,read,order,recap,done') errors.push(`${s.name}: unexpected script shape`);
+  if (SPECS[s.name]) {
+    if (!/^title,read(,order)?(,say)*(,recap)*,done$/.test(shape) || !/,(say|recap)/.test(shape)) errors.push(`${s.name}: unexpected written-lesson shape ${shape}`);
+    // every typed answer must have been shown on the card first
+    const cardText = script[1].text.toLowerCase();
+    script.filter((x) => x.type === 'say').forEach((x) => {
+      if (!cardText.includes(String(x.answer[0]).toLowerCase())) errors.push(`${s.name}: typed answer "${x.answer[0]}" is not on the teaching card`);
+    });
+    script.filter((x) => x.type === 'recap').forEach((x) => {
+      if (!x.wrongs || !x.wrongs.length || x.wrongs.includes(x.right)) errors.push(`${s.name}: bad multiple-choice options for "${x.q}"`);
+    });
+  } else if (shape !== 'title,read,recap,done' && shape !== 'title,read,order,recap,done') errors.push(`${s.name}: unexpected script shape`);
   if (i && sectionNumber(order[i - 1].subtopic) > sectionNumber(order[i].subtopic)) errors.push(`${s.name}: CEFR section moved backwards`);
   const disclosed = splitLabel(order[i].label).forms || order[i].label;
   const disclosureTokens = clean(disclosed).toLowerCase().replace(/e\.g\./g, '').split(/[^\p{L}\p{N}']+/u).filter((x) => x.length > 1);
   const read = script[1].text.toLowerCase();
-  if (!SPECIAL_LINES[s.name] && !disclosureTokens.every((token) => read.includes(token))) errors.push(`${s.name}: read card does not disclose tested content`);
+  if (!SPECS[s.name] && !SPECIAL_LINES[s.name] && !disclosureTokens.every((token) => read.includes(token))) errors.push(`${s.name}: read card does not disclose tested content`);
   const formation = FORMATION_PRACTICE[s.name];
   if (formation) {
     formation.requires.forEach((requiredId) => {
@@ -302,5 +342,6 @@ if (errors.length) throw new Error(`Italian authored-course validation failed:\n
 
 fs.mkdirSync(path.dirname(outputPath), { recursive: true });
 fs.writeFileSync(outputPath, JSON.stringify(artifact));
+console.log(`Written lessons: ${Object.keys(SPECS).length} of ${stages.length}. Specs for unknown nodes: ${Object.keys(SPECS).filter((id) => !(id in byConcept)).join(', ') || 'none'}.`);
 console.log(`Built ${stages.length} offline Italian lessons (${order[0].subtopic} → ${order[order.length - 1].subtopic}).`);
 

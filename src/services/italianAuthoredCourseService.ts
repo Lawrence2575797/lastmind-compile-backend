@@ -57,7 +57,21 @@ export async function italianAuthoredLookup(nodeId: string): Promise<ItalianAuth
 }
 
 export function italianAuthoredContent(info: ItalianAuthoredLookup): any | null {
-  return derivationContentForStage(info.stage, info.nodeKey, italianAuthoredStageKey(info.stageIndex));
+  const content = derivationContentForStage(info.stage, info.nodeKey, italianAuthoredStageKey(info.stageIndex));
+  if (!content) return null;
+  // A written lesson carries its own plain questions ("How do you say “Monday” in Italian?") and its own teaching card. Use those for the
+  // stored lesson text and for the questions kept for later review, instead of the generic ones built from the card.
+  const stage = info.stage.stage as any;
+  const read = (stage.script || []).find((x: any) => x.type === 'read');
+  const recall = Array.isArray(stage.recall) ? stage.recall.filter((r: any) => r && typeof r.q === 'string' && typeof r.a === 'string') : [];
+  if (!recall.length) return content;
+  const checks = recall.map((r: any) => ({ format: 'free_text', questionText: r.q, markScheme: r.a }));
+  return {
+    ...content,
+    explanation: read && typeof read.text === 'string' ? read.text : content.explanation,
+    practiceQuestion: checks[0],
+    recallChecks: checks,
+  };
 }
 
 export function italianAuthoredPayload(key: string): { terms: Stage['terms']; stage: any; languageInputV2: true; languageInputV3: true; languageInputV4: true; languageInputV5: true } | null {

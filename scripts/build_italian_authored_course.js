@@ -226,7 +226,8 @@ function specParts(spec) {
   const says = spec.say
     ? spec.say.map(([q, ...answer]) => ({ q, answer }))
     : (spec.vocab || []).slice(0, spec.max || 3).map((v) => ({ q: `How do you say “${v.en}” in Italian?`, answer: [v.it] }));
-  const quiz = (spec.quiz || []).map(([q, right, ...wrongs]) => ({ q, right, wrongs }));
+  // Short lessons: at most three questions in all, typed ones first.
+  const quiz = (spec.quiz || []).map(([q, right, ...wrongs]) => ({ q, right, wrongs })).slice(0, Math.max(says.length ? 1 : 0, 3 - says.length));
   const recall = says.length
     ? says.slice(0, 2).map((x) => ({ q: x.q, a: x.answer[0] }))
     : quiz.slice(0, 2).map((x) => ({ q: x.q, a: x.right }));
@@ -285,8 +286,10 @@ function lessonFor(node, index) {
     stage: {
       name: node.id,
       hud: `${node.subtopic.split(' ')[0]} · ${idea}`,
-      title: idea,
-      sub: forms ? `Learn and recognise ${forms}.` : `Understand ${node.label.toLowerCase()}.`,
+      title: spec && idea.split(' ').length < 2 ? clean(node.label) : idea,
+      sub: spec
+        ? (spec.vocab && spec.vocab.length ? `Learn ${spec.vocab.map((v) => v.it).join(', ')}.` : `${clean(node.label)}.`)
+        : (forms ? `Learn and recognise ${forms}.` : `Understand ${node.label.toLowerCase()}.`),
       ...(parts && parts.recall.length ? { recall: parts.recall } : {}),
       builds: [],
       graph: { h: 140, nodes: { [node.id]: [390, 38, 260, 64] }, edges: [], given: [], pairs: [] },

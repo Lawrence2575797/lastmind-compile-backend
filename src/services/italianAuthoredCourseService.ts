@@ -20,7 +20,11 @@ const course = JSON.parse(fs.readFileSync(coursePath, 'utf8')) as CourseBundle;
 
 export interface ItalianAuthoredLookup {
   nodeId: string;
+  // The map node's own concept id (what the client and the student's progress are keyed by) ...
   conceptId: string;
+  // ... and the authored course's key for it, which is what the stage's terms and script are keyed by. They are the same in some maps and
+  // different in others (older custom Italian maps), so the lesson content must be built from this one, never from conceptId.
+  nodeKey: string;
   stageIndex: number;
   stage: Stage;
 }
@@ -49,11 +53,11 @@ export async function italianAuthoredLookup(nodeId: string): Promise<ItalianAuth
   if (!node || String(node.subject).trim().toLowerCase() !== course.subject.toLowerCase()) return null;
   const stageIndex = course.byConcept[node.node_key as string];
   const stage = course.stages[stageIndex];
-  return Number.isInteger(stageIndex) && stage ? { nodeId, conceptId: node.concept_id as string, stageIndex, stage } : null;
+  return Number.isInteger(stageIndex) && stage ? { nodeId, conceptId: node.concept_id as string, nodeKey: node.node_key as string, stageIndex, stage } : null;
 }
 
 export function italianAuthoredContent(info: ItalianAuthoredLookup): any | null {
-  return derivationContentForStage(info.stage, info.conceptId, italianAuthoredStageKey(info.stageIndex));
+  return derivationContentForStage(info.stage, info.nodeKey, italianAuthoredStageKey(info.stageIndex));
 }
 
 export function italianAuthoredPayload(key: string): { terms: Stage['terms']; stage: any; languageInputV2: true; languageInputV3: true; languageInputV4: true; languageInputV5: true } | null {

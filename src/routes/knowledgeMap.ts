@@ -1167,6 +1167,15 @@ router.get('/immediate-recalls/due', requireAuth, syncEndpointLimiter, async (re
       : { data: [] as { node_id: string; encoding_content: unknown }[], error: null };
     if (lessonError) throw lessonError;
     const lessonByNodeId = new Map((lessons || []).map((l) => [l.node_id as string, l.encoding_content]));
+    // Immediate recalls must use the same authored Italian source as the
+    // lesson and Day-1 check. Some accounts still have pre-authored cached
+    // rows whose generic "order this chain" puzzle is not a valid language
+    // exercise; never let those rows back into the student's sequence.
+    await Promise.all((nodes || []).filter((n) => String(n.subject).toLowerCase() === 'italian').map(async (n) => {
+      const authored = await italianAuthoredLookup(n.id as string);
+      const content = authored ? italianAuthoredContent(authored) : null;
+      if (content) lessonByNodeId.set(n.id as string, content);
+    }));
 
     // A link's first integration schedules the same recall cascade as a
     // concept's first encoding - its "concept" is the ::integration key, not a

@@ -1,5 +1,6 @@
 import { supabaseAdmin } from './supabaseAdmin';
 import { isStructured } from './questionFormats';
+import { italianAuthoredContent, italianAuthoredLookup } from './italianAuthoredCourseService';
 
 // Spaced review draws on every question generated for a lesson, in turn, instead of always reusing one:
 // the practice question first, then each recall check. How far along the rotation a student is comes from how many
@@ -49,8 +50,14 @@ export function immediatePool(content: any): PoolEntry[] {
 export const textOrInteractive = (q: any) => isStructured(q) || (q?.format === 'free_text' && !!q.markScheme && !!q.questionText);
 
 export async function reviewPool(nodeId: string): Promise<PoolEntry[] | null> {
-  const { data: lesson } = await supabaseAdmin.from('knowledge_map_node_lessons').select('encoding_content').eq('node_id', nodeId).maybeSingle();
-  const c = lesson?.encoding_content as any;
+  // Keep later reviews on the same authored Italian material the student
+  // learned. Old cached lessons predate that course and may contain generic
+  // chain questions that are invalid for vocabulary or pronoun sets.
+  const authoredItalian = await italianAuthoredLookup(nodeId);
+  const { data: lesson } = authoredItalian
+    ? { data: null as any }
+    : await supabaseAdmin.from('knowledge_map_node_lessons').select('encoding_content').eq('node_id', nodeId).maybeSingle();
+  const c = authoredItalian ? italianAuthoredContent(authoredItalian) : lesson?.encoding_content as any;
   if (!c || c.formatVersion !== 2) return null;
   const pool: PoolEntry[] = [];
   const pq = c.practiceQuestion;

@@ -278,6 +278,25 @@ export interface SubjectMapNode {
   label: string;
   subtopic: string;
   theme: string; // real display name, always resolved - see getSubtopicThemeMap/fallbackThemeName
+  lessonGroup?: string;
+}
+
+function italianLessonGroup(nodeKey: string, label: string): string | undefined {
+  const rawKey = String(nodeKey || '');
+  const base = rawKey.replace(/__\d+$/, '');
+  const named: Record<string, string> = {
+    DAYS_OF_WEEK: 'Days of the week',
+    MONTHS_YEAR: 'Months of the year',
+    NUM_0_20: 'Numbers 0–20',
+    NUM_21_100: 'Numbers 21–100',
+    SEASONS: 'Seasons',
+  };
+  if (named[base]) return named[base];
+  // The authored map uses __2/__3… when one teachable topic is split into
+  // several short lessons. Keep those lessons separate for progress while
+  // exposing their shared topic to the map UI.
+  if (!/__\d+$/.test(rawKey)) return undefined;
+  return String(label || '').split(':')[0].trim() || undefined;
 }
 
 export interface SubjectMapResult {
@@ -472,13 +491,19 @@ export async function getKnowledgeMapForSubject(
   const finalNodeRows = dependencyOrderedIds.map((id) => nodeRowById.get(id)).filter((r): r is NodeRow => !!r);
 
   return {
-    nodes: finalNodeRows.map((r) => ({
-      id: r.id as string,
-      conceptId: r.concept_id as string,
-      label: r.label as string,
-      subtopic: r.subtopic as string,
-      theme: themeMap.get(r.subtopic as string) || fallbackThemeName(r.subtopic as string, subject),
-    })),
+    nodes: finalNodeRows.map((r) => {
+      const lessonGroup = subject.toLowerCase() === 'italian'
+        ? italianLessonGroup(r.node_key as string, r.label as string)
+        : undefined;
+      return {
+        id: r.id as string,
+        conceptId: r.concept_id as string,
+        label: r.label as string,
+        subtopic: r.subtopic as string,
+        theme: themeMap.get(r.subtopic as string) || fallbackThemeName(r.subtopic as string, subject),
+        ...(lessonGroup ? { lessonGroup } : {}),
+      };
+    }),
     edges: edgeRows.map((e) => ({ source: e.from_node_id, target: e.to_node_id })),
     mastery,
     masteryDetail,

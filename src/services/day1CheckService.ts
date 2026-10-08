@@ -16,6 +16,7 @@ import { poolOf, textOrInteractive, rotationPick } from './reviewQuestionPool';
 import { supabaseAdmin } from './supabaseAdmin';
 import { derivationStageOfConcept, derivationSectionQuestion } from './derivationService';
 import { compareSubtopics, getOrComputeSubtopicOrder } from './knowledgeMapNotesService';
+import { italianAuthoredContent, italianAuthoredLookup } from './italianAuthoredCourseService';
 
 export async function scheduleDay1Check(userId: string, conceptId: string): Promise<void> {
   const dueDate = new Date();
@@ -110,6 +111,24 @@ export async function getQuestionForConceptId(conceptId: string, userId?: string
 
   const { data: node } = await supabaseAdmin.from('knowledge_map_nodes').select('id').eq('concept_id', conceptId).maybeSingle();
   if (!node) return null;
+  // The live Italian lesson comes from the checked in-repo course, not an
+  // older cached row. Delayed checks must use that same source or they can
+  // resurrect stale generic puzzles, such as asking a student to put
+  // unrelated subject pronouns into a fictitious "builds on" order.
+  const authoredItalian = await italianAuthoredLookup(node.id as string);
+  if (authoredItalian) {
+    const authoredPool = poolOf(italianAuthoredContent(authoredItalian)).filter((entry) => textOrInteractive(entry.question));
+    if (!authoredPool.length) return null;
+    let done = 0;
+    if (userId) {
+      const { count } = await supabaseAdmin.from('immediate_recall_schedule').select('id', { count: 'exact', head: true }).eq('user_id', userId).eq('concept_id', conceptId);
+      done = count || 0;
+    }
+    const q = rotationPick(authoredPool, 1 + done).question;
+    return isStructured(q)
+      ? { questionText: q.questionText, markScheme: q.markScheme || '', structured: q }
+      : { questionText: q.questionText, markScheme: q.markScheme || '' };
+  }
   const { data: lesson } = await supabaseAdmin.from('knowledge_map_node_lessons').select('encoding_content').eq('node_id', node.id).maybeSingle();
   const content = lesson?.encoding_content as {
     practiceQuestion?: { questionText?: string; markScheme?: string };

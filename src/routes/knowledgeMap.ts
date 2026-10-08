@@ -1647,9 +1647,11 @@ router.post('/day1-checks/:id/submit', requireAuth, costlyEndpointLimiter, async
       return res.json({ correct: true, feedback, schedule: scheduleWithMastery(conceptId, graded), schedules, keysAwarded: keys.awarded, keyBalance: keys.balance });
     }
 
-    if (!retryAfterSillyMistake && sillyMistake) {
-      // Deferred - not resolved, no Rb bump and no FSRS grade yet. The
-      // student gets one more attempt at the exact same question. A cloze
+    if (!correct) {
+      // A wrong answer stays open until the student gets it right or chooses
+      // Skip. Day-1 recall is teaching as well as measurement: silently
+      // moving on after one or two misses leaves the misconception in place.
+      // Give the actual correction, then let the student answer again. A cloze
       // section check's first miss also gets a small nudge: the initial
       // letter of each word of every still-wrong term ("Finite stock" ->
       // "F    S"), enough to jog memory without just handing the answer
@@ -1657,18 +1659,14 @@ router.post('/day1-checks/:id/submit', requireAuth, costlyEndpointLimiter, async
       const hints = (question.structured?.format === 'cloze' || question.structured?.format === 'diagram') && detail
         ? (question.structured.blanks || []).map((b: any, i: number) => (detail![i] ? null : String(b.answer || '').split(' ').map((w: string) => w[0] || '').join('    ')))
         : undefined;
-      return res.json({ correct: false, sillyMistake: true, feedback, detail, hints });
+      const correction = question.structured
+        ? ((question.structured as any).correction || question.structured.markScheme || question.markScheme)
+        : question.markScheme;
+      const teachingFeedback = correction
+        ? `${feedback || 'Not quite.'} Correction: ${correction}`
+        : (feedback || 'Not quite. Read the question once more and try again.');
+      return res.json({ correct: false, sillyMistake: !!sillyMistake, retryable: true, feedback: teachingFeedback, correction, detail, hints });
     }
-
-    // A genuine failure (or a still-wrong/second attempt after the one
-    // reask already given) - resolve it, grade the FSRS card as a lapse,
-    // and bump the base recall count.
-    const graded = await gradeCorrectness(userId, conceptId, false, 0);
-    const schedules = await gradeSiblings(false);
-    const { error: updateError } = await supabaseAdmin.from('day1_checks').update({ resolved: true }).eq('id', id);
-    if (updateError) throw updateError;
-    await bumpBaseRecalls(userId);
-    res.json({ correct: false, sillyMistake: false, feedback, detail, schedule: scheduleWithMastery(conceptId, graded), schedules });
   } catch (err) {
     console.error('Day-1 check grading failed:', err);
     res.status(500).json({ error: 'could not grade this answer' });

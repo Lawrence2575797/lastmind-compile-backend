@@ -7,7 +7,7 @@ import { CreateCapError, assertCanSpend, getUsedUsd, recordSpend, spendSummary }
 import { parseModelJson } from '../services/jsonParsing';
 import { InsufficientLocksError } from '../services/lockService';
 import { startJob } from './createSimulation';
-import { generatePortraitCutout, generateEvidencePicture, downloadAsDataUrl } from '../services/createImages';
+import { generatePortraitCutout, generateFootballPortrait, generateEvidencePicture, downloadAsDataUrl } from '../services/createImages';
 import { createDuel, getDuel, claimSeat, saveResult, listDuels, sideOf, resultOf, otherSide, cleanCode, DuelRow, Side } from '../services/duelStore';
 import { CASE_GRAPH_COMPILE_PROMPT, CHARACTER_TURN_PROMPT, CLOSING_ASSESSMENT_PROMPT, COMPILE_SPEECH_PROMPT, COMPILE_QUESTION_PROMPT } from '../constants/playtestPrompts';
 
@@ -486,6 +486,26 @@ router.post('/playtest/portrait', costlyEndpointLimiter, async (req: Request, re
     if (handled) return handled;
     console.error('Playtest portrait failed:', err);
     res.status(502).json({ error: 'portrait unavailable' });
+  }
+});
+
+// POST /playtest/football-portrait { description } -> a photorealistic male club media-day portrait.
+router.post('/playtest/football-portrait', costlyEndpointLimiter, async (req: Request, res: Response) => {
+  const key = process.env.FAL_KEY;
+  if (!key) return res.status(501).json({ error: 'portraits not configured' });
+  const userId = req.userId as string;
+  const description = str((req.body ?? {}).description, 700);
+  if (!description) return res.status(400).json({ error: 'description is required' });
+  try {
+    assertCanSpend(userId, 0.03, Number((req.body ?? {}).clientUsedUsd) || undefined);
+    const fig = await generateFootballPortrait(key, description, userId);
+    recordSpend(userId, fig.costUsd);
+    res.json({ image: await downloadAsDataUrl(fig.url, false), transparent: false, usable: fig.usable, spend: spendSummary(userId) });
+  } catch (err) {
+    const handled = capResponse(res, userId, err);
+    if (handled) return handled;
+    console.error('Football portrait failed:', err);
+    res.status(502).json({ error: 'football portrait unavailable' });
   }
 });
 

@@ -20,6 +20,9 @@ export function cleanFigureDescription(text: string): string {
 export const FIGURE_STYLE =
   'Cinematic painterly digital art, front view waist-up portrait of one person standing squarely facing the camera, their whole torso turned toward the viewer so the FRONT of their clothing is visible (jacket front and buttons or zip, lapels, collar, tie or neckline), face and body facing the same direction, arms relaxed at their sides, warm low interior light, painterly texture, highly detailed, plain flat neutral mid-grey backdrop, centred in frame, no text, no lettering, no logos, not based on any real person.';
 
+export const FOOTBALL_PORTRAIT_STYLE =
+  'Photorealistic professional football club media-day photograph of exactly one fictional adult male footballer, front-facing head, shoulders and upper torso, natural skin texture, realistic proportions, confident neutral expression, soft studio key light, dark navy seamless backdrop, centred composition, sharp eyes, shallow depth of field. He wears a plain deep red modern football shirt with cream trim, no sponsor, no badge, no brand, no text, no lettering and no number. The person must not resemble a real footballer or celebrity.';
+
 const EVIDENCE_STYLE: Record<string, string> = {
   cctv: 'A grainy low-resolution monochrome CCTV security camera still frame taken from a high corner, wide angle, slightly fisheye, flat harsh lighting. Any people are small and seen from a distance or from behind so no face can be identified. No text, no numbers, no timestamps.',
   photo: 'A realistic documentary crime-scene style photograph, flat on-camera flash lighting, ordinary and unglamorous. Any people are seen from behind or far away so no face can be identified. No text, no numbers.',
@@ -84,6 +87,23 @@ export async function generatePortraitCutout(key: string, description: string, u
     if (cut.ok) { const j: any = await cut.json(); if (j?.image?.url) return { url: j.image.url, transparent: true, rounds: rounds - 1, usable, costUsd: cost }; }
   } catch (err) { console.error('Background removal failed:', err); }
   return { url: src, transparent: false, rounds: rounds - 1, usable, costUsd: cost };
+}
+
+// A coordinated photographic squad-card portrait. The studio background is retained so hair and shirt edges stay natural.
+export async function generateFootballPortrait(key: string, description: string, userId?: string): Promise<FigureResult> {
+  const clean = cleanFigureDescription(description) || 'an adult male professional footballer';
+  const urls = await falImages(key, `${FOOTBALL_PORTRAIT_STYLE} Player details: ${clean}`, { width: 768, height: 896 }, 3);
+  if (!urls.length) throw new Error('no image returned');
+  let chosen = urls[0]; let usable = false; let cost = 0.009;
+  try {
+    const results = await judge(PORTRAIT_JUDGE_PROMPT, `Each picture is meant to show this fictional male footballer: ${clean}. Judge all ${urls.length}.`, urls, userId);
+    cost += 0.004;
+    const i = results.findIndex((r) => r && r.ok === true);
+    if (i >= 0) { chosen = urls[i]; usable = true; }
+  } catch (err) {
+    console.error('Football portrait check failed (keeping the first candidate):', err);
+  }
+  return { url: chosen, transparent: false, rounds: 1, usable, costUsd: cost };
 }
 
 // The picture service refuses violent wording, and a classroom picture should not show injury anyway. Cortex (Haiku) restates

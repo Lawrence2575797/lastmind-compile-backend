@@ -1,10 +1,11 @@
 import { Router, Request, Response } from 'express';
 import { requireAuth } from '../services/authMiddleware';
 import { costlyEndpointLimiter } from '../services/rateLimiters';
-import { callClaudeJSON, MODELS } from '../services/claudeClient';
+import { callClaudeJSON, callClaudeChatCached, MODELS } from '../services/claudeClient';
 import { assertLocksAvailable, InsufficientLocksError } from '../services/lockService';
 import { FOOTBALL_INSTRUCTION_PROMPT } from '../constants/footballInstructionPrompts';
 import { FOOTBALL_REVIEW_PROMPT } from '../constants/footballReviewPrompt';
+import { FOOTBALL_ELENA_CHAT_PROMPT } from '../constants/footballElenaChatPrompt';
 import { validateRules, GROUPS, Opp } from '../services/footballRules';
 
 // The football manager game: a manager writes tactical instructions in their own words, in one box, about any players of either club, and Haiku
@@ -105,6 +106,30 @@ router.post('/football/review-instructions', async (req: Request, res: Response)
     if (err instanceof InsufficientLocksError) return res.status(402).json({ error: 'Lock limit reached', code: 'LOCK_LIMIT_REACHED', detail: "You're out of Locks for now." });
     console.error('Football review failed:', err);
     res.status(500).json({ error: 'The assistant could not review those just now. Try again.' });
+  }
+});
+
+// POST /football/elena-chat { message, history: [{role, content}], panel, level } -> { reply }
+// The chat at the bottom of Elena's side tab. Stateless: the page sends the text she is showing and the last few messages every time.
+router.post('/football/elena-chat', async (req: Request, res: Response) => {
+  const message = clip(req.body?.message, 1500);
+  if (!message) return res.status(400).json({ error: 'message is required' });
+  const panel = clip(req.body?.panel, 6000), level = clip(req.body?.level, 20);
+  const history = (Array.isArray(req.body?.history) ? req.body.history : []).slice(-6)
+    .map((m: any) => ({ role: (m && m.role === 'assistant' ? 'assistant' : 'user') as 'user' | 'assistant', content: clip(m && m.content, 1500) })).filter((m: any) => m.content);
+  try {
+    await assertLocksAvailable(req.userId as string);
+    const pageContext = `Statistics level the manager chose: ${level || 'not given'}.
+What is showing in Elena's panel right now:
+\"\"\"
+${panel || '(nothing yet)'}
+\"\"\"`;
+    const reply = await callClaudeChatCached({ model: MODELS.chat, systemPrompt: FOOTBALL_ELENA_CHAT_PROMPT, pageContext, messages: [...history, { role: 'user', content: message }], maxTokens: 700, temperature: 0.3, userId: req.userId as string, meteredReason: 'football-elena-chat' });
+    res.json({ reply: reply.trim() });
+  } catch (err) {
+    if (err instanceof InsufficientLocksError) return res.status(402).json({ error: 'Lock limit reached', code: 'LOCK_LIMIT_REACHED', detail: "You're out of Locks for now." });
+    console.error('Football Elena chat failed:', err);
+    res.status(500).json({ error: 'Elena could not answer just now. Try again.' });
   }
 });
 

@@ -25,7 +25,7 @@ A position and a name are interchangeable. "The left back", "the fullbacks", "th
 
 WHEN (all optional, all must hold; leave out what the text does not say)
   "possession": "with" | "without"
-  "stage": ["build","final","transAtt","transDef","press","without"]   build = we have the ball in our own half building up; final = we have it near their goal; transAtt = the seconds after we win it; transDef = the seconds after we lose it; press = we press them while they build from their end; without = we defend otherwise
+  "stage": ["build","midfield","final","transAtt","transDef","press","without"]   build = we have the ball in our own half building up; midfield = we are moving it up through the middle of the pitch; final = we have it near their goal; transAtt = the seconds after we win it; transDef = the seconds after we lose it; press = we press them while they build from their end; without = we defend otherwise
   "zone": ["own_third","middle_third","final_third"]   the third the ball is in, counted from our own goal
   "pressed": "pressed" | "free"        an opponent within about 4 m of the ball carrier, or nobody close
   "side": "left" | "centre" | "right" | "wide"   where the ball is, from our left
@@ -72,6 +72,7 @@ HOW TO TRANSLATE
 - "Man-mark Hargrove" is mark with his number and name. "Cut off the pass to Hargrove" is place with the player between the ball and him.
 - Strength: "always", "never" or "strictly" is 0.9 to 1; "prefer" or "try to" is 0.4 to 0.6; "a bit" is 0.2 to 0.3.
 - Positions work like names. "The fullbacks stay level with the centre-backs" is a rule for the group FB: place with dm = the dm of {"e":"group","side":"own","group":"CB","agg":"avg"}. "Mark their left winger" is mark with the slot LW from the opposition list. "The left back overlaps the left winger" is a rule for the slot LB, placed relative to the slot LW.
+- SHIRT POSITIONS ARE ALREADY THE INSTRUCTION. When the user message lists shirt positions for the stage, the manager has drawn where each player should stand and act at the start and by the end of it. Do not write a position, width, depth or "place" rule that only repeats what those positions already say (for example "full-backs high and wide" when the diagram has them high and wide). Positions are guides, not rules: players may be out of position, and the ball can be played from anywhere. Write position effects only for what a diagram cannot show: a position relative to a named player, to the ball or to an opponent, or something that depends on the situation.
 - Several instructions become several rules. Name the stage in "when" when the manager does ("in build-up", "when we win it", "when we are pressed").
 - Anything the manager does not say stays as the game would play it. Do not add effects they did not ask for.
 - Write each summary in plain words as the manager would say it. No jargon about weights, deltas or expressions.

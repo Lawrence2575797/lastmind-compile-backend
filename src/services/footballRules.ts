@@ -10,7 +10,7 @@ const ZONES = ['own_third', 'middle_third', 'final_third'] as const;
 const SIDES = ['left', 'centre', 'right', 'wide'] as const;
 const POSSESSION = ['with', 'without', 'any'] as const;
 const SCORES = ['winning', 'drawing', 'losing'] as const;
-const STAGES = ['build', 'final', 'transAtt', 'transDef', 'press', 'without'] as const;
+const STAGES = ['build', 'midfield', 'final', 'transAtt', 'transDef', 'press', 'without'] as const;
 
 export type Scope = { kind: 'team' } | { kind: 'line'; line: string } | { kind: 'group'; group: string } | { kind: 'slot'; slot: string } | { kind: 'player'; number: number };
 export type Opp = { number: number; name: string; slot?: string; group?: string };

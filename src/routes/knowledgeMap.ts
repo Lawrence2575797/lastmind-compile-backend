@@ -37,6 +37,7 @@ import { derivationKeyTermGraph, derivationCompletedStages, derivationQuick, ens
 import { derivationGenericLookup, derivationGenericGenerate, derivationContentForGenericNode, genericStageKey, derivationGenericPayloadForKey, derivationGenericConceptsForKey, DerivationStageNotReadyError, DerivationGenerationInfraError, DerivationGenerationAbortedError } from '../services/derivationGenericService';
 import { italianAuthoredLookup, italianAuthoredContent, italianAuthoredStageKey, italianAuthoredPayload, italianAuthoredConcepts } from '../services/italianAuthoredCourseService';
 import { generateAndCacheNodeLesson, generateAndCacheEdgeLesson, needsQuestionUpgrade, upgradeLessonQuestions } from '../services/lessonGenerationService';
+import { notesNodeLesson } from '../services/notesMapService';
 import { isStructured, gradeStructured, clientView, lessonForClient, sealJson, openJson, closeEnough, StructuredQuestion } from '../services/questionFormats';
 import { pickRotatingQuestion, poolEntry, poolOf, rotationPick, immediatePool } from '../services/reviewQuestionPool';
 import { answerKnowledgeMapQuestion } from '../services/knowledgeMapAskService';
@@ -245,6 +246,10 @@ router.get('/knowledge-map-v2/node/:nodeId/lesson', requireAuth, syncEndpointLim
         },
       });
     }
+
+    // A concept from the student's own notes is taught from what was written for it when the notes were mapped, never generated afresh.
+    const notesLesson = await notesNodeLesson(nodeId);
+    if (notesLesson) return res.json(lessonForClient(notesLesson));
 
     // Economics: taught by a derivation lesson. The stored old text lesson is replaced, and nothing is generated.
     const derived = await derivationQuick(nodeId);

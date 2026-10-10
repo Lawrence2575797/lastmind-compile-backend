@@ -33,7 +33,7 @@ async function extractConcepts(page: NotesPageIn, userId: string): Promise<RawCo
   const userContent = `Page title: ${page.title || 'Untitled'}\n\nThe student's notes:\n"""\n${page.text}\n"""`;
   const raw = await callClaudeJSON({ model: MODELS.chat, systemPrompt: NOTES_MAP_PROMPT, userContent, maxTokens: 3200, temperature: 0.2, userId, meteredReason: 'notes-map-extract' });
   const parsed = parseModelJson<{ concepts?: RawConcept[] }>(raw);
-  const list = Array.isArray(parsed && parsed.concepts) ? parsed.concepts : [];
+  const list: RawConcept[] = (parsed && Array.isArray(parsed.concepts) ? parsed.concepts : []) as RawConcept[];
   const seen = new Set<string>();
   return list.slice(0, 6).filter((c) => {
     const k = clean(String((c && c.key) || (c && c.label) || ''));
@@ -64,7 +64,7 @@ export async function syncNotesToMap(userId: string, pages: NotesPageIn[]): Prom
     });
     const { data: existing, error: exErr } = await supabaseAdmin.from('knowledge_map_nodes').select('id, concept_id').in('concept_id', rows.map((r) => r.row.concept_id));
     if (exErr) { console.error('Notes map lookup failed:', exErr); out.skipped++; continue; }
-    const idByConcept = new Map<string, string>((existing || []).map((r: any) => [r.concept_id as string, r.id as string]));
+    const idByConcept = new Map<string, string>((existing || []).map((r: any) => [r.concept_id as string, r.id as string] as [string, string]));
     const fresh = rows.filter((r) => !idByConcept.has(r.row.concept_id));
     if (fresh.length) {
       const { data: inserted, error: insErr } = await supabaseAdmin.from('knowledge_map_nodes').insert(fresh.map((r) => r.row)).select('id, concept_id');

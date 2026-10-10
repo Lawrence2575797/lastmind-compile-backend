@@ -497,10 +497,10 @@ router.post('/playtest/football-portrait', costlyEndpointLimiter, async (req: Re
   const description = str((req.body ?? {}).description, 700);
   if (!description) return res.status(400).json({ error: 'description is required' });
   try {
-    assertCanSpend(userId, 0.03, Number((req.body ?? {}).clientUsedUsd) || undefined);
+    assertCanSpend(userId, 0.04, Number((req.body ?? {}).clientUsedUsd) || undefined);
     const fig = await generateFootballPortrait(key, description, userId);
     recordSpend(userId, fig.costUsd);
-    res.json({ image: await downloadAsDataUrl(fig.url, false), transparent: false, usable: fig.usable, spend: spendSummary(userId) });
+    res.json({ image: await downloadAsDataUrl(fig.url, false), transparent: false, usable: fig.usable, badge: fig.badge || null, spend: spendSummary(userId) });
   } catch (err) {
     const handled = capResponse(res, userId, err);
     if (handled) return handled;

@@ -49,7 +49,7 @@ router.post('/problem-set/parse', async (req: Request, res: Response) => {
     for (let attempt = 0; attempt < 2 && !data; attempt++) {
       try {
         const raw = await callClaudeJSONWithFiles({
-          model: MODELS.compile, systemPrompt: PROBLEM_SET_PARSE_PROMPT, userText,
+          model: MODELS.chat, systemPrompt: PROBLEM_SET_PARSE_PROMPT, userText,
           files: files.map((f, i) => ({ kind: (f.mime === 'application/pdf' ? 'document' : 'image') as 'document' | 'image', mediaType: f.mime, base64Data: f.data, label: `File ${i + 1}: ${f.name}` })),
           maxTokens: 8000, temperature: 0, userId: req.userId as string, meteredReason: 'problem-set-parse',
         });
@@ -96,7 +96,7 @@ ${answer}
     let data: any = null, lastErr: unknown = null;
     for (let attempt = 0; attempt < 2 && !data; attempt++) {
       try {
-        const raw = await callClaudeJSON({ model: MODELS.compile, systemPrompt: PROBLEM_SET_MARK_PROMPT, userContent, maxTokens: 900, temperature: 0, userId: req.userId as string, meteredReason: 'problem-set-mark' });
+        const raw = await callClaudeJSON({ model: MODELS.chat, systemPrompt: PROBLEM_SET_MARK_PROMPT, userContent, maxTokens: 900, temperature: 0, userId: req.userId as string, meteredReason: 'problem-set-mark' });
         data = parseJsonLoose(raw);
       } catch (e) { lastErr = e; }
     }

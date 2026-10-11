@@ -1,0 +1,151 @@
+{
+ "id": "gen",
+ "subject": "Economics",
+ "title": "Principal-agent problem",
+ "terms": {
+  "ownership_control_sep": {
+   "label": "Divorce of ownership from control"
+  },
+  "asymmetric_info_agency": {
+   "label": "Asymmetric information"
+  },
+  "diff_objectives_agency": {
+   "label": "Differing objectives"
+  },
+  "market_power_motive": {
+   "label": "Desire for market power"
+  },
+  "principal_agent_problem": {
+   "label": "Principal-agent problem"
+  },
+  "hired_agent": {
+   "label": "Manager as hired agent"
+  }
+ },
+ "stages": [
+  {
+   "name": "Principal-agent problem",
+   "title": "Principal-agent problem",
+   "sub": "Why the people who own a company and the people who run it can end up pulling in different directions.",
+   "steps": [
+    {
+     "type": "ask",
+     "q": "A company has thousands of shareholders scattered across the country, none owning enough shares to run the business day to day. So who actually makes the daily decisions?",
+     "right": "Hired managers, not the shareholders",
+     "wrong": "The shareholders themselves, by voting daily",
+     "hint": "Could thousands of small shareholders realistically turn up and run the factory each morning?",
+     "pre": "Owning shares is different from running the firm. This split is the",
+     "term": "ownership_control_sep"
+    },
+    {
+     "type": "ask",
+     "q": "The shareholders own the firm but cannot run it themselves, so they bring in a manager to make decisions on their behalf. What is that manager now doing for the owners?",
+     "right": "Acting on their behalf as their agent",
+     "wrong": "Taking over ownership of their shares",
+     "hint": "The owners still own the firm; they've just handed over the job of running it. What role does the manager now hold?",
+     "pre": "A manager who runs the firm for the owners is",
+     "term": "hired_agent"
+    },
+    {
+     "type": "ask",
+     "q": "This hired manager sees every deal, cost and problem inside the firm as it happens, while the shareholders only see the yearly report. Do both sides know the same amount about how the firm is really doing?",
+     "right": "No, the manager knows far more",
+     "wrong": "Yes, they both know the same",
+     "hint": "Who is actually sitting in the building making the decisions each day?",
+     "pre": "The agent holds more information than the owners. This gap is",
+     "term": "asymmetric_info_agency"
+    },
+    {
+     "type": "ask",
+     "q": "A manager's bonus and reputation grow when the firm gets bigger, even if profit per pound invested falls. Shareholders just want more profit on their shares. Do manager and shareholder want the exact same thing here?",
+     "right": "No, they want different things",
+     "wrong": "Yes, bigger firm always means more profit for both",
+     "hint": "Whose reward depends on the firm's size, and whose depends on the profit it earns?",
+     "pre": "Managers may chase growth or sales while owners want profit. These are",
+     "term": "diff_objectives_agency"
+    },
+    {
+     "type": "order",
+     "terms": [
+      "ownership_control_sep",
+      "hired_agent",
+      "asymmetric_info_agency",
+      "diff_objectives_agency"
+     ],
+     "prompt": "Drag and drop the 4 key terms in the order they build on each other."
+    },
+    {
+     "type": "ask",
+     "q": "A manager pushes to take over rival firms and expand into new countries, even though shareholders think the extra profit won't cover the cost. Why might the manager still want this?",
+     "right": "It makes the firm bigger and more dominant",
+     "wrong": "It is the option most likely to raise profit",
+     "hint": "Think about what the manager gains personally from running a larger, more powerful firm, separate from the profit numbers.",
+     "pre": "Chasing size and dominance for their own sake is the",
+     "term": "market_power_motive"
+    },
+    {
+     "type": "ask",
+     "q": "The manager (agent) knows more than the shareholders (owners) and wants different things from them. Given this, will the manager reliably act exactly as the owners wish?",
+     "right": "No, they may act in their own interest instead",
+     "wrong": "Yes, hiring them guarantees they follow owners' wishes",
+     "hint": "If the agent knows more than the owner and wants different things, can the owner be sure the agent obeys?",
+     "pre": "This conflict between owners and the agents acting for them is the",
+     "term": "principal_agent_problem"
+    },
+    {
+     "type": "derive"
+    }
+   ],
+   "given": [],
+   "needs": [],
+   "builds": [],
+   "nodes": [
+    "ownership_control_sep",
+    "asymmetric_info_agency",
+    "diff_objectives_agency",
+    "market_power_motive",
+    "principal_agent_problem"
+   ],
+   "dropped": [
+    [
+     "ownership_control_sep",
+     "principal_agent_problem"
+    ]
+   ],
+   "edges": [
+    [
+     "asymmetric_info_agency",
+     "principal_agent_problem"
+    ],
+    [
+     "diff_objectives_agency",
+     "principal_agent_problem"
+    ],
+    [
+     "diff_objectives_agency",
+     "market_power_motive"
+    ],
+    [
+     "ownership_control_sep",
+     "hired_agent"
+    ],
+    [
+     "hired_agent",
+     "asymmetric_info_agency"
+    ],
+    [
+     "asymmetric_info_agency",
+     "principal_agent_problem"
+    ],
+    [
+     "diff_objectives_agency",
+     "principal_agent_problem"
+    ],
+    [
+     "diff_objectives_agency",
+     "market_power_motive"
+    ]
+   ]
+  }
+ ]
+}

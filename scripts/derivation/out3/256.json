@@ -1,0 +1,113 @@
+{
+ "id": "gen",
+ "subject": "Economics",
+ "title": "Non-economic barriers and tourism",
+ "terms": {
+  "non_econ_governance": {
+   "label": "Corruption & weak institutions"
+  },
+  "non_econ_conflict_geography": {
+   "label": "Conflict & geography"
+  },
+  "non_econ_social": {
+   "label": "Social factors & gender"
+  },
+  "tourism_dis": {
+   "label": "Disadvantages of tourism"
+  },
+  "tourism_dev": {
+   "label": "Tourism development"
+  }
+ },
+ "stages": [
+  {
+   "name": "Non-economic barriers and tourism",
+   "title": "Non-economic barriers and tourism",
+   "sub": "After this you can explain why governance, conflict, geography and social factors hold back development, and why tourism strategies can backfire.",
+   "steps": [
+    {
+     "type": "ask",
+     "q": "A country's police and judges regularly demand bribes before they will act, and government contracts go to the president's family and friends rather than the best firm. Will foreign firms want to invest there?",
+     "right": "No, they will be put off",
+     "wrong": "Yes, it makes no difference to them",
+     "hint": "Would you invest your money somewhere if you could not trust the courts or the rules to be fair?",
+     "pre": "Bribery and unfair, untrustworthy institutions like this are examples of",
+     "term": "non_econ_governance"
+    },
+    {
+     "type": "ask",
+     "q": "That same country then has fighting break out between rival groups, sits in a region prone to drought, and is hit by a major flood. Can firms and farmers keep production running normally through all of this?",
+     "right": "No, output and infrastructure are badly disrupted",
+     "wrong": "Yes, production carries on as normal",
+     "hint": "Think about roads, fields and factories when there is fighting, drought or flooding.",
+     "pre": "Fighting, harsh climate and disasters like these are",
+     "term": "non_econ_conflict_geography"
+    },
+    {
+     "type": "ask",
+     "q": "In a region left unstable by past conflict and poor infrastructure, girls are often kept at home instead of sent to school, and women are rarely allowed to run businesses or hold land. Will the country be using the potential of all its people?",
+     "right": "No, a large part of its potential workforce is held back",
+     "wrong": "Yes, everyone's potential is still used fully",
+     "hint": "If half the population cannot get educated or start businesses, what happens to the country's total output potential?",
+     "pre": "Missing out on women's education and equal opportunity like this is a",
+     "term": "non_econ_social"
+    },
+    {
+     "type": "order",
+     "terms": [
+      "non_econ_governance",
+      "non_econ_conflict_geography",
+      "non_econ_social"
+     ],
+     "prompt": "Drag and drop the 3 key terms in the order they build on each other."
+    },
+    {
+     "type": "ask",
+     "q": "A country in a conflict-hit, disaster-prone region decides to build its economy around foreign tourists visiting its beaches and wildlife. If fighting flares up again or a flood damages the resorts, what happens to tourist numbers and the profits, which mostly go to foreign-owned hotel chains anyway?",
+     "right": "Tourist numbers and local benefit can collapse quickly",
+     "wrong": "Tourist numbers and local benefit stay steady regardless",
+     "hint": "Think about how sensitive tourists are to safety news, and who actually keeps the profits if hotels are foreign-owned.",
+     "pre": "Such risks are among the",
+     "term": "tourism_dis"
+    },
+    {
+     "type": "derive"
+    }
+   ],
+   "given": [
+    "tourism_dev"
+   ],
+   "needs": [
+    "tourism_dev"
+   ],
+   "builds": [
+    "tourism_dev"
+   ],
+   "nodes": [
+    "non_econ_governance",
+    "non_econ_conflict_geography",
+    "tourism_dis",
+    "non_econ_social"
+   ],
+   "dropped": [],
+   "edges": [
+    [
+     "non_econ_governance",
+     "non_econ_conflict_geography"
+    ],
+    [
+     "non_econ_conflict_geography",
+     "non_econ_social"
+    ],
+    [
+     "non_econ_conflict_geography",
+     "tourism_dis"
+    ],
+    [
+     "tourism_dev",
+     "tourism_dis"
+    ]
+   ]
+  }
+ ]
+}

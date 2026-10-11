@@ -1,0 +1,148 @@
+{
+ "id": "gen",
+ "subject": "Economics",
+ "title": "Economic growth: benefits and costs",
+ "terms": {
+  "BEN_FUTURE_LIVING": {
+   "label": "Benefit: future living standards"
+  },
+  "spillover": {
+   "label": "Spillover effect"
+  },
+  "NEG_EXTERNALITY": {
+   "label": "Negative externality"
+  },
+  "COST_ENVIRONMENT_FUTURE": {
+   "label": "Cost: environmental sustainability"
+  },
+  "CAPITAL_STOCK_INCREASE": {
+   "label": "Rising capital stock"
+  },
+  "POTENTIAL_GROWTH": {
+   "label": "Potential growth"
+  },
+  "ACTUAL_GROWTH": {
+   "label": "Actual growth"
+  }
+ },
+ "stages": [
+  {
+   "name": "Economic growth: benefits and costs",
+   "title": "Economic growth: benefits and costs",
+   "sub": "Weighing the rise in future living standards against the environmental costs of growth.",
+   "steps": [
+    {
+     "type": "ask",
+     "q": "A country builds more factories and machines every year, adding to what it can produce. If this keeps happening, what happens to how much the country can produce in twenty years' time compared to now?",
+     "right": "It can produce much more",
+     "wrong": "It stays about the same",
+     "hint": "Think about what all that extra machinery and equipment lets workers make.",
+     "pre": "So growth driven by investment raises future productive capacity and",
+     "term": "BEN_FUTURE_LIVING"
+    },
+    {
+     "type": "ask",
+     "q": "A factory making steel pumps smoke into the air above a nearby town. The townspeople never agreed to breathe that smoke, and the factory does not pay them for it. Does the cost of the smoke fall only on the factory, or does it spread to people outside the deal?",
+     "right": "It spreads to people outside the deal",
+     "wrong": "It falls only on the factory",
+     "hint": "Who is actually breathing the smoke, and did they choose to be part of the factory's business?",
+     "pre": "A cost that spills over onto people not involved in producing or buying the good is a",
+     "term": "spillover"
+    },
+    {
+     "type": "ask",
+     "q": "As factories and mines expand output to grow the economy, they also pump out more pollution and use up more raw materials like coal and clean water. Is this side effect a one-off accident, or something that tends to happen alongside this kind of growth?",
+     "right": "It tends to happen alongside this kind of growth",
+     "wrong": "It is just a rare, one-off accident",
+     "hint": "Think about whether more production, almost by nature, tends to mean more waste, emissions and resource use.",
+     "pre": "These unpriced spillover costs from producing and consuming are",
+     "term": "NEG_EXTERNALITY"
+    },
+    {
+     "type": "order",
+     "terms": [
+      "BEN_FUTURE_LIVING",
+      "spillover",
+      "NEG_EXTERNALITY"
+     ],
+     "prompt": "Drag and drop the 3 key terms in the order they build on each other."
+    },
+    {
+     "type": "ask",
+     "q": "A country grows quickly for decades by burning through its forests, fish stocks and clean rivers, while pollution builds up. Even though people today are living better, what happens to the resources and clean environment that future generations will need to keep living standards rising?",
+     "right": "They are being run down and threatened",
+     "wrong": "They stay protected for the future",
+     "hint": "If forests, fish stocks and clean water are used up faster than they recover, what is left for later generations?",
+     "pre": "So alongside the benefit of higher future living standards, there is a",
+     "term": "COST_ENVIRONMENT_FUTURE"
+    },
+    {
+     "type": "derive"
+    }
+   ],
+   "given": [
+    "CAPITAL_STOCK_INCREASE",
+    "POTENTIAL_GROWTH",
+    "ACTUAL_GROWTH"
+   ],
+   "needs": [
+    "CAPITAL_STOCK_INCREASE",
+    "POTENTIAL_GROWTH",
+    "ACTUAL_GROWTH"
+   ],
+   "builds": [
+    "CAPITAL_STOCK_INCREASE",
+    "POTENTIAL_GROWTH",
+    "ACTUAL_GROWTH"
+   ],
+   "nodes": [
+    "BEN_FUTURE_LIVING",
+    "NEG_EXTERNALITY",
+    "COST_ENVIRONMENT_FUTURE"
+   ],
+   "dropped": [],
+   "edges": [
+    [
+     "NEG_EXTERNALITY",
+     "COST_ENVIRONMENT_FUTURE"
+    ],
+    [
+     "BEN_FUTURE_LIVING",
+     "COST_ENVIRONMENT_FUTURE"
+    ],
+    [
+     "CAPITAL_STOCK_INCREASE",
+     "BEN_FUTURE_LIVING"
+    ],
+    [
+     "POTENTIAL_GROWTH",
+     "BEN_FUTURE_LIVING"
+    ],
+    [
+     "ACTUAL_GROWTH",
+     "COST_ENVIRONMENT_FUTURE"
+    ],
+    [
+     "CAPITAL_STOCK_INCREASE",
+     "BEN_FUTURE_LIVING"
+    ],
+    [
+     "POTENTIAL_GROWTH",
+     "BEN_FUTURE_LIVING"
+    ],
+    [
+     "spillover",
+     "NEG_EXTERNALITY"
+    ],
+    [
+     "NEG_EXTERNALITY",
+     "COST_ENVIRONMENT_FUTURE"
+    ],
+    [
+     "BEN_FUTURE_LIVING",
+     "COST_ENVIRONMENT_FUTURE"
+    ]
+   ]
+  }
+ ]
+}

@@ -1,0 +1,228 @@
+{
+ "id": "gen",
+ "subject": "Economics",
+ "title": "Minimum prices",
+ "terms": {
+  "MINP_DIAG": {
+   "label": "Minimum price diagram"
+  },
+  "MINP_SURPLUS": {
+   "label": "Surplus from minimum price"
+  },
+  "MINP_ADV1": {
+   "label": "Guarantees producer income"
+  },
+  "MINP_ADV2": {
+   "label": "Discourages demerit consumption"
+  },
+  "MINP_DIS1": {
+   "label": "Storage/disposal costs"
+  },
+  "MINP_DIS2": {
+   "label": "Black market risk"
+  },
+  "DRAW_EQUIL": {
+   "label": "Construct a market equilibrium diagram"
+  },
+  "MINP_DEF": {
+   "label": "Minimum price: definition"
+  },
+  "EXTERN": {
+   "label": "Externalities: definition (third-party effects)"
+  }
+ },
+ "stages": [
+  {
+   "name": "Minimum prices",
+   "title": "Minimum prices",
+   "sub": "How a minimum price above equilibrium creates a surplus, and why that brings both benefits and problems.",
+   "steps": [
+    {
+     "type": "ask",
+     "q": "The government sets a legal minimum price for milk, above the price where the market would naturally settle. At this higher price, do farmers want to sell more milk or less than before?",
+     "right": "More, because the price is higher",
+     "wrong": "Less, because fewer people will buy it",
+     "hint": "Think about the supply curve: as price rises, what do producers want to do?",
+     "pre": "Farmers supply more, while buyers demand less, at this price. Drawn on a diagram, this is a",
+     "term": "MINP_DIAG",
+     "diagram": {
+      "x": "Quantity",
+      "y": "Price",
+      "curves": [
+       {
+        "label": "D",
+        "pts": [
+         [
+          0.08,
+          0.85
+         ],
+         [
+          0.4,
+          0.55
+         ],
+         [
+          0.9,
+          0.12
+         ]
+        ]
+       },
+       {
+        "label": "S",
+        "pts": [
+         [
+          0.08,
+          0.15
+         ],
+         [
+          0.4,
+          0.45
+         ],
+         [
+          0.9,
+          0.88
+         ]
+        ]
+       }
+      ],
+      "points": [
+       {
+        "label": "Min",
+        "x": 0.5,
+        "y": 0.68,
+        "guides": true
+       }
+      ]
+     }
+    },
+    {
+     "type": "ask",
+     "q": "At this minimum price, the quantity farmers want to supply is bigger than the quantity buyers want to demand. What exists in the market as a result?",
+     "right": "Unsold extra milk left over",
+     "wrong": "A shortage of milk for buyers",
+     "hint": "Supply exceeds demand at this price. What happens to the difference between them?",
+     "pre": "That leftover quantity is the",
+     "term": "MINP_SURPLUS"
+    },
+    {
+     "type": "ask",
+     "q": "Because farmers can sell all their milk at this guaranteed higher price rather than a lower market price, what happens to their earnings compared with before?",
+     "right": "They are protected and more stable",
+     "wrong": "They fall because less is sold overall",
+     "hint": "Think about what a price floor guarantees the seller, regardless of the surplus.",
+     "pre": "So one advantage is that it",
+     "term": "MINP_ADV1"
+    },
+    {
+     "type": "ask",
+     "q": "Suppose the minimum price is set on alcohol instead of milk, and alcohol harms third parties through its use. At the higher price, do people buy more or less alcohol than before?",
+     "right": "Less, because it now costs more",
+     "wrong": "More, because it seems more valuable",
+     "hint": "Higher price, same demand curve: what happens to quantity bought?",
+     "pre": "So another advantage is that it",
+     "term": "MINP_ADV2"
+    },
+    {
+     "type": "order",
+     "terms": [
+      "MINP_DIAG",
+      "MINP_SURPLUS",
+      "MINP_ADV1",
+      "MINP_ADV2"
+     ],
+     "prompt": "Drag and drop the 4 key terms in the order they build on each other."
+    },
+    {
+     "type": "ask",
+     "q": "All that unsold surplus milk still has to go somewhere. Does keeping or getting rid of it cost anyone anything?",
+     "right": "Yes, someone has to pay to store or destroy it",
+     "wrong": "No, it disappears at no cost",
+     "hint": "Milk does not vanish. What has to happen to it, and who pays for that?",
+     "pre": "So a disadvantage is the",
+     "term": "MINP_DIS1"
+    },
+    {
+     "type": "ask",
+     "q": "Some buyers are unwilling to pay the high legal minimum price. Might they look for a way to get milk more cheaply, outside the legal market?",
+     "right": "Yes, an illegal cheaper market could appear",
+     "wrong": "No, they will always pay the legal price",
+     "hint": "If people want a cheaper deal and the legal price will not fall, where might they turn?",
+     "pre": "So another disadvantage is the potential for a",
+     "term": "MINP_DIS2"
+    },
+    {
+     "type": "derive"
+    }
+   ],
+   "given": [
+    "DRAW_EQUIL",
+    "MINP_DEF",
+    "EXTERN"
+   ],
+   "needs": [
+    "DRAW_EQUIL",
+    "MINP_DEF",
+    "EXTERN"
+   ],
+   "builds": [
+    "DRAW_EQUIL",
+    "MINP_DEF",
+    "EXTERN"
+   ],
+   "nodes": [
+    "MINP_DIAG",
+    "MINP_SURPLUS",
+    "MINP_ADV1",
+    "MINP_ADV2",
+    "MINP_DIS1",
+    "MINP_DIS2"
+   ],
+   "dropped": [],
+   "edges": [
+    [
+     "MINP_DIAG",
+     "MINP_SURPLUS"
+    ],
+    [
+     "MINP_DIAG",
+     "MINP_ADV1"
+    ],
+    [
+     "MINP_DIAG",
+     "MINP_ADV2"
+    ],
+    [
+     "MINP_SURPLUS",
+     "MINP_DIS1"
+    ],
+    [
+     "MINP_SURPLUS",
+     "MINP_DIS2"
+    ],
+    [
+     "DRAW_EQUIL",
+     "MINP_DIAG"
+    ],
+    [
+     "MINP_DEF",
+     "MINP_DIAG"
+    ],
+    [
+     "EXTERN",
+     "MINP_ADV2"
+    ],
+    [
+     "DRAW_EQUIL",
+     "MINP_DIAG"
+    ],
+    [
+     "MINP_DEF",
+     "MINP_DIAG"
+    ],
+    [
+     "EXTERN",
+     "MINP_ADV2"
+    ]
+   ]
+  }
+ ]
+}

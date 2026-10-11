@@ -1,0 +1,114 @@
+{
+ "id": "gen",
+ "subject": "Economics",
+ "title": "Disadvantages of specialisation: quality",
+ "terms": {
+  "repcheap": {
+   "label": "Repetitive narrow tasks"
+  },
+  "skillnarrow": {
+   "label": "Narrowed skills"
+  },
+  "pridecare": {
+   "label": "Loss of care & pride"
+  },
+  "DIS_SPEC_QUALITY": {
+   "label": "Quality loss from specialisation"
+  },
+  "ADV_SPEC_PRODUCTIVITY": {
+   "label": "Higher productivity"
+  }
+ },
+ "stages": [
+  {
+   "name": "Disadvantages of specialisation: quality",
+   "title": "Disadvantages of specialisation: quality",
+   "sub": "See how the same division of labour that boosts output can quietly erode craftsmanship.",
+   "steps": [
+    {
+     "type": "ask",
+     "q": "A shoe-line worker only glues soles, all day, every day. Is their job varied, or the same task over and over?",
+     "right": "The same task over and over",
+     "wrong": "Still varied, just faster",
+     "hint": "Think about what dividing the job into small parts does to each worker's task.",
+     "pre": "Splitting production this way means each worker does",
+     "term": "repcheap"
+    },
+    {
+     "type": "ask",
+     "q": "After years of only gluing soles, could that worker easily sit down and make a whole shoe by hand, start to finish?",
+     "right": "No, they never practised the other skills",
+     "wrong": "Yes, just as easily as before",
+     "hint": "They only ever practised one small step, not the full craft.",
+     "pre": "So their range of skills has become",
+     "term": "skillnarrow"
+    },
+    {
+     "type": "ask",
+     "q": "A worker who repeats one small motion never sees the finished shoe. Would they spot and fix a flaw out of pride?",
+     "right": "Less likely, they never see the finished product",
+     "wrong": "Just as likely as a worker who makes the whole shoe",
+     "hint": "Pride in a finished product usually comes from making the whole thing, not one repeated motion.",
+     "pre": "So there can be a",
+     "term": "pridecare"
+    },
+    {
+     "type": "order",
+     "terms": [
+      "repcheap",
+      "skillnarrow",
+      "pridecare"
+     ],
+     "prompt": "Drag and drop the 3 key terms in the order they build on each other."
+    },
+    {
+     "type": "ask",
+     "q": "Output per hour on the line goes up, but customers start returning shoes with poorly glued soles. Has productivity risen without cost?",
+     "right": "No, quality has fallen even as output rose",
+     "wrong": "Yes, more shoes made is a pure gain",
+     "hint": "Compare the productivity gain with what is happening to the finished shoes.",
+     "pre": "So this narrowed, careless work can undercut the productivity gain: a",
+     "term": "DIS_SPEC_QUALITY"
+    },
+    {
+     "type": "derive"
+    }
+   ],
+   "given": [
+    "ADV_SPEC_PRODUCTIVITY"
+   ],
+   "needs": [
+    "ADV_SPEC_PRODUCTIVITY"
+   ],
+   "builds": [
+    "ADV_SPEC_PRODUCTIVITY"
+   ],
+   "nodes": [
+    "DIS_SPEC_QUALITY"
+   ],
+   "dropped": [],
+   "edges": [
+    [
+     "ADV_SPEC_PRODUCTIVITY",
+     "DIS_SPEC_QUALITY"
+    ],
+    [
+     "ADV_SPEC_PRODUCTIVITY",
+     "repcheap"
+    ],
+    [
+     "repcheap",
+     "skillnarrow"
+    ],
+    [
+     "skillnarrow",
+     "pridecare"
+    ],
+    [
+     "pridecare",
+     "DIS_SPEC_QUALITY"
+    ]
+   ]
+  }
+ ]
+}

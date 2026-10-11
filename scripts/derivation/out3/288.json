@@ -1,0 +1,120 @@
+{
+ "id": "gen",
+ "subject": "Economics",
+ "title": "Reasons for wage intervention",
+ "terms": {
+  "low_pay_situation": {
+   "label": "Low pay situation"
+  },
+  "reason_wages_poverty": {
+   "label": "Reason for wage intervention: tackling low pay and in-work poverty"
+  },
+  "wage_gap": {
+   "label": "Wage gap between groups"
+  },
+  "reason_wages_equity": {
+   "label": "Reason for wage intervention: equity/reducing wage inequality"
+  },
+  "labour_market_failure": {
+   "label": "Labour market failure resulting from occupational and geographical immobility"
+  }
+ },
+ "stages": [
+  {
+   "name": "Reasons for wage intervention",
+   "title": "Reasons for wage intervention",
+   "sub": "Understand why governments intervene in the labour market to tackle low pay and inequality.",
+   "steps": [
+    {
+     "type": "ask",
+     "q": "A cleaner works full-time but her wage is so low that even after working every week she still cannot afford rent and food. If nobody steps in, what happens to her household?",
+     "right": "It stays stuck in poverty despite working",
+     "wrong": "It slowly saves enough to escape poverty",
+     "hint": "She is working full-time already. Can she just work harder to fix this?",
+     "pre": "So immobile, weak workers can end up in a",
+     "term": "low_pay_situation"
+    },
+    {
+     "type": "ask",
+     "q": "If a government sets a minimum wage or tops up low pay with benefits, what is it trying to fix for workers like her?",
+     "right": "Workers being paid too little to escape poverty",
+     "wrong": "Firms making too much profit from selling goods",
+     "hint": "Think about whose income is the problem here, and what level it is stuck at.",
+     "pre": "So one reason for intervening is",
+     "term": "reason_wages_poverty"
+    },
+    {
+     "type": "ask",
+     "q": "A warehouse worker and a company director both work full weeks, but one earns £20,000 a year and the other earns £2,000,000. Is that gap only about how many hours each person works?",
+     "right": "No, it is far more than a difference in hours worked",
+     "wrong": "Yes, it is fully explained by hours worked",
+     "hint": "Both work similar hours. What else could explain such a huge difference in pay?",
+     "pre": "So across the workforce there can be a large",
+     "term": "wage_gap"
+    },
+    {
+     "type": "ask",
+     "q": "If a government introduces higher taxes on top earners or stronger minimum wages to narrow that gap between the highest and lowest paid, what is it aiming for?",
+     "right": "A fairer, less unequal spread of pay",
+     "wrong": "A faster growing economy overall",
+     "hint": "The policy targets the size of the gap between pay levels, not total output.",
+     "pre": "So another reason for intervening is",
+     "term": "reason_wages_equity"
+    },
+    {
+     "type": "order",
+     "terms": [
+      "low_pay_situation",
+      "reason_wages_poverty",
+      "wage_gap",
+      "reason_wages_equity"
+     ],
+     "prompt": "Drag and drop the 4 key terms in the order they build on each other."
+    },
+    {
+     "type": "derive"
+    }
+   ],
+   "given": [
+    "labour_market_failure"
+   ],
+   "needs": [
+    "labour_market_failure"
+   ],
+   "builds": [
+    "labour_market_failure"
+   ],
+   "nodes": [
+    "reason_wages_poverty",
+    "reason_wages_equity"
+   ],
+   "dropped": [],
+   "edges": [
+    [
+     "labour_market_failure",
+     "reason_wages_poverty"
+    ],
+    [
+     "labour_market_failure",
+     "reason_wages_equity"
+    ],
+    [
+     "labour_market_failure",
+     "low_pay_situation"
+    ],
+    [
+     "low_pay_situation",
+     "reason_wages_poverty"
+    ],
+    [
+     "labour_market_failure",
+     "wage_gap"
+    ],
+    [
+     "wage_gap",
+     "reason_wages_equity"
+    ]
+   ]
+  }
+ ]
+}

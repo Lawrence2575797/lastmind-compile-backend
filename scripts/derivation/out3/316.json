@@ -1,0 +1,158 @@
+{
+ "id": "gen",
+ "subject": "Economics",
+ "title": "Maximum wage: pros and cons",
+ "terms": {
+  "payprod": {
+   "label": "Pay above productivity"
+  },
+  "max_wage_adv_excess": {
+   "label": "Limiting unjustified pay"
+  },
+  "max_wage_disadv_shortage": {
+   "label": "Labour shortage"
+  },
+  "abroad": {
+   "label": "Pay elsewhere"
+  },
+  "max_wage_disadv_migration": {
+   "label": "Brain drain"
+  },
+  "max_wage_diagram": {
+   "label": "Maximum wage diagram"
+  },
+  "ped_labour": {
+   "label": "Elasticity of demand for labour: definition and determinants (e.g. labour cost as proportion of total cost, ease of substitution, PED of product, time period)"
+  },
+  "reasons_intervene_wages": {
+   "label": "Reasons to intervene in wages"
+  }
+ },
+ "stages": [
+  {
+   "name": "Maximum wage: pros and cons",
+   "title": "Maximum wage: pros and cons",
+   "sub": "What a wage cap is meant to do and what it can cost.",
+   "steps": [
+    {
+     "type": "ask",
+     "term": "payprod",
+     "q": "A footballer is paid a hundred times a nurse's wage. Is pay always matched to what the worker adds to output?",
+     "right": "No, some pay is far above what output justifies",
+     "wrong": "Yes, every wage exactly matches output",
+     "hint": "Does anyone earn more than their work adds?",
+     "pre": "Pay that goes beyond what a worker's output justifies is"
+    },
+    {
+     "type": "ask",
+     "term": "max_wage_adv_excess",
+     "q": "A cap stops chief executives being paid far above their contribution. What does it limit?",
+     "right": "Pay that output does not justify",
+     "wrong": "Pay that output fully justifies",
+     "hint": "Which pay is the cap aimed at?",
+     "pre": "So a cap can limit pay that is not earned. This is"
+    },
+    {
+     "type": "ask",
+     "term": "max_wage_disadv_shortage",
+     "q": "The cap is set below the wage at which enough surgeons want to work. What happens to the number of surgeons willing to work?",
+     "right": "Fewer are willing, so posts go unfilled",
+     "wrong": "More are willing, so posts overflow",
+     "hint": "A lower wage makes the job less attractive.",
+     "pre": "So a cap can leave jobs empty. This is a"
+    },
+    {
+     "type": "ask",
+     "term": "abroad",
+     "q": "A country abroad pays surgeons twice as much. What might a capped surgeon do?",
+     "right": "Move to work there",
+     "wrong": "Take a pay cut to stay",
+     "hint": "Who wants to earn half as much as they could?",
+     "pre": "Better wages in another country are"
+    },
+    {
+     "type": "order",
+     "terms": [
+      "payprod",
+      "max_wage_adv_excess",
+      "max_wage_disadv_shortage",
+      "abroad"
+     ],
+     "prompt": "Drag and drop the 4 key terms in the order they build on each other."
+    },
+    {
+     "type": "ask",
+     "term": "max_wage_disadv_migration",
+     "q": "Many of the country's best-trained workers leave to earn more elsewhere. What happens to its stock of skills?",
+     "right": "It shrinks as trained people leave",
+     "wrong": "It grows as trained people leave",
+     "hint": "Who is left behind when trained people go?",
+     "pre": "That loss of skilled workers is the"
+    },
+    {
+     "type": "derive"
+    }
+   ],
+   "given": [
+    "max_wage_diagram",
+    "ped_labour",
+    "reasons_intervene_wages"
+   ],
+   "needs": [
+    "max_wage_diagram",
+    "ped_labour",
+    "reasons_intervene_wages"
+   ],
+   "builds": [
+    "max_wage_diagram",
+    "ped_labour",
+    "reasons_intervene_wages"
+   ],
+   "nodes": [
+    "max_wage_disadv_shortage",
+    "max_wage_disadv_migration",
+    "max_wage_adv_excess"
+   ],
+   "dropped": [
+    [
+     "reasons_intervene_wages",
+     "max_wage_adv_excess"
+    ],
+    [
+     "max_wage_disadv_shortage",
+     "max_wage_disadv_migration"
+    ]
+   ],
+   "edges": [
+    [
+     "max_wage_diagram",
+     "max_wage_disadv_shortage"
+    ],
+    [
+     "ped_labour",
+     "max_wage_disadv_shortage"
+    ],
+    [
+     "max_wage_diagram",
+     "max_wage_adv_excess"
+    ],
+    [
+     "reasons_intervene_wages",
+     "payprod"
+    ],
+    [
+     "payprod",
+     "max_wage_adv_excess"
+    ],
+    [
+     "max_wage_disadv_shortage",
+     "abroad"
+    ],
+    [
+     "abroad",
+     "max_wage_disadv_migration"
+    ]
+   ]
+  }
+ ]
+}

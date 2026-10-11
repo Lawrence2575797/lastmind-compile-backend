@@ -1,0 +1,105 @@
+{
+ "id": "gen",
+ "subject": "Economics",
+ "title": "Elasticity of supply of labour",
+ "terms": {
+  "wageresponse": {
+   "label": "Wage responsiveness"
+  },
+  "skilltime": {
+   "label": "Training time"
+  },
+  "vocnature": {
+   "label": "Vocational nature"
+  },
+  "pes_labour": {
+   "label": "Elasticity of supply of labour"
+  },
+  "factor_qualifications": {
+   "label": "Qualifications barrier"
+  }
+ },
+ "stages": [
+  {
+   "name": "Elasticity of supply of labour",
+   "title": "Elasticity of supply of labour",
+   "sub": "Explain why some jobs fill up quickly when wages rise, and others do not.",
+   "steps": [
+    {
+     "type": "ask",
+     "q": "A supermarket raises checkout wages by 10%. Within weeks, plenty of new people apply, since almost anyone can be trained on the till in a day. Now a hospital raises surgeon wages by 10%. Do surgeon numbers rise just as fast?",
+     "right": "No, far fewer new surgeons appear",
+     "wrong": "Yes, about the same number appear",
+     "hint": "Think about the qualifications needed to become a surgeon versus a checkout worker.",
+     "pre": "So how much the quantity of labour supplied reacts to a wage change is called",
+     "term": "wageresponse"
+    },
+    {
+     "type": "ask",
+     "q": "Becoming a surgeon takes over 10 years of training, while becoming a checkout worker takes a day. If wages rise this year, which job can add new workers sooner?",
+     "right": "The checkout job",
+     "wrong": "The surgeon job",
+     "hint": "Which job's training can actually be finished within the same year as the wage rise?",
+     "pre": "So a key factor is how long the",
+     "term": "skilltime"
+    },
+    {
+     "type": "ask",
+     "q": "Someone becomes a nurse mainly because they feel called to care for people, not chiefly for the pay. If nursing wages rise 10%, will many outsiders switch into nursing just for the money?",
+     "right": "No, few will switch in for pay alone",
+     "wrong": "Yes, many will switch in for the pay",
+     "hint": "Does a strong sense of vocation make people move in and out of a job purely because of wage changes?",
+     "pre": "So another factor is the",
+     "term": "vocnature"
+    },
+    {
+     "type": "ask",
+     "q": "Given that surgeons need years of training and qualifications, respond slowly to wage changes, and often see the job as a calling, while checkout workers need almost none of this and respond fast, which job's labour supply is more sensitive to a wage rise?",
+     "right": "The checkout job's supply is far more sensitive",
+     "wrong": "Both jobs' supply are equally sensitive",
+     "hint": "Put the qualifications, training time and vocational factors together for each job.",
+     "pre": "This overall sensitivity of labour supply to a wage change is measured by the",
+     "term": "pes_labour"
+    },
+    {
+     "type": "derive"
+    }
+   ],
+   "given": [
+    "factor_qualifications"
+   ],
+   "needs": [
+    "factor_qualifications"
+   ],
+   "builds": [
+    "factor_qualifications"
+   ],
+   "nodes": [
+    "pes_labour"
+   ],
+   "dropped": [],
+   "edges": [
+    [
+     "factor_qualifications",
+     "pes_labour"
+    ],
+    [
+     "factor_qualifications",
+     "wageresponse"
+    ],
+    [
+     "wageresponse",
+     "pes_labour"
+    ],
+    [
+     "skilltime",
+     "pes_labour"
+    ],
+    [
+     "vocnature",
+     "pes_labour"
+    ]
+   ]
+  }
+ ]
+}

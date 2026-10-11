@@ -1,0 +1,230 @@
+{
+ "id": "gen",
+ "subject": "Economics",
+ "title": "Elasticity applications",
+ "terms": {
+  "xed_def": {
+   "label": "Cross elasticity of demand"
+  },
+  "xed_interpret": {
+   "label": "Interpreting XED"
+  },
+  "tot_rev": {
+   "label": "Total revenue"
+  },
+  "ped_revenue": {
+   "label": "PED and total revenue"
+  },
+  "elasticity_real_income_signif": {
+   "label": "Elasticities & real income"
+  },
+  "elasticity_sub_comp_signif": {
+   "label": "Elasticities & related prices"
+  },
+  "ped_indirect_tax_signif": {
+   "label": "Elasticities & tax/subsidy"
+  },
+  "demand_def": {
+   "label": "Demand"
+  },
+  "conditions_of_demand": {
+   "label": "Conditions of demand"
+  },
+  "ped_interpret": {
+   "label": "Interpreting PED values"
+  },
+  "yed_interpret": {
+   "label": "Interpreting YED values"
+  },
+  "indirect_tax_def": {
+   "label": "Definition of an indirect tax"
+  },
+  "subsidy_def": {
+   "label": "Definition of a subsidy"
+  },
+  "total_revenue_concept": {
+   "label": "Total revenue: price multiplied by quantity sold"
+  }
+ },
+ "stages": [
+  {
+   "name": "Elasticity applications",
+   "title": "Elasticity applications",
+   "sub": "After this the student can use XED and link elasticity values to firm and government decisions.",
+   "steps": [
+    {
+     "type": "ask",
+     "q": "The price of coffee rises by 10% and, with nothing else changing, the demand for tea rises by 4%. What does this tell you about how the two goods are linked?",
+     "right": "A price change in one good moves demand for the other",
+     "wrong": "A price change in one good has no effect on the other",
+     "hint": "Tea's demand moved even though tea's own price didn't change. What caused that?",
+     "pre": "The responsiveness of demand for one good to a price change in another good is measured by the",
+     "term": "xed_def"
+    },
+    {
+     "type": "ask",
+     "q": "In that example, tea's demand rose when coffee's price rose. If instead the two goods were milk and coffee (used together), would you expect a rise in coffee's price to raise or lower demand for milk?",
+     "right": "Lower it",
+     "wrong": "Raise it, just like tea",
+     "hint": "Tea replaces coffee, but milk is used alongside it. If coffee gets pricier and people buy less coffee, what happens to milk bought with it?",
+     "pre": "So the sign of the value tells you whether goods are substitutes or complements. This is",
+     "term": "xed_interpret"
+    },
+    {
+     "type": "ask",
+     "q": "A government is deciding whether to tax cigarettes heavily. If cigarettes have very few close substitutes, will a tax on them change quantity smoked by much?",
+     "right": "No, quantity will barely change",
+     "wrong": "Yes, quantity will fall sharply",
+     "hint": "Think about what a low cross elasticity with other goods, and inelastic demand, mean for how easily people switch away.",
+     "pre": "Knowing how substitutable and price-responsive a good is helps decide how a tax or subsidy will work. This is the significance of elasticities for",
+     "term": "ped_indirect_tax_signif"
+    },
+    {
+     "type": "ask",
+     "q": "A supermarket sells own-brand cola and a well-known branded cola, which are close substitutes. If the branded cola's price rises a lot, what happens to demand for the own-brand cola?",
+     "right": "It rises noticeably",
+     "wrong": "It falls noticeably",
+     "hint": "People switch away from the good that got dearer. Where do they switch to?",
+     "pre": "So a firm can predict how its sales react to a rival's price change. This is the significance of elasticities for prices of",
+     "term": "elasticity_sub_comp_signif"
+    },
+    {
+     "type": "order",
+     "terms": [
+      "xed_def",
+      "xed_interpret",
+      "ped_indirect_tax_signif",
+      "elasticity_sub_comp_signif"
+     ],
+     "prompt": "Drag and drop the 4 key terms in the order they build on each other."
+    },
+    {
+     "type": "ask",
+     "q": "A good has income elasticity of demand of +2 (a luxury). If average incomes fall in a recession, what happens to demand for this good compared with an everyday necessity?",
+     "right": "It falls by a much larger percentage",
+     "wrong": "It falls by roughly the same percentage",
+     "hint": "A high positive value means demand is very sensitive to income changes. Is a luxury more or less exposed to a downturn?",
+     "pre": "So a firm selling luxury goods must plan carefully for booms and recessions. This is the significance of elasticities for changes in",
+     "term": "elasticity_real_income_signif"
+    },
+    {
+     "type": "ask",
+     "q": "A firm cuts its price, and because demand is price elastic, quantity sold rises by a bigger percentage than the price fell. Multiplying the new lower price by the new higher quantity, does total money taken rise or fall compared with before?",
+     "right": "It rises",
+     "wrong": "It falls",
+     "hint": "Price times quantity: quantity increased by more than price decreased. What happens to the product?",
+     "pre": "Price multiplied by quantity sold is called",
+     "term": "tot_rev"
+    },
+    {
+     "type": "ask",
+     "q": "Now think of a good with inelastic demand. If the firm raises its price, quantity falls only a little. What happens to price times quantity now?",
+     "right": "It rises",
+     "wrong": "It falls",
+     "hint": "Price went up by a lot, quantity fell by only a little. Which effect dominates?",
+     "pre": "So whether revenue rises or falls with a price change depends on elasticity. This is the relationship between PED and",
+     "term": "ped_revenue"
+    },
+    {
+     "type": "derive"
+    }
+   ],
+   "given": [
+    "demand_def",
+    "conditions_of_demand",
+    "ped_interpret",
+    "yed_interpret"
+   ],
+   "needs": [
+    "demand_def",
+    "conditions_of_demand",
+    "ped_interpret",
+    "yed_interpret",
+    "indirect_tax_def",
+    "subsidy_def",
+    "total_revenue_concept"
+   ],
+   "builds": [
+    "demand_def",
+    "conditions_of_demand",
+    "ped_interpret",
+    "yed_interpret"
+   ],
+   "nodes": [
+    "xed_def",
+    "xed_interpret",
+    "ped_indirect_tax_signif",
+    "ped_revenue",
+    "elasticity_real_income_signif",
+    "elasticity_sub_comp_signif"
+   ],
+   "dropped": [],
+   "edges": [
+    [
+     "xed_def",
+     "xed_interpret"
+    ],
+    [
+     "xed_interpret",
+     "elasticity_sub_comp_signif"
+    ],
+    [
+     "xed_interpret",
+     "ped_indirect_tax_signif"
+    ],
+    [
+     "demand_def",
+     "xed_def"
+    ],
+    [
+     "conditions_of_demand",
+     "xed_def"
+    ],
+    [
+     "ped_interpret",
+     "ped_revenue"
+    ],
+    [
+     "ped_interpret",
+     "ped_indirect_tax_signif"
+    ],
+    [
+     "yed_interpret",
+     "elasticity_real_income_signif"
+    ],
+    [
+     "yed_interpret",
+     "ped_indirect_tax_signif"
+    ],
+    [
+     "xed_def",
+     "xed_interpret"
+    ],
+    [
+     "xed_interpret",
+     "elasticity_sub_comp_signif"
+    ],
+    [
+     "xed_interpret",
+     "ped_indirect_tax_signif"
+    ],
+    [
+     "yed_interpret",
+     "elasticity_real_income_signif"
+    ],
+    [
+     "ped_interpret",
+     "tot_rev"
+    ],
+    [
+     "tot_rev",
+     "ped_revenue"
+    ],
+    [
+     "ped_interpret",
+     "ped_indirect_tax_signif"
+    ]
+   ]
+  }
+ ]
+}

@@ -1,0 +1,149 @@
+{
+ "id": "gen",
+ "subject": "Economics",
+ "title": "Price regulation effects",
+ "terms": {
+  "cap_level": {
+   "label": "Fixed price cap"
+  },
+  "cost_gap": {
+   "label": "Cost-price gap"
+  },
+  "IMPACT_PRICES": {
+   "label": "Impact on prices"
+  },
+  "PRICE_REG_ADV2": {
+   "label": "Cost-cutting incentive"
+  },
+  "PRICE_REG_DEF": {
+   "label": "Price regulation: definition (e.g. RPI-X price capping by a regulator)"
+  },
+  "PROFIT_REG_DEF": {
+   "label": "Profit regulation: definition (e.g. capping rate of return on capital)"
+  },
+  "PRIVATISATION_DEF": {
+   "label": "Privatisation: definition (transfer of state-owned assets/firms to the private sector)"
+  },
+  "MERGER_POLICY": {
+   "label": "Merger control policy (Competition and Markets Authority investigation, referral thresholds, blocking/approving mergers with conditions)"
+  }
+ },
+ "stages": [
+  {
+   "name": "Price regulation effects",
+   "title": "Price regulation effects",
+   "sub": "What RPI-X price caps do to prices, and why they push regulated firms to cut costs.",
+   "steps": [
+    {
+     "type": "ask",
+     "q": "A water regulator uses RPI-X to set the maximum price the monopoly can charge next year, whatever happens to its costs. Once that maximum is set, can the firm charge above it?",
+     "right": "No, it is stuck at or below that maximum",
+     "wrong": "Yes, if its costs rise it can charge more",
+     "hint": "The whole point of RPI-X is to fix a ceiling. Can the firm break through it?",
+     "pre": "So the regulator has set a",
+     "term": "cap_level"
+    },
+    {
+     "type": "ask",
+     "q": "Before regulation the monopoly charged £60. RPI-X now sets a ceiling of £50. Compared with the unregulated price, what happens to the price customers pay?",
+     "right": "It is held lower than the unregulated price",
+     "wrong": "It rises above the unregulated price",
+     "hint": "The cap is meant to stop the monopoly charging what it likes. Which direction does that push price?",
+     "pre": "So capping prices this way has an",
+     "term": "IMPACT_PRICES"
+    },
+    {
+     "type": "ask",
+     "q": "The cap is fixed at £50, and the firm's cost per unit is £30. If the firm cuts its costs further, to £25, what happens to the gap between the capped price and its costs?",
+     "right": "The gap between price and cost gets bigger",
+     "wrong": "The gap between price and cost stays the same",
+     "hint": "The cap stays at £50 whatever the firm's costs are. If costs fall, what happens to the difference?",
+     "pre": "So under a fixed price cap, cutting costs widens the",
+     "term": "cost_gap"
+    },
+    {
+     "type": "order",
+     "terms": [
+      "cap_level",
+      "IMPACT_PRICES",
+      "cost_gap"
+     ],
+     "prompt": "Drag and drop the 3 key terms in the order they build on each other."
+    },
+    {
+     "type": "ask",
+     "q": "Since the firm keeps whatever gap it creates between the fixed cap and its own costs, what does it have a reason to do?",
+     "right": "Try to cut its costs as much as possible",
+     "wrong": "Try to raise its costs to justify future price rises",
+     "hint": "If a bigger gap between the fixed price and costs means more profit kept, what would the firm want to do to costs?",
+     "pre": "So RPI-X capping gives the firm an",
+     "term": "PRICE_REG_ADV2"
+    },
+    {
+     "type": "derive"
+    }
+   ],
+   "given": [
+    "PRICE_REG_DEF",
+    "PROFIT_REG_DEF",
+    "PRIVATISATION_DEF",
+    "MERGER_POLICY"
+   ],
+   "needs": [
+    "PRICE_REG_DEF",
+    "PROFIT_REG_DEF",
+    "PRIVATISATION_DEF",
+    "MERGER_POLICY"
+   ],
+   "builds": [
+    "PRICE_REG_DEF",
+    "PROFIT_REG_DEF",
+    "PRIVATISATION_DEF",
+    "MERGER_POLICY"
+   ],
+   "nodes": [
+    "IMPACT_PRICES",
+    "PRICE_REG_ADV2"
+   ],
+   "dropped": [],
+   "edges": [
+    [
+     "PRICE_REG_DEF",
+     "IMPACT_PRICES"
+    ],
+    [
+     "PROFIT_REG_DEF",
+     "IMPACT_PRICES"
+    ],
+    [
+     "PRIVATISATION_DEF",
+     "IMPACT_PRICES"
+    ],
+    [
+     "MERGER_POLICY",
+     "IMPACT_PRICES"
+    ],
+    [
+     "PRICE_REG_DEF",
+     "PRICE_REG_ADV2"
+    ],
+    [
+     "PRICE_REG_DEF",
+     "cap_level"
+    ],
+    [
+     "cap_level",
+     "IMPACT_PRICES"
+    ],
+    [
+     "cap_level",
+     "cost_gap"
+    ],
+    [
+     "cost_gap",
+     "PRICE_REG_ADV2"
+    ]
+   ]
+  }
+ ]
+}

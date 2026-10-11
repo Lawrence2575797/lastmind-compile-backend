@@ -1,0 +1,297 @@
+{
+ "id": "gen",
+ "subject": "Economics",
+ "title": "Minimum and maximum wages",
+ "terms": {
+  "min_wage_def": {
+   "label": "Minimum wage: definition (legal lower limit on wages set above equilibrium)"
+  },
+  "min_wage_diagram": {
+   "label": "Minimum wage diagram"
+  },
+  "max_wage_diagram": {
+   "label": "Maximum wage diagram"
+  },
+  "min_wage_disadv_unemployment": {
+   "label": "Minimum wage: unemployment"
+  },
+  "min_wage_disadv_costs": {
+   "label": "Minimum wage: higher costs"
+  },
+  "labour_equilibrium_diagram": {
+   "label": "Labour market equilibrium"
+  },
+  "max_wage_def": {
+   "label": "Maximum wage"
+  },
+  "pes_labour": {
+   "label": "Elasticity of supply of labour: definition and determinants (e.g. skill level required, time period, vocational nature of job)"
+  },
+  "min_wage_adv_poverty": {
+   "label": "Minimum wage: cuts poverty"
+  },
+  "reason_wages_poverty": {
+   "label": "Reason for wage intervention: tackling low pay and in-work poverty"
+  },
+  "reason_wages_monopsony": {
+   "label": "Reason for wage intervention: countering employer monopsony power"
+  }
+ },
+ "stages": [
+  {
+   "name": "Minimum and maximum wages",
+   "title": "Minimum and maximum wages",
+   "sub": "After this the student can explain how minimum and maximum wages distort the labour market and evaluate their effects.",
+   "steps": [
+    {
+     "type": "ask",
+     "q": "Workers currently paid £6 an hour are told that, by law, nobody may be paid less than £8 an hour. Is £8 above or below what the market was paying?",
+     "right": "Above the market wage",
+     "wrong": "Below the market wage",
+     "hint": "£8 is more than the £6 workers were getting.",
+     "pre": "A legal floor on pay set above the equilibrium wage is a",
+     "term": "min_wage_def"
+    },
+    {
+     "type": "ask",
+     "q": "At the old £6 wage, the quantity of labour supplied equalled the quantity demanded. If firms must now pay £8, do they want to hire the same number of workers as before?",
+     "right": "No, they want to hire fewer",
+     "wrong": "Yes, exactly the same number",
+     "hint": "Think of the labour demand curve: as the wage on the vertical axis rises, what happens to quantity demanded?",
+     "pre": "Firms cut back hiring while more people want jobs at £8, shown on a",
+     "term": "min_wage_diagram",
+     "diagram": {
+      "x": "Quantity of labour",
+      "y": "Wage rate",
+      "curves": [
+       {
+        "label": "S",
+        "pts": [
+         [
+          0.1,
+          0.15
+         ],
+         [
+          0.4,
+          0.4
+         ],
+         [
+          0.8,
+          0.75
+         ]
+        ]
+       },
+       {
+        "label": "D",
+        "pts": [
+         [
+          0.1,
+          0.75
+         ],
+         [
+          0.4,
+          0.4
+         ],
+         [
+          0.8,
+          0.15
+         ]
+        ]
+       }
+      ],
+      "points": [
+       {
+        "label": "We",
+        "x": 0.4,
+        "y": 0.4,
+        "guides": true
+       },
+       {
+        "label": "Wmin",
+        "x": 0.4,
+        "y": 0.62,
+        "guides": true
+       }
+      ]
+     }
+    },
+    {
+     "type": "ask",
+     "q": "A government instead caps pay for a skilled job at £10, below the £14 the market was paying. At £10, do enough workers want these jobs to fill all the vacancies firms want to offer?",
+     "right": "No, fewer workers are willing to take them",
+     "wrong": "Yes, the same number as before",
+     "hint": "Lower pay on the wage axis moves you along the supply curve - which way?",
+     "pre": "Firms want more workers than are willing to work at that low wage, shown on a",
+     "term": "max_wage_diagram",
+     "diagram": {
+      "x": "Quantity of labour",
+      "y": "Wage rate",
+      "curves": [
+       {
+        "label": "S",
+        "pts": [
+         [
+          0.1,
+          0.15
+         ],
+         [
+          0.4,
+          0.4
+         ],
+         [
+          0.8,
+          0.75
+         ]
+        ]
+       },
+       {
+        "label": "D",
+        "pts": [
+         [
+          0.1,
+          0.75
+         ],
+         [
+          0.4,
+          0.4
+         ],
+         [
+          0.8,
+          0.15
+         ]
+        ]
+       }
+      ],
+      "points": [
+       {
+        "label": "We",
+        "x": 0.4,
+        "y": 0.4,
+        "guides": true
+       },
+       {
+        "label": "Wmax",
+        "x": 0.4,
+        "y": 0.22,
+        "guides": true
+       }
+      ]
+     }
+    },
+    {
+     "type": "ask",
+     "q": "Paying £8 instead of £6 an hour for the same job raises what a firm must spend on each worker it keeps. What might a firm do to make up for this extra spending?",
+     "right": "Raise its prices or cut other benefits it offers staff",
+     "wrong": "Keep prices and benefits exactly the same",
+     "hint": "The wage bill has gone up - where else could that extra money come from?",
+     "pre": "Passing the higher wage bill on to customers or staff perks is the disadvantage of",
+     "term": "min_wage_disadv_costs"
+    },
+    {
+     "type": "order",
+     "terms": [
+      "min_wage_def",
+      "min_wage_diagram",
+      "max_wage_diagram",
+      "min_wage_disadv_costs"
+     ],
+     "prompt": "Drag and drop the 4 key terms in the order they build on each other."
+    },
+    {
+     "type": "ask",
+     "q": "On the minimum wage diagram, more people want jobs at £8 than firms want to hire. What happens to those workers who cannot find one of the jobs on offer?",
+     "right": "They end up out of work",
+     "wrong": "They are hired anyway at a lower wage",
+     "hint": "Look at the gap between the quantity supplied and the quantity demanded at £8.",
+     "pre": "That gap between the numbers wanting jobs and jobs on offer is a rise in",
+     "term": "min_wage_disadv_unemployment"
+    },
+    {
+     "type": "derive"
+    }
+   ],
+   "given": [
+    "labour_equilibrium_diagram",
+    "max_wage_def",
+    "pes_labour",
+    "min_wage_adv_poverty"
+   ],
+   "needs": [
+    "labour_equilibrium_diagram",
+    "max_wage_def",
+    "pes_labour",
+    "min_wage_adv_poverty",
+    "reason_wages_poverty",
+    "reason_wages_monopsony"
+   ],
+   "builds": [
+    "labour_equilibrium_diagram",
+    "max_wage_def",
+    "pes_labour",
+    "min_wage_adv_poverty"
+   ],
+   "nodes": [
+    "min_wage_def",
+    "min_wage_diagram",
+    "max_wage_diagram",
+    "min_wage_disadv_unemployment",
+    "min_wage_disadv_costs"
+   ],
+   "dropped": [],
+   "edges": [
+    [
+     "min_wage_def",
+     "min_wage_diagram"
+    ],
+    [
+     "min_wage_diagram",
+     "min_wage_disadv_unemployment"
+    ],
+    [
+     "min_wage_def",
+     "min_wage_disadv_costs"
+    ],
+    [
+     "labour_equilibrium_diagram",
+     "min_wage_def"
+    ],
+    [
+     "labour_equilibrium_diagram",
+     "min_wage_diagram"
+    ],
+    [
+     "max_wage_def",
+     "max_wage_diagram"
+    ],
+    [
+     "labour_equilibrium_diagram",
+     "max_wage_diagram"
+    ],
+    [
+     "pes_labour",
+     "min_wage_disadv_unemployment"
+    ],
+    [
+     "min_wage_adv_poverty",
+     "min_wage_disadv_costs"
+    ],
+    [
+     "max_wage_def",
+     "max_wage_diagram"
+    ],
+    [
+     "labour_equilibrium_diagram",
+     "min_wage_diagram"
+    ],
+    [
+     "labour_equilibrium_diagram",
+     "max_wage_diagram"
+    ],
+    [
+     "min_wage_adv_poverty",
+     "min_wage_def"
+    ]
+   ]
+  }
+ ]
+}

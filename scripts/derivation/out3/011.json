@@ -1,0 +1,151 @@
+{
+ "id": "gen",
+ "subject": "Economics",
+ "title": "Free markets: strengths and weaknesses",
+ "terms": {
+  "ADV_FM_EFFICIENCY": {
+   "label": "Advantage of free market: price incentives drive efficiency/innovation"
+  },
+  "ADV_FM_CHOICE": {
+   "label": "Responsiveness & choice"
+  },
+  "ADV_FM_GROWTH": {
+   "label": "Profit-driven growth"
+  },
+  "DIS_FM_INEQUALITY": {
+   "label": "Disadvantage of free market: income/wealth inequality"
+  },
+  "DIS_FM_MONOPOLY_POWER": {
+   "label": "Monopoly power exploitation"
+  },
+  "FREE_MARKET_ECONOMY": {
+   "label": "Free market economy"
+  }
+ },
+ "stages": [
+  {
+   "name": "Free markets: strengths and weaknesses",
+   "title": "Free markets: strengths and weaknesses",
+   "sub": "The student can explain the key advantages and disadvantages of a free market economy.",
+   "steps": [
+    {
+     "type": "ask",
+     "q": "A bakery selling stale bread loses money to rivals with fresher loaves. With no planner, what pushes it to improve?",
+     "right": "The chance to earn more profit by doing better",
+     "wrong": "A government inspector orders it to improve",
+     "hint": "There is no planner here. What in the market itself rewards doing better?",
+     "pre": "So prices and profit act as an",
+     "term": "ADV_FM_EFFICIENCY"
+    },
+    {
+     "type": "ask",
+     "q": "Coffee shops compete for customers who want oat milk, low prices or speed. Who decides which shops survive?",
+     "right": "Customers, by choosing what to buy",
+     "wrong": "A planning board, by setting quotas",
+     "hint": "Nobody is told what to sell. What signal tells sellers what customers actually want?",
+     "pre": "So firms compete to serve buyers, giving consumers a wide",
+     "term": "ADV_FM_CHOICE"
+    },
+    {
+     "type": "ask",
+     "q": "A firm invents a faster phone and earns huge profits. What does that profit encourage other firms and investors to do?",
+     "right": "Invest and expand to chase similar profits",
+     "wrong": "Stop investing, since the market is taken",
+     "hint": "Seeing someone else make money from a new idea, what do rivals want to do?",
+     "pre": "That chase for profit fuels dynamic",
+     "term": "ADV_FM_GROWTH"
+    },
+    {
+     "type": "ask",
+     "q": "With no redistribution, a surgeon earns far more than a cleaner, and their children inherit the gap. What happens to inequality over time?",
+     "right": "It can widen and persist",
+     "wrong": "It automatically evens out",
+     "hint": "If earnings and inheritance both follow market rewards, does the gap tend to close by itself?",
+     "pre": "This unevenness is the problem of",
+     "term": "DIS_FM_INEQUALITY"
+    },
+    {
+     "type": "order",
+     "terms": [
+      "ADV_FM_EFFICIENCY",
+      "ADV_FM_CHOICE",
+      "ADV_FM_GROWTH",
+      "DIS_FM_INEQUALITY"
+     ],
+     "prompt": "Drag and drop the 4 key terms in the order they build on each other."
+    },
+    {
+     "type": "ask",
+     "q": "The phone firm buys every rival and becomes the only seller. With nobody to switch to, what can it do to prices?",
+     "right": "Raise prices well above the competitive level",
+     "wrong": "Keep prices low to attract new rivals",
+     "hint": "If customers have nowhere else to go, what stops the firm charging more?",
+     "pre": "A single dominant firm using its position like this has",
+     "term": "DIS_FM_MONOPOLY_POWER"
+    },
+    {
+     "type": "derive"
+    }
+   ],
+   "given": [
+    "FREE_MARKET_ECONOMY"
+   ],
+   "needs": [
+    "FREE_MARKET_ECONOMY"
+   ],
+   "builds": [
+    "FREE_MARKET_ECONOMY"
+   ],
+   "nodes": [
+    "ADV_FM_EFFICIENCY",
+    "ADV_FM_CHOICE",
+    "ADV_FM_GROWTH",
+    "DIS_FM_INEQUALITY",
+    "DIS_FM_MONOPOLY_POWER"
+   ],
+   "dropped": [],
+   "edges": [
+    [
+     "ADV_FM_EFFICIENCY",
+     "DIS_FM_MONOPOLY_POWER"
+    ],
+    [
+     "FREE_MARKET_ECONOMY",
+     "ADV_FM_EFFICIENCY"
+    ],
+    [
+     "FREE_MARKET_ECONOMY",
+     "ADV_FM_CHOICE"
+    ],
+    [
+     "FREE_MARKET_ECONOMY",
+     "ADV_FM_GROWTH"
+    ],
+    [
+     "FREE_MARKET_ECONOMY",
+     "DIS_FM_INEQUALITY"
+    ],
+    [
+     "FREE_MARKET_ECONOMY",
+     "DIS_FM_MONOPOLY_POWER"
+    ],
+    [
+     "FREE_MARKET_ECONOMY",
+     "ADV_FM_EFFICIENCY"
+    ],
+    [
+     "FREE_MARKET_ECONOMY",
+     "ADV_FM_CHOICE"
+    ],
+    [
+     "FREE_MARKET_ECONOMY",
+     "ADV_FM_GROWTH"
+    ],
+    [
+     "FREE_MARKET_ECONOMY",
+     "DIS_FM_INEQUALITY"
+    ]
+   ]
+  }
+ ]
+}

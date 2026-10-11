@@ -1,0 +1,119 @@
+{
+ "id": "gen",
+ "subject": "Economics",
+ "title": "Impact of externalities on third parties",
+ "terms": {
+  "no_say": {
+   "label": "No say in the deal"
+  },
+  "uncompensated": {
+   "label": "Uncompensated effect"
+  },
+  "spillover": {
+   "label": "Spillover effect"
+  },
+  "externality_impact_third_parties": {
+   "label": "Impact on third parties"
+  },
+  "external_costs": {
+   "label": "External costs: costs of an economic transaction imposed on third parties not involved in it"
+  },
+  "external_benefits": {
+   "label": "External benefits: benefits of a transaction received by third parties not involved in it"
+  }
+ },
+ "stages": [
+  {
+   "name": "Impact of externalities on third parties",
+   "title": "Impact of externalities on third parties",
+   "sub": "After this, the student can explain why external costs and benefits matter for people outside the transaction.",
+   "steps": [
+    {
+     "type": "ask",
+     "q": "A factory and its customers agree a price for making and buying paint. The family living next door breathes in the fumes. Did that family take part in agreeing the deal?",
+     "right": "No, they had no say in it",
+     "wrong": "Yes, they helped set the price",
+     "hint": "Think about who actually sat down and agreed the sale.",
+     "pre": "So the affected neighbours had",
+     "term": "no_say"
+    },
+    {
+     "type": "ask",
+     "q": "The factory pays its workers and suppliers, and the customer pays the factory. Does anyone pay the neighbours for the fumes they breathe in?",
+     "right": "No, nobody pays them anything",
+     "wrong": "Yes, the price already covers it",
+     "hint": "Money changes hands between the factory and the buyer. Does any of it reach the neighbours?",
+     "pre": "So the effect on them is completely",
+     "term": "uncompensated"
+    },
+    {
+     "type": "ask",
+     "q": "The fumes drift from the factory's own land onto the neighbour's garden, without either side intending it. Does the effect stay contained inside the factory-customer deal, or does it move beyond it?",
+     "right": "It moves beyond the original deal",
+     "wrong": "It stays contained inside the deal",
+     "hint": "Fumes do not stop at the factory fence. Where do they end up?",
+     "pre": "So the cost or benefit escapes the transaction as a",
+     "term": "spillover"
+    },
+    {
+     "type": "ask",
+     "q": "A café opens on a quiet street and passers-by enjoy the smell of fresh coffee for free, without buying anything. If a chemical plant instead makes nearby residents ill for free, in both cases who is actually affected by a deal they had no part in?",
+     "right": "People outside the original buyer and seller",
+     "wrong": "Only the buyer and seller themselves",
+     "hint": "The café owner and customer, or the plant and its customer, made the deal. Who else feels the result?",
+     "pre": "That uncompensated spillover onto people outside the transaction is the",
+     "term": "externality_impact_third_parties"
+    },
+    {
+     "type": "derive"
+    }
+   ],
+   "given": [
+    "external_costs",
+    "external_benefits"
+   ],
+   "needs": [
+    "external_costs",
+    "external_benefits"
+   ],
+   "builds": [
+    "external_costs",
+    "external_benefits"
+   ],
+   "nodes": [
+    "externality_impact_third_parties"
+   ],
+   "dropped": [],
+   "edges": [
+    [
+     "external_costs",
+     "externality_impact_third_parties"
+    ],
+    [
+     "external_benefits",
+     "externality_impact_third_parties"
+    ],
+    [
+     "external_costs",
+     "no_say"
+    ],
+    [
+     "external_benefits",
+     "no_say"
+    ],
+    [
+     "no_say",
+     "uncompensated"
+    ],
+    [
+     "uncompensated",
+     "spillover"
+    ],
+    [
+     "spillover",
+     "externality_impact_third_parties"
+    ]
+   ]
+  }
+ ]
+}

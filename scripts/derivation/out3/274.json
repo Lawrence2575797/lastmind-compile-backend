@@ -1,0 +1,258 @@
+{
+ "id": "gen",
+ "subject": "Economics",
+ "title": "Satisficing vs profit maximisation: weighing the objectives",
+ "terms": {
+  "satisficing_adv_stakeholders": {
+   "label": "Advantage: balances stakeholders"
+  },
+  "satisficing_adv_realism": {
+   "label": "Advantage: realistic decision-making"
+  },
+  "satisficing_disadv_efficiency": {
+   "label": "Disadvantage: inefficiency risk"
+  },
+  "satisficing_disadv_measurement": {
+   "label": "Disadvantage: hard to measure"
+  },
+  "profit_max_adv_buffer": {
+   "label": "Advantage: profit buffer"
+  },
+  "stakeholder_conflict": {
+   "label": "Stakeholder conflict"
+  },
+  "objective_output_gap": {
+   "label": "Output shortfall vs MC=MR"
+  },
+  "subjective_judgement": {
+   "label": "Subjective judgement"
+  },
+  "profit_retained": {
+   "label": "Retained profit"
+  },
+  "satisficing_reasons": {
+   "label": "Reasons for satisficing"
+  },
+  "satisficing_definition": {
+   "label": "Satisficing"
+  },
+  "bounded_rationality": {
+   "label": "Bounded rationality"
+  },
+  "profit_max_condition": {
+   "label": "MC=MR rule"
+  }
+ },
+ "stages": [
+  {
+   "name": "Satisficing vs profit maximisation: weighing the objectives",
+   "title": "Satisficing vs profit maximisation: weighing the objectives",
+   "sub": "After this stage the student can evaluate the strengths and weaknesses of satisficing against profit maximisation.",
+   "steps": [
+    {
+     "type": "ask",
+     "q": "A firm's managers, workers and shareholders all want different things from the business. If it chases only one goal, such as maximum profit, do the other groups' demands get met?",
+     "right": "No, their demands are pushed aside",
+     "wrong": "Yes, one goal covers everyone's demands",
+     "hint": "Think about whether one target can satisfy groups who each want something different.",
+     "pre": "So chasing a single goal creates a",
+     "term": "stakeholder_conflict"
+    },
+    {
+     "type": "ask",
+     "q": "Now suppose the firm instead aims for 'good enough' across several goals at once. Does any one stakeholder group get completely ignored?",
+     "right": "No, each gets some reasonable attention",
+     "wrong": "Yes, one group is still ignored completely",
+     "hint": "Spreading attention across several goals rather than one: what happens to each group's share?",
+     "pre": "So compared with chasing one goal, this spreads attention and gives an",
+     "term": "satisficing_adv_stakeholders"
+    },
+    {
+     "type": "ask",
+     "q": "Real managers rarely have perfect information or unlimited time to calculate the exact profit-maximising output. Given these limits on their decision-making, could they realistically hit the exact maximising point every time?",
+     "right": "No, not realistically",
+     "wrong": "Yes, they could still hit it exactly",
+     "hint": "Think about what limits a manager's information, time and ability to calculate.",
+     "pre": "So given those limits, decisions are shaped by",
+     "term": "satisficing_adv_realism"
+    },
+    {
+     "type": "order",
+     "terms": [
+      "stakeholder_conflict",
+      "satisficing_adv_stakeholders",
+      "satisficing_adv_realism"
+     ],
+     "prompt": "Drag and drop the 3 key terms in the order they build on each other."
+    },
+    {
+     "type": "ask",
+     "q": "The MC=MR rule shows the exact output where profit is highest. A firm using satisficing stops adjusting output once profit feels 'good enough', short of that point. Is its output now at the level MC=MR points to, or below it?",
+     "right": "Below the level MC=MR points to",
+     "wrong": "Still at the level MC=MR points to",
+     "hint": "Has the firm carried on adjusting all the way to where MC=MR, or stopped earlier?",
+     "pre": "So there is a",
+     "term": "objective_output_gap"
+    },
+    {
+     "type": "ask",
+     "q": "Because output stays short of the MC=MR point, is the firm producing at the most efficient level, or missing out on some of it?",
+     "right": "Missing out on some efficiency",
+     "wrong": "Still at the most efficient level",
+     "hint": "If output falls short of the profit-maximising point, what happens to efficiency at that level?",
+     "pre": "So compared with profit maximisation, satisficing risks a",
+     "term": "satisficing_disadv_efficiency"
+    },
+    {
+     "type": "ask",
+     "q": "Two managers in the same firm are each asked whether this year's performance was 'good enough'. Since there's no fixed number to check against, would they necessarily agree?",
+     "right": "No, it comes down to personal opinion",
+     "wrong": "Yes, they would necessarily agree",
+     "hint": "Is 'good enough' a fixed figure like profit, or a judgement call?",
+     "pre": "So without a fixed target, the answer rests on",
+     "term": "subjective_judgement"
+    },
+    {
+     "type": "ask",
+     "q": "If judging 'good enough' comes down to personal opinion rather than a fixed number, can outsiders objectively check whether the firm has hit its objective?",
+     "right": "No, not objectively",
+     "wrong": "Yes, just as easily as checking profit",
+     "hint": "Compare checking a fixed profit figure against checking someone's personal judgement of 'good enough'.",
+     "pre": "So compared with a clear profit figure, satisficing is",
+     "term": "satisficing_disadv_measurement"
+    },
+    {
+     "type": "order",
+     "terms": [
+      "objective_output_gap",
+      "satisficing_disadv_efficiency",
+      "subjective_judgement",
+      "satisficing_disadv_measurement"
+     ],
+     "prompt": "Drag and drop the 4 key terms in the order they build on each other."
+    },
+    {
+     "type": "ask",
+     "q": "A firm producing at the MC=MR output earns the highest profit possible this year, rather than stopping early. What does that maximum profit leave the firm holding onto, once costs and distributions are covered?",
+     "right": "A larger pool of retained earnings",
+     "wrong": "No more than a satisficing firm would keep",
+     "hint": "If profit is higher than under satisficing, what happens to the amount left over inside the firm?",
+     "pre": "So maximising profit builds up",
+     "term": "profit_retained"
+    },
+    {
+     "type": "ask",
+     "q": "A recession hits and sales fall sharply. Does having a larger pool of retained earnings built up in good years help the firm survive the downturn?",
+     "right": "Yes, it gives a cushion to survive",
+     "wrong": "No, it makes no difference to survival",
+     "hint": "Think about what a firm can draw on when revenue suddenly drops.",
+     "pre": "So compared with satisficing's lower profits, maximising profit gives a",
+     "term": "profit_max_adv_buffer"
+    },
+    {
+     "type": "derive"
+    }
+   ],
+   "given": [
+    "satisficing_reasons",
+    "satisficing_definition",
+    "bounded_rationality",
+    "profit_max_condition"
+   ],
+   "needs": [
+    "satisficing_reasons",
+    "satisficing_definition",
+    "bounded_rationality",
+    "profit_max_condition"
+   ],
+   "builds": [
+    "satisficing_reasons",
+    "satisficing_definition",
+    "bounded_rationality",
+    "profit_max_condition"
+   ],
+   "nodes": [
+    "satisficing_adv_stakeholders",
+    "satisficing_adv_realism",
+    "satisficing_disadv_efficiency",
+    "satisficing_disadv_measurement",
+    "profit_max_adv_buffer"
+   ],
+   "dropped": [],
+   "edges": [
+    [
+     "satisficing_reasons",
+     "satisficing_adv_stakeholders"
+    ],
+    [
+     "satisficing_definition",
+     "satisficing_adv_stakeholders"
+    ],
+    [
+     "bounded_rationality",
+     "satisficing_adv_realism"
+    ],
+    [
+     "satisficing_definition",
+     "satisficing_adv_realism"
+    ],
+    [
+     "profit_max_condition",
+     "satisficing_disadv_efficiency"
+    ],
+    [
+     "satisficing_definition",
+     "satisficing_disadv_efficiency"
+    ],
+    [
+     "satisficing_definition",
+     "satisficing_disadv_measurement"
+    ],
+    [
+     "profit_max_condition",
+     "profit_max_adv_buffer"
+    ],
+    [
+     "satisficing_definition",
+     "stakeholder_conflict"
+    ],
+    [
+     "stakeholder_conflict",
+     "satisficing_adv_stakeholders"
+    ],
+    [
+     "bounded_rationality",
+     "satisficing_adv_realism"
+    ],
+    [
+     "satisficing_reasons",
+     "satisficing_adv_realism"
+    ],
+    [
+     "profit_max_condition",
+     "objective_output_gap"
+    ],
+    [
+     "objective_output_gap",
+     "satisficing_disadv_efficiency"
+    ],
+    [
+     "satisficing_definition",
+     "subjective_judgement"
+    ],
+    [
+     "subjective_judgement",
+     "satisficing_disadv_measurement"
+    ],
+    [
+     "profit_max_condition",
+     "profit_retained"
+    ],
+    [
+     "profit_retained",
+     "profit_max_adv_buffer"
+    ]
+   ]
+  }
+ ]
+}

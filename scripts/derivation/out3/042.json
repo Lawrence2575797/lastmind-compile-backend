@@ -1,0 +1,135 @@
+{
+ "id": "gen",
+ "subject": "Economics",
+ "title": "Aggregate demand (AD)",
+ "terms": {
+  "C_COMP": {
+   "label": "Consumption (C)"
+  },
+  "I_COMP": {
+   "label": "Investment (I)"
+  },
+  "G_COMP": {
+   "label": "Government expenditure (G)"
+  },
+  "NX_COMP": {
+   "label": "Net trade (X-M) as a component of AD"
+  },
+  "AD_DEF": {
+   "label": "Aggregate demand"
+  },
+  "REL_IMPORT": {
+   "label": "Relative importance of AD components"
+  }
+ },
+ "stages": [
+  {
+   "name": "Aggregate demand",
+   "title": "Aggregate demand (AD)",
+   "sub": "What total spending in an economy is made of, and which part usually matters most.",
+   "steps": [
+    {
+     "type": "ask",
+     "q": "Households across the country buy groceries, haircuts and new trainers. What kind of spending is this?",
+     "right": "Households spending on goods and services",
+     "wrong": "Firms spending on new machinery",
+     "hint": "Who is doing the spending here, households or businesses?",
+     "pre": "Household spending on goods and services is",
+     "term": "C_COMP"
+    },
+    {
+     "type": "ask",
+     "q": "A bakery buys a new oven so it can bake more bread in future. Is this households buying things to use now, or a firm buying something to produce more later?",
+     "right": "A firm buying something to produce more later",
+     "wrong": "A household buying something to use now",
+     "hint": "Who benefits straight away, the household eating bread, or the bakery's future output?",
+     "pre": "Firms spending on capital goods like this is",
+     "term": "I_COMP"
+    },
+    {
+     "type": "ask",
+     "q": "The NHS hires more nurses and builds a new hospital wing. Whose spending is this, and on what?",
+     "right": "The state spending on public services",
+     "wrong": "A household spending on healthcare",
+     "hint": "Is this a private household paying, or the state providing a service?",
+     "pre": "Spending by the state on public services is",
+     "term": "G_COMP"
+    },
+    {
+     "type": "ask",
+     "q": "The UK sells £50bn of goods to other countries but buys £70bn of goods from them. Has the UK gained or lost spending on its own output overall?",
+     "right": "Lost, since it buys more from abroad than it sells",
+     "wrong": "Gained, since it still sells goods abroad",
+     "hint": "Compare what leaves the country in payments against what comes in.",
+     "pre": "Exports minus imports gives",
+     "term": "NX_COMP"
+    },
+    {
+     "type": "order",
+     "terms": [
+      "C_COMP",
+      "I_COMP",
+      "G_COMP",
+      "NX_COMP"
+     ],
+     "prompt": "Drag and drop the 4 key terms in the order they build on each other."
+    },
+    {
+     "type": "ask",
+     "q": "If you wanted the total spending on all goods and services made in the economy, what would you need to do with household spending, firm spending, state spending and net trade?",
+     "right": "Add them all together",
+     "wrong": "Only count the largest one",
+     "hint": "Each one captures spending from a different group. To get the whole economy's total, do you pick one or combine them?",
+     "pre": "Adding C, I, G and (X-M) together gives",
+     "term": "AD_DEF"
+    },
+    {
+     "type": "ask",
+     "q": "In most economies, tens of millions of households buy things every single day, far more often than firms invest or the state builds hospitals. Which component would you expect to make up the biggest share of total spending?",
+     "right": "Household spending (C)",
+     "wrong": "Firm investment (I)",
+     "hint": "Think about how many people are spending, and how often, compared to firms or government.",
+     "pre": "Because everyone spends constantly, C is usually the largest share, showing the",
+     "term": "REL_IMPORT"
+    },
+    {
+     "type": "derive"
+    }
+   ],
+   "given": [],
+   "needs": [],
+   "builds": [],
+   "nodes": [
+    "C_COMP",
+    "I_COMP",
+    "G_COMP",
+    "NX_COMP",
+    "AD_DEF",
+    "REL_IMPORT"
+   ],
+   "dropped": [],
+   "edges": [
+    [
+     "C_COMP",
+     "AD_DEF"
+    ],
+    [
+     "I_COMP",
+     "AD_DEF"
+    ],
+    [
+     "G_COMP",
+     "AD_DEF"
+    ],
+    [
+     "NX_COMP",
+     "AD_DEF"
+    ],
+    [
+     "AD_DEF",
+     "REL_IMPORT"
+    ]
+   ]
+  }
+ ]
+}

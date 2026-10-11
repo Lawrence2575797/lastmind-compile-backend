@@ -1,0 +1,156 @@
+{
+ "id": "gen",
+ "subject": "Economics",
+ "title": "Buffer stock schemes: advantages and disadvantages",
+ "terms": {
+  "price_stability": {
+   "label": "Price stability"
+  },
+  "farmer_income": {
+   "label": "Stable farmer income"
+  },
+  "buffer_stock_adv": {
+   "label": "Advantages of buffer stocks"
+  },
+  "storage_cost": {
+   "label": "Storage & running cost"
+  },
+  "wrong_price": {
+   "label": "Setting the price band wrong"
+  },
+  "buffer_stock_dis": {
+   "label": "Disadvantages of buffer stocks"
+  },
+  "buffer_stock": {
+   "label": "Buffer stock scheme"
+  }
+ },
+ "stages": [
+  {
+   "name": "Buffer stock schemes: advantages and disadvantages",
+   "title": "Buffer stock schemes: advantages and disadvantages",
+   "sub": "Weigh up what a buffer stock scheme achieves against what it costs to run.",
+   "steps": [
+    {
+     "type": "ask",
+     "q": "A coffee harvest is huge one year and tiny the next. A buffer stock buys up the surplus in the big year and sells stock in the small year, keeping the price inside a band. Compared with letting the price swing freely, what happens to the price from year to year?",
+     "right": "It stays much steadier",
+     "wrong": "It swings even more wildly",
+     "hint": "Buying when there is too much and selling when there is too little pushes the price which way each time?",
+     "pre": "So the scheme gives farmers and buyers",
+     "term": "price_stability"
+    },
+    {
+     "type": "ask",
+     "q": "A coffee farmer now knows the price will stay inside a band every year, instead of crashing in bumper harvests. What does this do to the money they can plan on earning?",
+     "right": "It becomes more predictable",
+     "wrong": "It becomes harder to predict",
+     "hint": "If the price cannot fall below the minimum, can the farmer's revenue collapse the way it used to?",
+     "pre": "So farmers get a more",
+     "term": "farmer_income"
+    },
+    {
+     "type": "ask",
+     "q": "Steadier prices and steadier farmer incomes: is this a point in favour of running a buffer stock scheme, or against it?",
+     "right": "A point in favour of it",
+     "wrong": "A point against it",
+     "hint": "Think about who benefits from the steadier price and income you just worked out.",
+     "pre": "These effects are the",
+     "term": "buffer_stock_adv"
+    },
+    {
+     "type": "ask",
+     "q": "To keep buying up surplus coffee, the scheme needs warehouses, security and staff to look after the stock every single year, even in normal years. What does this do to the cost of running the scheme?",
+     "right": "It adds a large ongoing cost",
+     "wrong": "It costs almost nothing extra",
+     "hint": "Someone has to pay to store and guard all that coffee, year after year.",
+     "pre": "So the scheme faces high",
+     "term": "storage_cost"
+    },
+    {
+     "type": "order",
+     "terms": [
+      "price_stability",
+      "farmer_income",
+      "buffer_stock_adv",
+      "storage_cost"
+     ],
+     "prompt": "Drag and drop the 4 key terms in the order they build on each other."
+    },
+    {
+     "type": "ask",
+     "q": "If the managers set the minimum price too high, farmers keep growing more than buyers want, and the authority must keep buying the unsold surplus forever. What has gone wrong here?",
+     "right": "The price band was set at the wrong level",
+     "wrong": "The harvest was unusually small that year",
+     "hint": "Is this a one-off bad harvest, or a mistake baked into where the band was fixed?",
+     "pre": "This risk is",
+     "term": "wrong_price"
+    },
+    {
+     "type": "ask",
+     "q": "Large ongoing storage costs, and the risk of the band being fixed at the wrong level: do these count for the scheme, or against it?",
+     "right": "They count against it",
+     "wrong": "They count for it",
+     "hint": "Think about who has to pay for the storage and who suffers if the band is wrong.",
+     "pre": "These problems are the",
+     "term": "buffer_stock_dis"
+    },
+    {
+     "type": "derive"
+    }
+   ],
+   "given": [
+    "buffer_stock"
+   ],
+   "needs": [
+    "buffer_stock"
+   ],
+   "builds": [
+    "buffer_stock"
+   ],
+   "nodes": [
+    "buffer_stock_adv",
+    "buffer_stock_dis"
+   ],
+   "dropped": [],
+   "edges": [
+    [
+     "buffer_stock",
+     "buffer_stock_adv"
+    ],
+    [
+     "buffer_stock",
+     "buffer_stock_dis"
+    ],
+    [
+     "buffer_stock",
+     "price_stability"
+    ],
+    [
+     "price_stability",
+     "farmer_income"
+    ],
+    [
+     "farmer_income",
+     "buffer_stock_adv"
+    ],
+    [
+     "buffer_stock",
+     "storage_cost"
+    ],
+    [
+     "buffer_stock",
+     "wrong_price"
+    ],
+    [
+     "storage_cost",
+     "buffer_stock_dis"
+    ],
+    [
+     "wrong_price",
+     "buffer_stock_dis"
+    ]
+   ]
+  }
+ ]
+}

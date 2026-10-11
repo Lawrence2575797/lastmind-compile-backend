@@ -13,6 +13,7 @@ Rules
 - If a mark allocation is printed (for example "[4 marks]"), put the number in "marks".
 - If something is illegible, write [illegible] in its place. Do not guess.
 - Ignore page numbers, watermarks and anything that is not part of the questions.
+- Personal details are never copied out. A student's own name, a candidate or student number, an email address, a phone number, a home address, a school or teacher's name written as a person's name, and handwritten personal notes are left out of every field; write [removed] if one sits inside a question's own text. Course codes, subject names and the names of people who are part of the question itself (for example a character in a maths puzzle) stay.
 
 Return ONLY this JSON, with no commentary and no markdown fences:
 {

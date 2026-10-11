@@ -1,0 +1,175 @@
+{
+ "id": "gen",
+ "subject": "Economics",
+ "title": "Exchange rates: inflation, competitiveness and FDI",
+ "terms": {
+  "importcost": {
+   "label": "Cost of imports"
+  },
+  "EXRATE_IMPACT_INFLATION": {
+   "label": "Imported inflation"
+  },
+  "exportprice": {
+   "label": "Price of exports abroad"
+  },
+  "COMPET_FACT_EXRATE": {
+   "label": "Exchange rate & competitiveness"
+  },
+  "ukassetcost": {
+   "label": "Cost of UK assets to foreigners"
+  },
+  "EXRATE_IMPACT_FDI": {
+   "label": "Exchange rate & FDI flows"
+  },
+  "DEPRECIATION_DEF": {
+   "label": "Depreciation"
+  },
+  "APPRECIATION_DEF": {
+   "label": "Appreciation"
+  }
+ },
+ "stages": [
+  {
+   "name": "Exchange rates: inflation, competitiveness and FDI",
+   "title": "Exchange rates: inflation, competitiveness and FDI",
+   "sub": "After this stage the student can explain how a currency's rise or fall feeds through into inflation, trade competitiveness and FDI flows.",
+   "steps": [
+    {
+     "type": "ask",
+     "q": "The pound depreciates against the dollar. A UK importer still needs to pay the same dollar price for oil. What happens to the pound price they now pay?",
+     "right": "It rises",
+     "wrong": "It stays the same",
+     "hint": "Each pound now buys fewer dollars, so how many pounds are needed to buy the same amount of oil?",
+     "pre": "So a weaker pound raises the",
+     "term": "importcost"
+    },
+    {
+     "type": "ask",
+     "q": "UK shops now pay more for imported oil, food and components. What is likely to happen to the prices they charge shoppers?",
+     "right": "They rise",
+     "wrong": "They stay the same",
+     "hint": "If a firm's costs go up, what usually happens to the price on the shelf?",
+     "pre": "Higher import costs feeding through into UK prices is called",
+     "term": "EXRATE_IMPACT_INFLATION"
+    },
+    {
+     "type": "ask",
+     "q": "The pound depreciates. A French buyer wants to buy a £1,000 UK-made machine. Does it now cost them more or fewer euros than before?",
+     "right": "Fewer euros",
+     "wrong": "More euros",
+     "hint": "Each euro now buys more pounds, so how many euros are needed for the same £1,000 machine?",
+     "pre": "So a weaker pound changes the",
+     "term": "exportprice"
+    },
+    {
+     "type": "ask",
+     "q": "UK exports now cost foreign buyers less, while imports cost UK buyers more. What happens to how attractive UK goods are compared with foreign goods, on both sides?",
+     "right": "UK goods become more attractive",
+     "wrong": "UK goods become less attractive",
+     "hint": "Cheaper for foreigners to buy from the UK, and imports dearer for the UK to buy in return: which way does that push demand for UK output?",
+     "pre": "This effect of the exchange rate on how attractive UK goods are is the",
+     "term": "COMPET_FACT_EXRATE"
+    },
+    {
+     "type": "order",
+     "terms": [
+      "importcost",
+      "EXRATE_IMPACT_INFLATION",
+      "exportprice",
+      "COMPET_FACT_EXRATE"
+     ],
+     "prompt": "Drag and drop the 4 key terms in the order they build on each other."
+    },
+    {
+     "type": "ask",
+     "q": "The pound depreciates. A US firm wants to buy a UK factory priced at £10 million. Does that factory now cost the US firm more or fewer dollars than before?",
+     "right": "Fewer dollars",
+     "wrong": "More dollars",
+     "hint": "Each dollar now buys more pounds, so how many dollars are needed to buy the same £10 million factory?",
+     "pre": "So a weaker pound changes the",
+     "term": "ukassetcost"
+    },
+    {
+     "type": "ask",
+     "q": "UK factories and firms have just become cheaper for foreign firms to buy. What is likely to happen to the amount of foreign direct investment coming into the UK?",
+     "right": "It rises",
+     "wrong": "It falls",
+     "hint": "If foreign firms can buy the same UK assets for less of their own currency, are they more or less likely to invest?",
+     "pre": "This effect of the exchange rate on investment flows is the",
+     "term": "EXRATE_IMPACT_FDI"
+    },
+    {
+     "type": "derive"
+    }
+   ],
+   "given": [
+    "DEPRECIATION_DEF",
+    "APPRECIATION_DEF"
+   ],
+   "needs": [
+    "DEPRECIATION_DEF",
+    "APPRECIATION_DEF"
+   ],
+   "builds": [
+    "DEPRECIATION_DEF",
+    "APPRECIATION_DEF"
+   ],
+   "nodes": [
+    "EXRATE_IMPACT_INFLATION",
+    "COMPET_FACT_EXRATE",
+    "EXRATE_IMPACT_FDI"
+   ],
+   "dropped": [],
+   "edges": [
+    [
+     "DEPRECIATION_DEF",
+     "EXRATE_IMPACT_INFLATION"
+    ],
+    [
+     "APPRECIATION_DEF",
+     "EXRATE_IMPACT_FDI"
+    ],
+    [
+     "APPRECIATION_DEF",
+     "COMPET_FACT_EXRATE"
+    ],
+    [
+     "DEPRECIATION_DEF",
+     "COMPET_FACT_EXRATE"
+    ],
+    [
+     "DEPRECIATION_DEF",
+     "importcost"
+    ],
+    [
+     "importcost",
+     "EXRATE_IMPACT_INFLATION"
+    ],
+    [
+     "DEPRECIATION_DEF",
+     "exportprice"
+    ],
+    [
+     "APPRECIATION_DEF",
+     "exportprice"
+    ],
+    [
+     "exportprice",
+     "COMPET_FACT_EXRATE"
+    ],
+    [
+     "APPRECIATION_DEF",
+     "ukassetcost"
+    ],
+    [
+     "DEPRECIATION_DEF",
+     "ukassetcost"
+    ],
+    [
+     "ukassetcost",
+     "EXRATE_IMPACT_FDI"
+    ]
+   ]
+  }
+ ]
+}

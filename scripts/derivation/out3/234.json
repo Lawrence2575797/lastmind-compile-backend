@@ -1,0 +1,212 @@
+{
+ "id": "gen",
+ "subject": "Economics",
+ "title": "Taxation and work incentives",
+ "terms": {
+  "taxpayer_bears": {
+   "label": "Who bears the tax"
+  },
+  "DIRECT_INDIRECT_TAX": {
+   "label": "Direct vs indirect tax"
+  },
+  "avg_rate": {
+   "label": "Average tax rate"
+  },
+  "TAX_PROGRESSIVE": {
+   "label": "Progressive tax"
+  },
+  "TAX_PROPORTIONAL": {
+   "label": "Proportional tax"
+  },
+  "TAX_REGRESSIVE": {
+   "label": "Regressive taxes: definition"
+  },
+  "sub_effect": {
+   "label": "Substitution effect"
+  },
+  "inc_effect": {
+   "label": "Income effect"
+  },
+  "INCENTIVES_WORK": {
+   "label": "Work incentive effects"
+  }
+ },
+ "stages": [
+  {
+   "name": "Taxation and work incentives",
+   "title": "Taxation and work incentives",
+   "sub": "How to classify taxes and work out what they do to people's incentive to work.",
+   "steps": [
+    {
+     "type": "ask",
+     "q": "The government takes income tax straight out of your payslip before you ever see the money. Who hands the money to the government?",
+     "right": "The person who earned it, directly",
+     "wrong": "The shop where they later spend it",
+     "hint": "Whose name is on the payslip the tax was deducted from?",
+     "pre": "The earner pays it themselves, this is",
+     "term": "taxpayer_bears"
+    },
+    {
+     "type": "ask",
+     "q": "Now compare that to VAT added onto the price of a chocolate bar. The shop collects it and passes it to the government, but who actually ends up poorer by the amount of the tax?",
+     "right": "The customer buying the chocolate bar",
+     "wrong": "The shop that collects the tax",
+     "hint": "The shop just hands the money on. Whose spending money actually falls?",
+     "pre": "So one tax is paid straight by the earner, the other is paid on spending and passed on by a seller. This is the difference between",
+     "term": "DIRECT_INDIRECT_TAX"
+    },
+    {
+     "type": "ask",
+     "q": "Anna earns £20,000 and pays £2,000 tax. Ben earns £100,000 and pays £30,000 tax. To compare them fairly, what should you look at rather than the raw £ amount paid?",
+     "right": "Tax paid as a share of income",
+     "wrong": "The total £ amount each paid",
+     "hint": "Ben paid far more in £, but is that because he is taxed more heavily, or just because he earns more?",
+     "pre": "Comparing tax as a proportion of income gives the",
+     "term": "avg_rate"
+    },
+    {
+     "type": "ask",
+     "q": "Anna's rate is 10% and Ben's is 30%. As income rises, what has happened to the share of income taken in tax?",
+     "right": "It has risen",
+     "wrong": "It has stayed the same",
+     "hint": "10% versus 30% - did that share go up or stay flat as income increased?",
+     "pre": "A tax whose rate rises as income rises is",
+     "term": "TAX_PROGRESSIVE"
+    },
+    {
+     "type": "order",
+     "terms": [
+      "taxpayer_bears",
+      "DIRECT_INDIRECT_TAX",
+      "avg_rate",
+      "TAX_PROGRESSIVE"
+     ],
+     "prompt": "Drag and drop the 4 key terms in the order they build on each other."
+    },
+    {
+     "type": "ask",
+     "q": "Now imagine everyone pays exactly 20% of their income, whether they earn £20,000 or £100,000. Does the share taken change as income rises?",
+     "right": "No, it stays the same",
+     "wrong": "Yes, it rises with income",
+     "hint": "20% of £20,000 and 20% of £100,000 are different amounts, but is the percentage itself changing?",
+     "pre": "A tax where the rate stays the same at every income level is",
+     "term": "TAX_PROPORTIONAL"
+    },
+    {
+     "type": "ask",
+     "q": "VAT is charged at the same 20% on a chocolate bar whether the buyer earns £15,000 or £150,000. For the low earner, that £1 of VAT is a bigger slice of their income. As income rises, what happens to VAT's share of income?",
+     "right": "It falls",
+     "wrong": "It rises",
+     "hint": "The £ amount of VAT on the same item is fixed. Does a fixed amount become a bigger or smaller share of a bigger income?",
+     "pre": "A tax whose share of income falls as income rises is",
+     "term": "TAX_REGRESSIVE"
+    },
+    {
+     "type": "ask",
+     "q": "Income tax becomes more progressive, so an extra hour of overtime is now taxed at a much higher rate than before. Purely because that hour now earns you less take-home pay per hour, are you more or less tempted to work it compared with, say, watching TV instead?",
+     "right": "Less tempted, work now pays relatively less",
+     "wrong": "More tempted, to make up the lost pay",
+     "hint": "Working and leisure are alternatives. If working now earns less per hour after tax, which becomes relatively more attractive?",
+     "pre": "Extra work now buys less, so people work less: this pull towards leisure is the",
+     "term": "sub_effect"
+    },
+    {
+     "type": "ask",
+     "q": "Now think only about your total income falling because of the higher tax. If you want to protect your overall standard of living, how might you react to being poorer overall?",
+     "right": "Work more hours to make up the loss",
+     "wrong": "Work fewer hours, since pay is lower",
+     "hint": "If your total income has dropped and you still want the same lifestyle, do you cut back on work or take on more of it?",
+     "pre": "Being poorer overall can push people to work more to recover income: this is the",
+     "term": "inc_effect"
+    },
+    {
+     "type": "order",
+     "terms": [
+      "TAX_PROPORTIONAL",
+      "TAX_REGRESSIVE",
+      "sub_effect",
+      "inc_effect"
+     ],
+     "prompt": "Drag and drop the 4 key terms in the order they build on each other."
+    },
+    {
+     "type": "ask",
+     "q": "One effect pulls a worker towards less work, the other pulls towards more work, from the very same tax rise. So can economists say for certain, in general, whether higher progressive tax always reduces total hours worked?",
+     "right": "No, it depends which effect is stronger",
+     "wrong": "Yes, hours worked always fall",
+     "hint": "If the two effects pull in opposite directions, does one always have to win?",
+     "pre": "Whether people work more or less overall depends on the balance of these two forces: this is the tax's effect on",
+     "term": "INCENTIVES_WORK"
+    },
+    {
+     "type": "derive"
+    }
+   ],
+   "given": [],
+   "needs": [],
+   "builds": [],
+   "nodes": [
+    "DIRECT_INDIRECT_TAX",
+    "TAX_PROGRESSIVE",
+    "TAX_PROPORTIONAL",
+    "TAX_REGRESSIVE",
+    "INCENTIVES_WORK"
+   ],
+   "dropped": [],
+   "edges": [
+    [
+     "DIRECT_INDIRECT_TAX",
+     "TAX_PROGRESSIVE"
+    ],
+    [
+     "DIRECT_INDIRECT_TAX",
+     "TAX_PROPORTIONAL"
+    ],
+    [
+     "DIRECT_INDIRECT_TAX",
+     "TAX_REGRESSIVE"
+    ],
+    [
+     "TAX_PROGRESSIVE",
+     "INCENTIVES_WORK"
+    ],
+    [
+     "taxpayer_bears",
+     "DIRECT_INDIRECT_TAX"
+    ],
+    [
+     "DIRECT_INDIRECT_TAX",
+     "avg_rate"
+    ],
+    [
+     "avg_rate",
+     "TAX_PROGRESSIVE"
+    ],
+    [
+     "avg_rate",
+     "TAX_PROPORTIONAL"
+    ],
+    [
+     "avg_rate",
+     "TAX_REGRESSIVE"
+    ],
+    [
+     "TAX_PROGRESSIVE",
+     "sub_effect"
+    ],
+    [
+     "TAX_PROGRESSIVE",
+     "inc_effect"
+    ],
+    [
+     "sub_effect",
+     "INCENTIVES_WORK"
+    ],
+    [
+     "inc_effect",
+     "INCENTIVES_WORK"
+    ]
+   ]
+  }
+ ]
+}

@@ -1,0 +1,130 @@
+{
+ "id": "gen",
+ "subject": "Economics",
+ "title": "Externalities",
+ "terms": {
+  "private_benefits": {
+   "label": "Private benefits"
+  },
+  "external_benefits": {
+   "label": "External benefits"
+  },
+  "social_benefits": {
+   "label": "Social benefits"
+  },
+  "externalities_def": {
+   "label": "Externalities"
+  },
+  "market_failure_def": {
+   "label": "Market failure"
+  },
+  "social_costs": {
+   "label": "Social costs"
+  }
+ },
+ "stages": [
+  {
+   "name": "Externalities",
+   "title": "Externalities",
+   "sub": "How spillover effects on bystanders cause markets to misallocate resources.",
+   "steps": [
+    {
+     "type": "ask",
+     "q": "You buy a coffee and drink it. Who gets the enjoyment and who pays the money?",
+     "right": "Just you and the seller",
+     "wrong": "Everyone nearby as well",
+     "hint": "Think about who is actually part of the transaction.",
+     "pre": "The benefit going straight to the people in the transaction is a",
+     "term": "private_benefits"
+    },
+    {
+     "type": "ask",
+     "q": "A neighbour plants flowers purely for themselves. You enjoy the view daily but never paid. Are you part of the transaction?",
+     "right": "No, I am a bystander who still gains",
+     "wrong": "Yes, I am buying that benefit too",
+     "hint": "You did not pay the neighbour or agree to anything, yet you still gain.",
+     "pre": "A benefit landing on someone outside the transaction is an",
+     "term": "external_benefits"
+    },
+    {
+     "type": "ask",
+     "q": "Counting the neighbour's enjoyment of their flowers and yours as a passer-by, what is the total benefit created?",
+     "right": "The private benefit plus the external benefit",
+     "wrong": "Only whichever benefit is larger",
+     "hint": "You are asked for the total to everyone, not just to one side.",
+     "pre": "Adding the two together gives the",
+     "term": "social_benefits"
+    },
+    {
+     "type": "ask",
+     "q": "The factory's owner breaks even, but its smoke harms residents who are never compensated. Does the market price include that harm?",
+     "right": "No, the market ignores it",
+     "wrong": "Yes, the price already reflects it",
+     "hint": "The residents are not in the transaction, so does the price the factory faces include their harm?",
+     "pre": "Spillover effects on third parties that the market ignores, causing resources to be misallocated, are",
+     "term": "externalities_def"
+    },
+    {
+     "type": "derive"
+    }
+   ],
+   "given": [
+    "market_failure_def",
+    "social_costs"
+   ],
+   "needs": [
+    "market_failure_def",
+    "social_costs"
+   ],
+   "builds": [
+    "market_failure_def",
+    "social_costs"
+   ],
+   "nodes": [
+    "private_benefits",
+    "external_benefits",
+    "social_benefits",
+    "externalities_def"
+   ],
+   "dropped": [],
+   "edges": [
+    [
+     "private_benefits",
+     "social_benefits"
+    ],
+    [
+     "external_benefits",
+     "social_benefits"
+    ],
+    [
+     "social_benefits",
+     "externalities_def"
+    ],
+    [
+     "market_failure_def",
+     "externalities_def"
+    ],
+    [
+     "social_costs",
+     "externalities_def"
+    ],
+    [
+     "private_benefits",
+     "social_benefits"
+    ],
+    [
+     "external_benefits",
+     "social_benefits"
+    ],
+    [
+     "social_benefits",
+     "externalities_def"
+    ],
+    [
+     "social_costs",
+     "externalities_def"
+    ]
+   ]
+  }
+ ]
+}

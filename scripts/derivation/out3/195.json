@@ -1,0 +1,163 @@
+{
+ "id": "gen",
+ "subject": "Economics",
+ "title": "Current account imbalances",
+ "terms": {
+  "CA_DEFICIT_CAUSE_COMPET": {
+   "label": "Deficit from weak competitiveness"
+  },
+  "CA_DEFICIT_CAUSE_STRUCTURAL": {
+   "label": "Deficit from structural weakness"
+  },
+  "CA_SURPLUS_CAUSES": {
+   "label": "Causes of a current account surplus"
+  },
+  "PROT_REASONS_BOP": {
+   "label": "Trade restrictions to fix the balance of payments"
+  },
+  "CA_MEASURE_PROTECTIONISM": {
+   "label": "Protectionism to reduce a deficit"
+  },
+  "COMPET_ULC": {
+   "label": "Relative unit labour costs"
+  },
+  "BOP_CURRENT_TRADE": {
+   "label": "Trade in goods & services balance"
+  },
+  "TARIFF_DEF": {
+   "label": "Tariff"
+  }
+ },
+ "stages": [
+  {
+   "name": "Current account imbalances",
+   "title": "Current account imbalances",
+   "sub": "Explain what drives a current account deficit or surplus, and why governments might turn to protectionism.",
+   "steps": [
+    {
+     "type": "ask",
+     "q": "Country A's unit labour costs are much higher than its rivals', so its goods cost more abroad than similar foreign goods. What happens to its exports compared with its imports?",
+     "right": "Exports fall behind imports",
+     "wrong": "Exports rise above imports",
+     "hint": "If your goods cost more than rivals', would foreigners buy more or less of them?",
+     "pre": "So expensive, uncompetitive goods drag the trade balance into deficit. This is a",
+     "term": "CA_DEFICIT_CAUSE_COMPET"
+    },
+    {
+     "type": "ask",
+     "q": "This country also has very low productivity and households save little, so there is little investment in new capacity or efficiency. Does this problem disappear if wages are cut for a year, or does it sit underneath the economy for years regardless of short-term price changes?",
+     "right": "It sits underneath the economy for years",
+     "wrong": "It disappears once wages are cut",
+     "hint": "Low savings and low productivity are about the economy's foundations, not just today's prices.",
+     "pre": "A deep, long-lasting cause like this is a",
+     "term": "CA_DEFICIT_CAUSE_STRUCTURAL"
+    },
+    {
+     "type": "ask",
+     "q": "Now picture the opposite country: highly competitive exporters, high household saving, and weak domestic demand for imports. Would its current account tend to show a deficit or the reverse?",
+     "right": "The reverse: a surplus",
+     "wrong": "Still a deficit",
+     "hint": "If it sells more abroad than it buys in, which way does the balance point?",
+     "pre": "So strong competitiveness, high saving and weak import demand produce the",
+     "term": "CA_SURPLUS_CAUSES"
+    },
+    {
+     "type": "ask",
+     "q": "A government facing a persistent deficit puts a tariff on imported goods, making them dearer than domestic alternatives, so fewer imports are bought while domestic goods are bought instead. Does this narrow the gap between what the country buys from abroad and what it sells abroad?",
+     "right": "Yes, it narrows the gap",
+     "wrong": "No, the gap stays the same",
+     "hint": "Fewer imports bought means less money leaving the country to pay for them.",
+     "pre": "So a government facing a deficit might use tariffs and quotas as a",
+     "term": "CA_MEASURE_PROTECTIONISM"
+    },
+    {
+     "type": "order",
+     "terms": [
+      "CA_DEFICIT_CAUSE_COMPET",
+      "CA_DEFICIT_CAUSE_STRUCTURAL",
+      "CA_SURPLUS_CAUSES",
+      "CA_MEASURE_PROTECTIONISM"
+     ],
+     "prompt": "Drag and drop the 4 key terms in the order they build on each other."
+    },
+    {
+     "type": "ask",
+     "q": "A government wants fewer imports bought so the trade balance improves, and decides restricting trade is the way to achieve it. What is it ultimately trying to correct by doing this?",
+     "right": "A balance of payments deficit",
+     "wrong": "A shortage of exportable goods",
+     "hint": "The goal is about the overall gap between money flowing out for imports and in for exports.",
+     "pre": "So one reason for using trade restrictions is",
+     "term": "PROT_REASONS_BOP"
+    },
+    {
+     "type": "derive"
+    }
+   ],
+   "given": [
+    "COMPET_ULC",
+    "BOP_CURRENT_TRADE",
+    "TARIFF_DEF"
+   ],
+   "needs": [
+    "COMPET_ULC",
+    "BOP_CURRENT_TRADE",
+    "TARIFF_DEF"
+   ],
+   "builds": [
+    "COMPET_ULC",
+    "BOP_CURRENT_TRADE",
+    "TARIFF_DEF"
+   ],
+   "nodes": [
+    "CA_DEFICIT_CAUSE_COMPET",
+    "PROT_REASONS_BOP",
+    "CA_DEFICIT_CAUSE_STRUCTURAL",
+    "CA_SURPLUS_CAUSES",
+    "CA_MEASURE_PROTECTIONISM"
+   ],
+   "dropped": [],
+   "edges": [
+    [
+     "CA_DEFICIT_CAUSE_COMPET",
+     "PROT_REASONS_BOP"
+    ],
+    [
+     "CA_DEFICIT_CAUSE_COMPET",
+     "CA_DEFICIT_CAUSE_STRUCTURAL"
+    ],
+    [
+     "CA_DEFICIT_CAUSE_COMPET",
+     "CA_SURPLUS_CAUSES"
+    ],
+    [
+     "CA_DEFICIT_CAUSE_COMPET",
+     "CA_MEASURE_PROTECTIONISM"
+    ],
+    [
+     "COMPET_ULC",
+     "CA_DEFICIT_CAUSE_COMPET"
+    ],
+    [
+     "BOP_CURRENT_TRADE",
+     "CA_SURPLUS_CAUSES"
+    ],
+    [
+     "TARIFF_DEF",
+     "CA_MEASURE_PROTECTIONISM"
+    ],
+    [
+     "COMPET_ULC",
+     "CA_DEFICIT_CAUSE_COMPET"
+    ],
+    [
+     "BOP_CURRENT_TRADE",
+     "CA_DEFICIT_CAUSE_COMPET"
+    ],
+    [
+     "TARIFF_DEF",
+     "CA_MEASURE_PROTECTIONISM"
+    ]
+   ]
+  }
+ ]
+}

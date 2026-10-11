@@ -1,0 +1,210 @@
+{
+ "id": "gen",
+ "subject": "Economics",
+ "title": "National income",
+ "terms": {
+  "invest": {
+   "label": "Investment"
+  },
+  "govspend": {
+   "label": "Government spending given up"
+  },
+  "exports": {
+   "label": "Exports"
+  },
+  "savings": {
+   "label": "Savings"
+  },
+  "tax": {
+   "label": "Taxation"
+  },
+  "INJECTIONS_DEF": {
+   "label": "Injections"
+  },
+  "WITHDRAWALS_DEF": {
+   "label": "Withdrawals"
+  },
+  "INJ_WITH_EQUAL": {
+   "label": "Injections = withdrawals"
+  },
+  "CFOI": {
+   "label": "Circular flow of income"
+  }
+ },
+ "stages": [
+  {
+   "name": "National income",
+   "title": "National income",
+   "sub": "How money enters and leaves the circular flow, and what balances it.",
+   "steps": [
+    {
+     "type": "ask",
+     "q": "A firm builds a new factory instead of just paying it all straight back out to households as wages. Does this add extra spending into the flow between households and firms, on top of normal household spending?",
+     "right": "Yes, it adds extra spending",
+     "wrong": "No, it stays inside the same flow",
+     "hint": "Wages go to households, but this money is spent on new buildings and machinery instead.",
+     "pre": "Spending on new capital like this is called",
+     "term": "invest"
+    },
+    {
+     "type": "ask",
+     "q": "The government builds a new hospital, paying firms to build it. Does this add extra spending into the flow, separate from household wages and spending?",
+     "right": "Yes, it adds extra spending",
+     "wrong": "No, it is already counted in wages",
+     "hint": "This money comes from the government, not from a household buying goods.",
+     "pre": "Spending like this by the government is called",
+     "term": "govspend"
+    },
+    {
+     "type": "ask",
+     "q": "A UK firm sells cars to a buyer in France. Does money flow into the UK circular flow from outside it?",
+     "right": "Yes, money flows in from abroad",
+     "wrong": "No, the money stays with UK households",
+     "hint": "Who is paying, and where do they live?",
+     "pre": "Sales to foreign buyers like this are called",
+     "term": "exports"
+    },
+    {
+     "type": "ask",
+     "q": "Investment, government spending and sales to buyers in France all add money into the circular flow from outside the normal household-firm spending loop. What do we call this whole group together?",
+     "right": "Extra spending added into the flow",
+     "wrong": "Spending that leaves the flow",
+     "hint": "Think about whether money is entering or leaving the flow in each of these three cases.",
+     "pre": "Investment, government spending and exports together are called",
+     "term": "INJECTIONS_DEF"
+    },
+    {
+     "type": "order",
+     "terms": [
+      "invest",
+      "govspend",
+      "exports",
+      "INJECTIONS_DEF"
+     ],
+     "prompt": "Drag and drop the 4 key terms in the order they build on each other."
+    },
+    {
+     "type": "ask",
+     "q": "A household earns £2,000 but only spends £1,500, putting £500 aside in a bank account. Does that £500 carry on round the flow between households and firms straight away?",
+     "right": "No, it leaves the flow for now",
+     "wrong": "Yes, it keeps circulating immediately",
+     "hint": "Money spent on goods goes to firms. What happens to money that is not spent?",
+     "pre": "Money put aside like this is called",
+     "term": "savings"
+    },
+    {
+     "type": "ask",
+     "q": "A household earns £2,000 but the government takes £300 in income tax before any spending happens. Does that £300 stay in the households-and-firms flow?",
+     "right": "No, it leaves the flow",
+     "wrong": "Yes, it still goes to firms",
+     "hint": "Where does that £300 go instead of being spent on goods from firms?",
+     "pre": "Money taken out like this is called",
+     "term": "tax"
+    },
+    {
+     "type": "ask",
+     "q": "A household spends £200 on a phone made in another country instead of one made at home. Does that money stay with domestic firms in the flow?",
+     "right": "No, it leaves to a foreign firm",
+     "wrong": "Yes, it stays with domestic firms",
+     "hint": "Who actually receives the £200 in the end?",
+     "pre": "Spending on goods from abroad, alongside savings and taxation, means money leaving the flow, called",
+     "term": "WITHDRAWALS_DEF"
+    },
+    {
+     "type": "order",
+     "terms": [
+      "savings",
+      "tax",
+      "WITHDRAWALS_DEF"
+     ],
+     "prompt": "Drag and drop the 3 key terms in the order they build on each other."
+    },
+    {
+     "type": "ask",
+     "q": "Injections this year are £50bn and withdrawals are £70bn. Is national income likely to grow, shrink, or stay exactly the same size?",
+     "right": "It will shrink",
+     "wrong": "It will grow",
+     "hint": "More money is leaving the flow than entering it.",
+     "pre": "National income only stays stable, at rest, when they are equal, giving the condition",
+     "term": "INJ_WITH_EQUAL"
+    },
+    {
+     "type": "derive"
+    }
+   ],
+   "given": [
+    "CFOI"
+   ],
+   "needs": [
+    "CFOI"
+   ],
+   "builds": [
+    "CFOI"
+   ],
+   "nodes": [
+    "INJECTIONS_DEF",
+    "WITHDRAWALS_DEF",
+    "INJ_WITH_EQUAL"
+   ],
+   "dropped": [],
+   "edges": [
+    [
+     "INJECTIONS_DEF",
+     "INJ_WITH_EQUAL"
+    ],
+    [
+     "WITHDRAWALS_DEF",
+     "INJ_WITH_EQUAL"
+    ],
+    [
+     "CFOI",
+     "INJECTIONS_DEF"
+    ],
+    [
+     "CFOI",
+     "WITHDRAWALS_DEF"
+    ],
+    [
+     "CFOI",
+     "invest"
+    ],
+    [
+     "CFOI",
+     "govspend"
+    ],
+    [
+     "CFOI",
+     "exports"
+    ],
+    [
+     "CFOI",
+     "savings"
+    ],
+    [
+     "CFOI",
+     "tax"
+    ],
+    [
+     "invest",
+     "INJECTIONS_DEF"
+    ],
+    [
+     "govspend",
+     "INJECTIONS_DEF"
+    ],
+    [
+     "exports",
+     "INJECTIONS_DEF"
+    ],
+    [
+     "savings",
+     "WITHDRAWALS_DEF"
+    ],
+    [
+     "tax",
+     "WITHDRAWALS_DEF"
+    ]
+   ]
+  }
+ ]
+}

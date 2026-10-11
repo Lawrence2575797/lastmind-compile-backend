@@ -1,0 +1,232 @@
+{
+ "id": "gen",
+ "subject": "Economics",
+ "title": "Aggregate demand: influences on C and I",
+ "terms": {
+  "borrowcost": {
+   "label": "Cost of borrowing"
+  },
+  "savingreward": {
+   "label": "Reward for saving"
+  },
+  "INTEREST_RATES_CONSUMPTION": {
+   "label": "Interest rates and consumption"
+  },
+  "CONSUMER_CONFIDENCE": {
+   "label": "Consumer confidence"
+  },
+  "depreciation": {
+   "label": "Depreciation"
+  },
+  "INTEREST_RATES_INVESTMENT": {
+   "label": "Interest rates and investment"
+  },
+  "BUSINESS_CONFIDENCE": {
+   "label": "Business confidence"
+  },
+  "GROSS_NET_INVESTMENT": {
+   "label": "Gross vs net investment"
+  },
+  "INTEREST_RATES_DEF": {
+   "label": "Interest rates"
+  },
+  "C_COMP": {
+   "label": "Consumption (C)"
+  },
+  "SAVINGS_CONSUMPTION_RELATIONSHIP": {
+   "label": "Savings-consumption trade-off"
+  },
+  "I_COMP": {
+   "label": "Investment (I)"
+  }
+ },
+ "stages": [
+  {
+   "name": "Aggregate demand: influences on C and I",
+   "title": "Aggregate demand: influences on C and I",
+   "sub": "What makes households and firms spend more or less, and how investment is counted.",
+   "steps": [
+    {
+     "type": "ask",
+     "term": "borrowcost",
+     "q": "You borrowed £1,000 and the interest rate rises from 4% to 8%. What happens to what you pay for the loan?",
+     "right": "You pay more for the same loan",
+     "wrong": "You pay less for the same loan",
+     "hint": "The rate is the price of the loan. What happens when the price doubles?",
+     "pre": "So a higher rate raises the"
+    },
+    {
+     "type": "ask",
+     "term": "savingreward",
+     "q": "The same rise in interest rates applies to the money you keep in the bank. What happens to what you earn from saving?",
+     "right": "You earn more from keeping money in",
+     "wrong": "You earn less from keeping money in",
+     "hint": "Interest is paid on savings as well as charged on loans.",
+     "pre": "So a higher rate also raises the"
+    },
+    {
+     "type": "ask",
+     "term": "INTEREST_RATES_CONSUMPTION",
+     "q": "Borrowing now costs more and saving pays more. What happens to household spending?",
+     "right": "It falls, as saving looks more attractive",
+     "wrong": "It rises, as saving looks less attractive",
+     "hint": "Would you spend a pound now or earn more by keeping it?",
+     "pre": "So higher rates reduce spending. This is the link between"
+    },
+    {
+     "type": "ask",
+     "term": "CONSUMER_CONFIDENCE",
+     "q": "Households read that jobs are secure and wages will rise, and interest rates have not changed. Will they spend more or less?",
+     "right": "More, as they feel secure about the future",
+     "wrong": "Less, as they save against future risks",
+     "hint": "Spending depends on more than the rate: how do they feel about tomorrow?",
+     "pre": "How secure households feel about their finances is"
+    },
+    {
+     "type": "order",
+     "terms": [
+      "borrowcost",
+      "savingreward",
+      "INTEREST_RATES_CONSUMPTION",
+      "CONSUMER_CONFIDENCE"
+     ],
+     "prompt": "Drag and drop the 4 key terms in the order they build on each other."
+    },
+    {
+     "type": "ask",
+     "term": "INTEREST_RATES_INVESTMENT",
+     "q": "A firm plans a £1m factory paid for by a loan, and interest rates double. Is the factory more or less worth building?",
+     "right": "Less worth building, as the loan costs more",
+     "wrong": "More worth building, as the loan is bigger",
+     "hint": "The firm compares what the factory earns with what the loan costs.",
+     "pre": "So higher rates discourage firms from building. This is the link between"
+    },
+    {
+     "type": "ask",
+     "term": "BUSINESS_CONFIDENCE",
+     "q": "Firms expect customers to buy much more next year. Do they build extra capacity now, or hold back?",
+     "right": "Build more, expecting sales to grow",
+     "wrong": "Hold back, expecting sales to fall",
+     "hint": "Firms invest for the sales they expect, not the sales they have.",
+     "pre": "Firms' expectations about future sales make up"
+    },
+    {
+     "type": "ask",
+     "term": "depreciation",
+     "q": "A machine loses some of its value every year through wear and age. What is that loss of value?",
+     "right": "The fall in its value from wear and age",
+     "wrong": "The rise in its price from scarcity",
+     "hint": "Think of a car that is worth less each year you use it.",
+     "pre": "This loss of value through use is"
+    },
+    {
+     "type": "ask",
+     "term": "GROSS_NET_INVESTMENT",
+     "q": "A bakery spends £50,000 on new ovens, but its old ovens lost £20,000 of value this year. By how much has its stock of ovens really grown?",
+     "right": "By £30,000, once the wear is allowed for",
+     "wrong": "By £50,000, which is all it spent",
+     "hint": "Some of the spending only replaced what wore out.",
+     "pre": "Total spending against spending after wear is the distinction between"
+    },
+    {
+     "type": "order",
+     "terms": [
+      "INTEREST_RATES_INVESTMENT",
+      "BUSINESS_CONFIDENCE",
+      "depreciation",
+      "GROSS_NET_INVESTMENT"
+     ],
+     "prompt": "Drag and drop the 4 key terms in the order they build on each other."
+    },
+    {
+     "type": "derive"
+    }
+   ],
+   "given": [
+    "INTEREST_RATES_DEF",
+    "C_COMP",
+    "SAVINGS_CONSUMPTION_RELATIONSHIP",
+    "I_COMP"
+   ],
+   "needs": [
+    "INTEREST_RATES_DEF",
+    "C_COMP",
+    "SAVINGS_CONSUMPTION_RELATIONSHIP",
+    "I_COMP"
+   ],
+   "builds": [
+    "INTEREST_RATES_DEF",
+    "C_COMP",
+    "SAVINGS_CONSUMPTION_RELATIONSHIP",
+    "I_COMP"
+   ],
+   "nodes": [
+    "INTEREST_RATES_CONSUMPTION",
+    "CONSUMER_CONFIDENCE",
+    "INTEREST_RATES_INVESTMENT",
+    "GROSS_NET_INVESTMENT",
+    "BUSINESS_CONFIDENCE"
+   ],
+   "dropped": [
+    [
+     "INTEREST_RATES_DEF",
+     "INTEREST_RATES_CONSUMPTION"
+    ],
+    [
+     "INTEREST_RATES_DEF",
+     "INTEREST_RATES_INVESTMENT"
+    ]
+   ],
+   "edges": [
+    [
+     "C_COMP",
+     "INTEREST_RATES_CONSUMPTION"
+    ],
+    [
+     "SAVINGS_CONSUMPTION_RELATIONSHIP",
+     "INTEREST_RATES_CONSUMPTION"
+    ],
+    [
+     "C_COMP",
+     "CONSUMER_CONFIDENCE"
+    ],
+    [
+     "I_COMP",
+     "GROSS_NET_INVESTMENT"
+    ],
+    [
+     "I_COMP",
+     "BUSINESS_CONFIDENCE"
+    ],
+    [
+     "I_COMP",
+     "INTEREST_RATES_INVESTMENT"
+    ],
+    [
+     "INTEREST_RATES_DEF",
+     "borrowcost"
+    ],
+    [
+     "INTEREST_RATES_DEF",
+     "savingreward"
+    ],
+    [
+     "borrowcost",
+     "INTEREST_RATES_CONSUMPTION"
+    ],
+    [
+     "savingreward",
+     "INTEREST_RATES_CONSUMPTION"
+    ],
+    [
+     "borrowcost",
+     "INTEREST_RATES_INVESTMENT"
+    ],
+    [
+     "depreciation",
+     "GROSS_NET_INVESTMENT"
+    ]
+   ]
+  }
+ ]
+}

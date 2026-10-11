@@ -1,0 +1,265 @@
+{
+ "id": "gen",
+ "subject": "Economics",
+ "title": "Demand-side policy in crises",
+ "terms": {
+  "committee": {
+   "label": "Setting rates by committee"
+  },
+  "BOE_ROLE": {
+   "label": "Role of the Bank of England"
+  },
+  "MPC_ROLE": {
+   "label": "Role of the MPC"
+  },
+  "DEMAND_POLICY_AD_DIAGRAM": {
+   "label": "AD/AS demand-side diagrams"
+  },
+  "GREAT_DEPRESSION": {
+   "label": "Great Depression responses"
+  },
+  "GFC_2008": {
+   "label": "GFC 2008 responses"
+  },
+  "POLICY_DISTINCTION": {
+   "label": "Distinction between monetary and fiscal policy"
+  },
+  "MON_INT_RATE": {
+   "label": "Interest rates (monetary)"
+  },
+  "OBJ_INFLATION_STABLE": {
+   "label": "Stable inflation"
+  },
+  "AD_AS_BASE": {
+   "label": "AD/AS diagram"
+  },
+  "MON_QE": {
+   "label": "Monetary policy instrument: asset purchases (quantitative easing) to increase money supply"
+  },
+  "FISC_GOV_SPEND": {
+   "label": "Fiscal policy instrument: government spending"
+  },
+  "FISC_TAX": {
+   "label": "Fiscal policy instrument: taxation"
+  }
+ },
+ "stages": [
+  {
+   "name": "Demand-side policy in crises",
+   "title": "Demand-side policy in crises",
+   "sub": "How the Bank of England and demand-side policy respond when the economy falls into crisis.",
+   "steps": [
+    {
+     "type": "ask",
+     "q": "Inflation needs to be kept low and stable, but the government also wants to spend and tax as it pleases. Who is given the job of managing interest rates, separately from government day-to-day decisions?",
+     "right": "An independent institution set up to manage money and banking",
+     "wrong": "Whichever government department is in office that year",
+     "hint": "Think about who controls the currency and the banking system, not who controls taxes.",
+     "pre": "That institution is the Bank of England, and this describes the",
+     "term": "BOE_ROLE"
+    },
+    {
+     "type": "ask",
+     "q": "Interest rate decisions affect everyone's mortgages and savings. Should one person alone decide the rate, or a group of experts voting together?",
+     "right": "A group of experts voting together",
+     "wrong": "One person alone",
+     "hint": "Which is less likely to make a rushed or biased decision, one voice or several?",
+     "pre": "So interest rates are set by a",
+     "term": "committee"
+    },
+    {
+     "type": "ask",
+     "q": "This group inside the Bank of England meets monthly to vote on the interest rate in order to hit the inflation target. What is this group called?",
+     "right": "The Monetary Policy Committee",
+     "wrong": "The Treasury Select Committee",
+     "hint": "It sits inside the Bank of England and its job is entirely about monetary policy.",
+     "pre": "This group is the",
+     "term": "MPC_ROLE"
+    },
+    {
+     "type": "ask",
+     "q": "A government cuts taxes so households spend more. On an AD/AS diagram, which curve moves as a result?",
+     "right": "The aggregate demand curve",
+     "wrong": "The aggregate supply curve",
+     "hint": "Tax cuts change how much people spend, which side of the diagram is that?",
+     "pre": "So demand-side policies are shown as a shift of AD, using",
+     "term": "DEMAND_POLICY_AD_DIAGRAM",
+     "diagram": {
+      "x": "Real GDP",
+      "y": "Price level",
+      "curves": [
+       {
+        "label": "AD1",
+        "pts": [
+         [
+          0.1,
+          0.2
+         ],
+         [
+          0.5,
+          0.5
+         ],
+         [
+          0.9,
+          0.8
+         ]
+        ]
+       },
+       {
+        "label": "AD2",
+        "pts": [
+         [
+          0.2,
+          0.2
+         ],
+         [
+          0.6,
+          0.5
+         ],
+         [
+          1,
+          0.8
+         ]
+        ]
+       }
+      ]
+     }
+    },
+    {
+     "type": "order",
+     "terms": [
+      "BOE_ROLE",
+      "committee",
+      "MPC_ROLE",
+      "DEMAND_POLICY_AD_DIAGRAM"
+     ],
+     "prompt": "Drag and drop the 4 key terms in the order they build on each other."
+    },
+    {
+     "type": "ask",
+     "q": "In the early 1930s, banks failed, spending collapsed and output fell sharply. On the AD/AS diagram, would AD have shifted left or right?",
+     "right": "Left, as spending fell sharply",
+     "wrong": "Right, as prices fell sharply",
+     "hint": "Banks failing and people losing savings makes them spend less, not more.",
+     "pre": "That sharp leftward shift in spending is what governments faced in the",
+     "term": "GREAT_DEPRESSION"
+    },
+    {
+     "type": "ask",
+     "q": "In 2008, banks nearly collapsed and lending froze, causing AD to shift sharply left again. What kind of shock caused this crisis, compared with the 1930s?",
+     "right": "A shock starting in the banking and financial system",
+     "wrong": "A shock starting from a fall in exports alone",
+     "hint": "Think about where the crisis began: mortgages, banks and financial institutions.",
+     "pre": "This financial-system shock is what defines the",
+     "term": "GFC_2008"
+    },
+    {
+     "type": "derive"
+    }
+   ],
+   "given": [
+    "POLICY_DISTINCTION",
+    "MON_INT_RATE",
+    "OBJ_INFLATION_STABLE",
+    "AD_AS_BASE"
+   ],
+   "needs": [
+    "POLICY_DISTINCTION",
+    "MON_INT_RATE",
+    "OBJ_INFLATION_STABLE",
+    "AD_AS_BASE",
+    "MON_QE",
+    "FISC_GOV_SPEND",
+    "FISC_TAX"
+   ],
+   "builds": [
+    "POLICY_DISTINCTION",
+    "MON_INT_RATE",
+    "OBJ_INFLATION_STABLE",
+    "AD_AS_BASE"
+   ],
+   "nodes": [
+    "BOE_ROLE",
+    "MPC_ROLE",
+    "DEMAND_POLICY_AD_DIAGRAM",
+    "GREAT_DEPRESSION",
+    "GFC_2008"
+   ],
+   "dropped": [],
+   "edges": [
+    [
+     "BOE_ROLE",
+     "MPC_ROLE"
+    ],
+    [
+     "DEMAND_POLICY_AD_DIAGRAM",
+     "GREAT_DEPRESSION"
+    ],
+    [
+     "DEMAND_POLICY_AD_DIAGRAM",
+     "GFC_2008"
+    ],
+    [
+     "MPC_ROLE",
+     "GFC_2008"
+    ],
+    [
+     "POLICY_DISTINCTION",
+     "BOE_ROLE"
+    ],
+    [
+     "MON_INT_RATE",
+     "MPC_ROLE"
+    ],
+    [
+     "OBJ_INFLATION_STABLE",
+     "MPC_ROLE"
+    ],
+    [
+     "AD_AS_BASE",
+     "DEMAND_POLICY_AD_DIAGRAM"
+    ],
+    [
+     "MON_INT_RATE",
+     "DEMAND_POLICY_AD_DIAGRAM"
+    ],
+    [
+     "OBJ_INFLATION_STABLE",
+     "BOE_ROLE"
+    ],
+    [
+     "POLICY_DISTINCTION",
+     "committee"
+    ],
+    [
+     "MON_INT_RATE",
+     "committee"
+    ],
+    [
+     "committee",
+     "MPC_ROLE"
+    ],
+    [
+     "BOE_ROLE",
+     "MPC_ROLE"
+    ],
+    [
+     "AD_AS_BASE",
+     "DEMAND_POLICY_AD_DIAGRAM"
+    ],
+    [
+     "DEMAND_POLICY_AD_DIAGRAM",
+     "GREAT_DEPRESSION"
+    ],
+    [
+     "DEMAND_POLICY_AD_DIAGRAM",
+     "GFC_2008"
+    ],
+    [
+     "MPC_ROLE",
+     "GFC_2008"
+    ]
+   ]
+  }
+ ]
+}

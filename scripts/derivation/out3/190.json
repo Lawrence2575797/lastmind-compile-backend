@@ -1,0 +1,115 @@
+{
+ "id": "gen",
+ "subject": "Economics",
+ "title": "Government intervention in currency markets",
+ "terms": {
+  "reserves": {
+   "label": "Foreign currency reserves"
+  },
+  "excess_demand": {
+   "label": "Excess demand for currency"
+  },
+  "excess_supply": {
+   "label": "Excess supply of currency"
+  },
+  "GOVT_INTERVENTION_FX": {
+   "label": "Government intervention in FX markets"
+  },
+  "EXRATE_MANAGED": {
+   "label": "Managed exchange rate"
+  },
+  "EXRATE_FIXED": {
+   "label": "Fixed exchange rate"
+  }
+ },
+ "stages": [
+  {
+   "name": "Government intervention in currency markets",
+   "title": "Government intervention in currency markets",
+   "sub": "How a government defends its exchange rate by trading foreign currency.",
+   "steps": [
+    {
+     "type": "ask",
+     "q": "A country running a managed exchange rate keeps a stock of dollars, euros and gold sitting in its central bank, ready to be used at any time. If it wants to buy its own currency on the market, what does it need to pay with?",
+     "right": "Foreign currency it holds",
+     "wrong": "More of its own currency",
+     "hint": "You cannot buy your own currency using itself. What else must you pay with?",
+     "pre": "That stock of foreign money held by the central bank is called",
+     "term": "reserves"
+    },
+    {
+     "type": "ask",
+     "q": "Traders suddenly want to buy far more pounds than sellers are offering, pushing the pound to rise. What is happening to pounds in the market?",
+     "right": "There is too much demand for pounds",
+     "wrong": "There is too much supply of pounds",
+     "hint": "Think about which side of the market has grown, buyers or sellers.",
+     "pre": "That situation, where buyers outnumber sellers at the current rate, is",
+     "term": "excess_demand"
+    },
+    {
+     "type": "ask",
+     "q": "Now imagine the opposite: everyone wants to sell pounds and hardly anyone wants to buy them, pushing the pound to fall. What is happening to pounds in the market?",
+     "right": "There is too much supply of pounds",
+     "wrong": "There is too much demand for pounds",
+     "hint": "Which side of the market has grown this time, buyers or sellers?",
+     "pre": "That situation, where sellers outnumber buyers at the current rate, is",
+     "term": "excess_supply"
+    },
+    {
+     "type": "ask",
+     "q": "The pound is falling below its target rate because of excess supply of pounds. The central bank takes its reserves and uses them to buy pounds on the market. What effect should this have on the pound's value?",
+     "right": "It pushes the pound back up",
+     "wrong": "It pushes the pound further down",
+     "hint": "Buying pounds with reserves adds to demand for pounds. What does extra demand do to a price?",
+     "pre": "Using reserves to buy or sell currency and steer the exchange rate is",
+     "term": "GOVT_INTERVENTION_FX"
+    },
+    {
+     "type": "derive"
+    }
+   ],
+   "given": [
+    "EXRATE_MANAGED",
+    "EXRATE_FIXED"
+   ],
+   "needs": [
+    "EXRATE_MANAGED",
+    "EXRATE_FIXED"
+   ],
+   "builds": [
+    "EXRATE_MANAGED",
+    "EXRATE_FIXED"
+   ],
+   "nodes": [
+    "GOVT_INTERVENTION_FX"
+   ],
+   "dropped": [],
+   "edges": [
+    [
+     "EXRATE_MANAGED",
+     "GOVT_INTERVENTION_FX"
+    ],
+    [
+     "EXRATE_FIXED",
+     "GOVT_INTERVENTION_FX"
+    ],
+    [
+     "reserves",
+     "excess_demand"
+    ],
+    [
+     "reserves",
+     "excess_supply"
+    ],
+    [
+     "excess_demand",
+     "GOVT_INTERVENTION_FX"
+    ],
+    [
+     "excess_supply",
+     "GOVT_INTERVENTION_FX"
+    ]
+   ]
+  }
+ ]
+}

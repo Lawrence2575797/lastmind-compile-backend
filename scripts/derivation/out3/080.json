@@ -1,0 +1,185 @@
+{
+ "id": "gen",
+ "subject": "Economics",
+ "title": "Macroeconomic objectives and policies",
+ "terms": {
+  "OBJ_BUDGET": {
+   "label": "Balanced budget objective"
+  },
+  "FISC_GOV_SPEND": {
+   "label": "Fiscal policy instrument: government spending"
+  },
+  "MON_INT_RATE": {
+   "label": "Interest rates (monetary)"
+  },
+  "MON_QE": {
+   "label": "Monetary policy instrument: asset purchases (quantitative easing) to increase money supply"
+  },
+  "OBJ_INCOME_EQ": {
+   "label": "Income equality objective"
+  },
+  "tax_revenue": {
+   "label": "Tax revenue"
+  },
+  "money_supply": {
+   "label": "Money supply"
+  },
+  "low_rates": {
+   "label": "Rates near zero"
+  },
+  "INTEREST_RATES_DEF": {
+   "label": "Interest rates"
+  },
+  "G_COMP": {
+   "label": "Government expenditure (G)"
+  }
+ },
+ "stages": [
+  {
+   "name": "Macroeconomic objectives and policies",
+   "title": "Macroeconomic objectives and policies",
+   "sub": "After this, the student can identify fiscal and monetary policy tools and two further government objectives.",
+   "steps": [
+    {
+     "type": "ask",
+     "q": "A government spends £500bn this year but only collects £450bn in tax. What is the gap between the two called?",
+     "right": "A budget deficit",
+     "wrong": "A trade deficit",
+     "hint": "Think about spending versus money coming in from tax, not money coming in from abroad.",
+     "pre": "Spending more than tax raised creates a deficit, and the money collected from tax is called",
+     "term": "tax_revenue"
+    },
+    {
+     "type": "ask",
+     "q": "A government wants spending to equal tax revenue each year, neither running a deficit nor piling up a surplus. What is it aiming for?",
+     "right": "A balance between what it spends and what it raises",
+     "wrong": "Spending as little as possible every year",
+     "hint": "It is not about cutting spending to zero, it is about the two figures matching.",
+     "pre": "Aiming for spending to match revenue is the objective of a",
+     "term": "OBJ_BUDGET"
+    },
+    {
+     "type": "ask",
+     "q": "You already know G is government spending on things like schools, hospitals and roads within AD. If the government decides to change how much it spends to influence the economy, what kind of policy is it using?",
+     "right": "Fiscal policy, adjusting spending directly",
+     "wrong": "Monetary policy, run by the central bank",
+     "hint": "Who controls the level of G directly: the government's budget, or the central bank?",
+     "pre": "Deliberately changing G to manage the economy is the fiscal policy instrument of",
+     "term": "FISC_GOV_SPEND"
+    },
+    {
+     "type": "ask",
+     "q": "You already know interest rates are the cost of borrowing and the reward for saving. If the central bank raises this rate to cool down spending in the economy, what kind of policy is that?",
+     "right": "Monetary policy, using the price of money",
+     "wrong": "Fiscal policy, using government spending",
+     "hint": "Is the central bank changing how much the government spends, or the cost of borrowing and saving?",
+     "pre": "Changing this rate to manage the economy is the monetary policy instrument of",
+     "term": "MON_INT_RATE"
+    },
+    {
+     "type": "order",
+     "terms": [
+      "tax_revenue",
+      "OBJ_BUDGET",
+      "FISC_GOV_SPEND",
+      "MON_INT_RATE"
+     ],
+     "prompt": "Drag and drop the 4 key terms in the order they build on each other."
+    },
+    {
+     "type": "ask",
+     "q": "The central bank keeps cutting interest rates until they are almost zero, and spending still has not picked up. Is there much room left to cut rates any further?",
+     "right": "No, there is barely any room left",
+     "wrong": "Yes, there is plenty of room left",
+     "hint": "Rates cannot easily go far below zero, so how much lower can they push from here?",
+     "pre": "So the tool of cutting rates has run out of room once rates are",
+     "term": "low_rates"
+    },
+    {
+     "type": "ask",
+     "q": "With rates stuck near zero, the central bank instead creates new money electronically and uses it to buy government bonds from banks, hoping banks then lend more out. What happens to the total amount of money in the economy?",
+     "right": "It rises",
+     "wrong": "It stays fixed",
+     "hint": "The central bank is creating money, not just moving existing money between accounts.",
+     "pre": "Creating new money like this expands the",
+     "term": "money_supply"
+    },
+    {
+     "type": "ask",
+     "q": "So when a central bank creates new money to buy bonds because cutting rates further is no longer possible, what should we call this extra monetary tool?",
+     "right": "A separate instrument from cutting rates",
+     "wrong": "Just another way of cutting rates",
+     "hint": "It works through buying assets to create money, not through moving the interest rate itself.",
+     "pre": "This monetary policy instrument is",
+     "term": "MON_QE"
+    },
+    {
+     "type": "ask",
+     "q": "In a country, the richest 10% earn 40 times more than the poorest 10%. If the government wants to narrow that gap between rich and poor, what is it trying to achieve?",
+     "right": "Greater equality of income across the population",
+     "wrong": "Faster growth in total national income",
+     "hint": "The goal here is about the gap between rich and poor, not the total size of income.",
+     "pre": "Narrowing that gap is the objective of",
+     "term": "OBJ_INCOME_EQ"
+    },
+    {
+     "type": "derive"
+    }
+   ],
+   "given": [
+    "INTEREST_RATES_DEF",
+    "G_COMP"
+   ],
+   "needs": [
+    "INTEREST_RATES_DEF",
+    "G_COMP"
+   ],
+   "builds": [
+    "INTEREST_RATES_DEF",
+    "G_COMP"
+   ],
+   "nodes": [
+    "OBJ_BUDGET",
+    "FISC_GOV_SPEND",
+    "MON_INT_RATE",
+    "MON_QE",
+    "OBJ_INCOME_EQ"
+   ],
+   "dropped": [],
+   "edges": [
+    [
+     "INTEREST_RATES_DEF",
+     "MON_INT_RATE"
+    ],
+    [
+     "G_COMP",
+     "FISC_GOV_SPEND"
+    ],
+    [
+     "G_COMP",
+     "FISC_GOV_SPEND"
+    ],
+    [
+     "tax_revenue",
+     "FISC_GOV_SPEND"
+    ],
+    [
+     "INTEREST_RATES_DEF",
+     "MON_INT_RATE"
+    ],
+    [
+     "MON_INT_RATE",
+     "low_rates"
+    ],
+    [
+     "low_rates",
+     "money_supply"
+    ],
+    [
+     "money_supply",
+     "MON_QE"
+    ]
+   ]
+  }
+ ]
+}

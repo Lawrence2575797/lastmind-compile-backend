@@ -1,0 +1,373 @@
+{
+ "id": "gen",
+ "subject": "Economics",
+ "title": "Shut-down points",
+ "terms": {
+  "IDENTIFY_PROFIT_AREA": {
+   "label": "Reading the profit area"
+  },
+  "SR_SHUTDOWN": {
+   "label": "Short-run shut-down point"
+  },
+  "LR_SHUTDOWN": {
+   "label": "Long-run shut-down point"
+  },
+  "SR_SHUTDOWN_DIAG": {
+   "label": "Short-run shut-down diagram"
+  },
+  "LR_SHUTDOWN_DIAG": {
+   "label": "Long-run shut-down diagram"
+  },
+  "fixedcosts": {
+   "label": "Fixed costs still owed"
+  },
+  "IDENTIFY_PROFIT_MAX_OUTPUT": {
+   "label": "Profit-maximising output"
+  },
+  "SUPERNORMAL_PROFIT": {
+   "label": "Supernormal profit"
+  },
+  "LOSSES": {
+   "label": "Losses"
+  },
+  "AVC": {
+   "label": "Average variable cost (AVC = TVC/Q)"
+  },
+  "ATC": {
+   "label": "Average (total) cost (ATC = TC/Q = AFC + AVC)"
+  },
+  "LR_DEF": {
+   "label": "The long run: all factors of production are variable"
+  },
+  "DRAW_COST_CURVES": {
+   "label": "Constructing MC, ATC and AVC curves on a diagram"
+  },
+  "DRAW_AR_MR": {
+   "label": "Constructing AR (demand) and MR curves on a diagram"
+  }
+ },
+ "stages": [
+  {
+   "name": "Shut-down points",
+   "title": "Shut-down points",
+   "sub": "Work out when a loss-making firm should stay open, and when it should close down.",
+   "steps": [
+    {
+     "type": "ask",
+     "q": "A firm is at its profit-maximising output. Its average revenue is £8 and average total cost is £10. Is it making a profit or a loss, and how big is the gap per unit?",
+     "right": "A loss of £2 per unit",
+     "wrong": "A profit of £2 per unit",
+     "hint": "Compare revenue per unit to cost per unit at that output.",
+     "pre": "On the diagram, the rectangle between AR and ATC at that output is the area you shade to show the",
+     "term": "IDENTIFY_PROFIT_AREA",
+     "diagram": {
+      "x": "Output",
+      "y": "Price/Cost",
+      "curves": [
+       {
+        "label": "ATC",
+        "pts": [
+         [
+          0.05,
+          0.7
+         ],
+         [
+          0.4,
+          0.35
+         ],
+         [
+          0.7,
+          0.45
+         ],
+         [
+          0.95,
+          0.75
+         ]
+        ]
+       },
+       {
+        "label": "AR",
+        "pts": [
+         [
+          0.05,
+          0.5
+         ],
+         [
+          0.5,
+          0.5
+         ],
+         [
+          0.95,
+          0.5
+         ]
+        ]
+       }
+      ],
+      "points": [
+       {
+        "label": "Q",
+        "x": 0.5,
+        "y": 0.5,
+        "guides": true
+       }
+      ]
+     }
+    },
+    {
+     "type": "ask",
+     "q": "Even if it shuts down completely and produces nothing, a firm still has to pay its rent and loan repayments. Do these costs disappear if output is zero?",
+     "right": "No, they still get charged",
+     "wrong": "Yes, they also fall to zero",
+     "hint": "Rent and loan repayments do not depend on how much is produced.",
+     "pre": "Costs that carry on even at zero output are the",
+     "term": "fixedcosts"
+    },
+    {
+     "type": "ask",
+     "q": "A firm is making a loss. Its average revenue covers its average variable cost and leaves a bit over towards rent, but not all of it. Is it better off producing, or producing nothing at all?",
+     "right": "Better off producing something",
+     "wrong": "Better off producing nothing",
+     "hint": "If it shuts down it pays all its fixed costs anyway and earns nothing towards them. If it produces, does it get some money towards those fixed costs?",
+     "pre": "So a firm stays open in the short run as long as revenue covers variable costs, only leaving once AR falls below AVC. That is the",
+     "term": "SR_SHUTDOWN"
+    },
+    {
+     "type": "ask",
+     "q": "Now imagine revenue does not even cover the variable costs of making each unit. Every extra unit made loses money beyond what fixed costs already cost. Should the firm carry on producing?",
+     "right": "No, it should stop producing",
+     "wrong": "Yes, it should keep producing",
+     "hint": "If each unit adds to the loss on top of fixed costs, does producing more help or make things worse?",
+     "pre": "On a diagram, this is shown by AR dropping below the AVC curve, which is the",
+     "term": "SR_SHUTDOWN_DIAG",
+     "diagram": {
+      "x": "Output",
+      "y": "Price/Cost",
+      "curves": [
+       {
+        "label": "AVC",
+        "pts": [
+         [
+          0.05,
+          0.6
+         ],
+         [
+          0.4,
+          0.3
+         ],
+         [
+          0.7,
+          0.4
+         ],
+         [
+          0.95,
+          0.65
+         ]
+        ]
+       },
+       {
+        "label": "AR",
+        "pts": [
+         [
+          0.05,
+          0.2
+         ],
+         [
+          0.5,
+          0.2
+         ],
+         [
+          0.95,
+          0.2
+         ]
+        ]
+       }
+      ],
+      "points": [
+       {
+        "label": "Q",
+        "x": 0.5,
+        "y": 0.2,
+        "guides": true
+       }
+      ]
+     }
+    },
+    {
+     "type": "order",
+     "terms": [
+      "IDENTIFY_PROFIT_AREA",
+      "fixedcosts",
+      "SR_SHUTDOWN",
+      "SR_SHUTDOWN_DIAG"
+     ],
+     "prompt": "Drag and drop the 4 key terms in the order they build on each other."
+    },
+    {
+     "type": "ask",
+     "q": "A firm's revenue covers all its variable costs and some, but not all, of its fixed costs, quarter after quarter with no sign of improving. Is this a situation it can keep going forever?",
+     "right": "No, it must eventually exit",
+     "wrong": "Yes, it can carry on forever",
+     "hint": "Covering variable costs keeps it open today, but what happens to unpaid fixed costs over time?",
+     "pre": "When revenue stays below total cost for good, the firm eventually exits, which is the",
+     "term": "LR_SHUTDOWN"
+    },
+    {
+     "type": "ask",
+     "q": "On a diagram, a firm's AR sits below its ATC curve at every output, permanently, with no prospect of AR ever rising above ATC. What does this whole picture show about the firm's future?",
+     "right": "It will exit in the long run",
+     "wrong": "It will stay open long run",
+     "hint": "This is about total cost, not just variable cost, and about the long run, not just today.",
+     "pre": "Shading the loss area against ATC across the whole diagram like this is the",
+     "term": "LR_SHUTDOWN_DIAG",
+     "diagram": {
+      "x": "Output",
+      "y": "Price/Cost",
+      "curves": [
+       {
+        "label": "ATC",
+        "pts": [
+         [
+          0.05,
+          0.75
+         ],
+         [
+          0.4,
+          0.45
+         ],
+         [
+          0.7,
+          0.55
+         ],
+         [
+          0.95,
+          0.8
+         ]
+        ]
+       },
+       {
+        "label": "AR",
+        "pts": [
+         [
+          0.05,
+          0.3
+         ],
+         [
+          0.5,
+          0.3
+         ],
+         [
+          0.95,
+          0.3
+         ]
+        ]
+       }
+      ],
+      "points": [
+       {
+        "label": "Q",
+        "x": 0.5,
+        "y": 0.3,
+        "guides": true
+       }
+      ]
+     }
+    },
+    {
+     "type": "derive"
+    }
+   ],
+   "given": [
+    "IDENTIFY_PROFIT_MAX_OUTPUT",
+    "SUPERNORMAL_PROFIT",
+    "LOSSES",
+    "AVC"
+   ],
+   "needs": [
+    "IDENTIFY_PROFIT_MAX_OUTPUT",
+    "SUPERNORMAL_PROFIT",
+    "LOSSES",
+    "AVC",
+    "ATC",
+    "LR_DEF",
+    "DRAW_COST_CURVES",
+    "DRAW_AR_MR"
+   ],
+   "builds": [
+    "IDENTIFY_PROFIT_MAX_OUTPUT",
+    "SUPERNORMAL_PROFIT",
+    "LOSSES",
+    "AVC"
+   ],
+   "nodes": [
+    "IDENTIFY_PROFIT_AREA",
+    "SR_SHUTDOWN",
+    "LR_SHUTDOWN",
+    "SR_SHUTDOWN_DIAG",
+    "LR_SHUTDOWN_DIAG"
+   ],
+   "dropped": [],
+   "edges": [
+    [
+     "SR_SHUTDOWN",
+     "SR_SHUTDOWN_DIAG"
+    ],
+    [
+     "LR_SHUTDOWN",
+     "LR_SHUTDOWN_DIAG"
+    ],
+    [
+     "IDENTIFY_PROFIT_MAX_OUTPUT",
+     "IDENTIFY_PROFIT_AREA"
+    ],
+    [
+     "SUPERNORMAL_PROFIT",
+     "IDENTIFY_PROFIT_AREA"
+    ],
+    [
+     "LOSSES",
+     "IDENTIFY_PROFIT_AREA"
+    ],
+    [
+     "AVC",
+     "SR_SHUTDOWN"
+    ],
+    [
+     "LOSSES",
+     "SR_SHUTDOWN"
+    ],
+    [
+     "IDENTIFY_PROFIT_MAX_OUTPUT",
+     "SR_SHUTDOWN"
+    ],
+    [
+     "LOSSES",
+     "LR_SHUTDOWN"
+    ],
+    [
+     "IDENTIFY_PROFIT_MAX_OUTPUT",
+     "LR_SHUTDOWN"
+    ],
+    [
+     "LOSSES",
+     "IDENTIFY_PROFIT_AREA"
+    ],
+    [
+     "SUPERNORMAL_PROFIT",
+     "IDENTIFY_PROFIT_AREA"
+    ],
+    [
+     "AVC",
+     "SR_SHUTDOWN"
+    ],
+    [
+     "fixedcosts",
+     "SR_SHUTDOWN"
+    ],
+    [
+     "IDENTIFY_PROFIT_AREA",
+     "LR_SHUTDOWN"
+    ]
+   ]
+  }
+ ]
+}

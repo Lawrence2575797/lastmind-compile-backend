@@ -1,0 +1,400 @@
+{
+ "id": "gen",
+ "subject": "Economics",
+ "title": "Profit maximisation",
+ "terms": {
+  "mc_point": {
+   "label": "Plotting MC"
+  },
+  "atc_avc_points": {
+   "label": "Plotting ATC & AVC"
+  },
+  "DRAW_COST_CURVES": {
+   "label": "Constructing MC, ATC and AVC curves on a diagram"
+  },
+  "ar_point": {
+   "label": "Plotting AR"
+  },
+  "mr_point": {
+   "label": "Plotting MR"
+  },
+  "DRAW_AR_MR": {
+   "label": "Constructing AR (demand) and MR curves on a diagram"
+  },
+  "profit_gap": {
+   "label": "Extra profit on a unit"
+  },
+  "IDENTIFY_PROFIT_MAX_OUTPUT": {
+   "label": "Profit-maximising output"
+  },
+  "MC_SHAPE": {
+   "label": "Shape of the MC curve"
+  },
+  "AVC_ATC_SHAPE": {
+   "label": "U-shaped AVC/ATC curves"
+  },
+  "COST_REL": {
+   "label": "Relationships between cost curves"
+  },
+  "TR_AR_MR_REL": {
+   "label": "TR, AR, MR relationship"
+  },
+  "PROFIT_MAX_COND": {
+   "label": "Profit maximisation condition: MC = MR"
+  }
+ },
+ "stages": [
+  {
+   "name": "Profit maximisation",
+   "title": "Profit maximisation",
+   "sub": "Draw the cost and revenue curves and read off the output where profit is greatest.",
+   "steps": [
+    {
+     "type": "ask",
+     "q": "You know the marginal cost of the 1st, 2nd, 3rd... unit made. If you plot each of these against output, what do you get?",
+     "right": "A curve showing cost per extra unit",
+     "wrong": "A curve showing total cost so far",
+     "hint": "Each point is the cost of just one more unit, not everything made so far.",
+     "pre": "Plotting each marginal cost against its output gives you",
+     "term": "mc_point"
+    },
+    {
+     "type": "ask",
+     "q": "You already know AVC and ATC fall then rise, and that MC cuts them at their lowest points. If you plot AVC and ATC at every output level, what do you get?",
+     "right": "Two U-shaped curves, both crossed by MC at their minimum",
+     "wrong": "Two straight lines that never meet MC",
+     "hint": "Use the shape and the crossing point you already know about.",
+     "pre": "Plotting them point by point gives you",
+     "term": "atc_avc_points"
+    },
+    {
+     "type": "ask",
+     "q": "You now have MC, AVC and ATC each plotted against output on the same axes. What have you built?",
+     "right": "A full diagram of the firm's cost curves",
+     "wrong": "A diagram of the firm's revenue curves",
+     "hint": "All three lines you just plotted come from costs, not from sales.",
+     "pre": "Together, on one diagram, this is",
+     "term": "DRAW_COST_CURVES",
+     "diagram": {
+      "x": "Output",
+      "y": "Cost per unit",
+      "curves": [
+       {
+        "label": "MC",
+        "pts": [
+         [
+          0.05,
+          0.6
+         ],
+         [
+          0.25,
+          0.25
+         ],
+         [
+          0.5,
+          0.18
+         ],
+         [
+          0.75,
+          0.35
+         ],
+         [
+          0.95,
+          0.8
+         ]
+        ]
+       },
+       {
+        "label": "ATC",
+        "pts": [
+         [
+          0.1,
+          0.75
+         ],
+         [
+          0.3,
+          0.35
+         ],
+         [
+          0.5,
+          0.22
+         ],
+         [
+          0.7,
+          0.3
+         ],
+         [
+          0.9,
+          0.55
+         ]
+        ]
+       }
+      ]
+     }
+    },
+    {
+     "type": "ask",
+     "q": "You know AR is the price line and comes from the same data as TR and MR. If you plot the price the firm charges at every output level, what do you get?",
+     "right": "A curve showing the price, which is also the demand curve",
+     "wrong": "A curve showing total revenue at every output",
+     "hint": "Price per unit sold is what AR actually measures.",
+     "pre": "Plotting price against output gives you",
+     "term": "ar_point"
+    },
+    {
+     "type": "order",
+     "terms": [
+      "mc_point",
+      "atc_avc_points",
+      "DRAW_COST_CURVES",
+      "ar_point"
+     ],
+     "prompt": "Drag and drop the 4 key terms in the order they build on each other."
+    },
+    {
+     "type": "ask",
+     "q": "You know MR is the revenue from selling one more unit, and it relates to AR. If you plot that extra revenue at every output level, what do you get?",
+     "right": "A curve showing revenue from one more unit, lying below AR",
+     "wrong": "A curve showing revenue from one more unit, lying above AR",
+     "hint": "Recall how MR sits relative to AR once output rises above zero.",
+     "pre": "Plotting each of these gives you",
+     "term": "mr_point"
+    },
+    {
+     "type": "ask",
+     "q": "You now have AR and MR both plotted against output on one diagram. What have you built?",
+     "right": "A diagram of the firm's revenue curves",
+     "wrong": "A diagram of the firm's cost curves",
+     "hint": "These two lines came from price and extra revenue, not from cost per unit.",
+     "pre": "Together, on one diagram, this is",
+     "term": "DRAW_AR_MR",
+     "diagram": {
+      "x": "Output",
+      "y": "Revenue per unit",
+      "curves": [
+       {
+        "label": "AR",
+        "pts": [
+         [
+          0.08,
+          0.85
+         ],
+         [
+          0.4,
+          0.6
+         ],
+         [
+          0.9,
+          0.2
+         ]
+        ]
+       },
+       {
+        "label": "MR",
+        "pts": [
+         [
+          0.05,
+          0.75
+         ],
+         [
+          0.4,
+          0.4
+         ],
+         [
+          0.85,
+          0.02
+         ]
+        ]
+       }
+      ]
+     }
+    },
+    {
+     "type": "ask",
+     "q": "At some output, making one more unit adds more to revenue than it adds to cost. Should the firm produce that extra unit?",
+     "right": "Yes, it adds more profit",
+     "wrong": "No, it should stop producing",
+     "hint": "Compare what one more unit brings in against what it costs to make.",
+     "pre": "As long as the extra unit adds more revenue than cost, there is",
+     "term": "profit_gap"
+    },
+    {
+     "type": "order",
+     "terms": [
+      "mr_point",
+      "DRAW_AR_MR",
+      "profit_gap"
+     ],
+     "prompt": "Drag and drop the 3 key terms in the order they build on each other."
+    },
+    {
+     "type": "ask",
+     "q": "Once making one more unit adds exactly as much to cost as it adds to revenue, is there still any extra profit gained from making it?",
+     "right": "No, that gap has closed",
+     "wrong": "Yes, there is still a little extra profit",
+     "hint": "Think about the point where the extra cost line and extra revenue line cross.",
+     "pre": "So profit is greatest at the output where MC meets MR, which is",
+     "term": "IDENTIFY_PROFIT_MAX_OUTPUT",
+     "diagram": {
+      "x": "Output",
+      "y": "£ per unit",
+      "curves": [
+       {
+        "label": "MC",
+        "pts": [
+         [
+          0.05,
+          0.6
+         ],
+         [
+          0.25,
+          0.25
+         ],
+         [
+          0.5,
+          0.18
+         ],
+         [
+          0.75,
+          0.35
+         ],
+         [
+          0.95,
+          0.8
+         ]
+        ]
+       },
+       {
+        "label": "MR",
+        "pts": [
+         [
+          0.05,
+          0.75
+         ],
+         [
+          0.4,
+          0.4
+         ],
+         [
+          0.85,
+          0.02
+         ]
+        ]
+       }
+      ],
+      "points": [
+       {
+        "label": "E",
+        "x": 0.5,
+        "y": 0.18,
+        "guides": true
+       }
+      ]
+     }
+    },
+    {
+     "type": "derive"
+    }
+   ],
+   "given": [
+    "MC_SHAPE",
+    "AVC_ATC_SHAPE",
+    "COST_REL",
+    "TR_AR_MR_REL"
+   ],
+   "needs": [
+    "MC_SHAPE",
+    "AVC_ATC_SHAPE",
+    "COST_REL",
+    "TR_AR_MR_REL",
+    "PROFIT_MAX_COND"
+   ],
+   "builds": [
+    "MC_SHAPE",
+    "AVC_ATC_SHAPE",
+    "COST_REL",
+    "TR_AR_MR_REL"
+   ],
+   "nodes": [
+    "DRAW_COST_CURVES",
+    "DRAW_AR_MR",
+    "IDENTIFY_PROFIT_MAX_OUTPUT"
+   ],
+   "dropped": [],
+   "edges": [
+    [
+     "DRAW_COST_CURVES",
+     "IDENTIFY_PROFIT_MAX_OUTPUT"
+    ],
+    [
+     "DRAW_AR_MR",
+     "IDENTIFY_PROFIT_MAX_OUTPUT"
+    ],
+    [
+     "MC_SHAPE",
+     "DRAW_COST_CURVES"
+    ],
+    [
+     "AVC_ATC_SHAPE",
+     "DRAW_COST_CURVES"
+    ],
+    [
+     "COST_REL",
+     "DRAW_COST_CURVES"
+    ],
+    [
+     "TR_AR_MR_REL",
+     "DRAW_AR_MR"
+    ],
+    [
+     "MC_SHAPE",
+     "mc_point"
+    ],
+    [
+     "mc_point",
+     "DRAW_COST_CURVES"
+    ],
+    [
+     "AVC_ATC_SHAPE",
+     "atc_avc_points"
+    ],
+    [
+     "COST_REL",
+     "atc_avc_points"
+    ],
+    [
+     "atc_avc_points",
+     "DRAW_COST_CURVES"
+    ],
+    [
+     "TR_AR_MR_REL",
+     "ar_point"
+    ],
+    [
+     "ar_point",
+     "DRAW_AR_MR"
+    ],
+    [
+     "TR_AR_MR_REL",
+     "mr_point"
+    ],
+    [
+     "mr_point",
+     "DRAW_AR_MR"
+    ],
+    [
+     "DRAW_COST_CURVES",
+     "profit_gap"
+    ],
+    [
+     "DRAW_AR_MR",
+     "profit_gap"
+    ],
+    [
+     "profit_gap",
+     "IDENTIFY_PROFIT_MAX_OUTPUT"
+    ]
+   ]
+  }
+ ]
+}

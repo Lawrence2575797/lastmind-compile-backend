@@ -1,0 +1,177 @@
+{
+ "id": "gen",
+ "subject": "Economics",
+ "title": "Elasticity of demand",
+ "terms": {
+  "ped_interpret": {
+   "label": "Interpreting PED values"
+  },
+  "ped_factors": {
+   "label": "Factors influencing PED"
+  },
+  "total_revenue_concept": {
+   "label": "Total revenue: price multiplied by quantity sold"
+  },
+  "yed_def": {
+   "label": "Income elasticity of demand"
+  },
+  "yed_interpret": {
+   "label": "Interpreting YED values"
+  },
+  "price_change": {
+   "label": "Price change"
+  },
+  "income_change": {
+   "label": "Income change"
+  },
+  "ped_def": {
+   "label": "Price elasticity of demand"
+  },
+  "demand_def": {
+   "label": "Demand"
+  }
+ },
+ "stages": [
+  {
+   "name": "Elasticity of demand",
+   "title": "Elasticity of demand",
+   "sub": "After this, the student can classify PED and YED values and use them to predict revenue and the type of good.",
+   "steps": [
+    {
+     "type": "ask",
+     "q": "A café raises the price of coffee by 10% and the quantity sold falls by 40%. Compared with the size of the rise in price, is the fall in quantity bigger or smaller?",
+     "right": "Much bigger",
+     "wrong": "About the same",
+     "hint": "Compare 10% with 40%.",
+     "pre": "When quantity responds more than the price change, demand is relatively elastic. When it responds by exactly the same amount, that is unitary, and when it responds less, that is relatively inelastic. Reading a PED number this way is",
+     "term": "ped_interpret"
+    },
+    {
+     "type": "ask",
+     "q": "Insulin has almost no substitutes, so a price rise barely changes the quantity bought. A well-known snack brand has many close substitutes, so a small price rise sends buyers elsewhere. Which good has the more elastic demand?",
+     "right": "The snack brand with many substitutes",
+     "wrong": "The insulin with no substitutes",
+     "hint": "Elastic demand means buyers can easily switch away when price rises.",
+     "pre": "The number and closeness of substitutes, how essential the good is, and how large a share of income it takes up are all",
+     "term": "ped_factors"
+    },
+    {
+     "type": "ask",
+     "q": "A shop's ice cream demand is elastic. If it raises the price, will the fall in quantity sold be small enough or big enough to matter a lot?",
+     "right": "Big enough to matter a lot",
+     "wrong": "Too small to matter",
+     "hint": "Elastic means quantity is very sensitive to price.",
+     "pre": "So a change like this in the price a firm charges is a",
+     "term": "price_change"
+    },
+    {
+     "type": "ask",
+     "q": "That shop sells 100 ice creams a day at £2 each, giving £200 a day. It raises the price to £3, and because demand is elastic, sales fall to 50 a day. What happens to the total amount of money it takes each day?",
+     "right": "It falls, to £150",
+     "wrong": "It rises, since price is higher",
+     "hint": "Work out price times quantity at both prices.",
+     "pre": "Price multiplied by the quantity sold is called",
+     "term": "total_revenue_concept"
+    },
+    {
+     "type": "order",
+     "terms": [
+      "ped_interpret",
+      "ped_factors",
+      "price_change",
+      "total_revenue_concept"
+     ],
+     "prompt": "Drag and drop the 4 key terms in the order they build on each other."
+    },
+    {
+     "type": "ask",
+     "q": "A household's income rises by 20% and the quantity of own-brand pasta they buy falls by 5%, as they switch to branded pasta instead. What has changed here?",
+     "right": "Both income and quantity bought",
+     "wrong": "Only the price of pasta",
+     "hint": "Nothing about price is mentioned; look at what actually moved.",
+     "pre": "A rise in income like this is an example of",
+     "term": "income_change"
+    },
+    {
+     "type": "ask",
+     "q": "For that own-brand pasta, income rose 20% but quantity bought fell 5%. What single measure would capture how quantity demanded responds to a change in income?",
+     "right": "The percentage change in quantity divided by the percentage change in income",
+     "wrong": "The percentage change in income divided by the price of pasta",
+     "hint": "You want quantity's response relative to the income change that caused it.",
+     "pre": "That ratio is",
+     "term": "yed_def"
+    },
+    {
+     "type": "ask",
+     "q": "For the own-brand pasta, income went up but the quantity bought went down. Is this pasta a good people buy more of as they get richer, or less of?",
+     "right": "Less of, as income rises",
+     "wrong": "More of, as income rises",
+     "hint": "Look again at the direction of the quantity change compared with the income change.",
+     "pre": "A good bought less as income rises is called inferior; one bought more is normal or luxury, and how strongly quantity responds tells you if it's income elastic or inelastic. Reading a YED value this way is",
+     "term": "yed_interpret"
+    },
+    {
+     "type": "derive"
+    }
+   ],
+   "given": [
+    "ped_def",
+    "demand_def"
+   ],
+   "needs": [
+    "ped_def",
+    "demand_def"
+   ],
+   "builds": [
+    "ped_def",
+    "demand_def"
+   ],
+   "nodes": [
+    "ped_interpret",
+    "ped_factors",
+    "total_revenue_concept",
+    "yed_def",
+    "yed_interpret"
+   ],
+   "dropped": [],
+   "edges": [
+    [
+     "ped_interpret",
+     "ped_factors"
+    ],
+    [
+     "yed_def",
+     "yed_interpret"
+    ],
+    [
+     "ped_def",
+     "ped_interpret"
+    ],
+    [
+     "demand_def",
+     "yed_def"
+    ],
+    [
+     "demand_def",
+     "total_revenue_concept"
+    ],
+    [
+     "ped_def",
+     "ped_interpret"
+    ],
+    [
+     "price_change",
+     "total_revenue_concept"
+    ],
+    [
+     "ped_interpret",
+     "total_revenue_concept"
+    ],
+    [
+     "income_change",
+     "yed_def"
+    ]
+   ]
+  }
+ ]
+}

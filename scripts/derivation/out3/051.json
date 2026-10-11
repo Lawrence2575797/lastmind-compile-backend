@@ -1,0 +1,255 @@
+{
+ "id": "gen",
+ "subject": "Economics",
+ "title": "Aggregate supply (AS)",
+ "terms": {
+  "output_price_level": {
+   "label": "Price level & real output"
+  },
+  "as_definition": {
+   "label": "Aggregate supply"
+  },
+  "as_curve_draw": {
+   "label": "Constructing the AS curve"
+  },
+  "movement_along_as": {
+   "label": "Movement along AS"
+  },
+  "shift_of_as": {
+   "label": "Shift of AS"
+  },
+  "movement_vs_shift_as": {
+   "label": "Movement vs shift of AS"
+  }
+ },
+ "stages": [
+  {
+   "name": "Aggregate supply (AS)",
+   "title": "Aggregate supply (AS)",
+   "sub": "How to read and draw the AS curve, and tell a movement along it from a shift of it.",
+   "steps": [
+    {
+     "type": "ask",
+     "q": "Across the whole economy, prices of most goods rise together, and total output is measured for the whole country rather than one firm. What are we now looking at: one firm's price, or the economy-wide picture?",
+     "right": "The economy-wide picture",
+     "wrong": "Still one firm's price and output",
+     "hint": "Think nationally, not about a single shop.",
+     "pre": "So we now track the whole economy's",
+     "term": "output_price_level"
+    },
+    {
+     "type": "ask",
+     "q": "At a higher general price level, firms can sell their output for more. Are firms willing to produce and sell more output at that higher price level?",
+     "right": "Yes, more output becomes worthwhile",
+     "wrong": "No, output stays the same",
+     "hint": "Would higher prices make production more or less profitable for firms overall?",
+     "pre": "The total output firms are willing and able to supply at each price level is",
+     "term": "as_definition"
+    },
+    {
+     "type": "ask",
+     "q": "If you plot the general price level on the vertical axis and real output on the horizontal axis, and higher prices mean firms supply more, which way should the line slope?",
+     "right": "Upward, bottom-left to top-right",
+     "wrong": "Downward, top-left to bottom-right",
+     "hint": "More output goes with higher price level, so as one rises, so does the other.",
+     "pre": "Plotting that relationship gives",
+     "term": "as_curve_draw",
+     "diagram": {
+      "x": "Real output",
+      "y": "Price level",
+      "curves": [
+       {
+        "label": "AS",
+        "pts": [
+         [
+          0.1,
+          0.15
+         ],
+         [
+          0.35,
+          0.35
+         ],
+         [
+          0.6,
+          0.55
+         ],
+         [
+          0.85,
+          0.8
+         ]
+        ]
+       }
+      ]
+     }
+    },
+    {
+     "type": "ask",
+     "q": "The price level rises and firms respond by supplying more output, staying on the same AS line. Has the AS line moved, or have firms just moved to a different point on it?",
+     "right": "They moved to a different point on it",
+     "wrong": "The whole AS line has moved",
+     "hint": "Only the price level changed here, nothing about costs or conditions.",
+     "pre": "That is a",
+     "term": "movement_along_as",
+     "diagram": {
+      "x": "Real output",
+      "y": "Price level",
+      "curves": [
+       {
+        "label": "AS",
+        "pts": [
+         [
+          0.1,
+          0.15
+         ],
+         [
+          0.35,
+          0.35
+         ],
+         [
+          0.6,
+          0.55
+         ],
+         [
+          0.85,
+          0.8
+         ]
+        ]
+       }
+      ],
+      "points": [
+       {
+        "label": "A",
+        "x": 0.35,
+        "y": 0.35,
+        "guides": true
+       },
+       {
+        "label": "B",
+        "x": 0.6,
+        "y": 0.55,
+        "guides": true
+       }
+      ]
+     }
+    },
+    {
+     "type": "order",
+     "terms": [
+      "output_price_level",
+      "as_definition",
+      "as_curve_draw",
+      "movement_along_as"
+     ],
+     "prompt": "Drag and drop the 4 key terms in the order they build on each other."
+    },
+    {
+     "type": "ask",
+     "q": "Wages fall across the economy, so at every price level it is now cheaper for firms to produce, and they supply more output than before at each price level. Does one point move along the old line, or does the whole line move?",
+     "right": "The whole line moves",
+     "wrong": "It stays on the same line",
+     "hint": "This time the price level did not cause the change, costs did. So can the old line still describe firms' behaviour?",
+     "pre": "That is a",
+     "term": "shift_of_as",
+     "diagram": {
+      "x": "Real output",
+      "y": "Price level",
+      "curves": [
+       {
+        "label": "AS1",
+        "pts": [
+         [
+          0.1,
+          0.15
+         ],
+         [
+          0.35,
+          0.35
+         ],
+         [
+          0.6,
+          0.55
+         ],
+         [
+          0.85,
+          0.8
+         ]
+        ]
+       },
+       {
+        "label": "AS2",
+        "pts": [
+         [
+          0.2,
+          0.15
+         ],
+         [
+          0.45,
+          0.35
+         ],
+         [
+          0.7,
+          0.55
+         ],
+         [
+          0.95,
+          0.8
+         ]
+        ]
+       }
+      ]
+     }
+    },
+    {
+     "type": "ask",
+     "q": "Costs of raw materials for firms rise sharply. Should this be shown as a movement along the AS line, or as the AS line itself shifting?",
+     "right": "The AS line shifting",
+     "wrong": "A movement along the AS line",
+     "hint": "Did the price level cause this change, or something else about firms' costs?",
+     "pre": "Telling a change in the price level apart from a change in a non-price factor is the difference between",
+     "term": "movement_vs_shift_as"
+    },
+    {
+     "type": "derive"
+    }
+   ],
+   "given": [],
+   "needs": [],
+   "builds": [],
+   "nodes": [
+    "output_price_level",
+    "as_definition",
+    "as_curve_draw",
+    "movement_along_as",
+    "shift_of_as",
+    "movement_vs_shift_as"
+   ],
+   "dropped": [],
+   "edges": [
+    [
+     "output_price_level",
+     "as_definition"
+    ],
+    [
+     "as_definition",
+     "as_curve_draw"
+    ],
+    [
+     "as_curve_draw",
+     "movement_along_as"
+    ],
+    [
+     "as_curve_draw",
+     "shift_of_as"
+    ],
+    [
+     "movement_along_as",
+     "movement_vs_shift_as"
+    ],
+    [
+     "shift_of_as",
+     "movement_vs_shift_as"
+    ]
+   ]
+  }
+ ]
+}

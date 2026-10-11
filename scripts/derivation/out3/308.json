@@ -1,0 +1,217 @@
+{
+ "id": "gen",
+ "subject": "Economics",
+ "title": "Government intervention: permits and failure",
+ "terms": {
+  "PERMIT_DIS1": {
+   "label": "Cap-setting difficulty"
+  },
+  "PERMIT_DIS2": {
+   "label": "Admin & monitoring costs"
+  },
+  "PERMIT_DIS3": {
+   "label": "Relocation risk"
+  },
+  "GOVFAIL_APPLIED": {
+   "label": "Government failure applied"
+  },
+  "EVAL_INTERVENE": {
+   "label": "Evaluating intervention"
+  },
+  "PERMIT_MECH": {
+   "label": "Cap-and-trade mechanism"
+  },
+  "GOVFAIL_DISTORT": {
+   "label": "Cause of government failure: distortion of price signals"
+  },
+  "GOVFAIL_UNINTEND": {
+   "label": "Cause of government failure: unintended consequences"
+  },
+  "GOVFAIL_ADMIN": {
+   "label": "Cause of government failure: excessive administrative costs"
+  },
+  "GOVFAIL_INFOGAP": {
+   "label": "Cause of government failure: information gaps facing policymakers"
+  },
+  "TAX_DIS2": {
+   "label": "Tax disadvantage: difficulty valuing the externality precisely"
+  },
+  "MAXP_DIS2": {
+   "label": "Maximum price disadvantage: emergence of black markets"
+  },
+  "SUB_DIS2": {
+   "label": "Subsidy disadvantage: firms become inefficient/reliant on subsidy"
+  },
+  "REASONS_INTERVENE": {
+   "label": "Reasons for government intervention in markets"
+  },
+  "GOVFAIL_DEF": {
+   "label": "Government failure: intervention causing a net welfare loss"
+  }
+ },
+ "stages": [
+  {
+   "name": "Government intervention: permits and failure",
+   "title": "Government intervention: permits and failure",
+   "sub": "After this, the student can weigh the drawbacks of tradeable permits and judge whether government intervention is actually worth it.",
+   "steps": [
+    {
+     "type": "ask",
+     "q": "A regulator issues pollution permits and lets firms trade them, creating a market price for pollution. If the regulator sets the total number of permits too high, will the pollution cut be as big as hoped?",
+     "right": "No, too little pollution would be cut",
+     "wrong": "Yes, the market price fixes this automatically",
+     "hint": "The number of permits decides how much pollution is allowed in total.",
+     "pre": "So the regulator faces the",
+     "term": "PERMIT_DIS1"
+    },
+    {
+     "type": "ask",
+     "q": "Every firm's emissions have to be measured and checked, and every permit trade has to be tracked and enforced. Is that free to run?",
+     "right": "No, it costs money and staff to run",
+     "wrong": "Yes, the market runs itself once set up",
+     "hint": "Someone has to check what firms actually emit and verify every trade.",
+     "pre": "So permits also bring",
+     "term": "PERMIT_DIS2"
+    },
+    {
+     "type": "ask",
+     "q": "A factory now has to buy permits to keep polluting at home, but a country next door has no such scheme. What might the factory's owner consider doing?",
+     "right": "Moving production to the country with no scheme",
+     "wrong": "Paying for extra permits and staying put",
+     "hint": "If polluting is cheaper abroad, where might the firm choose to produce instead?",
+     "pre": "So permits create a",
+     "term": "PERMIT_DIS3"
+    },
+    {
+     "type": "ask",
+     "q": "A wrong permit cap distorts the price of pollution, monitoring adds cost, and firms may relocate abroad. If you looked at a minimum wage, a subsidy, or a tax instead, could each of these run into its own version of a mis-set price, extra cost, or an unintended side effect?",
+     "right": "Yes, the same kinds of problems show up",
+     "wrong": "No, only permits run into these problems",
+     "hint": "Distorted signals, admin costs and unintended consequences are not unique to one policy tool.",
+     "pre": "So these causes of failure show up",
+     "term": "GOVFAIL_APPLIED"
+    },
+    {
+     "type": "order",
+     "terms": [
+      "PERMIT_DIS1",
+      "PERMIT_DIS2",
+      "PERMIT_DIS3",
+      "GOVFAIL_APPLIED"
+     ],
+     "prompt": "Drag and drop the 4 key terms in the order they build on each other."
+    },
+    {
+     "type": "ask",
+     "q": "A policy fixes a market failure but its own costs and side effects turn out to be larger than the problem it solved. Should the government still intervene?",
+     "right": "No, only if the benefits outweigh the costs",
+     "wrong": "Yes, any fix for a market failure is worth doing",
+     "hint": "Intervening is not automatically good just because there was a market failure to begin with.",
+     "pre": "So each intervention needs",
+     "term": "EVAL_INTERVENE"
+    },
+    {
+     "type": "derive"
+    }
+   ],
+   "given": [
+    "PERMIT_MECH",
+    "GOVFAIL_DISTORT",
+    "GOVFAIL_UNINTEND",
+    "GOVFAIL_ADMIN"
+   ],
+   "needs": [
+    "PERMIT_MECH",
+    "GOVFAIL_DISTORT",
+    "GOVFAIL_UNINTEND",
+    "GOVFAIL_ADMIN",
+    "GOVFAIL_INFOGAP",
+    "TAX_DIS2",
+    "MAXP_DIS2",
+    "SUB_DIS2",
+    "REASONS_INTERVENE",
+    "GOVFAIL_DEF"
+   ],
+   "builds": [
+    "PERMIT_MECH",
+    "GOVFAIL_DISTORT",
+    "GOVFAIL_UNINTEND",
+    "GOVFAIL_ADMIN"
+   ],
+   "nodes": [
+    "PERMIT_DIS1",
+    "PERMIT_DIS2",
+    "PERMIT_DIS3",
+    "GOVFAIL_APPLIED",
+    "EVAL_INTERVENE"
+   ],
+   "dropped": [],
+   "edges": [
+    [
+     "PERMIT_DIS1",
+     "GOVFAIL_APPLIED"
+    ],
+    [
+     "GOVFAIL_APPLIED",
+     "EVAL_INTERVENE"
+    ],
+    [
+     "PERMIT_MECH",
+     "PERMIT_DIS1"
+    ],
+    [
+     "PERMIT_MECH",
+     "PERMIT_DIS2"
+    ],
+    [
+     "PERMIT_MECH",
+     "PERMIT_DIS3"
+    ],
+    [
+     "GOVFAIL_DISTORT",
+     "GOVFAIL_APPLIED"
+    ],
+    [
+     "GOVFAIL_UNINTEND",
+     "GOVFAIL_APPLIED"
+    ],
+    [
+     "GOVFAIL_ADMIN",
+     "GOVFAIL_APPLIED"
+    ],
+    [
+     "PERMIT_MECH",
+     "PERMIT_DIS1"
+    ],
+    [
+     "PERMIT_MECH",
+     "PERMIT_DIS2"
+    ],
+    [
+     "PERMIT_MECH",
+     "PERMIT_DIS3"
+    ],
+    [
+     "PERMIT_DIS2",
+     "GOVFAIL_APPLIED"
+    ],
+    [
+     "PERMIT_DIS3",
+     "GOVFAIL_APPLIED"
+    ],
+    [
+     "GOVFAIL_DISTORT",
+     "GOVFAIL_APPLIED"
+    ],
+    [
+     "GOVFAIL_UNINTEND",
+     "GOVFAIL_APPLIED"
+    ],
+    [
+     "GOVFAIL_ADMIN",
+     "GOVFAIL_APPLIED"
+    ]
+   ]
+  }
+ ]
+}

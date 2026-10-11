@@ -1,0 +1,174 @@
+{
+ "id": "gen",
+ "subject": "Economics",
+ "title": "Human capital development",
+ "terms": {
+  "young_pop": {
+   "label": "Young population share"
+  },
+  "dependency_ratio": {
+   "label": "Dependency ratio"
+  },
+  "demographic_factors": {
+   "label": "Demographic factors"
+  },
+  "education_skills_factor": {
+   "label": "Education and skills"
+  },
+  "human_capital_dev": {
+   "label": "Developing human capital"
+  },
+  "human_capital_adv": {
+   "label": "Advantages of human capital development"
+  },
+  "human_capital_dis": {
+   "label": "Disadvantages of human capital development"
+  }
+ },
+ "stages": [
+  {
+   "name": "Human capital development",
+   "title": "Human capital development",
+   "sub": "How population pressures and skills gaps shape a strategy to build human capital, and what that strategy gains and risks.",
+   "steps": [
+    {
+     "type": "ask",
+     "q": "A developing country has a very high birth rate, so most of its population is under 15. Are there many working adults compared to children?",
+     "right": "No, relatively few working adults",
+     "wrong": "Yes, roughly equal numbers",
+     "hint": "If most people are children, who is left to work?",
+     "pre": "So a country with lots of children has a high proportion of",
+     "term": "young_pop"
+    },
+    {
+     "type": "ask",
+     "q": "With so many children (and also some elderly) compared to workers, is the burden on each working adult small or large?",
+     "right": "Large, each worker supports many dependants",
+     "wrong": "Small, dependants are spread evenly",
+     "hint": "Fewer workers, more non-workers to support - what does that do to the load per worker?",
+     "pre": "The number of dependants each worker must support is shown by the",
+     "term": "dependency_ratio"
+    },
+    {
+     "type": "ask",
+     "q": "Birth rates, ageing, and the balance of workers to dependants all differ hugely between countries. What kind of influence on development are these population patterns?",
+     "right": "A demographic influence",
+     "wrong": "A purely financial influence",
+     "hint": "These are all about the size and structure of the population itself.",
+     "pre": "Population growth and age structure are examples of",
+     "term": "demographic_factors"
+    },
+    {
+     "type": "ask",
+     "q": "A country has very few working-age adults per dependant, and most young people leave school early to help earn money for the family. Will many of them gain advanced skills?",
+     "right": "No, few will gain advanced skills",
+     "wrong": "Yes, most will still gain advanced skills",
+     "hint": "If children must work early rather than stay in school, what happens to their skills?",
+     "pre": "So a shortage of trained, skilled workers is a constraint called",
+     "term": "education_skills_factor"
+    },
+    {
+     "type": "order",
+     "terms": [
+      "young_pop",
+      "dependency_ratio",
+      "demographic_factors",
+      "education_skills_factor"
+     ],
+     "prompt": "Drag and drop the 4 key terms in the order they build on each other."
+    },
+    {
+     "type": "ask",
+     "q": "A government sees this skills shortage holding back growth. Instead of leaving it to the market, it funds schools, training centres and healthcare to raise workers' abilities directly. What kind of strategy is this?",
+     "right": "A deliberate government intervention",
+     "wrong": "A natural market outcome",
+     "hint": "Who is acting here, and is it choosing to step in or standing back?",
+     "pre": "This deliberate government strategy to raise workers' skills and health is",
+     "term": "human_capital_dev"
+    },
+    {
+     "type": "ask",
+     "q": "Years after this schooling and training programme, workers can operate more complex machinery and produce more per hour. What has happened to output and growth?",
+     "right": "Output and growth rise",
+     "wrong": "Output and growth stay the same",
+     "hint": "More skilled workers using better methods - what happens to what they can produce?",
+     "pre": "Higher productivity and growth from better-skilled workers is an",
+     "term": "human_capital_adv"
+    },
+    {
+     "type": "ask",
+     "q": "Building schools and training centres across the country takes many years and a large budget, and in the meantime the young population keeps growing faster than places can be built. Does this strategy pay off quickly and cheaply?",
+     "right": "No, it is slow and costly",
+     "wrong": "Yes, it works fast and cheaply",
+     "hint": "Think about how long it takes to train a whole generation, and how many more children keep arriving.",
+     "pre": "This slow payback and high cost, worsened by rapid population growth, is a",
+     "term": "human_capital_dis"
+    },
+    {
+     "type": "derive"
+    }
+   ],
+   "given": [],
+   "needs": [],
+   "builds": [],
+   "nodes": [
+    "demographic_factors",
+    "education_skills_factor",
+    "human_capital_dev",
+    "human_capital_adv",
+    "human_capital_dis"
+   ],
+   "dropped": [],
+   "edges": [
+    [
+     "demographic_factors",
+     "education_skills_factor"
+    ],
+    [
+     "education_skills_factor",
+     "human_capital_dev"
+    ],
+    [
+     "human_capital_dev",
+     "human_capital_adv"
+    ],
+    [
+     "human_capital_dev",
+     "human_capital_dis"
+    ],
+    [
+     "demographic_factors",
+     "human_capital_dis"
+    ],
+    [
+     "young_pop",
+     "dependency_ratio"
+    ],
+    [
+     "dependency_ratio",
+     "demographic_factors"
+    ],
+    [
+     "demographic_factors",
+     "education_skills_factor"
+    ],
+    [
+     "education_skills_factor",
+     "human_capital_dev"
+    ],
+    [
+     "human_capital_dev",
+     "human_capital_adv"
+    ],
+    [
+     "human_capital_dev",
+     "human_capital_dis"
+    ],
+    [
+     "demographic_factors",
+     "human_capital_dis"
+    ]
+   ]
+  }
+ ]
+}

@@ -1,0 +1,118 @@
+<think>
+Let me analyze the graph for issues.
+
+**Cycle check**: N10_11_1 -> N10_10_1 -> N10_11_1 (via N10_10_1 -> N10_11_1). This is a cycle: N10_11_1 -> N10_10_1 -> N10_11_1. Need to break it. The genuine direction: Haber process purpose is to make ammonia for fertilisers (N10_10_1 mentions purpose already includes fertilisers). N10_11_1 (NPK fertilisers) is really a downstream application concept that should depend on N10_10_1, not the reverse. Remove edge N10_11_1 -> N10_10_1, keep N10_10_1 -> N10_11_1.
+
+**Rule 17 check**: N10_2_6 "Required practical 8: analysis and purification of water samples" bundles procedure (measuring pH, evaporating, distilling) - this seems fine as procedure node, but does it bundle "concept it investigates"? It's testing water purity, concept already covered in N10_2_1. The procedure itself is fine as a procedure node. N10_2_7 calculates mass of dissolved solids from data - that's the application split already done. Good, this follows rule 17 pattern (procedure -> application).
+
+N10_7_2 "Investigating conditions needed for rusting" - this bundles procedure AND interpretation (concept). It says "describe experiments and interpret results" - bundles carrying out with concept understanding. This is rule 17 violation - should split into procedure (setting up experiment) and application/concept (interpreting that both air and water needed). Actually the essential points already state the conclusion (rust only forms when both present) as part of same node performing the procedure. Let's split.
+
+N10_11_5 "Required practical: preparing an ammonium salt" - procedure node, doesn't bundle calculation... seems fine, though there's no application node for calculating quantities/yield from titration. But this may not be strictly required. Let's check the essential points - titration to find volume, then repeat and crystallise. This is procedure only, seems fine actually since no calculation is bundled explicitly. But rule 17 wants procedure/concept/application split when both are bundled. Here it's just procedure, that's fine.
+
+**Missing edge for N10_11_5**: Should probably depend on general acid-base neutralisation/titration concept from earlier topics (Topic 6 - Chemical changes, acids and reactions). But since we only have Topic 10 nodes here, this is a cross-topic issue - but the task says "fix every substantive issue" within this batch only, and we can't invent endpoints outside given nodes. So skip since we can't reference external topic nodes not given.
+
+Wait, the instructions say "never invent endpoints" - meaning we can't create edges to nodes not in the graph. So we should only fix within given node set.
+
+Let me look for other cycles more thoroughly.
+
+Edges list - check for cycles among Haber/fertiliser cluster:
+- N10_11_1 -> N10_10_1
+- N10_10_1 -> N10_10_2 -> N10_10_3 -> N10_10_4 -> N10_10_8
+- N10_10_3 -> N10_10_5 -> N10_10_7
+- N10_10_3 -> N10_10_6 -> N10_10_7
+- N10_10_7 -> N10_10_8
+- N10_10_1 -> N10_11_1 -> N10_11_3 -> N10_11_4
+- N10_10_4 -> N10_11_2 -> N10_11_4, N10_11_2 -> N10_11_5 -> N10_11_6
+- N10_11_4 -> N10_11_6
+- N10_10_8 -> N10_11_6
+
+Only cycle: N10_11_1 <-> N10_10_1.
+
+Direction should be N10_10_1 -> N10_11_1 (Haber process purpose introduces fertilisers, then NPK fertilisers node builds on that). Remove N10_11_1 -> N10_10_1.
+
+Also check N10_2_1 -> N10_3_1: reasonable order (potable water def before waste water treatment need). Fine, no cycle.
+
+Now check rule 17 more carefully - N10_7_2 practicalIds is empty array but this is clearly a practical experiment (investigating rusting conditions) - it should have a practicalId? Not in the required practicals list (1-8) necessarily since rusting investigation isn't one of the 8 core required practicals for AQA chemistry. Actually it's not a required practical, just a suggested class experiment. Kind is "procedure" but empty practicalIds - that's fine since practicalIds only for the specified required practicals 1-8.
+
+But it does bundle procedure + concept interpretation. Let's split into:
+- N10_7_2 (procedure): "Setting up experiment to test conditions for rusting" - describes the experimental setup only.
+- New node N10_7_2b (concept/application): "Interpreting rusting experiment results: air and water both required" - conclusion drawn from data.
+
+Let's do this split per rule 17.
+
+**Check advantages/disadvantages sets breadth**:
+- N10_4_5 "Evaluating biological methods of metal extraction" - bundles both advantages and disadvantages in one node (environmental benefit, slower/smaller yield, extends resource availability) - that's 3 points bundled but this is an evaluation node combining trade-offs, arguably acceptable since it's a single "evaluate" style node per spec wording, but per rule 7 bundling advantages and disadvantages together should possibly be split. However, the spec statement itself says "evaluate X as an alternative to traditional mining" as a single objective - this is somewhat exempted as it's a joint evaluation. Let's check if other nodes split adv/dis separately (e.g., N10_6_5 "Evaluating ways of reducing use of limited resources" also bundles). These seem to be legitimate "evaluation" kind nodes intended as synthesis nodes at the end of a chain, not raw "Advantages of X"/"Disadvantages of X" nodes. I'll leave these unless clearly bundling per rule 7. Actually the instructions specifically call out "Advantages of X"/"Disadvantages of X" nodes - these evaluation nodes are differently named, are more like synthesis conclusions. I'll flag N10_4_5 as bundling advantages and disadvantages without split, since rule 7 applies broadly to any node justifying multiple separate points. Let's split into an advantages node and disadvantages node.
+
+Actually per task instructions, this round is specifically "Remove every cycle... then fix any atomicity/rule-17 issue in this topic. Return a compact patch only." So scope is narrower: cycles + atomicity/rule-17. I should focus primarily on these two things, not the full checklist. Let's be efficient and compact.
+
+So the required fixes:
+1. Cycle: N10_11_1 <-> N10_10_1. Remove N10_11_1->N10_10_1.
+2. Rule-17: N10_7_2 bundles procedure + concept conclusion. Split.
+
+Let me also check other procedure nodes for rule-17 bundling:
+- N10_2_6 (procedure) -> N10_2_7 (application calculating mass) - already split correctly. Good.
+- N10_11_5 (procedure) - preparing ammonium salt - no concept/application bundled explicitly beyond procedure steps. Fine as is, though missing an application node for calculating yield/percentage yield - but that's not required by rule 17 since no calculation-from-data is embedded in the essential points. Fine.
+
+Check N10_5_4 "Carrying out and interpreting a comparative LCA" - kind application. This bundles doing the LCA comparison and drawing conclusions - both are part of application, not raising a procedure/concept split issue since it's inherently an applied skill node, not a lab practical technique per rule 17 (this is a written/calculation-style application, not a lab practical). Fine.
+
+Now let's also check atomicity - N10_2_5 "Comparing treatment of ground water vs salty/sea water" - essential points: 2 bullet points, atomic count fine (<=4).
+
+N10_3_6 fine.
+
+N10_9_9 "Selecting materials for a use based on their properties" - fine.
+
+Now let's produce patch.
+
+For N10_7_2, split into:
+- N10_7_2 (procedure, keep): relabel to focus purely on procedure setup, e.g. "Setting up experiments to test conditions needed for rusting" essentialPoints: setup only.
+- New node N10_7_2b: "Interpreting results of rusting experiments (HT? no)" - concept/application: rust only forms when both air and water present.
+
+Edges: N10_7_1 -> N10_7_2 (procedure) stays. N10_7_2 -> N10_7_2b new edge. N10_7_2b -> N10_7_3 replace old N10_7_1->N10_7_3? Wait original edge was N10_7_1 -> N10_7_3 (barrier methods) directly, not through N10_7_2. That's fine, barrier methods conceptually don't need experiment interpretation necessarily, though logically barrier methods prevention flows from knowing corrosion requires air+water. Let's add edge N10_7_2b -> N10_7_3 as additional edge (since barrier prevention rationale depends on knowing what causes rusting - air/water exclusion). Actually current edge N10_7_1->N10_7_3 already covers definition->barrier methods conceptually (barrier excludes air and water, but does node explain why barriers work in terms of air/water requirement causally - point stated in essential points of N10_7_3: "act as a barrier excluding air and water" - this implies knowledge that both are required from N10_7_2b). So add edge N10_7_2b -> N10_7_3 for prerequisite grounding, keeping N10_7_1->N10_7_3 too (fine, DAG still valid, no cycle).
+
+Let's finalize patch.
+</think>
+
+```json
+{
+  "issues": [
+    {
+      "type": "wrong_edge",
+      "affected_node": "N10_11_1",
+      "explanation": "N10_11_1 -> N10_10_1 and N10_10_1 -> N10_11_1 form a cycle. The genuine prerequisite direction is that the Haber process's purpose (making ammonia for fertilisers) grounds the NPK fertiliser concept, not the reverse.",
+      "fix": {
+        "remove_edges": [["N10_11_1","N10_10_1"]]
+      }
+    },
+    {
+      "type": "missing_intermediate_node",
+      "affected_node": "N10_7_2",
+      "explanation": "Rule 17 violation: this node bundles carrying out the rusting experiment (setting up air/water/no-air/no-water test tubes) together with interpreting the results to conclude that both air and water are needed for rusting. These must be split into a procedure node and a separate concept/application node.",
+      "fix": {
+        "new_nodes": [
+          {"id":"N10_7_2b","label":"Interpreting rusting experiment results: air and water both required","subtopic":"10.3","theme":"Topic 10","difficulty":0.35,"objective":"Interpret comparative rusting experiment results to conclude that both air and water are necessary for rusting.","essentialPoints":["Rust only forms in the tube where iron is exposed to both air and water","Absence of rust in the air-only or water-only (no air) tubes shows both substances are required"],"specRefs":["4.10.3.1"],"kind":"application","practicalIds":[]}
+        ],
+        "new_edges": [
+          ["N10_7_2","N10_7_2b"],
+          ["N10_7_2b","N10_7_3"]
+        ]
+      }
+    }
+  ],
+  "removeNodeIds": [],
+  "upsertNodes": [
+    {"id":"N10_7_2","label":"Setting up experiments to test conditions needed for rusting","subtopic":"10.3","theme":"Topic 10","difficulty":0.3,"objective":"Describe how to set up experiments to test which conditions (air, water) are necessary for rusting.","essentialPoints":["Set up test tubes with iron exposed to: air+water, air only (dry), water only (no air, e.g. boiled/oil-sealed)"],"specRefs":["4.10.3.1"],"kind":"procedure","practicalIds":[]},
+    {"id":"N10_7_2b","label":"Interpreting rusting experiment results: air and water both required","subtopic":"10.3","theme":"Topic 10","difficulty":0.35,"objective":"Interpret comparative rusting experiment results to conclude that both air and water are necessary for rusting.","essentialPoints":["Rust only forms in the tube where iron is exposed to both air and water","Absence of rust in the air-only or water-only (no air) tubes shows both substances are required"],"specRefs":["4.10.3.1"],"kind":"application","practicalIds":[]}
+  ],
+  "removeEdges": [
+    ["N10_11_1","N10_10_1"]
+  ],
+  "addEdges": [
+    ["N10_7_2","N10_7_2b"],
+    ["N10_7_2b","N10_7_3"]
+  ],
+  "remainingProblems": [
+    "N10_4_5 and N10_6_5 bundle advantages and disadvantages within single evaluation nodes (rule 7); consider splitting into separate benefit/drawback nodes in a future pass.",
+    "N10_11_5 (required practical) has no cross-topic prerequisite edge to earlier acid-base/titration/neutralisation concept nodes from Topic 6, since those nodes are outside this batch's node set."
+  ]
+}
+```

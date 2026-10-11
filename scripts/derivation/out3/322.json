@@ -1,0 +1,242 @@
+{
+ "id": "gen",
+ "subject": "Economics",
+ "title": "Aid, the IMF and debt relief",
+ "terms": {
+  "human_aid": {
+   "label": "Humanitarian aid"
+  },
+  "bilateral_aid": {
+   "label": "Bilateral aid"
+  },
+  "multilateral_aid": {
+   "label": "Multilateral aid"
+  },
+  "tied_aid": {
+   "label": "Tied aid"
+  },
+  "aid_types": {
+   "label": "Aid: types"
+  },
+  "aid_adv": {
+   "label": "Advantages of aid"
+  },
+  "aid_dis": {
+   "label": "Disadvantages of aid"
+  },
+  "imf": {
+   "label": "Role of the IMF"
+  },
+  "debt_relief": {
+   "label": "Debt relief"
+  },
+  "savings_gap": {
+   "label": "The savings gap"
+  },
+  "forex_gap": {
+   "label": "Foreign exchange gap"
+  },
+  "debt_burden": {
+   "label": "Debt (external debt burden)"
+  },
+  "world_bank": {
+   "label": "Role of the World Bank"
+  },
+  "non_econ_governance": {
+   "label": "Non-economic factors (1): corruption, weak institutions and political instability"
+  }
+ },
+ "stages": [
+  {
+   "name": "Aid, the IMF and debt relief",
+   "title": "Aid, the IMF and debt relief",
+   "sub": "How foreign aid, the IMF and debt relief affect growth and development in poorer countries.",
+   "steps": [
+    {
+     "type": "read",
+     "term": "human_aid",
+     "text": "After an earthquake, food and medical supplies are flown in to save lives immediately. This emergency support is "
+    },
+    {
+     "type": "read",
+     "term": "bilateral_aid",
+     "text": "The UK government sends money directly to Kenya's government to build schools. Aid given directly from one country to another is "
+    },
+    {
+     "type": "read",
+     "term": "multilateral_aid",
+     "text": "Several countries pay into the World Bank, which then distributes funds to Kenya. Aid channelled through an international organisation like this is "
+    },
+    {
+     "type": "read",
+     "term": "tied_aid",
+     "text": "France lends Senegal money, on condition that Senegal spends it buying French-built roads from French firms. Aid that comes with strings attached like this is "
+    },
+    {
+     "type": "order",
+     "terms": [
+      "human_aid",
+      "bilateral_aid",
+      "multilateral_aid",
+      "tied_aid"
+     ],
+     "prompt": "Drag and drop the 4 key terms in the order they were introduced."
+    },
+    {
+     "type": "ask",
+     "q": "These four different forms of money and support flowing into a developing country are all examples of what?",
+     "right": "Aid",
+     "wrong": "Investment",
+     "hint": "Think about what humanitarian, bilateral, multilateral and tied support all have in common.",
+     "pre": "Together, humanitarian, bilateral, multilateral and tied support are the main",
+     "term": "aid_types"
+    },
+    {
+     "type": "ask",
+     "q": "A country cannot save enough of its own income to fund investment, and struggles to earn enough foreign currency to buy machinery from abroad. If aid fills these two gaps, what happens to its ability to invest?",
+     "right": "It increases",
+     "wrong": "It falls",
+     "hint": "Aid brings in extra savings and extra foreign currency, on top of what the country already has.",
+     "pre": "By filling the savings gap and the foreign currency gap, aid raises investment and growth. This is an",
+     "term": "aid_adv"
+    },
+    {
+     "type": "ask",
+     "q": "A government receiving tied aid must buy the donor country's goods and services, whether or not they are the cheapest or the most useful for local needs. What does this do to the value the recipient actually gets?",
+     "right": "It falls",
+     "wrong": "It rises",
+     "hint": "If you are forced to buy from one supplier rather than choosing the best deal, do you get better or worse value?",
+     "pre": "Tied conditions and dependency on donors can reduce the benefit gained. This is a",
+     "term": "aid_dis"
+    },
+    {
+     "type": "order",
+     "terms": [
+      "aid_types",
+      "aid_adv",
+      "aid_dis"
+     ],
+     "prompt": "Drag and drop the 3 key terms in the order they build on each other."
+    },
+    {
+     "type": "ask",
+     "q": "A country cannot pay its import bills and turns to an international lender of last resort for a loan, but the loan comes with required policy changes such as cutting government spending. Which organisation does this describe?",
+     "right": "The IMF",
+     "wrong": "The World Bank",
+     "hint": "Think of the organisation that lends to countries in short-term financial difficulty and attaches economic conditions.",
+     "pre": "That short-term lender that attaches policy conditions is",
+     "term": "imf"
+    },
+    {
+     "type": "ask",
+     "q": "A poor country is spending most of its export earnings just paying interest on old loans, leaving little for healthcare or schools. If the IMF and lenders agree to cancel or reduce part of that debt, what happens to the money available for development spending?",
+     "right": "It rises",
+     "wrong": "It falls",
+     "hint": "If less income has to go on interest payments, more is left over for other things.",
+     "pre": "Cancelling or reducing what a country owes, freeing up funds for development, is",
+     "term": "debt_relief"
+    },
+    {
+     "type": "derive"
+    }
+   ],
+   "given": [
+    "savings_gap",
+    "forex_gap",
+    "debt_burden",
+    "world_bank"
+   ],
+   "needs": [
+    "savings_gap",
+    "forex_gap",
+    "debt_burden",
+    "world_bank",
+    "non_econ_governance"
+   ],
+   "builds": [
+    "savings_gap",
+    "forex_gap",
+    "debt_burden",
+    "world_bank"
+   ],
+   "nodes": [
+    "aid_types",
+    "aid_adv",
+    "aid_dis",
+    "imf",
+    "debt_relief"
+   ],
+   "dropped": [],
+   "edges": [
+    [
+     "aid_types",
+     "aid_adv"
+    ],
+    [
+     "aid_types",
+     "aid_dis"
+    ],
+    [
+     "imf",
+     "debt_relief"
+    ],
+    [
+     "savings_gap",
+     "aid_types"
+    ],
+    [
+     "forex_gap",
+     "aid_types"
+    ],
+    [
+     "debt_burden",
+     "debt_relief"
+    ],
+    [
+     "forex_gap",
+     "imf"
+    ],
+    [
+     "debt_burden",
+     "imf"
+    ],
+    [
+     "world_bank",
+     "debt_relief"
+    ],
+    [
+     "human_aid",
+     "aid_types"
+    ],
+    [
+     "bilateral_aid",
+     "aid_types"
+    ],
+    [
+     "multilateral_aid",
+     "aid_types"
+    ],
+    [
+     "tied_aid",
+     "aid_types"
+    ],
+    [
+     "savings_gap",
+     "aid_adv"
+    ],
+    [
+     "forex_gap",
+     "aid_adv"
+    ],
+    [
+     "debt_burden",
+     "debt_relief"
+    ],
+    [
+     "world_bank",
+     "imf"
+    ]
+   ]
+  }
+ ]
+}

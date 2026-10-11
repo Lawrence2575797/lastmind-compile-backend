@@ -1,0 +1,174 @@
+{
+ "id": "gen",
+ "subject": "Economics",
+ "title": "International competitiveness",
+ "terms": {
+  "COMPET_REP": {
+   "label": "Relative export prices"
+  },
+  "COMPET_FACT_INNOVATION": {
+   "label": "Innovation & non-price factors"
+  },
+  "COMPET_FACT_REGULATION": {
+   "label": "Regulation & business environment"
+  },
+  "COMPET_BENEFITS": {
+   "label": "Benefits of competitiveness"
+  },
+  "COMPET_PROBLEMS": {
+   "label": "Problems of uncompetitiveness"
+  },
+  "COMPET_FACT_EXRATE": {
+   "label": "Exchange rate & competitiveness"
+  },
+  "COMPET_ULC": {
+   "label": "Relative unit labour costs"
+  },
+  "CA_DEFICIT_CAUSE_COMPET": {
+   "label": "Deficit from weak competitiveness"
+  }
+ },
+ "stages": [
+  {
+   "name": "International competitiveness",
+   "title": "International competitiveness",
+   "sub": "What makes a country's firms competitive abroad, and what follows from having it or lacking it.",
+   "steps": [
+    {
+     "type": "ask",
+     "q": "A UK car and a German car are almost identical, but the UK one is cheaper to buy abroad. Which is a buyer in France more likely to choose?",
+     "right": "The UK car, because it costs less",
+     "wrong": "The German car, because it costs less",
+     "hint": "Think about which price the French buyer actually pays for each car.",
+     "pre": "So comparing how cheap one country's exports are against another's is a measure called",
+     "term": "COMPET_REP"
+    },
+    {
+     "type": "ask",
+     "q": "Two phone makers charge the same price, but one phone has a better camera and longer battery life. Which will most buyers pick, even at an equal price?",
+     "right": "The one with the better features",
+     "wrong": "The one with the weaker features",
+     "hint": "If price does not decide it, what else about the product does?",
+     "pre": "So better technology, quality and design are a factor called",
+     "term": "COMPET_FACT_INNOVATION"
+    },
+    {
+     "type": "ask",
+     "q": "One country requires firms to complete months of paperwork before they can export; another makes it quick and simple. Which country's firms can sell abroad more easily?",
+     "right": "The one with simpler rules",
+     "wrong": "The one with more paperwork",
+     "hint": "Which set of firms loses less time and money just getting to the point of selling?",
+     "pre": "So the rules and environment government sets for business are a factor called",
+     "term": "COMPET_FACT_REGULATION"
+    },
+    {
+     "type": "order",
+     "terms": [
+      "COMPET_REP",
+      "COMPET_FACT_INNOVATION",
+      "COMPET_FACT_REGULATION"
+     ],
+     "prompt": "Drag and drop the 3 key terms in the order they build on each other."
+    },
+    {
+     "type": "ask",
+     "q": "A country's exports are cheap, well-made and produced under helpful regulation, so foreign buyers and firms increasingly choose it over rivals. What is likely to happen to its export sales, and to foreign firms wanting to invest and produce there?",
+     "right": "Both exports and inward investment rise",
+     "wrong": "Both exports and inward investment fall",
+     "hint": "If a country is an attractive place to sell to and to sell from, why would investors avoid it?",
+     "pre": "Export growth, rising living standards and attracting investment are the",
+     "term": "COMPET_BENEFITS"
+    },
+    {
+     "type": "ask",
+     "q": "Now imagine the opposite: a country's firms are expensive, low quality and slowed down by regulation, so both locals and foreigners buy imports instead of its exports. What happens to jobs in its export industries, and to how much it earns from selling abroad compared to what it spends on imports?",
+     "right": "Jobs are lost and it earns less than it spends on imports",
+     "wrong": "Jobs are gained and it earns more than it spends on imports",
+     "hint": "If exports are weak while imports are strong, does the country sell more or less abroad than it buys in?",
+     "pre": "Unemployment, low growth and a current account deficit are the",
+     "term": "COMPET_PROBLEMS"
+    },
+    {
+     "type": "derive"
+    }
+   ],
+   "given": [
+    "COMPET_FACT_EXRATE",
+    "COMPET_ULC",
+    "CA_DEFICIT_CAUSE_COMPET"
+   ],
+   "needs": [
+    "COMPET_FACT_EXRATE",
+    "COMPET_ULC",
+    "CA_DEFICIT_CAUSE_COMPET"
+   ],
+   "builds": [
+    "COMPET_FACT_EXRATE",
+    "COMPET_ULC",
+    "CA_DEFICIT_CAUSE_COMPET"
+   ],
+   "nodes": [
+    "COMPET_REP",
+    "COMPET_FACT_INNOVATION",
+    "COMPET_FACT_REGULATION",
+    "COMPET_BENEFITS",
+    "COMPET_PROBLEMS"
+   ],
+   "dropped": [],
+   "edges": [
+    [
+     "COMPET_REP",
+     "COMPET_BENEFITS"
+    ],
+    [
+     "COMPET_FACT_INNOVATION",
+     "COMPET_BENEFITS"
+    ],
+    [
+     "COMPET_FACT_REGULATION",
+     "COMPET_BENEFITS"
+    ],
+    [
+     "COMPET_BENEFITS",
+     "COMPET_PROBLEMS"
+    ],
+    [
+     "COMPET_FACT_EXRATE",
+     "COMPET_REP"
+    ],
+    [
+     "COMPET_ULC",
+     "COMPET_REP"
+    ],
+    [
+     "COMPET_ULC",
+     "COMPET_BENEFITS"
+    ],
+    [
+     "CA_DEFICIT_CAUSE_COMPET",
+     "COMPET_PROBLEMS"
+    ],
+    [
+     "COMPET_REP",
+     "COMPET_BENEFITS"
+    ],
+    [
+     "COMPET_FACT_INNOVATION",
+     "COMPET_BENEFITS"
+    ],
+    [
+     "COMPET_FACT_REGULATION",
+     "COMPET_BENEFITS"
+    ],
+    [
+     "COMPET_BENEFITS",
+     "COMPET_PROBLEMS"
+    ],
+    [
+     "CA_DEFICIT_CAUSE_COMPET",
+     "COMPET_PROBLEMS"
+    ]
+   ]
+  }
+ ]
+}

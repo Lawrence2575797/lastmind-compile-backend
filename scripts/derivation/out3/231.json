@@ -1,0 +1,207 @@
+{
+ "id": "gen",
+ "subject": "Economics",
+ "title": "Role of the state in the macroeconomy",
+ "terms": {
+  "capex": {
+   "label": "Capital expenditure"
+  },
+  "curex": {
+   "label": "Current expenditure"
+  },
+  "transfer": {
+   "label": "Transfer payments"
+  },
+  "GOV_SPEND_TYPES": {
+   "label": "Types of public expenditure"
+  },
+  "SPEND_CHANGE_REASONS": {
+   "label": "Reasons spending changes"
+  },
+  "CROWDING_OUT_RESOURCE": {
+   "label": "Resource crowding out"
+  },
+  "CROWDING_OUT_FINANCIAL": {
+   "label": "Financial crowding out"
+  },
+  "SPEND_PROD_GROWTH": {
+   "label": "Spending, productivity and growth"
+  },
+  "GDP_DEF": {
+   "label": "GDP: definition (total value of output/income/expenditure in an economy)"
+  },
+  "G_COMP": {
+   "label": "Government expenditure (G) as a component of AD"
+  }
+ },
+ "stages": [
+  {
+   "name": "Role of the state in the macroeconomy",
+   "title": "Role of the state in the macroeconomy",
+   "sub": "How the way government spends, and how much it spends, shapes the private sector and growth.",
+   "steps": [
+    {
+     "type": "ask",
+     "q": "A government builds a new motorway that will be used for 40 years. Is that spending used up this year, or does it build something lasting?",
+     "right": "It builds something lasting",
+     "wrong": "It is used up this year",
+     "hint": "Think about how long the motorway will still be useful.",
+     "pre": "Spending on long-lasting assets like roads and hospitals is",
+     "term": "capex"
+    },
+    {
+     "type": "ask",
+     "q": "The government pays nurses' wages and buys medicines this month. Will this spending need repeating next month too?",
+     "right": "Yes, it recurs every period",
+     "wrong": "No, it is a one-off purchase",
+     "hint": "Compare paying wages this month to building a motorway once.",
+     "pre": "Spending on the day-to-day running of public services is",
+     "term": "curex"
+    },
+    {
+     "type": "ask",
+     "q": "A pensioner receives a state pension payment. Does the government get any good or service in exchange for this money?",
+     "right": "No, nothing is produced in return",
+     "wrong": "Yes, it buys a service from them",
+     "hint": "Compare this to paying a nurse's wage, where a service is provided back.",
+     "pre": "Payments made with nothing produced in return are",
+     "term": "transfer"
+    },
+    {
+     "type": "ask",
+     "q": "You already know government spending (G) is part of AD. Building roads, running hospitals and paying pensions all count as G, but do they affect the economy in the same way?",
+     "right": "No, each type works differently",
+     "wrong": "Yes, they all work identically",
+     "hint": "A road adds to the capital stock, wages pay for services, pensions just move income around.",
+     "pre": "So economists split G into these",
+     "term": "GOV_SPEND_TYPES"
+    },
+    {
+     "type": "order",
+     "terms": [
+      "capex",
+      "curex",
+      "transfer",
+      "GOV_SPEND_TYPES"
+     ],
+     "prompt": "Drag and drop the 4 key terms in the order they build on each other."
+    },
+    {
+     "type": "ask",
+     "q": "A country's population is ageing fast and world trade is disrupted by a pandemic. Would you expect its mix of capital, current and transfer spending to stay fixed forever?",
+     "right": "No, the mix would need to change",
+     "wrong": "Yes, the mix stays the same",
+     "hint": "More pensioners and health spending needs, plus global shocks, both press on the budget.",
+     "pre": "So the size and composition of public expenditure change for these",
+     "term": "SPEND_CHANGE_REASONS"
+    },
+    {
+     "type": "ask",
+     "q": "A government hires thousands of extra construction workers and buys huge amounts of steel and cement for a new rail line. Are these workers and materials now available for private building firms to use?",
+     "right": "No, less is available for private firms",
+     "wrong": "Yes, private firms can still use the same amount",
+     "hint": "Workers and steel are finite. If government takes more, how much is left for others?",
+     "pre": "So government use of finite resources displaces private activity: this is",
+     "term": "CROWDING_OUT_RESOURCE"
+    },
+    {
+     "type": "ask",
+     "q": "A government borrows heavily to fund its spending, competing with firms for funds in the loans market. What tends to happen to the interest rate firms must pay to borrow?",
+     "right": "It rises",
+     "wrong": "It falls",
+     "hint": "More borrowers chasing the same pool of savings pushes the price of borrowing up.",
+     "pre": "Higher rates discourage firms from investing: this is financial",
+     "term": "CROWDING_OUT_FINANCIAL"
+    },
+    {
+     "type": "ask",
+     "q": "If higher government borrowing pushes up interest rates and private firms invest less in new machinery, what happens to the economy's ability to produce more in future?",
+     "right": "It grows more slowly",
+     "wrong": "It is unaffected",
+     "hint": "Less private investment means less new capital being added over time.",
+     "pre": "So a large public expenditure to GDP ratio can weaken future",
+     "term": "SPEND_PROD_GROWTH"
+    },
+    {
+     "type": "order",
+     "terms": [
+      "SPEND_CHANGE_REASONS",
+      "CROWDING_OUT_RESOURCE",
+      "CROWDING_OUT_FINANCIAL",
+      "SPEND_PROD_GROWTH"
+     ],
+     "prompt": "Drag and drop the 4 key terms in the order they build on each other."
+    },
+    {
+     "type": "derive"
+    }
+   ],
+   "given": [
+    "GDP_DEF",
+    "G_COMP"
+   ],
+   "needs": [
+    "GDP_DEF",
+    "G_COMP"
+   ],
+   "builds": [
+    "GDP_DEF",
+    "G_COMP"
+   ],
+   "nodes": [
+    "GOV_SPEND_TYPES",
+    "SPEND_CHANGE_REASONS",
+    "CROWDING_OUT_RESOURCE",
+    "CROWDING_OUT_FINANCIAL",
+    "SPEND_PROD_GROWTH"
+   ],
+   "dropped": [],
+   "edges": [
+    [
+     "GOV_SPEND_TYPES",
+     "SPEND_CHANGE_REASONS"
+    ],
+    [
+     "GOV_SPEND_TYPES",
+     "SPEND_PROD_GROWTH"
+    ],
+    [
+     "GOV_SPEND_TYPES",
+     "CROWDING_OUT_RESOURCE"
+    ],
+    [
+     "GOV_SPEND_TYPES",
+     "CROWDING_OUT_FINANCIAL"
+    ],
+    [
+     "CROWDING_OUT_FINANCIAL",
+     "SPEND_PROD_GROWTH"
+    ],
+    [
+     "GDP_DEF",
+     "SPEND_PROD_GROWTH"
+    ],
+    [
+     "G_COMP",
+     "GOV_SPEND_TYPES"
+    ],
+    [
+     "capex",
+     "GOV_SPEND_TYPES"
+    ],
+    [
+     "curex",
+     "GOV_SPEND_TYPES"
+    ],
+    [
+     "transfer",
+     "GOV_SPEND_TYPES"
+    ],
+    [
+     "G_COMP",
+     "GOV_SPEND_TYPES"
+    ]
+   ]
+  }
+ ]
+}

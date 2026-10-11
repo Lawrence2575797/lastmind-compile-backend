@@ -1,0 +1,133 @@
+{
+ "id": "gen",
+ "subject": "Economics",
+ "title": "RPI and CPI",
+ "terms": {
+  "basket_diff": {
+   "label": "Different basket"
+  },
+  "avg_method": {
+   "label": "Averaging method"
+  },
+  "RPI_DEF": {
+   "label": "Retail Prices Index"
+  },
+  "RPI_CPI_DIFFERENCES": {
+   "label": "RPI vs CPI differences"
+  },
+  "CPI_INDEX_CALC": {
+   "label": "Calculating CPI"
+  },
+  "CPI_LIMIT_HOUSING": {
+   "label": "Housing costs excluded"
+  }
+ },
+ "stages": [
+  {
+   "name": "RPI and CPI",
+   "title": "RPI and CPI",
+   "sub": "How the Retail Prices Index differs from the CPI as a way of tracking prices.",
+   "steps": [
+    {
+     "type": "ask",
+     "q": "CPI leaves out mortgage interest and council tax. Would an index that included them track exactly the same prices as CPI?",
+     "right": "No, it would track a different set of prices",
+     "wrong": "Yes, it would end up identical to the CPI",
+     "hint": "Adding in housing costs that CPI excludes changes what is being measured.",
+     "pre": "So an older, separate measure that does include those housing costs is called the",
+     "term": "RPI_DEF"
+    },
+    {
+     "type": "ask",
+     "q": "If RPI and CPI survey somewhat different households and items, will they weigh exactly the same things?",
+     "right": "No, they weigh different items",
+     "wrong": "Yes, they weigh identical items",
+     "hint": "Different coverage of households and spending means different items get weighted in.",
+     "pre": "So one difference between them is that RPI covers",
+     "term": "basket_diff"
+    },
+    {
+     "type": "ask",
+     "q": "CPI and RPI average prices with different methods. Tracking the same price rises, will they give exactly the same result?",
+     "right": "No, the result will differ slightly",
+     "wrong": "Yes, the sums always cancel out",
+     "hint": "Two different types of average applied to the same numbers rarely produce the same answer.",
+     "pre": "So another difference between them is the",
+     "term": "avg_method"
+    },
+    {
+     "type": "order",
+     "terms": [
+      "RPI_DEF",
+      "basket_diff",
+      "avg_method"
+     ],
+     "prompt": "Drag and drop the 3 key terms in the order they build on each other."
+    },
+    {
+     "type": "ask",
+     "q": "RPI includes housing costs CPI excludes, covers different items and averages differently. Do they usually report the same inflation rate?",
+     "right": "No, they usually give different rates",
+     "wrong": "Yes, they always match exactly",
+     "hint": "Three separate causes of difference were just identified: housing, coverage, and the method of averaging.",
+     "pre": "Put together, these causes explain the",
+     "term": "RPI_CPI_DIFFERENCES"
+    },
+    {
+     "type": "derive"
+    }
+   ],
+   "given": [
+    "CPI_INDEX_CALC",
+    "CPI_LIMIT_HOUSING"
+   ],
+   "needs": [
+    "CPI_INDEX_CALC",
+    "CPI_LIMIT_HOUSING"
+   ],
+   "builds": [
+    "CPI_INDEX_CALC",
+    "CPI_LIMIT_HOUSING"
+   ],
+   "nodes": [
+    "RPI_DEF",
+    "RPI_CPI_DIFFERENCES"
+   ],
+   "dropped": [],
+   "edges": [
+    [
+     "RPI_DEF",
+     "RPI_CPI_DIFFERENCES"
+    ],
+    [
+     "CPI_INDEX_CALC",
+     "RPI_DEF"
+    ],
+    [
+     "CPI_LIMIT_HOUSING",
+     "RPI_CPI_DIFFERENCES"
+    ],
+    [
+     "RPI_DEF",
+     "basket_diff"
+    ],
+    [
+     "RPI_DEF",
+     "avg_method"
+    ],
+    [
+     "basket_diff",
+     "RPI_CPI_DIFFERENCES"
+    ],
+    [
+     "avg_method",
+     "RPI_CPI_DIFFERENCES"
+    ],
+    [
+     "CPI_LIMIT_HOUSING",
+     "RPI_CPI_DIFFERENCES"
+    ]
+   ]
+  }
+ ]
+}

@@ -1,0 +1,181 @@
+{
+ "id": "gen",
+ "subject": "Economics",
+ "title": "Labour market: supply factors and immobility",
+ "terms": {
+  "factor_population": {
+   "label": "Population size/structure"
+  },
+  "factor_trade_unions": {
+   "label": "Trade union barriers"
+  },
+  "factor_gov_policy": {
+   "label": "Government policy"
+  },
+  "geo_immobility": {
+   "label": "Geographical immobility"
+  },
+  "occ_immobility": {
+   "label": "Occupational immobility"
+  },
+  "barrier_entry": {
+   "label": "Barrier to entry"
+  },
+  "immobility": {
+   "label": "Immobility of labour"
+  },
+  "supply_def": {
+   "label": "Supply"
+  },
+  "factor_qualifications": {
+   "label": "Qualifications barrier"
+  }
+ },
+ "stages": [
+  {
+   "name": "Labour market: supply factors and immobility",
+   "title": "Labour market: supply factors and immobility",
+   "sub": "Explain why the supply of labour to a job or area can be limited, and why workers cannot always move to where jobs are.",
+   "steps": [
+    {
+     "type": "ask",
+     "q": "A country has a rise in working-age migrants arriving and settling. What happens to the number of people available to work?",
+     "right": "It rises",
+     "wrong": "It stays the same",
+     "hint": "More working-age people in the country means more potential workers.",
+     "pre": "The number and age make-up of people available to work is a labour supply factor: the",
+     "term": "factor_population"
+    },
+    {
+     "type": "ask",
+     "q": "Electricians must complete years of training before they can legally practise. Does this training requirement make it easy or hard for new people to start working as electricians?",
+     "right": "It makes it harder to start",
+     "wrong": "It makes no difference either way",
+     "hint": "Think about someone with no training trying to become an electrician tomorrow.",
+     "pre": "A requirement that limits who can enter a job is a",
+     "term": "barrier_entry"
+    },
+    {
+     "type": "ask",
+     "q": "On top of the training requirement, a union now refuses to let new electricians join easily. What happens to the number of people able to supply their labour as electricians?",
+     "right": "It stays lower than it otherwise would be",
+     "wrong": "It rises to match demand for electricians",
+     "hint": "Qualifications already restrict entry. Does an extra restriction on joining make entry easier or harder?",
+     "pre": "Restrictions on joining a union, adding to that barrier, are the labour supply factor:",
+     "term": "factor_trade_unions"
+    },
+    {
+     "type": "ask",
+     "q": "Benefits are cut and income tax is lowered for low earners. Would more or fewer people be willing to take a job now?",
+     "right": "More people would be willing to work",
+     "wrong": "The same number would be willing to work",
+     "hint": "Think about how much better off someone is now from working versus not working.",
+     "pre": "Taxes and benefits changing people's incentive to work is the labour supply factor:",
+     "term": "factor_gov_policy"
+    },
+    {
+     "type": "order",
+     "terms": [
+      "factor_population",
+      "barrier_entry",
+      "factor_trade_unions",
+      "factor_gov_policy"
+     ],
+     "prompt": "Drag and drop the 4 key terms in the order they build on each other."
+    },
+    {
+     "type": "ask",
+     "q": "A factory worker in Newcastle is offered a job in London, but rents there are far higher and their family lives near Newcastle. Can they easily take the job?",
+     "right": "No, moving is difficult for them",
+     "wrong": "Yes, they can move without any problem",
+     "hint": "Think about what is stopping them physically relocating, even though they want the job.",
+     "pre": "Being unable to move between areas for reasons like housing costs and family ties is",
+     "term": "geo_immobility"
+    },
+    {
+     "type": "ask",
+     "q": "A coal miner loses their job when the mine closes. They have no training in other fields and struggle to get interviews in new industries. Can they simply switch into a different occupation straight away?",
+     "right": "No, their skills do not transfer to other jobs",
+     "wrong": "Yes, they can switch occupation easily",
+     "hint": "Think about whether their existing skills are useful in a different type of job.",
+     "pre": "Being unable to move between occupations because of mismatched or non-transferable skills is",
+     "term": "occ_immobility"
+    },
+    {
+     "type": "ask",
+     "q": "Both workers want a job but cannot get to it or into it, one blocked by distance and cost, the other by mismatched skills. What do these two problems both show about labour?",
+     "right": "Labour cannot move freely to where it is needed",
+     "wrong": "Labour always moves freely to where it is needed",
+     "hint": "Think about what the Newcastle worker and the ex-miner have in common: are either of them able to move into the job on offer?",
+     "pre": "Together these are causes of the",
+     "term": "immobility"
+    },
+    {
+     "type": "derive"
+    }
+   ],
+   "given": [
+    "supply_def",
+    "factor_qualifications"
+   ],
+   "needs": [
+    "supply_def",
+    "factor_qualifications"
+   ],
+   "builds": [
+    "supply_def",
+    "factor_qualifications"
+   ],
+   "nodes": [
+    "factor_population",
+    "factor_trade_unions",
+    "factor_gov_policy",
+    "geo_immobility",
+    "occ_immobility"
+   ],
+   "dropped": [],
+   "edges": [
+    [
+     "supply_def",
+     "factor_population"
+    ],
+    [
+     "supply_def",
+     "factor_trade_unions"
+    ],
+    [
+     "supply_def",
+     "factor_gov_policy"
+    ],
+    [
+     "factor_qualifications",
+     "occ_immobility"
+    ],
+    [
+     "supply_def",
+     "geo_immobility"
+    ],
+    [
+     "supply_def",
+     "factor_population"
+    ],
+    [
+     "factor_qualifications",
+     "barrier_entry"
+    ],
+    [
+     "barrier_entry",
+     "factor_trade_unions"
+    ],
+    [
+     "geo_immobility",
+     "immobility"
+    ],
+    [
+     "occ_immobility",
+     "immobility"
+    ]
+   ]
+  }
+ ]
+}

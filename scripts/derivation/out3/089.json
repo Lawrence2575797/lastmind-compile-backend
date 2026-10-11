@@ -1,0 +1,254 @@
+{
+ "id": "gen",
+ "subject": "Economics",
+ "title": "Supply-side policy: infrastructure and its effects",
+ "terms": {
+  "SSP_INFRASTRUCTURE": {
+   "label": "Improving infrastructure"
+  },
+  "SSP_AD_AS_DIAGRAM": {
+   "label": "LRAS shift diagram"
+  },
+  "SSP_ADV_LONGRUN_GROWTH": {
+   "label": "Raises long-run growth"
+  },
+  "SSP_ADV_COMPETITIVENESS": {
+   "label": "Improves competitiveness"
+  },
+  "SSP_ADV_REDUCE_UNEMP": {
+   "label": "Reduces structural unemployment"
+  },
+  "SSP_DISTINCTION": {
+   "label": "Market-based vs interventionist SSP"
+  },
+  "AD_AS_BASE": {
+   "label": "AD/AS diagram"
+  },
+  "SSP_INCENTIVES": {
+   "label": "Increasing incentives"
+  },
+  "SSP_COMPETITION": {
+   "label": "Promoting competition"
+  },
+  "SSP_LABOUR_REFORM": {
+   "label": "Supply-side policy: reforming the labour market (e.g. trade union reform, minimum wage changes)"
+  },
+  "SSP_SKILLS": {
+   "label": "Supply-side policy: improving skills and quality of the labour force (education/training)"
+  },
+  "OBJ_GROWTH": {
+   "label": "Macroeconomic objective: economic growth"
+  },
+  "OBJ_INFLATION_LOW": {
+   "label": "Macroeconomic objective: low rate of inflation"
+  },
+  "OBJ_BOP": {
+   "label": "Macroeconomic objective: balance of payments equilibrium on current account"
+  },
+  "OBJ_UNEMP": {
+   "label": "Macroeconomic objective: low unemployment"
+  }
+ },
+ "stages": [
+  {
+   "name": "Supply-side policy: infrastructure and its effects",
+   "title": "Supply-side policy: infrastructure and its effects",
+   "sub": "Explain how improving infrastructure shifts LRAS and evaluate the resulting benefits.",
+   "steps": [
+    {
+     "type": "ask",
+     "q": "A government spends billions building new motorways, ports and broadband networks over ten years. Is this the government using markets and price signals, or stepping in directly to build capacity itself?",
+     "right": "Stepping in directly to build capacity itself",
+     "wrong": "Using markets and price signals to encourage firms",
+     "hint": "Think about who is doing the building here: private firms responding to prices, or the state itself.",
+     "pre": "So this is a government directly boosting the economy's capacity by",
+     "term": "SSP_INFRASTRUCTURE"
+    },
+    {
+     "type": "ask",
+     "q": "With better roads and faster broadband, firms can produce more output from the same workers and machines, at every price level. On an AD/AS diagram, which curve captures the economy's maximum possible output?",
+     "right": "The long-run aggregate supply curve",
+     "wrong": "The aggregate demand curve",
+     "hint": "You are asking about the economy's productive capacity, not how much people want to buy.",
+     "pre": "So better infrastructure is shown as a rightward shift of the",
+     "term": "SSP_AD_AS_DIAGRAM",
+     "diagram": {
+      "x": "Real output",
+      "y": "Price level",
+      "curves": [
+       {
+        "label": "AD",
+        "pts": [
+         [
+          0.1,
+          0.85
+         ],
+         [
+          0.5,
+          0.5
+         ],
+         [
+          0.9,
+          0.15
+         ]
+        ]
+       },
+       {
+        "label": "LRAS1",
+        "pts": [
+         [
+          0.4,
+          0.05
+         ],
+         [
+          0.4,
+          0.5
+         ],
+         [
+          0.4,
+          0.95
+         ]
+        ]
+       },
+       {
+        "label": "LRAS2",
+        "pts": [
+         [
+          0.6,
+          0.05
+         ],
+         [
+          0.6,
+          0.5
+         ],
+         [
+          0.6,
+          0.95
+         ]
+        ]
+       }
+      ]
+     }
+    },
+    {
+     "type": "ask",
+     "q": "After LRAS shifts right, the economy can produce more output year after year without prices rising as fast as before. What has happened to the maximum sustainable rate the economy can grow at?",
+     "right": "It has risen, without extra inflationary pressure",
+     "wrong": "It has fallen, causing higher inflation",
+     "hint": "A bigger productive capacity means more can be produced before shortages push prices up.",
+     "pre": "So a key strength is that it",
+     "term": "SSP_ADV_LONGRUN_GROWTH"
+    },
+    {
+     "type": "ask",
+     "q": "Cheaper, faster transport and communication mean UK firms can move goods and information more cheaply than firms in other countries. What does this do to UK firms' costs compared with foreign rivals?",
+     "right": "It lowers their costs relative to foreign rivals",
+     "wrong": "It raises their costs relative to foreign rivals",
+     "hint": "If it is cheaper to move goods and data at home, how do UK firms' costs compare to abroad?",
+     "pre": "So another strength is that it",
+     "term": "SSP_ADV_COMPETITIVENESS"
+    },
+    {
+     "type": "order",
+     "terms": [
+      "SSP_INFRASTRUCTURE",
+      "SSP_AD_AS_DIAGRAM",
+      "SSP_ADV_LONGRUN_GROWTH",
+      "SSP_ADV_COMPETITIVENESS"
+     ],
+     "prompt": "Drag and drop the 4 key terms in the order they build on each other."
+    },
+    {
+     "type": "ask",
+     "q": "New infrastructure projects need workers with construction, engineering and digital skills in the regions being built up. What happens to workers who were previously unemployed because their skills or location did not match available jobs?",
+     "right": "Some can now find work that matches their skills or area",
+     "wrong": "They remain unemployed regardless of the projects",
+     "hint": "Structural unemployment happens when skills or location do not match jobs. Does building new capacity in an area change that mismatch?",
+     "pre": "So a further strength is that it",
+     "term": "SSP_ADV_REDUCE_UNEMP"
+    },
+    {
+     "type": "derive"
+    }
+   ],
+   "given": [
+    "SSP_DISTINCTION",
+    "AD_AS_BASE",
+    "SSP_INCENTIVES",
+    "SSP_COMPETITION"
+   ],
+   "needs": [
+    "SSP_DISTINCTION",
+    "AD_AS_BASE",
+    "SSP_INCENTIVES",
+    "SSP_COMPETITION",
+    "SSP_LABOUR_REFORM",
+    "SSP_SKILLS",
+    "OBJ_GROWTH",
+    "OBJ_INFLATION_LOW",
+    "OBJ_BOP",
+    "OBJ_UNEMP"
+   ],
+   "builds": [
+    "SSP_DISTINCTION",
+    "AD_AS_BASE",
+    "SSP_INCENTIVES",
+    "SSP_COMPETITION"
+   ],
+   "nodes": [
+    "SSP_INFRASTRUCTURE",
+    "SSP_AD_AS_DIAGRAM",
+    "SSP_ADV_LONGRUN_GROWTH",
+    "SSP_ADV_COMPETITIVENESS",
+    "SSP_ADV_REDUCE_UNEMP"
+   ],
+   "dropped": [],
+   "edges": [
+    [
+     "SSP_INFRASTRUCTURE",
+     "SSP_AD_AS_DIAGRAM"
+    ],
+    [
+     "SSP_AD_AS_DIAGRAM",
+     "SSP_ADV_LONGRUN_GROWTH"
+    ],
+    [
+     "SSP_DISTINCTION",
+     "SSP_INFRASTRUCTURE"
+    ],
+    [
+     "AD_AS_BASE",
+     "SSP_AD_AS_DIAGRAM"
+    ],
+    [
+     "SSP_INCENTIVES",
+     "SSP_AD_AS_DIAGRAM"
+    ],
+    [
+     "SSP_COMPETITION",
+     "SSP_AD_AS_DIAGRAM"
+    ],
+    [
+     "SSP_COMPETITION",
+     "SSP_ADV_COMPETITIVENESS"
+    ],
+    [
+     "SSP_DISTINCTION",
+     "SSP_INFRASTRUCTURE"
+    ],
+    [
+     "AD_AS_BASE",
+     "SSP_AD_AS_DIAGRAM"
+    ],
+    [
+     "SSP_INCENTIVES",
+     "SSP_ADV_REDUCE_UNEMP"
+    ],
+    [
+     "SSP_COMPETITION",
+     "SSP_ADV_COMPETITIVENESS"
+    ]
+   ]
+  }
+ ]
+}

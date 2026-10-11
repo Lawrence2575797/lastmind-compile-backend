@@ -207,13 +207,13 @@ button { font: inherit; color: inherit; }
     ],
     "finres": [
      291,
-     310,
+     220,
      164,
      56
     ],
     "fings": [
      551,
-     310,
+     220,
      224,
      64
     ],
@@ -225,7 +225,7 @@ button { font: inherit; color: inherit; }
     ],
     "scarcity": [
      870,
-     400,
+     310,
      130,
      56
     ]
@@ -233,32 +233,56 @@ button { font: inherit; color: inherit; }
    "edges": [
     [
      [
-      105,
-      96
+      170,
+      68
      ],
      [
-      105,
-      130
+      273,
+      68
+     ],
+     [
+      273,
+      230
+     ],
+     [
+      291,
+      230
      ]
     ],
     [
      [
-      105,
-      186
+      170,
+      158
      ],
      [
-      105,
-      220
+      261,
+      158
+     ],
+     [
+      261,
+      242
+     ],
+     [
+      291,
+      242
      ]
     ],
     [
      [
-      105,
-      276
+      170,
+      248
      ],
      [
-      105,
-      310
+      249,
+      248
+     ],
+     [
+      249,
+      254
+     ],
+     [
+      291,
+      254
      ]
     ],
     [
@@ -267,44 +291,52 @@ button { font: inherit; color: inherit; }
       338
      ],
      [
-      291,
+      237,
       338
+     ],
+     [
+      237,
+      266
+     ],
+     [
+      291,
+      266
      ]
     ],
     [
      [
       455,
-      338
+      248
      ],
      [
       533,
-      338
+      248
      ],
      [
       533,
-      342
+      252
      ],
      [
       551,
-      342
+      252
      ]
     ],
     [
      [
       775,
-      342
+      252
      ],
      [
       852,
-      342
+      252
      ],
      [
       852,
-      422
+      332
      ],
      [
       870,
-      422
+      332
      ]
     ],
     [
@@ -318,11 +350,11 @@ button { font: inherit; color: inherit; }
      ],
      [
       840,
-      434
+      344
      ],
      [
       870,
-      434
+      344
      ]
     ]
    ],
@@ -1053,6 +1085,7 @@ button { font: inherit; color: inherit; }
   function buildAsk(step) {
     var wrap = stack('<div class="eyebrow">What follows?</div><p class="big">' + step.q + '</p>');
     if (step.fig && typeof miniFigure === 'function') wrap.appendChild(miniFigure(step.fig));
+    if (step.diagram) wrap.appendChild(diagramEl(step.diagram));
     var opts = el('div', 'opts'), note = el('div', 'note'), out = el('div', 'reveal'); out.hidden = true;
     (Math.random() < 0.5 ? [0, 1] : [1, 0]).forEach(function (i) {
       var b = el('button', 'opt', step.opts[i]); b.type = 'button';
@@ -1225,6 +1258,49 @@ button { font: inherit; color: inherit; }
     var io = new IntersectionObserver(function (es) { es.forEach(function (e) { if (e.isIntersecting && e.intersectionRatio > 0.6 && !done) { done = true; io.disconnect(); next(false); } }); }, { root: feed, threshold: [0.6] });
     io.observe(s);
   }
+  /* ---- a small economics diagram, drawn from data: labelled axes, up to three curves through given points, labelled points, dashed guides.
+     Coordinates are 0 to 1 on both axes. Used by any question that carries a "diagram". ---- */
+  function diagramEl(d) {
+    var box = el('div', 'svgwrap'), svg = document.createElementNS(NS, 'svg'), ox = 70, oy = 340, W = 430, H = 290;
+    box.appendChild(svg); svg.setAttribute('viewBox', '0 0 560 400'); svg.setAttribute('class', 'dia');
+    function px(x, y) { return [ox + W * x, oy - H * y]; }
+    for (var i = 1; i <= 4; i++) {
+      svgEl('line', { x1: ox, x2: ox + W + 20, y1: oy - (H / 4) * i, y2: oy - (H / 4) * i, class: 'dgrid' }, svg);
+      svgEl('line', { y1: oy, y2: oy - H - 20, x1: ox + (W / 4) * i, x2: ox + (W / 4) * i, class: 'dgrid' }, svg);
+    }
+    svgEl('line', { x1: ox, y1: oy, x2: ox + W + 34, y2: oy, class: 'dax' }, svg);
+    svgEl('line', { x1: ox, y1: oy, x2: ox, y2: oy - H - 34, class: 'dax' }, svg);
+    var xl = svgEl('text', { x: ox + W / 2, y: oy + 44, class: 'dlab', 'text-anchor': 'middle' }, svg); xl.textContent = d.x;
+    var yl = svgEl('text', { x: 22, y: oy - H / 2, class: 'dlab', 'text-anchor': 'middle', transform: 'rotate(-90 22 ' + (oy - H / 2) + ')' }, svg); yl.textContent = d.y;
+    function smooth(pts) {
+      var p = pts.map(function (q) { return px(q[0], q[1]); });
+      if (p.length === 2) return 'M' + p[0][0] + ',' + p[0][1] + 'L' + p[1][0] + ',' + p[1][1];
+      var s = 'M' + p[0][0].toFixed(1) + ',' + p[0][1].toFixed(1);
+      for (var k = 0; k < p.length - 1; k++) {
+        var a = p[k - 1] || p[k], b = p[k], c = p[k + 1], e = p[k + 2] || c;
+        s += 'C' + (b[0] + (c[0] - a[0]) / 6).toFixed(1) + ',' + (b[1] + (c[1] - a[1]) / 6).toFixed(1) + ' ' + (c[0] - (e[0] - b[0]) / 6).toFixed(1) + ',' + (c[1] - (e[1] - b[1]) / 6).toFixed(1) + ' ' + c[0].toFixed(1) + ',' + c[1].toFixed(1);
+      }
+      return s;
+    }
+    (d.curves || []).forEach(function (c, i) {
+      var path = svgEl('path', { d: smooth(c.pts), class: 'dcurve' + (i ? ' mine' : '') }, svg);
+      if (c.dashed) path.setAttribute('stroke-dasharray', '9 7');
+      var end = px(c.pts[c.pts.length - 1][0], c.pts[c.pts.length - 1][1]);
+      var t = svgEl('text', { x: end[0] + 8, y: end[1] - 8, class: 'dlab' }, svg); t.textContent = c.label;
+    });
+    (d.points || []).forEach(function (p) {
+      var q = px(p.x, p.y);
+      if (p.guides) {
+        svgEl('line', { x1: ox, y1: q[1], x2: q[0], y2: q[1], class: 'dgrid', 'stroke-dasharray': '5 5', style: 'stroke: var(--muted)' }, svg);
+        svgEl('line', { x1: q[0], y1: oy, x2: q[0], y2: q[1], class: 'dgrid', 'stroke-dasharray': '5 5', style: 'stroke: var(--muted)' }, svg);
+      }
+      var g = svgEl('g', { class: 'dpt ' + (p.style || '') }, svg);
+      svgEl('circle', { cx: q[0], cy: q[1], r: 7 }, g);
+      var t = svgEl('text', { x: q[0] + 14, y: q[1] - 10, class: 'dlab' }, g); t.textContent = p.label;
+    });
+    return box;
+  }
+
   /* ---- the economics drawing tool: axes, an animated example, and a curve the student draws ---- */
   var PX = { ox: 70, oy: 340, W: 430, H: 290 };
   function ppfPoint(t, u) { return [PX.ox + PX.W * t, PX.oy - PX.H * u]; }

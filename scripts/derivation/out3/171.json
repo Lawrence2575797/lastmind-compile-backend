@@ -1,0 +1,135 @@
+{
+ "id": "gen",
+ "subject": "Economics",
+ "title": "Comparative advantage and trade patterns",
+ "terms": {
+  "speclow": {
+   "label": "Specialising in low-cost goods"
+  },
+  "exportgood": {
+   "label": "Export good"
+  },
+  "importgood": {
+   "label": "Import good"
+  },
+  "tradepartner": {
+   "label": "Trade partner choice"
+  },
+  "TRADE_PATTERN_COMPADV": {
+   "label": "Comparative advantage & trade patterns"
+  },
+  "COMP_ADV_NUM": {
+   "label": "Comparative advantage"
+  }
+ },
+ "stages": [
+  {
+   "name": "Comparative advantage and trade patterns",
+   "title": "Comparative advantage and trade patterns",
+   "sub": "Why countries end up trading the particular goods they do, with the particular partners they do.",
+   "steps": [
+    {
+     "type": "ask",
+     "q": "You worked out that Vietnam gives up less to produce a tonne of rice than the UK does, while the UK gives up less to produce a tonne of cars. If both countries want to gain from trade, what should Vietnam do with its production?",
+     "right": "Focus on producing rice",
+     "wrong": "Try to produce both equally",
+     "hint": "Which good does Vietnam sacrifice least to make?",
+     "pre": "Vietnam should put its resources into",
+     "term": "speclow"
+    },
+    {
+     "type": "ask",
+     "q": "Vietnam now produces far more rice than it needs at home. What does it do with the surplus?",
+     "right": "Sell it to other countries",
+     "wrong": "Store it for future domestic use only",
+     "hint": "If a country makes more of something than it consumes, where does the rest go?",
+     "pre": "Rice becomes Vietnam's",
+     "term": "exportgood"
+    },
+    {
+     "type": "ask",
+     "q": "Vietnam has stopped producing many cars because the UK produces them at lower opportunity cost. Where do Vietnam's cars now come from?",
+     "right": "Bought in from the UK",
+     "wrong": "Built at home instead",
+     "hint": "If Vietnam no longer specialises in cars, but still wants them, what must happen?",
+     "pre": "Cars become Vietnam's",
+     "term": "importgood"
+    },
+    {
+     "type": "ask",
+     "q": "Suppose Thailand also has a low opportunity cost in rice, similar to Vietnam's. Would the UK gain much by buying its cars-for-rice trade specifically with Thailand rather than Vietnam?",
+     "right": "No, either country would do fine",
+     "wrong": "Yes, only Vietnam would do fine",
+     "hint": "What matters is the opposite side's opportunity cost, not the country's name.",
+     "pre": "So who a country trades with depends on relative costs, shaping",
+     "term": "tradepartner"
+    },
+    {
+     "type": "order",
+     "terms": [
+      "speclow",
+      "exportgood",
+      "importgood",
+      "tradepartner"
+     ],
+     "prompt": "Drag and drop the 4 key terms in the order they build on each other."
+    },
+    {
+     "type": "ask",
+     "q": "Countries tend to export the goods they produce at low opportunity cost, and import the goods other countries produce more cheaply in opportunity-cost terms. If every country does this, what does world trade look like?",
+     "right": "Each country's exports are its cheapest goods",
+     "wrong": "Each country exports and imports at random",
+     "hint": "Think about the big picture that all the specialising, exporting and importing adds up to.",
+     "pre": "This overall picture is",
+     "term": "TRADE_PATTERN_COMPADV"
+    },
+    {
+     "type": "derive"
+    }
+   ],
+   "given": [
+    "COMP_ADV_NUM"
+   ],
+   "needs": [
+    "COMP_ADV_NUM"
+   ],
+   "builds": [
+    "COMP_ADV_NUM"
+   ],
+   "nodes": [
+    "TRADE_PATTERN_COMPADV"
+   ],
+   "dropped": [],
+   "edges": [
+    [
+     "COMP_ADV_NUM",
+     "TRADE_PATTERN_COMPADV"
+    ],
+    [
+     "COMP_ADV_NUM",
+     "speclow"
+    ],
+    [
+     "speclow",
+     "exportgood"
+    ],
+    [
+     "speclow",
+     "importgood"
+    ],
+    [
+     "exportgood",
+     "tradepartner"
+    ],
+    [
+     "importgood",
+     "tradepartner"
+    ],
+    [
+     "tradepartner",
+     "TRADE_PATTERN_COMPADV"
+    ]
+   ]
+  }
+ ]
+}

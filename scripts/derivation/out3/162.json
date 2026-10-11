@@ -1,0 +1,194 @@
+{
+ "id": "gen",
+ "subject": "Economics",
+ "title": "Globalisation, trade patterns and RTAs",
+ "terms": {
+  "winners_losers": {
+   "label": "Winners and losers"
+  },
+  "wage_gap": {
+   "label": "Wage gap between groups"
+  },
+  "GLOB_IMPACT_COUNTRY_INEQ": {
+   "label": "Globalisation and inequality"
+  },
+  "china_effect": {
+   "label": "Low-cost manufacturing shift"
+  },
+  "TRADE_PATTERN_EMERGING": {
+   "label": "Emerging economies and trade patterns"
+  },
+  "fdi_def": {
+   "label": "Foreign direct investment"
+  },
+  "market_access": {
+   "label": "Guaranteed market access"
+  },
+  "RTA_BEN_INVESTMENT": {
+   "label": "RTAs raise FDI"
+  },
+  "GLOB_IMPACT_COUNTRY_GROWTH": {
+   "label": "Impact of globalisation: economic growth and development for countries"
+  }
+ },
+ "stages": [
+  {
+   "name": "Globalisation, trade patterns and RTAs",
+   "title": "Globalisation, trade patterns and RTAs",
+   "sub": "After this you can explain how globalisation creates inequality, how emerging economies reshape trade, and why trade agreements attract investment.",
+   "steps": [
+    {
+     "type": "ask",
+     "q": "A country opens up to trade. Its exporters boom and hire more staff, but its firms that competed with cheap imports shut down and lay off staff. Does globalisation help everyone in the country equally?",
+     "right": "No, some gain and some lose out",
+     "wrong": "Yes, growth means everyone benefits the same",
+     "hint": "Think about the exporters versus the firms facing new import competition.",
+     "pre": "So within a country there are",
+     "term": "winners_losers"
+    },
+    {
+     "type": "ask",
+     "q": "Globally, factories now favour workers with the skills to run automated, export-focused production, while low-skilled workers compete against cheap imports for jobs. What happens to the gap between what skilled and low-skilled workers earn?",
+     "right": "It tends to widen",
+     "wrong": "It tends to close",
+     "hint": "One group's skills are now in higher demand than before; the other group faces more competition.",
+     "pre": "So among workers there is a widening",
+     "term": "wage_gap"
+    },
+    {
+     "type": "ask",
+     "q": "Some countries and workers ride the export boom, others lose out to import competition, and skilled workers pull further ahead of unskilled ones. Does globalisation spread the gains evenly, between countries and within them?",
+     "right": "No, gaps widen both between and within countries",
+     "wrong": "Yes, gains spread evenly everywhere",
+     "hint": "Combine the country-level winners/losers with the skilled/unskilled wage gap.",
+     "pre": "This uneven spread of gains is",
+     "term": "GLOB_IMPACT_COUNTRY_INEQ"
+    },
+    {
+     "type": "ask",
+     "q": "A country with very low wages builds huge factories and starts making most of the world's phones and clothes, taking this production away from higher-wage countries. Does world manufacturing stay spread out the same way as before?",
+     "right": "No, it shifts towards the low-wage producer",
+     "wrong": "Yes, production stays evenly spread as before",
+     "hint": "Where would firms rather build factories if labour is much cheaper in one place?",
+     "pre": "So low-cost countries pull in",
+     "term": "china_effect"
+    },
+    {
+     "type": "order",
+     "terms": [
+      "winners_losers",
+      "wage_gap",
+      "GLOB_IMPACT_COUNTRY_INEQ",
+      "china_effect"
+     ],
+     "prompt": "Drag and drop the 4 key terms in the order they build on each other."
+    },
+    {
+     "type": "ask",
+     "q": "As manufacturing concentrates in low-wage countries, and gains from trade split unevenly between rich and poor nations, do the goods that each type of country exports and imports stay the same as 50 years ago?",
+     "right": "No, who exports what has changed a lot",
+     "wrong": "Yes, the same countries still export the same goods",
+     "hint": "Think about a country that used to import manufactured goods now exporting them instead.",
+     "pre": "This shift in who trades what is the",
+     "term": "TRADE_PATTERN_EMERGING"
+    },
+    {
+     "type": "ask",
+     "q": "A UK firm builds a factory in Vietnam to run the business itself, rather than just buying a few Vietnamese shares. Is this the same as an investor briefly buying and selling shares abroad?",
+     "right": "No, it's a lasting stake in running a foreign business",
+     "wrong": "Yes, both are just buying foreign shares",
+     "hint": "One is building and controlling operations abroad; the other is trading paper assets.",
+     "pre": "Building or buying a lasting business stake abroad is",
+     "term": "fdi_def"
+    },
+    {
+     "type": "ask",
+     "q": "Two countries sign a deal removing tariffs between them permanently. Can a firm building a factory in one country now be confident its goods will reach the other country's customers tariff-free for years to come?",
+     "right": "Yes, the deal locks in that access",
+     "wrong": "No, access could disappear at any time",
+     "hint": "What does signing a lasting agreement do to the risk that tariffs return?",
+     "pre": "The firm now has",
+     "term": "market_access"
+    },
+    {
+     "type": "order",
+     "terms": [
+      "TRADE_PATTERN_EMERGING",
+      "fdi_def",
+      "market_access"
+     ],
+     "prompt": "Drag and drop the 3 key terms in the order they build on each other."
+    },
+    {
+     "type": "ask",
+     "q": "Because that firm can now build a factory in one member country and reliably reach every other member's customers without tariffs, does the deal make investing in the region more or less attractive to foreign firms?",
+     "right": "More attractive, so investment rises",
+     "wrong": "Less attractive, so investment falls",
+     "hint": "Combine the lasting business stake with the guaranteed access to the whole trade bloc.",
+     "pre": "So regional trade agreements increase",
+     "term": "RTA_BEN_INVESTMENT"
+    },
+    {
+     "type": "derive"
+    }
+   ],
+   "given": [
+    "GLOB_IMPACT_COUNTRY_GROWTH"
+   ],
+   "needs": [
+    "GLOB_IMPACT_COUNTRY_GROWTH"
+   ],
+   "builds": [
+    "GLOB_IMPACT_COUNTRY_GROWTH"
+   ],
+   "nodes": [
+    "GLOB_IMPACT_COUNTRY_INEQ",
+    "TRADE_PATTERN_EMERGING",
+    "RTA_BEN_INVESTMENT"
+   ],
+   "dropped": [],
+   "edges": [
+    [
+     "GLOB_IMPACT_COUNTRY_GROWTH",
+     "GLOB_IMPACT_COUNTRY_INEQ"
+    ],
+    [
+     "GLOB_IMPACT_COUNTRY_GROWTH",
+     "TRADE_PATTERN_EMERGING"
+    ],
+    [
+     "GLOB_IMPACT_COUNTRY_GROWTH",
+     "RTA_BEN_INVESTMENT"
+    ],
+    [
+     "GLOB_IMPACT_COUNTRY_GROWTH",
+     "winners_losers"
+    ],
+    [
+     "winners_losers",
+     "wage_gap"
+    ],
+    [
+     "wage_gap",
+     "GLOB_IMPACT_COUNTRY_INEQ"
+    ],
+    [
+     "china_effect",
+     "TRADE_PATTERN_EMERGING"
+    ],
+    [
+     "GLOB_IMPACT_COUNTRY_INEQ",
+     "TRADE_PATTERN_EMERGING"
+    ],
+    [
+     "fdi_def",
+     "market_access"
+    ],
+    [
+     "market_access",
+     "RTA_BEN_INVESTMENT"
+    ]
+   ]
+  }
+ ]
+}

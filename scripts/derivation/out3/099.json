@@ -1,0 +1,129 @@
+{
+ "id": "gen",
+ "subject": "Economics",
+ "title": "Profit vs not-for-profit",
+ "terms": {
+  "profit_org_def": {
+   "label": "Profit organisation"
+  },
+  "not_for_profit_def": {
+   "label": "Not-for-profit organisation"
+  },
+  "revenue": {
+   "label": "Revenue"
+  },
+  "surplus_use": {
+   "label": "Use of surplus"
+  },
+  "profit_notprofit_distinction": {
+   "label": "Profit vs not-for-profit"
+  }
+ },
+ "stages": [
+  {
+   "name": "Profit vs not-for-profit",
+   "title": "Profit vs not-for-profit",
+   "sub": "How to tell apart businesses that exist to make money and organisations that exist to serve a cause.",
+   "steps": [
+    {
+     "type": "ask",
+     "q": "A café sells coffee for £3 that cost £1 to make. What do we call the £3 it takes in from selling?",
+     "right": "The total money it takes in",
+     "wrong": "The money left over after costs",
+     "hint": "Is this the whole amount coming in, or only what remains after costs?",
+     "pre": "The money a sale brings in is called",
+     "term": "revenue"
+    },
+    {
+     "type": "ask",
+     "q": "A gym owner sets prices to leave as much money as possible left over after costs, and pays this leftover to herself. What kind of business is this?",
+     "right": "One set up to make money for its owner",
+     "wrong": "One set up to fund a cause",
+     "hint": "Who benefits from the money left over after costs here?",
+     "pre": "That is a",
+     "term": "profit_org_def"
+    },
+    {
+     "type": "ask",
+     "q": "A charity shop sells donated clothes. Its founders set it up so that any leftover money goes towards housing homeless people, not to themselves. What kind of organisation is this?",
+     "right": "One set up to serve a social aim, not to enrich its owners",
+     "wrong": "One set up to make money for its owner",
+     "hint": "Who is meant to gain from the money left over after costs here?",
+     "pre": "That is a",
+     "term": "not_for_profit_def"
+    },
+    {
+     "type": "ask",
+     "q": "Both the gym and the charity shop end the month with money left over after costs. Where does that leftover money go in each case?",
+     "right": "To the owner in one, the cause in the other",
+     "wrong": "To the owner in both of the cases",
+     "hint": "Think about who actually keeps the surplus once costs are paid in each case.",
+     "pre": "So what differs is the",
+     "term": "surplus_use"
+    },
+    {
+     "type": "order",
+     "terms": [
+      "revenue",
+      "profit_org_def",
+      "not_for_profit_def",
+      "surplus_use"
+     ],
+     "prompt": "Drag and drop the 4 key terms in the order they build on each other."
+    },
+    {
+     "type": "ask",
+     "q": "Using what happens to the leftover money as the test, are the gym and the charity shop the same type of organisation or different types?",
+     "right": "Different types",
+     "wrong": "The same type",
+     "hint": "One keeps the surplus for its owner, the other feeds it back into a cause. Does that make them alike or unlike?",
+     "pre": "This is the",
+     "term": "profit_notprofit_distinction"
+    },
+    {
+     "type": "derive"
+    }
+   ],
+   "given": [],
+   "needs": [],
+   "builds": [],
+   "nodes": [
+    "profit_org_def",
+    "not_for_profit_def",
+    "profit_notprofit_distinction"
+   ],
+   "dropped": [
+    [
+     "profit_org_def",
+     "profit_notprofit_distinction"
+    ],
+    [
+     "not_for_profit_def",
+     "profit_notprofit_distinction"
+    ]
+   ],
+   "edges": [
+    [
+     "revenue",
+     "profit_org_def"
+    ],
+    [
+     "revenue",
+     "not_for_profit_def"
+    ],
+    [
+     "profit_org_def",
+     "surplus_use"
+    ],
+    [
+     "not_for_profit_def",
+     "surplus_use"
+    ],
+    [
+     "surplus_use",
+     "profit_notprofit_distinction"
+    ]
+   ]
+  }
+ ]
+}

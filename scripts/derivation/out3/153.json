@@ -1,0 +1,124 @@
+{
+ "id": "gen",
+ "subject": "Economics",
+ "title": "Restricting monopsony power",
+ "terms": {
+  "mrl_effect": {
+   "label": "Below-competitive quantity"
+  },
+  "supply_chain_complexity": {
+   "label": "Complex supply chains"
+  },
+  "MONOPSONY_RESTRICT_ADV2": {
+   "label": "Restriction raises employment"
+  },
+  "MONOPSONY_RESTRICT_DIS2": {
+   "label": "Hard to monitor compliance"
+  },
+  "MONOPSONY_RESTRICT_DEF": {
+   "label": "Restricting monopsony power"
+  },
+  "monopsony_char": {
+   "label": "Monopsony"
+  }
+ },
+ "stages": [
+  {
+   "name": "Restricting monopsony power",
+   "title": "Restricting monopsony power",
+   "sub": "What happens when the state limits a single dominant buyer's power over price and output, and why that limit is hard to police.",
+   "steps": [
+    {
+     "type": "ask",
+     "q": "A single supermarket chain is the only buyer of milk from local farmers, and it pushes the price it pays right down. Compared with a market where many buyers compete for the milk, does the supermarket buy more or less milk at that low price?",
+     "right": "Less milk than if buyers competed",
+     "wrong": "The same amount as if buyers competed",
+     "hint": "Think about why the buyer can get away with paying so little: it is not purchasing at the level a competitive market would reach.",
+     "pre": "So a dominant buyer settles on a",
+     "term": "mrl_effect"
+    },
+    {
+     "type": "ask",
+     "q": "The government now sets a minimum price farmers must be paid for milk, close to what a competitive market would pay. If the supermarket now has to pay more per litre, what happens to the quantity of milk it chooses to buy?",
+     "right": "It rises, towards the competitive level",
+     "wrong": "It falls further below the competitive level",
+     "hint": "Use the earlier finding: the low quantity was caused by the buyer holding the price down. Remove that power and the quantity moves back which way?",
+     "pre": "So restricting monopsony power tends to bring an",
+     "term": "MONOPSONY_RESTRICT_ADV2"
+    },
+    {
+     "type": "ask",
+     "q": "That same milk passes through several stages: farm, wholesaler, processor, supermarket, before reaching shelves. If a regulator wants to check the farmer is really being paid the minimum price throughout this whole chain, is that easy or difficult to check at every stage?",
+     "right": "Difficult, there are many stages to check",
+     "wrong": "Easy, one price applies everywhere",
+     "hint": "Count how many separate firms and contracts sit between the farm and the shop shelf.",
+     "pre": "So the rule has to be applied across",
+     "term": "supply_chain_complexity"
+    },
+    {
+     "type": "ask",
+     "q": "Given how many separate firms and contracts sit between farm and shelf, can a regulator be confident every one of them is actually following the rule, without a large ongoing effort?",
+     "right": "No, enforcing it everywhere is hard",
+     "wrong": "Yes, checking one price is straightforward",
+     "hint": "Think about the cost and effort of inspecting every link in a long chain, not just the headline rule.",
+     "pre": "So a key drawback is that it is",
+     "term": "MONOPSONY_RESTRICT_DIS2"
+    },
+    {
+     "type": "derive"
+    }
+   ],
+   "given": [
+    "MONOPSONY_RESTRICT_DEF",
+    "monopsony_char"
+   ],
+   "needs": [
+    "MONOPSONY_RESTRICT_DEF",
+    "monopsony_char"
+   ],
+   "builds": [
+    "MONOPSONY_RESTRICT_DEF",
+    "monopsony_char"
+   ],
+   "nodes": [
+    "MONOPSONY_RESTRICT_DIS2",
+    "MONOPSONY_RESTRICT_ADV2"
+   ],
+   "dropped": [],
+   "edges": [
+    [
+     "MONOPSONY_RESTRICT_DEF",
+     "MONOPSONY_RESTRICT_DIS2"
+    ],
+    [
+     "MONOPSONY_RESTRICT_DEF",
+     "MONOPSONY_RESTRICT_ADV2"
+    ],
+    [
+     "monopsony_char",
+     "MONOPSONY_RESTRICT_ADV2"
+    ],
+    [
+     "monopsony_char",
+     "mrl_effect"
+    ],
+    [
+     "mrl_effect",
+     "MONOPSONY_RESTRICT_ADV2"
+    ],
+    [
+     "MONOPSONY_RESTRICT_DEF",
+     "MONOPSONY_RESTRICT_ADV2"
+    ],
+    [
+     "MONOPSONY_RESTRICT_DEF",
+     "supply_chain_complexity"
+    ],
+    [
+     "supply_chain_complexity",
+     "MONOPSONY_RESTRICT_DIS2"
+    ]
+   ]
+  }
+ ]
+}

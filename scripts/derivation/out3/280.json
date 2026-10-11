@@ -1,0 +1,161 @@
+{
+ "id": "gen",
+ "subject": "Economics",
+ "title": "Policies for geographical immobility",
+ "terms": {
+  "housing_policy": {
+   "label": "Housing policy support"
+  },
+  "relocation_subsidy": {
+   "label": "Relocation subsidies"
+  },
+  "transport_invest": {
+   "label": "Transport infrastructure investment"
+  },
+  "policy_geo_mobility": {
+   "label": "Policies to tackle geographical immobility"
+  },
+  "policy_geo_mobility_eval": {
+   "label": "Evaluation of these policies"
+  },
+  "reasons_tackle_immobility": {
+   "label": "Reasons to tackle immobility"
+  },
+  "geo_immobility": {
+   "label": "Geographical immobility"
+  }
+ },
+ "stages": [
+  {
+   "name": "Policies for geographical immobility",
+   "title": "Policies for geographical immobility",
+   "sub": "What governments can do about workers stuck in the wrong place, and how well it actually works.",
+   "steps": [
+    {
+     "type": "ask",
+     "q": "A worker in the North could take a job in London, but rents there are far higher than her current wage could cover. What kind of government scheme would let her actually afford the move?",
+     "right": "Help with housing costs in expensive areas",
+     "wrong": "A cut in income tax for everyone",
+     "hint": "Her problem is specifically about the cost of a home in the new area.",
+     "pre": "One option is",
+     "term": "housing_policy"
+    },
+    {
+     "type": "ask",
+     "q": "A firm in Bristol wants to hire a worker from Newcastle, but the worker cannot cover the removal van, deposit and travel to interviews. What could directly cover these one-off costs of moving?",
+     "right": "A cash grant to cover moving costs",
+     "wrong": "A longer notice period before starting the job",
+     "hint": "Think about the upfront costs of physically moving house and city, not the ongoing cost of living there.",
+     "pre": "Another option is",
+     "term": "relocation_subsidy"
+    },
+    {
+     "type": "ask",
+     "q": "Workers in a rural town could take jobs in the nearby city, but the only bus runs twice a day and the journey takes two hours. What kind of long-term government spending would make commuting realistic?",
+     "right": "Building better roads and rail links",
+     "wrong": "Paying the workers' bus fares each week",
+     "hint": "The bus fare is not the problem here, the poor service and journey time is.",
+     "pre": "A third option is",
+     "term": "transport_invest"
+    },
+    {
+     "type": "order",
+     "terms": [
+      "housing_policy",
+      "relocation_subsidy",
+      "transport_invest"
+     ],
+     "prompt": "Drag and drop the 3 key terms in the order they build on each other."
+    },
+    {
+     "type": "ask",
+     "q": "Housing support, relocation grants and transport investment are all aimed at the same problem: workers unable to move to where the jobs are. What single problem do all three measures try to fix?",
+     "right": "Workers being unable to move to where jobs are",
+     "wrong": "Workers lacking the right skills for jobs",
+     "hint": "Think about what stops someone physically getting to a job, not what stops them doing the job.",
+     "pre": "Together, measures aimed at this problem are",
+     "term": "policy_geo_mobility"
+    },
+    {
+     "type": "ask",
+     "q": "The transport investment cost £2 billion and will not improve journey times for another five years. Does knowing this change how confident you are that the policy is worth it right now?",
+     "right": "Yes, the cost and the delay both matter",
+     "wrong": "No, only whether it fixes the problem eventually matters",
+     "hint": "A policy can solve a problem in theory but still be a poor choice once you weigh up what it costs and how long it takes.",
+     "pre": "Judging policies on their cost, regional impact, time lag and actual effectiveness is the",
+     "term": "policy_geo_mobility_eval"
+    },
+    {
+     "type": "derive"
+    }
+   ],
+   "given": [
+    "reasons_tackle_immobility",
+    "geo_immobility"
+   ],
+   "needs": [
+    "reasons_tackle_immobility",
+    "geo_immobility"
+   ],
+   "builds": [
+    "reasons_tackle_immobility",
+    "geo_immobility"
+   ],
+   "nodes": [
+    "policy_geo_mobility",
+    "policy_geo_mobility_eval"
+   ],
+   "dropped": [],
+   "edges": [
+    [
+     "policy_geo_mobility",
+     "policy_geo_mobility_eval"
+    ],
+    [
+     "reasons_tackle_immobility",
+     "policy_geo_mobility"
+    ],
+    [
+     "geo_immobility",
+     "policy_geo_mobility"
+    ],
+    [
+     "reasons_tackle_immobility",
+     "housing_policy"
+    ],
+    [
+     "geo_immobility",
+     "housing_policy"
+    ],
+    [
+     "reasons_tackle_immobility",
+     "relocation_subsidy"
+    ],
+    [
+     "geo_immobility",
+     "relocation_subsidy"
+    ],
+    [
+     "reasons_tackle_immobility",
+     "transport_invest"
+    ],
+    [
+     "geo_immobility",
+     "transport_invest"
+    ],
+    [
+     "housing_policy",
+     "policy_geo_mobility"
+    ],
+    [
+     "relocation_subsidy",
+     "policy_geo_mobility"
+    ],
+    [
+     "transport_invest",
+     "policy_geo_mobility"
+    ]
+   ]
+  }
+ ]
+}

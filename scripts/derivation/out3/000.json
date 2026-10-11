@@ -1,0 +1,144 @@
+{
+ "id": "gen",
+ "subject": "Economics",
+ "title": "Positive and normative economics",
+ "terms": {
+  "testable": {
+   "label": "Testable claim"
+  },
+  "opinionbased": {
+   "label": "Opinion-based claim"
+  },
+  "POSITIVE_STATEMENT": {
+   "label": "Positive statements"
+  },
+  "NORMATIVE_STATEMENT": {
+   "label": "Normative statements"
+  },
+  "POS_NORM_DISTINCTION": {
+   "label": "Positive vs normative"
+  },
+  "VALUE_JUDGEMENTS": {
+   "label": "Value judgements"
+  }
+ },
+ "stages": [
+  {
+   "name": "Positive and normative economics",
+   "title": "Positive and normative economics",
+   "sub": "Tell facts about the economy apart from opinions about what should be done, and see why opinions still shape policy.",
+   "steps": [
+    {
+     "type": "ask",
+     "q": "\"Unemployment in the UK was 4.2% last year.\" Could two researchers with the same data end up disagreeing about whether this is true?",
+     "right": "No, the data would settle it either way",
+     "wrong": "Yes, they could reasonably disagree",
+     "hint": "Is there a number out there that either matches this claim or does not?",
+     "pre": "A claim that can be checked against evidence and shown true or false is a",
+     "term": "testable"
+    },
+    {
+     "type": "ask",
+     "term": "POSITIVE_STATEMENT",
+     "q": "Take the claim about unemployment. Whoever is asked, does the data make it true or false, whatever anyone feels about it?",
+     "right": "Yes, the facts decide it",
+     "wrong": "No, it is true if enough agree",
+     "hint": "A number either matches the claim or it does not.",
+     "pre": "A claim about how things are, which evidence can settle, is a"
+    },
+    {
+     "type": "ask",
+     "q": "\"The government should cut unemployment benefits.\" Could two people who agree on every statistic still disagree about this?",
+     "right": "Yes, because it depends on what they value",
+     "wrong": "No, the statistics would settle it",
+     "hint": "Even with identical facts in front of them, could their views on fairness still differ?",
+     "pre": "A claim that cannot be settled by evidence alone, only by what people believe should happen, is",
+     "term": "opinionbased"
+    },
+    {
+     "type": "ask",
+     "term": "NORMATIVE_STATEMENT",
+     "q": "Take the claim about cutting benefits. It says what ought to happen. Could facts alone show it is right or wrong?",
+     "right": "No, it rests on views about what is fair",
+     "wrong": "Yes, the facts prove it right or wrong",
+     "hint": "Two people with the same facts can still disagree about what ought to be done.",
+     "pre": "A claim about what ought to happen is a"
+    },
+    {
+     "type": "chains",
+     "lanes": [
+      {
+       "label": "Chain 1",
+       "terms": [
+        "testable",
+        "POSITIVE_STATEMENT"
+       ]
+      },
+      {
+       "label": "Chain 2",
+       "terms": [
+        "opinionbased",
+        "NORMATIVE_STATEMENT"
+       ]
+      }
+     ],
+     "prompt": "Drag and drop the 4 key terms into the two chains that lead to one concept. Chain 1 is what evidence can settle. Chain 2 is what people believe should happen.",
+     "then": "what does telling the two apart give you?"
+    },
+    {
+     "type": "ask",
+     "q": "Compare \"Raising the minimum wage will reduce jobs\" with \"Raising the minimum wage is right\". Which could evidence settle?",
+     "right": "The first one, about jobs",
+     "wrong": "The second one, about what is right",
+     "hint": "One claims something measurable will happen. The other claims something ought to happen. Which is measurable?",
+     "pre": "Telling these two kinds of claim apart is",
+     "term": "POS_NORM_DISTINCTION"
+    },
+    {
+     "type": "ask",
+     "q": "Two governments see the same evidence about a policy, yet one bans it and the other allows it. What explains the difference?",
+     "right": "Their differing opinions about what matters most",
+     "wrong": "They must be looking at different data",
+     "hint": "If the facts are identical, what else could differ between the two decisions?",
+     "pre": "Policy choices are shaped by",
+     "term": "VALUE_JUDGEMENTS"
+    },
+    {
+     "type": "derive"
+    }
+   ],
+   "given": [],
+   "needs": [],
+   "builds": [],
+   "nodes": [
+    "POSITIVE_STATEMENT",
+    "NORMATIVE_STATEMENT",
+    "POS_NORM_DISTINCTION",
+    "VALUE_JUDGEMENTS"
+   ],
+   "dropped": [],
+   "edges": [
+    [
+     "testable",
+     "POSITIVE_STATEMENT"
+    ],
+    [
+     "opinionbased",
+     "NORMATIVE_STATEMENT"
+    ],
+    [
+     "POSITIVE_STATEMENT",
+     "POS_NORM_DISTINCTION"
+    ],
+    [
+     "NORMATIVE_STATEMENT",
+     "POS_NORM_DISTINCTION"
+    ],
+    [
+     "NORMATIVE_STATEMENT",
+     "VALUE_JUDGEMENTS"
+    ]
+   ]
+  }
+ ]
+}

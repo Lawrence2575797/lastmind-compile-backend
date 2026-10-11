@@ -1,0 +1,142 @@
+{
+ "id": "gen",
+ "subject": "Economics",
+ "title": "Causes of inequality: trade and technology",
+ "terms": {
+  "skilled_unskilled": {
+   "label": "Skilled vs unskilled labour"
+  },
+  "GLOBALISATION_CAUSE": {
+   "label": "Globalisation and trade"
+  },
+  "TECH_CHANGE_CAUSE": {
+   "label": "Technological change"
+  },
+  "export_import_mix": {
+   "label": "Export/import price mix"
+  },
+  "TRADE_TERMS_INTL": {
+   "label": "Terms of trade differences"
+  },
+  "FACTOR_INCOME_DIFF": {
+   "label": "Differences in factor incomes"
+  }
+ },
+ "stages": [
+  {
+   "name": "Causes of inequality: trade and technology",
+   "title": "Causes of inequality: trade and technology",
+   "sub": "After this stage you can explain how globalisation, automation and trade structures widen income gaps within and between countries.",
+   "steps": [
+    {
+     "type": "ask",
+     "q": "A car factory pays its machine-programming engineers far more than its cleaners. Both are wages, but is one type of worker rewarded more than the other?",
+     "right": "Yes, pay differs sharply by skill",
+     "wrong": "No, all wages are equal",
+     "hint": "Think about why an engineer's pay differs from a cleaner's, even though both earn a wage.",
+     "pre": "So within the wage part of factor income, there is a gap between",
+     "term": "skilled_unskilled"
+    },
+    {
+     "type": "ask",
+     "q": "A country opens up to trade. It now imports cheap clothing made by unskilled workers abroad, but exports hi-tech goods made by its own skilled workers. What happens to demand for its unskilled workers compared to its skilled workers?",
+     "right": "It falls relative to skilled workers",
+     "wrong": "It rises equally with skilled workers",
+     "hint": "The country stops making the clothing itself, so who loses work, and who gains from exporting hi-tech goods?",
+     "pre": "So opening up to trade widens the gap between skilled and unskilled pay. This is the effect of",
+     "term": "GLOBALISATION_CAUSE"
+    },
+    {
+     "type": "ask",
+     "q": "A warehouse installs robots that replace unskilled packers, but now needs more skilled engineers to maintain them. What happens to the pay gap between skilled and unskilled workers there?",
+     "right": "It widens, as skilled workers become more valuable",
+     "wrong": "It narrows, as fewer workers are needed overall",
+     "hint": "The robots removed the unskilled jobs but created demand for a different type of worker. What happens to what each type earns?",
+     "pre": "So automation replacing routine jobs while rewarding skilled workers is",
+     "term": "TECH_CHANGE_CAUSE"
+    },
+    {
+     "type": "ask",
+     "q": "Country A exports raw cocoa at a low, volatile price and imports expensive manufactured machinery. Country B exports the machinery. If cocoa prices fall while machinery prices stay high, whose income from trade suffers?",
+     "right": "Country A's, since its exports buy less in return",
+     "wrong": "Country B's, since it depends on imports too",
+     "hint": "Compare what each country earns from selling its exports against what it must pay for its imports.",
+     "pre": "So differences in export and import prices between countries feed into",
+     "term": "export_import_mix"
+    },
+    {
+     "type": "order",
+     "terms": [
+      "skilled_unskilled",
+      "GLOBALISATION_CAUSE",
+      "TECH_CHANGE_CAUSE",
+      "export_import_mix"
+     ],
+     "prompt": "Drag and drop the 4 key terms in the order they build on each other."
+    },
+    {
+     "type": "ask",
+     "q": "If Country A's export prices keep falling relative to its import prices, while Country B's exports stay valuable, what happens to the income gap between the two countries over time?",
+     "right": "It widens between the two countries",
+     "wrong": "It stays the same, since both still trade freely",
+     "hint": "Think about which country's export earnings buy more imports over time, and which country's buy less.",
+     "pre": "So a persistent gap in export and import prices, alongside differing trade structures, is a cause of inequality between countries called",
+     "term": "TRADE_TERMS_INTL"
+    },
+    {
+     "type": "derive"
+    }
+   ],
+   "given": [
+    "FACTOR_INCOME_DIFF"
+   ],
+   "needs": [
+    "FACTOR_INCOME_DIFF"
+   ],
+   "builds": [
+    "FACTOR_INCOME_DIFF"
+   ],
+   "nodes": [
+    "GLOBALISATION_CAUSE",
+    "TECH_CHANGE_CAUSE",
+    "TRADE_TERMS_INTL"
+   ],
+   "dropped": [
+    [
+     "GLOBALISATION_CAUSE",
+     "TRADE_TERMS_INTL"
+    ]
+   ],
+   "edges": [
+    [
+     "FACTOR_INCOME_DIFF",
+     "GLOBALISATION_CAUSE"
+    ],
+    [
+     "FACTOR_INCOME_DIFF",
+     "TECH_CHANGE_CAUSE"
+    ],
+    [
+     "FACTOR_INCOME_DIFF",
+     "skilled_unskilled"
+    ],
+    [
+     "skilled_unskilled",
+     "GLOBALISATION_CAUSE"
+    ],
+    [
+     "skilled_unskilled",
+     "TECH_CHANGE_CAUSE"
+    ],
+    [
+     "GLOBALISATION_CAUSE",
+     "export_import_mix"
+    ],
+    [
+     "export_import_mix",
+     "TRADE_TERMS_INTL"
+    ]
+   ]
+  }
+ ]
+}

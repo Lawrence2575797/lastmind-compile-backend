@@ -1,0 +1,118 @@
+{
+ "id": "gen",
+ "subject": "Economics",
+ "title": "Emerging and developing economies: infrastructure and tourism",
+ "terms": {
+  "infrastructure_factor": {
+   "label": "Infrastructure"
+  },
+  "infra_development": {
+   "label": "Infrastructure development"
+  },
+  "infra_dev_adv": {
+   "label": "Advantages of infrastructure development"
+  },
+  "tourism_dev": {
+   "label": "Tourism development"
+  },
+  "tourism_adv": {
+   "label": "Advantages of tourism development"
+  }
+ },
+ "stages": [
+  {
+   "name": "Emerging and developing economies: infrastructure and tourism",
+   "title": "Emerging and developing economies: infrastructure and tourism",
+   "sub": "After this you can explain why poor infrastructure holds back development, and evaluate infrastructure investment and tourism as strategies to fix it.",
+   "steps": [
+    {
+     "type": "ask",
+     "q": "A country has no paved roads linking its farms to the cities, and power cuts happen daily. Can factories and lorries there work as efficiently as ones in a country with good roads and reliable power?",
+     "right": "No, they will be held back",
+     "wrong": "Yes, roads and power make no difference",
+     "hint": "Think about a lorry stuck on a dirt track, or a factory with no electricity for hours.",
+     "pre": "So the roads, power, water and networks a country has, or lacks, are its",
+     "term": "infrastructure_factor"
+    },
+    {
+     "type": "ask",
+     "q": "A government decides to spend heavily on building new roads, ports and power plants rather than leaving this to private firms. Whose decision is driving this change?",
+     "right": "The government's, stepping in directly",
+     "wrong": "Private firms responding to prices",
+     "hint": "Is this the market sorting itself out, or the state deliberately acting?",
+     "pre": "So a government deliberately building up roads, power and ports is",
+     "term": "infra_development"
+    },
+    {
+     "type": "ask",
+     "q": "Once the new roads and reliable power are built, firms can move goods faster and factories stop losing hours to power cuts. What happens to firms' costs and ability to attract investment?",
+     "right": "Costs fall and investment becomes more attractive",
+     "wrong": "Costs stay the same, only appearance improves",
+     "hint": "If lorries move faster and machines never stop, what happens to how much it costs to produce and sell things?",
+     "pre": "So the benefits of this spending are the",
+     "term": "infra_dev_adv"
+    },
+    {
+     "type": "ask",
+     "q": "That same country has beautiful beaches and ancient ruins, but almost no visitors because there are no direct flights or trained guides. If the government instead built airports, hotels and trained guides to attract foreign visitors, what kind of strategy would that be?",
+     "right": "Building up an industry to attract visitors from abroad",
+     "wrong": "Building infrastructure with no link to visitors",
+     "hint": "Think about what the airports, hotels and guides are all aimed at bringing in.",
+     "pre": "Deliberately building up an industry around foreign visitors is",
+     "term": "tourism_dev"
+    },
+    {
+     "type": "order",
+     "terms": [
+      "infrastructure_factor",
+      "infra_development",
+      "infra_dev_adv",
+      "tourism_dev"
+     ],
+     "prompt": "Drag and drop the 4 key terms in the order they build on each other."
+    },
+    {
+     "type": "ask",
+     "q": "Foreign tourists start arriving, spending on hotels, food and local crafts, and bringing in foreign currency the country did not have before. What does this do for jobs, incomes and foreign currency earnings?",
+     "right": "They all increase",
+     "wrong": "They stay roughly the same",
+     "hint": "Think about who gets paid when a tourist buys a meal, a room and a souvenir.",
+     "pre": "These gains for jobs, incomes and foreign earnings are the",
+     "term": "tourism_adv"
+    },
+    {
+     "type": "derive"
+    }
+   ],
+   "given": [],
+   "needs": [],
+   "builds": [],
+   "nodes": [
+    "infrastructure_factor",
+    "infra_development",
+    "infra_dev_adv",
+    "tourism_dev",
+    "tourism_adv"
+   ],
+   "dropped": [],
+   "edges": [
+    [
+     "infrastructure_factor",
+     "infra_development"
+    ],
+    [
+     "infra_development",
+     "infra_dev_adv"
+    ],
+    [
+     "infrastructure_factor",
+     "tourism_dev"
+    ],
+    [
+     "tourism_dev",
+     "tourism_adv"
+    ]
+   ]
+  }
+ ]
+}

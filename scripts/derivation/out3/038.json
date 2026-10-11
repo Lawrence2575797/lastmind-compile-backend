@@ -1,0 +1,109 @@
+{
+ "id": "gen",
+ "subject": "Economics",
+ "title": "Effects of unemployment on government",
+ "terms": {
+  "wage_tax": {
+   "label": "Income tax from wages"
+  },
+  "benefit_spend": {
+   "label": "Benefit spending"
+  },
+  "tax_rev_fall": {
+   "label": "Lower tax revenue"
+  },
+  "UNEMPLOYMENT_EFFECT_GOVT": {
+   "label": "Effect on government finances"
+  },
+  "UNEMPLOYMENT_DEF": {
+   "label": "Definition of unemployment"
+  }
+ },
+ "stages": [
+  {
+   "name": "Effects of unemployment on government",
+   "title": "Effects of unemployment on government",
+   "sub": "How rising unemployment squeezes the government's budget from both sides.",
+   "steps": [
+    {
+     "type": "ask",
+     "q": "A factory closes and 200 workers lose their jobs. They used to pay income tax each month. Do they still pay it?",
+     "right": "No, they stop paying it",
+     "wrong": "Yes, they carry on paying it",
+     "hint": "Income tax is taken from wages. If there is no wage, is there tax to take?",
+     "pre": "So the government loses",
+     "term": "wage_tax"
+    },
+    {
+     "type": "ask",
+     "q": "Those 200 workers are willing and able to work but can't find a job. Can they claim unemployment benefits?",
+     "right": "Yes, they become eligible for benefits",
+     "wrong": "No, benefits are only for those in work",
+     "hint": "Think about who benefits are designed to support.",
+     "pre": "So the government now faces higher",
+     "term": "benefit_spend"
+    },
+    {
+     "type": "ask",
+     "q": "If thousands of workers across the country stop paying income tax at the same time, what happens to the total amount of tax the government collects?",
+     "right": "It falls",
+     "wrong": "It stays the same",
+     "hint": "Each worker's lost tax adds up across the whole economy.",
+     "pre": "Across the whole economy this shows up as",
+     "term": "tax_rev_fall"
+    },
+    {
+     "type": "ask",
+     "q": "The government is now collecting less tax and paying out more in benefits at the same time. What does this do to its overall budget position?",
+     "right": "It gets worse, needing more borrowing or spending cuts elsewhere",
+     "wrong": "It stays balanced, since the two changes cancel out",
+     "hint": "Less coming in and more going out at the same time: does that improve or worsen the budget?",
+     "pre": "This combined squeeze on the public finances is the",
+     "term": "UNEMPLOYMENT_EFFECT_GOVT"
+    },
+    {
+     "type": "derive"
+    }
+   ],
+   "given": [
+    "UNEMPLOYMENT_DEF"
+   ],
+   "needs": [
+    "UNEMPLOYMENT_DEF"
+   ],
+   "builds": [
+    "UNEMPLOYMENT_DEF"
+   ],
+   "nodes": [
+    "UNEMPLOYMENT_EFFECT_GOVT"
+   ],
+   "dropped": [],
+   "edges": [
+    [
+     "UNEMPLOYMENT_DEF",
+     "UNEMPLOYMENT_EFFECT_GOVT"
+    ],
+    [
+     "UNEMPLOYMENT_DEF",
+     "wage_tax"
+    ],
+    [
+     "UNEMPLOYMENT_DEF",
+     "benefit_spend"
+    ],
+    [
+     "wage_tax",
+     "tax_rev_fall"
+    ],
+    [
+     "tax_rev_fall",
+     "UNEMPLOYMENT_EFFECT_GOVT"
+    ],
+    [
+     "benefit_spend",
+     "UNEMPLOYMENT_EFFECT_GOVT"
+    ]
+   ]
+  }
+ ]
+}

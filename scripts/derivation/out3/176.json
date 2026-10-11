@@ -1,0 +1,105 @@
+{
+ "id": "gen",
+ "subject": "Economics",
+ "title": "Cost of regional trade agreements",
+ "terms": {
+  "policy_setting": {
+   "label": "Setting your own policy"
+  },
+  "shared_rules": {
+   "label": "Shared rules"
+  },
+  "national_interest": {
+   "label": "National interest clash"
+  },
+  "RTA_COST_SOVEREIGNTY": {
+   "label": "Loss of national sovereignty"
+  },
+  "MU_CONDITIONS": {
+   "label": "Conditions for monetary union"
+  }
+ },
+ "stages": [
+  {
+   "name": "Cost of regional trade agreements",
+   "title": "Cost of regional trade agreements",
+   "sub": "Understand why joining a regional trade agreement can mean giving up national control over policy.",
+   "steps": [
+    {
+     "type": "ask",
+     "q": "Before joining a currency union, a country sets its own interest rates and its own trade rules to suit its own economy. Once it joins a deep trade agreement, can it still set all of these entirely alone?",
+     "right": "No, some choices are now made together",
+     "wrong": "Yes, every choice is still its own",
+     "hint": "Think about what a currency union like the Eurozone actually requires members to agree on.",
+     "pre": "So before joining, a country is used to",
+     "term": "policy_setting"
+    },
+    {
+     "type": "ask",
+     "q": "Members of a trade bloc agree common tariffs, standards and sometimes a common currency. If one member wants a different tariff to protect its own farmers, can it just set one?",
+     "right": "No, it must follow the agreed common rules",
+     "wrong": "Yes, each member sets its own tariffs freely",
+     "hint": "The whole point of the bloc is that members agree the same rules together.",
+     "pre": "So members must all follow",
+     "term": "shared_rules"
+    },
+    {
+     "type": "ask",
+     "q": "A recession hits one member country hard, but the bloc's shared interest rate and trade rules were set to suit the average of all members. Can that country change the shared rules just for itself?",
+     "right": "No, its own needs can be overruled by the group",
+     "wrong": "Yes, it can override the rules for its own case",
+     "hint": "The rules were agreed by all members together, not by one country alone.",
+     "pre": "So a country's own needs can clash with the group's, creating a",
+     "term": "national_interest"
+    },
+    {
+     "type": "ask",
+     "q": "So when a country joins a deep trade agreement and hands control of tariffs, standards or its currency to a shared body, what has it given up?",
+     "right": "Some control over its own economic decisions",
+     "wrong": "Only a small amount of trade with outsiders",
+     "hint": "Think about who now decides the rules the country once decided for itself.",
+     "pre": "This loss of control over its own policy decisions is the",
+     "term": "RTA_COST_SOVEREIGNTY"
+    },
+    {
+     "type": "derive"
+    }
+   ],
+   "given": [
+    "MU_CONDITIONS"
+   ],
+   "needs": [
+    "MU_CONDITIONS"
+   ],
+   "builds": [
+    "MU_CONDITIONS"
+   ],
+   "nodes": [
+    "RTA_COST_SOVEREIGNTY"
+   ],
+   "dropped": [],
+   "edges": [
+    [
+     "MU_CONDITIONS",
+     "RTA_COST_SOVEREIGNTY"
+    ],
+    [
+     "MU_CONDITIONS",
+     "policy_setting"
+    ],
+    [
+     "policy_setting",
+     "shared_rules"
+    ],
+    [
+     "shared_rules",
+     "national_interest"
+    ],
+    [
+     "national_interest",
+     "RTA_COST_SOVEREIGNTY"
+    ]
+   ]
+  }
+ ]
+}

@@ -1,0 +1,125 @@
+{
+ "id": "gen",
+ "subject": "Economics",
+ "title": "Internal economies of scale: finance, risk and marketing",
+ "terms": {
+  "lowrisk": {
+   "label": "Perceived low risk"
+  },
+  "FIN_ECON": {
+   "label": "Financial economies of scale"
+  },
+  "RISK_ECON": {
+   "label": "Risk-bearing economies of scale"
+  },
+  "MKT_ECON": {
+   "label": "Marketing economies of scale"
+  },
+  "INT_ECON": {
+   "label": "Internal economies of scale"
+  }
+ },
+ "stages": [
+  {
+   "name": "Internal economies of scale: finance, risk and marketing",
+   "title": "Internal economies of scale: finance, risk and marketing",
+   "sub": "How growing bigger cuts a firm's costs through cheaper borrowing, spread risk and cheaper advertising.",
+   "steps": [
+    {
+     "type": "ask",
+     "q": "A huge supermarket chain and a corner shop both ask a bank for a loan. Which one does the bank see as more likely to keep trading and pay it back?",
+     "right": "The huge supermarket chain",
+     "wrong": "Both look equally likely to the bank",
+     "hint": "Which business looks safer to a bank, based on its size and steady sales?",
+     "pre": "So the bank sees the big firm as a",
+     "term": "lowrisk"
+    },
+    {
+     "type": "ask",
+     "q": "If the bank sees a firm as less likely to fail, does it charge that firm a higher or lower interest rate on a loan?",
+     "right": "A lower interest rate",
+     "wrong": "A higher interest rate",
+     "hint": "Banks charge more for risky loans and less for safe ones. Which is this firm?",
+     "pre": "Being able to borrow more cheaply because of its size is an",
+     "term": "FIN_ECON"
+    },
+    {
+     "type": "ask",
+     "q": "A firm that only sells umbrellas struggles when it rains less. A firm that sells umbrellas, sun hats, tents and coats does not depend on one product. If umbrella sales fall one year, what happens to the second firm's total sales?",
+     "right": "They are cushioned by its other products",
+     "wrong": "They fall by just as much as the first firm's",
+     "hint": "Does the second firm rely on just one product line for all its income?",
+     "pre": "Spreading across many product lines lowers the danger of relying on one product. That is an",
+     "term": "RISK_ECON"
+    },
+    {
+     "type": "ask",
+     "q": "A national chain runs one advert seen by 10 million people, costing £1 per thousand viewers. A single small shop would have to pay almost the same amount just to reach its local town. Which one pays less to advertise to each customer it reaches?",
+     "right": "The national chain",
+     "wrong": "The small shop",
+     "hint": "The advert cost is similar either way, but one of them reaches far more customers with it.",
+     "pre": "Spreading one advertising cost over many more customers lowers the cost per customer. That is an",
+     "term": "MKT_ECON"
+    },
+    {
+     "type": "order",
+     "terms": [
+      "lowrisk",
+      "FIN_ECON",
+      "RISK_ECON",
+      "MKT_ECON"
+     ],
+     "prompt": "Drag and drop the 4 key terms in the order they build on each other."
+    },
+    {
+     "type": "derive"
+    }
+   ],
+   "given": [
+    "INT_ECON"
+   ],
+   "needs": [
+    "INT_ECON"
+   ],
+   "builds": [
+    "INT_ECON"
+   ],
+   "nodes": [
+    "FIN_ECON",
+    "RISK_ECON",
+    "MKT_ECON"
+   ],
+   "dropped": [],
+   "edges": [
+    [
+     "INT_ECON",
+     "FIN_ECON"
+    ],
+    [
+     "INT_ECON",
+     "RISK_ECON"
+    ],
+    [
+     "INT_ECON",
+     "MKT_ECON"
+    ],
+    [
+     "INT_ECON",
+     "lowrisk"
+    ],
+    [
+     "lowrisk",
+     "FIN_ECON"
+    ],
+    [
+     "INT_ECON",
+     "RISK_ECON"
+    ],
+    [
+     "INT_ECON",
+     "MKT_ECON"
+    ]
+   ]
+  }
+ ]
+}

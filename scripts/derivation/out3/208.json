@@ -1,0 +1,198 @@
+{
+ "id": "gen",
+ "subject": "Economics",
+ "title": "International inequality",
+ "terms": {
+  "HUMAN_CAPITAL_INTL": {
+   "label": "Human capital gap"
+  },
+  "INSTITUTIONS_GOVERNANCE_INTL": {
+   "label": "Institutions & governance"
+  },
+  "HISTORICAL_COLONIAL_INTL": {
+   "label": "Colonial legacy"
+  },
+  "ACCESS_CAPITAL_INTL": {
+   "label": "Access to capital & tech"
+  },
+  "KUZNETS_CURVE": {
+   "label": "Kuznets curve"
+  },
+  "GINI_COEFFICIENT": {
+   "label": "Gini coefficient"
+  },
+  "RESOURCE_ENDOWMENT_INTL": {
+   "label": "Resource endowment gap"
+  },
+  "ECON_GROWTH": {
+   "label": "Economic growth"
+  }
+ },
+ "stages": [
+  {
+   "name": "International inequality",
+   "title": "International inequality",
+   "sub": "Explain why countries differ in income and how inequality can change as an economy develops.",
+   "steps": [
+    {
+     "type": "ask",
+     "q": "Country A's workers mostly finish secondary school and many go to university. Country B's workers mostly leave school at age 11. Which country's workers can likely earn higher wages?",
+     "right": "Country A's workers",
+     "wrong": "Country B's workers",
+     "hint": "Think about who can do more skilled, higher-paid jobs.",
+     "pre": "Skills and qualifications built through schooling are",
+     "term": "HUMAN_CAPITAL_INTL"
+    },
+    {
+     "type": "ask",
+     "q": "One country has reliable courts, low corruption and stable elected governments. Another has frequent coups, weak courts and officials who demand bribes. Which country will attract more long-term investment?",
+     "right": "The stable, low-corruption one",
+     "wrong": "The unstable, corrupt one",
+     "hint": "Would a firm build a factory somewhere its property rights might not be enforced?",
+     "pre": "The quality of a country's rules, courts and political stability are its",
+     "term": "INSTITUTIONS_GOVERNANCE_INTL"
+    },
+    {
+     "type": "ask",
+     "q": "A former colony had its borders, institutions and export patterns shaped by a foreign ruling power for over a century, then became independent. Would you expect that period to still affect its economy today?",
+     "right": "Yes, its effects can still be felt today",
+     "wrong": "No, independence erases all past effects",
+     "hint": "Borders, institutions and infrastructure built decades ago do not vanish the day independence is declared.",
+     "pre": "That lasting effect of past rule is a country's",
+     "term": "HISTORICAL_COLONIAL_INTL"
+    },
+    {
+     "type": "ask",
+     "q": "Country A's firms can easily borrow to buy modern machinery, and it has strong roads, ports and internet. Country B's firms struggle to get loans and have poor roads and patchy power supply. Which country's firms can produce more efficiently?",
+     "right": "Country A's firms",
+     "wrong": "Country B's firms",
+     "hint": "Think about what firms need in order to use modern equipment and move goods around.",
+     "pre": "Differing access to funding, technology and infrastructure is a difference in",
+     "term": "ACCESS_CAPITAL_INTL"
+    },
+    {
+     "type": "order",
+     "terms": [
+      "HUMAN_CAPITAL_INTL",
+      "INSTITUTIONS_GOVERNANCE_INTL",
+      "HISTORICAL_COLONIAL_INTL",
+      "ACCESS_CAPITAL_INTL"
+     ],
+     "prompt": "Drag and drop the 4 key terms in the order they build on each other."
+    },
+    {
+     "type": "ask",
+     "q": "A poor country starts growing fast: at first, only owners of land and capital in cities profit, so the Gini coefficient rises. As it grows richer, education spreads and welfare systems develop, so the Gini coefficient starts falling. What shape would a graph of inequality against income per head trace out over this whole process?",
+     "right": "It rises then falls, like an upside-down U",
+     "wrong": "It falls then rises, like a plain U",
+     "hint": "Inequality went up early on, then came back down later, as the country got richer.",
+     "pre": "That pattern of inequality first rising then falling with development is the",
+     "term": "KUZNETS_CURVE",
+     "diagram": {
+      "x": "Income per head",
+      "y": "Inequality (Gini)",
+      "curves": [
+       {
+        "label": "Inequality",
+        "pts": [
+         [
+          0.05,
+          0.2
+         ],
+         [
+          0.3,
+          0.6
+         ],
+         [
+          0.5,
+          0.75
+         ],
+         [
+          0.7,
+          0.55
+         ],
+         [
+          0.95,
+          0.25
+         ]
+        ]
+       }
+      ]
+     }
+    },
+    {
+     "type": "derive"
+    }
+   ],
+   "given": [
+    "GINI_COEFFICIENT",
+    "RESOURCE_ENDOWMENT_INTL",
+    "ECON_GROWTH"
+   ],
+   "needs": [
+    "GINI_COEFFICIENT",
+    "RESOURCE_ENDOWMENT_INTL",
+    "ECON_GROWTH"
+   ],
+   "builds": [
+    "GINI_COEFFICIENT",
+    "RESOURCE_ENDOWMENT_INTL",
+    "ECON_GROWTH"
+   ],
+   "nodes": [
+    "HUMAN_CAPITAL_INTL",
+    "INSTITUTIONS_GOVERNANCE_INTL",
+    "HISTORICAL_COLONIAL_INTL",
+    "ACCESS_CAPITAL_INTL",
+    "KUZNETS_CURVE"
+   ],
+   "dropped": [],
+   "edges": [
+    [
+     "INSTITUTIONS_GOVERNANCE_INTL",
+     "HISTORICAL_COLONIAL_INTL"
+    ],
+    [
+     "HUMAN_CAPITAL_INTL",
+     "ACCESS_CAPITAL_INTL"
+    ],
+    [
+     "GINI_COEFFICIENT",
+     "HUMAN_CAPITAL_INTL"
+    ],
+    [
+     "GINI_COEFFICIENT",
+     "INSTITUTIONS_GOVERNANCE_INTL"
+    ],
+    [
+     "RESOURCE_ENDOWMENT_INTL",
+     "ACCESS_CAPITAL_INTL"
+    ],
+    [
+     "ECON_GROWTH",
+     "KUZNETS_CURVE"
+    ],
+    [
+     "GINI_COEFFICIENT",
+     "KUZNETS_CURVE"
+    ],
+    [
+     "INSTITUTIONS_GOVERNANCE_INTL",
+     "HISTORICAL_COLONIAL_INTL"
+    ],
+    [
+     "HUMAN_CAPITAL_INTL",
+     "ACCESS_CAPITAL_INTL"
+    ],
+    [
+     "ECON_GROWTH",
+     "KUZNETS_CURVE"
+    ],
+    [
+     "GINI_COEFFICIENT",
+     "KUZNETS_CURVE"
+    ]
+   ]
+  }
+ ]
+}

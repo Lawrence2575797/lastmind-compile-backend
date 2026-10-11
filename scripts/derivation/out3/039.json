@@ -1,0 +1,158 @@
+{
+ "id": "gen",
+ "subject": "Economics",
+ "title": "Balance of payments",
+ "terms": {
+  "crossborder": {
+   "label": "Cross-border activity"
+  },
+  "BOP_STRUCTURE": {
+   "label": "Balance of payments components"
+  },
+  "CURRENT_ACCOUNT": {
+   "label": "Current account"
+  },
+  "BALANCE_TRADE_GOODS_SERVICES": {
+   "label": "Balance of trade in goods & services"
+  },
+  "CURRENT_ACCOUNT_OTHER_COMPONENTS": {
+   "label": "Primary & secondary income"
+  },
+  "CA_DEFICIT_SURPLUS": {
+   "label": "Current account deficit/surplus"
+  }
+ },
+ "stages": [
+  {
+   "name": "Balance of payments",
+   "title": "Balance of payments",
+   "sub": "How the UK records money flowing in and out of the country, and what a current account deficit or surplus means.",
+   "steps": [
+    {
+     "type": "ask",
+     "q": "A UK firm sells cars to France, a UK bank earns interest from US bonds, and a UK resident sends money to family abroad. Do all of these involve money crossing the UK's border?",
+     "right": "Yes, money moves in or out of the country each time",
+     "wrong": "No, only the car sale counts as money crossing the border",
+     "hint": "Look at each example: is money leaving or entering the UK in every case?",
+     "pre": "All of these are examples of",
+     "term": "crossborder"
+    },
+    {
+     "type": "ask",
+     "q": "A government wants to record every type of cross-border transaction, from selling goods to buying foreign property to receiving interest payments. Would one single list be enough, or would it help to sort them into a few separate accounts?",
+     "right": "Sort them into a few separate accounts",
+     "wrong": "One single list would be enough",
+     "hint": "Think about how different buying a factory abroad is from selling goods abroad.",
+     "pre": "So all cross-border transactions are recorded under",
+     "term": "BOP_STRUCTURE"
+    },
+    {
+     "type": "ask",
+     "q": "One of these accounts records the money earned from trading goods and services abroad, plus income and transfers between countries, but not the buying and selling of assets like factories or shares. Which kind of flows does this account track?",
+     "right": "Regular flows of trade, income and transfers",
+     "wrong": "One-off purchases of foreign assets and property",
+     "hint": "Trade, income and transfers happen repeatedly, unlike buying a factory once.",
+     "pre": "This account is the",
+     "term": "CURRENT_ACCOUNT"
+    },
+    {
+     "type": "ask",
+     "q": "The UK exports £320bn of goods and services but imports £360bn. Has the UK earned more from selling abroad than it has spent on buying from abroad?",
+     "right": "No, it has spent more than it earned",
+     "wrong": "Yes, it has earned more than it spent",
+     "hint": "Compare the £320bn coming in against the £360bn going out.",
+     "pre": "Comparing exports and imports of goods and services gives the",
+     "term": "BALANCE_TRADE_GOODS_SERVICES"
+    },
+    {
+     "type": "order",
+     "terms": [
+      "crossborder",
+      "BOP_STRUCTURE",
+      "CURRENT_ACCOUNT",
+      "BALANCE_TRADE_GOODS_SERVICES"
+     ],
+     "prompt": "Drag and drop the 4 key terms in the order they build on each other."
+    },
+    {
+     "type": "ask",
+     "q": "Besides trade in goods and services, the current account also includes interest earned on overseas investments and money sent home by workers abroad. Are these the same thing as selling goods and services?",
+     "right": "No, they are separate types of income and transfer",
+     "wrong": "Yes, they are just more trade in goods and services",
+     "hint": "Interest on investments and money sent home are not payments for goods or services sold.",
+     "pre": "These extra flows are the current account's",
+     "term": "CURRENT_ACCOUNT_OTHER_COMPONENTS"
+    },
+    {
+     "type": "ask",
+     "q": "Add up the UK's trade balance in goods and services and its net primary and secondary income. If the total is negative, has more money left the UK on the current account than has come in?",
+     "right": "Yes, more has left than has come in",
+     "wrong": "No, more has come in than has left",
+     "hint": "A negative total on the current account means outflows are bigger than inflows.",
+     "pre": "A negative total is a current account deficit, and a positive total is a",
+     "term": "CA_DEFICIT_SURPLUS"
+    },
+    {
+     "type": "derive"
+    }
+   ],
+   "given": [],
+   "needs": [],
+   "builds": [],
+   "nodes": [
+    "BOP_STRUCTURE",
+    "CURRENT_ACCOUNT",
+    "BALANCE_TRADE_GOODS_SERVICES",
+    "CURRENT_ACCOUNT_OTHER_COMPONENTS",
+    "CA_DEFICIT_SURPLUS"
+   ],
+   "dropped": [],
+   "edges": [
+    [
+     "BOP_STRUCTURE",
+     "CURRENT_ACCOUNT"
+    ],
+    [
+     "CURRENT_ACCOUNT",
+     "BALANCE_TRADE_GOODS_SERVICES"
+    ],
+    [
+     "CURRENT_ACCOUNT",
+     "CURRENT_ACCOUNT_OTHER_COMPONENTS"
+    ],
+    [
+     "BALANCE_TRADE_GOODS_SERVICES",
+     "CA_DEFICIT_SURPLUS"
+    ],
+    [
+     "CURRENT_ACCOUNT_OTHER_COMPONENTS",
+     "CA_DEFICIT_SURPLUS"
+    ],
+    [
+     "crossborder",
+     "BOP_STRUCTURE"
+    ],
+    [
+     "BOP_STRUCTURE",
+     "CURRENT_ACCOUNT"
+    ],
+    [
+     "CURRENT_ACCOUNT",
+     "BALANCE_TRADE_GOODS_SERVICES"
+    ],
+    [
+     "CURRENT_ACCOUNT",
+     "CURRENT_ACCOUNT_OTHER_COMPONENTS"
+    ],
+    [
+     "BALANCE_TRADE_GOODS_SERVICES",
+     "CA_DEFICIT_SURPLUS"
+    ],
+    [
+     "CURRENT_ACCOUNT_OTHER_COMPONENTS",
+     "CA_DEFICIT_SURPLUS"
+    ]
+   ]
+  }
+ ]
+}

@@ -1,0 +1,189 @@
+{
+ "id": "gen",
+ "subject": "Economics",
+ "title": "Business growth",
+ "terms": {
+  "reasons_firms_grow": {
+   "label": "Reasons firms grow"
+  },
+  "organic_growth_def": {
+   "label": "Organic growth"
+  },
+  "vertical_integration_def": {
+   "label": "Vertical integration"
+  },
+  "forward_vertical_def": {
+   "label": "Forward vertical integration"
+  },
+  "backward_vertical_def": {
+   "label": "Backward vertical integration"
+  },
+  "supply_chain_stage": {
+   "label": "Supply chain stage"
+  },
+  "profit_motive_growth": {
+   "label": "Profit/revenue growth motive for expansion"
+  },
+  "risk_diversification": {
+   "label": "Risk diversification motive for growth"
+  },
+  "market_power_motive": {
+   "label": "Desire for market power"
+  },
+  "principal_agent_problem": {
+   "label": "Principal-agent problem"
+  }
+ },
+ "stages": [
+  {
+   "name": "Business growth",
+   "title": "Business growth",
+   "sub": "Why firms grow, and how organic and vertical growth differ.",
+   "steps": [
+    {
+     "type": "ask",
+     "q": "A bakery owner notices that a bigger bakery down the road earns far more profit each year, and could survive a bad month more easily than she could. What is pulling her towards expanding?",
+     "right": "Wanting more profit and more safety from being bigger",
+     "wrong": "Wanting to close the business down",
+     "hint": "Think about what a small firm gains by becoming a larger one.",
+     "pre": "Higher profit, spreading risk and gaining market power are all",
+     "term": "reasons_firms_grow"
+    },
+    {
+     "type": "ask",
+     "q": "The bakery reinvests its own profits to open a second shop and hire more staff, rather than buying another bakery. Has it grown using its own resources, or by taking over someone else's business?",
+     "right": "Using its own resources and sales",
+     "wrong": "By taking over another business",
+     "hint": "Where did the money and the new shop come from: the firm itself, or an outside company it bought?",
+     "pre": "Growing by building up from within, using retained profit and new sales, is",
+     "term": "organic_growth_def"
+    },
+    {
+     "type": "ask",
+     "q": "Wheat is milled into flour, the flour is baked into bread, and the bread is sold in a shop. Are milling, baking and selling all the same point in this process, or different points along it?",
+     "right": "Different points along the process",
+     "wrong": "All the same point in the process",
+     "hint": "Does flour become bread at the same moment it is sold to a customer, or earlier?",
+     "pre": "Each step from raw material to finished sale is a",
+     "term": "supply_chain_stage"
+    },
+    {
+     "type": "ask",
+     "q": "Instead of growing its own shops, the bakery buys the flour mill that supplies its wheat, and also buys a chain of cafés that sell its bread to customers. Is it growing within its own stage of production, or joining together different stages of the same supply chain?",
+     "right": "Joining together different stages of the same supply chain",
+     "wrong": "Growing within its own single stage only",
+     "hint": "Flour milling and running cafés are different stages from baking bread. Is the bakery staying at one stage or spreading across stages?",
+     "pre": "Merging with or taking over a firm at a different stage of the same supply chain is",
+     "term": "vertical_integration_def"
+    },
+    {
+     "type": "order",
+     "terms": [
+      "reasons_firms_grow",
+      "organic_growth_def",
+      "supply_chain_stage",
+      "vertical_integration_def"
+     ],
+     "prompt": "Drag and drop the 4 key terms in the order they build on each other."
+    },
+    {
+     "type": "ask",
+     "q": "The bakery buys the café chain that sells its bread to customers. Is that café chain a stage closer to the final customer, or a stage further back towards raw materials?",
+     "right": "A stage closer to the final customer",
+     "wrong": "A stage further back towards raw materials",
+     "hint": "Cafés sell directly to customers. Is that nearer the start of production or the end?",
+     "pre": "Taking over a firm nearer the final customer is",
+     "term": "forward_vertical_def"
+    },
+    {
+     "type": "ask",
+     "q": "The bakery instead buys the flour mill that supplies its wheat. Is that mill a stage closer to the final customer, or a stage further back towards raw materials?",
+     "right": "A stage further back towards raw materials",
+     "wrong": "A stage closer to the final customer",
+     "hint": "The mill supplies an ingredient before baking even starts. Is that nearer the raw material end or the customer end?",
+     "pre": "Taking over a firm nearer the raw materials is",
+     "term": "backward_vertical_def"
+    },
+    {
+     "type": "derive"
+    }
+   ],
+   "given": [
+    "profit_motive_growth",
+    "risk_diversification",
+    "market_power_motive",
+    "principal_agent_problem"
+   ],
+   "needs": [
+    "profit_motive_growth",
+    "risk_diversification",
+    "market_power_motive",
+    "principal_agent_problem"
+   ],
+   "builds": [
+    "profit_motive_growth",
+    "risk_diversification",
+    "market_power_motive",
+    "principal_agent_problem"
+   ],
+   "nodes": [
+    "reasons_firms_grow",
+    "organic_growth_def",
+    "vertical_integration_def",
+    "forward_vertical_def",
+    "backward_vertical_def"
+   ],
+   "dropped": [],
+   "edges": [
+    [
+     "reasons_firms_grow",
+     "organic_growth_def"
+    ],
+    [
+     "reasons_firms_grow",
+     "vertical_integration_def"
+    ],
+    [
+     "vertical_integration_def",
+     "forward_vertical_def"
+    ],
+    [
+     "vertical_integration_def",
+     "backward_vertical_def"
+    ],
+    [
+     "profit_motive_growth",
+     "reasons_firms_grow"
+    ],
+    [
+     "risk_diversification",
+     "reasons_firms_grow"
+    ],
+    [
+     "market_power_motive",
+     "reasons_firms_grow"
+    ],
+    [
+     "principal_agent_problem",
+     "reasons_firms_grow"
+    ],
+    [
+     "profit_motive_growth",
+     "reasons_firms_grow"
+    ],
+    [
+     "risk_diversification",
+     "reasons_firms_grow"
+    ],
+    [
+     "market_power_motive",
+     "reasons_firms_grow"
+    ],
+    [
+     "supply_chain_stage",
+     "vertical_integration_def"
+    ]
+   ]
+  }
+ ]
+}

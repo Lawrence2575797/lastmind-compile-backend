@@ -1,0 +1,98 @@
+{
+ "id": "gen",
+ "subject": "Economics",
+ "title": "Social costs",
+ "terms": {
+  "private_costs": {
+   "label": "Private costs"
+  },
+  "external_costs": {
+   "label": "External costs"
+  },
+  "third_party": {
+   "label": "Third party"
+  },
+  "social_costs": {
+   "label": "Social costs"
+  }
+ },
+ "stages": [
+  {
+   "name": "Social costs",
+   "title": "Social costs",
+   "sub": "See how the costs a firm pays and the costs it dumps on others add up to the true cost of production.",
+   "steps": [
+    {
+     "type": "ask",
+     "q": "A factory buys steel, pays its workers' wages and pays for electricity to make cars. Who pays these costs?",
+     "right": "The factory itself",
+     "wrong": "People living near the factory",
+     "hint": "Whose bank account do these payments come out of?",
+     "pre": "The costs a producer pays itself are its",
+     "term": "private_costs"
+    },
+    {
+     "type": "ask",
+     "q": "The factory's smoke gives a nearby family coughs, though they never bought or sold anything to it. Were they part of the deal?",
+     "right": "No, they had no part in it",
+     "wrong": "Yes, they are affected so they are involved",
+     "hint": "Did the family sign any contract or hand over any money in this transaction?",
+     "pre": "Someone affected but not involved in the deal is a",
+     "term": "third_party"
+    },
+    {
+     "type": "ask",
+     "q": "The family has to pay for medicine because of the smoke, but the factory never pays for this. Who actually bears this cost?",
+     "right": "The third party, not the factory",
+     "wrong": "The factory that caused it",
+     "hint": "Whose money actually goes on the medicine bills?",
+     "pre": "Costs imposed on third parties like this are",
+     "term": "external_costs"
+    },
+    {
+     "type": "ask",
+     "q": "To find the true cost to society of making the cars, count only what the factory pays, or that plus the family's harm?",
+     "right": "Both added together",
+     "wrong": "Only what the factory pays",
+     "hint": "Does the harm to the family disappear just because the factory does not pay for it?",
+     "pre": "Private costs plus external costs give",
+     "term": "social_costs"
+    },
+    {
+     "type": "derive"
+    }
+   ],
+   "given": [],
+   "needs": [],
+   "builds": [],
+   "nodes": [
+    "private_costs",
+    "external_costs",
+    "social_costs"
+   ],
+   "dropped": [],
+   "edges": [
+    [
+     "private_costs",
+     "social_costs"
+    ],
+    [
+     "external_costs",
+     "social_costs"
+    ],
+    [
+     "private_costs",
+     "social_costs"
+    ],
+    [
+     "third_party",
+     "external_costs"
+    ],
+    [
+     "external_costs",
+     "social_costs"
+    ]
+   ]
+  }
+ ]
+}

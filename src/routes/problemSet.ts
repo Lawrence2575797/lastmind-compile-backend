@@ -3,6 +3,8 @@ import { requireAuth, requirePaidTier } from '../services/authMiddleware';
 import { costlyEndpointLimiter } from '../services/rateLimiters';
 import { callClaudeJSON, callClaudeJSONWithFiles, MODELS } from '../services/claudeClient';
 import { assertLocksAvailable, InsufficientLocksError } from '../services/lockService';
+import { applyStructuredPIIFilter } from '../safety/piiFilterStructured';
+import { applyContextualPIIFilter } from '../safety/piiFilterContextual';
 import { PROBLEM_SET_PARSE_PROMPT } from '../constants/problemSetPrompt';
 import { PROBLEM_SET_MARK_PROMPT, PROBLEM_SET_SOLVE_PROMPT } from '../constants/problemSetMarkPrompt';
 
@@ -25,6 +27,10 @@ function parseJsonLoose(text: string): any {
   return JSON.parse(start >= 0 && end > start ? t.slice(start, end + 1) : t);
 }
 const cleanText = (s: unknown, n: number) => clip(s, n).replace(/\$\$?/g, '');
+// What was read out of an uploaded picture or PDF goes through the same personal-information filters that typed text does, so an email
+// address, phone number or address on a scanned page never reaches the question boxes, the marker or the assistant.
+const scrub = (s: string) => applyContextualPIIFilter(applyStructuredPIIFilter(s));
+const cleanRead = (s: unknown, n: number) => scrub(cleanText(s, n));
 
 router.post('/problem-set/parse', async (req: Request, res: Response) => {
   const rawFiles = Array.isArray(req.body?.files) ? req.body.files.slice(0, MAX_FILES) : [];
@@ -58,17 +64,17 @@ router.post('/problem-set/parse', async (req: Request, res: Response) => {
     }
     if (!data) throw lastErr || new Error('unreadable');
     const qs = (Array.isArray(data.questions) ? data.questions : []).slice(0, 60).map((q: any, i: number) => {
-      const out: any = { number: cleanText(q && q.number, 12) || String(i + 1), text: cleanText(q && q.text, 4000) };
-      const options = (Array.isArray(q && q.options) ? q.options : []).slice(0, 10).map((o: any) => ({ label: cleanText(o && o.label, 6), text: cleanText(o && o.text, 600) })).filter((o: any) => o.text);
+      const out: any = { number: cleanText(q && q.number, 12) || String(i + 1), text: cleanRead(q && q.text, 4000) };
+      const options = (Array.isArray(q && q.options) ? q.options : []).slice(0, 10).map((o: any) => ({ label: cleanText(o && o.label, 6), text: cleanRead(o && o.text, 600) })).filter((o: any) => o.text);
       if (options.length) out.options = options;
-      const rows = Array.isArray(q && q.table && q.table.rows) ? q.table.rows.slice(0, 12).map((r: any) => (Array.isArray(r) ? r.slice(0, 12).map((c: any) => cleanText(c, 80)) : [])).filter((r: any[]) => r.length) : [];
+      const rows = Array.isArray(q && q.table && q.table.rows) ? q.table.rows.slice(0, 12).map((r: any) => (Array.isArray(r) ? r.slice(0, 12).map((c: any) => cleanRead(c, 80)) : [])).filter((r: any[]) => r.length) : [];
       if (rows.length) out.table = { rows };
-      const figure = cleanText(q && q.figure, 500); if (figure) out.figure = figure;
+      const figure = cleanRead(q && q.figure, 500); if (figure) out.figure = figure;
       const marks = Number(q && q.marks); if (isFinite(marks) && marks > 0 && marks < 200) out.marks = Math.round(marks);
       return out;
     }).filter((q: any) => q.text || q.options || q.table);
     if (!qs.length) return res.status(422).json({ error: 'LastMind could not find any questions in that. Try a clearer picture, or paste the text.' });
-    res.json({ title: cleanText(data.title, 120), header: cleanText(data.header, 300), questions: qs });
+    res.json({ title: cleanRead(data.title, 120), header: cleanRead(data.header, 300), questions: qs });
   } catch (err) {
     if (err instanceof InsufficientLocksError) return res.status(402).json({ error: 'Lock limit reached', code: 'LOCK_LIMIT_REACHED', detail: "You're out of Locks for now." });
     console.error('Problem set parse failed:', err);

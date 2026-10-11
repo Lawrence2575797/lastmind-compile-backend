@@ -1,0 +1,132 @@
+{
+ "id": "gen",
+ "subject": "Economics",
+ "title": "Trade, scale and regional agreements",
+ "terms": {
+  "biggermarket": {
+   "label": "Bigger export market"
+  },
+  "avgcost": {
+   "label": "Falling average cost"
+  },
+  "SPEC_ADV_ECONSCALE": {
+   "label": "Economies of scale from trade"
+  },
+  "rtadef": {
+   "label": "Regional trade agreement"
+  },
+  "RTA_BEN_SCALE": {
+   "label": "RTA economies of scale"
+  },
+  "SPEC_ADV_EFFICIENCY": {
+   "label": "Efficiency gain from specialisation"
+  }
+ },
+ "stages": [
+  {
+   "name": "Trade, scale and regional agreements",
+   "title": "Trade, scale and regional agreements",
+   "sub": "See how selling to a bigger market cuts costs, and why trade blocs create the same effect deliberately.",
+   "steps": [
+    {
+     "type": "ask",
+     "q": "A shoe firm used to sell only in its home town of 50,000 people. Trade opens up and it now sells to a country of 50 million. Does it face a smaller or a much larger group of possible buyers?",
+     "right": "A much larger group of buyers",
+     "wrong": "Roughly the same size group of buyers",
+     "hint": "Compare 50,000 people to 50 million people.",
+     "pre": "So opening up to trade gives the firm a",
+     "term": "biggermarket"
+    },
+    {
+     "type": "ask",
+     "q": "To supply this much larger market, the firm builds one huge factory instead of many small ones, spreading its machinery and management costs over far more pairs of shoes. What happens to the cost of making each pair?",
+     "right": "The cost per pair falls",
+     "wrong": "The cost per pair stays the same",
+     "hint": "The same fixed costs are now spread over many more shoes.",
+     "pre": "Producing on a much bigger scale brings",
+     "term": "avgcost"
+    },
+    {
+     "type": "ask",
+     "q": "So because trade let the firm reach a far bigger market and produce on a much larger scale, its average cost per pair of shoes fell. What has trade allowed the firm to gain?",
+     "right": "Lower costs from producing on a larger scale",
+     "wrong": "Higher costs from producing on a larger scale",
+     "hint": "Bigger market, bigger factory, cost per unit falling: what is this benefit called?",
+     "pre": "This benefit of trade, on top of the efficiency gains from resource allocation, is",
+     "term": "SPEC_ADV_ECONSCALE"
+    },
+    {
+     "type": "ask",
+     "q": "Instead of waiting for trade to happen naturally, a group of 20 neighbouring countries sign a treaty to scrap tariffs between themselves and let firms sell freely across all 20. What have these countries formed?",
+     "right": "A treaty letting them trade freely as a group",
+     "wrong": "A single new country with one shared government",
+     "hint": "This is several separate countries agreeing to trade freely with each other, not one country acting alone.",
+     "pre": "A group of countries agreeing to trade freely like this forms a",
+     "term": "rtadef"
+    },
+    {
+     "type": "order",
+     "terms": [
+      "biggermarket",
+      "avgcost",
+      "SPEC_ADV_ECONSCALE",
+      "rtadef"
+     ],
+     "prompt": "Drag and drop the 4 key terms in the order they build on each other."
+    },
+    {
+     "type": "ask",
+     "q": "A car firm inside this 20-country agreement can now sell to all 20 countries tariff-free instead of just its own. Will it be able to build bigger plants and cut its cost per car, just like the shoe firm did from trade generally?",
+     "right": "Yes, the same cost-cutting effect happens",
+     "wrong": "No, that effect needs worldwide trade instead",
+     "hint": "Think about what made the shoe firm's costs fall: was it trade with the whole world, or simply a bigger market to sell into?",
+     "pre": "So a regional trade agreement gives firms the same",
+     "term": "RTA_BEN_SCALE"
+    },
+    {
+     "type": "derive"
+    }
+   ],
+   "given": [
+    "SPEC_ADV_EFFICIENCY"
+   ],
+   "needs": [
+    "SPEC_ADV_EFFICIENCY"
+   ],
+   "builds": [
+    "SPEC_ADV_EFFICIENCY"
+   ],
+   "nodes": [
+    "SPEC_ADV_ECONSCALE",
+    "RTA_BEN_SCALE"
+   ],
+   "dropped": [],
+   "edges": [
+    [
+     "SPEC_ADV_ECONSCALE",
+     "RTA_BEN_SCALE"
+    ],
+    [
+     "SPEC_ADV_EFFICIENCY",
+     "SPEC_ADV_ECONSCALE"
+    ],
+    [
+     "biggermarket",
+     "avgcost"
+    ],
+    [
+     "avgcost",
+     "SPEC_ADV_ECONSCALE"
+    ],
+    [
+     "rtadef",
+     "RTA_BEN_SCALE"
+    ],
+    [
+     "SPEC_ADV_ECONSCALE",
+     "RTA_BEN_SCALE"
+    ]
+   ]
+  }
+ ]
+}

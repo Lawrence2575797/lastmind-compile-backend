@@ -1,0 +1,142 @@
+{
+ "id": "gen",
+ "subject": "Economics",
+ "title": "Reducing fiscal deficits",
+ "terms": {
+  "DEFICIT_SIG_FISCAL_SPACE": {
+   "label": "Reduced fiscal space"
+  },
+  "REASONS_REDUCE_DEFICIT": {
+   "label": "Reasons to reduce deficit"
+  },
+  "POLICY_REDUCE_DEFICIT": {
+   "label": "Policies to reduce deficit"
+  },
+  "EVAL_REDUCE_DEFICIT": {
+   "label": "Evaluating deficit policies"
+  },
+  "DEBT_SIZE_FACTORS": {
+   "label": "Factors affecting national debt size"
+  },
+  "DEFICIT_SIG_INTEREST": {
+   "label": "Rising debt interest cost"
+  },
+  "DEFICIT_SIG_GENERATIONAL": {
+   "label": "Intergenerational equity"
+  },
+  "FISCAL_POLICY_DEF": {
+   "label": "Fiscal policy: definition (government spending and taxation)"
+  },
+  "CROWDING_OUT_RESOURCE": {
+   "label": "Resource crowding out: government use of finite resources displaces private sector activity"
+  }
+ },
+ "stages": [
+  {
+   "name": "Reducing fiscal deficits",
+   "title": "Reducing fiscal deficits",
+   "sub": "Why governments try to reduce deficits and debt, how they do it, and how well it works.",
+   "steps": [
+    {
+     "type": "ask",
+     "q": "A country has already borrowed heavily for years. A new pandemic hits and the government wants to borrow a lot more to support households. What might make lenders and markets nervous about lending it even more?",
+     "right": "It already owes a lot, so there is less room to borrow more",
+     "wrong": "It has never borrowed before, so lenders do not know it",
+     "hint": "Think about how much borrowing capacity is left after years of high debt.",
+     "pre": "So high existing debt leaves less room to respond to a future shock. This is",
+     "term": "DEFICIT_SIG_FISCAL_SPACE"
+    },
+    {
+     "type": "ask",
+     "q": "Rising interest costs eat into the budget, debt keeps growing across generations, and there is less room left to borrow for the next crisis. Given all this, what is a government likely to want to do?",
+     "right": "Bring the deficit and debt down",
+     "wrong": "Keep borrowing at the same pace regardless",
+     "hint": "If interest costs, generational burden and lost flexibility all point the same way, what action follows?",
+     "pre": "These problems together are the",
+     "term": "REASONS_REDUCE_DEFICIT"
+    },
+    {
+     "type": "ask",
+     "q": "A government decides it must shrink its deficit. It could raise income tax rates, or it could cut spending on public services, or both. What kind of thing are these two options?",
+     "right": "Deliberate actions to close the gap between spending and revenue",
+     "wrong": "Automatic changes that happen without any government decision",
+     "hint": "Are these things the government chooses to do, or things that just happen on their own?",
+     "pre": "Raising taxes and cutting spending to shrink the deficit are",
+     "term": "POLICY_REDUCE_DEFICIT"
+    },
+    {
+     "type": "ask",
+     "q": "Cutting spending on schools and hospitals lowers borrowing, but it also reduces services people rely on and can slow growth. So can these policies simply be judged as a good or a bad idea?",
+     "right": "No, the benefits and costs both need weighing up",
+     "wrong": "Yes, lower borrowing always makes it a good idea",
+     "hint": "There is a gain (less borrowing) and a cost (less spending, slower growth) at the same time.",
+     "pre": "Weighing those gains against those costs is the",
+     "term": "EVAL_REDUCE_DEFICIT"
+    },
+    {
+     "type": "derive"
+    }
+   ],
+   "given": [
+    "DEBT_SIZE_FACTORS",
+    "DEFICIT_SIG_INTEREST",
+    "DEFICIT_SIG_GENERATIONAL",
+    "FISCAL_POLICY_DEF"
+   ],
+   "needs": [
+    "DEBT_SIZE_FACTORS",
+    "DEFICIT_SIG_INTEREST",
+    "DEFICIT_SIG_GENERATIONAL",
+    "FISCAL_POLICY_DEF",
+    "CROWDING_OUT_RESOURCE"
+   ],
+   "builds": [
+    "DEBT_SIZE_FACTORS",
+    "DEFICIT_SIG_INTEREST",
+    "DEFICIT_SIG_GENERATIONAL",
+    "FISCAL_POLICY_DEF"
+   ],
+   "nodes": [
+    "DEFICIT_SIG_FISCAL_SPACE",
+    "REASONS_REDUCE_DEFICIT",
+    "POLICY_REDUCE_DEFICIT",
+    "EVAL_REDUCE_DEFICIT"
+   ],
+   "dropped": [],
+   "edges": [
+    [
+     "DEFICIT_SIG_FISCAL_SPACE",
+     "REASONS_REDUCE_DEFICIT"
+    ],
+    [
+     "REASONS_REDUCE_DEFICIT",
+     "POLICY_REDUCE_DEFICIT"
+    ],
+    [
+     "REASONS_REDUCE_DEFICIT",
+     "EVAL_REDUCE_DEFICIT"
+    ],
+    [
+     "POLICY_REDUCE_DEFICIT",
+     "EVAL_REDUCE_DEFICIT"
+    ],
+    [
+     "DEBT_SIZE_FACTORS",
+     "DEFICIT_SIG_FISCAL_SPACE"
+    ],
+    [
+     "DEFICIT_SIG_INTEREST",
+     "REASONS_REDUCE_DEFICIT"
+    ],
+    [
+     "DEFICIT_SIG_GENERATIONAL",
+     "REASONS_REDUCE_DEFICIT"
+    ],
+    [
+     "FISCAL_POLICY_DEF",
+     "POLICY_REDUCE_DEFICIT"
+    ]
+   ]
+  }
+ ]
+}

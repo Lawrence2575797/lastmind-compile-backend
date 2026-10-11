@@ -1,0 +1,88 @@
+{
+ "id": "gen",
+ "subject": "Economics",
+ "title": "Harrod-Domar model",
+ "terms": {
+  "savings_ratio": {
+   "label": "Savings ratio"
+  },
+  "investment_link": {
+   "label": "Savings-investment link"
+  },
+  "capital_output_ratio": {
+   "label": "Capital-output ratio"
+  },
+  "harrod_domar_savings": {
+   "label": "Harrod-Domar model"
+  }
+ },
+ "stages": [
+  {
+   "name": "Harrod-Domar model",
+   "title": "Harrod-Domar model",
+   "sub": "How the share of income saved and the efficiency of capital together determine an economy's growth rate.",
+   "steps": [
+    {
+     "type": "ask",
+     "q": "Country A saves 5% of its national income each year, Country B saves 20%. Which country has more of its own income left over to fund new factories and equipment?",
+     "right": "Country B",
+     "wrong": "Country A",
+     "hint": "Saving means not spending on consumption now, so it is available for something else.",
+     "pre": "The share of national income not spent on consumption is the",
+     "term": "savings_ratio"
+    },
+    {
+     "type": "ask",
+     "q": "A bank collects up savings from households and lends them out to firms building new factories. What has happened to that saved money?",
+     "right": "It has been turned into investment in capital",
+     "wrong": "It has simply disappeared from the economy",
+     "hint": "Savings sitting idle do nothing for growth. What has to happen to them first?",
+     "pre": "So savings channelled into new capital become",
+     "term": "investment_link"
+    },
+    {
+     "type": "ask",
+     "q": "Building a new road costs £10 million and raises the country's yearly output by £2 million. To get the same £2 million rise in output from a less efficient project, would you need to spend more or less than £10 million on capital?",
+     "right": "More",
+     "wrong": "Less",
+     "hint": "A less efficient project needs more capital to produce the same extra output.",
+     "pre": "The amount of extra capital needed to produce one extra unit of output is the",
+     "term": "capital_output_ratio"
+    },
+    {
+     "type": "ask",
+     "q": "Two countries save the same share of income, but Country X needs far less new capital than Country Y to produce each extra unit of output. Which country would grow faster from the same savings ratio?",
+     "right": "Country X",
+     "wrong": "Country Y",
+     "hint": "Less capital needed per unit of extra output means each pound of investment goes further.",
+     "pre": "So growth depends jointly on the savings ratio and the capital-output ratio: this is the",
+     "term": "harrod_domar_savings"
+    },
+    {
+     "type": "derive"
+    }
+   ],
+   "given": [],
+   "needs": [],
+   "builds": [],
+   "nodes": [
+    "harrod_domar_savings"
+   ],
+   "dropped": [],
+   "edges": [
+    [
+     "savings_ratio",
+     "investment_link"
+    ],
+    [
+     "investment_link",
+     "harrod_domar_savings"
+    ],
+    [
+     "capital_output_ratio",
+     "harrod_domar_savings"
+    ]
+   ]
+  }
+ ]
+}

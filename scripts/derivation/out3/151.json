@@ -1,0 +1,145 @@
+{
+ "id": "gen",
+ "subject": "Economics",
+ "title": "Privatisation",
+ "terms": {
+  "PRIVATISATION_DEF": {
+   "label": "Privatisation"
+  },
+  "PRIVATISATION_ADV1": {
+   "label": "Efficiency incentive"
+  },
+  "PRIVATISATION_ADV2": {
+   "label": "Sale revenue"
+  },
+  "PRIVATISATION_DIS1": {
+   "label": "Private monopoly risk"
+  },
+  "PRIVATISATION_DIS2": {
+   "label": "Profit over service"
+  },
+  "REASONS_PROMOTE_COMP": {
+   "label": "Reasons to promote competition"
+  },
+  "monopoly_eq": {
+   "label": "Monopoly equilibrium"
+  }
+ },
+ "stages": [
+  {
+   "name": "Privatisation",
+   "title": "Privatisation",
+   "sub": "Weigh up the advantages and disadvantages of selling state-owned firms to the private sector.",
+   "steps": [
+    {
+     "type": "ask",
+     "q": "A national rail company is owned and run by the government. The government now sells the whole company to a private investor. What happens to who owns it?",
+     "right": "The state hands ownership to a buyer",
+     "wrong": "The state takes ownership from a buyer",
+     "hint": "Think about who signs the cheque to buy the company.",
+     "pre": "Selling a state-owned firm into private hands is",
+     "term": "PRIVATISATION_DEF"
+    },
+    {
+     "type": "ask",
+     "q": "Under state ownership, the rail company's losses were covered by government funds even when it ran badly. Once it must survive on its own profits in a competitive setting, what pressure does it now face?",
+     "right": "Pressure to cut costs and perform well",
+     "wrong": "No real change, it can still be inefficient",
+     "hint": "Think about what happens to a private firm that keeps wasting money without government support.",
+     "pre": "Facing profit incentives and competition tends to raise",
+     "term": "PRIVATISATION_ADV1"
+    },
+    {
+     "type": "ask",
+     "q": "The government receives a large payment from the investor buying the rail company. What has this sale given the government?",
+     "right": "A one-off boost to its funds",
+     "wrong": "An ongoing yearly cost",
+     "hint": "Think about what selling any asset brings in for the seller.",
+     "pre": "So privatisation can raise government",
+     "term": "PRIVATISATION_ADV2"
+    },
+    {
+     "type": "ask",
+     "q": "The rail company is still the only firm running trains on that route, but it is now privately owned instead of government owned. Has the lack of competition on that route actually gone away?",
+     "right": "No, it is still the only firm there",
+     "wrong": "Yes, competition appears automatically",
+     "hint": "Ownership changed, but did a rival firm suddenly appear on the same route?",
+     "pre": "So a public monopoly may simply become a",
+     "term": "PRIVATISATION_DIS1"
+    },
+    {
+     "type": "order",
+     "terms": [
+      "PRIVATISATION_DEF",
+      "PRIVATISATION_ADV1",
+      "PRIVATISATION_ADV2",
+      "PRIVATISATION_DIS1"
+     ],
+     "prompt": "Drag and drop the 4 key terms in the order they build on each other."
+    },
+    {
+     "type": "ask",
+     "q": "The new private owner faces pressure to cut costs and boost profit, as you saw. On this essential rail route, it now cuts back on maintenance and off-peak services that were not very profitable. Whose interest is being put first?",
+     "right": "The firm's profit, over passengers' needs",
+     "wrong": "Passengers' needs, over the firm's profit",
+     "hint": "Which one drives the firm's decisions now: what earns money, or what passengers actually need?",
+     "pre": "So private firms in essential services may put",
+     "term": "PRIVATISATION_DIS2"
+    },
+    {
+     "type": "derive"
+    }
+   ],
+   "given": [
+    "REASONS_PROMOTE_COMP",
+    "monopoly_eq"
+   ],
+   "needs": [
+    "REASONS_PROMOTE_COMP",
+    "monopoly_eq"
+   ],
+   "builds": [
+    "REASONS_PROMOTE_COMP",
+    "monopoly_eq"
+   ],
+   "nodes": [
+    "PRIVATISATION_DEF",
+    "PRIVATISATION_ADV1",
+    "PRIVATISATION_ADV2",
+    "PRIVATISATION_DIS1",
+    "PRIVATISATION_DIS2"
+   ],
+   "dropped": [],
+   "edges": [
+    [
+     "PRIVATISATION_DEF",
+     "PRIVATISATION_ADV1"
+    ],
+    [
+     "PRIVATISATION_DEF",
+     "PRIVATISATION_ADV2"
+    ],
+    [
+     "PRIVATISATION_DEF",
+     "PRIVATISATION_DIS1"
+    ],
+    [
+     "PRIVATISATION_ADV1",
+     "PRIVATISATION_DIS2"
+    ],
+    [
+     "REASONS_PROMOTE_COMP",
+     "PRIVATISATION_DEF"
+    ],
+    [
+     "monopoly_eq",
+     "PRIVATISATION_DIS1"
+    ],
+    [
+     "REASONS_PROMOTE_COMP",
+     "PRIVATISATION_DEF"
+    ]
+   ]
+  }
+ ]
+}

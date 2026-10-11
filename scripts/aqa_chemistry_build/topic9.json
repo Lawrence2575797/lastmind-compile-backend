@@ -1,0 +1,596 @@
+{
+  "nodes": [
+    {
+      "id": "ATM_COMPOSITION",
+      "label": "Proportions of gases in today's atmosphere (approx. 80% N2, 20% O2, small proportions of CO2, water vapour, noble gases)",
+      "subtopic": "9.1",
+      "theme": "Topic 9",
+      "difficulty": 0.15,
+      "objective": "State the approximate percentages of nitrogen, oxygen and other gases in the Earth's current atmosphere, stable for the last 200 million years.",
+      "essentialPoints": [
+        "Approximately 80% nitrogen and 20% oxygen",
+        "Small proportions of CO2, water vapour and noble gases",
+        "Composition has been broadly constant for ~200 million years"
+      ],
+      "specRefs": [
+        "4.9.1.1"
+      ],
+      "kind": "concept",
+      "practicalIds": []
+    },
+    {
+      "id": "ATM_EARLY_VOLCANIC",
+      "label": "Early Earth's atmosphere formed by intense volcanic activity",
+      "subtopic": "9.1",
+      "theme": "Topic 9",
+      "difficulty": 0.25,
+      "objective": "Describe the theory that volcanic activity in Earth's first billion years released gases forming the early atmosphere and water vapour that condensed to form the oceans.",
+      "essentialPoints": [
+        "Intense volcanic activity during first billion years released gases",
+        "Early atmosphere likely mainly CO2 with little/no oxygen, similar to Mars/Venus today",
+        "Water vapour released condensed to form the oceans",
+        "Volcanoes also released nitrogen (built up gradually) and small proportions of methane and ammonia"
+      ],
+      "specRefs": [
+        "4.9.1.2"
+      ],
+      "kind": "concept",
+      "practicalIds": []
+    },
+    {
+      "id": "ATM_CO2_OCEAN_UPTAKE",
+      "label": "Dissolving of CO2 in oceans and formation of carbonate sediments",
+      "subtopic": "9.1",
+      "theme": "Topic 9",
+      "difficulty": 0.3,
+      "objective": "Explain how CO2 dissolved in forming oceans and was precipitated as carbonates, reducing atmospheric CO2.",
+      "essentialPoints": [
+        "When oceans formed, CO2 dissolved into the water",
+        "Carbonates precipitated out of solution forming sedimentary rock deposits",
+        "This process reduced the amount of CO2 in the atmosphere"
+      ],
+      "specRefs": [
+        "4.9.1.2",
+        "4.9.1.4"
+      ],
+      "kind": "concept",
+      "practicalIds": []
+    },
+    {
+      "id": "ATM_EARLY_EVIDENCE_EVAL",
+      "label": "Evaluating evidence and theories about Earth's early atmosphere",
+      "subtopic": "9.1",
+      "theme": "Topic 9",
+      "difficulty": 0.55,
+      "objective": "Given appropriate information, interpret evidence and evaluate different theories about the composition and formation of Earth's early atmosphere.",
+      "essentialPoints": [
+        "Evidence for the early atmosphere is limited due to the 4.6 billion year timescale",
+        "Different theories can be compared and evaluated against given evidence",
+        "Uncertainty exists because direct measurement of ancient atmospheres is impossible"
+      ],
+      "specRefs": [
+        "4.9.1.2"
+      ],
+      "kind": "evaluation",
+      "practicalIds": []
+    },
+    {
+      "id": "PHOTOSYNTHESIS_EQ",
+      "label": "Photosynthesis equation and its role in producing oxygen",
+      "subtopic": "9.1",
+      "theme": "Topic 9",
+      "difficulty": 0.2,
+      "objective": "State the word/symbol equation for photosynthesis and describe how algae and plants produced atmospheric oxygen over time.",
+      "essentialPoints": [
+        "Photosynthesis: carbon dioxide + water → glucose + oxygen",
+        "Algae first produced oxygen about 2.7 billion years ago",
+        "Over the next billion years plants evolved, gradually increasing atmospheric oxygen enabling animal evolution"
+      ],
+      "specRefs": [
+        "4.9.1.3"
+      ],
+      "kind": "concept",
+      "practicalIds": []
+    },
+    {
+      "id": "ATM_CO2_DECREASE_BIO",
+      "label": "Photosynthesis as a cause of decreasing atmospheric CO2",
+      "subtopic": "9.1",
+      "theme": "Topic 9",
+      "difficulty": 0.2,
+      "objective": "Explain how photosynthesis by algae and plants decreased the percentage of CO2 in the atmosphere.",
+      "essentialPoints": [
+        "Photosynthesis removes CO2 from the atmosphere and locks carbon into biomass",
+        "Contributed to long-term decline in atmospheric CO2 percentage"
+      ],
+      "specRefs": [
+        "4.9.1.4"
+      ],
+      "kind": "concept",
+      "practicalIds": []
+    },
+    {
+      "id": "FOSSIL_FUEL_LIMESTONE_FORMATION",
+      "label": "Formation of limestone, coal, crude oil and natural gas as carbon sinks",
+      "subtopic": "9.1",
+      "theme": "Topic 9",
+      "difficulty": 0.35,
+      "objective": "Describe and explain the formation of deposits of limestone, coal, crude oil and natural gas, and how their formation removed carbon from the atmosphere-ocean system.",
+      "essentialPoints": [
+        "Sedimentary rocks such as limestone formed from precipitated carbonates and shells/skeletons of marine organisms",
+        "Coal formed from the remains of ancient plants under heat and pressure over geological time",
+        "Crude oil and natural gas formed from the remains of marine organisms buried under sediment over geological time",
+        "These deposits locked carbon away, reducing atmospheric/dissolved CO2"
+      ],
+      "specRefs": [
+        "4.9.1.4"
+      ],
+      "kind": "concept",
+      "practicalIds": []
+    },
+    {
+      "id": "ATM_CHANGE_TIMELINE",
+      "label": "Overall timeline of atmospheric change and its causes",
+      "subtopic": "9.1",
+      "theme": "Topic 9",
+      "difficulty": 0.35,
+      "objective": "Describe the main changes in the Earth's atmosphere over geological time and the causes of these changes.",
+      "essentialPoints": [
+        "Sequence: volcanic CO2-rich early atmosphere → ocean/carbonate CO2 removal → photosynthesis producing O2 and removing CO2 → formation of fossil fuel/sedimentary carbon stores → modern stable composition",
+        "Combines biological and geological processes as causes of change"
+      ],
+      "specRefs": [
+        "4.9.1.4"
+      ],
+      "kind": "concept",
+      "practicalIds": []
+    },
+    {
+      "id": "GREENHOUSE_GASES_DEF",
+      "label": "Greenhouse gases: water vapour, carbon dioxide and methane",
+      "subtopic": "9.2",
+      "theme": "Topic 9",
+      "difficulty": 0.15,
+      "objective": "Identify water vapour, carbon dioxide and methane as the main greenhouse gases responsible for maintaining habitable temperatures on Earth.",
+      "essentialPoints": [
+        "Greenhouse gases include water vapour, carbon dioxide and methane",
+        "They maintain Earth's temperature at a level able to support life"
+      ],
+      "specRefs": [
+        "4.9.2.1"
+      ],
+      "kind": "concept",
+      "practicalIds": []
+    },
+    {
+      "id": "GREENHOUSE_EFFECT_MECHANISM",
+      "label": "The greenhouse effect: interaction of short and long wavelength radiation with matter",
+      "subtopic": "9.2",
+      "theme": "Topic 9",
+      "difficulty": 0.5,
+      "objective": "Describe the greenhouse effect in terms of short-wavelength radiation from the Sun passing through the atmosphere, being absorbed and re-emitted as longer-wavelength radiation, which greenhouse gases absorb and re-radiate, warming the Earth's surface.",
+      "essentialPoints": [
+        "Short-wavelength radiation from the Sun passes through the atmosphere and is absorbed by the Earth's surface",
+        "The Earth re-emits energy as longer-wavelength radiation",
+        "Greenhouse gases absorb this long-wavelength radiation and re-radiate it in all directions, including back to Earth's surface",
+        "This traps energy in the lower atmosphere, raising surface temperature"
+      ],
+      "specRefs": [
+        "4.9.2.1"
+      ],
+      "kind": "concept",
+      "practicalIds": []
+    },
+    {
+      "id": "HUMAN_ACTIVITY_CO2_INCREASE",
+      "label": "Human activities that increase atmospheric carbon dioxide",
+      "subtopic": "9.2",
+      "theme": "Topic 9",
+      "difficulty": 0.15,
+      "objective": "Recall two human activities that increase atmospheric carbon dioxide levels.",
+      "essentialPoints": [
+        "Combustion of fossil fuels releases CO2",
+        "Deforestation reduces CO2 uptake by photosynthesis and can release stored carbon"
+      ],
+      "specRefs": [
+        "4.9.2.2"
+      ],
+      "kind": "concept",
+      "practicalIds": []
+    },
+    {
+      "id": "HUMAN_ACTIVITY_METHANE_INCREASE",
+      "label": "Human activities that increase atmospheric methane",
+      "subtopic": "9.2",
+      "theme": "Topic 9",
+      "difficulty": 0.15,
+      "objective": "Recall two human activities that increase atmospheric methane levels.",
+      "essentialPoints": [
+        "Livestock farming (e.g. cattle) releases methane through digestion",
+        "Rice paddy fields and landfill sites release methane from decomposition"
+      ],
+      "specRefs": [
+        "4.9.2.2"
+      ],
+      "kind": "concept",
+      "practicalIds": []
+    },
+    {
+      "id": "CLIMATE_EVIDENCE_EVAL",
+      "label": "Evaluating evidence quality and uncertainty in climate change reports",
+      "subtopic": "9.2",
+      "theme": "Topic 9",
+      "difficulty": 0.6,
+      "objective": "Evaluate the quality of evidence in a report about global climate change, describe uncertainties in the evidence base, and recognise the importance of peer review and communication of results.",
+      "essentialPoints": [
+        "Complex systems like global climate are difficult to model, leading to simplified models with inherent uncertainty",
+        "Media presentations may be based on partial evidence and can be biased",
+        "Peer review validates scientific claims before wide acceptance; communicating results to varied audiences is important"
+      ],
+      "specRefs": [
+        "4.9.2.2"
+      ],
+      "kind": "evaluation",
+      "practicalIds": []
+    },
+    {
+      "id": "GLOBAL_CLIMATE_CHANGE_LINK",
+      "label": "Human-caused increase in greenhouse gases linked to global climate change",
+      "subtopic": "9.2",
+      "theme": "Topic 9",
+      "difficulty": 0.4,
+      "objective": "State that many scientists, based on peer-reviewed evidence, believe increased human-caused greenhouse gas emissions increase atmospheric surface temperature and cause global climate change.",
+      "essentialPoints": [
+        "Increased greenhouse gas concentrations from human activity increase surface atmospheric temperature",
+        "This warming is believed by many scientists (based on peer-reviewed evidence) to cause global climate change"
+      ],
+      "specRefs": [
+        "4.9.2.2",
+        "4.9.2.3"
+      ],
+      "kind": "concept",
+      "practicalIds": []
+    },
+    {
+      "id": "CLIMATE_CHANGE_EFFECTS",
+      "label": "Potential effects of global climate change",
+      "subtopic": "9.2",
+      "theme": "Topic 9",
+      "difficulty": 0.3,
+      "objective": "Describe briefly four potential effects of global climate change.",
+      "essentialPoints": [
+        "Sea level rise from melting ice caps/glaciers and thermal expansion, causing flooding",
+        "Changes to weather patterns causing more frequent/severe storms",
+        "Changes in distribution of wildlife species (migration, habitat loss)",
+        "Changes to amount/timing/distribution of rainfall, affecting agriculture and water supply"
+      ],
+      "specRefs": [
+        "4.9.2.3"
+      ],
+      "kind": "concept",
+      "practicalIds": []
+    },
+    {
+      "id": "CLIMATE_CHANGE_RISK_EVAL",
+      "label": "Discussing scale, risk and environmental implications of global climate change",
+      "subtopic": "9.2",
+      "theme": "Topic 9",
+      "difficulty": 0.55,
+      "objective": "Discuss the scale, risk and environmental implications associated with global climate change.",
+      "essentialPoints": [
+        "Global scale of climate change means impacts are widespread and interconnected across ecosystems and economies",
+        "Risk assessment weighs likelihood and severity of effects (e.g. flooding, food/water insecurity) against uncertainty in predictions",
+        "Environmental implications include biodiversity loss and habitat disruption alongside human socioeconomic impacts"
+      ],
+      "specRefs": [
+        "4.9.2.3"
+      ],
+      "kind": "evaluation",
+      "practicalIds": []
+    },
+    {
+      "id": "CARBON_FOOTPRINT_DEF",
+      "label": "Definition of carbon footprint",
+      "subtopic": "9.2",
+      "theme": "Topic 9",
+      "difficulty": 0.2,
+      "objective": "Define carbon footprint as the total amount of carbon dioxide and other greenhouse gases emitted over the full life cycle of a product, service or event.",
+      "essentialPoints": [
+        "Carbon footprint = total CO2 and other greenhouse gases emitted",
+        "Measured over the full life cycle of a product, service or event"
+      ],
+      "specRefs": [
+        "4.9.2.4"
+      ],
+      "kind": "concept",
+      "practicalIds": []
+    },
+    {
+      "id": "CARBON_FOOTPRINT_REDUCTION",
+      "label": "Actions to reduce carbon footprint",
+      "subtopic": "9.2",
+      "theme": "Topic 9",
+      "difficulty": 0.25,
+      "objective": "Describe actions that can reduce emissions of carbon dioxide and methane, thereby reducing carbon footprint.",
+      "essentialPoints": [
+        "Using renewable/alternative energy sources instead of fossil fuels reduces CO2 emissions",
+        "Improving energy efficiency and carbon capture/storage reduces emissions",
+        "Reducing meat consumption and changes to waste management/farming practices reduce methane emissions"
+      ],
+      "specRefs": [
+        "4.9.2.4"
+      ],
+      "kind": "concept",
+      "practicalIds": []
+    },
+    {
+      "id": "CARBON_FOOTPRINT_LIMITATIONS_EVAL",
+      "label": "Reasons why actions to reduce carbon footprint may be limited",
+      "subtopic": "9.2",
+      "theme": "Topic 9",
+      "difficulty": 0.45,
+      "objective": "Give reasons why actions to reduce carbon dioxide and methane emissions may be limited.",
+      "essentialPoints": [
+        "Economic costs of alternative technologies can be high, and may disadvantage individuals, businesses or countries",
+        "Lack of public/political will or international agreement can limit government action",
+        "Incomplete science or lack of international cooperation can limit effectiveness of proposed solutions",
+        "Lifestyle changes are difficult to implement/enforce on a large scale"
+      ],
+      "specRefs": [
+        "4.9.2.4"
+      ],
+      "kind": "evaluation",
+      "practicalIds": []
+    },
+    {
+      "id": "FUEL_COMPOSITION_ELEMENTS",
+      "label": "Fuels contain carbon and/or hydrogen and may contain sulfur",
+      "subtopic": "9.3",
+      "theme": "Topic 9",
+      "difficulty": 0.15,
+      "objective": "State that most fuels, including coal, contain carbon and/or hydrogen and may also contain some sulfur as an impurity.",
+      "essentialPoints": [
+        "Fuels such as coal contain carbon and/or hydrogen",
+        "Some fuels also contain sulfur impurities"
+      ],
+      "specRefs": [
+        "4.9.3.1"
+      ],
+      "kind": "concept",
+      "practicalIds": []
+    },
+    {
+      "id": "COMBUSTION_PRODUCTS_MAIN",
+      "label": "Combustion products from fuels: CO2, water vapour, CO, SO2, oxides of nitrogen, particulates",
+      "subtopic": "9.3",
+      "theme": "Topic 9",
+      "difficulty": 0.35,
+      "objective": "Describe how carbon monoxide, soot (carbon particles), sulfur dioxide and oxides of nitrogen are produced by burning fuels, and predict combustion products given fuel composition and conditions.",
+      "essentialPoints": [
+        "Complete combustion of carbon-containing fuels produces CO2 and water vapour",
+        "Incomplete combustion (insufficient oxygen) produces carbon monoxide and/or soot (unburned carbon particles/hydrocarbons)",
+        "Sulfur impurities in fuel burn to form sulfur dioxide",
+        "High temperatures in combustion cause nitrogen and oxygen from the air to react, forming oxides of nitrogen"
+      ],
+      "specRefs": [
+        "4.9.3.1"
+      ],
+      "kind": "concept",
+      "practicalIds": []
+    },
+    {
+      "id": "CO_TOXICITY",
+      "label": "Carbon monoxide: a toxic, colourless, odourless gas",
+      "subtopic": "9.3",
+      "theme": "Topic 9",
+      "difficulty": 0.2,
+      "objective": "Describe carbon monoxide as a toxic gas that is colourless and odourless, making it hard to detect, and explain the danger this poses to humans.",
+      "essentialPoints": [
+        "Carbon monoxide is toxic to humans (binds to haemoglobin, reducing oxygen transport)",
+        "It is colourless and odourless, so cannot easily be detected without specific alarms"
+      ],
+      "specRefs": [
+        "4.9.3.2"
+      ],
+      "kind": "concept",
+      "practicalIds": []
+    },
+    {
+      "id": "SO2_NOX_EFFECTS",
+      "label": "Effects of sulfur dioxide and oxides of nitrogen: respiratory problems and acid rain",
+      "subtopic": "9.3",
+      "theme": "Topic 9",
+      "difficulty": 0.3,
+      "objective": "Describe and explain how sulfur dioxide and oxides of nitrogen cause respiratory problems in humans and cause acid rain.",
+      "essentialPoints": [
+        "Sulfur dioxide and oxides of nitrogen irritate the respiratory system, worsening conditions such as asthma",
+        "These gases dissolve in atmospheric water droplets forming acidic solutions, which fall as acid rain",
+        "Acid rain damages plants, aquatic ecosystems and buildings/structures"
+      ],
+      "specRefs": [
+        "4.9.3.2"
+      ],
+      "kind": "concept",
+      "practicalIds": []
+    },
+    {
+      "id": "PARTICULATE_EFFECTS",
+      "label": "Effects of particulates: global dimming and health problems",
+      "subtopic": "9.3",
+      "theme": "Topic 9",
+      "difficulty": 0.3,
+      "objective": "Describe and explain how particulates (soot and unburned hydrocarbons) cause global dimming and health problems for humans.",
+      "essentialPoints": [
+        "Particulates reflect sunlight back into space and provide surfaces for cloud droplet formation, contributing to global dimming (reduced sunlight reaching Earth's surface)",
+        "Fine particulates can be inhaled deep into the lungs, causing respiratory and cardiovascular health problems"
+      ],
+      "specRefs": [
+        "4.9.3.2"
+      ],
+      "kind": "concept",
+      "practicalIds": []
+    }
+  ],
+  "edges": [
+    {
+      "from": "ATM_EARLY_VOLCANIC",
+      "to": "ATM_CO2_OCEAN_UPTAKE",
+      "difficulty": 0.3
+    },
+    {
+      "from": "ATM_EARLY_VOLCANIC",
+      "to": "ATM_EARLY_EVIDENCE_EVAL",
+      "difficulty": 0.45
+    },
+    {
+      "from": "ATM_CO2_OCEAN_UPTAKE",
+      "to": "ATM_EARLY_EVIDENCE_EVAL",
+      "difficulty": 0.4
+    },
+    {
+      "from": "ATM_CO2_OCEAN_UPTAKE",
+      "to": "FOSSIL_FUEL_LIMESTONE_FORMATION",
+      "difficulty": 0.35
+    },
+    {
+      "from": "PHOTOSYNTHESIS_EQ",
+      "to": "ATM_CO2_DECREASE_BIO",
+      "difficulty": 0.25
+    },
+    {
+      "from": "PHOTOSYNTHESIS_EQ",
+      "to": "GREENHOUSE_GASES_DEF",
+      "difficulty": 0.15
+    },
+    {
+      "from": "ATM_CO2_DECREASE_BIO",
+      "to": "FOSSIL_FUEL_LIMESTONE_FORMATION",
+      "difficulty": 0.3
+    },
+    {
+      "from": "ATM_EARLY_VOLCANIC",
+      "to": "ATM_CHANGE_TIMELINE",
+      "difficulty": 0.3
+    },
+    {
+      "from": "ATM_CO2_OCEAN_UPTAKE",
+      "to": "ATM_CHANGE_TIMELINE",
+      "difficulty": 0.3
+    },
+    {
+      "from": "PHOTOSYNTHESIS_EQ",
+      "to": "ATM_CHANGE_TIMELINE",
+      "difficulty": 0.3
+    },
+    {
+      "from": "ATM_CO2_DECREASE_BIO",
+      "to": "ATM_CHANGE_TIMELINE",
+      "difficulty": 0.3
+    },
+    {
+      "from": "FOSSIL_FUEL_LIMESTONE_FORMATION",
+      "to": "ATM_CHANGE_TIMELINE",
+      "difficulty": 0.35
+    },
+    {
+      "from": "ATM_CHANGE_TIMELINE",
+      "to": "ATM_COMPOSITION",
+      "difficulty": 0.3
+    },
+    {
+      "from": "GREENHOUSE_GASES_DEF",
+      "to": "GREENHOUSE_EFFECT_MECHANISM",
+      "difficulty": 0.4
+    },
+    {
+      "from": "GREENHOUSE_EFFECT_MECHANISM",
+      "to": "HUMAN_ACTIVITY_CO2_INCREASE",
+      "difficulty": 0.3
+    },
+    {
+      "from": "GREENHOUSE_EFFECT_MECHANISM",
+      "to": "HUMAN_ACTIVITY_METHANE_INCREASE",
+      "difficulty": 0.3
+    },
+    {
+      "from": "HUMAN_ACTIVITY_CO2_INCREASE",
+      "to": "GLOBAL_CLIMATE_CHANGE_LINK",
+      "difficulty": 0.35
+    },
+    {
+      "from": "HUMAN_ACTIVITY_METHANE_INCREASE",
+      "to": "GLOBAL_CLIMATE_CHANGE_LINK",
+      "difficulty": 0.35
+    },
+    {
+      "from": "GLOBAL_CLIMATE_CHANGE_LINK",
+      "to": "CLIMATE_EVIDENCE_EVAL",
+      "difficulty": 0.5
+    },
+    {
+      "from": "GLOBAL_CLIMATE_CHANGE_LINK",
+      "to": "CLIMATE_CHANGE_EFFECTS",
+      "difficulty": 0.4
+    },
+    {
+      "from": "CLIMATE_CHANGE_EFFECTS",
+      "to": "CLIMATE_CHANGE_RISK_EVAL",
+      "difficulty": 0.5
+    },
+    {
+      "from": "CLIMATE_EVIDENCE_EVAL",
+      "to": "CLIMATE_CHANGE_RISK_EVAL",
+      "difficulty": 0.45
+    },
+    {
+      "from": "HUMAN_ACTIVITY_CO2_INCREASE",
+      "to": "CARBON_FOOTPRINT_DEF",
+      "difficulty": 0.25
+    },
+    {
+      "from": "HUMAN_ACTIVITY_METHANE_INCREASE",
+      "to": "CARBON_FOOTPRINT_DEF",
+      "difficulty": 0.25
+    },
+    {
+      "from": "CARBON_FOOTPRINT_DEF",
+      "to": "CARBON_FOOTPRINT_REDUCTION",
+      "difficulty": 0.3
+    },
+    {
+      "from": "CARBON_FOOTPRINT_REDUCTION",
+      "to": "CARBON_FOOTPRINT_LIMITATIONS_EVAL",
+      "difficulty": 0.45
+    },
+    {
+      "from": "CLIMATE_CHANGE_RISK_EVAL",
+      "to": "CARBON_FOOTPRINT_LIMITATIONS_EVAL",
+      "difficulty": 0.4
+    },
+    {
+      "from": "FUEL_COMPOSITION_ELEMENTS",
+      "to": "COMBUSTION_PRODUCTS_MAIN",
+      "difficulty": 0.35
+    },
+    {
+      "from": "COMBUSTION_PRODUCTS_MAIN",
+      "to": "CO_TOXICITY",
+      "difficulty": 0.25
+    },
+    {
+      "from": "COMBUSTION_PRODUCTS_MAIN",
+      "to": "SO2_NOX_EFFECTS",
+      "difficulty": 0.3
+    },
+    {
+      "from": "COMBUSTION_PRODUCTS_MAIN",
+      "to": "PARTICULATE_EFFECTS",
+      "difficulty": 0.3
+    },
+    {
+      "from": "HUMAN_ACTIVITY_CO2_INCREASE",
+      "to": "COMBUSTION_PRODUCTS_MAIN",
+      "difficulty": 0.25
+    }
+  ]
+}

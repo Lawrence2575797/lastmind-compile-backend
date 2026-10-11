@@ -1,0 +1,243 @@
+{
+ "id": "gen",
+ "subject": "Economics",
+ "title": "Opportunity cost, PPF and advantage",
+ "terms": {
+  "choice": {
+   "label": "Choice"
+  },
+  "tradeoff": {
+   "label": "Trade-off"
+  },
+  "altuses": {
+   "label": "Alternative uses"
+  },
+  "nextbest": {
+   "label": "Next best alternative"
+  },
+  "OPP_COST": {
+   "label": "Opportunity cost"
+  },
+  "axes": {
+   "label": "Two goods, fixed resources"
+  },
+  "PPF": {
+   "label": "Production possibility frontier"
+  },
+  "ABS_ADV": {
+   "label": "Absolute advantage"
+  },
+  "COMP_ADV_NUM": {
+   "label": "Comparative advantage"
+  }
+ },
+ "stages": [
+  {
+   "name": "Opportunity cost, PPF and advantage",
+   "title": "Opportunity cost, PPF and advantage",
+   "sub": "Why countries specialise and trade, built up from opportunity cost through the PPF to comparative advantage.",
+   "steps": [
+    {
+     "type": "ask",
+     "q": "A farmer has one field. Planting it with wheat means it cannot also be planted with potatoes this year. What must the farmer do?",
+     "right": "Choose between wheat and potatoes",
+     "wrong": "Wait until the field is bigger",
+     "hint": "One field, two crops that both need it. What is left to decide?",
+     "pre": "The farmer has to make a",
+     "term": "choice"
+    },
+    {
+     "type": "ask",
+     "q": "The farmer plants wheat. Does she still get the potato harvest she did not plant?",
+     "right": "No, she gives it up",
+     "wrong": "Yes, she gets both harvests",
+     "hint": "Can the same field grow both crops at once?",
+     "pre": "So every choice involves a",
+     "term": "tradeoff"
+    },
+    {
+     "type": "ask",
+     "q": "Could that same field instead grow potatoes, or barley, or be left as pasture?",
+     "right": "Yes, many different things",
+     "wrong": "No, only wheat can be grown there",
+     "hint": "Is the field capable of producing just one thing, or several different things?",
+     "pre": "So resources like land have",
+     "term": "altuses"
+    },
+    {
+     "type": "ask",
+     "q": "Of wheat, potatoes and pasture, which one does the farmer actually count as her loss from choosing wheat?",
+     "right": "The single best one she gave up",
+     "wrong": "All the other options added together",
+     "hint": "She can only have picked one of the others instead. Which one would that have been?",
+     "pre": "That single best alternative given up is the",
+     "term": "nextbest"
+    },
+    {
+     "type": "order",
+     "terms": [
+      "choice",
+      "tradeoff",
+      "altuses",
+      "nextbest"
+     ],
+     "prompt": "Drag and drop the 4 key terms in the order they build on each other."
+    },
+    {
+     "type": "ask",
+     "q": "So what is the true cost to the farmer of growing wheat instead of potatoes?",
+     "right": "The potatoes she gave up producing",
+     "wrong": "The money she spent on wheat seed",
+     "hint": "Cost here is not about cash spent, it's about what was sacrificed.",
+     "pre": "That is her",
+     "term": "OPP_COST"
+    },
+    {
+     "type": "ask",
+     "q": "A country has a fixed amount of land, workers and machines, and can use them to make either cars or wheat. If it wants to see, for every possible split of resources, the most of each it could produce, what two things must it show on a graph?",
+     "right": "The maximum output of cars against the maximum output of wheat",
+     "wrong": "The price of cars against the price of wheat",
+     "hint": "Think about what is being produced with the resources, not what it sells for.",
+     "pre": "So we plot the maximum combinations of",
+     "term": "axes"
+    },
+    {
+     "type": "ask",
+     "q": "Using all its resources, a country plots its maximum possible combinations of cars and wheat as a curve. What does that curve show?",
+     "right": "The maximum combinations it can produce with current resources",
+     "wrong": "The combinations consumers most want to buy",
+     "hint": "This is about production limits, not consumer preferences.",
+     "pre": "That curve is the",
+     "term": "PPF",
+     "diagram": {
+      "x": "Wheat",
+      "y": "Cars",
+      "curves": [
+       {
+        "label": "PPF",
+        "pts": [
+         [
+          0,
+          0.9
+         ],
+         [
+          0.3,
+          0.85
+         ],
+         [
+          0.6,
+          0.68
+         ],
+         [
+          0.85,
+          0.4
+         ],
+         [
+          0.95,
+          0
+         ]
+        ]
+       }
+      ]
+     }
+    },
+    {
+     "type": "ask",
+     "q": "Country A makes 10 cars or 6 tonnes of wheat per worker per day; Country B makes 4 cars or 6 tonnes of wheat per worker per day, using identical resources otherwise. Which country can produce more cars outright?",
+     "right": "Country A",
+     "wrong": "Country B",
+     "hint": "Look only at the car numbers, not the wheat numbers.",
+     "pre": "Producing more of a good with the same resources than another country is having",
+     "term": "ABS_ADV"
+    },
+    {
+     "type": "order",
+     "terms": [
+      "OPP_COST",
+      "axes",
+      "PPF",
+      "ABS_ADV"
+     ],
+     "prompt": "Drag and drop the 4 key terms in the order they build on each other."
+    },
+    {
+     "type": "ask",
+     "q": "Country A gives up 0.6 tonnes of wheat for every car made (6/10). Country B gives up 1.5 tonnes of wheat for every car made (6/4). Which country sacrifices less wheat to make a car?",
+     "right": "Country A",
+     "wrong": "Country B",
+     "hint": "Compare the two opportunity-cost figures: 0.6 against 1.5.",
+     "pre": "Having the lower opportunity cost of production is having",
+     "term": "COMP_ADV_NUM"
+    },
+    {
+     "type": "derive"
+    }
+   ],
+   "given": [],
+   "needs": [],
+   "builds": [],
+   "nodes": [
+    "OPP_COST",
+    "PPF",
+    "ABS_ADV",
+    "COMP_ADV_NUM"
+   ],
+   "dropped": [
+    [
+     "OPP_COST",
+     "PPF"
+    ]
+   ],
+   "edges": [
+    [
+     "PPF",
+     "ABS_ADV"
+    ],
+    [
+     "ABS_ADV",
+     "COMP_ADV_NUM"
+    ],
+    [
+     "OPP_COST",
+     "COMP_ADV_NUM"
+    ],
+    [
+     "choice",
+     "tradeoff"
+    ],
+    [
+     "tradeoff",
+     "nextbest"
+    ],
+    [
+     "altuses",
+     "nextbest"
+    ],
+    [
+     "nextbest",
+     "OPP_COST"
+    ],
+    [
+     "OPP_COST",
+     "axes"
+    ],
+    [
+     "axes",
+     "PPF"
+    ],
+    [
+     "PPF",
+     "ABS_ADV"
+    ],
+    [
+     "ABS_ADV",
+     "COMP_ADV_NUM"
+    ],
+    [
+     "OPP_COST",
+     "COMP_ADV_NUM"
+    ]
+   ]
+  }
+ ]
+}

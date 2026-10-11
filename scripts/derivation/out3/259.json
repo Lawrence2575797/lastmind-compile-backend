@@ -1,0 +1,141 @@
+{
+ "id": "gen",
+ "subject": "Economics",
+ "title": "Information provision: strengths and weaknesses",
+ "terms": {
+  "compare_alt": {
+   "label": "Compare to bans/taxes"
+  },
+  "INFOPROV_ADV3": {
+   "label": "Preserves consumer choice"
+  },
+  "norms_shift": {
+   "label": "Norms shift over time"
+  },
+  "INFOPROV_ADV4": {
+   "label": "Long-lasting effect"
+  },
+  "INFOPROV_DIS4": {
+   "label": "Counter-advertising offsets it"
+  },
+  "INFOPROV_DEF": {
+   "label": "Provision of information: definition"
+  }
+ },
+ "stages": [
+  {
+   "name": "Information provision: strengths and weaknesses",
+   "title": "Information provision: strengths and weaknesses",
+   "sub": "Weigh up why giving people information can work well, and why it can still fail.",
+   "steps": [
+    {
+     "type": "ask",
+     "q": "A ban stops a good being sold at all, and a tax makes it more expensive to discourage buying it. Putting calorie labels on menus does neither of those things. Does it stop or price anyone out of ordering the meal?",
+     "right": "No, it leaves the decision to the customer",
+     "wrong": "Yes, it works the same as a ban or tax",
+     "hint": "A label only adds information. Does it remove the option or raise its price?",
+     "pre": "So compared with a ban or a tax, information provision is",
+     "term": "compare_alt"
+    },
+    {
+     "type": "ask",
+     "q": "Because the customer can still order the high-calorie meal if they want to, has their freedom to choose been taken away?",
+     "right": "No, their freedom to choose is kept",
+     "wrong": "Yes, their freedom to choose is removed",
+     "hint": "If the option is still there, is the choice still theirs?",
+     "pre": "So one advantage is that it",
+     "term": "INFOPROV_ADV3"
+    },
+    {
+     "type": "ask",
+     "q": "Ten years after cigarette packets first showed health warnings, most people now see smoking as harmful and unattractive without even reading the warning. Have people's underlying attitudes changed, or stayed the same?",
+     "right": "Their attitudes and norms have changed",
+     "wrong": "Their attitudes have stayed exactly the same",
+     "hint": "Think about whether the warning is still doing all the work, or whether beliefs themselves have moved.",
+     "pre": "So over time, people's attitudes and social",
+     "term": "norms_shift"
+    },
+    {
+     "type": "ask",
+     "q": "If attitudes and norms have genuinely shifted this way, does the effect on behaviour disappear once the campaign stops, or does it keep going?",
+     "right": "It keeps going for a long time",
+     "wrong": "It disappears as soon as the campaign stops",
+     "hint": "If beliefs themselves have changed, does removing the advert undo that belief?",
+     "pre": "So another advantage is that it can have a",
+     "term": "INFOPROV_ADV4"
+    },
+    {
+     "type": "order",
+     "terms": [
+      "compare_alt",
+      "INFOPROV_ADV3",
+      "norms_shift",
+      "INFOPROV_ADV4"
+     ],
+     "prompt": "Drag and drop the 4 key terms in the order they build on each other."
+    },
+    {
+     "type": "ask",
+     "q": "The government runs adverts warning about the harms of sugary drinks. The drinks companies respond with their own adverts making sugary drinks look fun and harmless. Does the government's message still land as strongly?",
+     "right": "No, the firms' adverts weaken it",
+     "wrong": "Yes, the government's message always wins",
+     "hint": "Two opposing messages are now competing for the same audience. Does one cancel out some of the other?",
+     "pre": "So a real weakness is that",
+     "term": "INFOPROV_DIS4"
+    },
+    {
+     "type": "derive"
+    }
+   ],
+   "given": [
+    "INFOPROV_DEF"
+   ],
+   "needs": [
+    "INFOPROV_DEF"
+   ],
+   "builds": [
+    "INFOPROV_DEF"
+   ],
+   "nodes": [
+    "INFOPROV_ADV3",
+    "INFOPROV_ADV4",
+    "INFOPROV_DIS4"
+   ],
+   "dropped": [],
+   "edges": [
+    [
+     "INFOPROV_DEF",
+     "INFOPROV_ADV3"
+    ],
+    [
+     "INFOPROV_DEF",
+     "INFOPROV_ADV4"
+    ],
+    [
+     "INFOPROV_DEF",
+     "INFOPROV_DIS4"
+    ],
+    [
+     "INFOPROV_DEF",
+     "compare_alt"
+    ],
+    [
+     "compare_alt",
+     "INFOPROV_ADV3"
+    ],
+    [
+     "INFOPROV_DEF",
+     "norms_shift"
+    ],
+    [
+     "norms_shift",
+     "INFOPROV_ADV4"
+    ],
+    [
+     "INFOPROV_DEF",
+     "INFOPROV_DIS4"
+    ]
+   ]
+  }
+ ]
+}

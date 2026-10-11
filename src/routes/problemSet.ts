@@ -1,9 +1,10 @@
 import { Router, Request, Response } from 'express';
 import { requireAuth, requirePaidTier } from '../services/authMiddleware';
 import { costlyEndpointLimiter } from '../services/rateLimiters';
-import { callClaudeJSONWithFiles, MODELS } from '../services/claudeClient';
+import { callClaudeJSON, callClaudeJSONWithFiles, MODELS } from '../services/claudeClient';
 import { assertLocksAvailable, InsufficientLocksError } from '../services/lockService';
 import { PROBLEM_SET_PARSE_PROMPT } from '../constants/problemSetPrompt';
+import { PROBLEM_SET_MARK_PROMPT } from '../constants/problemSetMarkPrompt';
 
 // POST /problem-set/parse { files: [{ name, mime, data (base64) }], texts: [string] } -> { title, header, questions: [{ number, text, options?, table?, figure?, marks? }] }
 // The Notes page's problem sets: whatever the student added (screenshots, a PDF, pasted text) is read once and returned as separate
@@ -72,6 +73,43 @@ router.post('/problem-set/parse', async (req: Request, res: Response) => {
     if (err instanceof InsufficientLocksError) return res.status(402).json({ error: 'Lock limit reached', code: 'LOCK_LIMIT_REACHED', detail: "You're out of Locks for now." });
     console.error('Problem set parse failed:', err);
     res.status(500).json({ error: 'LastMind could not read that just now. Try again.' });
+  }
+});
+
+// POST /problem-set/mark { question, answer } -> { verdict, score, paragraphs }
+// One answer on a problem set, marked and explained in a few short paragraphs. Nothing is stored here.
+router.post('/problem-set/mark', async (req: Request, res: Response) => {
+  const question = clip(req.body?.question, 4000), answer = clip(req.body?.answer, 4000);
+  if (!question) return res.status(400).json({ error: 'There is no question to mark against.' });
+  if (!answer) return res.status(400).json({ error: 'Write an answer first.' });
+  try {
+    await assertLocksAvailable(req.userId as string);
+    const userContent = `The question:
+"""
+${question}
+"""
+
+The student's answer:
+"""
+${answer}
+"""`;
+    let data: any = null, lastErr: unknown = null;
+    for (let attempt = 0; attempt < 2 && !data; attempt++) {
+      try {
+        const raw = await callClaudeJSON({ model: MODELS.compile, systemPrompt: PROBLEM_SET_MARK_PROMPT, userContent, maxTokens: 900, temperature: 0, userId: req.userId as string, meteredReason: 'problem-set-mark' });
+        data = parseJsonLoose(raw);
+      } catch (e) { lastErr = e; }
+    }
+    if (!data) throw lastErr || new Error('unreadable');
+    const verdict = ['correct', 'partly', 'incorrect'].includes(data.verdict) ? data.verdict : 'partly';
+    const paragraphs = (Array.isArray(data.paragraphs) ? data.paragraphs : []).map((p: unknown) => cleanText(p, 700)).filter(Boolean).slice(0, 4);
+    if (!paragraphs.length) return res.status(500).json({ error: 'LastMind could not mark that just now. Try again.' });
+    const score = /^\d{1,3}\s*\/\s*\d{1,3}$/.test(String(data.score || '').trim()) ? String(data.score).replace(/\s+/g, '') : '';
+    res.json({ verdict, score, paragraphs });
+  } catch (err) {
+    if (err instanceof InsufficientLocksError) return res.status(402).json({ error: 'Lock limit reached', code: 'LOCK_LIMIT_REACHED', detail: "You're out of Locks for now." });
+    console.error('Problem set mark failed:', err);
+    res.status(500).json({ error: 'LastMind could not mark that just now. Try again.' });
   }
 });
 

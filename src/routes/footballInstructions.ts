@@ -73,9 +73,13 @@ router.post('/football/compile-condition', async (req: Request, res: Response) =
   const text = clip(req.body?.text, 400);
   if (text.length < 3) return res.status(400).json({ error: 'Write when this page should be used first.' });
   const own = readSquad(req.body?.squad), opp = readSquad(req.body?.opponent);
+  // ready-made situations the game already knows (the page sends the ones that make sense for this page)
+  const presets: Array<{ key: string; label: string }> = (Array.isArray(req.body?.presets) ? req.body.presets : []).slice(0, 14)
+    .map((p: any) => ({ key: clip(p && p.key, 30), label: clip(p && p.label, 80) })).filter((p: { key: string; label: string }) => /^[a-z_]+$/.test(p.key) && p.label);
+  const presetNote = presets.length ? ` These ready-made situations are known to the game: ${presets.map((p) => `"${p.key}" (${p.label})`).join(', ')}. If what the manager wrote means exactly one of them and nothing more, also return "preset" with its key at the top level of the JSON, next to "rules"; otherwise leave "preset" out.` : '';
   try {
     await assertLocksAvailable(req.userId as string);
-    const preface = `The manager is not giving an instruction. They are describing WHEN one of their tactics pages should be used. Return exactly one rule: scope {"kind":"team"}, effects [{"type":"tempo","delta":0.1}] as a placeholder that will be thrown away, and the whole situation they describe in "when". Use the "expr" condition for anything the other fields cannot say, for example where our full-backs, our midfield or their players stand (use a group or line entity with "agg", never {"e":"me"}). "summary" is the situation in plain words starting with "when", in the manager's terms, for example "when our full-backs have stepped high". If the situation cannot be written as a condition, return an empty rules array and say why in notIncluded.\n\n`;
+    const preface = `The manager is not giving an instruction. They are describing WHEN one of their tactics pages should be used. Return exactly one rule: scope {"kind":"team"}, effects [{"type":"tempo","delta":0.1}] as a placeholder that will be thrown away, and the whole situation they describe in "when". Use the "expr" condition for anything the other fields cannot say, for example where our full-backs, our midfield or their players stand (use a group or line entity with "agg", never {"e":"me"}). "summary" is the situation in plain words starting with "when", in the manager's terms, for example "when our full-backs have stepped high". If the situation cannot be written as a condition, return an empty rules array and say why in notIncluded.${presetNote}\n\n`;
     const userContent = `${preface}Our squad:\n${own.map(line).join('\n') || '(not given)'}\n\nThe opposition's squad:\n${opp.map(line).join('\n') || '(not given)'}\n\nWhen the page should be used:\n"""\n${text}\n"""`;
     let parsed: any = null, lastErr: unknown = null;
     for (let attempt = 0; attempt < 2 && !parsed; attempt++) {
@@ -87,7 +91,9 @@ router.post('/football/compile-condition', async (req: Request, res: Response) =
     if (!parsed) throw lastErr || new Error('no usable answer');
     const { rules } = validateRules(parsed.rules, asOpp(own), { kind: 'team' }, text, asOpp(opp));
     const r: any = rules[0];
+    const preset = presets.find((p) => p.key === parsed.preset);
     const when = r && r.when && typeof r.when === 'object' ? r.when : null;
+    if (preset && r) return res.json({ summary: clip(r.summary, 160) || preset.label, when: when || {}, preset: preset.key });
     if (!when || !Object.keys(when).length) {
       const why = (Array.isArray(parsed.notIncluded) ? parsed.notIncluded : []).map((s: unknown) => clip(s, 300)).filter(Boolean)[0];
       return res.status(422).json({ error: why || 'That could not be turned into a situation the game can check. Try describing it with the score, the minute, where the ball is, or where a group of players stands.' });

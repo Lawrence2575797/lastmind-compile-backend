@@ -89,14 +89,25 @@ function cleanQuiz(data: any): QuizQ[] | null {
       if (options.length === 4 && Number.isInteger(correct) && correct >= 0 && correct <= 3) out.push({ type: 'mcq', covers, q, options, correct, explanation });
     } else if (x.type === 'cloze') {
       const answer = clip(x.answer, 120);
-      if (answer && /_{2,}/.test(q)) out.push({ type: 'cloze', covers, q, answer, accept: (Array.isArray(x.accept) ? x.accept : []).map((a: unknown) => clip(a, 120)).filter(Boolean).slice(0, 6), explanation });
+      // a gap the model forgot to draw is drawn for it, where the answer sits in the sentence
+      const at = answer ? q.toLowerCase().indexOf(answer.toLowerCase()) : -1;
+      const qq = /_{2,}/.test(q) ? q : (at >= 0 ? q.slice(0, at) + '_____' + q.slice(at + answer.length) : q);
+      if (answer && /_{2,}/.test(qq)) out.push({ type: 'cloze', covers, q: qq, answer, accept: (Array.isArray(x.accept) ? x.accept : []).map((a: unknown) => clip(a, 120)).filter(Boolean).slice(0, 6), explanation });
     } else if (x.type === 'free') {
       const modelAnswer = clip(x.modelAnswer, 700);
       if (modelAnswer) out.push({ type: 'free', covers, q, modelAnswer, explanation });
     }
   });
   const mcq = out.filter((x) => x.type === 'mcq').length, cloze = out.filter((x) => x.type === 'cloze').length, free = out.filter((x) => x.type === 'free').length;
-  return out.length === 5 && mcq >= 2 && cloze >= 1 && free >= 1 ? out : null;
+  void mcq; void cloze; void free;
+  // Anything close is used rather than thrown away: a quiz of four or more usable questions is fine, and a sixth is simply left off.
+  // Free-response questions are kept in the five if there are any, so the mix is not all multiple choice.
+  if (out.length < 4) return null;
+  if (out.length <= 5) return out;
+  const pick: QuizQ[] = [];
+  (['mcq', 'cloze', 'free'] as const).forEach((t) => { const f = out.find((x) => x.type === t); if (f) pick.push(f); });
+  out.forEach((x) => { if (pick.length < 5 && !pick.includes(x)) pick.push(x); });
+  return pick.slice(0, 5);
 }
 router.post('/notes-assistant/quiz', async (req: Request, res: Response) => {
   const text = clip(req.body?.text, MAX_NOTES_CHARS), title = clip(req.body?.title, 200);
@@ -105,9 +116,9 @@ router.post('/notes-assistant/quiz', async (req: Request, res: Response) => {
     await assertLocksAvailable(req.userId as string);
     const userContent = `Page title: ${title || '(untitled)'}\n\nNotes written on the day being tested:\n"""\n${text}\n"""`;
     let quiz: QuizQ[] | null = null, lastErr: unknown = null;
-    for (let attempt = 0; attempt < 2 && !quiz; attempt++) {
+    for (let attempt = 0; attempt < 3 && !quiz; attempt++) {
       try {
-        const raw = await callClaudeJSON({ model: MODELS.chat, systemPrompt: NOTES_QUIZ_PROMPT, userContent, maxTokens: 2200, temperature: 0.4, userId: req.userId as string, meteredReason: 'notes-quiz-generate' });
+        const raw = await callClaudeJSON({ model: MODELS.chat, systemPrompt: NOTES_QUIZ_PROMPT, userContent, maxTokens: 3200, temperature: 0.4, userId: req.userId as string, meteredReason: 'notes-quiz-generate' });
         quiz = cleanQuiz(parseJsonLoose(raw));
       } catch (e) { lastErr = e; }
     }

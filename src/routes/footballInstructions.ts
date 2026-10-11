@@ -65,4 +65,39 @@ router.post('/football/compile-instruction', async (req: Request, res: Response)
   }
 });
 
+// POST /football/compile-condition { text, squad, opponent } -> { summary, when }
+// The manager describes in their own words when a tactics page should be used ("when our full-backs have stepped high and we are drawing").
+// It is read once, when they save it, into the same "when" the instruction rules use, which the match then checks as it plays. Nothing here
+// runs during a match.
+router.post('/football/compile-condition', async (req: Request, res: Response) => {
+  const text = clip(req.body?.text, 400);
+  if (text.length < 3) return res.status(400).json({ error: 'Write when this page should be used first.' });
+  const own = readSquad(req.body?.squad), opp = readSquad(req.body?.opponent);
+  try {
+    await assertLocksAvailable(req.userId as string);
+    const preface = `The manager is not giving an instruction. They are describing WHEN one of their tactics pages should be used. Return exactly one rule: scope {"kind":"team"}, effects [{"type":"tempo","delta":0.1}] as a placeholder that will be thrown away, and the whole situation they describe in "when". Use the "expr" condition for anything the other fields cannot say, for example where our full-backs, our midfield or their players stand (use a group or line entity with "agg", never {"e":"me"}). "summary" is the situation in plain words starting with "when", in the manager's terms, for example "when our full-backs have stepped high". If the situation cannot be written as a condition, return an empty rules array and say why in notIncluded.\n\n`;
+    const userContent = `${preface}Our squad:\n${own.map(line).join('\n') || '(not given)'}\n\nThe opposition's squad:\n${opp.map(line).join('\n') || '(not given)'}\n\nWhen the page should be used:\n"""\n${text}\n"""`;
+    let parsed: any = null, lastErr: unknown = null;
+    for (let attempt = 0; attempt < 2 && !parsed; attempt++) {
+      try {
+        const raw = await callClaudeJSON({ model: MODELS.chat, systemPrompt: FOOTBALL_INSTRUCTION_PROMPT, userContent, maxTokens: 1500, temperature: 0, userId: req.userId as string, meteredReason: 'football-condition' });
+        parsed = parseJsonLoose(raw);
+      } catch (e) { lastErr = e; }
+    }
+    if (!parsed) throw lastErr || new Error('no usable answer');
+    const { rules } = validateRules(parsed.rules, asOpp(own), { kind: 'team' }, text, asOpp(opp));
+    const r: any = rules[0];
+    const when = r && r.when && typeof r.when === 'object' ? r.when : null;
+    if (!when || !Object.keys(when).length) {
+      const why = (Array.isArray(parsed.notIncluded) ? parsed.notIncluded : []).map((s: unknown) => clip(s, 300)).filter(Boolean)[0];
+      return res.status(422).json({ error: why || 'That could not be turned into a situation the game can check. Try describing it with the score, the minute, where the ball is, or where a group of players stands.' });
+    }
+    res.json({ summary: clip(r.summary, 160) || text, when });
+  } catch (err) {
+    if (err instanceof InsufficientLocksError) return res.status(402).json({ error: 'Lock limit reached', code: 'LOCK_LIMIT_REACHED', detail: "You're out of Locks for now." });
+    console.error('Football condition compile failed:', err);
+    res.status(500).json({ error: 'LastMind could not read that just now. Try again.' });
+  }
+});
+
 export default router;

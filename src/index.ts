@@ -39,6 +39,7 @@ import personalNotesRouter from './routes/personalNotes';
 import notesAssistantRouter from './routes/notesAssistant';
 import footballInstructionsRouter from './routes/footballInstructions';
 import notesMapRouter from './routes/notesMap';
+import problemSetRouter from './routes/problemSet';
 import footballOpponentRouter from './routes/footballOpponent';
 import themeSettingsRouter from './routes/themeSettings';
 import objectiveCourseRouter from './routes/objectiveCourse';
@@ -77,6 +78,7 @@ app.use(helmet({ contentSecurityPolicy: false }));
 // has been read, the global one below skips it.
 app.use('/sync/folders', express.json({ limit: '3mb' }));
 app.use('/create/projects', express.json({ limit: '6mb' }));
+app.use('/problem-set', express.json({ limit: '26mb' }));   // pictures and PDFs of a problem set, as base64
 app.use('/playtest/session', express.json({ limit: '1mb' }));
 app.use('/playtest/duel/create', express.json({ limit: '1mb' }));
 app.use(express.json({ limit: '200kb' }));
@@ -115,6 +117,7 @@ app.use('/', personalNotesRouter);
 app.use('/', notesAssistantRouter);
 app.use('/', footballInstructionsRouter);
 app.use('/', notesMapRouter);
+app.use('/', problemSetRouter);
 app.use('/', footballOpponentRouter);
 app.use('/', themeSettingsRouter);
 app.use('/', objectiveCourseRouter);

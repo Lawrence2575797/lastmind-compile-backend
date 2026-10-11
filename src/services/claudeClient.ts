@@ -498,6 +498,37 @@ export async function callClaudeJSONWithUsage(params: {
   return { text, usage };
 }
 
+export interface ClaudeFileInput {
+  kind: 'image' | 'document';
+  mediaType: string;   // an image type, or application/pdf for a document
+  base64Data: string;
+  label: string;
+}
+
+/**
+ * Like callClaudeJSONWithImages, but a file can also be a PDF (sent to Claude as a document block).
+ */
+export async function callClaudeJSONWithFiles(params: {
+  model: string;
+  systemPrompt: string;
+  userText: string;
+  files: ClaudeFileInput[];
+  maxTokens?: number;
+  temperature?: number;
+  userId?: string;
+  meteredReason?: string;
+}): Promise<string> {
+  const content: any[] = [{ type: 'text', text: sanitizeForClaude(params.userText) }];
+  for (const f of params.files) {
+    content.push({ type: 'text', text: f.label });
+    content.push({ type: f.kind, source: { type: 'base64', media_type: f.mediaType, data: f.base64Data } });
+  }
+  const { text, usage } = await sendWithTemperatureRetry(params.model, params.systemPrompt, content, params.maxTokens, params.temperature);
+  const chargeUserId = params.userId ?? currentUserId();
+  if (chargeUserId) await chargeForClaudeCall(chargeUserId, params.model, usage, params.meteredReason || 'unlabeled');
+  return text;
+}
+
 export interface ClaudeImageInput {
   mediaType: 'image/png' | 'image/jpeg' | 'image/gif' | 'image/webp';
   base64Data: string;

@@ -1,5 +1,11 @@
 import { callClaudeJSON, MODELS } from './claudeClient';
 import { CORTEX_INTENT_PROMPT } from '../constants/cortexPrompts';
+
+// Switched off: generating a knowledge map and lessons for a topic typed into the chat. Set to true to bring it back.
+const LESSON_GENERATION_ENABLED = false;
+const LESSON_GENERATION_OFF_NOTE = `
+
+IMPORTANT - overrides everything above about starting topics and building lessons: building a knowledge map or generating lessons from a topic the student types is not available in this chat. Never set "startTopic" or "beginQueuedLessons", and never say you will build, generate or start a lesson or map. If the student asks to be taught something, say plainly that lessons are in their subjects on the Learn page, then help directly: answer the question, explain the idea briefly, or work through it with them.`;
 import { checkTopicScope } from './topicScopeService';
 
 // Beyond stripping a code fence, also falls back to the substring between
@@ -219,6 +225,9 @@ export async function decideCortexAction(
     `Student's latest message: ${message}`,
   ].filter(Boolean).join('\n\n');
 
+  // Building a topic map and lessons from a typed topic is switched off (the code stays, but is unreachable). The assistant is told so, and
+  // anything it still sets for it is stripped below, so the app can never be handed one of these requests.
+  const systemPrompt = LESSON_GENERATION_ENABLED ? CORTEX_INTENT_PROMPT : CORTEX_INTENT_PROMPT + LESSON_GENERATION_OFF_NOTE;
   const attempts = [MODELS.chat, MODELS.chat, MODELS.diagnosticTree];
   let parsed: CortexResult | null = null;
   const details: string[] = [];
@@ -227,7 +236,7 @@ export async function decideCortexAction(
     try {
       const raw = await callClaudeJSON({
         model: attempts[i],
-        systemPrompt: CORTEX_INTENT_PROMPT,
+        systemPrompt,
         userContent,
         temperature: 0.5,
         maxTokens: 1600,
@@ -242,6 +251,7 @@ export async function decideCortexAction(
     }
   }
   if (!parsed) throw new CortexUnavailableError(details.join(' | ').slice(0, 600));
+  if (!LESSON_GENERATION_ENABLED && (parsed.startTopic || parsed.beginQueuedLessons)) parsed = { ...parsed, startTopic: undefined, beginQueuedLessons: undefined };
 
   // Cheap (Haiku) pre-flight gate before a real (Sonnet) map generation:
   // "teach me linear algebra" or "teach me chemistry" is broad enough that

@@ -86,7 +86,7 @@ function cleanQuiz(data: any): QuizQ[] | null {
     if (x.type === 'mcq') {
       const options = (Array.isArray(x.options) ? x.options : []).map((o: unknown) => clip(o, 300)).filter(Boolean);
       const correct = Number(x.correct);
-      if (options.length === 4 && Number.isInteger(correct) && correct >= 0 && correct <= 3) out.push({ type: 'mcq', covers, q, options, correct, explanation });
+      if (options.length >= 2 && Number.isInteger(correct) && correct >= 0 && correct < Math.min(options.length, 6)) out.push({ type: 'mcq', covers, q, options: options.slice(0, 6), correct, explanation });
     } else if (x.type === 'cloze') {
       const answer = clip(x.answer, 120);
       // a gap the model forgot to draw is drawn for it, where the answer sits in the sentence
@@ -102,7 +102,7 @@ function cleanQuiz(data: any): QuizQ[] | null {
   void mcq; void cloze; void free;
   // Anything close is used rather than thrown away: a quiz of four or more usable questions is fine, and a sixth is simply left off.
   // Free-response questions are kept in the five if there are any, so the mix is not all multiple choice.
-  if (out.length < 4) return null;
+  if (out.length < 1) return null;
   if (out.length <= 5) return out;
   const pick: QuizQ[] = [];
   (['mcq', 'cloze', 'free'] as const).forEach((t) => { const f = out.find((x) => x.type === t); if (f) pick.push(f); });

@@ -4,7 +4,7 @@ import { costlyEndpointLimiter } from '../services/rateLimiters';
 import { callClaudeJSON, callClaudeJSONWithFiles, MODELS } from '../services/claudeClient';
 import { assertLocksAvailable, InsufficientLocksError } from '../services/lockService';
 import { PROBLEM_SET_PARSE_PROMPT } from '../constants/problemSetPrompt';
-import { PROBLEM_SET_MARK_PROMPT } from '../constants/problemSetMarkPrompt';
+import { PROBLEM_SET_MARK_PROMPT, PROBLEM_SET_SOLVE_PROMPT } from '../constants/problemSetMarkPrompt';
 
 // POST /problem-set/parse { files: [{ name, mime, data (base64) }], texts: [string] } -> { title, header, questions: [{ number, text, options?, table?, figure?, marks? }] }
 // The Notes page's problem sets: whatever the student added (screenshots, a PDF, pasted text) is read once and returned as separate
@@ -84,20 +84,28 @@ router.post('/problem-set/mark', async (req: Request, res: Response) => {
   if (!answer) return res.status(400).json({ error: 'Write an answer first.' });
   try {
     await assertLocksAvailable(req.userId as string);
-    const userContent = `The question:
-"""
-${question}
-"""
-
-The student's answer:
-"""
-${answer}
-"""`;
+    // 1. the question is solved on its own, with room to think, before the student's answer is looked at
+    let reference = '';
+    for (let attempt = 0; attempt < 2 && !reference; attempt++) {
+      try {
+        const rawSolve = await callClaudeJSON({ model: MODELS.chat, systemPrompt: PROBLEM_SET_SOLVE_PROMPT, userContent: `The question:\n\"\"\"\n${question}\n\"\"\"`, maxTokens: 1800, temperature: 0, userId: req.userId as string, meteredReason: 'problem-set-solve' });
+        const solved = parseJsonLoose(rawSolve);
+        reference = clip(solved && solved.answer, 600);
+      } catch (e) { /* tried again once */ }
+    }
+    if (!reference) return res.status(500).json({ error: 'LastMind could not mark that just now. Try again.' });
+    // 2. the answer is marked against that solution
+    const userContent = `The question:\n\"\"\"\n${question}\n\"\"\"\n\nThe reference answer (worked out and checked):\n${reference}\n\nThe student's answer:\n\"\"\"\n${answer}\n\"\"\"`;
+    // feedback that thinks aloud or corrects itself is never shown
+    const SECOND_THOUGHTS = /\b(wait|let me (re)?(consider|check|think|calculate|recalculate)|reconsider|on reflection|hold on|actually,|i made (a|an) (mistake|error)|scratch that|correction:|re-?examin)/i;
     let data: any = null, lastErr: unknown = null;
-    for (let attempt = 0; attempt < 2 && !data; attempt++) {
+    for (let attempt = 0; attempt < 3 && !data; attempt++) {
       try {
         const raw = await callClaudeJSON({ model: MODELS.chat, systemPrompt: PROBLEM_SET_MARK_PROMPT, userContent, maxTokens: 900, temperature: 0, userId: req.userId as string, meteredReason: 'problem-set-mark' });
-        data = parseJsonLoose(raw);
+        const parsed = parseJsonLoose(raw);
+        const text = (Array.isArray(parsed && parsed.paragraphs) ? parsed.paragraphs : []).join(' ');
+        if (!text || SECOND_THOUGHTS.test(text)) { lastErr = new Error('second thoughts'); continue; }
+        data = parsed;
       } catch (e) { lastErr = e; }
     }
     if (!data) throw lastErr || new Error('unreadable');

@@ -59,6 +59,8 @@ export async function deleteOwnAccount(userId: string): Promise<void> {
   // survives account deletion, only what's explicitly anonymized above.
   await deleteRows('concept_reviews');
   await deleteRows('user_folders');
+  await deleteRows('user_notes');
+  await deleteRows('user_note_images');
   await deleteRows('chain_lesson_progress');
   await deleteRows('review_log');
   await deleteRows('knowledge_map_node_note_edits');

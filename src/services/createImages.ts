@@ -26,7 +26,7 @@ const EVIDENCE_STYLE: Record<string, string> = {
   physical: 'A realistic forensic photograph of a single exhibit lying on a plain table under harsh light, inside a clear sealed plastic evidence bag, sharp focus, ordinary and unglamorous. No people. No text, no labels, no numbers.',
 };
 
-async function falImages(key: string, prompt: string, size: { width: number; height: number }, n: number): Promise<string[]> {
+export async function falImages(key: string, prompt: string, size: { width: number; height: number }, n: number): Promise<string[]> {
   const r = await fetch('https://fal.run/fal-ai/flux/schnell', { method: 'POST', headers: FAL_HEADERS(key), body: JSON.stringify({ prompt, image_size: size, num_images: n }) });
   if (!r.ok) throw new Error(`image service ${r.status}`);
   const j: any = await r.json();

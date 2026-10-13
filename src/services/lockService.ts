@@ -7,6 +7,24 @@ export class InsufficientLocksError extends Error {
   constructor() { super('insufficient Locks'); this.name = 'InsufficientLocksError'; }
 }
 const UNLIMITED_LOCKS_USER_IDS = new Set(['1554f85d-95a0-49de-b48a-aa9c8363f7cd']);
+// Accounts that are never metered, found by their sign-in email as well as by id (the account's own email is read from Supabase auth and kept in
+// memory, so the lookup happens once per account per server start).
+const UNLIMITED_LOCKS_EMAILS = new Set(['jamesmwood@btinternet.com']);
+const unlimitedByLookup = new Map<string, boolean>();
+async function hasUnlimitedLocks(userId: string): Promise<boolean> {
+  if (UNLIMITED_LOCKS_USER_IDS.has(userId)) return true;
+  const known = unlimitedByLookup.get(userId);
+  if (known !== undefined) return known;
+  try {
+    const { data } = await supabaseAdmin.auth.admin.getUserById(userId);
+    const email = (data?.user?.email || '').toLowerCase();
+    const yes = !!email && UNLIMITED_LOCKS_EMAILS.has(email);
+    unlimitedByLookup.set(userId, yes);
+    return yes;
+  } catch {
+    return false;   // not cached: try again next time
+  }
+}
 
 async function sumLedger(userId: string, table: string, column: string, since: string): Promise<number> {
   let total = 0;
@@ -24,7 +42,7 @@ async function sumLedger(userId: string, table: string, column: string, since: s
 // overwrite another debit. A purchase receipt credits once by its primary key,
 // avoiding the non-atomic receipt-then-balance-update failure in the draft.
 export async function getOrCreateLockBalance(userId: string): Promise<LockBalance> {
-  if (UNLIMITED_LOCKS_USER_IDS.has(userId)) return { balance: 999_999 };
+  if (await hasUnlimitedLocks(userId)) return { balance: 999_999 };
   const subscription = await getOrCreateSubscription(userId);
   const since = monthlyPeriod().period_start + 'T00:00:00.000Z';
   const [changes, purchases] = await Promise.all([

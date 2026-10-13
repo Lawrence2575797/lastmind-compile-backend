@@ -17,7 +17,27 @@ export function monthlyPeriod(now = new Date()) {
   };
 }
 
+// Accounts that are always on the paid tier, found by sign-in email. The account's tier row is brought up to 'premium' the first time it is
+// looked at (once per account per server start), so every screen and every gate sees the same thing.
+const PREMIUM_EMAILS = new Set(['jamesmwood@btinternet.com']);
+const premiumChecked = new Set<string>();
+export async function ensurePremiumAccount(userId: string): Promise<void> {
+  if (premiumChecked.has(userId)) return;
+  try {
+    const { data } = await supabaseAdmin.auth.admin.getUserById(userId);
+    const email = (data?.user?.email || '').toLowerCase();
+    if (email && PREMIUM_EMAILS.has(email)) {
+      const { error } = await supabaseAdmin.from('user_subscriptions').upsert({ user_id: userId, tier: 'premium', ...monthlyPeriod() }, { onConflict: 'user_id' });
+      if (error) throw error;
+    }
+    premiumChecked.add(userId);
+  } catch (err) {
+    console.error('Premium account check failed:', err);   // not cached: tried again next time
+  }
+}
+
 export async function getOrCreateSubscription(userId: string): Promise<UserSubscription> {
+  await ensurePremiumAccount(userId);
   const { data, error } = await supabaseAdmin.from('user_subscriptions').select('*').eq('user_id', userId).maybeSingle();
   if (error) throw error;
   if (data) return { ...data, ...monthlyPeriod() };

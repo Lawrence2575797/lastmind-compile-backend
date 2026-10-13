@@ -1,6 +1,7 @@
 import { runWithUser } from './requestContext';
 import { Request, Response, NextFunction } from 'express';
 import { verifyUser, supabaseAdmin } from './supabaseAdmin';
+import { ensurePremiumAccount } from './subscriptionService';
 
 // Extends Express's Request type so authenticated routes can read
 // req.userId/req.userEmail without casting.
@@ -78,6 +79,7 @@ export function requireAdmin(req: Request, res: Response, next: NextFunction) {
 // stay reachable on both tiers but need to know WHICH tier applies — e.g.
 // the knowledge-map Verify route's free/premium credit coefficient.
 export async function isUserPaid(userId: string): Promise<boolean> {
+  await ensurePremiumAccount(userId);
   const { data: modern, error: modernError } = await supabaseAdmin
     .from('user_subscriptions')
     .select('tier')

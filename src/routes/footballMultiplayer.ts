@@ -8,6 +8,7 @@ import { createGame, getGame, saveState, GameRow, GameState } from '../services/
 const router = Router();
 router.use('/football-mp', requireAuth);
 
+const IDLE_MS = 24 * 60 * 60 * 1000;
 const CODE = /^[A-Z2-9]{6}$/;
 const TEAM = /^t[1-9][0-9]?$/;
 const cleanName = (v: unknown) => (typeof v === 'string' ? v.trim().replace(/[^\w\s.'-]/g, '').slice(0, 24) : '') || 'Manager';
@@ -120,10 +121,13 @@ router.post('/football-mp/played', actionEndpointLimiter, async (req: Request, r
       if (round !== g.state.round || g.state.finished) return res.json(view(g, userId));   // somebody got there first: the state says so
       const seated = Object.keys(g.state.seats), planned = Object.keys(g.state.plans[String(round)] || {});
       const everyone = seated.every((t) => planned.includes(t));
-      if (!everyone && !(force && g.hostId === userId)) return res.status(409).json({ error: 'Not everybody has handed their plan in yet.' });
+      // a manager who has gone quiet for a day does not hold everyone else up: their club plays on as it is
+      const idle = Date.now() - Date.parse(g.state.roundAt || g.updatedAt) > IDLE_MS;
+      if (!everyone && !idle && !(force && g.hostId === userId)) return res.status(409).json({ error: 'Not everybody has handed their plan in yet.' });
       const state: GameState = JSON.parse(JSON.stringify(g.state));
       state.played.push({ round, at: new Date().toISOString(), by: mine, scores: clean, forced: !everyone });
       state.round = round + 1;
+      state.roundAt = new Date().toISOString();
       state.finished = state.kind === 'match' || state.round >= 14;   // a one-off match is one round; the league is fourteen
       if (await saveState(g, state)) return res.json(view(Object.assign({}, g, { state, version: g.version + 1 }), userId));
     }

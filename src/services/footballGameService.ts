@@ -12,6 +12,7 @@ export interface GameState {
   teams: string[];                              // the clubs that exist in this game (a one-off match has two seats, a league has eight clubs)
   seats: Record<string, Seat>;                  // club id -> the manager sitting there
   round: number;                                // the round waiting to be played
+  roundAt?: string;                             // when that round became the current one (a manager who has not handed in a plan a day later is left to play on as they are)
   plans: Record<string, Record<string, { plan: unknown; at: string }>>;   // round -> club id -> that manager's plan
   played: { round: number; at: string; by: string; scores: { id: string; hg: number; ag: number }[]; forced: boolean }[];
   finished: boolean;
@@ -24,7 +25,7 @@ const rowOf = (r: any): GameRow => ({ code: r.code, kind: r.kind, seed: r.seed, 
 
 export async function createGame(userId: string, kind: GameKind, seed: number, teams: string[], teamId: string, name: string): Promise<GameRow> {
   const runSeed = Math.floor(Math.random() * 1_000_000_000);
-  const state: GameState = { kind, hostTeam: teamId, teams, seats: { [teamId]: { userId, name, joinedAt: new Date().toISOString() } }, round: 0, plans: {}, played: [], finished: false };
+  const state: GameState = { kind, hostTeam: teamId, teams, seats: { [teamId]: { userId, name, joinedAt: new Date().toISOString() } }, round: 0, roundAt: new Date().toISOString(), plans: {}, played: [], finished: false };
   for (let i = 0; i < 6; i++) {
     const code = makeCode();
     const { data, error } = await supabaseAdmin.from('football_games').insert({ code, kind, seed, run_seed: runSeed, host_id: userId, state, version: 1 }).select('*').single();

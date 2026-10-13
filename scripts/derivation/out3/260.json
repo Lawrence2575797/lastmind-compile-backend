@@ -1,0 +1,109 @@
+{
+ "id": "gen",
+ "subject": "Economics",
+ "title": "Promoting small business: innovation and jobs",
+ "terms": {
+  "startup": {
+   "label": "Start-up ideas"
+  },
+  "compjobs": {
+   "label": "Jobs at competitors"
+  },
+  "rivalry": {
+   "label": "Competitive pressure"
+  },
+  "SMALL_BIZ_ADV2": {
+   "label": "Innovation & employment advantage"
+  },
+  "SMALL_BIZ_PROMO_DEF": {
+   "label": "Promotion of small business: definition (subsidies, tax breaks, grants, reduced regulation for small firms)"
+  }
+ },
+ "stages": [
+  {
+   "name": "Promoting small business: innovation and jobs",
+   "title": "Promoting small business: innovation and jobs",
+   "sub": "After this, the student can explain how supporting small firms boosts innovation and employment.",
+   "steps": [
+    {
+     "type": "ask",
+     "q": "A new grant makes it much cheaper to start a small firm. A woman with an untested idea for a compostable coffee cup now applies for it. Without the grant, would she have risked her savings on that untested idea?",
+     "right": "Probably not, the risk was too high alone",
+     "wrong": "Yes, she would have anyway",
+     "hint": "Think about how much of her own money she would have needed to risk without help.",
+     "pre": "So cheaper entry lets more people try out new",
+     "term": "startup"
+    },
+    {
+     "type": "ask",
+     "q": "Once her small cup firm is up and running, it needs staff to make and pack the cups. Where do most of those workers come from?",
+     "right": "People hired newly into the small firm",
+     "wrong": "People already working at the big cup factory",
+     "hint": "The small firm did not exist before, so who is filling its new roles?",
+     "pre": "Those new roles add to",
+     "term": "compjobs"
+    },
+    {
+     "type": "ask",
+     "q": "The big cup factory now sees dozens of small firms selling cheaper, greener cups nearby. Can it keep charging high prices and using its old wasteful process without losing customers?",
+     "right": "No, it must improve to keep up",
+     "wrong": "Yes, its size protects it either way",
+     "hint": "With more small rivals nearby, does the big firm face more or less pressure to do better?",
+     "pre": "So more small firms create more",
+     "term": "rivalry"
+    },
+    {
+     "type": "ask",
+     "q": "Across the whole economy, many small firms are trying out new products, hiring their own staff, and pushing big firms to respond. What happens to the total number of new ideas being tried and jobs being created?",
+     "right": "Both rise across the economy",
+     "wrong": "Both stay the same, just moved between firms",
+     "hint": "These are firms and pressures that would not exist without the support, so is anything simply shifted, or genuinely added?",
+     "pre": "So promoting small business is an advantage because it supports",
+     "term": "SMALL_BIZ_ADV2"
+    },
+    {
+     "type": "derive"
+    }
+   ],
+   "given": [
+    "SMALL_BIZ_PROMO_DEF"
+   ],
+   "needs": [
+    "SMALL_BIZ_PROMO_DEF"
+   ],
+   "builds": [
+    "SMALL_BIZ_PROMO_DEF"
+   ],
+   "nodes": [
+    "SMALL_BIZ_ADV2"
+   ],
+   "dropped": [],
+   "edges": [
+    [
+     "SMALL_BIZ_PROMO_DEF",
+     "SMALL_BIZ_ADV2"
+    ],
+    [
+     "SMALL_BIZ_PROMO_DEF",
+     "startup"
+    ],
+    [
+     "SMALL_BIZ_PROMO_DEF",
+     "compjobs"
+    ],
+    [
+     "compjobs",
+     "rivalry"
+    ],
+    [
+     "startup",
+     "SMALL_BIZ_ADV2"
+    ],
+    [
+     "rivalry",
+     "SMALL_BIZ_ADV2"
+    ]
+   ]
+  }
+ ]
+}

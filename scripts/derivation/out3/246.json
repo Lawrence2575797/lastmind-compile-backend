@@ -1,0 +1,206 @@
+{
+ "id": "gen",
+ "subject": "Economics",
+ "title": "Policies for international competitiveness",
+ "terms": {
+  "invest_infra": {
+   "label": "Invest in infrastructure and skills"
+  },
+  "lower_costs": {
+   "label": "Lower firms' costs"
+  },
+  "POLICY_INCREASE_COMPETITIVENESS": {
+   "label": "Policies to raise competitiveness"
+  },
+  "time_lag": {
+   "label": "Time lags"
+  },
+  "conflicting_aims": {
+   "label": "Conflicts with other aims"
+  },
+  "EVAL_COMPETITIVENESS_POLICY": {
+   "label": "Evaluating competitiveness policy"
+  },
+  "SUPPLY_SIDE_POLICY_DEF": {
+   "label": "Supply-side policies"
+  },
+  "EXCHANGE_RATE_POLICY_DEF": {
+   "label": "Exchange rate policy"
+  },
+  "REASONS_INCREASE_COMPETITIVENESS": {
+   "label": "Reasons for wanting competitiveness"
+  },
+  "COMPET_ULC": {
+   "label": "Measure of international competitiveness: relative unit labour costs"
+  },
+  "DEPRECIATION_DEF": {
+   "label": "Depreciation: market-driven fall in currency value (floating system)"
+  }
+ },
+ "stages": [
+  {
+   "name": "Policies for international competitiveness",
+   "title": "Policies for international competitiveness",
+   "sub": "You can identify how governments try to raise competitiveness and judge how well those measures actually work.",
+   "steps": [
+    {
+     "type": "ask",
+     "q": "A government wants firms to produce more efficiently in the long run, so it spends on better roads, ports and worker training. What kind of policy is this, using tools you already know?",
+     "right": "A supply-side policy",
+     "wrong": "An exchange rate policy",
+     "hint": "Think about which tool box roads, ports and training come from.",
+     "pre": "Building better roads and training workers is a form of",
+     "term": "invest_infra"
+    },
+    {
+     "type": "ask",
+     "q": "Better roads mean goods move faster and cheaper, and trained workers produce more per hour worked. What happens to the cost of making each unit of output?",
+     "right": "It falls",
+     "wrong": "It stays the same",
+     "hint": "If transport and labour are both more efficient, does output cost more or less per unit?",
+     "pre": "So these measures work by helping to",
+     "term": "lower_costs"
+    },
+    {
+     "type": "ask",
+     "q": "A country's currency has been strong, making its exports pricier abroad. The government leans on its central bank to help push the exchange rate down. Alongside supply-side spending, is this also aimed at making exports cheaper for foreigners to buy?",
+     "right": "Yes, both aim to make exports more competitive",
+     "wrong": "No, only supply-side spending affects export prices",
+     "hint": "A weaker currency and lower unit costs both change how expensive exports look to foreign buyers.",
+     "pre": "So supply-side spending and exchange rate action together are examples of",
+     "term": "POLICY_INCREASE_COMPETITIVENESS"
+    },
+    {
+     "type": "ask",
+     "q": "New infrastructure and training schemes are announced today. Will firms' costs fall tomorrow, or only after roads are built and workers are trained years later?",
+     "right": "Only after several years",
+     "wrong": "Almost immediately",
+     "hint": "Building a port or retraining a workforce takes time to complete, not days.",
+     "pre": "So one problem with these policies is",
+     "term": "time_lag"
+    },
+    {
+     "type": "order",
+     "terms": [
+      "invest_infra",
+      "lower_costs",
+      "POLICY_INCREASE_COMPETITIVENESS",
+      "time_lag"
+     ],
+     "prompt": "Drag and drop the 4 key terms in the order they build on each other."
+    },
+    {
+     "type": "ask",
+     "q": "The government cuts firms' taxes and eases regulation to lower costs and boost competitiveness. But this also cuts tax revenue and weakens workplace protections. Could this clash with the government's other goals, like a balanced budget or fair working conditions?",
+     "right": "Yes, it could work against other goals",
+     "wrong": "No, competitiveness policy cannot affect other goals",
+     "hint": "Lower taxes and lighter regulation have knock-on effects beyond just competitiveness.",
+     "pre": "So these policies can create",
+     "term": "conflicting_aims"
+    },
+    {
+     "type": "ask",
+     "q": "To check whether all this spending and currency action actually worked, you compare a country's unit labour costs with its trading partners' over several years, using a measure you already know. Does simply announcing policies guarantee competitiveness has improved?",
+     "right": "No, it must be checked against actual data",
+     "wrong": "Yes, announcing them is enough",
+     "hint": "Policies are aims; the measure tells you what really happened to costs relative to other countries.",
+     "pre": "Weighing up time lags, conflicting aims and what the data on relative costs actually shows is the",
+     "term": "EVAL_COMPETITIVENESS_POLICY"
+    },
+    {
+     "type": "derive"
+    }
+   ],
+   "given": [
+    "SUPPLY_SIDE_POLICY_DEF",
+    "EXCHANGE_RATE_POLICY_DEF",
+    "REASONS_INCREASE_COMPETITIVENESS",
+    "COMPET_ULC"
+   ],
+   "needs": [
+    "SUPPLY_SIDE_POLICY_DEF",
+    "EXCHANGE_RATE_POLICY_DEF",
+    "REASONS_INCREASE_COMPETITIVENESS",
+    "COMPET_ULC",
+    "DEPRECIATION_DEF"
+   ],
+   "builds": [
+    "SUPPLY_SIDE_POLICY_DEF",
+    "EXCHANGE_RATE_POLICY_DEF",
+    "REASONS_INCREASE_COMPETITIVENESS",
+    "COMPET_ULC"
+   ],
+   "nodes": [
+    "POLICY_INCREASE_COMPETITIVENESS",
+    "EVAL_COMPETITIVENESS_POLICY"
+   ],
+   "dropped": [],
+   "edges": [
+    [
+     "POLICY_INCREASE_COMPETITIVENESS",
+     "EVAL_COMPETITIVENESS_POLICY"
+    ],
+    [
+     "SUPPLY_SIDE_POLICY_DEF",
+     "POLICY_INCREASE_COMPETITIVENESS"
+    ],
+    [
+     "EXCHANGE_RATE_POLICY_DEF",
+     "POLICY_INCREASE_COMPETITIVENESS"
+    ],
+    [
+     "REASONS_INCREASE_COMPETITIVENESS",
+     "POLICY_INCREASE_COMPETITIVENESS"
+    ],
+    [
+     "REASONS_INCREASE_COMPETITIVENESS",
+     "EVAL_COMPETITIVENESS_POLICY"
+    ],
+    [
+     "COMPET_ULC",
+     "POLICY_INCREASE_COMPETITIVENESS"
+    ],
+    [
+     "SUPPLY_SIDE_POLICY_DEF",
+     "invest_infra"
+    ],
+    [
+     "invest_infra",
+     "lower_costs"
+    ],
+    [
+     "EXCHANGE_RATE_POLICY_DEF",
+     "lower_costs"
+    ],
+    [
+     "REASONS_INCREASE_COMPETITIVENESS",
+     "lower_costs"
+    ],
+    [
+     "lower_costs",
+     "POLICY_INCREASE_COMPETITIVENESS"
+    ],
+    [
+     "POLICY_INCREASE_COMPETITIVENESS",
+     "time_lag"
+    ],
+    [
+     "POLICY_INCREASE_COMPETITIVENESS",
+     "conflicting_aims"
+    ],
+    [
+     "time_lag",
+     "EVAL_COMPETITIVENESS_POLICY"
+    ],
+    [
+     "conflicting_aims",
+     "EVAL_COMPETITIVENESS_POLICY"
+    ],
+    [
+     "COMPET_ULC",
+     "EVAL_COMPETITIVENESS_POLICY"
+    ]
+   ]
+  }
+ ]
+}

@@ -1,0 +1,171 @@
+{
+ "id": "gen",
+ "subject": "Economics",
+ "title": "Trade, competitiveness, FDI and fiscal policy",
+ "terms": {
+  "TRADE_BALANCE_DEF": {
+   "label": "Trade balance"
+  },
+  "INTL_COMPETITIVENESS_DEF": {
+   "label": "International competitiveness"
+  },
+  "FDI_DEF": {
+   "label": "Foreign direct investment"
+  },
+  "TAX_FDI_FLOWS": {
+   "label": "Tax effects on FDI flows"
+  },
+  "DISCRETIONARY_FISCAL": {
+   "label": "Discretionary fiscal policy"
+  },
+  "DIRECT_INDIRECT_TAX": {
+   "label": "Direct vs indirect tax"
+  },
+  "GOV_SPEND_TYPES": {
+   "label": "Distinction between capital, current expenditure and transfer payments"
+  },
+  "BOP_STRUCTURE": {
+   "label": "Components of the balance of payments (current, capital, financial accounts)"
+  }
+ },
+ "stages": [
+  {
+   "name": "Trade, competitiveness, FDI and fiscal policy",
+   "title": "Trade, competitiveness, FDI and fiscal policy",
+   "sub": "After this you can explain the trade balance, what drives competitiveness, why FDI matters, how tax changes affect it, and what discretionary fiscal policy means.",
+   "steps": [
+    {
+     "type": "ask",
+     "q": "A country sells £300bn of goods and services abroad and buys £340bn from abroad in a year. Has it earned more from exports than it spent on imports?",
+     "right": "No, it has spent more than it earned",
+     "wrong": "Yes, it has earned more than it spent",
+     "hint": "Compare the two numbers: exports versus imports.",
+     "pre": "The difference between the value of exports and imports of goods and services is the",
+     "term": "TRADE_BALANCE_DEF"
+    },
+    {
+     "type": "ask",
+     "q": "Two countries make similar cars, but one country's cars are cheaper, better made, and delivered faster. Which country's firms will buyers choose?",
+     "right": "The one with cheaper, better, faster cars",
+     "wrong": "Whichever country is bigger",
+     "hint": "Think about what actually makes a buyer pick one seller over another: price and quality matter, not size.",
+     "pre": "Being able to sell well abroad because of price, quality, productivity and costs is",
+     "term": "INTL_COMPETITIVENESS_DEF"
+    },
+    {
+     "type": "ask",
+     "q": "A German car firm builds and runs its own factory in the UK, employing UK workers and controlling operations there, rather than just buying shares in a UK firm.",
+     "right": "It has built lasting productive capacity it controls abroad",
+     "wrong": "It has made a short-term trade in UK shares",
+     "hint": "Notice it built and runs a factory itself, rather than just holding paper assets.",
+     "pre": "A firm from one country owning and controlling productive assets in another country is",
+     "term": "FDI_DEF"
+    },
+    {
+     "type": "ask",
+     "q": "A government cuts corporation tax sharply, so firms keep more of their profits after tax. Would foreign firms find it more or less attractive to build factories there now?",
+     "right": "More attractive, more firms may invest",
+     "wrong": "Less attractive, fewer firms will invest",
+     "hint": "Lower tax on profit means a firm keeps more of what it earns from investing there.",
+     "pre": "So a tax cut like this tends to raise inward",
+     "term": "TAX_FDI_FLOWS"
+    },
+    {
+     "type": "order",
+     "terms": [
+      "TRADE_BALANCE_DEF",
+      "INTL_COMPETITIVENESS_DEF",
+      "FDI_DEF",
+      "TAX_FDI_FLOWS"
+     ],
+     "prompt": "Drag and drop the 4 key terms in the order they build on each other."
+    },
+    {
+     "type": "ask",
+     "q": "Facing a downturn, a government deliberately announces a new one-off round of tax cuts and extra spending this year, rather than letting existing tax and benefit rules respond automatically. Is this a deliberate, chosen change, or one that happens automatically as the economy moves?",
+     "right": "A deliberate, chosen change",
+     "wrong": "An automatic change with no decision needed",
+     "hint": "The government is announcing and deciding on it this year, not just letting existing rules run.",
+     "pre": "A deliberate change in government spending or taxation to influence the economy is",
+     "term": "DISCRETIONARY_FISCAL"
+    },
+    {
+     "type": "derive"
+    }
+   ],
+   "given": [
+    "DIRECT_INDIRECT_TAX",
+    "GOV_SPEND_TYPES",
+    "BOP_STRUCTURE"
+   ],
+   "needs": [
+    "DIRECT_INDIRECT_TAX",
+    "GOV_SPEND_TYPES",
+    "BOP_STRUCTURE"
+   ],
+   "builds": [
+    "DIRECT_INDIRECT_TAX",
+    "GOV_SPEND_TYPES",
+    "BOP_STRUCTURE"
+   ],
+   "nodes": [
+    "TRADE_BALANCE_DEF",
+    "INTL_COMPETITIVENESS_DEF",
+    "FDI_DEF",
+    "TAX_FDI_FLOWS",
+    "DISCRETIONARY_FISCAL"
+   ],
+   "dropped": [],
+   "edges": [
+    [
+     "FDI_DEF",
+     "TAX_FDI_FLOWS"
+    ],
+    [
+     "TRADE_BALANCE_DEF",
+     "INTL_COMPETITIVENESS_DEF"
+    ],
+    [
+     "DIRECT_INDIRECT_TAX",
+     "TAX_FDI_FLOWS"
+    ],
+    [
+     "GOV_SPEND_TYPES",
+     "DISCRETIONARY_FISCAL"
+    ],
+    [
+     "DIRECT_INDIRECT_TAX",
+     "DISCRETIONARY_FISCAL"
+    ],
+    [
+     "BOP_STRUCTURE",
+     "TRADE_BALANCE_DEF"
+    ],
+    [
+     "BOP_STRUCTURE",
+     "TRADE_BALANCE_DEF"
+    ],
+    [
+     "TRADE_BALANCE_DEF",
+     "INTL_COMPETITIVENESS_DEF"
+    ],
+    [
+     "FDI_DEF",
+     "TAX_FDI_FLOWS"
+    ],
+    [
+     "DIRECT_INDIRECT_TAX",
+     "TAX_FDI_FLOWS"
+    ],
+    [
+     "GOV_SPEND_TYPES",
+     "DISCRETIONARY_FISCAL"
+    ],
+    [
+     "TAX_FDI_FLOWS",
+     "DISCRETIONARY_FISCAL"
+    ]
+   ]
+  }
+ ]
+}

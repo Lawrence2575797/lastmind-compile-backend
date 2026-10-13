@@ -1,0 +1,221 @@
+{
+ "id": "gen",
+ "subject": "Economics",
+ "title": "Central bank functions",
+ "terms": {
+  "CB_BANKER_GOVT": {
+   "label": "Banker to government"
+  },
+  "CB_BANKER_BANKS": {
+   "label": "Banker to banks / LOLR"
+  },
+  "CB_LOLR_MORALHAZARD_LINK": {
+   "label": "LOLR and moral hazard"
+  },
+  "CB_REGULATION": {
+   "label": "Central bank regulation role"
+  },
+  "CB_REGULATION_RESPONSE_FAILURE": {
+   "label": "Regulation as response to failure"
+  },
+  "rigging": {
+   "label": "Market rigging"
+  },
+  "systemic_ext": {
+   "label": "Systemic externalities"
+  },
+  "CENTRAL_BANK_DEF": {
+   "label": "Definition of a central bank as the state institution overseeing the monetary and banking system"
+  },
+  "ROLE_LENDING": {
+   "label": "Lending to borrowers"
+  },
+  "MORAL_HAZARD_FIN": {
+   "label": "Moral hazard in finance"
+  },
+  "ASYM_INFO_FIN": {
+   "label": "Asymmetric information (finance)"
+  },
+  "MARKET_RIGGING_DEF": {
+   "label": "Market rigging: definition (collusive/manipulative practices distorting prices, e.g. LIBOR fixing)"
+  },
+  "EXTERNALITY_FIN": {
+   "label": "Externalities from financial sector activity (systemic risk imposing costs on wider economy)"
+  }
+ },
+ "stages": [
+  {
+   "name": "Central bank functions",
+   "title": "Central bank functions",
+   "sub": "What the central bank does for government and banks, and why it regulates the industry.",
+   "steps": [
+    {
+     "type": "ask",
+     "q": "The government needs to borrow £50 billion this year by selling bonds, and needs somewhere to hold its day-to-day cash. Which institution handles this for it?",
+     "right": "The central bank",
+     "wrong": "A high-street commercial bank",
+     "hint": "Think about which single institution oversees the whole monetary and banking system.",
+     "pre": "Managing the government's accounts and issuing its debt is the central bank acting as",
+     "term": "CB_BANKER_GOVT"
+    },
+    {
+     "type": "ask",
+     "q": "A commercial bank suddenly cannot get enough cash to meet withdrawals and no other bank will lend to it. Who can step in to lend to that bank when nobody else will?",
+     "right": "The central bank",
+     "wrong": "The government's tax office",
+     "hint": "Just as the government has one bank to rely on, so do commercial banks.",
+     "pre": "Being the bank that commercial banks can turn to, and lending when no one else will, makes the central bank",
+     "term": "CB_BANKER_BANKS"
+    },
+    {
+     "type": "ask",
+     "q": "If a bank's managers know that the central bank will always rescue them from a cash crisis, how carefully will they weigh up risky lending decisions?",
+     "right": "Less carefully, since a rescue is expected",
+     "wrong": "Just as carefully as before",
+     "hint": "Recall moral hazard: when someone is protected from the consequences of their choices, how do their choices change?",
+     "pre": "So the promise of rescue itself encourages excessive risk-taking, which is the",
+     "term": "CB_LOLR_MORALHAZARD_LINK"
+    },
+    {
+     "type": "ask",
+     "q": "Beyond lending, the central bank also sets rules banks must follow, checks their capital levels, and can fine or restrict banks that break the rules. What kind of role is this?",
+     "right": "Overseeing and controlling the banking industry",
+     "wrong": "Simply advertising banking services",
+     "hint": "Think about who is checking that banks behave properly, not just lending to them.",
+     "pre": "Setting and enforcing rules over banks is the central bank's role in",
+     "term": "CB_REGULATION"
+    },
+    {
+     "type": "order",
+     "terms": [
+      "CB_BANKER_GOVT",
+      "CB_BANKER_BANKS",
+      "CB_LOLR_MORALHAZARD_LINK",
+      "CB_REGULATION"
+     ],
+     "prompt": "Drag and drop the 4 key terms in the order they build on each other."
+    },
+    {
+     "type": "ask",
+     "q": "A lender cannot fully tell how risky a borrower really is before lending to them. Should rules exist requiring borrowers to disclose more information?",
+     "right": "Yes, to reduce this information gap",
+     "wrong": "No, lenders should just guess as before",
+     "hint": "Recall the problem where one side of a deal knows more than the other.",
+     "pre": "Rules tackling this information gap are a response to",
+     "term": "rigging"
+    },
+    {
+     "type": "ask",
+     "q": "Traders at several banks secretly agree to fix an interest rate benchmark used across the whole economy, distorting prices for everyone. Should this kind of behaviour be controlled by rules?",
+     "right": "Yes, rules are needed to stop it",
+     "wrong": "No, the market will correct it itself",
+     "hint": "This is deliberate manipulation of a market price, not an honest mistake.",
+     "pre": "Preventing this kind of manipulation of markets is called tackling",
+     "term": "systemic_ext"
+    },
+    {
+     "type": "ask",
+     "q": "One bank collapsing can cause savers to panic and pull money from other banks too, even healthy ones, dragging down the whole financial system. Does this spillover cost only affect the bank that failed?",
+     "right": "No, it spreads costs across the whole system",
+     "wrong": "Yes, it stays contained to that one bank",
+     "hint": "Think about how the failure of one firm can impose costs on people and firms outside that failure.",
+     "pre": "Costs that spill over onto the wider system like this are",
+     "term": "CB_REGULATION_RESPONSE_FAILURE"
+    },
+    {
+     "type": "derive"
+    }
+   ],
+   "given": [
+    "CENTRAL_BANK_DEF",
+    "ROLE_LENDING",
+    "MORAL_HAZARD_FIN",
+    "ASYM_INFO_FIN"
+   ],
+   "needs": [
+    "CENTRAL_BANK_DEF",
+    "ROLE_LENDING",
+    "MORAL_HAZARD_FIN",
+    "ASYM_INFO_FIN",
+    "MARKET_RIGGING_DEF",
+    "EXTERNALITY_FIN"
+   ],
+   "builds": [
+    "CENTRAL_BANK_DEF",
+    "ROLE_LENDING",
+    "MORAL_HAZARD_FIN",
+    "ASYM_INFO_FIN"
+   ],
+   "nodes": [
+    "CB_BANKER_GOVT",
+    "CB_BANKER_BANKS",
+    "CB_LOLR_MORALHAZARD_LINK",
+    "CB_REGULATION",
+    "CB_REGULATION_RESPONSE_FAILURE"
+   ],
+   "dropped": [],
+   "edges": [
+    [
+     "CB_BANKER_BANKS",
+     "CB_LOLR_MORALHAZARD_LINK"
+    ],
+    [
+     "CB_REGULATION",
+     "CB_REGULATION_RESPONSE_FAILURE"
+    ],
+    [
+     "CENTRAL_BANK_DEF",
+     "CB_BANKER_GOVT"
+    ],
+    [
+     "CENTRAL_BANK_DEF",
+     "CB_BANKER_BANKS"
+    ],
+    [
+     "ROLE_LENDING",
+     "CB_BANKER_BANKS"
+    ],
+    [
+     "MORAL_HAZARD_FIN",
+     "CB_LOLR_MORALHAZARD_LINK"
+    ],
+    [
+     "CENTRAL_BANK_DEF",
+     "CB_REGULATION"
+    ],
+    [
+     "ASYM_INFO_FIN",
+     "CB_REGULATION_RESPONSE_FAILURE"
+    ],
+    [
+     "MORAL_HAZARD_FIN",
+     "CB_REGULATION_RESPONSE_FAILURE"
+    ],
+    [
+     "CB_BANKER_BANKS",
+     "CB_LOLR_MORALHAZARD_LINK"
+    ],
+    [
+     "MORAL_HAZARD_FIN",
+     "CB_LOLR_MORALHAZARD_LINK"
+    ],
+    [
+     "CB_REGULATION",
+     "CB_REGULATION_RESPONSE_FAILURE"
+    ],
+    [
+     "ASYM_INFO_FIN",
+     "CB_REGULATION_RESPONSE_FAILURE"
+    ],
+    [
+     "rigging",
+     "CB_REGULATION_RESPONSE_FAILURE"
+    ],
+    [
+     "systemic_ext",
+     "CB_REGULATION_RESPONSE_FAILURE"
+    ]
+   ]
+  }
+ ]
+}

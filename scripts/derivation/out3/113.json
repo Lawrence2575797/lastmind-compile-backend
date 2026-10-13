@@ -1,0 +1,166 @@
+{
+ "id": "gen",
+ "subject": "Economics",
+ "title": "Revenue maximisation: pros and cons",
+ "terms": {
+  "output_gain": {
+   "label": "Extra output from revenue max"
+  },
+  "brand_reach": {
+   "label": "Wider brand presence"
+  },
+  "revenue_max_adv_marketshare": {
+   "label": "Market share advantage"
+  },
+  "cost_gap": {
+   "label": "Costs above revenue"
+  },
+  "cash_squeeze": {
+   "label": "Cash squeeze"
+  },
+  "revenue_max_disadv_sustainability": {
+   "label": "Sustainability disadvantage"
+  },
+  "revenue_max_condition": {
+   "label": "MR=0 rule"
+  },
+  "cost_curves": {
+   "label": "Cost curves: total cost, average cost, marginal cost construction"
+  }
+ },
+ "stages": [
+  {
+   "name": "Revenue maximisation: pros and cons",
+   "title": "Revenue maximisation: pros and cons",
+   "sub": "The student can explain one advantage and one disadvantage of a firm choosing to maximise revenue rather than profit.",
+   "steps": [
+    {
+     "type": "ask",
+     "q": "A firm sets output where MR=0 instead of stopping earlier where MR=MC. Compared with the profit-maximising output, is the quantity it sells higher or lower?",
+     "right": "Higher",
+     "wrong": "Lower",
+     "hint": "MR=0 is further along the output axis than MR=MC.",
+     "pre": "So revenue maximising gives the firm",
+     "term": "output_gain"
+    },
+    {
+     "type": "ask",
+     "q": "The firm is now selling a much larger quantity, in more shops, seen by more customers. What happens to how many people recognise its name?",
+     "right": "More people come to know the brand",
+     "wrong": "The same number know the brand",
+     "hint": "Higher sales volume means the product is physically in front of more customers.",
+     "pre": "So selling more spreads the firm's",
+     "term": "brand_reach"
+    },
+    {
+     "type": "ask",
+     "q": "A supermarket chain that is everywhere and instantly recognised can often push out smaller rivals and negotiate harder with suppliers. Does high output and brand reach help or hurt the firm's position against competitors?",
+     "right": "It helps, giving the firm more power in the market",
+     "wrong": "It hurts, since rivals copy the branding",
+     "hint": "Think about size and visibility compared with a small competitor.",
+     "pre": "That growing power and presence is the",
+     "term": "revenue_max_adv_marketshare"
+    },
+    {
+     "type": "ask",
+     "q": "Average cost is built from fixed and variable costs per unit. Past the profit-maximising point, extra units cost more to make than they add in revenue. As output rises to the MR=0 point, does average cost catch up with or overtake average revenue?",
+     "right": "It can overtake average revenue",
+     "wrong": "It stays safely below average revenue",
+     "hint": "Beyond the profit-maximising output, each extra unit adds less revenue than it costs.",
+     "pre": "So pushing output that far can create",
+     "term": "cost_gap"
+    },
+    {
+     "type": "order",
+     "terms": [
+      "output_gain",
+      "brand_reach",
+      "revenue_max_adv_marketshare",
+      "cost_gap"
+     ],
+     "prompt": "Drag and drop the 4 key terms in the order they build on each other."
+    },
+    {
+     "type": "ask",
+     "q": "If costs are regularly running ahead of revenue, what happens to the cash the firm has left over to pay its bills?",
+     "right": "It shrinks",
+     "wrong": "It stays the same",
+     "hint": "Costs above revenue means less money left in the firm.",
+     "pre": "That squeeze on the firm's finances is a",
+     "term": "cash_squeeze"
+    },
+    {
+     "type": "ask",
+     "q": "If this cash squeeze continues year after year, can the firm keep operating in the long run without running into financial trouble?",
+     "right": "No, it may become unsustainable",
+     "wrong": "Yes, it can carry on as before",
+     "hint": "Think about what happens after several years of costs outrunning revenue.",
+     "pre": "So revenue maximising risks being financially unsustainable, which is the",
+     "term": "revenue_max_disadv_sustainability"
+    },
+    {
+     "type": "derive"
+    }
+   ],
+   "given": [
+    "revenue_max_condition",
+    "cost_curves"
+   ],
+   "needs": [
+    "revenue_max_condition",
+    "cost_curves"
+   ],
+   "builds": [
+    "revenue_max_condition",
+    "cost_curves"
+   ],
+   "nodes": [
+    "revenue_max_adv_marketshare",
+    "revenue_max_disadv_sustainability"
+   ],
+   "dropped": [],
+   "edges": [
+    [
+     "revenue_max_condition",
+     "revenue_max_adv_marketshare"
+    ],
+    [
+     "cost_curves",
+     "revenue_max_disadv_sustainability"
+    ],
+    [
+     "revenue_max_condition",
+     "revenue_max_disadv_sustainability"
+    ],
+    [
+     "revenue_max_condition",
+     "output_gain"
+    ],
+    [
+     "output_gain",
+     "brand_reach"
+    ],
+    [
+     "brand_reach",
+     "revenue_max_adv_marketshare"
+    ],
+    [
+     "revenue_max_condition",
+     "cost_gap"
+    ],
+    [
+     "cost_curves",
+     "cost_gap"
+    ],
+    [
+     "cost_gap",
+     "cash_squeeze"
+    ],
+    [
+     "cash_squeeze",
+     "revenue_max_disadv_sustainability"
+    ]
+   ]
+  }
+ ]
+}

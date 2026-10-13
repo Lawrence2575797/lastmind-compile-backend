@@ -1,0 +1,243 @@
+{
+ "id": "gen",
+ "subject": "Economics",
+ "title": "Consumer and producer surplus",
+ "terms": {
+  "wtp": {
+   "label": "Willingness to pay"
+  },
+  "wta": {
+   "label": "Willingness to accept"
+  },
+  "consumer_surplus_def": {
+   "label": "Definition of consumer surplus"
+  },
+  "producer_surplus_def": {
+   "label": "Definition of producer surplus"
+  },
+  "cs_ps_diagram": {
+   "label": "Identifying consumer and producer surplus areas on a supply-demand diagram"
+  },
+  "dmu_shape_demand": {
+   "label": "DMU shapes demand"
+  },
+  "equilibrium_def": {
+   "label": "Equilibrium price and quantity"
+  },
+  "draw_demand_curve": {
+   "label": "Drawing a demand curve"
+  },
+  "draw_supply_curve": {
+   "label": "Construct/draw a supply curve on a diagram"
+  }
+ },
+ "stages": [
+  {
+   "name": "Consumer and producer surplus",
+   "title": "Consumer and producer surplus",
+   "sub": "You can identify consumer and producer surplus as areas on a supply and demand diagram.",
+   "steps": [
+    {
+     "type": "ask",
+     "q": "A concert ticket sells for £40. One fan would have paid up to £70 rather than miss out, but only pays £40. Did she value the ticket at exactly £40?",
+     "right": "No, she valued it more than £40",
+     "wrong": "Yes, she valued it at exactly £40",
+     "hint": "Think about the highest price she said she'd have paid, not the price she actually paid.",
+     "pre": "The most a buyer would pay for a unit is their",
+     "term": "wtp"
+    },
+    {
+     "type": "ask",
+     "q": "A farmer would sell his wheat for as little as £3 a sack rather than let it go to waste, but the market price is £8. Does £3 or £8 tell you the least he'd accept?",
+     "right": "£3, the lowest he'd accept",
+     "wrong": "£8, the lowest he'd accept",
+     "hint": "The market price is what he actually gets. What's the minimum that would still make selling worthwhile?",
+     "pre": "The least a seller would accept for a unit is their",
+     "term": "wta"
+    },
+    {
+     "type": "ask",
+     "q": "The fan who would have paid £70 only pays the market price of £40. What has she gained?",
+     "right": "Extra benefit worth £30 that she didn't have to pay for",
+     "wrong": "Nothing, because she still had to pay £40",
+     "hint": "Compare what she was willing to pay with what she actually paid.",
+     "pre": "That gap between willingness to pay and the price actually paid is",
+     "term": "consumer_surplus_def"
+    },
+    {
+     "type": "ask",
+     "q": "The farmer who would have accepted £3 actually sells at the market price of £8. What has he gained?",
+     "right": "Extra revenue of £5 above what he needed to accept",
+     "wrong": "Nothing, because £8 is just the market price",
+     "hint": "Compare what he'd have been willing to accept with what he actually received.",
+     "pre": "That gap between the price received and the least a seller would accept is",
+     "term": "producer_surplus_def"
+    },
+    {
+     "type": "order",
+     "terms": [
+      "wtp",
+      "wta",
+      "consumer_surplus_def",
+      "producer_surplus_def"
+     ],
+     "prompt": "Drag and drop the 4 key terms in the order they build on each other."
+    },
+    {
+     "type": "ask",
+     "q": "On a supply and demand diagram, every point on the demand curve above the equilibrium price shows a buyer willing to pay more than they actually paid. What area, between the demand curve and the price line, captures all of those gains added together?",
+     "right": "The triangle above the price line and below the demand curve",
+     "wrong": "The triangle below the price line and above the supply curve",
+     "hint": "Consumer surplus comes from buyers, whose curve is demand.",
+     "pre": "That whole area is",
+     "diagram": {
+      "x": "Quantity",
+      "y": "Price",
+      "curves": [
+       {
+        "label": "D",
+        "pts": [
+         [
+          0.08,
+          0.88
+         ],
+         [
+          0.4,
+          0.58
+         ],
+         [
+          0.9,
+          0.14
+         ]
+        ]
+       },
+       {
+        "label": "S",
+        "pts": [
+         [
+          0.08,
+          0.14
+         ],
+         [
+          0.4,
+          0.44
+         ],
+         [
+          0.9,
+          0.88
+         ]
+        ]
+       }
+      ],
+      "points": [
+       {
+        "label": "E",
+        "x": 0.52,
+        "y": 0.5,
+        "guides": true
+       }
+      ]
+     },
+     "term": "cs_ps_diagram"
+    },
+    {
+     "type": "derive"
+    }
+   ],
+   "given": [
+    "dmu_shape_demand",
+    "equilibrium_def",
+    "draw_demand_curve",
+    "draw_supply_curve"
+   ],
+   "needs": [
+    "dmu_shape_demand",
+    "equilibrium_def",
+    "draw_demand_curve",
+    "draw_supply_curve"
+   ],
+   "builds": [
+    "dmu_shape_demand",
+    "equilibrium_def",
+    "draw_demand_curve",
+    "draw_supply_curve"
+   ],
+   "nodes": [
+    "consumer_surplus_def",
+    "producer_surplus_def",
+    "cs_ps_diagram"
+   ],
+   "dropped": [],
+   "edges": [
+    [
+     "consumer_surplus_def",
+     "cs_ps_diagram"
+    ],
+    [
+     "producer_surplus_def",
+     "cs_ps_diagram"
+    ],
+    [
+     "dmu_shape_demand",
+     "consumer_surplus_def"
+    ],
+    [
+     "equilibrium_def",
+     "consumer_surplus_def"
+    ],
+    [
+     "equilibrium_def",
+     "producer_surplus_def"
+    ],
+    [
+     "draw_demand_curve",
+     "cs_ps_diagram"
+    ],
+    [
+     "draw_supply_curve",
+     "cs_ps_diagram"
+    ],
+    [
+     "dmu_shape_demand",
+     "wtp"
+    ],
+    [
+     "wtp",
+     "consumer_surplus_def"
+    ],
+    [
+     "equilibrium_def",
+     "wtp"
+    ],
+    [
+     "equilibrium_def",
+     "wta"
+    ],
+    [
+     "draw_supply_curve",
+     "wta"
+    ],
+    [
+     "wta",
+     "producer_surplus_def"
+    ],
+    [
+     "consumer_surplus_def",
+     "cs_ps_diagram"
+    ],
+    [
+     "producer_surplus_def",
+     "cs_ps_diagram"
+    ],
+    [
+     "draw_demand_curve",
+     "cs_ps_diagram"
+    ],
+    [
+     "draw_supply_curve",
+     "cs_ps_diagram"
+    ]
+   ]
+  }
+ ]
+}

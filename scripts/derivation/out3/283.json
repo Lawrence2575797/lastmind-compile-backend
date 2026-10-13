@@ -1,0 +1,225 @@
+{
+ "id": "gen",
+ "subject": "Economics",
+ "title": "External shocks and policy",
+ "terms": {
+  "oilorigin": {
+   "label": "Origin outside the economy"
+  },
+  "EXTERNAL_SHOCKS_DEF": {
+   "label": "External shocks"
+  },
+  "policychoice": {
+   "label": "Choice of policy tool"
+  },
+  "POLICY_RESPONSE_SHOCKS": {
+   "label": "Policy response to shocks"
+  },
+  "timelag": {
+   "label": "Time lag"
+  },
+  "EVAL_SHOCK_RESPONSE": {
+   "label": "Evaluation of shock response"
+  },
+  "POLICY_PROBLEM_EXTERNAL_SHOCKS": {
+   "label": "Policy problem: inability to control shocks"
+  },
+  "AD_AS_MODEL": {
+   "label": "AD/AS framework (aggregate demand and aggregate supply)"
+  },
+  "FISCAL_POLICY_DEF": {
+   "label": "Fiscal policy"
+  },
+  "MONETARY_POLICY_DEF": {
+   "label": "Monetary policy: definition and tools (interest rates, money supply)"
+  },
+  "EXCHANGE_RATE_POLICY_DEF": {
+   "label": "Exchange rate policy: definition and tools"
+  },
+  "SUPPLY_SIDE_POLICY_DEF": {
+   "label": "Supply-side policies: definition and tools"
+  },
+  "LIMITS_CONTROL_TRANSNATIONALS": {
+   "label": "Limits to government ability to control global companies"
+  }
+ },
+ "stages": [
+  {
+   "name": "External shocks and policy",
+   "title": "External shocks and policy",
+   "sub": "You can explain why external shocks are hard for policymakers to control and evaluate the response.",
+   "steps": [
+    {
+     "type": "ask",
+     "q": "A war in another country suddenly doubles the world price of oil. Did anything the UK government or Bank of England did cause this?",
+     "right": "No, it came from outside the economy",
+     "wrong": "Yes, it followed from a domestic policy decision",
+     "hint": "Think about where the war and the oil price rise actually happened.",
+     "pre": "An unexpected event starting outside the domestic economy that hits it anyway is an",
+     "term": "oilorigin"
+    },
+    {
+     "type": "ask",
+     "q": "A pandemic shuts down world trade and a sudden global recession hits import demand. Are both of these the same kind of event as the oil price war?",
+     "right": "Yes, both start outside the domestic economy",
+     "wrong": "No, only one of them counts as external",
+     "hint": "Ask where each event originates, not what it affects.",
+     "pre": "Pandemics, wars, global recessions and commodity price swings are all examples of",
+     "term": "EXTERNAL_SHOCKS_DEF"
+    },
+    {
+     "type": "ask",
+     "q": "Oil prices have doubled, pushing up costs and prices across the economy. Government spending and tax changes, interest rate changes, and letting the currency move are all available. Does only one of these tools exist for tackling this?",
+     "right": "No, several different tools could be used",
+     "wrong": "Yes, there is really only one option",
+     "hint": "Fiscal, monetary and exchange rate policy are all separate tools sitting there unused.",
+     "pre": "So policymakers first face a",
+     "term": "policychoice"
+    },
+    {
+     "type": "ask",
+     "q": "The Bank of England raises interest rates to bring inflation from the oil shock back down. What is this an example of?",
+     "right": "Using a macro policy tool to react to the shock",
+     "wrong": "A tool that removes the shock from happening again",
+     "hint": "Does raising rates stop the war, or does it deal with the effects of the war on the economy?",
+     "pre": "Using fiscal, monetary or exchange rate policy to react to a shock is the",
+     "term": "POLICY_RESPONSE_SHOCKS"
+    },
+    {
+     "type": "order",
+     "terms": [
+      "oilorigin",
+      "EXTERNAL_SHOCKS_DEF",
+      "policychoice",
+      "POLICY_RESPONSE_SHOCKS"
+     ],
+     "prompt": "Drag and drop the 4 key terms in the order they build on each other."
+    },
+    {
+     "type": "ask",
+     "q": "The Bank of England raises interest rates today. Does the fall in inflation happen today, or only after many months?",
+     "right": "Only after many months",
+     "wrong": "Immediately, within days",
+     "hint": "Interest rate changes take time to affect spending, and spending takes time to affect prices.",
+     "pre": "So a policy response is slowed by a",
+     "term": "timelag"
+    },
+    {
+     "type": "ask",
+     "q": "Using the AD/AS model, a sudden rise in import costs shifts aggregate supply left, raising prices and lowering output. If the interest rate rise arrives many months later, could it undo both problems well, given raising rates also reduces demand and output further?",
+     "right": "No, it may fix inflation but worsen the fall in output",
+     "wrong": "Yes, it fixes both problems equally well",
+     "hint": "Higher rates cut demand. Does cutting demand help an economy where output has already fallen?",
+     "pre": "Weighing up the delay, side effects and how well it matches the problem is the",
+     "term": "EVAL_SHOCK_RESPONSE"
+    },
+    {
+     "type": "ask",
+     "q": "After all this, could the government have used any policy to stop the war or the pandemic from happening in the first place?",
+     "right": "No, those events were outside its control",
+     "wrong": "Yes, with the right policy mix it could have prevented them",
+     "hint": "Policy can react to the shock's effects, but can it reach the actual cause abroad?",
+     "pre": "This shows the",
+     "term": "POLICY_PROBLEM_EXTERNAL_SHOCKS"
+    },
+    {
+     "type": "derive"
+    }
+   ],
+   "given": [
+    "AD_AS_MODEL",
+    "FISCAL_POLICY_DEF",
+    "MONETARY_POLICY_DEF",
+    "EXCHANGE_RATE_POLICY_DEF"
+   ],
+   "needs": [
+    "AD_AS_MODEL",
+    "FISCAL_POLICY_DEF",
+    "MONETARY_POLICY_DEF",
+    "EXCHANGE_RATE_POLICY_DEF",
+    "SUPPLY_SIDE_POLICY_DEF",
+    "LIMITS_CONTROL_TRANSNATIONALS"
+   ],
+   "builds": [
+    "AD_AS_MODEL",
+    "FISCAL_POLICY_DEF",
+    "MONETARY_POLICY_DEF",
+    "EXCHANGE_RATE_POLICY_DEF"
+   ],
+   "nodes": [
+    "EXTERNAL_SHOCKS_DEF",
+    "POLICY_RESPONSE_SHOCKS",
+    "EVAL_SHOCK_RESPONSE",
+    "POLICY_PROBLEM_EXTERNAL_SHOCKS"
+   ],
+   "dropped": [
+    [
+     "EXTERNAL_SHOCKS_DEF",
+     "POLICY_RESPONSE_SHOCKS"
+    ]
+   ],
+   "edges": [
+    [
+     "POLICY_RESPONSE_SHOCKS",
+     "EVAL_SHOCK_RESPONSE"
+    ],
+    [
+     "EVAL_SHOCK_RESPONSE",
+     "POLICY_PROBLEM_EXTERNAL_SHOCKS"
+    ],
+    [
+     "AD_AS_MODEL",
+     "EXTERNAL_SHOCKS_DEF"
+    ],
+    [
+     "FISCAL_POLICY_DEF",
+     "POLICY_RESPONSE_SHOCKS"
+    ],
+    [
+     "MONETARY_POLICY_DEF",
+     "POLICY_RESPONSE_SHOCKS"
+    ],
+    [
+     "EXCHANGE_RATE_POLICY_DEF",
+     "POLICY_RESPONSE_SHOCKS"
+    ],
+    [
+     "oilorigin",
+     "EXTERNAL_SHOCKS_DEF"
+    ],
+    [
+     "EXTERNAL_SHOCKS_DEF",
+     "policychoice"
+    ],
+    [
+     "FISCAL_POLICY_DEF",
+     "policychoice"
+    ],
+    [
+     "MONETARY_POLICY_DEF",
+     "policychoice"
+    ],
+    [
+     "EXCHANGE_RATE_POLICY_DEF",
+     "policychoice"
+    ],
+    [
+     "policychoice",
+     "POLICY_RESPONSE_SHOCKS"
+    ],
+    [
+     "POLICY_RESPONSE_SHOCKS",
+     "timelag"
+    ],
+    [
+     "timelag",
+     "EVAL_SHOCK_RESPONSE"
+    ],
+    [
+     "AD_AS_MODEL",
+     "EVAL_SHOCK_RESPONSE"
+    ]
+   ]
+  }
+ ]
+}

@@ -1,0 +1,234 @@
+{
+ "id": "gen",
+ "subject": "Economics",
+ "title": "Market structures: revenue, profit and efficiency",
+ "terms": {
+  "AR": {
+   "label": "Average revenue"
+  },
+  "MR": {
+   "label": "Marginal revenue"
+  },
+  "revenue_curves": {
+   "label": "Revenue curves: AR, MR"
+  },
+  "profit_max_rule": {
+   "label": "Profit maximisation: MC=MR"
+  },
+  "normal_profit": {
+   "label": "Normal/supernormal profit or loss"
+  },
+  "alloc_eff": {
+   "label": "Allocative efficiency"
+  },
+  "prod_eff": {
+   "label": "Productive efficiency"
+  },
+  "cost_curves": {
+   "label": "Cost curves: total cost, average cost, marginal cost construction"
+  },
+  "TR": {
+   "label": "Total revenue"
+  }
+ },
+ "stages": [
+  {
+   "name": "Market structures: revenue, profit and efficiency",
+   "title": "Market structures: revenue, profit and efficiency",
+   "sub": "How firms find their profit-maximising output, and whether that output is efficient.",
+   "steps": [
+    {
+     "type": "ask",
+     "q": "A firm sells 10 units at £5 each, so total revenue is £50. What is the revenue per unit sold?",
+     "right": "£5, the same as the price",
+     "wrong": "£50, the same as total revenue",
+     "hint": "Divide total revenue by the number of units.",
+     "pre": "Revenue per unit, which is the same as price, is called",
+     "term": "AR"
+    },
+    {
+     "type": "ask",
+     "q": "A firm sells one more unit and total revenue rises from £50 to £54. What has that extra unit added to revenue?",
+     "right": "£4, the revenue from the extra unit",
+     "wrong": "£5, the average revenue per unit",
+     "hint": "Look at the change in total revenue, not the average.",
+     "pre": "The extra revenue from selling one more unit is",
+     "term": "MR"
+    },
+    {
+     "type": "ask",
+     "q": "You now have a curve showing revenue per unit at each output, and a curve showing extra revenue from each extra unit. Do these two curves show the same thing?",
+     "right": "No, they show two different things",
+     "wrong": "Yes, they always show the same amount",
+     "hint": "One is per unit sold, the other is the extra from the last unit sold.",
+     "pre": "Plotted against output, these are the",
+     "term": "revenue_curves",
+     "diagram": {
+      "x": "Output",
+      "y": "£ per unit",
+      "curves": [
+       {
+        "label": "AR",
+        "pts": [
+         [
+          0.05,
+          0.85
+         ],
+         [
+          0.4,
+          0.55
+         ],
+         [
+          0.9,
+          0.15
+         ]
+        ]
+       },
+       {
+        "label": "MR",
+        "pts": [
+         [
+          0.05,
+          0.85
+         ],
+         [
+          0.35,
+          0.35
+         ],
+         [
+          0.6,
+          0.05
+         ]
+        ]
+       }
+      ]
+     }
+    },
+    {
+     "type": "ask",
+     "q": "Making one more unit costs the firm £4, but selling it only brings in £3 of extra revenue. Should the firm make that extra unit?",
+     "right": "No, it loses money on that unit",
+     "wrong": "Yes, more output is always better",
+     "hint": "Compare what the extra unit costs to make with what it earns.",
+     "pre": "So a firm should only keep expanding while the extra cost is below the extra revenue, stopping exactly where they are equal. That rule is",
+     "term": "profit_max_rule"
+    },
+    {
+     "type": "order",
+     "terms": [
+      "AR",
+      "MR",
+      "revenue_curves",
+      "profit_max_rule"
+     ],
+     "prompt": "Drag and drop the 4 key terms in the order they build on each other."
+    },
+    {
+     "type": "ask",
+     "q": "At its chosen output, a firm's price per unit exactly equals its average cost per unit. Is it making anything above covering its costs?",
+     "right": "No, it just covers all its costs",
+     "wrong": "Yes, it earns extra profit above its costs",
+     "hint": "If revenue per unit equals cost per unit, what is left over?",
+     "pre": "Just covering all costs, including a normal return to the owner, is",
+     "term": "normal_profit"
+    },
+    {
+     "type": "ask",
+     "q": "At the profit-maximising output, the price customers pay turns out to equal the cost of making one more unit. Does this mean resources are being used exactly as consumers value them?",
+     "right": "Yes, price reflects the true cost of the last unit",
+     "wrong": "No, price is unrelated to that cost here",
+     "hint": "Compare what buyers pay with what the last unit actually costs to produce.",
+     "pre": "When price equals the cost of the last unit made, this is",
+     "term": "alloc_eff"
+    },
+    {
+     "type": "ask",
+     "q": "You already built average cost from total cost divided by output. At which output is that average cost curve at its lowest point?",
+     "right": "The output where average cost is minimised",
+     "wrong": "The output where total cost is minimised",
+     "hint": "Average cost falls then rises as output grows. Where is the bottom of that curve?",
+     "pre": "Producing at that lowest-cost output is",
+     "term": "prod_eff"
+    },
+    {
+     "type": "order",
+     "terms": [
+      "normal_profit",
+      "alloc_eff",
+      "prod_eff"
+     ],
+     "prompt": "Drag and drop the 3 key terms in the order they build on each other."
+    },
+    {
+     "type": "derive"
+    }
+   ],
+   "given": [
+    "cost_curves",
+    "TR"
+   ],
+   "needs": [
+    "cost_curves",
+    "TR"
+   ],
+   "builds": [
+    "cost_curves",
+    "TR"
+   ],
+   "nodes": [
+    "revenue_curves",
+    "profit_max_rule",
+    "normal_profit",
+    "alloc_eff",
+    "prod_eff"
+   ],
+   "dropped": [],
+   "edges": [
+    [
+     "revenue_curves",
+     "profit_max_rule"
+    ],
+    [
+     "profit_max_rule",
+     "normal_profit"
+    ],
+    [
+     "profit_max_rule",
+     "alloc_eff"
+    ],
+    [
+     "cost_curves",
+     "profit_max_rule"
+    ],
+    [
+     "cost_curves",
+     "prod_eff"
+    ],
+    [
+     "TR",
+     "revenue_curves"
+    ],
+    [
+     "TR",
+     "AR"
+    ],
+    [
+     "AR",
+     "MR"
+    ],
+    [
+     "AR",
+     "revenue_curves"
+    ],
+    [
+     "MR",
+     "revenue_curves"
+    ],
+    [
+     "cost_curves",
+     "prod_eff"
+    ]
+   ]
+  }
+ ]
+}

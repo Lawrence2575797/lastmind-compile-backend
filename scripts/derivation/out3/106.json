@@ -1,0 +1,213 @@
+{
+ "id": "gen",
+ "subject": "Economics",
+ "title": "Conglomerate integration: advantages and disadvantages",
+ "terms": {
+  "conglomerate_adv_diversify": {
+   "label": "Risk diversification"
+  },
+  "conglomerate_adv_crosssell": {
+   "label": "Cross-selling advantage"
+  },
+  "conglomerate_dis_noeconomies": {
+   "label": "Limited synergies"
+  },
+  "conglomerate_dis_management": {
+   "label": "Management expertise gap"
+  },
+  "conglomerate_dis_focus": {
+   "label": "Conglomerate integration disadvantage: loss of strategic focus on the core business"
+  },
+  "unrelated_markets": {
+   "label": "Unrelated markets"
+  },
+  "shared_brand_base": {
+   "label": "Shared brand & customer base"
+  },
+  "spread_management": {
+   "label": "Spread management time"
+  },
+  "conglomerate_integration_def": {
+   "label": "Conglomerate integration"
+  },
+  "econ_scale": {
+   "label": "Economies of scale"
+  }
+ },
+ "stages": [
+  {
+   "name": "Conglomerate integration: advantages and disadvantages",
+   "title": "Conglomerate integration: advantages and disadvantages",
+   "sub": "After this, the student can explain why firms merge across unrelated markets, and the benefits and risks that follow.",
+   "steps": [
+    {
+     "type": "ask",
+     "q": "A biscuit maker merges with an insurance company. Do these two firms sell to the same market, using the same skills and supply chains?",
+     "right": "No, they operate in completely different markets",
+     "wrong": "Yes, they operate in the same market",
+     "hint": "Think about what biscuits and insurance actually have in common.",
+     "pre": "So the merged firm now operates across",
+     "term": "unrelated_markets"
+    },
+    {
+     "type": "ask",
+     "q": "If the biscuit market suddenly slumps, does the insurance business, in a completely different market, also collapse?",
+     "right": "No, it can keep earning as normal",
+     "wrong": "Yes, both would collapse together",
+     "hint": "The two markets are unrelated. Does bad news in one usually hit the other?",
+     "pre": "So spreading into unrelated markets gives the firm",
+     "term": "conglomerate_adv_diversify"
+    },
+    {
+     "type": "ask",
+     "q": "The biscuit maker also owns a chain of cafés. Does it already have a well-known brand name and a list of loyal biscuit customers it could point at the cafés?",
+     "right": "Yes, it already has a brand and customer base to use",
+     "wrong": "No, the café business starts from nothing",
+     "hint": "Think about what the firm built up in its original business, and whether that asset can be pointed at a new one.",
+     "pre": "So the firm has a",
+     "term": "shared_brand_base"
+    },
+    {
+     "type": "ask",
+     "q": "Could the firm use that existing brand and customer base to promote the café's menu and boost café sales?",
+     "right": "Yes, it can use them to boost sales elsewhere",
+     "wrong": "No, brand and customers only work in the original market",
+     "hint": "If people already trust the biscuit brand, would that trust carry over when it appears on a café menu?",
+     "pre": "Using strengths from one market to boost sales in another is",
+     "term": "conglomerate_adv_crosssell"
+    },
+    {
+     "type": "order",
+     "terms": [
+      "unrelated_markets",
+      "conglomerate_adv_diversify",
+      "shared_brand_base",
+      "conglomerate_adv_crosssell"
+     ],
+     "prompt": "Drag and drop the 4 key terms in the order they build on each other."
+    },
+    {
+     "type": "ask",
+     "q": "Biscuits and insurance use completely different factories, staff and supply chains. Can combining them let the firm buy ingredients in bulk or share a production line, the way two biscuit firms merging could?",
+     "right": "No, there is little to share between them",
+     "wrong": "Yes, the same cost savings apply",
+     "hint": "Economies of scale usually come from doing more of the same kind of thing. Are biscuits and insurance the same kind of thing?",
+     "pre": "Because the markets are unrelated, the firm gets",
+     "term": "conglomerate_dis_noeconomies"
+    },
+    {
+     "type": "ask",
+     "q": "The biscuit company's directors, who know baking and retail well, are now put in charge of running the insurance arm, a completely different market. Do they necessarily know how to run an insurance business well?",
+     "right": "No, they may lack the right knowledge",
+     "wrong": "Yes, good managers can run any business",
+     "hint": "Insurance has its own rules, risks and skills. Does biscuit experience prepare anyone for that?",
+     "pre": "So across such different markets,",
+     "term": "conglomerate_dis_management"
+    },
+    {
+     "type": "ask",
+     "q": "The same directors must now also oversee insurance and cafés alongside biscuits. Do they still have as many hours in the day to spend on each business as before?",
+     "right": "No, their time gets divided between the businesses",
+     "wrong": "Yes, their total time available stays focused on each",
+     "hint": "There is only so much management time. If it must now cover three unrelated businesses, what happens to the time each one gets?",
+     "pre": "So management time and attention gets",
+     "term": "spread_management"
+    },
+    {
+     "type": "ask",
+     "q": "With attention divided this way, does the board still give its full focus to perfecting the biscuit business that made the firm successful?",
+     "right": "No, the core business gets less focus than before",
+     "wrong": "Yes, the core business stays the main priority",
+     "hint": "If management time is now split across unrelated businesses, what happens to the attention on the original one?",
+     "pre": "Spreading attention across unrelated markets causes a",
+     "term": "conglomerate_dis_focus"
+    },
+    {
+     "type": "derive"
+    }
+   ],
+   "given": [
+    "conglomerate_integration_def",
+    "econ_scale"
+   ],
+   "needs": [
+    "conglomerate_integration_def",
+    "econ_scale"
+   ],
+   "builds": [
+    "conglomerate_integration_def",
+    "econ_scale"
+   ],
+   "nodes": [
+    "conglomerate_adv_diversify",
+    "conglomerate_adv_crosssell",
+    "conglomerate_dis_noeconomies",
+    "conglomerate_dis_management",
+    "conglomerate_dis_focus"
+   ],
+   "dropped": [],
+   "edges": [
+    [
+     "conglomerate_integration_def",
+     "conglomerate_adv_diversify"
+    ],
+    [
+     "conglomerate_integration_def",
+     "conglomerate_adv_crosssell"
+    ],
+    [
+     "econ_scale",
+     "conglomerate_dis_noeconomies"
+    ],
+    [
+     "conglomerate_integration_def",
+     "conglomerate_dis_noeconomies"
+    ],
+    [
+     "conglomerate_integration_def",
+     "conglomerate_dis_management"
+    ],
+    [
+     "conglomerate_integration_def",
+     "conglomerate_dis_focus"
+    ],
+    [
+     "conglomerate_integration_def",
+     "unrelated_markets"
+    ],
+    [
+     "unrelated_markets",
+     "conglomerate_adv_diversify"
+    ],
+    [
+     "conglomerate_integration_def",
+     "shared_brand_base"
+    ],
+    [
+     "shared_brand_base",
+     "conglomerate_adv_crosssell"
+    ],
+    [
+     "unrelated_markets",
+     "conglomerate_dis_noeconomies"
+    ],
+    [
+     "econ_scale",
+     "conglomerate_dis_noeconomies"
+    ],
+    [
+     "unrelated_markets",
+     "conglomerate_dis_management"
+    ],
+    [
+     "conglomerate_integration_def",
+     "spread_management"
+    ],
+    [
+     "spread_management",
+     "conglomerate_dis_focus"
+    ]
+   ]
+  }
+ ]
+}

@@ -1,0 +1,205 @@
+{
+ "id": "gen",
+ "subject": "Economics",
+ "title": "Business growth: finance and staying small",
+ "terms": {
+  "loan": {
+   "label": "Bank loan"
+  },
+  "shares": {
+   "label": "Selling shares"
+  },
+  "retained_profit": {
+   "label": "Retained profit"
+  },
+  "external_finance_types": {
+   "label": "Sources of external finance"
+  },
+  "constraint_access_finance": {
+   "label": "Access to finance constraint"
+  },
+  "stay_small_dis_finance": {
+   "label": "Limited finance & bargaining power"
+  },
+  "stay_small_adv_control": {
+   "label": "Retaining full control"
+  },
+  "constraint_owner_objectives": {
+   "label": "Owner objectives constraint"
+  },
+  "reasons_firms_grow": {
+   "label": "Reasons firms grow"
+  },
+  "owner_pref_small": {
+   "label": "Owner preference"
+  },
+  "principal_agent_problem": {
+   "label": "Principal-agent problem"
+  },
+  "reasons_firms_stay_small": {
+   "label": "Reasons firms stay small"
+  }
+ },
+ "stages": [
+  {
+   "name": "Business growth: finance and staying small",
+   "title": "Business growth: finance and staying small",
+   "sub": "Why access to finance and owners' own goals shape whether a firm grows or stays small.",
+   "steps": [
+    {
+     "type": "read",
+     "term": "loan",
+     "text": "A small bakery wants to buy a second oven. It borrows the money from a bank and pays it back with interest. This is a "
+    },
+    {
+     "type": "read",
+     "term": "shares",
+     "text": "A growing firm instead invites new investors to buy a stake in the company in exchange for cash. This is "
+    },
+    {
+     "type": "read",
+     "term": "retained_profit",
+     "text": "Instead of borrowing or bringing in investors, the firm simply keeps some of last year's profit in the business rather than paying it all out. This is "
+    },
+    {
+     "type": "ask",
+     "q": "A bank loan, selling shares, and keeping past profit are all ways a firm gets money from outside its own day-to-day trading. What would you call this whole group of options?",
+     "right": "Sources of money from outside the firm's normal trading",
+     "wrong": "Ways of cutting the firm's daily running costs",
+     "hint": "None of the three come from simply selling more product this week.",
+     "pre": "Together these are the",
+     "term": "external_finance_types"
+    },
+    {
+     "type": "order",
+     "terms": [
+      "loan",
+      "shares",
+      "retained_profit",
+      "external_finance_types"
+     ],
+     "prompt": "Drag and drop the 4 key terms in the order they build on each other."
+    },
+    {
+     "type": "ask",
+     "q": "A small, unknown firm with few assets applies for a large loan and tries to attract new shareholders. Will banks and investors treat it the same as a large, established firm?",
+     "right": "No, it will find it much harder to get funded",
+     "wrong": "Yes, size makes no difference to lenders or investors",
+     "hint": "Think about how much a bank trusts a firm with no track record and few assets to offer as security.",
+     "pre": "So a firm's growth can be held back by its",
+     "term": "constraint_access_finance"
+    },
+    {
+     "type": "ask",
+     "q": "Because it struggles to raise loans or attract shareholders, and has little size to negotiate better deals with suppliers, what does a small firm end up facing compared with a large one?",
+     "right": "Weaker access to funding and weaker bargaining power",
+     "wrong": "Stronger access to funding and stronger bargaining power",
+     "hint": "Small firms buy less, so suppliers have less reason to offer them good terms, and lenders see them as riskier.",
+     "pre": "That is the disadvantage of staying small:",
+     "term": "stay_small_dis_finance"
+    },
+    {
+     "type": "ask",
+     "q": "A sole owner sells shares to outside investors to fund expansion. Those investors now want a say in decisions, and might want different things from the owner. If the owner instead stays small and keeps all the shares, what does she avoid?",
+     "right": "Investors pulling the business in a different direction from her",
+     "wrong": "Having to keep any accounting records at all",
+     "hint": "Think about what changes once someone else owns part of the decision-making power.",
+     "pre": "By staying small she avoids this kind of conflict, known as the",
+     "term": "stay_small_adv_control"
+    },
+    {
+     "type": "ask",
+     "q": "An owner who values a relaxed lifestyle and enjoys running things her own way is offered a chance to expand fast, take on debt, and share control with new investors. Will her personal goals push her to take that chance, or to turn it down?",
+     "right": "Turn it down, to keep her lifestyle and control",
+     "wrong": "Take it, since growth is always the main goal",
+     "hint": "Growth would mean more pressure, more debt, and less control over decisions. Does that fit what she wants?",
+     "pre": "So what an owner personally wants can itself be a",
+     "term": "constraint_owner_objectives"
+    },
+    {
+     "type": "derive"
+    }
+   ],
+   "given": [
+    "reasons_firms_grow",
+    "owner_pref_small",
+    "principal_agent_problem",
+    "reasons_firms_stay_small"
+   ],
+   "needs": [
+    "reasons_firms_grow",
+    "owner_pref_small",
+    "principal_agent_problem",
+    "reasons_firms_stay_small"
+   ],
+   "builds": [
+    "reasons_firms_grow",
+    "owner_pref_small",
+    "principal_agent_problem",
+    "reasons_firms_stay_small"
+   ],
+   "nodes": [
+    "external_finance_types",
+    "constraint_access_finance",
+    "stay_small_dis_finance",
+    "stay_small_adv_control",
+    "constraint_owner_objectives"
+   ],
+   "dropped": [],
+   "edges": [
+    [
+     "external_finance_types",
+     "constraint_access_finance"
+    ],
+    [
+     "external_finance_types",
+     "stay_small_dis_finance"
+    ],
+    [
+     "reasons_firms_grow",
+     "constraint_access_finance"
+    ],
+    [
+     "owner_pref_small",
+     "constraint_owner_objectives"
+    ],
+    [
+     "principal_agent_problem",
+     "constraint_owner_objectives"
+    ],
+    [
+     "reasons_firms_stay_small",
+     "stay_small_adv_control"
+    ],
+    [
+     "principal_agent_problem",
+     "stay_small_adv_control"
+    ],
+    [
+     "reasons_firms_stay_small",
+     "stay_small_dis_finance"
+    ],
+    [
+     "loan",
+     "external_finance_types"
+    ],
+    [
+     "shares",
+     "external_finance_types"
+    ],
+    [
+     "retained_profit",
+     "external_finance_types"
+    ],
+    [
+     "principal_agent_problem",
+     "stay_small_adv_control"
+    ],
+    [
+     "owner_pref_small",
+     "constraint_owner_objectives"
+    ]
+   ]
+  }
+ ]
+}

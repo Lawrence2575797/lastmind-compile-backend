@@ -1,0 +1,157 @@
+{
+ "id": "gen",
+ "subject": "Economics",
+ "title": "Horizontal and conglomerate integration",
+ "terms": {
+  "horizontal_integration_def": {
+   "label": "Horizontal integration"
+  },
+  "conglomerate_integration_def": {
+   "label": "Conglomerate integration"
+  },
+  "horizontal_adv_scale": {
+   "label": "Economies of scale advantage"
+  },
+  "horizontal_adv_marketshare": {
+   "label": "Market share advantage"
+  },
+  "horizontal_adv_synergy": {
+   "label": "Synergy advantage"
+  },
+  "reasons_firms_grow": {
+   "label": "Reasons firms grow"
+  },
+  "econ_scale": {
+   "label": "Economies of scale"
+  }
+ },
+ "stages": [
+  {
+   "name": "Horizontal and conglomerate integration",
+   "title": "Horizontal and conglomerate integration",
+   "sub": "Recognise the two types of merger and explain three advantages of merging with a direct rival.",
+   "steps": [
+    {
+     "type": "ask",
+     "q": "A bakery merges with another bakery that makes the same kind of bread for the same customers. What stage of production are both firms at?",
+     "right": "The same stage, selling similar products",
+     "wrong": "Different stages of the same supply chain",
+     "hint": "Are the two bakeries rivals selling to the same customers, or one supplying the other?",
+     "pre": "Two firms at the same stage making similar products merging is",
+     "term": "horizontal_integration_def"
+    },
+    {
+     "type": "ask",
+     "q": "A bakery instead merges with a company that makes furniture, in a totally unrelated market. What stage or market do the two firms share?",
+     "right": "None, they are in unrelated markets",
+     "wrong": "The same market, just different products",
+     "hint": "Does furniture-making have anything to do with baking bread?",
+     "pre": "Two firms in completely unrelated markets merging is",
+     "term": "conglomerate_integration_def"
+    },
+    {
+     "type": "ask",
+     "q": "After the two bakeries merge, they combine their ovens and delivery vans into one larger operation rather than running two separate small ones. What happens to their average cost per loaf?",
+     "right": "It falls, because output is spread over the bigger combined operation",
+     "wrong": "It rises, because two lots of equipment now need running",
+     "hint": "Think about economies of scale: does spreading fixed costs over more loaves raise or lower the cost per loaf?",
+     "pre": "Combining operations to cut cost per unit gives",
+     "term": "horizontal_adv_scale"
+    },
+    {
+     "type": "ask",
+     "q": "Before the merger, the two bakeries were competing for the same local customers. After merging into one firm, how many bakeries are now competing for those customers?",
+     "right": "Just one, so competition for those customers falls",
+     "wrong": "Still two, just under one owner",
+     "hint": "Were the two firms rivals before? Are they still separate rivals after they become one firm?",
+     "pre": "Removing a rival and gaining its customers gives",
+     "term": "horizontal_adv_marketshare"
+    },
+    {
+     "type": "order",
+     "terms": [
+      "horizontal_integration_def",
+      "conglomerate_integration_def",
+      "horizontal_adv_scale",
+      "horizontal_adv_marketshare"
+     ],
+     "prompt": "Drag and drop the 4 key terms in the order they build on each other."
+    },
+    {
+     "type": "ask",
+     "q": "One bakery had a much better bread recipe and the other had a much faster delivery app. After merging, can the combined firm use both together?",
+     "right": "Yes, both firms' strengths become available to the whole business",
+     "wrong": "No, each part can only use its own original strengths",
+     "hint": "Once they are one company, are the recipe and the app locked inside their original half, or shared?",
+     "pre": "Combining each firm's best resources and technology gives",
+     "term": "horizontal_adv_synergy"
+    },
+    {
+     "type": "derive"
+    }
+   ],
+   "given": [
+    "reasons_firms_grow",
+    "econ_scale"
+   ],
+   "needs": [
+    "reasons_firms_grow",
+    "econ_scale"
+   ],
+   "builds": [
+    "reasons_firms_grow",
+    "econ_scale"
+   ],
+   "nodes": [
+    "horizontal_integration_def",
+    "conglomerate_integration_def",
+    "horizontal_adv_scale",
+    "horizontal_adv_marketshare",
+    "horizontal_adv_synergy"
+   ],
+   "dropped": [],
+   "edges": [
+    [
+     "horizontal_integration_def",
+     "horizontal_adv_scale"
+    ],
+    [
+     "horizontal_integration_def",
+     "horizontal_adv_marketshare"
+    ],
+    [
+     "horizontal_integration_def",
+     "horizontal_adv_synergy"
+    ],
+    [
+     "reasons_firms_grow",
+     "horizontal_integration_def"
+    ],
+    [
+     "reasons_firms_grow",
+     "conglomerate_integration_def"
+    ],
+    [
+     "econ_scale",
+     "horizontal_adv_scale"
+    ],
+    [
+     "horizontal_integration_def",
+     "horizontal_adv_scale"
+    ],
+    [
+     "horizontal_integration_def",
+     "horizontal_adv_marketshare"
+    ],
+    [
+     "horizontal_integration_def",
+     "horizontal_adv_synergy"
+    ],
+    [
+     "econ_scale",
+     "horizontal_adv_scale"
+    ]
+   ]
+  }
+ ]
+}

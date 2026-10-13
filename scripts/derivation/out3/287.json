@@ -1,0 +1,119 @@
+{
+ "id": "gen",
+ "subject": "Economics",
+ "title": "Information provision disadvantage",
+ "terms": {
+  "leaflet_ignored": {
+   "label": "Ignoring information"
+  },
+  "info_overload": {
+   "label": "Information overload"
+  },
+  "trust_source": {
+   "label": "Trusting the source"
+  },
+  "INFOPROV_DIS3": {
+   "label": "Information provision disadvantage: distrust/ignore/misinterpret"
+  },
+  "INFOPROV_DEF": {
+   "label": "Provision of information: definition"
+  },
+  "irrational_computation": {
+   "label": "Irrational behaviour: consumer weakness at computation"
+  }
+ },
+ "stages": [
+  {
+   "name": "Government intervention: information provision (disadvantages)",
+   "title": "Information provision disadvantage",
+   "sub": "Why giving consumers information does not always change what they actually do.",
+   "steps": [
+    {
+     "type": "ask",
+     "q": "The government prints leaflets on the calories in fast food and posts them to every household. Will everyone actually read them?",
+     "right": "No, many people will bin them unread",
+     "wrong": "Yes, everyone reads what they are sent",
+     "hint": "Think about your own post: junk mail, letters, leaflets. Do you read all of it?",
+     "pre": "So many people will simply",
+     "term": "leaflet_ignored"
+    },
+    {
+     "type": "ask",
+     "q": "A cigarette packet is covered in warnings, statistics and diagrams all at once. Does cramming in more facts make a smoker weigh them up more carefully?",
+     "right": "No, they may just tune it all out",
+     "wrong": "Yes, more facts always get processed more carefully",
+     "hint": "You already know consumers are weak at working through complicated numbers. What happens when there is a lot to work through at once?",
+     "pre": "Too much detail at once causes",
+     "term": "info_overload"
+    },
+    {
+     "type": "ask",
+     "q": "A tabloid headline and a peer-reviewed health study report the same statistic on sugar. Will a sceptical consumer treat both claims the same way?",
+     "right": "No, they may believe one and dismiss the other",
+     "wrong": "Yes, the same fact is believed regardless of where it comes from",
+     "hint": "Does it matter to you who is telling you something, not just what they are telling you?",
+     "pre": "So consumers react differently depending on",
+     "term": "trust_source"
+    },
+    {
+     "type": "ask",
+     "q": "So even after the government pays to give consumers full, accurate information, will they necessarily end up making the choice that information was meant to produce?",
+     "right": "No, it may be ignored, overwhelming, distrusted or misread",
+     "wrong": "Yes, once given the facts they will act on them",
+     "hint": "Put together what happens when people skip leaflets, get swamped by detail, or doubt the source.",
+     "pre": "This is the",
+     "term": "INFOPROV_DIS3"
+    },
+    {
+     "type": "derive"
+    }
+   ],
+   "given": [
+    "INFOPROV_DEF",
+    "irrational_computation"
+   ],
+   "needs": [
+    "INFOPROV_DEF",
+    "irrational_computation"
+   ],
+   "builds": [
+    "INFOPROV_DEF",
+    "irrational_computation"
+   ],
+   "nodes": [
+    "INFOPROV_DIS3"
+   ],
+   "dropped": [],
+   "edges": [
+    [
+     "INFOPROV_DEF",
+     "INFOPROV_DIS3"
+    ],
+    [
+     "irrational_computation",
+     "INFOPROV_DIS3"
+    ],
+    [
+     "INFOPROV_DEF",
+     "leaflet_ignored"
+    ],
+    [
+     "irrational_computation",
+     "info_overload"
+    ],
+    [
+     "leaflet_ignored",
+     "trust_source"
+    ],
+    [
+     "info_overload",
+     "INFOPROV_DIS3"
+    ],
+    [
+     "trust_source",
+     "INFOPROV_DIS3"
+    ]
+   ]
+  }
+ ]
+}

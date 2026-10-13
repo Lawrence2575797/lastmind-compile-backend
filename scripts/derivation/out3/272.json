@@ -1,0 +1,195 @@
+{
+ "id": "gen",
+ "subject": "Economics",
+ "title": "Business objectives: profit, revenue and sales maximisation compared",
+ "terms": {
+  "supernormal_profit": {
+   "label": "Supernormal profit"
+  },
+  "profit_max_disadv_measurement": {
+   "label": "Measurement difficulty"
+  },
+  "revenue_max_disadv_profit": {
+   "label": "Revenue max: lower profit"
+  },
+  "sales_max_disadv_profit": {
+   "label": "Sales max: normal profit only"
+  },
+  "profit_max_adv_investment": {
+   "label": "Profit funds investment"
+  },
+  "profit_max_adv_signal": {
+   "label": "Profit signals resources"
+  },
+  "profit_max_condition": {
+   "label": "MC=MR rule"
+  },
+  "revenue_max_condition": {
+   "label": "Revenue maximisation: MR=0 rule and diagram"
+  },
+  "sales_max_condition": {
+   "label": "Sales (output) maximisation: AC=AR rule (normal profit constraint) and diagram"
+  }
+ },
+ "stages": [
+  {
+   "name": "Business objectives: profit, revenue and sales maximisation compared",
+   "title": "Business objectives: profit, revenue and sales maximisation compared",
+   "sub": "After this stage you can weigh up the practical advantages and disadvantages of profit, revenue and sales maximisation.",
+   "steps": [
+    {
+     "type": "ask",
+     "q": "A firm sets output where MC=MR and earns more than it needs to stay in business. Is that extra amount above the minimum needed, or is it the minimum itself?",
+     "right": "It is the extra above the minimum",
+     "wrong": "It is only the minimum amount",
+     "hint": "Normal profit is just enough to keep the firm in the industry. This is extra on top of that.",
+     "pre": "Profit above the amount needed to stay in business is",
+     "term": "supernormal_profit"
+    },
+    {
+     "type": "ask",
+     "q": "A firm knows its MC=MR rule in theory, but in reality it struggles to know its exact costs and revenues at every possible output. Can it be sure it has found the exact profit-maximising output?",
+     "right": "No, it is very hard to pinpoint exactly",
+     "wrong": "Yes, the rule always gives an exact answer",
+     "hint": "The rule is easy to draw on a diagram, but real firms do not have perfect data on costs and revenue at every output level.",
+     "pre": "In practice this is the",
+     "term": "profit_max_disadv_measurement"
+    },
+    {
+     "type": "ask",
+     "q": "A firm instead maximises revenue, setting output where MR=0, well beyond the profit-maximising output. Compared with profit maximisation, will its profit be higher or lower?",
+     "right": "Lower, which could upset shareholders",
+     "wrong": "Higher, which pleases shareholders",
+     "hint": "Pushing output past the MC=MR point adds output that costs more than the revenue it earns.",
+     "pre": "So a key drawback is",
+     "term": "revenue_max_disadv_profit"
+    },
+    {
+     "type": "ask",
+     "q": "A firm maximises sales instead, expanding output until AC=AR so it earns just enough to survive. What happens to the supernormal profit it could have earned by maximising profit instead?",
+     "right": "It is given up entirely",
+     "wrong": "Most of it is still kept",
+     "hint": "AC=AR is the zero-supernormal-profit point. What is left over for shareholders at that output?",
+     "pre": "So the drawback is that",
+     "term": "sales_max_disadv_profit"
+    },
+    {
+     "type": "order",
+     "terms": [
+      "supernormal_profit",
+      "profit_max_disadv_measurement",
+      "revenue_max_disadv_profit",
+      "sales_max_disadv_profit"
+     ],
+     "prompt": "Drag and drop the 4 key terms in the order they build on each other."
+    },
+    {
+     "type": "ask",
+     "q": "A profit-maximising firm keeps back some of its supernormal profit rather than paying it all out. What can it now afford to spend on new equipment and research that a firm with only normal profit could not?",
+     "right": "More spending on new equipment",
+     "wrong": "The same spending as before",
+     "hint": "Retained profit is cash sitting inside the firm. What can cash be spent on to improve future production?",
+     "pre": "This funds greater",
+     "term": "profit_max_adv_investment"
+    },
+    {
+     "type": "ask",
+     "q": "A market where firms are earning supernormal profit looks very attractive to outside investors and new firms looking for somewhere to put their money. What does that high profit do to resources in the wider economy?",
+     "right": "It draws resources into that market",
+     "wrong": "It pushes resources from that market",
+     "hint": "Think about why new firms enter a profitable industry rather than an unprofitable one.",
+     "pre": "So supernormal profit acts as a signal that",
+     "term": "profit_max_adv_signal"
+    },
+    {
+     "type": "derive"
+    }
+   ],
+   "given": [
+    "profit_max_condition",
+    "revenue_max_condition",
+    "sales_max_condition"
+   ],
+   "needs": [
+    "profit_max_condition",
+    "revenue_max_condition",
+    "sales_max_condition"
+   ],
+   "builds": [
+    "profit_max_condition",
+    "revenue_max_condition",
+    "sales_max_condition"
+   ],
+   "nodes": [
+    "profit_max_disadv_measurement",
+    "revenue_max_disadv_profit",
+    "sales_max_disadv_profit",
+    "profit_max_adv_investment",
+    "profit_max_adv_signal"
+   ],
+   "dropped": [],
+   "edges": [
+    [
+     "profit_max_condition",
+     "profit_max_disadv_measurement"
+    ],
+    [
+     "profit_max_condition",
+     "revenue_max_disadv_profit"
+    ],
+    [
+     "revenue_max_condition",
+     "revenue_max_disadv_profit"
+    ],
+    [
+     "sales_max_condition",
+     "sales_max_disadv_profit"
+    ],
+    [
+     "profit_max_condition",
+     "sales_max_disadv_profit"
+    ],
+    [
+     "profit_max_condition",
+     "profit_max_adv_investment"
+    ],
+    [
+     "profit_max_condition",
+     "profit_max_adv_signal"
+    ],
+    [
+     "profit_max_condition",
+     "supernormal_profit"
+    ],
+    [
+     "supernormal_profit",
+     "revenue_max_disadv_profit"
+    ],
+    [
+     "supernormal_profit",
+     "sales_max_disadv_profit"
+    ],
+    [
+     "supernormal_profit",
+     "profit_max_adv_investment"
+    ],
+    [
+     "supernormal_profit",
+     "profit_max_adv_signal"
+    ],
+    [
+     "revenue_max_condition",
+     "revenue_max_disadv_profit"
+    ],
+    [
+     "sales_max_condition",
+     "sales_max_disadv_profit"
+    ],
+    [
+     "profit_max_condition",
+     "profit_max_disadv_measurement"
+    ]
+   ]
+  }
+ ]
+}

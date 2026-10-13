@@ -1,0 +1,104 @@
+{
+ "id": "gen",
+ "subject": "Economics",
+ "title": "Poverty and inequality",
+ "terms": {
+  "POVERTY_DEF": {
+   "label": "Poverty"
+  },
+  "ABS_POVERTY": {
+   "label": "Absolute poverty"
+  },
+  "REL_POVERTY": {
+   "label": "Relative poverty"
+  },
+  "ABS_REL_DISTINCTION": {
+   "label": "Absolute vs relative"
+  }
+ },
+ "stages": [
+  {
+   "name": "Poverty and inequality",
+   "title": "Poverty and inequality",
+   "sub": "Tell apart a fixed poverty line from one that moves with everyone else's income.",
+   "steps": [
+    {
+     "type": "ask",
+     "q": "A family cannot afford enough food, warm clothing or a place to live. Are they able to meet a basic standard of living?",
+     "right": "No, they fall short of it",
+     "wrong": "Yes, as long as they have some income",
+     "hint": "Think about what having 'some money' actually buys them here.",
+     "pre": "Being unable to meet a given standard of living is",
+     "term": "POVERTY_DEF"
+    },
+    {
+     "type": "ask",
+     "q": "A country sets a fixed list of basics: enough food, water, shelter and clothing to survive. A family cannot afford this list even after ten years, even though prices and wages elsewhere have changed. What has stayed the same?",
+     "right": "The fixed minimum list itself",
+     "wrong": "The average income in that country",
+     "hint": "The list of basics does not move even if the rest of the economy does.",
+     "pre": "Falling short of that fixed, unchanging minimum is",
+     "term": "ABS_POVERTY"
+    },
+    {
+     "type": "ask",
+     "q": "A family can afford food, heating and shelter, but their income is far below what most other households in their country earn. If average incomes doubled next year, would the amount this family needs to avoid this kind of poverty change too?",
+     "right": "Yes, the benchmark would move with it",
+     "wrong": "No, the benchmark stays fixed",
+     "hint": "Is this family being compared to a fixed list, or to everyone else around them?",
+     "pre": "Being significantly below the average income or living standard of your society is",
+     "term": "REL_POVERTY"
+    },
+    {
+     "type": "order",
+     "terms": [
+      "POVERTY_DEF",
+      "ABS_POVERTY",
+      "REL_POVERTY"
+     ],
+     "prompt": "Drag and drop the 3 key terms in the order they build on each other."
+    },
+    {
+     "type": "ask",
+     "q": "Average incomes in a country rise sharply over 20 years, so the fixed list of basics becomes easy for almost everyone to afford. Could someone stop falling short of that fixed list, yet still earn far less than everyone else around them?",
+     "right": "Yes, the two benchmarks can move apart",
+     "wrong": "No, the two benchmarks always match",
+     "hint": "One measure never changes its target, the other resets every time the average changes.",
+     "pre": "Comparing a fixed minimum against a benchmark that shifts with average living standards is the",
+     "term": "ABS_REL_DISTINCTION"
+    },
+    {
+     "type": "derive"
+    }
+   ],
+   "given": [],
+   "needs": [],
+   "builds": [],
+   "nodes": [
+    "POVERTY_DEF",
+    "ABS_POVERTY",
+    "REL_POVERTY",
+    "ABS_REL_DISTINCTION"
+   ],
+   "dropped": [],
+   "edges": [
+    [
+     "POVERTY_DEF",
+     "ABS_POVERTY"
+    ],
+    [
+     "POVERTY_DEF",
+     "REL_POVERTY"
+    ],
+    [
+     "ABS_POVERTY",
+     "ABS_REL_DISTINCTION"
+    ],
+    [
+     "REL_POVERTY",
+     "ABS_REL_DISTINCTION"
+    ]
+   ]
+  }
+ ]
+}

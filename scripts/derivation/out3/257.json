@@ -1,0 +1,150 @@
+{
+ "id": "gen",
+ "subject": "Economics",
+ "title": "Productive efficiency",
+ "terms": {
+  "unused_resources": {
+   "label": "Unused resources"
+  },
+  "resources_maxed": {
+   "label": "Resources fully used"
+  },
+  "waste": {
+   "label": "Wasted resources"
+  },
+  "PROD_EFFICIENCY_CONCEPT": {
+   "label": "Productive efficiency: producing at the lowest possible cost / on the production frontier"
+  },
+  "SCARCITY": {
+   "label": "The problem of scarcity"
+  }
+ },
+ "stages": [
+  {
+   "name": "Productive efficiency",
+   "title": "Productive efficiency",
+   "sub": "Recognise when an economy is producing as much as it can from its scarce resources.",
+   "steps": [
+    {
+     "type": "ask",
+     "q": "A farm has fields lying empty and workers sitting idle, while people in the country still want more food. Could the farm grow more food right now without getting any new resources?",
+     "right": "Yes, it could use the idle fields and workers",
+     "wrong": "No, it is already growing all it can",
+     "hint": "Think about whether every field and every worker is actually being used.",
+     "pre": "Because some land and labour are sitting idle, the farm has",
+     "term": "unused_resources"
+    },
+    {
+     "type": "ask",
+     "q": "Now imagine every field is planted and every worker is busy farming. Can the farm grow any more food without new resources?",
+     "right": "No, it has no spare resources left",
+     "wrong": "Yes, it can always squeeze out more",
+     "hint": "If nothing is idle any more, what is left to add to production?",
+     "pre": "Now every resource is in use. Its resources are",
+     "term": "resources_maxed"
+    },
+    {
+     "type": "ask",
+     "q": "Suppose instead the farm's workers are fully busy but doing the wrong jobs, so the same land and labour produce less food than they could with better organisation. Is this farm getting the most out of its resources?",
+     "right": "No, some of its effort is being wasted",
+     "wrong": "Yes, being busy is enough for it",
+     "hint": "Being busy is not the same as being used well. Is output as high as it could be for these resources?",
+     "pre": "So resources can be used but still badly organised. That is",
+     "term": "waste"
+    },
+    {
+     "type": "ask",
+     "q": "Compare two farms with identical land, workers and machines. One grows more food from them than the other. Which farm is getting more out of the same resources?",
+     "right": "The farm growing more food from them",
+     "wrong": "The farm using more workers on them",
+     "hint": "Lowest cost per unit means squeezing the most output from the same inputs, not using the most inputs.",
+     "pre": "Producing the most output at the lowest possible cost from given resources is",
+     "term": "PROD_EFFICIENCY_CONCEPT",
+     "diagram": {
+      "x": "Good A",
+      "y": "Good B",
+      "curves": [
+       {
+        "label": "PPF",
+        "pts": [
+         [
+          0,
+          0.9
+         ],
+         [
+          0.3,
+          0.85
+         ],
+         [
+          0.6,
+          0.68
+         ],
+         [
+          0.85,
+          0.4
+         ],
+         [
+          0.95,
+          0
+         ]
+        ]
+       }
+      ],
+      "points": [
+       {
+        "label": "X",
+        "x": 0.6,
+        "y": 0.68,
+        "guides": true
+       },
+       {
+        "label": "Y",
+        "x": 0.4,
+        "y": 0.3,
+        "guides": true
+       }
+      ]
+     }
+    },
+    {
+     "type": "derive"
+    }
+   ],
+   "given": [
+    "SCARCITY"
+   ],
+   "needs": [
+    "SCARCITY"
+   ],
+   "builds": [
+    "SCARCITY"
+   ],
+   "nodes": [
+    "PROD_EFFICIENCY_CONCEPT"
+   ],
+   "dropped": [],
+   "edges": [
+    [
+     "SCARCITY",
+     "PROD_EFFICIENCY_CONCEPT"
+    ],
+    [
+     "SCARCITY",
+     "unused_resources"
+    ],
+    [
+     "unused_resources",
+     "resources_maxed"
+    ],
+    [
+     "resources_maxed",
+     "waste"
+    ],
+    [
+     "waste",
+     "PROD_EFFICIENCY_CONCEPT"
+    ]
+   ]
+  }
+ ]
+}

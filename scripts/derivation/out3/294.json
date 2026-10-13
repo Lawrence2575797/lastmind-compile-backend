@@ -1,0 +1,146 @@
+{
+ "id": "gen",
+ "subject": "Economics",
+ "title": "The price mechanism",
+ "terms": {
+  "price_mechanism_incentive": {
+   "label": "Price mechanism: incentive"
+  },
+  "price_mechanism_signalling": {
+   "label": "Price mechanism function: signalling"
+  },
+  "price_mechanism_market_types": {
+   "label": "Price mechanism across markets"
+  },
+  "excess_gap": {
+   "label": "Excess demand/supply gap"
+  },
+  "market_forces_elimination": {
+   "label": "Market forces eliminate imbalance"
+  },
+  "price_mechanism_rationing": {
+   "label": "Price mechanism: rationing"
+  }
+ },
+ "stages": [
+  {
+   "name": "The price mechanism",
+   "title": "The price mechanism",
+   "sub": "How rising and falling prices guide buyers and sellers in any market, from a local shop to the whole world.",
+   "steps": [
+    {
+     "type": "ask",
+     "q": "Onions are in short supply after a poor harvest, so buyers want more than farmers can offer at the old price. As the price rises and market forces work to close this gap, what happens to the size of the gap between what buyers want and what farmers offer?",
+     "right": "It shrinks towards zero",
+     "wrong": "It stays the same size",
+     "hint": "You already know market forces eliminate excess demand and excess supply. What happens to that gap as price keeps adjusting?",
+     "pre": "The rising price steadily closes the",
+     "term": "excess_gap"
+    },
+    {
+     "type": "ask",
+     "q": "As the onion price rises and that gap closes, a farmer notices they can now earn much more per tonne than last year. What is the farmer likely to do?",
+     "right": "Grow more onions to sell",
+     "wrong": "Grow the same amount as before",
+     "hint": "Think about what the higher price makes it worthwhile for the farmer to do.",
+     "pre": "The price rise pushes the farmer to supply more. That is the price mechanism acting as an",
+     "term": "price_mechanism_incentive"
+    },
+    {
+     "type": "ask",
+     "q": "You walk past the greengrocer and see onion prices have doubled since last month. Even before anyone tells you, what does that price rise tell you about onions right now?",
+     "right": "They are scarcer than before",
+     "wrong": "They are more plentiful than before",
+     "hint": "You already know rationing shares out scarce onions by price. What does the price itself reveal about supply and demand conditions, without anyone explaining?",
+     "pre": "The price change passes on information about scarcity to everyone in the market. That is the price mechanism acting as a",
+     "term": "price_mechanism_signalling"
+    },
+    {
+     "type": "order",
+     "terms": [
+      "excess_gap",
+      "price_mechanism_incentive",
+      "price_mechanism_signalling"
+     ],
+     "prompt": "Drag and drop the 3 key terms in the order they build on each other."
+    },
+    {
+     "type": "ask",
+     "q": "A flood wipes out half the local cabbage crop in one town, prices there rise, and nearby farmers rush in extra supplies. Could the very same rationing, signalling and incentive effects also play out for oil traded between countries across the whole world?",
+     "right": "Yes, the same effects work at any scale",
+     "wrong": "No, they only work in small local markets",
+     "hint": "Does the size of the market change what a price rise tells buyers and sellers, or just how many of them there are?",
+     "pre": "Rationing, signalling and incentives operate the same way in small local markets and in huge global ones. That is",
+     "term": "price_mechanism_market_types"
+    },
+    {
+     "type": "derive"
+    }
+   ],
+   "given": [
+    "market_forces_elimination",
+    "price_mechanism_rationing"
+   ],
+   "needs": [
+    "market_forces_elimination",
+    "price_mechanism_rationing"
+   ],
+   "builds": [
+    "market_forces_elimination",
+    "price_mechanism_rationing"
+   ],
+   "nodes": [
+    "price_mechanism_incentive",
+    "price_mechanism_signalling",
+    "price_mechanism_market_types"
+   ],
+   "dropped": [],
+   "edges": [
+    [
+     "price_mechanism_incentive",
+     "price_mechanism_market_types"
+    ],
+    [
+     "price_mechanism_signalling",
+     "price_mechanism_market_types"
+    ],
+    [
+     "market_forces_elimination",
+     "price_mechanism_incentive"
+    ],
+    [
+     "market_forces_elimination",
+     "price_mechanism_signalling"
+    ],
+    [
+     "price_mechanism_rationing",
+     "price_mechanism_market_types"
+    ],
+    [
+     "price_mechanism_rationing",
+     "excess_gap"
+    ],
+    [
+     "market_forces_elimination",
+     "excess_gap"
+    ],
+    [
+     "excess_gap",
+     "price_mechanism_incentive"
+    ],
+    [
+     "price_mechanism_rationing",
+     "price_mechanism_signalling"
+    ],
+    [
+     "price_mechanism_incentive",
+     "price_mechanism_market_types"
+    ],
+    [
+     "price_mechanism_signalling",
+     "price_mechanism_market_types"
+    ]
+   ]
+  }
+ ]
+}

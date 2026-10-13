@@ -1,0 +1,164 @@
+{
+ "id": "gen",
+ "subject": "Economics",
+ "title": "Current account policy and global imbalances",
+ "terms": {
+  "productivity_gap": {
+   "label": "Productivity gap"
+  },
+  "supply_fix": {
+   "label": "Supply-side fix"
+  },
+  "CA_MEASURE_SUPPLYSIDE": {
+   "label": "Supply-side policies for deficit"
+  },
+  "persistent_gap": {
+   "label": "Persistent imbalance"
+  },
+  "GLOBAL_IMBALANCE_SIG": {
+   "label": "Significance of global imbalances"
+  },
+  "CA_DEFICIT_CAUSE_STRUCTURAL": {
+   "label": "Deficit from structural weakness"
+  },
+  "CA_SURPLUS_CAUSES": {
+   "label": "Causes of a current account surplus"
+  },
+  "SSP_ADV_COMPETITIVENESS": {
+   "label": "Improves competitiveness"
+  }
+ },
+ "stages": [
+  {
+   "name": "Current account policy and global imbalances",
+   "title": "Current account policy and global imbalances",
+   "sub": "How a country can fix a structural deficit, and why deficits and surpluses persisting worldwide actually matters.",
+   "steps": [
+    {
+     "type": "ask",
+     "q": "A country's firms have low productivity and export goods that cost more to make than rivals' goods. Is this a one-off blip or something that keeps dragging on the current account year after year?",
+     "right": "Something that keeps dragging on it",
+     "wrong": "A one-off blip that soon passes",
+     "hint": "Low productivity does not fix itself overnight.",
+     "pre": "So weak productivity creates a lasting",
+     "term": "productivity_gap"
+    },
+    {
+     "type": "ask",
+     "q": "If domestic firms are just less efficient than foreign rivals, will simply changing interest rates or the exchange rate fix that underlying weakness?",
+     "right": "No, the weakness itself needs to be tackled directly",
+     "wrong": "Yes, changing rates fixes it fully",
+     "hint": "Interest rates change spending, but do they make factories more efficient?",
+     "pre": "So policy needs to target the weakness itself with a",
+     "term": "supply_fix"
+    },
+    {
+     "type": "ask",
+     "q": "Training workers, investing in technology and cutting red tape all aim to make firms produce more cheaply and sell more abroad. What kind of policies are these aimed at a current account deficit?",
+     "right": "Supply-side policies to boost competitiveness",
+     "wrong": "Policies to cut consumer spending directly",
+     "hint": "Think about what raises efficiency and lowers costs of production, not just demand.",
+     "pre": "So the government can use",
+     "term": "CA_MEASURE_SUPPLYSIDE"
+    },
+    {
+     "type": "ask",
+     "q": "One country runs a large structural deficit while another runs a large structural surplus, and neither shows signs of shrinking. Is this just a short-term wobble, or a lasting feature of the world economy?",
+     "right": "A lasting feature of the world economy",
+     "wrong": "Just a short-term wobble that will vanish soon",
+     "hint": "Both causes you already know are structural, not temporary.",
+     "pre": "So deficits and surpluses sitting side by side become a",
+     "term": "persistent_gap"
+    },
+    {
+     "type": "order",
+     "terms": [
+      "productivity_gap",
+      "supply_fix",
+      "CA_MEASURE_SUPPLYSIDE",
+      "persistent_gap"
+     ],
+     "prompt": "Drag and drop the 4 key terms in the order they build on each other."
+    },
+    {
+     "type": "ask",
+     "q": "A country running a huge deficit is relying on constant borrowing from abroad to pay for it. If lenders suddenly lost confidence and stopped lending, what would happen to that country's currency and financial system?",
+     "right": "They could come under serious pressure or even crisis",
+     "wrong": "Nothing, deficits have no effect on lenders' confidence",
+     "hint": "Borrowing that cannot continue forever creates risk when it stops.",
+     "pre": "This is why economists worry about the",
+     "term": "GLOBAL_IMBALANCE_SIG"
+    },
+    {
+     "type": "derive"
+    }
+   ],
+   "given": [
+    "CA_DEFICIT_CAUSE_STRUCTURAL",
+    "CA_SURPLUS_CAUSES",
+    "SSP_ADV_COMPETITIVENESS"
+   ],
+   "needs": [
+    "CA_DEFICIT_CAUSE_STRUCTURAL",
+    "CA_SURPLUS_CAUSES",
+    "SSP_ADV_COMPETITIVENESS"
+   ],
+   "builds": [
+    "CA_DEFICIT_CAUSE_STRUCTURAL",
+    "CA_SURPLUS_CAUSES",
+    "SSP_ADV_COMPETITIVENESS"
+   ],
+   "nodes": [
+    "CA_MEASURE_SUPPLYSIDE",
+    "GLOBAL_IMBALANCE_SIG"
+   ],
+   "dropped": [],
+   "edges": [
+    [
+     "CA_DEFICIT_CAUSE_STRUCTURAL",
+     "CA_MEASURE_SUPPLYSIDE"
+    ],
+    [
+     "CA_DEFICIT_CAUSE_STRUCTURAL",
+     "GLOBAL_IMBALANCE_SIG"
+    ],
+    [
+     "CA_SURPLUS_CAUSES",
+     "GLOBAL_IMBALANCE_SIG"
+    ],
+    [
+     "SSP_ADV_COMPETITIVENESS",
+     "CA_MEASURE_SUPPLYSIDE"
+    ],
+    [
+     "CA_DEFICIT_CAUSE_STRUCTURAL",
+     "productivity_gap"
+    ],
+    [
+     "productivity_gap",
+     "supply_fix"
+    ],
+    [
+     "SSP_ADV_COMPETITIVENESS",
+     "supply_fix"
+    ],
+    [
+     "supply_fix",
+     "CA_MEASURE_SUPPLYSIDE"
+    ],
+    [
+     "CA_DEFICIT_CAUSE_STRUCTURAL",
+     "persistent_gap"
+    ],
+    [
+     "CA_SURPLUS_CAUSES",
+     "persistent_gap"
+    ],
+    [
+     "persistent_gap",
+     "GLOBAL_IMBALANCE_SIG"
+    ]
+   ]
+  }
+ ]
+}

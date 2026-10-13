@@ -1,0 +1,243 @@
+{
+ "id": "gen",
+ "subject": "Economics",
+ "title": "Currency wars and the Marshall-Lerner condition",
+ "terms": {
+  "COMPETITIVE_DEVAL": {
+   "label": "Competitive devaluation"
+  },
+  "COMPETITIVE_DEVAL_CONSEQ": {
+   "label": "Currency wars"
+  },
+  "ped_x": {
+   "label": "PED of exports"
+  },
+  "ped_m": {
+   "label": "PED of imports"
+  },
+  "MARSHALL_LERNER": {
+   "label": "Marshall-Lerner condition"
+  },
+  "J_CURVE": {
+   "label": "J curve effect"
+  },
+  "EXRATE_IMPACT_CA": {
+   "label": "Exchange rate impact on current account"
+  },
+  "EXRATE_IMPACT_GROWTH": {
+   "label": "Exchange rate impact on growth/jobs"
+  },
+  "DEPRECIATION_DEF": {
+   "label": "Depreciation"
+  },
+  "DEVALUATION_DEF": {
+   "label": "Devaluation"
+  },
+  "BOP_CURRENT_TRADE": {
+   "label": "Trade in goods & services balance"
+  }
+ },
+ "stages": [
+  {
+   "name": "Currency wars and the Marshall-Lerner condition",
+   "title": "Currency wars and the Marshall-Lerner condition",
+   "sub": "After this you can explain why countries weaken their currencies on purpose, when it backfires, and how it feeds through to trade, growth and jobs.",
+   "steps": [
+    {
+     "type": "ask",
+     "q": "A country's exporters are struggling to sell abroad because their goods are too expensive in foreign currency. The government pushes its own currency's value down on purpose to fix this. Is this the market moving the currency, or a deliberate policy choice?",
+     "right": "A deliberate policy choice",
+     "wrong": "The market moving the currency",
+     "hint": "The government is acting on purpose here, not just letting the market decide.",
+     "pre": "A currency pushed down deliberately to make exports cheaper is called",
+     "term": "COMPETITIVE_DEVAL"
+    },
+    {
+     "type": "ask",
+     "q": "Country A deliberately weakens its currency to steal export sales from Country B. Country B's exporters now lose out. What is Country B likely to do next?",
+     "right": "Weaken its own currency in response",
+     "wrong": "Leave its currency exactly as it is",
+     "hint": "If B's exports just became relatively more expensive, how does B fight back?",
+     "pre": "Both sides devaluing back and forth is called",
+     "term": "COMPETITIVE_DEVAL_CONSEQ"
+    },
+    {
+     "type": "ask",
+     "q": "A country's currency falls, making its exports cheaper abroad. If foreign buyers barely increase how much they buy even though the price dropped a lot, is demand for those exports responding strongly to the price change?",
+     "right": "No, barely at all",
+     "wrong": "Yes, very strongly",
+     "hint": "Think about how much the quantity bought changes compared to how much the price changed.",
+     "pre": "How much the quantity of exports demanded responds to a price change is the",
+     "term": "ped_x"
+    },
+    {
+     "type": "ask",
+     "q": "That same currency fall makes imports more expensive in domestic currency. If people carry on buying almost the same quantity of imports despite the price rise, is demand for imports responding strongly to that price change?",
+     "right": "No, barely at all",
+     "wrong": "Yes, very strongly",
+     "hint": "Same idea as before, but now for the goods coming into the country.",
+     "pre": "How much the quantity of imports demanded responds to a price change is the",
+     "term": "ped_m"
+    },
+    {
+     "type": "order",
+     "terms": [
+      "COMPETITIVE_DEVAL",
+      "COMPETITIVE_DEVAL_CONSEQ",
+      "ped_x",
+      "ped_m"
+     ],
+     "prompt": "Drag and drop the 4 key terms in the order they build on each other."
+    },
+    {
+     "type": "ask",
+     "q": "If both export demand and import demand barely react to price changes (their responsiveness scores add to well under 1), will a weaker currency actually shrink the trade gap, given export volumes barely rise and import volumes barely fall?",
+     "right": "No, the trade gap will not shrink",
+     "wrong": "Yes, the trade gap will shrink",
+     "hint": "For the trade balance to improve, the volume changes need to be big enough to outweigh the worse prices on the goods still being traded.",
+     "pre": "Only when the two responsiveness scores add to more than 1 does depreciation improve the trade balance. That is the",
+     "term": "MARSHALL_LERNER"
+    },
+    {
+     "type": "ask",
+     "q": "The day after a depreciation, existing shipping contracts and habits mean trade volumes barely change yet, but every import now costs more in domestic currency. In the very short run, does the trade balance improve or worsen, before volumes have time to adjust?",
+     "right": "It worsens at first",
+     "wrong": "It improves at first",
+     "hint": "Prices have changed immediately, but quantities take time to catch up.",
+     "pre": "This short-run worsening before the later improvement (once the condition above holds) is the",
+     "term": "J_CURVE",
+     "diagram": {
+      "x": "Time",
+      "y": "Current account balance",
+      "curves": [
+       {
+        "label": "CA",
+        "pts": [
+         [
+          0.05,
+          0.55
+         ],
+         [
+          0.25,
+          0.3
+         ],
+         [
+          0.45,
+          0.25
+         ],
+         [
+          0.7,
+          0.5
+         ],
+         [
+          0.95,
+          0.8
+         ]
+        ]
+       }
+      ]
+     }
+    },
+    {
+     "type": "ask",
+     "q": "Suppose the Marshall-Lerner condition holds and enough time has passed for the J curve's short-run dip to pass. Putting the trade in goods and services together with everything else that responds to the exchange rate, has the current account's trade balance now moved in a lasting way?",
+     "right": "Yes, it has moved and settled at a new level",
+     "wrong": "No, it always returns to where it started",
+     "hint": "Once volumes have fully adjusted, does the exchange rate change leave a permanent mark on trade, or does it wash out?",
+     "pre": "Tracing that full effect through, from the exchange rate to the trade balance, is the",
+     "term": "EXRATE_IMPACT_CA"
+    },
+    {
+     "type": "ask",
+     "q": "A lasting improvement in the trade balance means more spending on domestically produced exports and less spent on foreign imports. Does this add to or subtract from total spending on domestic output, and what would that likely do to jobs in export industries?",
+     "right": "It adds to domestic output and supports more jobs",
+     "wrong": "It has no effect on domestic output or jobs",
+     "hint": "Exports are part of a country's total spending on domestic output; more exports sold means more needs to be produced.",
+     "pre": "That knock-on effect on output, growth and jobs is the",
+     "term": "EXRATE_IMPACT_GROWTH"
+    },
+    {
+     "type": "derive"
+    }
+   ],
+   "given": [
+    "DEPRECIATION_DEF",
+    "DEVALUATION_DEF",
+    "BOP_CURRENT_TRADE"
+   ],
+   "needs": [
+    "DEPRECIATION_DEF",
+    "DEVALUATION_DEF",
+    "BOP_CURRENT_TRADE"
+   ],
+   "builds": [
+    "DEPRECIATION_DEF",
+    "DEVALUATION_DEF",
+    "BOP_CURRENT_TRADE"
+   ],
+   "nodes": [
+    "COMPETITIVE_DEVAL",
+    "COMPETITIVE_DEVAL_CONSEQ",
+    "MARSHALL_LERNER",
+    "J_CURVE",
+    "EXRATE_IMPACT_CA",
+    "EXRATE_IMPACT_GROWTH"
+   ],
+   "dropped": [],
+   "edges": [
+    [
+     "COMPETITIVE_DEVAL",
+     "COMPETITIVE_DEVAL_CONSEQ"
+    ],
+    [
+     "MARSHALL_LERNER",
+     "J_CURVE"
+    ],
+    [
+     "J_CURVE",
+     "EXRATE_IMPACT_CA"
+    ],
+    [
+     "EXRATE_IMPACT_CA",
+     "EXRATE_IMPACT_GROWTH"
+    ],
+    [
+     "DEPRECIATION_DEF",
+     "COMPETITIVE_DEVAL"
+    ],
+    [
+     "DEVALUATION_DEF",
+     "COMPETITIVE_DEVAL"
+    ],
+    [
+     "DEPRECIATION_DEF",
+     "MARSHALL_LERNER"
+    ],
+    [
+     "BOP_CURRENT_TRADE",
+     "EXRATE_IMPACT_CA"
+    ],
+    [
+     "DEPRECIATION_DEF",
+     "COMPETITIVE_DEVAL"
+    ],
+    [
+     "DEVALUATION_DEF",
+     "COMPETITIVE_DEVAL"
+    ],
+    [
+     "ped_x",
+     "MARSHALL_LERNER"
+    ],
+    [
+     "ped_m",
+     "MARSHALL_LERNER"
+    ],
+    [
+     "BOP_CURRENT_TRADE",
+     "EXRATE_IMPACT_CA"
+    ]
+   ]
+  }
+ ]
+}

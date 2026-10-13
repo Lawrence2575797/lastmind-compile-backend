@@ -1,0 +1,153 @@
+{
+ "id": "gen",
+ "subject": "Economics",
+ "title": "Fiscal policy and government expenditure",
+ "terms": {
+  "FISCAL_POLICY_DEF": {
+   "label": "Fiscal policy"
+  },
+  "TRADE_CYCLE_GOVT_SPEND": {
+   "label": "Automatic stabilisers"
+  },
+  "FISCAL_POLICY_GOVT_SPEND": {
+   "label": "Discretionary fiscal changes"
+  },
+  "taxation": {
+   "label": "Taxation"
+  },
+  "TRADE_CYCLE": {
+   "label": "The trade (business) cycle: definition"
+  },
+  "G_COMP": {
+   "label": "Government expenditure (G) as a component of AD"
+  },
+  "FISCAL_DEFICIT_DEF": {
+   "label": "Fiscal (budget) deficit: definition"
+  }
+ },
+ "stages": [
+  {
+   "name": "Fiscal policy and government expenditure",
+   "title": "Fiscal policy and government expenditure",
+   "sub": "How the trade cycle and deliberate government decisions both change government spending.",
+   "steps": [
+    {
+     "type": "ask",
+     "q": "A government decides how much to spend on schools and hospitals, and how much to collect from workers and firms in charge. What are these two things together called?",
+     "right": "The government's use of spending and charges to manage the economy",
+     "wrong": "The central bank's control of interest rates and the money supply",
+     "hint": "Think about the two tools a government itself controls, not the central bank.",
+     "pre": "Using spending and charges this way is called",
+     "term": "FISCAL_POLICY_DEF"
+    },
+    {
+     "type": "ask",
+     "q": "One of those two tools is spending. The other is the money the government collects from workers and firms in charge. What do we call that second tool?",
+     "right": "The charges the government collects from income and profits",
+     "wrong": "The interest the government pays on its borrowing",
+     "hint": "This is the government's income, not its outgoings.",
+     "pre": "That charge on income and profits is",
+     "term": "taxation"
+    },
+    {
+     "type": "ask",
+     "q": "A recession hits and more people lose their jobs. Without any new announcement, what happens to the government's spending on unemployment benefits?",
+     "right": "It rises automatically as more people claim",
+     "wrong": "It only rises if a minister decides to raise it",
+     "hint": "Nobody has to pass a new law for more people to claim benefits when they lose their jobs.",
+     "pre": "Spending that rises and falls with the cycle without new decisions is due to",
+     "term": "TRADE_CYCLE_GOVT_SPEND"
+    },
+    {
+     "type": "ask",
+     "q": "This time, the government itself chooses to build three new hospitals and cut taxation to boost the economy. Is this spending change automatic, or the result of a deliberate choice?",
+     "right": "A deliberate choice by the government",
+     "wrong": "An automatic change with the cycle",
+     "hint": "Compare this to benefits rising on their own in a recession. Who is actually deciding here?",
+     "pre": "Spending changed by a deliberate policy choice comes from",
+     "term": "FISCAL_POLICY_GOVT_SPEND"
+    },
+    {
+     "type": "order",
+     "terms": [
+      "FISCAL_POLICY_DEF",
+      "taxation",
+      "TRADE_CYCLE_GOVT_SPEND",
+      "FISCAL_POLICY_GOVT_SPEND"
+     ],
+     "prompt": "Drag and drop the 4 key terms in the order they build on each other."
+    },
+    {
+     "type": "derive"
+    }
+   ],
+   "given": [
+    "TRADE_CYCLE",
+    "G_COMP",
+    "FISCAL_DEFICIT_DEF"
+   ],
+   "needs": [
+    "TRADE_CYCLE",
+    "G_COMP",
+    "FISCAL_DEFICIT_DEF"
+   ],
+   "builds": [
+    "TRADE_CYCLE",
+    "G_COMP",
+    "FISCAL_DEFICIT_DEF"
+   ],
+   "nodes": [
+    "FISCAL_POLICY_DEF",
+    "TRADE_CYCLE_GOVT_SPEND",
+    "FISCAL_POLICY_GOVT_SPEND"
+   ],
+   "dropped": [],
+   "edges": [
+    [
+     "FISCAL_POLICY_DEF",
+     "FISCAL_POLICY_GOVT_SPEND"
+    ],
+    [
+     "FISCAL_POLICY_DEF",
+     "TRADE_CYCLE_GOVT_SPEND"
+    ],
+    [
+     "TRADE_CYCLE",
+     "TRADE_CYCLE_GOVT_SPEND"
+    ],
+    [
+     "G_COMP",
+     "TRADE_CYCLE_GOVT_SPEND"
+    ],
+    [
+     "G_COMP",
+     "FISCAL_POLICY_GOVT_SPEND"
+    ],
+    [
+     "FISCAL_DEFICIT_DEF",
+     "FISCAL_POLICY_DEF"
+    ],
+    [
+     "FISCAL_POLICY_DEF",
+     "taxation"
+    ],
+    [
+     "taxation",
+     "FISCAL_POLICY_GOVT_SPEND"
+    ],
+    [
+     "TRADE_CYCLE",
+     "TRADE_CYCLE_GOVT_SPEND"
+    ],
+    [
+     "G_COMP",
+     "TRADE_CYCLE_GOVT_SPEND"
+    ],
+    [
+     "G_COMP",
+     "FISCAL_POLICY_GOVT_SPEND"
+    ]
+   ]
+  }
+ ]
+}

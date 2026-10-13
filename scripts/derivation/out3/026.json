@@ -1,0 +1,135 @@
+{
+ "id": "gen",
+ "subject": "Economics",
+ "title": "Government failure",
+ "terms": {
+  "GOVFAIL_DEF": {
+   "label": "Government failure"
+  },
+  "GOVFAIL_DISTORT": {
+   "label": "Distortion of price signals"
+  },
+  "GOVFAIL_UNINTEND": {
+   "label": "Unintended consequences"
+  },
+  "GOVFAIL_ADMIN": {
+   "label": "Excessive administrative costs"
+  },
+  "GOVFAIL_INFOGAP": {
+   "label": "Information gaps"
+  },
+  "REASONS_INTERVENE": {
+   "label": "Reasons for intervention"
+  }
+ },
+ "stages": [
+  {
+   "name": "Government failure",
+   "title": "Government failure",
+   "sub": "Why government intervention can sometimes make a market worse off, and the main reasons this happens.",
+   "steps": [
+    {
+     "type": "ask",
+     "q": "A government caps rent to help tenants, but landlords withdraw flats and the shortage worsens. Has the intervention definitely made things better?",
+     "right": "No, it could leave society worse off",
+     "wrong": "Yes, any intervention improves things",
+     "hint": "Think about what happened to the total supply of homes after the cap.",
+     "pre": "When intervention ends up causing a net loss of welfare, that is",
+     "term": "GOVFAIL_DEF"
+    },
+    {
+     "type": "ask",
+     "q": "A subsidy makes wheat far cheaper than it costs to grow. Do farmers now know what wheat is worth to buyers?",
+     "right": "No, the price no longer reflects true value",
+     "wrong": "Yes, the price still shows true value",
+     "hint": "Prices normally tell producers what buyers value. What happens to that message once it is propped up artificially?",
+     "pre": "So the subsidy causes",
+     "term": "GOVFAIL_DISTORT"
+    },
+    {
+     "type": "ask",
+     "q": "A sugary drinks tax is meant to cut sugar, but people switch to sugary snacks. Did it only produce its intended effect?",
+     "right": "No, it also caused side effects nobody planned",
+     "wrong": "Yes, it worked exactly as intended",
+     "hint": "Compare the goal of the tax with what people actually did in response.",
+     "pre": "Extra effects like this, beyond what was intended, are",
+     "term": "GOVFAIL_UNINTEND"
+    },
+    {
+     "type": "ask",
+     "q": "A subsidy scheme's inspectors, forms and staff eat much of the money meant for farmers. Does every pound reach them?",
+     "right": "No, a lot is spent just running the scheme",
+     "wrong": "Yes, it all reaches the people intended",
+     "hint": "Think about the staff and paperwork needed to operate the scheme, separate from the actual payments.",
+     "pre": "Resources used up just to run a policy are",
+     "term": "GOVFAIL_ADMIN"
+    },
+    {
+     "type": "order",
+     "terms": [
+      "GOVFAIL_DEF",
+      "GOVFAIL_DISTORT",
+      "GOVFAIL_UNINTEND",
+      "GOVFAIL_ADMIN"
+     ],
+     "prompt": "Drag and drop the 4 key terms in the order they build on each other."
+    },
+    {
+     "type": "ask",
+     "q": "A government sets a pollution limit from outdated data, not knowing how firms will react. Can it be sure it's right?",
+     "right": "No, it is guessing without full knowledge",
+     "wrong": "Yes, it can calculate the exact right limit",
+     "hint": "Does the government have complete, accurate knowledge of every firm's behaviour before it sets the rule?",
+     "pre": "Policymakers acting without full knowledge face",
+     "term": "GOVFAIL_INFOGAP"
+    },
+    {
+     "type": "derive"
+    }
+   ],
+   "given": [
+    "REASONS_INTERVENE"
+   ],
+   "needs": [
+    "REASONS_INTERVENE"
+   ],
+   "builds": [
+    "REASONS_INTERVENE"
+   ],
+   "nodes": [
+    "GOVFAIL_DEF",
+    "GOVFAIL_DISTORT",
+    "GOVFAIL_UNINTEND",
+    "GOVFAIL_ADMIN",
+    "GOVFAIL_INFOGAP"
+   ],
+   "dropped": [],
+   "edges": [
+    [
+     "GOVFAIL_DEF",
+     "GOVFAIL_DISTORT"
+    ],
+    [
+     "GOVFAIL_DEF",
+     "GOVFAIL_UNINTEND"
+    ],
+    [
+     "GOVFAIL_DEF",
+     "GOVFAIL_ADMIN"
+    ],
+    [
+     "GOVFAIL_DEF",
+     "GOVFAIL_INFOGAP"
+    ],
+    [
+     "REASONS_INTERVENE",
+     "GOVFAIL_DEF"
+    ],
+    [
+     "REASONS_INTERVENE",
+     "GOVFAIL_DEF"
+    ]
+   ]
+  }
+ ]
+}

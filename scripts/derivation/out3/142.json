@@ -1,0 +1,167 @@
+{
+ "id": "gen",
+ "subject": "Economics",
+ "title": "Monopsony",
+ "terms": {
+  "single_buyer": {
+   "label": "Single dominant buyer"
+  },
+  "monopsony_char": {
+   "label": "Monopsony"
+  },
+  "monopsony_costs_benefits_firms": {
+   "label": "Monopsony: effect on firms"
+  },
+  "monopsony_costs_benefits_consumers": {
+   "label": "Monopsony: effect on consumers"
+  },
+  "monopsony_costs_benefits_workers": {
+   "label": "Monopsony: effect on workers"
+  },
+  "monopsony_costs_benefits_suppliers": {
+   "label": "Monopsony: effect on suppliers"
+  },
+  "monopoly_char": {
+   "label": "Characteristics of monopoly"
+  }
+ },
+ "stages": [
+  {
+   "name": "Monopsony",
+   "title": "Monopsony",
+   "sub": "How having a single dominant buyer changes outcomes for firms, consumers, workers and suppliers.",
+   "steps": [
+    {
+     "type": "ask",
+     "q": "In a monopoly, one firm dominates as the only seller in a market. Now picture a huge supermarket chain that is the only realistic buyer for local farmers' produce. Which side of the deal does it dominate?",
+     "right": "The buying side",
+     "wrong": "The selling side",
+     "hint": "The farmers are the sellers. Who is on the other side of that trade?",
+     "pre": "So instead of one dominant seller, this market has one dominant",
+     "term": "single_buyer"
+    },
+    {
+     "type": "ask",
+     "q": "This supermarket buys most of the region's milk, and farmers have almost nowhere else to sell it. Can the farmers easily walk away and get a better price elsewhere?",
+     "right": "No, they have little choice but to accept its terms",
+     "wrong": "Yes, they can easily switch to another big buyer",
+     "hint": "If one buyer takes almost all the output, how much power do sellers have to negotiate?",
+     "pre": "A market with one dominant buyer like this is called a",
+     "term": "monopsony_char"
+    },
+    {
+     "type": "ask",
+     "q": "Because farmers have nowhere else to sell, the supermarket can offer a lower price than it would face if it competed with other buyers. What happens to the supermarket's costs?",
+     "right": "Its input costs fall, raising its profit",
+     "wrong": "Its input costs rise, cutting its profit",
+     "hint": "If sellers cannot refuse a low offer, does the buyer end up paying more or less?",
+     "pre": "So for the firm itself, this brings",
+     "term": "monopsony_costs_benefits_firms"
+    },
+    {
+     "type": "ask",
+     "q": "If the supermarket's lower buying costs get passed on as lower shelf prices, shoppers gain. But if squeezed farmers respond by cutting back production or quality, what happens to what's on offer?",
+     "right": "The amount and quality of goods available may fall",
+     "wrong": "The amount and quality of goods available always rises",
+     "hint": "Lower prices are one possible outcome, but what could happen to supply if farmers struggle to survive?",
+     "pre": "So consumers face a mix of possible cheaper prices against",
+     "term": "monopsony_costs_benefits_consumers"
+    },
+    {
+     "type": "order",
+     "terms": [
+      "single_buyer",
+      "monopsony_char",
+      "monopsony_costs_benefits_firms",
+      "monopsony_costs_benefits_consumers"
+     ],
+     "prompt": "Drag and drop the 4 key terms in the order they build on each other."
+    },
+    {
+     "type": "ask",
+     "q": "Now think of a single big employer in a small town, the only real employer of a certain skill. It can offer a wage below the value each extra worker actually generates for it. What happens to the number of people it hires compared with a competitive job market?",
+     "right": "It hires fewer workers, at a wage below their true value",
+     "wrong": "It hires more workers, at a wage above their true value",
+     "hint": "With no rival employers bidding wages up, does the firm need to hire as many, or pay as much?",
+     "pre": "So for employees, this brings",
+     "term": "monopsony_costs_benefits_workers"
+    },
+    {
+     "type": "ask",
+     "q": "Going back to the farmers selling milk to the one big supermarket: with no other buyer to turn to, what happens to the price they receive and the security of their contracts?",
+     "right": "Prices are squeezed down and contracts become less secure",
+     "wrong": "Prices rise and contracts become more secure",
+     "hint": "If the buyer holds all the power, which way do prices and contract terms move for the seller?",
+     "pre": "So for suppliers, this brings",
+     "term": "monopsony_costs_benefits_suppliers"
+    },
+    {
+     "type": "derive"
+    }
+   ],
+   "given": [
+    "monopoly_char"
+   ],
+   "needs": [
+    "monopoly_char"
+   ],
+   "builds": [
+    "monopoly_char"
+   ],
+   "nodes": [
+    "monopsony_char",
+    "monopsony_costs_benefits_firms",
+    "monopsony_costs_benefits_consumers",
+    "monopsony_costs_benefits_workers",
+    "monopsony_costs_benefits_suppliers"
+   ],
+   "dropped": [],
+   "edges": [
+    [
+     "monopsony_char",
+     "monopsony_costs_benefits_firms"
+    ],
+    [
+     "monopsony_char",
+     "monopsony_costs_benefits_consumers"
+    ],
+    [
+     "monopsony_char",
+     "monopsony_costs_benefits_workers"
+    ],
+    [
+     "monopsony_char",
+     "monopsony_costs_benefits_suppliers"
+    ],
+    [
+     "monopoly_char",
+     "monopsony_char"
+    ],
+    [
+     "monopoly_char",
+     "single_buyer"
+    ],
+    [
+     "single_buyer",
+     "monopsony_char"
+    ],
+    [
+     "monopsony_char",
+     "monopsony_costs_benefits_firms"
+    ],
+    [
+     "monopsony_char",
+     "monopsony_costs_benefits_consumers"
+    ],
+    [
+     "monopsony_char",
+     "monopsony_costs_benefits_workers"
+    ],
+    [
+     "monopsony_char",
+     "monopsony_costs_benefits_suppliers"
+    ]
+   ]
+  }
+ ]
+}

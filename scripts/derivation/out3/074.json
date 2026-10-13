@@ -1,0 +1,140 @@
+{
+ "id": "gen",
+ "subject": "Economics",
+ "title": "Economic growth and government finances",
+ "terms": {
+  "workers_earning": {
+   "label": "More workers earning"
+  },
+  "less_benefits": {
+   "label": "Less benefits paid out"
+  },
+  "BEN_GOVT_REVENUE": {
+   "label": "Higher tax revenue, lower welfare spending"
+  },
+  "growing_economy": {
+   "label": "Growing, congested economy"
+  },
+  "COST_GOVT_SPENDING": {
+   "label": "Extra government spending"
+  },
+  "BOOM_UNEMPLOYMENT": {
+   "label": "Falling unemployment"
+  }
+ },
+ "stages": [
+  {
+   "name": "Economic growth and government finances",
+   "title": "Economic growth and government finances",
+   "sub": "How growth changes what the government collects and what it must spend.",
+   "steps": [
+    {
+     "type": "ask",
+     "q": "Unemployment is falling and more people are in jobs earning wages. Each of those wages gets taxed. What happens to the amount of income tax collected?",
+     "right": "It rises",
+     "wrong": "It stays the same",
+     "hint": "More people earning wages means more wages being taxed.",
+     "pre": "So with more people",
+     "term": "workers_earning"
+    },
+    {
+     "type": "ask",
+     "q": "With fewer people out of work, how many people need to claim unemployment benefits?",
+     "right": "Fewer people",
+     "wrong": "The same number of people",
+     "hint": "Benefits are paid to people without jobs. If more people have jobs, what happens to that number?",
+     "pre": "So there are",
+     "term": "less_benefits"
+    },
+    {
+     "type": "ask",
+     "q": "Tax collected is rising and benefit payments are falling at the same time. What does this do to the government's finances?",
+     "right": "It improves them",
+     "wrong": "It makes no difference to them",
+     "hint": "More money coming in and less money going out.",
+     "pre": "This is the government revenue benefit of growth:",
+     "term": "BEN_GOVT_REVENUE"
+    },
+    {
+     "type": "ask",
+     "q": "As the economy grows, more people commute, more goods are transported, and more housing is needed. What is likely to happen to roads, transport and housing in a growing economy?",
+     "right": "They become stretched and need expanding",
+     "wrong": "They easily cope without any changes",
+     "hint": "More output and more people usually mean more pressure on what already exists.",
+     "pre": "So growth tends to produce a",
+     "term": "growing_economy"
+    },
+    {
+     "type": "order",
+     "terms": [
+      "workers_earning",
+      "less_benefits",
+      "BEN_GOVT_REVENUE",
+      "growing_economy"
+     ],
+     "prompt": "Drag and drop the 4 key terms in the order they build on each other."
+    },
+    {
+     "type": "ask",
+     "q": "To keep up with a growing, congested economy, the government has to build new roads, railways and housing, and write new rules to manage it all. Does this cost the government anything?",
+     "right": "Yes, it has to spend more money",
+     "wrong": "No, this happens without any government spending",
+     "hint": "Building infrastructure and writing regulation both require resources and money.",
+     "pre": "This is the",
+     "term": "COST_GOVT_SPENDING"
+    },
+    {
+     "type": "derive"
+    }
+   ],
+   "given": [
+    "BOOM_UNEMPLOYMENT"
+   ],
+   "needs": [
+    "BOOM_UNEMPLOYMENT"
+   ],
+   "builds": [
+    "BOOM_UNEMPLOYMENT"
+   ],
+   "nodes": [
+    "BEN_GOVT_REVENUE",
+    "COST_GOVT_SPENDING"
+   ],
+   "dropped": [],
+   "edges": [
+    [
+     "BEN_GOVT_REVENUE",
+     "COST_GOVT_SPENDING"
+    ],
+    [
+     "BOOM_UNEMPLOYMENT",
+     "BEN_GOVT_REVENUE"
+    ],
+    [
+     "BOOM_UNEMPLOYMENT",
+     "workers_earning"
+    ],
+    [
+     "workers_earning",
+     "BEN_GOVT_REVENUE"
+    ],
+    [
+     "BOOM_UNEMPLOYMENT",
+     "less_benefits"
+    ],
+    [
+     "less_benefits",
+     "BEN_GOVT_REVENUE"
+    ],
+    [
+     "BEN_GOVT_REVENUE",
+     "growing_economy"
+    ],
+    [
+     "growing_economy",
+     "COST_GOVT_SPENDING"
+    ]
+   ]
+  }
+ ]
+}

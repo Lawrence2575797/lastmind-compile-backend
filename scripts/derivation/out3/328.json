@@ -1,0 +1,201 @@
+{
+ "id": "gen",
+ "subject": "Economics",
+ "title": "Advantages of price controls",
+ "terms": {
+  "equity": {
+   "label": "Equity"
+  },
+  "meritgood": {
+   "label": "Merit good"
+  },
+  "socoptimum": {
+   "label": "Social optimum"
+  },
+  "demeritgood": {
+   "label": "Demerit good"
+  },
+  "MAXP_ADV3": {
+   "label": "Max price: affordability"
+  },
+  "MAXP_ADV4": {
+   "label": "Max price: merit good consumption"
+  },
+  "MINP_ADV3": {
+   "label": "Min price: internalises cost"
+  },
+  "MAXP_DIAG": {
+   "label": "Maximum price diagram"
+  },
+  "EXTERN": {
+   "label": "Externalities: definition (third-party effects)"
+  },
+  "MINP_DIAG": {
+   "label": "Minimum price diagram"
+  }
+ },
+ "stages": [
+  {
+   "name": "Advantages of price controls",
+   "title": "Advantages of price controls",
+   "sub": "After this you can explain why governments use maximum and minimum prices to improve fairness and correct under- or over-consumption.",
+   "steps": [
+    {
+     "type": "ask",
+     "q": "Bread is a basic essential. If its price is left to the free market and rises sharply, who struggles most to afford it: rich households or poor households?",
+     "right": "Poor households struggle most",
+     "wrong": "Both struggle equally",
+     "hint": "Think about who has the least spare income to absorb a price rise.",
+     "pre": "So free market prices can hit low-income households hardest, raising concerns about fairness, called",
+     "term": "equity"
+    },
+    {
+     "type": "ask",
+     "q": "A government caps the price of bread below the market equilibrium so more people can buy it. Whose situation does this directly help: low-income households buying bread, or bread producers' profits?",
+     "right": "Low-income households buying bread",
+     "wrong": "Bread producers' profits",
+     "hint": "Look at the maximum price diagram: the price falls, so who benefits from paying less?",
+     "pre": "So capping price below equilibrium is the",
+     "term": "MAXP_ADV3"
+    },
+    {
+     "type": "ask",
+     "q": "A vaccine benefits not just the person who takes it but everyone around them who avoids catching the disease. Does the free market price account for those extra benefits to others?",
+     "right": "No, it ignores those extra benefits",
+     "wrong": "Yes, it fully accounts for them",
+     "hint": "Think about who the buyer considers when deciding how much to pay: just themselves, or everyone affected?",
+     "pre": "A good like this, whose benefits to society exceed the benefits to the buyer alone, is a",
+     "term": "meritgood"
+    },
+    {
+     "type": "ask",
+     "q": "Cigarettes harm not just the smoker but also people nearby through passive smoke. Does the free market price the smoker pays include this extra harm to others?",
+     "right": "No, it leaves out that harm",
+     "wrong": "Yes, it fully includes that harm",
+     "hint": "Think about what the smoker pays for: just their own cigarettes, or also the harm to others?",
+     "pre": "A good like this, whose costs to society exceed the costs to the buyer, is a",
+     "term": "demeritgood"
+    },
+    {
+     "type": "order",
+     "terms": [
+      "equity",
+      "MAXP_ADV3",
+      "meritgood",
+      "demeritgood"
+     ],
+     "prompt": "Drag and drop the 4 key terms in the order they build on each other."
+    },
+    {
+     "type": "ask",
+     "q": "If a vaccine's price only reflects the buyer's own benefit, will the free market quantity bought match the quantity that is best for society as a whole?",
+     "right": "No, it will be lower",
+     "wrong": "Yes, it will match",
+     "hint": "The buyer ignores benefits to others, so do they buy enough from society's point of view?",
+     "pre": "The quantity that accounts for all benefits to society is the",
+     "term": "socoptimum"
+    },
+    {
+     "type": "ask",
+     "q": "A government sets a maximum price for the vaccine below equilibrium, so more people buy it, moving consumption closer to what's best for society. Does this pull consumption towards or away from the social optimum?",
+     "right": "Towards the social optimum",
+     "wrong": "Away from the social optimum",
+     "hint": "More people buying a merit good moves closer to, or further from, the ideal level?",
+     "pre": "So lowering the price towards the socially ideal quantity is the",
+     "term": "MAXP_ADV4"
+    },
+    {
+     "type": "ask",
+     "q": "A government sets a minimum price for cigarettes above equilibrium, raising the price smokers pay closer to the true cost including harm to others. Does this make the price smokers pay reflect more, or less, of the harm to third parties?",
+     "right": "More of the harm to third parties",
+     "wrong": "Less of the harm to third parties",
+     "hint": "Look at the minimum price diagram: the price rises, so does it capture more or less of the external cost?",
+     "pre": "So making the price paid reflect that outside harm is called",
+     "term": "MINP_ADV3"
+    },
+    {
+     "type": "derive"
+    }
+   ],
+   "given": [
+    "MAXP_DIAG",
+    "EXTERN",
+    "MINP_DIAG"
+   ],
+   "needs": [
+    "MAXP_DIAG",
+    "EXTERN",
+    "MINP_DIAG"
+   ],
+   "builds": [
+    "MAXP_DIAG",
+    "EXTERN",
+    "MINP_DIAG"
+   ],
+   "nodes": [
+    "MAXP_ADV3",
+    "MAXP_ADV4",
+    "MINP_ADV3"
+   ],
+   "dropped": [],
+   "edges": [
+    [
+     "MAXP_DIAG",
+     "MAXP_ADV3"
+    ],
+    [
+     "MAXP_DIAG",
+     "MAXP_ADV4"
+    ],
+    [
+     "EXTERN",
+     "MAXP_ADV4"
+    ],
+    [
+     "MINP_DIAG",
+     "MINP_ADV3"
+    ],
+    [
+     "EXTERN",
+     "MINP_ADV3"
+    ],
+    [
+     "MAXP_DIAG",
+     "equity"
+    ],
+    [
+     "equity",
+     "MAXP_ADV3"
+    ],
+    [
+     "MAXP_DIAG",
+     "meritgood"
+    ],
+    [
+     "meritgood",
+     "socoptimum"
+    ],
+    [
+     "socoptimum",
+     "MAXP_ADV4"
+    ],
+    [
+     "EXTERN",
+     "demeritgood"
+    ],
+    [
+     "demeritgood",
+     "socoptimum"
+    ],
+    [
+     "socoptimum",
+     "MINP_ADV3"
+    ],
+    [
+     "MINP_DIAG",
+     "MINP_ADV3"
+    ]
+   ]
+  }
+ ]
+}

@@ -1,0 +1,142 @@
+{
+ "id": "gen",
+ "subject": "Economics",
+ "title": "National income",
+ "terms": {
+  "HOUSEHOLDS_FIRMS": {
+   "label": "Households and firms"
+  },
+  "INCOME_DEF": {
+   "label": "Income"
+  },
+  "spending": {
+   "label": "Spending flow"
+  },
+  "CFOI": {
+   "label": "Circular flow of income"
+  },
+  "WEALTH_DEF": {
+   "label": "Wealth"
+  },
+  "INCOME_WEALTH_DIST": {
+   "label": "Income vs wealth"
+  }
+ },
+ "stages": [
+  {
+   "name": "National income",
+   "title": "National income",
+   "sub": "How income flows between households and firms, and why income differs from wealth.",
+   "steps": [
+    {
+     "type": "ask",
+     "q": "People work and spend, and businesses produce and pay wages. Are these two groups separate, or the same group doing the same job?",
+     "right": "Two separate groups with different roles",
+     "wrong": "The same group, just given two names",
+     "hint": "One group buys goods and supplies work, the other produces goods and pays wages. Are those the same job?",
+     "pre": "Every economy has these two core groups:",
+     "term": "HOUSEHOLDS_FIRMS"
+    },
+    {
+     "type": "ask",
+     "q": "A worker gets paid £2,000 this month, then another £2,000 next month, and so on. Is this a one-off amount, or something that keeps arriving over time?",
+     "right": "Something that keeps arriving over time",
+     "wrong": "A one-off amount received just once",
+     "hint": "Wages are not received once and never again, they arrive again and again.",
+     "pre": "Money received regularly over a period of time is",
+     "term": "INCOME_DEF"
+    },
+    {
+     "type": "ask",
+     "q": "Households take the wages firms pay them and use that money to buy the goods firms produce. Does this spending go nowhere, or does it travel straight back to the firms?",
+     "right": "It travels straight back to firms as revenue",
+     "wrong": "It goes nowhere once households spend it",
+     "hint": "When you buy something, whose till does the money land in?",
+     "pre": "So households' spending becomes firms' revenue, a",
+     "term": "spending"
+    },
+    {
+     "type": "ask",
+     "q": "Firms pay wages to households, households spend that money buying firms' output, and firms use that revenue to pay more wages. Does this money movement stop after one round, or keep going round and round?",
+     "right": "It keeps going round and round",
+     "wrong": "It stops after households spend the wages once",
+     "hint": "Wages become spending, spending becomes revenue, revenue pays more wages. Where does that chain end?",
+     "pre": "This continuous movement of money between households and firms is",
+     "term": "CFOI"
+    },
+    {
+     "type": "order",
+     "terms": [
+      "HOUSEHOLDS_FIRMS",
+      "INCOME_DEF",
+      "spending",
+      "CFOI"
+     ],
+     "prompt": "Drag and drop the 4 key terms in the order they build on each other."
+    },
+    {
+     "type": "ask",
+     "q": "A household owns a house worth £300,000 and savings of £50,000. If they earned nothing at all next year, would this £350,000 disappear?",
+     "right": "No, it stays as something they own",
+     "wrong": "Yes, it disappears without income",
+     "hint": "Owning a house or savings is not the same as being paid. Does what you own vanish if you stop earning?",
+     "pre": "What a household owns, built up at one point in time, is its",
+     "term": "WEALTH_DEF"
+    },
+    {
+     "type": "ask",
+     "q": "A pensioner receives no wages this year but owns a paid-off house worth £400,000. Are the £400,000 of house and the wages someone else earns each month measuring the same kind of thing?",
+     "right": "No, one is a stock of value, the other a flow over time",
+     "wrong": "Yes, both just measure money a person has",
+     "hint": "The house was built up over time and stays put; wages arrive again and again each month. Are these the same kind of measurement?",
+     "pre": "So we must separate a flow received over time from a stock built up at a point in time. That is the",
+     "term": "INCOME_WEALTH_DIST"
+    },
+    {
+     "type": "derive"
+    }
+   ],
+   "given": [],
+   "needs": [],
+   "builds": [],
+   "nodes": [
+    "HOUSEHOLDS_FIRMS",
+    "INCOME_DEF",
+    "CFOI",
+    "WEALTH_DEF",
+    "INCOME_WEALTH_DIST"
+   ],
+   "dropped": [],
+   "edges": [
+    [
+     "HOUSEHOLDS_FIRMS",
+     "CFOI"
+    ],
+    [
+     "INCOME_DEF",
+     "CFOI"
+    ],
+    [
+     "INCOME_DEF",
+     "INCOME_WEALTH_DIST"
+    ],
+    [
+     "WEALTH_DEF",
+     "INCOME_WEALTH_DIST"
+    ],
+    [
+     "HOUSEHOLDS_FIRMS",
+     "spending"
+    ],
+    [
+     "INCOME_DEF",
+     "spending"
+    ],
+    [
+     "spending",
+     "CFOI"
+    ]
+   ]
+  }
+ ]
+}

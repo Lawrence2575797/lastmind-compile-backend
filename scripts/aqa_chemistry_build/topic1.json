@@ -1,0 +1,1178 @@
+{
+  "nodes": [
+    {
+      "id": "WS_ELEMENT_SYMBOLS",
+      "label": "Element names and chemical symbols (first 20 elements, Groups 1 & 7, and others in spec)",
+      "subtopic": "1.1",
+      "theme": "Topic 1",
+      "difficulty": 0.25,
+      "objective": "Recall and use the names and symbols of the first 20 elements, Group 1 and Group 7 elements, and other specified elements.",
+      "essentialPoints": [
+        "Each element has a unique one- or two-letter chemical symbol (e.g. O, Na)",
+        "The first 20 elements plus Groups 1 and 7 and other spec elements must be known by name and symbol"
+      ],
+      "specRefs": [
+        "4.1.1.1"
+      ],
+      "kind": "concept",
+      "practicalIds": []
+    },
+    {
+      "id": "ATOMS_ELEMENTS",
+      "label": "Atoms and elements",
+      "subtopic": "1.1",
+      "theme": "Topic 1",
+      "difficulty": 0.15,
+      "objective": "State that all substances are made of atoms and define an atom and an element.",
+      "essentialPoints": [
+        "An atom is the smallest part of an element that can exist",
+        "An element consists of only one type of atom",
+        "There are about 100 different elements, shown in the periodic table"
+      ],
+      "specRefs": [
+        "4.1.1.1"
+      ],
+      "kind": "concept",
+      "practicalIds": []
+    },
+    {
+      "id": "COMPOUNDS",
+      "label": "Compounds and chemical reactions",
+      "subtopic": "1.1",
+      "theme": "Topic 1",
+      "difficulty": 0.3,
+      "objective": "Define compounds and describe how chemical reactions form new substances.",
+      "essentialPoints": [
+        "Compounds contain two or more elements chemically combined in fixed proportions",
+        "Chemical reactions always form one or more new substances, often with a detectable energy change",
+        "Compounds can only be separated into elements by chemical reactions",
+        "Compounds are represented by formulae using element symbols"
+      ],
+      "specRefs": [
+        "4.1.1.1"
+      ],
+      "kind": "concept",
+      "practicalIds": []
+    },
+    {
+      "id": "WORD_SYMBOL_EQUATIONS",
+      "label": "Writing word and balanced symbol equations",
+      "subtopic": "1.1",
+      "theme": "Topic 1",
+      "difficulty": 0.45,
+      "objective": "Write word equations and balanced chemical equations (with state symbols/formulae) for reactions in the specification.",
+      "essentialPoints": [
+        "Word equations show reactants and products by name",
+        "Balanced symbol equations use formulae with equal atoms of each element on both sides",
+        "Conservation of mass requires balancing"
+      ],
+      "specRefs": [
+        "4.1.1.1"
+      ],
+      "kind": "procedure",
+      "practicalIds": []
+    },
+    {
+      "id": "HT_IONIC_HALF_EQUATIONS",
+      "label": "Balanced half equations and ionic equations (HT)",
+      "subtopic": "1.1",
+      "theme": "Topic 1",
+      "difficulty": 0.65,
+      "objective": "Write balanced half equations and ionic equations where appropriate (HT only).",
+      "essentialPoints": [
+        "Half equations show electron transfer at an electrode (oxidation or reduction)",
+        "Ionic equations show only the species that actually change, omitting spectator ions"
+      ],
+      "specRefs": [
+        "4.1.1.1"
+      ],
+      "kind": "procedure",
+      "practicalIds": []
+    },
+    {
+      "id": "MIXTURES",
+      "label": "Mixtures",
+      "subtopic": "1.1",
+      "theme": "Topic 1",
+      "difficulty": 0.2,
+      "objective": "Define a mixture and explain that no chemical reaction is needed to form or separate one.",
+      "essentialPoints": [
+        "A mixture consists of two or more elements or compounds not chemically combined",
+        "Each substance in a mixture keeps its own chemical properties",
+        "Mixtures can be separated by physical processes without new substances being made"
+      ],
+      "specRefs": [
+        "4.1.1.2"
+      ],
+      "kind": "concept",
+      "practicalIds": []
+    },
+    {
+      "id": "SEP_FILTRATION",
+      "label": "Separation technique: filtration",
+      "subtopic": "1.1",
+      "theme": "Topic 1",
+      "difficulty": 0.15,
+      "objective": "Describe and explain filtration as a technique for separating an insoluble solid from a liquid.",
+      "essentialPoints": [
+        "Filtration separates an insoluble solid from a liquid using filter paper",
+        "Used to obtain residue and filtrate"
+      ],
+      "specRefs": [
+        "4.1.1.2"
+      ],
+      "kind": "procedure",
+      "practicalIds": [
+        1
+      ]
+    },
+    {
+      "id": "SEP_CRYSTALLISATION",
+      "label": "Separation technique: crystallisation",
+      "subtopic": "1.1",
+      "theme": "Topic 1",
+      "difficulty": 0.25,
+      "objective": "Describe and explain crystallisation as a technique for obtaining a solute as solid crystals from a solution.",
+      "essentialPoints": [
+        "A solution is heated to evaporate solvent until saturated, then cooled to form crystals",
+        "Used to obtain a soluble salt from its solution"
+      ],
+      "specRefs": [
+        "4.1.1.2"
+      ],
+      "kind": "procedure",
+      "practicalIds": [
+        1
+      ]
+    },
+    {
+      "id": "SEP_SIMPLE_DISTILLATION",
+      "label": "Separation technique: simple distillation",
+      "subtopic": "1.1",
+      "theme": "Topic 1",
+      "difficulty": 0.3,
+      "objective": "Describe and explain simple distillation for separating a solvent from a solution.",
+      "essentialPoints": [
+        "Liquid is heated to evaporate the solvent, which is then condensed and collected",
+        "Separates a solvent (e.g. water) from dissolved solutes, leaving solute behind"
+      ],
+      "specRefs": [
+        "4.1.1.2"
+      ],
+      "kind": "procedure",
+      "practicalIds": [
+        8
+      ]
+    },
+    {
+      "id": "SEP_FRACTIONAL_DISTILLATION",
+      "label": "Separation technique: fractional distillation",
+      "subtopic": "1.1",
+      "theme": "Topic 1",
+      "difficulty": 0.4,
+      "objective": "Describe and explain fractional distillation for separating a mixture of miscible liquids with different boiling points.",
+      "essentialPoints": [
+        "A fractionating column allows separation of liquids with different boiling points",
+        "Vapours condense at different heights/temperatures corresponding to their boiling points"
+      ],
+      "specRefs": [
+        "4.1.1.2"
+      ],
+      "kind": "procedure",
+      "practicalIds": []
+    },
+    {
+      "id": "SEP_CHROMATOGRAPHY",
+      "label": "Separation technique: chromatography",
+      "subtopic": "1.1",
+      "theme": "Topic 1",
+      "difficulty": 0.35,
+      "objective": "Describe and explain paper chromatography as a technique for separating substances based on differing solubility/affinity for a stationary phase.",
+      "essentialPoints": [
+        "Chromatography separates mixtures based on distribution between a mobile and stationary phase",
+        "Different substances travel different distances depending on their attraction to each phase"
+      ],
+      "specRefs": [
+        "4.1.1.2"
+      ],
+      "kind": "procedure",
+      "practicalIds": [
+        6
+      ]
+    },
+    {
+      "id": "SEP_CHOOSE_TECHNIQUE",
+      "label": "Selecting an appropriate separation/purification technique",
+      "subtopic": "1.1",
+      "theme": "Topic 1",
+      "difficulty": 0.45,
+      "objective": "Suggest a suitable separation or purification technique for a mixture given information about its components.",
+      "essentialPoints": [
+        "Choice of technique depends on properties of the mixture (solubility, boiling point, particle size, colour)",
+        "Different techniques suit different combinations of solid/liquid mixtures"
+      ],
+      "specRefs": [
+        "4.1.1.2"
+      ],
+      "kind": "application",
+      "practicalIds": []
+    },
+    {
+      "id": "WS_BURETTE_TITRATION_TECHNIQUE",
+      "label": "Titration technique: using a burette, pipette and indicator to find an end-point",
+      "subtopic": "1.1",
+      "theme": "Topic 1",
+      "difficulty": 0.4,
+      "objective": "Carry out an acid-alkali titration accurately using a burette, pipette and indicator to identify the end-point.",
+      "essentialPoints": [
+        "A pipette measures a fixed volume of one solution into a conical flask with indicator",
+        "A burette is used to add the second solution dropwise until the indicator changes colour (end-point)",
+        "A rough titration followed by accurate concordant titrations improves reliability"
+      ],
+      "specRefs": [
+        "4.1.1.1"
+      ],
+      "kind": "procedure",
+      "practicalIds": [
+        2
+      ]
+    },
+    {
+      "id": "PLUM_PUDDING_HISTORY",
+      "label": "Atomic model history: solid sphere and plum pudding models",
+      "subtopic": "1.1",
+      "theme": "Topic 1",
+      "difficulty": 0.2,
+      "objective": "Describe the early solid sphere model of the atom and the plum pudding model that followed the discovery of the electron.",
+      "essentialPoints": [
+        "Before the electron was discovered, atoms were thought to be tiny indivisible spheres",
+        "The discovery of the electron led to the plum pudding model: a ball of positive charge with negative electrons embedded in it"
+      ],
+      "specRefs": [
+        "4.1.1.3"
+      ],
+      "kind": "concept",
+      "practicalIds": []
+    },
+    {
+      "id": "ALPHA_SCATTERING_NUCLEAR_MODEL",
+      "label": "Alpha particle scattering experiment and the nuclear model",
+      "subtopic": "1.1",
+      "theme": "Topic 1",
+      "difficulty": 0.5,
+      "objective": "Explain how the results of the alpha particle scattering experiment led to replacement of the plum pudding model with the nuclear model.",
+      "essentialPoints": [
+        "Alpha particles were fired at thin gold foil; most passed through but some deflected or bounced back",
+        "This showed mass and positive charge are concentrated in a tiny central nucleus",
+        "This evidence replaced the plum pudding model with the nuclear model"
+      ],
+      "specRefs": [
+        "4.1.1.3"
+      ],
+      "kind": "concept",
+      "practicalIds": []
+    },
+    {
+      "id": "BOHR_MODEL",
+      "label": "Bohr's model: electrons in fixed energy levels",
+      "subtopic": "1.1",
+      "theme": "Topic 1",
+      "difficulty": 0.35,
+      "objective": "Describe Niels Bohr's adaptation of the nuclear model, proposing electrons orbit the nucleus at specific distances (energy levels).",
+      "essentialPoints": [
+        "Bohr proposed electrons orbit the nucleus only at specific, fixed distances (energy levels/shells)",
+        "Bohr's theoretical calculations agreed with experimental observations"
+      ],
+      "specRefs": [
+        "4.1.1.3"
+      ],
+      "kind": "concept",
+      "practicalIds": []
+    },
+    {
+      "id": "PROTON_DISCOVERY",
+      "label": "Discovery of the proton",
+      "subtopic": "1.1",
+      "theme": "Topic 1",
+      "difficulty": 0.3,
+      "objective": "Describe how later experiments showed the nuclear positive charge could be subdivided into protons of equal positive charge.",
+      "essentialPoints": [
+        "Experiments showed the positive charge of the nucleus is made of whole-number units",
+        "Each unit of positive charge was named the proton"
+      ],
+      "specRefs": [
+        "4.1.1.3"
+      ],
+      "kind": "concept",
+      "practicalIds": []
+    },
+    {
+      "id": "NEUTRON_DISCOVERY",
+      "label": "Chadwick's discovery of the neutron",
+      "subtopic": "1.1",
+      "theme": "Topic 1",
+      "difficulty": 0.25,
+      "objective": "State that James Chadwick's experimental work provided evidence for neutrons within the nucleus, about 20 years after the nucleus was accepted.",
+      "essentialPoints": [
+        "Chadwick's experimental work provided evidence for neutrons in the nucleus",
+        "This occurred about 20 years after the nuclear model became accepted"
+      ],
+      "specRefs": [
+        "4.1.1.3"
+      ],
+      "kind": "concept",
+      "practicalIds": []
+    },
+    {
+      "id": "SCIENTIFIC_MODEL_CHANGE",
+      "label": "How new evidence changes a scientific model",
+      "subtopic": "1.1",
+      "theme": "Topic 1",
+      "difficulty": 0.3,
+      "objective": "Explain that scientific models are changed or replaced when new experimental evidence emerges.",
+      "essentialPoints": [
+        "A scientific model can be changed or replaced when new evidence does not fit the existing model",
+        "This is illustrated by the historical development of the atomic model"
+      ],
+      "specRefs": [
+        "4.1.1.3"
+      ],
+      "kind": "concept",
+      "practicalIds": []
+    },
+    {
+      "id": "SUBATOMIC_CHARGES",
+      "label": "Relative electrical charges of protons, neutrons and electrons",
+      "subtopic": "1.1",
+      "theme": "Topic 1",
+      "difficulty": 0.2,
+      "objective": "State the relative charges of protons (+1), neutrons (0) and electrons (-1).",
+      "essentialPoints": [
+        "Protons have a relative charge of +1",
+        "Neutrons have a relative charge of 0",
+        "Electrons have a relative charge of -1"
+      ],
+      "specRefs": [
+        "4.1.1.4"
+      ],
+      "kind": "concept",
+      "practicalIds": []
+    },
+    {
+      "id": "ATOM_NEUTRAL_ATOMIC_NUMBER",
+      "label": "Atomic number and neutral atoms",
+      "subtopic": "1.1",
+      "theme": "Topic 1",
+      "difficulty": 0.3,
+      "objective": "Explain that atoms have no overall charge because protons equal electrons, and define atomic number.",
+      "essentialPoints": [
+        "In a neutral atom, the number of electrons equals the number of protons",
+        "Atomic number is the number of protons in an atom of an element",
+        "All atoms of a given element have the same number of protons; different elements have different numbers of protons"
+      ],
+      "specRefs": [
+        "4.1.1.4"
+      ],
+      "kind": "concept",
+      "practicalIds": []
+    },
+    {
+      "id": "ATOM_SIZE_SCALE",
+      "label": "Size and scale of atoms and nuclei",
+      "subtopic": "1.1",
+      "theme": "Topic 1",
+      "difficulty": 0.35,
+      "objective": "State the approximate radius of an atom and of a nucleus, and relate these to standard form and everyday scale.",
+      "essentialPoints": [
+        "Atoms have a radius of about 0.1 nm (1 x 10^-10 m)",
+        "A nucleus has a radius less than 1/10 000 of the atom's radius (about 1 x 10^-14 m)",
+        "Almost all the mass of an atom is concentrated in the nucleus"
+      ],
+      "specRefs": [
+        "4.1.1.5"
+      ],
+      "kind": "concept",
+      "practicalIds": []
+    },
+    {
+      "id": "RELATIVE_MASSES_PARTICLES",
+      "label": "Relative masses of protons, neutrons and electrons",
+      "subtopic": "1.1",
+      "theme": "Topic 1",
+      "difficulty": 0.2,
+      "objective": "State the relative masses of a proton, neutron and electron.",
+      "essentialPoints": [
+        "Protons and neutrons each have a relative mass of 1",
+        "Electrons have a relative mass that is very small (about 1/1835), often treated as negligible"
+      ],
+      "specRefs": [
+        "4.1.1.5"
+      ],
+      "kind": "concept",
+      "practicalIds": []
+    },
+    {
+      "id": "MASS_NUMBER",
+      "label": "Mass number",
+      "subtopic": "1.1",
+      "theme": "Topic 1",
+      "difficulty": 0.2,
+      "objective": "Define mass number as the sum of protons and neutrons in an atom.",
+      "essentialPoints": [
+        "Mass number = number of protons + number of neutrons"
+      ],
+      "specRefs": [
+        "4.1.1.5"
+      ],
+      "kind": "concept",
+      "practicalIds": []
+    },
+    {
+      "id": "ISOTOPES",
+      "label": "Isotopes",
+      "subtopic": "1.1",
+      "theme": "Topic 1",
+      "difficulty": 0.35,
+      "objective": "Define isotopes as atoms of the same element with different numbers of neutrons.",
+      "essentialPoints": [
+        "Isotopes are atoms of the same element (same proton number) with different numbers of neutrons",
+        "Isotopes therefore have different mass numbers"
+      ],
+      "specRefs": [
+        "4.1.1.5"
+      ],
+      "kind": "concept",
+      "practicalIds": []
+    },
+    {
+      "id": "CALC_SUBATOMIC_PARTICLES",
+      "label": "Calculating numbers of protons, neutrons and electrons in atoms/ions",
+      "subtopic": "1.1",
+      "theme": "Topic 1",
+      "difficulty": 0.4,
+      "objective": "Calculate the numbers of protons, neutrons and electrons in an atom or ion given its atomic number and mass number.",
+      "essentialPoints": [
+        "Number of protons = atomic number",
+        "Number of neutrons = mass number - atomic number",
+        "Number of electrons = number of protons ± charge for ions"
+      ],
+      "specRefs": [
+        "4.1.1.5"
+      ],
+      "kind": "application",
+      "practicalIds": []
+    },
+    {
+      "id": "RELATIVE_ATOMIC_MASS",
+      "label": "Relative atomic mass from isotopic abundance",
+      "subtopic": "1.1",
+      "theme": "Topic 1",
+      "difficulty": 0.45,
+      "objective": "Calculate the relative atomic mass of an element from the percentage abundances of its isotopes.",
+      "essentialPoints": [
+        "Relative atomic mass is a weighted average accounting for isotope abundance",
+        "Calculated as sum of (isotope mass x % abundance) / 100"
+      ],
+      "specRefs": [
+        "4.1.1.6"
+      ],
+      "kind": "application",
+      "practicalIds": []
+    },
+    {
+      "id": "ELECTRONIC_STRUCTURE",
+      "label": "Electronic structure of atoms (energy levels/shells)",
+      "subtopic": "1.1",
+      "theme": "Topic 1",
+      "difficulty": 0.4,
+      "objective": "Represent the electronic structure of the first 20 elements using numbers or diagrams, with electrons filling the lowest available energy levels.",
+      "essentialPoints": [
+        "Electrons occupy the lowest available energy levels (shells) first",
+        "Electronic structure can be written as numbers (e.g. 2,8,1 for sodium) or shown as a diagram",
+        "Shells fill in order: 2, then 8, then 8 (for the first 20 elements)"
+      ],
+      "specRefs": [
+        "4.1.1.7"
+      ],
+      "kind": "concept",
+      "practicalIds": []
+    },
+    {
+      "id": "PERIODIC_TABLE_ARRANGEMENT",
+      "label": "Arrangement of the periodic table by atomic number and groups",
+      "subtopic": "1.1",
+      "theme": "Topic 1",
+      "difficulty": 0.35,
+      "objective": "Describe how elements are arranged in the periodic table by atomic number into periods and groups of similar properties.",
+      "essentialPoints": [
+        "Elements are arranged in order of atomic (proton) number",
+        "Elements with similar properties are placed in the same column (group)",
+        "Similar properties recur at regular intervals, giving the table its 'periodic' name"
+      ],
+      "specRefs": [
+        "4.1.2.1"
+      ],
+      "kind": "concept",
+      "practicalIds": []
+    },
+    {
+      "id": "GROUPS_OUTER_ELECTRONS",
+      "label": "Groups and outer-shell electrons determine chemical properties",
+      "subtopic": "1.1",
+      "theme": "Topic 1",
+      "difficulty": 0.4,
+      "objective": "Explain that elements in the same group have the same number of outer-shell electrons, giving them similar chemical properties, and relate group/period position to electronic structure and atomic number.",
+      "essentialPoints": [
+        "Elements in the same group have the same number of outer-shell electrons",
+        "This shared outer electron number causes similar chemical properties",
+        "Position in the periodic table can be explained by/predicted from electronic structure and atomic number"
+      ],
+      "specRefs": [
+        "4.1.2.1"
+      ],
+      "kind": "concept",
+      "practicalIds": []
+    },
+    {
+      "id": "PREDICT_REACTIVITY_FROM_POSITION",
+      "label": "Predicting reactions and reactivity from periodic table position",
+      "subtopic": "1.1",
+      "theme": "Topic 1",
+      "difficulty": 0.5,
+      "objective": "Predict possible reactions and probable reactivity of elements based on their position in the periodic table.",
+      "essentialPoints": [
+        "Elements' likely reactions and reactivity can be predicted from their group and period position",
+        "This relies on the shared outer-electron structure within groups"
+      ],
+      "specRefs": [
+        "4.1.2.1"
+      ],
+      "kind": "application",
+      "practicalIds": []
+    },
+    {
+      "id": "EARLY_PERIODIC_TABLES",
+      "label": "Early periodic tables based on atomic weight",
+      "subtopic": "1.1",
+      "theme": "Topic 1",
+      "difficulty": 0.25,
+      "objective": "Describe how scientists before the discovery of subatomic particles classified elements by atomic weight, and the limitations of this approach.",
+      "essentialPoints": [
+        "Before protons, neutrons and electrons were known, elements were ordered by atomic weight",
+        "Early tables were incomplete, and strict atomic-weight order sometimes placed elements in inappropriate groups"
+      ],
+      "specRefs": [
+        "4.1.2.2"
+      ],
+      "kind": "concept",
+      "practicalIds": []
+    },
+    {
+      "id": "MENDELEEV_PREDICTIONS",
+      "label": "Mendeleev's periodic table: gaps and predictions",
+      "subtopic": "1.1",
+      "theme": "Topic 1",
+      "difficulty": 0.35,
+      "objective": "Describe how Mendeleev left gaps for undiscovered elements and altered atomic-weight order to fit properties, and how later discoveries and isotopes confirmed and refined his table.",
+      "essentialPoints": [
+        "Mendeleev left gaps in his table for elements he believed were undiscovered",
+        "He sometimes reordered elements based on properties rather than strict atomic weight",
+        "Elements with Mendeleev's predicted properties were later discovered, filling the gaps",
+        "Knowledge of isotopes later explained remaining anomalies in atomic-weight order"
+      ],
+      "specRefs": [
+        "4.1.2.2"
+      ],
+      "kind": "concept",
+      "practicalIds": []
+    },
+    {
+      "id": "METALS_NONMETALS_IONS",
+      "label": "Metals and non-metals defined by ion formation",
+      "subtopic": "1.1",
+      "theme": "Topic 1",
+      "difficulty": 0.3,
+      "objective": "Define metals and non-metals in terms of their tendency to form positive ions, and locate them on the periodic table.",
+      "essentialPoints": [
+        "Metals are elements that react to form positive ions",
+        "Non-metals are elements that do not form positive ions",
+        "Metals are found to the left/bottom of the periodic table; non-metals to the right/top"
+      ],
+      "specRefs": [
+        "4.1.2.3"
+      ],
+      "kind": "concept",
+      "practicalIds": []
+    },
+    {
+      "id": "METAL_NONMETAL_PROPERTIES_STRUCTURE",
+      "label": "Explaining metal/non-metal properties from atomic structure and position",
+      "subtopic": "1.1",
+      "theme": "Topic 1",
+      "difficulty": 0.5,
+      "objective": "Explain the differing physical and chemical properties of metals and non-metals in terms of their atomic structure and periodic table position.",
+      "essentialPoints": [
+        "Metal/non-metal physical and chemical properties differ because of differences in atomic structure (outer electrons)",
+        "Reactions of elements relate to their electron arrangement and atomic number"
+      ],
+      "specRefs": [
+        "4.1.2.3"
+      ],
+      "kind": "application",
+      "practicalIds": []
+    },
+    {
+      "id": "GROUP0_STABLE_OUTER_SHELL",
+      "label": "Group 0: stable outer shells and lack of reactivity",
+      "subtopic": "1.1",
+      "theme": "Topic 1",
+      "difficulty": 0.35,
+      "objective": "Explain why the noble gases are unreactive in terms of their stable outer-shell electron arrangements.",
+      "essentialPoints": [
+        "Group 0 elements (noble gases) are unreactive and rarely form molecules",
+        "They have full/stable outer electron shells: 8 electrons, except helium which has 2"
+      ],
+      "specRefs": [
+        "4.1.2.4"
+      ],
+      "kind": "concept",
+      "practicalIds": []
+    },
+    {
+      "id": "GROUP0_BOILING_POINT_TREND",
+      "label": "Group 0: boiling point trend down the group",
+      "subtopic": "1.1",
+      "theme": "Topic 1",
+      "difficulty": 0.3,
+      "objective": "Describe and predict how boiling points of the noble gases increase with increasing relative atomic mass down the group.",
+      "essentialPoints": [
+        "Boiling points of noble gases increase going down the group",
+        "This trend correlates with increasing relative atomic mass"
+      ],
+      "specRefs": [
+        "4.1.2.4"
+      ],
+      "kind": "concept",
+      "practicalIds": []
+    },
+    {
+      "id": "GROUP1_REACTIONS",
+      "label": "Group 1 reactions with oxygen, chlorine and water",
+      "subtopic": "1.1",
+      "theme": "Topic 1",
+      "difficulty": 0.45,
+      "objective": "Describe the reactions of the first three alkali metals (lithium, sodium, potassium) with oxygen, chlorine and water.",
+      "essentialPoints": [
+        "Alkali metals react with oxygen to form metal oxides",
+        "Alkali metals react with chlorine to form metal chlorides",
+        "Alkali metals react with water to form metal hydroxide and hydrogen gas, becoming more vigorous down the group"
+      ],
+      "specRefs": [
+        "4.1.2.5"
+      ],
+      "kind": "concept",
+      "practicalIds": []
+    },
+    {
+      "id": "GROUP1_REACTIVITY_TREND",
+      "label": "Group 1: reactivity increases down the group",
+      "subtopic": "1.1",
+      "theme": "Topic 1",
+      "difficulty": 0.45,
+      "objective": "Explain why reactivity of Group 1 elements increases going down the group, linked to outer-shell electron arrangement.",
+      "essentialPoints": [
+        "Reactivity of alkali metals increases going down the group",
+        "Explained by the single outer electron becoming easier to lose as atomic radius increases and it is further from the nucleus"
+      ],
+      "specRefs": [
+        "4.1.2.5"
+      ],
+      "kind": "concept",
+      "practicalIds": []
+    },
+    {
+      "id": "GROUP7_COMPOUND_FORMATION",
+      "label": "Group 7: nature of compounds formed with metals and non-metals",
+      "subtopic": "1.1",
+      "theme": "Topic 1",
+      "difficulty": 0.4,
+      "objective": "Describe the nature of compounds formed when chlorine, bromine and iodine react with metals and non-metals.",
+      "essentialPoints": [
+        "Halogens are non-metals existing as diatomic molecules (pairs of atoms)",
+        "Reaction of a halogen with a metal produces an ionic salt (metal halide)",
+        "Reaction of a halogen with a non-metal produces a molecular (covalent) compound"
+      ],
+      "specRefs": [
+        "4.1.2.6"
+      ],
+      "kind": "concept",
+      "practicalIds": []
+    },
+    {
+      "id": "GROUP7_PHYSICAL_TRENDS",
+      "label": "Group 7: trends in relative molecular mass, melting and boiling point",
+      "subtopic": "1.1",
+      "theme": "Topic 1",
+      "difficulty": 0.3,
+      "objective": "Describe how relative molecular mass, melting point and boiling point increase down Group 7.",
+      "essentialPoints": [
+        "Further down Group 7, relative molecular mass increases",
+        "Melting point and boiling point both increase down the group"
+      ],
+      "specRefs": [
+        "4.1.2.6"
+      ],
+      "kind": "concept",
+      "practicalIds": []
+    },
+    {
+      "id": "GROUP7_REACTIVITY_TREND",
+      "label": "Group 7: reactivity decreases down the group",
+      "subtopic": "1.1",
+      "theme": "Topic 1",
+      "difficulty": 0.45,
+      "objective": "Explain why reactivity of Group 7 elements decreases going down the group, linked to outer-shell electron arrangement.",
+      "essentialPoints": [
+        "Reactivity of halogens decreases going down the group",
+        "Explained by increasing atomic radius making it harder to attract/gain an extra electron into the outer shell"
+      ],
+      "specRefs": [
+        "4.1.2.6"
+      ],
+      "kind": "concept",
+      "practicalIds": []
+    },
+    {
+      "id": "HALOGEN_DISPLACEMENT",
+      "label": "Halogen displacement reactions",
+      "subtopic": "1.1",
+      "theme": "Topic 1",
+      "difficulty": 0.45,
+      "objective": "Describe and explain how a more reactive halogen displaces a less reactive halogen from an aqueous solution of its salt.",
+      "essentialPoints": [
+        "A more reactive halogen can displace a less reactive halogen from a solution of its salt",
+        "This demonstrates the reactivity trend down Group 7",
+        "Displacement is evidenced by a colour change in solution"
+      ],
+      "specRefs": [
+        "4.1.2.6"
+      ],
+      "kind": "application",
+      "practicalIds": [
+        6
+      ]
+    },
+    {
+      "id": "GROUP_PROPERTY_PREDICTION",
+      "label": "Predicting group properties from electron arrangement and trends",
+      "subtopic": "1.1",
+      "theme": "Topic 1",
+      "difficulty": 0.45,
+      "objective": "Predict properties of Group 0, 1 and 7 elements from given trends down each group, based on outer-shell electron arrangement.",
+      "essentialPoints": [
+        "Properties of Group 0, 1 and 7 elements can be predicted from established trends down the group",
+        "Predictions are grounded in the shared outer-shell electron count within each group"
+      ],
+      "specRefs": [
+        "4.1.2.4",
+        "4.1.2.5",
+        "4.1.2.6"
+      ],
+      "kind": "application",
+      "practicalIds": []
+    },
+    {
+      "id": "TRANSITION_METALS_VS_GROUP1",
+      "label": "Transition metals compared with Group 1 elements",
+      "subtopic": "1.1",
+      "theme": "Topic 1",
+      "difficulty": 0.4,
+      "objective": "Describe how transition metals differ from Group 1 metals in melting point, density, strength, hardness and reactivity, exemplified by Cr, Mn, Fe, Co, Ni, Cu.",
+      "essentialPoints": [
+        "Transition metals have higher melting points, densities, strength and hardness than Group 1 metals",
+        "Transition metals are much less reactive with oxygen, water and halogens than Group 1 metals",
+        "Examples: Cr, Mn, Fe, Co, Ni, Cu"
+      ],
+      "specRefs": [
+        "4.1.3.1"
+      ],
+      "kind": "concept",
+      "practicalIds": []
+    },
+    {
+      "id": "TRANSITION_METAL_TYPICAL_PROPERTIES",
+      "label": "Typical properties of transition metals: variable ions, coloured compounds, catalysts",
+      "subtopic": "1.1",
+      "theme": "Topic 1",
+      "difficulty": 0.4,
+      "objective": "Describe the typical properties of transition elements: forming ions with different charges, forming coloured compounds, and acting as catalysts, exemplified by Cr, Mn, Fe, Co, Ni, Cu.",
+      "essentialPoints": [
+        "Many transition elements form ions with different charges (variable oxidation states)",
+        "Transition element compounds are often coloured",
+        "Transition elements and their compounds are often useful as catalysts"
+      ],
+      "specRefs": [
+        "4.1.3.2"
+      ],
+      "kind": "concept",
+      "practicalIds": []
+    }
+  ],
+  "edges": [
+    {
+      "from": "ATOMS_ELEMENTS",
+      "to": "WS_ELEMENT_SYMBOLS",
+      "difficulty": 0.1
+    },
+    {
+      "from": "WS_ELEMENT_SYMBOLS",
+      "to": "COMPOUNDS",
+      "difficulty": 0.15
+    },
+    {
+      "from": "COMPOUNDS",
+      "to": "WORD_SYMBOL_EQUATIONS",
+      "difficulty": 0.3
+    },
+    {
+      "from": "WORD_SYMBOL_EQUATIONS",
+      "to": "HT_IONIC_HALF_EQUATIONS",
+      "difficulty": 0.45
+    },
+    {
+      "from": "ATOMS_ELEMENTS",
+      "to": "MIXTURES",
+      "difficulty": 0.15
+    },
+    {
+      "from": "COMPOUNDS",
+      "to": "MIXTURES",
+      "difficulty": 0.2
+    },
+    {
+      "from": "MIXTURES",
+      "to": "SEP_FILTRATION",
+      "difficulty": 0.15
+    },
+    {
+      "from": "MIXTURES",
+      "to": "SEP_CRYSTALLISATION",
+      "difficulty": 0.2
+    },
+    {
+      "from": "MIXTURES",
+      "to": "SEP_SIMPLE_DISTILLATION",
+      "difficulty": 0.2
+    },
+    {
+      "from": "MIXTURES",
+      "to": "SEP_FRACTIONAL_DISTILLATION",
+      "difficulty": 0.25
+    },
+    {
+      "from": "MIXTURES",
+      "to": "SEP_CHROMATOGRAPHY",
+      "difficulty": 0.2
+    },
+    {
+      "from": "SEP_FILTRATION",
+      "to": "SEP_CHOOSE_TECHNIQUE",
+      "difficulty": 0.3
+    },
+    {
+      "from": "SEP_CRYSTALLISATION",
+      "to": "SEP_CHOOSE_TECHNIQUE",
+      "difficulty": 0.3
+    },
+    {
+      "from": "SEP_SIMPLE_DISTILLATION",
+      "to": "SEP_CHOOSE_TECHNIQUE",
+      "difficulty": 0.3
+    },
+    {
+      "from": "SEP_FRACTIONAL_DISTILLATION",
+      "to": "SEP_CHOOSE_TECHNIQUE",
+      "difficulty": 0.3
+    },
+    {
+      "from": "SEP_CHROMATOGRAPHY",
+      "to": "SEP_CHOOSE_TECHNIQUE",
+      "difficulty": 0.3
+    },
+    {
+      "from": "WORD_SYMBOL_EQUATIONS",
+      "to": "WS_BURETTE_TITRATION_TECHNIQUE",
+      "difficulty": 0.3
+    },
+    {
+      "from": "ATOMS_ELEMENTS",
+      "to": "PLUM_PUDDING_HISTORY",
+      "difficulty": 0.15
+    },
+    {
+      "from": "PLUM_PUDDING_HISTORY",
+      "to": "SCIENTIFIC_MODEL_CHANGE",
+      "difficulty": 0.2
+    },
+    {
+      "from": "SCIENTIFIC_MODEL_CHANGE",
+      "to": "ALPHA_SCATTERING_NUCLEAR_MODEL",
+      "difficulty": 0.4
+    },
+    {
+      "from": "PLUM_PUDDING_HISTORY",
+      "to": "ALPHA_SCATTERING_NUCLEAR_MODEL",
+      "difficulty": 0.3
+    },
+    {
+      "from": "ALPHA_SCATTERING_NUCLEAR_MODEL",
+      "to": "BOHR_MODEL",
+      "difficulty": 0.35
+    },
+    {
+      "from": "ALPHA_SCATTERING_NUCLEAR_MODEL",
+      "to": "PROTON_DISCOVERY",
+      "difficulty": 0.3
+    },
+    {
+      "from": "PROTON_DISCOVERY",
+      "to": "NEUTRON_DISCOVERY",
+      "difficulty": 0.25
+    },
+    {
+      "from": "ALPHA_SCATTERING_NUCLEAR_MODEL",
+      "to": "SUBATOMIC_CHARGES",
+      "difficulty": 0.25
+    },
+    {
+      "from": "PROTON_DISCOVERY",
+      "to": "SUBATOMIC_CHARGES",
+      "difficulty": 0.2
+    },
+    {
+      "from": "NEUTRON_DISCOVERY",
+      "to": "SUBATOMIC_CHARGES",
+      "difficulty": 0.15
+    },
+    {
+      "from": "SUBATOMIC_CHARGES",
+      "to": "ATOM_NEUTRAL_ATOMIC_NUMBER",
+      "difficulty": 0.25
+    },
+    {
+      "from": "ALPHA_SCATTERING_NUCLEAR_MODEL",
+      "to": "ATOM_SIZE_SCALE",
+      "difficulty": 0.3
+    },
+    {
+      "from": "SUBATOMIC_CHARGES",
+      "to": "RELATIVE_MASSES_PARTICLES",
+      "difficulty": 0.2
+    },
+    {
+      "from": "ATOM_NEUTRAL_ATOMIC_NUMBER",
+      "to": "MASS_NUMBER",
+      "difficulty": 0.2
+    },
+    {
+      "from": "RELATIVE_MASSES_PARTICLES",
+      "to": "MASS_NUMBER",
+      "difficulty": 0.2
+    },
+    {
+      "from": "MASS_NUMBER",
+      "to": "ISOTOPES",
+      "difficulty": 0.3
+    },
+    {
+      "from": "ATOM_NEUTRAL_ATOMIC_NUMBER",
+      "to": "ISOTOPES",
+      "difficulty": 0.3
+    },
+    {
+      "from": "MASS_NUMBER",
+      "to": "CALC_SUBATOMIC_PARTICLES",
+      "difficulty": 0.35
+    },
+    {
+      "from": "ATOM_NEUTRAL_ATOMIC_NUMBER",
+      "to": "CALC_SUBATOMIC_PARTICLES",
+      "difficulty": 0.35
+    },
+    {
+      "from": "ISOTOPES",
+      "to": "CALC_SUBATOMIC_PARTICLES",
+      "difficulty": 0.3
+    },
+    {
+      "from": "ISOTOPES",
+      "to": "RELATIVE_ATOMIC_MASS",
+      "difficulty": 0.4
+    },
+    {
+      "from": "ATOM_NEUTRAL_ATOMIC_NUMBER",
+      "to": "ELECTRONIC_STRUCTURE",
+      "difficulty": 0.35
+    },
+    {
+      "from": "ELECTRONIC_STRUCTURE",
+      "to": "PERIODIC_TABLE_ARRANGEMENT",
+      "difficulty": 0.4
+    },
+    {
+      "from": "ATOM_NEUTRAL_ATOMIC_NUMBER",
+      "to": "PERIODIC_TABLE_ARRANGEMENT",
+      "difficulty": 0.3
+    },
+    {
+      "from": "PERIODIC_TABLE_ARRANGEMENT",
+      "to": "GROUPS_OUTER_ELECTRONS",
+      "difficulty": 0.35
+    },
+    {
+      "from": "ELECTRONIC_STRUCTURE",
+      "to": "GROUPS_OUTER_ELECTRONS",
+      "difficulty": 0.35
+    },
+    {
+      "from": "GROUPS_OUTER_ELECTRONS",
+      "to": "PREDICT_REACTIVITY_FROM_POSITION",
+      "difficulty": 0.45
+    },
+    {
+      "from": "RELATIVE_ATOMIC_MASS",
+      "to": "EARLY_PERIODIC_TABLES",
+      "difficulty": 0.2
+    },
+    {
+      "from": "EARLY_PERIODIC_TABLES",
+      "to": "MENDELEEV_PREDICTIONS",
+      "difficulty": 0.3
+    },
+    {
+      "from": "SCIENTIFIC_MODEL_CHANGE",
+      "to": "MENDELEEV_PREDICTIONS",
+      "difficulty": 0.25
+    },
+    {
+      "from": "ISOTOPES",
+      "to": "MENDELEEV_PREDICTIONS",
+      "difficulty": 0.3
+    },
+    {
+      "from": "GROUPS_OUTER_ELECTRONS",
+      "to": "METALS_NONMETALS_IONS",
+      "difficulty": 0.3
+    },
+    {
+      "from": "METALS_NONMETALS_IONS",
+      "to": "METAL_NONMETAL_PROPERTIES_STRUCTURE",
+      "difficulty": 0.4
+    },
+    {
+      "from": "PERIODIC_TABLE_ARRANGEMENT",
+      "to": "METAL_NONMETAL_PROPERTIES_STRUCTURE",
+      "difficulty": 0.3
+    },
+    {
+      "from": "GROUPS_OUTER_ELECTRONS",
+      "to": "GROUP0_STABLE_OUTER_SHELL",
+      "difficulty": 0.3
+    },
+    {
+      "from": "GROUP0_STABLE_OUTER_SHELL",
+      "to": "GROUP0_BOILING_POINT_TREND",
+      "difficulty": 0.3
+    },
+    {
+      "from": "METALS_NONMETALS_IONS",
+      "to": "GROUP1_REACTIONS",
+      "difficulty": 0.35
+    },
+    {
+      "from": "GROUPS_OUTER_ELECTRONS",
+      "to": "GROUP1_REACTIONS",
+      "difficulty": 0.35
+    },
+    {
+      "from": "WORD_SYMBOL_EQUATIONS",
+      "to": "GROUP1_REACTIONS",
+      "difficulty": 0.3
+    },
+    {
+      "from": "GROUP1_REACTIONS",
+      "to": "GROUP1_REACTIVITY_TREND",
+      "difficulty": 0.4
+    },
+    {
+      "from": "ATOM_SIZE_SCALE",
+      "to": "GROUP1_REACTIVITY_TREND",
+      "difficulty": 0.35
+    },
+    {
+      "from": "METALS_NONMETALS_IONS",
+      "to": "GROUP7_COMPOUND_FORMATION",
+      "difficulty": 0.35
+    },
+    {
+      "from": "GROUPS_OUTER_ELECTRONS",
+      "to": "GROUP7_COMPOUND_FORMATION",
+      "difficulty": 0.35
+    },
+    {
+      "from": "GROUP7_COMPOUND_FORMATION",
+      "to": "GROUP7_PHYSICAL_TRENDS",
+      "difficulty": 0.3
+    },
+    {
+      "from": "GROUP7_PHYSICAL_TRENDS",
+      "to": "GROUP7_REACTIVITY_TREND",
+      "difficulty": 0.4
+    },
+    {
+      "from": "ATOM_SIZE_SCALE",
+      "to": "GROUP7_REACTIVITY_TREND",
+      "difficulty": 0.35
+    },
+    {
+      "from": "GROUP7_REACTIVITY_TREND",
+      "to": "HALOGEN_DISPLACEMENT",
+      "difficulty": 0.4
+    },
+    {
+      "from": "WORD_SYMBOL_EQUATIONS",
+      "to": "HALOGEN_DISPLACEMENT",
+      "difficulty": 0.3
+    },
+    {
+      "from": "GROUP0_BOILING_POINT_TREND",
+      "to": "GROUP_PROPERTY_PREDICTION",
+      "difficulty": 0.35
+    },
+    {
+      "from": "GROUP1_REACTIVITY_TREND",
+      "to": "GROUP_PROPERTY_PREDICTION",
+      "difficulty": 0.35
+    },
+    {
+      "from": "GROUP7_REACTIVITY_TREND",
+      "to": "GROUP_PROPERTY_PREDICTION",
+      "difficulty": 0.35
+    },
+    {
+      "from": "METAL_NONMETAL_PROPERTIES_STRUCTURE",
+      "to": "TRANSITION_METALS_VS_GROUP1",
+      "difficulty": 0.4
+    },
+    {
+      "from": "GROUP1_REACTIVITY_TREND",
+      "to": "TRANSITION_METALS_VS_GROUP1",
+      "difficulty": 0.4
+    },
+    {
+      "from": "TRANSITION_METALS_VS_GROUP1",
+      "to": "TRANSITION_METAL_TYPICAL_PROPERTIES",
+      "difficulty": 0.35
+    }
+  ]
+}

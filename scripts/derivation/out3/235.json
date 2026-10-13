@@ -1,0 +1,119 @@
+{
+ "id": "gen",
+ "subject": "Economics",
+ "title": "Protectionism and equality",
+ "terms": {
+  "share_income": {
+   "label": "Share of income spent"
+  },
+  "same_price_rise": {
+   "label": "Same price rise for all"
+  },
+  "burden_falls_harder": {
+   "label": "Heavier burden on poor"
+  },
+  "PROT_IMPACT_EQUALITY": {
+   "label": "Protectionism and equality"
+  },
+  "PROT_IMPACT_LIVING": {
+   "label": "Impact of protectionism on living standards: reduced real incomes from higher prices"
+  },
+  "TAX_REGRESSIVE": {
+   "label": "Regressive taxes: definition"
+  }
+ },
+ "stages": [
+  {
+   "name": "Protectionism and equality",
+   "title": "Protectionism and equality",
+   "sub": "After this, the student can explain why tariffs hit poorer households harder than richer ones.",
+   "steps": [
+    {
+     "type": "ask",
+     "q": "A rich household and a poor household both spend £20 a month more on food because of a tariff. The poor household earns £800 a month, the rich household earns £8,000 a month. Whose income takes the bigger hit, as a proportion?",
+     "right": "The poor household",
+     "wrong": "The rich household",
+     "hint": "Compare £20 out of £800 with £20 out of £8,000.",
+     "pre": "Because low earners spend a bigger",
+     "term": "share_income"
+    },
+    {
+     "type": "ask",
+     "q": "A government puts a tariff on imported clothing. Does the shop charge poor customers a different price from rich customers for the same item?",
+     "right": "No, everyone pays the same higher price",
+     "wrong": "Yes, poorer customers pay less",
+     "hint": "Think about how a tariff changes the price tag in the shop, not who is standing at the till.",
+     "pre": "So protectionism raises prices with",
+     "term": "same_price_rise"
+    },
+    {
+     "type": "ask",
+     "q": "Given that everyone faces the same price rise, but that price rise takes a bigger slice out of a poor household's income than a rich one's, whose living standards fall by more?",
+     "right": "Poorer households, by more",
+     "wrong": "Both households equally",
+     "hint": "You already worked out whose income share takes the bigger hit.",
+     "pre": "So the extra cost lands as a",
+     "term": "burden_falls_harder"
+    },
+    {
+     "type": "ask",
+     "q": "A tax that takes a bigger share of income from the poor than the rich is called regressive. Does a tariff that works this way widen or narrow the income gap between rich and poor?",
+     "right": "It widens the gap",
+     "wrong": "It narrows the gap",
+     "hint": "If the poor lose a bigger share of their income than the rich, what happens to the gap between them?",
+     "pre": "This regressive effect on lower-income groups is the",
+     "term": "PROT_IMPACT_EQUALITY"
+    },
+    {
+     "type": "derive"
+    }
+   ],
+   "given": [
+    "PROT_IMPACT_LIVING",
+    "TAX_REGRESSIVE"
+   ],
+   "needs": [
+    "PROT_IMPACT_LIVING",
+    "TAX_REGRESSIVE"
+   ],
+   "builds": [
+    "PROT_IMPACT_LIVING",
+    "TAX_REGRESSIVE"
+   ],
+   "nodes": [
+    "PROT_IMPACT_EQUALITY"
+   ],
+   "dropped": [],
+   "edges": [
+    [
+     "PROT_IMPACT_LIVING",
+     "PROT_IMPACT_EQUALITY"
+    ],
+    [
+     "TAX_REGRESSIVE",
+     "PROT_IMPACT_EQUALITY"
+    ],
+    [
+     "TAX_REGRESSIVE",
+     "share_income"
+    ],
+    [
+     "PROT_IMPACT_LIVING",
+     "same_price_rise"
+    ],
+    [
+     "share_income",
+     "burden_falls_harder"
+    ],
+    [
+     "same_price_rise",
+     "burden_falls_harder"
+    ],
+    [
+     "burden_falls_harder",
+     "PROT_IMPACT_EQUALITY"
+    ]
+   ]
+  }
+ ]
+}

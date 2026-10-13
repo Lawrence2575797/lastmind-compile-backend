@@ -1,0 +1,109 @@
+{
+  "issues": [
+    {
+      "type": "wrong_edge",
+      "affected_node": "N10_11_1",
+      "explanation": "N10_11_1 -> N10_10_1 and N10_10_1 -> N10_11_1 form a cycle. The genuine prerequisite direction is that the Haber process's purpose (making ammonia for fertilisers) grounds the NPK fertiliser concept, not the reverse.",
+      "fix": {
+        "remove_edges": [
+          [
+            "N10_11_1",
+            "N10_10_1"
+          ]
+        ]
+      }
+    },
+    {
+      "type": "missing_intermediate_node",
+      "affected_node": "N10_7_2",
+      "explanation": "Rule 17 violation: this node bundles carrying out the rusting experiment (setting up air/water/no-air/no-water test tubes) together with interpreting the results to conclude that both air and water are needed for rusting. These must be split into a procedure node and a separate concept/application node.",
+      "fix": {
+        "new_nodes": [
+          {
+            "id": "N10_7_2b",
+            "label": "Interpreting rusting experiment results: air and water both required",
+            "subtopic": "10.3",
+            "theme": "Topic 10",
+            "difficulty": 0.35,
+            "objective": "Interpret comparative rusting experiment results to conclude that both air and water are necessary for rusting.",
+            "essentialPoints": [
+              "Rust only forms in the tube where iron is exposed to both air and water",
+              "Absence of rust in the air-only or water-only (no air) tubes shows both substances are required"
+            ],
+            "specRefs": [
+              "4.10.3.1"
+            ],
+            "kind": "application",
+            "practicalIds": []
+          }
+        ],
+        "new_edges": [
+          [
+            "N10_7_2",
+            "N10_7_2b"
+          ],
+          [
+            "N10_7_2b",
+            "N10_7_3"
+          ]
+        ]
+      }
+    }
+  ],
+  "removeNodeIds": [],
+  "upsertNodes": [
+    {
+      "id": "N10_7_2",
+      "label": "Setting up experiments to test conditions needed for rusting",
+      "subtopic": "10.3",
+      "theme": "Topic 10",
+      "difficulty": 0.3,
+      "objective": "Describe how to set up experiments to test which conditions (air, water) are necessary for rusting.",
+      "essentialPoints": [
+        "Set up test tubes with iron exposed to: air+water, air only (dry), water only (no air, e.g. boiled/oil-sealed)"
+      ],
+      "specRefs": [
+        "4.10.3.1"
+      ],
+      "kind": "procedure",
+      "practicalIds": []
+    },
+    {
+      "id": "N10_7_2b",
+      "label": "Interpreting rusting experiment results: air and water both required",
+      "subtopic": "10.3",
+      "theme": "Topic 10",
+      "difficulty": 0.35,
+      "objective": "Interpret comparative rusting experiment results to conclude that both air and water are necessary for rusting.",
+      "essentialPoints": [
+        "Rust only forms in the tube where iron is exposed to both air and water",
+        "Absence of rust in the air-only or water-only (no air) tubes shows both substances are required"
+      ],
+      "specRefs": [
+        "4.10.3.1"
+      ],
+      "kind": "application",
+      "practicalIds": []
+    }
+  ],
+  "removeEdges": [
+    [
+      "N10_11_1",
+      "N10_10_1"
+    ]
+  ],
+  "addEdges": [
+    [
+      "N10_7_2",
+      "N10_7_2b"
+    ],
+    [
+      "N10_7_2b",
+      "N10_7_3"
+    ]
+  ],
+  "remainingProblems": [
+    "N10_4_5 and N10_6_5 bundle advantages and disadvantages within single evaluation nodes (rule 7); consider splitting into separate benefit/drawback nodes in a future pass.",
+    "N10_11_5 (required practical) has no cross-topic prerequisite edge to earlier acid-base/titration/neutralisation concept nodes from Topic 6, since those nodes are outside this batch's node set."
+  ]
+}

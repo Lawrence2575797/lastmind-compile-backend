@@ -1,0 +1,138 @@
+{
+ "id": "gen",
+ "subject": "Economics",
+ "title": "Exchange rate systems",
+ "terms": {
+  "curr_price": {
+   "label": "Price of a currency"
+  },
+  "EXRATE_FLOATING": {
+   "label": "Floating exchange rate"
+  },
+  "TRADE_PATTERN_EXRATE": {
+   "label": "Exchange rates and trade flows"
+  },
+  "CA_DEFICIT_CAUSE_EXRATE": {
+   "label": "Overvalued rate causing a deficit"
+  },
+  "EXRATE_FIXED": {
+   "label": "Fixed exchange rate"
+  },
+  "EXRATE_MANAGED": {
+   "label": "Managed exchange rate"
+  }
+ },
+ "stages": [
+  {
+   "name": "Exchange rate systems",
+   "title": "Exchange rate systems",
+   "sub": "How exchange rates are set, and how they affect trade and the current account.",
+   "steps": [
+    {
+     "type": "ask",
+     "q": "Lots of people want to buy pounds today, but few people want to sell them. In an open market with no government involved, what happens to the price of the pound?",
+     "right": "It rises, because demand exceeds supply",
+     "wrong": "It stays the same, because only the government can move it",
+     "hint": "Think about any market: if buyers outnumber sellers at the current price, what does the price do?",
+     "pre": "So a currency, like any good, has a",
+     "term": "curr_price"
+    },
+    {
+     "type": "ask",
+     "q": "A government decides never to intervene, so that price you just worked out is left to move purely with demand and supply, day to day. What kind of system is this?",
+     "right": "One where the market alone sets the rate",
+     "wrong": "One where the government sets the rate",
+     "hint": "If nobody steps in to hold the price still, who is actually deciding it?",
+     "pre": "So when a currency's price is left entirely to demand and supply, that is a",
+     "term": "EXRATE_FLOATING"
+    },
+    {
+     "type": "ask",
+     "q": "The pound falls in value, so UK goods become cheaper for foreign buyers and foreign goods become more expensive for UK buyers. What is likely to happen to UK exports and imports?",
+     "right": "Exports rise, imports fall",
+     "wrong": "Exports fall, imports rise",
+     "hint": "If UK goods are now cheaper abroad, do foreigners buy more or less of them?",
+     "pre": "So a change in a currency's value changes trade flows. That is",
+     "term": "TRADE_PATTERN_EXRATE"
+    },
+    {
+     "type": "ask",
+     "q": "The pound is trading well above the level demand and supply would normally give it, so UK exports look expensive abroad and imports look cheap at home. What does this do to the gap between what the UK earns from exports and spends on imports?",
+     "right": "It widens the gap, with more spent on imports than earned from exports",
+     "wrong": "It closes the gap, balancing exports and imports",
+     "hint": "Expensive exports sell less, cheap imports sell more. Where does that leave the trade balance?",
+     "pre": "So a currency priced too high can be the",
+     "term": "CA_DEFICIT_CAUSE_EXRATE"
+    },
+    {
+     "type": "order",
+     "terms": [
+      "curr_price",
+      "EXRATE_FLOATING",
+      "TRADE_PATTERN_EXRATE",
+      "CA_DEFICIT_CAUSE_EXRATE"
+     ],
+     "prompt": "Drag and drop the 4 key terms in the order they build on each other."
+    },
+    {
+     "type": "ask",
+     "q": "A country's central bank announces the currency will always be exchanged at exactly 5 units per dollar, and it will buy or sell its own currency to keep it there. Can the price of this currency move with demand and supply?",
+     "right": "No, it is held at the announced level",
+     "wrong": "Yes, it still moves freely each day",
+     "hint": "If the bank always intervenes to hold the rate at one number, can the market push it elsewhere?",
+     "pre": "So a currency held at one announced level by the central bank is a",
+     "term": "EXRATE_FIXED"
+    },
+    {
+     "type": "ask",
+     "q": "A central bank normally lets its currency move with demand and supply, but occasionally buys or sells it to stop sharp swings. Is this the same as always fixing it at one level, or always leaving it alone?",
+     "right": "Neither, it mostly floats but is sometimes steered",
+     "wrong": "It is the same as always fixing it at one level",
+     "hint": "The bank does not announce one fixed number, but it does not always stay hands-off either.",
+     "pre": "A currency that mostly floats but is occasionally steered by the central bank is a",
+     "term": "EXRATE_MANAGED"
+    },
+    {
+     "type": "derive"
+    }
+   ],
+   "given": [],
+   "needs": [],
+   "builds": [],
+   "nodes": [
+    "EXRATE_FLOATING",
+    "TRADE_PATTERN_EXRATE",
+    "CA_DEFICIT_CAUSE_EXRATE",
+    "EXRATE_FIXED",
+    "EXRATE_MANAGED"
+   ],
+   "dropped": [],
+   "edges": [
+    [
+     "EXRATE_FLOATING",
+     "CA_DEFICIT_CAUSE_EXRATE"
+    ],
+    [
+     "EXRATE_FIXED",
+     "EXRATE_MANAGED"
+    ],
+    [
+     "EXRATE_FLOATING",
+     "EXRATE_MANAGED"
+    ],
+    [
+     "EXRATE_FLOATING",
+     "TRADE_PATTERN_EXRATE"
+    ],
+    [
+     "curr_price",
+     "EXRATE_FLOATING"
+    ],
+    [
+     "EXRATE_FLOATING",
+     "CA_DEFICIT_CAUSE_EXRATE"
+    ]
+   ]
+  }
+ ]
+}

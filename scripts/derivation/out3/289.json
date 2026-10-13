@@ -1,0 +1,135 @@
+{
+ "id": "gen",
+ "subject": "Economics",
+ "title": "Utility and demand",
+ "terms": {
+  "UTILITY_DEF": {
+   "label": "Utility"
+  },
+  "util_max": {
+   "label": "Utility maximisation"
+  },
+  "demand_def": {
+   "label": "Demand"
+  },
+  "law_of_demand": {
+   "label": "Law of demand"
+  },
+  "dim_marg_utility": {
+   "label": "Diminishing marginal utility"
+  },
+  "rationality_assumption": {
+   "label": "The rationality assumption in economics"
+  }
+ },
+ "stages": [
+  {
+   "name": "Utility and demand",
+   "title": "Utility and demand",
+   "sub": "Why buyers want things, and how price changes what they buy.",
+   "steps": [
+    {
+     "type": "ask",
+     "q": "You eat a slice of cake and enjoy it. What have you actually gained from eating it?",
+     "right": "Satisfaction from consuming it",
+     "wrong": "Energy to sell on later",
+     "hint": "Think about why anyone eats the cake in the first place.",
+     "pre": "The satisfaction gained from consuming a good or service is called",
+     "term": "UTILITY_DEF"
+    },
+    {
+     "type": "ask",
+     "q": "You are rational and have limited money to spend on many things. What will you try to do with it?",
+     "right": "Get as much satisfaction as possible",
+     "wrong": "Spend as little of it as possible",
+     "hint": "You already know consumers behave rationally. What would a rational spender aim for?",
+     "pre": "So consumers are assumed to aim to",
+     "term": "util_max"
+    },
+    {
+     "type": "ask",
+     "q": "You eat a second slice of cake straight after the first. Does it give you as much extra satisfaction as the first slice did?",
+     "right": "No, less extra satisfaction",
+     "wrong": "Yes, exactly the same extra satisfaction",
+     "hint": "Think about how full you already are after the first slice.",
+     "pre": "So each extra slice adds less satisfaction than the one before. That is",
+     "term": "dim_marg_utility"
+    },
+    {
+     "type": "ask",
+     "q": "Buyers each have some quantity of cake they are willing and able to buy at every possible price. What does that describe?",
+     "right": "Buyers' willingness and ability to buy at each price",
+     "wrong": "Bakers' willingness to bake at each price",
+     "hint": "Is this about people buying cake, or people making cake?",
+     "pre": "That quantity at each price is called",
+     "term": "demand_def"
+    },
+    {
+     "type": "order",
+     "terms": [
+      "UTILITY_DEF",
+      "util_max",
+      "dim_marg_utility",
+      "demand_def"
+     ],
+     "prompt": "Drag and drop the 4 key terms in the order they build on each other."
+    },
+    {
+     "type": "ask",
+     "q": "The price of cake rises from £2 to £4 and nothing else changes. What happens to the quantity bought?",
+     "right": "It falls",
+     "wrong": "It rises",
+     "hint": "Would you buy more or fewer cakes at double the price?",
+     "pre": "So price and quantity demanded move in opposite directions. That is the",
+     "term": "law_of_demand"
+    },
+    {
+     "type": "derive"
+    }
+   ],
+   "given": [
+    "rationality_assumption"
+   ],
+   "needs": [
+    "rationality_assumption"
+   ],
+   "builds": [
+    "rationality_assumption"
+   ],
+   "nodes": [
+    "UTILITY_DEF",
+    "util_max",
+    "demand_def",
+    "law_of_demand",
+    "dim_marg_utility"
+   ],
+   "dropped": [],
+   "edges": [
+    [
+     "demand_def",
+     "law_of_demand"
+    ],
+    [
+     "util_max",
+     "dim_marg_utility"
+    ],
+    [
+     "UTILITY_DEF",
+     "util_max"
+    ],
+    [
+     "util_max",
+     "demand_def"
+    ],
+    [
+     "rationality_assumption",
+     "util_max"
+    ],
+    [
+     "rationality_assumption",
+     "util_max"
+    ]
+   ]
+  }
+ ]
+}

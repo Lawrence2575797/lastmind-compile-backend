@@ -1,0 +1,143 @@
+{
+ "id": "gen",
+ "subject": "Economics",
+ "title": "Diseconomies of scale",
+ "terms": {
+  "INT_DISECON": {
+   "label": "Internal diseconomies of scale"
+  },
+  "EXT_DISECON": {
+   "label": "External diseconomies of scale"
+  },
+  "COMM_DISECON": {
+   "label": "Communication diseconomies"
+  },
+  "COORD_DISECON": {
+   "label": "Coordination diseconomies"
+  },
+  "MOTIV_DISECON": {
+   "label": "Motivational diseconomies"
+  },
+  "DISECON_SCALE_DEF": {
+   "label": "Diseconomies of scale (LRAC rises as output rises)"
+  }
+ },
+ "stages": [
+  {
+   "name": "Diseconomies of scale",
+   "title": "Diseconomies of scale",
+   "sub": "Why growing too big can push a firm's average costs back up, from inside the firm and across the whole industry.",
+   "steps": [
+    {
+     "type": "ask",
+     "q": "A bakery grows from 1 site to 50 sites. Its own management structure becomes slow and costly to run, and its LRAC starts rising. Is the cause something happening inside this one firm, or something happening to every firm in the baking industry at once?",
+     "right": "Something inside this one firm",
+     "wrong": "Something hitting every firm in the industry",
+     "hint": "The other 49 bakeries in the country are not affected by this firm's own management problems.",
+     "pre": "A rise in LRAC caused by problems within the growing firm itself is called",
+     "term": "INT_DISECON"
+    },
+    {
+     "type": "ask",
+     "q": "Now imagine hundreds of firms in the same industry all expand together, so they all compete for the same limited local workers and raw materials, pushing wages and material costs up for every firm. Is this caused by one firm's own size, or by the industry growing as a whole?",
+     "right": "By the industry growing as a whole",
+     "wrong": "By that one firm's own size",
+     "hint": "Even a firm that has not grown itself would still face these higher wages and material costs.",
+     "pre": "A rise in LRAC caused by the whole industry expanding is called",
+     "term": "EXT_DISECON"
+    },
+    {
+     "type": "ask",
+     "q": "Back inside the 50-site bakery: messages from head office now pass through many layers of managers before reaching bakers on the ground, and instructions arrive late or muddled. Does this make the firm run more efficiently, or less?",
+     "right": "Less efficiently",
+     "wrong": "More efficiently",
+     "hint": "Think about a message passed through ten people before it reaches the person who needs it.",
+     "pre": "Rising costs from messages getting lost or distorted as a firm grows are",
+     "term": "COMM_DISECON"
+    },
+    {
+     "type": "ask",
+     "q": "With so many sites, senior managers can no longer closely monitor what happens in each bakery, so mistakes and waste go unnoticed for longer. Does this make it easier or harder for managers to keep control of costs?",
+     "right": "Harder to keep control",
+     "wrong": "Easier to keep control",
+     "hint": "One manager watching 50 sites versus one manager watching 1 site.",
+     "pre": "Rising costs from managers struggling to supervise and control a larger firm are",
+     "term": "COORD_DISECON"
+    },
+    {
+     "type": "order",
+     "terms": [
+      "INT_DISECON",
+      "EXT_DISECON",
+      "COMM_DISECON",
+      "COORD_DISECON"
+     ],
+     "prompt": "Drag and drop the 4 key terms in the order they build on each other."
+    },
+    {
+     "type": "ask",
+     "q": "Workers on the factory floor now feel like a small, unnoticed part of a huge organisation, so they put in less effort than when the bakery was small. Does this raise or lower output per worker, pushing costs up or down?",
+     "right": "Lowers output per worker, pushing costs up",
+     "wrong": "Raises output per worker, pushing costs down",
+     "hint": "Feeling anonymous and undervalued tends to change how hard people work, not always for the better.",
+     "pre": "Rising costs from workers feeling less valued and less motivated in a larger firm are",
+     "term": "MOTIV_DISECON"
+    },
+    {
+     "type": "derive"
+    }
+   ],
+   "given": [
+    "DISECON_SCALE_DEF"
+   ],
+   "needs": [
+    "DISECON_SCALE_DEF"
+   ],
+   "builds": [
+    "DISECON_SCALE_DEF"
+   ],
+   "nodes": [
+    "INT_DISECON",
+    "EXT_DISECON",
+    "COMM_DISECON",
+    "COORD_DISECON",
+    "MOTIV_DISECON"
+   ],
+   "dropped": [],
+   "edges": [
+    [
+     "INT_DISECON",
+     "COMM_DISECON"
+    ],
+    [
+     "INT_DISECON",
+     "COORD_DISECON"
+    ],
+    [
+     "INT_DISECON",
+     "MOTIV_DISECON"
+    ],
+    [
+     "DISECON_SCALE_DEF",
+     "INT_DISECON"
+    ],
+    [
+     "DISECON_SCALE_DEF",
+     "EXT_DISECON"
+    ],
+    [
+     "INT_DISECON",
+     "COMM_DISECON"
+    ],
+    [
+     "INT_DISECON",
+     "COORD_DISECON"
+    ],
+    [
+     "INT_DISECON",
+     "MOTIV_DISECON"
+    ]
+   ]
+  }
+ ]
+}

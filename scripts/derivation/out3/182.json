@@ -1,0 +1,153 @@
+{
+ "id": "gen",
+ "subject": "Economics",
+ "title": "Impact of protectionism on government",
+ "terms": {
+  "tariff_rev": {
+   "label": "Tariff revenue"
+  },
+  "foreign_retaliate": {
+   "label": "Foreign retaliation"
+  },
+  "export_fall": {
+   "label": "Exports fall"
+  },
+  "wto_dispute": {
+   "label": "WTO dispute action"
+  },
+  "PROT_IMPACT_GOVT": {
+   "label": "Impact on government"
+  },
+  "TARIFF_DEF": {
+   "label": "Tariff"
+  },
+  "WTO_ROLE": {
+   "label": "Role of the WTO"
+  }
+ },
+ "stages": [
+  {
+   "name": "Impact of protectionism on government",
+   "title": "Impact of protectionism on government",
+   "sub": "Weigh up why a government might gain and lose from putting up a tariff.",
+   "steps": [
+    {
+     "type": "ask",
+     "q": "A government puts a £50 tariff on every imported car. Cars still get imported. Does the government collect any money from this?",
+     "right": "Yes, money from every car brought in",
+     "wrong": "No, tariffs cost the government money",
+     "hint": "Who pays the tariff at the border, and where does that payment go?",
+     "pre": "So the government collects",
+     "term": "tariff_rev"
+    },
+    {
+     "type": "ask",
+     "q": "Another country's car industry is badly hurt by this tariff. Is their government likely to just accept the lost sales?",
+     "right": "No, it will likely hit back with its own tariffs",
+     "wrong": "Yes, it will accept the loss quietly",
+     "hint": "If your exports were suddenly blocked, would your government sit still?",
+     "pre": "So the tariff can trigger",
+     "term": "foreign_retaliate"
+    },
+    {
+     "type": "ask",
+     "q": "That other country now places tariffs on the first country's exports. What happens to those exports?",
+     "right": "They fall",
+     "wrong": "They stay the same",
+     "hint": "If your goods now cost more abroad because of a new tariff, what happens to sales there?",
+     "pre": "So the first country's",
+     "term": "export_fall"
+    },
+    {
+     "type": "ask",
+     "q": "The harmed trading partner could instead take the tariff to the body that settles trade disagreements. What might it do there?",
+     "right": "Bring a formal dispute case",
+     "wrong": "Ignore the rules body entirely",
+     "hint": "Think about what the WTO exists to handle between arguing countries.",
+     "pre": "So the partner may bring a",
+     "term": "wto_dispute"
+    },
+    {
+     "type": "order",
+     "terms": [
+      "tariff_rev",
+      "foreign_retaliate",
+      "export_fall",
+      "wto_dispute"
+     ],
+     "prompt": "Drag and drop the 4 key terms in the order they build on each other."
+    },
+    {
+     "type": "ask",
+     "q": "So does a tariff leave a government simply better off, or gaining revenue while risking retaliation?",
+     "right": "Gaining revenue while risking retaliation",
+     "wrong": "Simply better off with no real risk",
+     "hint": "Weigh the money collected against lost exports and possible disputes.",
+     "pre": "This overall balance is the",
+     "term": "PROT_IMPACT_GOVT"
+    },
+    {
+     "type": "derive"
+    }
+   ],
+   "given": [
+    "TARIFF_DEF",
+    "WTO_ROLE"
+   ],
+   "needs": [
+    "TARIFF_DEF",
+    "WTO_ROLE"
+   ],
+   "builds": [
+    "TARIFF_DEF",
+    "WTO_ROLE"
+   ],
+   "nodes": [
+    "PROT_IMPACT_GOVT"
+   ],
+   "dropped": [],
+   "edges": [
+    [
+     "TARIFF_DEF",
+     "PROT_IMPACT_GOVT"
+    ],
+    [
+     "WTO_ROLE",
+     "PROT_IMPACT_GOVT"
+    ],
+    [
+     "TARIFF_DEF",
+     "tariff_rev"
+    ],
+    [
+     "tariff_rev",
+     "PROT_IMPACT_GOVT"
+    ],
+    [
+     "TARIFF_DEF",
+     "foreign_retaliate"
+    ],
+    [
+     "foreign_retaliate",
+     "export_fall"
+    ],
+    [
+     "foreign_retaliate",
+     "wto_dispute"
+    ],
+    [
+     "WTO_ROLE",
+     "wto_dispute"
+    ],
+    [
+     "export_fall",
+     "PROT_IMPACT_GOVT"
+    ],
+    [
+     "wto_dispute",
+     "PROT_IMPACT_GOVT"
+    ]
+   ]
+  }
+ ]
+}

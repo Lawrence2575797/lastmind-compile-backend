@@ -1,0 +1,125 @@
+{
+ "id": "gen",
+ "subject": "Economics",
+ "title": "Irrational behaviour",
+ "terms": {
+  "bounded_rationality": {
+   "label": "Bounded rationality"
+  },
+  "irrational_herd": {
+   "label": "Herd behaviour"
+  },
+  "irrational_habit": {
+   "label": "Habitual behaviour"
+  },
+  "irrational_computation": {
+   "label": "Weakness at computation"
+  },
+  "rationality_assumption": {
+   "label": "Rationality assumption"
+  }
+ },
+ "stages": [
+  {
+   "name": "Irrational behaviour",
+   "title": "Irrational behaviour",
+   "sub": "See three ways real buyers depart from the rationality assumption.",
+   "steps": [
+    {
+     "type": "ask",
+     "q": "The rationality assumption says people weigh every option perfectly. In real life, do shoppers have unlimited time and brainpower to check every option, or only a limited amount?",
+     "right": "Only a limited amount",
+     "wrong": "An unlimited amount",
+     "hint": "Think about how long you actually spend comparing products in a shop.",
+     "pre": "So real decision-making is limited by",
+     "term": "bounded_rationality"
+    },
+    {
+     "type": "ask",
+     "q": "A new coffee shop opens next to one that has been empty for months. You see a long queue outside the new one and decide to join it without checking the menu. Are you weighing up your own costs and benefits, or copying what others are doing?",
+     "right": "Copying what others are doing",
+     "wrong": "Weighing up my own costs and benefits",
+     "hint": "Did you compare the two shops yourself, or just follow the crowd?",
+     "pre": "Being swayed by what other people are buying is the",
+     "term": "irrational_herd"
+    },
+    {
+     "type": "ask",
+     "q": "You have bought the same brand of cereal every week for ten years. A cheaper, equally good brand appears next to it. Do you stop and recalculate which is best, or just pick up the usual box?",
+     "right": "Just pick up the usual box",
+     "wrong": "Stop and recalculate the best",
+     "hint": "Are you actually comparing the two boxes each week, or acting on routine?",
+     "pre": "Sticking with what you always do, rather than reassessing, is the",
+     "term": "irrational_habit"
+    },
+    {
+     "type": "ask",
+     "q": "A shop offers a loan at 2% interest per month. Most shoppers cannot quickly work out that this comes to over 25% a year, so it looks cheap to them. Are shoppers correctly working out the true cost, or misjudging the true cost?",
+     "right": "Misjudging the true cost",
+     "wrong": "Correctly working the true cost",
+     "hint": "Can most people multiply out a monthly rate into a true yearly cost in their head?",
+     "pre": "Struggling to work out the real costs and benefits is consumer",
+     "term": "irrational_computation"
+    },
+    {
+     "type": "order",
+     "terms": [
+      "bounded_rationality",
+      "irrational_herd",
+      "irrational_habit",
+      "irrational_computation"
+     ],
+     "prompt": "Drag and drop the 4 key terms in the order they build on each other."
+    },
+    {
+     "type": "derive"
+    }
+   ],
+   "given": [
+    "rationality_assumption"
+   ],
+   "needs": [
+    "rationality_assumption"
+   ],
+   "builds": [
+    "rationality_assumption"
+   ],
+   "nodes": [
+    "irrational_herd",
+    "irrational_habit",
+    "irrational_computation"
+   ],
+   "dropped": [],
+   "edges": [
+    [
+     "rationality_assumption",
+     "irrational_herd"
+    ],
+    [
+     "rationality_assumption",
+     "irrational_habit"
+    ],
+    [
+     "rationality_assumption",
+     "irrational_computation"
+    ],
+    [
+     "rationality_assumption",
+     "bounded_rationality"
+    ],
+    [
+     "bounded_rationality",
+     "irrational_herd"
+    ],
+    [
+     "bounded_rationality",
+     "irrational_habit"
+    ],
+    [
+     "bounded_rationality",
+     "irrational_computation"
+    ]
+   ]
+  }
+ ]
+}

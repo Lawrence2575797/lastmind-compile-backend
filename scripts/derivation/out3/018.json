@@ -1,0 +1,159 @@
+{
+ "id": "gen",
+ "subject": "Economics",
+ "title": "Public goods",
+ "terms": {
+  "non_rivalry": {
+   "label": "Non-rivalry"
+  },
+  "non_excludability": {
+   "label": "Non-excludability"
+  },
+  "public_vs_private_goods": {
+   "label": "Public vs private goods"
+  },
+  "free_rider_problem": {
+   "label": "Free rider problem"
+  },
+  "public_goods_underprovision": {
+   "label": "Under-provision of public goods"
+  },
+  "market_failure_def": {
+   "label": "Market failure"
+  }
+ },
+ "stages": [
+  {
+   "name": "Public goods",
+   "title": "Public goods",
+   "sub": "Why the free market fails to provide public goods at all.",
+   "steps": [
+    {
+     "type": "ask",
+     "q": "A street light shines for one passer-by. Does that use up light for the next person who walks by?",
+     "right": "No, there is just as much light left for them",
+     "wrong": "Yes, there is less light left for them",
+     "hint": "Think about whether one person looking at the light stops another person seeing it too.",
+     "pre": "So one person's use does not reduce what is left for others. That is",
+     "term": "non_rivalry"
+    },
+    {
+     "type": "ask",
+     "q": "A council puts up a street light on a public road. Can it stop someone who won't pay council tax from benefiting?",
+     "right": "No, anyone walking past benefits either way",
+     "wrong": "Yes, it can block non-payers from the light",
+     "hint": "Is there a gate or meter that only lets paying people see the light?",
+     "pre": "So it is impossible to stop non-payers from consuming it. That is",
+     "term": "non_excludability"
+    },
+    {
+     "type": "ask",
+     "q": "An ice cream is used up, and the shop can withhold it until you pay. Does a street light share both features?",
+     "right": "No, the street light lacks both features",
+     "wrong": "Yes, the street light works the same way",
+     "hint": "Think back to what you found for the light: could use be limited, and could non-payers be blocked?",
+     "pre": "Goods differ in whether they show these two features. This split is the",
+     "term": "public_vs_private_goods"
+    },
+    {
+     "type": "ask",
+     "q": "Nobody can be stopped from enjoying the street light, paying or not. Would a rational person pay towards it, or wait for others?",
+     "right": "Wait and let others pay for it",
+     "wrong": "Pay their fair share anyway",
+     "hint": "If you get the benefit either way, what is the incentive to hand over money?",
+     "pre": "Everyone benefiting while avoiding payment is the",
+     "term": "free_rider_problem"
+    },
+    {
+     "type": "order",
+     "terms": [
+      "non_rivalry",
+      "non_excludability",
+      "public_vs_private_goods",
+      "free_rider_problem"
+     ],
+     "prompt": "Drag and drop the 4 key terms in the order they build on each other."
+    },
+    {
+     "type": "ask",
+     "q": "If a private firm knows almost nobody will pay for the street lights it builds, will it have any reason to build them?",
+     "right": "No, it will provide little or none",
+     "wrong": "Yes, it will still build plenty",
+     "hint": "Would a firm keep supplying something it cannot get paid for?",
+     "pre": "So the free market provides far too few, or none at all. Since this missing market means resources are not allocated efficiently, this is a type of",
+     "term": "public_goods_underprovision"
+    },
+    {
+     "type": "derive"
+    }
+   ],
+   "given": [
+    "market_failure_def"
+   ],
+   "needs": [
+    "market_failure_def"
+   ],
+   "builds": [
+    "market_failure_def"
+   ],
+   "nodes": [
+    "non_rivalry",
+    "non_excludability",
+    "public_vs_private_goods",
+    "free_rider_problem",
+    "public_goods_underprovision"
+   ],
+   "dropped": [],
+   "edges": [
+    [
+     "non_rivalry",
+     "public_vs_private_goods"
+    ],
+    [
+     "non_excludability",
+     "public_vs_private_goods"
+    ],
+    [
+     "non_excludability",
+     "free_rider_problem"
+    ],
+    [
+     "public_vs_private_goods",
+     "free_rider_problem"
+    ],
+    [
+     "free_rider_problem",
+     "public_goods_underprovision"
+    ],
+    [
+     "market_failure_def",
+     "public_goods_underprovision"
+    ],
+    [
+     "non_rivalry",
+     "public_vs_private_goods"
+    ],
+    [
+     "non_excludability",
+     "public_vs_private_goods"
+    ],
+    [
+     "non_excludability",
+     "free_rider_problem"
+    ],
+    [
+     "public_vs_private_goods",
+     "free_rider_problem"
+    ],
+    [
+     "free_rider_problem",
+     "public_goods_underprovision"
+    ],
+    [
+     "market_failure_def",
+     "public_goods_underprovision"
+    ]
+   ]
+  }
+ ]
+}

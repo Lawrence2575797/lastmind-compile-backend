@@ -1,0 +1,105 @@
+{
+ "id": "gen",
+ "subject": "Economics",
+ "title": "Government intervention in currency markets",
+ "terms": {
+  "hotmoney": {
+   "label": "Hot money flows"
+  },
+  "cap_inflow": {
+   "label": "Capital inflow"
+  },
+  "currency_demand_up": {
+   "label": "Higher currency demand"
+  },
+  "GOVT_INTERVENTION_RATES": {
+   "label": "Interest rate intervention"
+  },
+  "EXRATE_FLOAT_FACTORS_INTEREST": {
+   "label": "Factor influencing floating exchange rates: relative interest rates and hot money flows"
+  }
+ },
+ "stages": [
+  {
+   "name": "Government intervention in currency markets",
+   "title": "Government intervention in currency markets",
+   "sub": "How a government can use interest rates to move its exchange rate.",
+   "steps": [
+    {
+     "type": "ask",
+     "q": "A UK bank account suddenly pays 6% interest while similar accounts abroad pay 1%. Where will short-term savers around the world want to move their money?",
+     "right": "Into the UK, chasing the higher return",
+     "wrong": "Away from the UK, avoiding the change",
+     "hint": "Savers move cash quickly to wherever it earns most, they are not tied to one country.",
+     "pre": "Short-term speculative money chasing the best return is called",
+     "term": "hotmoney"
+    },
+    {
+     "type": "ask",
+     "q": "As this money moves abroad into UK accounts, what has to happen for savers to actually hold pounds?",
+     "right": "They must buy pounds, sending money into the UK",
+     "wrong": "They must sell pounds, sending money out of the UK",
+     "hint": "To put savings into a UK account, what currency must the saver first buy?",
+     "pre": "Buying pounds to place funds in the UK is a",
+     "term": "cap_inflow"
+    },
+    {
+     "type": "ask",
+     "q": "If large amounts of foreign money are flowing in to buy pounds, what happens to demand for the pound on the foreign exchange market?",
+     "right": "Demand for the pound rises",
+     "wrong": "Demand for the pound falls",
+     "hint": "Every inflow into pound accounts starts with someone buying pounds.",
+     "pre": "So the capital inflow creates",
+     "term": "currency_demand_up"
+    },
+    {
+     "type": "ask",
+     "q": "A government wants its currency to appreciate. Given that raising interest rates attracts hot money and pushes up demand for the currency, what tool could it use on purpose?",
+     "right": "Raise domestic interest rates to attract inflows",
+     "wrong": "Raise domestic taxes to reduce spending",
+     "hint": "Which of these two policies directly changes the return savers get on holding the currency?",
+     "pre": "Deliberately changing rates to attract or deter capital flows and move the exchange rate is",
+     "term": "GOVT_INTERVENTION_RATES"
+    },
+    {
+     "type": "derive"
+    }
+   ],
+   "given": [
+    "EXRATE_FLOAT_FACTORS_INTEREST"
+   ],
+   "needs": [
+    "EXRATE_FLOAT_FACTORS_INTEREST"
+   ],
+   "builds": [
+    "EXRATE_FLOAT_FACTORS_INTEREST"
+   ],
+   "nodes": [
+    "GOVT_INTERVENTION_RATES"
+   ],
+   "dropped": [],
+   "edges": [
+    [
+     "EXRATE_FLOAT_FACTORS_INTEREST",
+     "GOVT_INTERVENTION_RATES"
+    ],
+    [
+     "EXRATE_FLOAT_FACTORS_INTEREST",
+     "hotmoney"
+    ],
+    [
+     "hotmoney",
+     "cap_inflow"
+    ],
+    [
+     "cap_inflow",
+     "currency_demand_up"
+    ],
+    [
+     "currency_demand_up",
+     "GOVT_INTERVENTION_RATES"
+    ]
+   ]
+  }
+ ]
+}

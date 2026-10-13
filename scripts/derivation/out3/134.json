@@ -1,0 +1,279 @@
+{
+ "id": "gen",
+ "subject": "Economics",
+ "title": "Market structures: barriers and monopoly",
+ "terms": {
+  "legal_barrier": {
+   "label": "Legal barrier"
+  },
+  "natural_barrier": {
+   "label": "Natural barrier"
+  },
+  "strategic_barrier": {
+   "label": "Strategic barrier"
+  },
+  "barriers_entry_exit": {
+   "label": "Barriers to entry and exit"
+  },
+  "sunk_costs": {
+   "label": "Sunk costs"
+  },
+  "contestability": {
+   "label": "Contestability"
+  },
+  "oligopoly_barriers": {
+   "label": "Oligopoly: high barriers"
+  },
+  "monopoly_char": {
+   "label": "Characteristics of monopoly"
+  },
+  "monopoly_eq": {
+   "label": "Monopoly equilibrium"
+  },
+  "profit_max_rule": {
+   "label": "Profit maximisation: MC=MR"
+  }
+ },
+ "stages": [
+  {
+   "name": "Market structures: barriers and monopoly",
+   "title": "Market structures: barriers and monopoly",
+   "sub": "Explain why some markets stay closed to new firms, and derive the monopoly profit-maximising equilibrium.",
+   "steps": [
+    {
+     "type": "ask",
+     "q": "A new firm wants to sell electricity but needs a government licence it cannot get. What is stopping it entering?",
+     "right": "A rule set by government or regulators",
+     "wrong": "The cost of building power stations",
+     "hint": "Think about who controls the licence, not the cost of equipment.",
+     "pre": "That kind of barrier, created by law or regulation, is a",
+     "term": "legal_barrier"
+    },
+    {
+     "type": "ask",
+     "q": "A water pipe network only makes sense if one firm builds it, since laying a second set of pipes down every street would be wasteful. What is stopping a rival entering?",
+     "right": "The way the industry itself is structured",
+     "wrong": "A rule set by government or regulators",
+     "hint": "No law bans a rival here. What about the industry makes duplication pointless?",
+     "pre": "That kind of barrier, arising from the industry itself, is a",
+     "term": "natural_barrier"
+    },
+    {
+     "type": "ask",
+     "q": "An existing airline drops its prices to a loss-making level whenever a new airline tries to enter its routes, then raises them again once the new airline leaves. What is stopping entry now?",
+     "right": "Deliberate action by the existing firm",
+     "wrong": "A rule set by government or regulators",
+     "hint": "Is this happening because of a law, or because of what the existing firm chooses to do?",
+     "pre": "That kind of barrier, created on purpose by firms already in the market, is a",
+     "term": "strategic_barrier"
+    },
+    {
+     "type": "order",
+     "terms": [
+      "legal_barrier",
+      "natural_barrier",
+      "strategic_barrier"
+     ],
+     "prompt": "Drag and drop the 3 key terms in the order they were introduced."
+    },
+    {
+     "type": "ask",
+     "q": "Licences, one-firm-only industries and price wars all make it hard for a new firm to get in or get out safely. What do all three count as, together?",
+     "right": "Different obstacles facing entry and exit",
+     "wrong": "Different ways firms maximise profit",
+     "hint": "Each one is a different obstacle facing a firm trying to enter or leave a market.",
+     "pre": "Together these are",
+     "term": "barriers_entry_exit"
+    },
+    {
+     "type": "ask",
+     "q": "A firm spends £2 million building a custom factory that cannot be resold or used for anything else. If it later leaves the market, can it get that £2 million back?",
+     "right": "No, it is lost for good",
+     "wrong": "Yes, it can sell the factory on",
+     "hint": "The factory has no other use and no buyer. What happens to money spent on it?",
+     "pre": "Money spent that cannot be recovered on leaving is a",
+     "term": "sunk_costs"
+    },
+    {
+     "type": "ask",
+     "q": "If leaving a market means losing millions that can never be recovered, how easily will firms risk entering it in the first place?",
+     "right": "Less easily, entry becomes riskier",
+     "wrong": "Just as easily, entry stays equally attractive",
+     "hint": "Think about the risk of entering if you might not get your money back on exit.",
+     "pre": "So how easy it is for new firms to enter and leave is called",
+     "term": "contestability"
+    },
+    {
+     "type": "ask",
+     "q": "An oligopoly has just a few large firms, each spending heavily on branding, factories and legal protections. Could a small new firm easily match this and break in?",
+     "right": "No, it would find entry very hard",
+     "wrong": "Yes, entry would be fairly easy",
+     "hint": "Think about the scale of spending and legal protection already in place.",
+     "pre": "So an oligopoly is marked by",
+     "term": "oligopoly_barriers"
+    },
+    {
+     "type": "order",
+     "terms": [
+      "barriers_entry_exit",
+      "sunk_costs",
+      "contestability",
+      "oligopoly_barriers"
+     ],
+     "prompt": "Drag and drop the 4 key terms in the order they build on each other."
+    },
+    {
+     "type": "ask",
+     "q": "One firm supplies all of a country's rail track, protected by law and owning resources no rival can copy. Could another firm realistically start competing and undercut its price?",
+     "right": "No, it can set the price largely alone",
+     "wrong": "Yes, competition would force its price down",
+     "hint": "With no close rival able to enter, who decides the price in this market?",
+     "pre": "A single dominant firm, protected by high barriers, able to set its own price, shows the",
+     "term": "monopoly_char"
+    },
+    {
+     "type": "ask",
+     "q": "This monopoly firm picks its profit-maximising output using the usual MC=MR rule. Once it has that output, how does it find the price to charge for each unit?",
+     "right": "Reads the price straight up from its demand curve at that output",
+     "wrong": "Sets price equal to marginal cost at that output",
+     "hint": "The firm is a price maker: which curve tells it what buyers will pay for that quantity?",
+     "pre": "Output where MC=MR, then price read off demand: this is the",
+     "term": "monopoly_eq",
+     "diagram": {
+      "x": "Quantity",
+      "y": "Price / Cost",
+      "curves": [
+       {
+        "label": "D",
+        "pts": [
+         [
+          0.08,
+          0.8
+         ],
+         [
+          0.4,
+          0.55
+         ],
+         [
+          0.9,
+          0.15
+         ]
+        ]
+       },
+       {
+        "label": "MR",
+        "pts": [
+         [
+          0.05,
+          0.65
+         ],
+         [
+          0.3,
+          0.4
+         ],
+         [
+          0.55,
+          0.1
+         ]
+        ]
+       },
+       {
+        "label": "MC",
+        "pts": [
+         [
+          0.1,
+          0.15
+         ],
+         [
+          0.5,
+          0.35
+         ],
+         [
+          0.9,
+          0.6
+         ]
+        ]
+       }
+      ],
+      "points": [
+       {
+        "label": "E",
+        "x": 0.45,
+        "y": 0.32,
+        "guides": true
+       },
+       {
+        "label": "P",
+        "x": 0.45,
+        "y": 0.5,
+        "guides": true
+       }
+      ]
+     }
+    },
+    {
+     "type": "derive"
+    }
+   ],
+   "given": [
+    "profit_max_rule"
+   ],
+   "needs": [
+    "profit_max_rule"
+   ],
+   "builds": [
+    "profit_max_rule"
+   ],
+   "nodes": [
+    "barriers_entry_exit",
+    "sunk_costs",
+    "oligopoly_barriers",
+    "monopoly_char",
+    "monopoly_eq"
+   ],
+   "dropped": [],
+   "edges": [
+    [
+     "barriers_entry_exit",
+     "sunk_costs"
+    ],
+    [
+     "barriers_entry_exit",
+     "oligopoly_barriers"
+    ],
+    [
+     "barriers_entry_exit",
+     "monopoly_char"
+    ],
+    [
+     "monopoly_char",
+     "monopoly_eq"
+    ],
+    [
+     "profit_max_rule",
+     "monopoly_eq"
+    ],
+    [
+     "legal_barrier",
+     "barriers_entry_exit"
+    ],
+    [
+     "natural_barrier",
+     "barriers_entry_exit"
+    ],
+    [
+     "strategic_barrier",
+     "barriers_entry_exit"
+    ],
+    [
+     "sunk_costs",
+     "contestability"
+    ],
+    [
+     "profit_max_rule",
+     "monopoly_eq"
+    ]
+   ]
+  }
+ ]
+}

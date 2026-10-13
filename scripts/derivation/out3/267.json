@@ -1,0 +1,216 @@
+{
+ "id": "gen",
+ "subject": "Economics",
+ "title": "Indirect taxes and subsidies",
+ "terms": {
+  "indirect_tax_def": {
+   "label": "Indirect tax"
+  },
+  "tax_shift": {
+   "label": "Tax shifts supply left"
+  },
+  "subsidy_def": {
+   "label": "Subsidy"
+  },
+  "subsidy_shift": {
+   "label": "Subsidy shifts supply right"
+  },
+  "conditions_of_supply": {
+   "label": "Conditions of supply"
+  }
+ },
+ "stages": [
+  {
+   "name": "Indirect taxes and subsidies",
+   "title": "Indirect taxes and subsidies",
+   "sub": "How government charges and payments on goods shift the supply curve.",
+   "steps": [
+    {
+     "type": "ask",
+     "q": "The government adds £1 to the price of every packet of cigarettes sold. Who actually hands that £1 over to the government, the smoker or the shop?",
+     "right": "The shop hands it over",
+     "wrong": "The smoker hands it over directly",
+     "hint": "The smoker pays the shop, then the shop deals with the government.",
+     "pre": "A charge on a good or service, paid to the government through the seller rather than straight from the buyer, is an",
+     "term": "indirect_tax_def"
+    },
+    {
+     "type": "ask",
+     "q": "With £1 extra to pay to the government on every packet, is a shop willing to supply the same amount at each price as before?",
+     "right": "No, it will supply less at each price",
+     "wrong": "Yes, supply stays exactly the same",
+     "hint": "The tax adds to the shop's cost of selling each packet, so what happens to the whole supply curve?",
+     "pre": "So costs rise and the supply curve shifts left. This is how an",
+     "term": "tax_shift",
+     "diagram": {
+      "x": "Quantity",
+      "y": "Price",
+      "curves": [
+       {
+        "label": "S1",
+        "pts": [
+         [
+          0.15,
+          0.1
+         ],
+         [
+          0.4,
+          0.45
+         ],
+         [
+          0.7,
+          0.75
+         ],
+         [
+          0.9,
+          0.9
+         ]
+        ]
+       },
+       {
+        "label": "S2",
+        "pts": [
+         [
+          0.3,
+          0.15
+         ],
+         [
+          0.5,
+          0.5
+         ],
+         [
+          0.75,
+          0.78
+         ],
+         [
+          0.9,
+          0.9
+         ]
+        ]
+       }
+      ]
+     }
+    },
+    {
+     "type": "ask",
+     "q": "The government now pays bus companies £2 for every passenger they carry. Does this raise or lower the company's cost of running each journey?",
+     "right": "It lowers the cost",
+     "wrong": "It raises the cost",
+     "hint": "The company is receiving money from the government for each passenger, not paying it out.",
+     "pre": "A payment from the government to a producer that lowers its costs is a",
+     "term": "subsidy_def"
+    },
+    {
+     "type": "ask",
+     "q": "With costs lower per journey, are bus companies willing to supply more or fewer journeys at each price than before?",
+     "right": "More journeys at each price",
+     "wrong": "Fewer journeys at each price",
+     "hint": "Lower costs make selling each unit more attractive, so which way does the whole curve move?",
+     "pre": "So costs fall and the supply curve shifts right. This is how a",
+     "term": "subsidy_shift",
+     "diagram": {
+      "x": "Quantity",
+      "y": "Price",
+      "curves": [
+       {
+        "label": "S1",
+        "pts": [
+         [
+          0.3,
+          0.15
+         ],
+         [
+          0.5,
+          0.5
+         ],
+         [
+          0.75,
+          0.78
+         ],
+         [
+          0.9,
+          0.9
+         ]
+        ]
+       },
+       {
+        "label": "S2",
+        "pts": [
+         [
+          0.15,
+          0.1
+         ],
+         [
+          0.4,
+          0.45
+         ],
+         [
+          0.7,
+          0.75
+         ],
+         [
+          0.9,
+          0.9
+         ]
+        ]
+       }
+      ]
+     }
+    },
+    {
+     "type": "order",
+     "terms": [
+      "indirect_tax_def",
+      "tax_shift",
+      "subsidy_def",
+      "subsidy_shift"
+     ],
+     "prompt": "Drag and drop the 4 key terms in the order they build on each other."
+    },
+    {
+     "type": "derive"
+    }
+   ],
+   "given": [
+    "conditions_of_supply"
+   ],
+   "needs": [
+    "conditions_of_supply"
+   ],
+   "builds": [
+    "conditions_of_supply"
+   ],
+   "nodes": [
+    "indirect_tax_def",
+    "subsidy_def"
+   ],
+   "dropped": [],
+   "edges": [
+    [
+     "conditions_of_supply",
+     "indirect_tax_def"
+    ],
+    [
+     "conditions_of_supply",
+     "subsidy_def"
+    ],
+    [
+     "conditions_of_supply",
+     "indirect_tax_def"
+    ],
+    [
+     "indirect_tax_def",
+     "tax_shift"
+    ],
+    [
+     "conditions_of_supply",
+     "subsidy_def"
+    ],
+    [
+     "subsidy_def",
+     "subsidy_shift"
+    ]
+   ]
+  }
+ ]
+}

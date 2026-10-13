@@ -1,0 +1,165 @@
+{
+ "id": "gen",
+ "subject": "Economics",
+ "title": "Opportunity cost and economic agents",
+ "terms": {
+  "choice": {
+   "label": "Choice"
+  },
+  "tradeoff": {
+   "label": "Trade-off"
+  },
+  "altuses": {
+   "label": "Alternative uses"
+  },
+  "nextbest": {
+   "label": "Next best alternative"
+  },
+  "OPPORTUNITY_COST": {
+   "label": "Opportunity cost"
+  },
+  "ECONOMIC_AGENTS": {
+   "label": "Economic agents"
+  },
+  "OPP_COST_IMPORTANCE": {
+   "label": "Importance of opportunity cost"
+  },
+  "SCARCITY": {
+   "label": "The problem of scarcity"
+  }
+ },
+ "stages": [
+  {
+   "name": "Opportunity cost and economic agents",
+   "title": "Opportunity cost and economic agents",
+   "sub": "Who faces opportunity cost, and why it matters to each of them.",
+   "steps": [
+    {
+     "type": "ask",
+     "q": "Scarcity means not everyone can have everything. So what must people, firms and governments do?",
+     "right": "Choose between the options",
+     "wrong": "Wait until there is enough for everyone",
+     "hint": "If everything cannot be had at once, what is left to do?",
+     "pre": "They have to make a",
+     "term": "choice"
+    },
+    {
+     "type": "ask",
+     "q": "When you choose one option, do you still get the ones you did not choose?",
+     "right": "No, you give them up",
+     "wrong": "Yes, all of them",
+     "hint": "You chose the phone. Can you also spend that same money on the holiday?",
+     "pre": "So every choice is a",
+     "term": "tradeoff"
+    },
+    {
+     "type": "ask",
+     "q": "Can the same land, workers and machines be used to make something else instead?",
+     "right": "Yes, many different things",
+     "wrong": "No, only one thing",
+     "hint": "Could a factory make juice or fizzy drinks with the very same resources?",
+     "pre": "So resources have",
+     "term": "altuses"
+    },
+    {
+     "type": "ask",
+     "q": "Of everything you gave up, which one do you count when judging a choice?",
+     "right": "The best one you gave up",
+     "wrong": "All of them added together",
+     "hint": "You can only have one thing instead. Which of the things you gave up would you actually have picked?",
+     "pre": "That is the",
+     "term": "nextbest"
+    },
+    {
+     "type": "order",
+     "terms": [
+      "choice",
+      "tradeoff",
+      "altuses",
+      "nextbest"
+     ],
+     "prompt": "Drag and drop the 4 key terms in the order they build on each other."
+    },
+    {
+     "type": "ask",
+     "q": "So what is the real cost of a choice?",
+     "right": "The value of the next best alternative you gave up",
+     "wrong": "The money you pay, plus the time it takes",
+     "hint": "Money is only one way of counting. What did you actually give up?",
+     "pre": "That is the",
+     "term": "OPPORTUNITY_COST"
+    },
+    {
+     "type": "ask",
+     "q": "A shopper budgets, a bakery picks bread or cakes, a government picks hospitals or roads. Do all three face the same problem?",
+     "right": "Yes, all are choosing between limited options",
+     "wrong": "No, only the government's choice counts as economic",
+     "hint": "Think about whether spending money, using ovens and using tax revenue are really different kinds of problem.",
+     "pre": "Consumers, producers and government are all",
+     "term": "ECONOMIC_AGENTS"
+    },
+    {
+     "type": "ask",
+     "q": "A government builds a hospital instead of a road. If it ignores what the road would have given, might it decide badly?",
+     "right": "Yes, it might choose badly without weighing this up",
+     "wrong": "No, only the money spent matters",
+     "hint": "The hospital's true cost is the next best alternative given up. What happens if that is ignored?",
+     "pre": "So weighing up what is given up helps every agent decide well. This is the",
+     "term": "OPP_COST_IMPORTANCE"
+    },
+    {
+     "type": "derive"
+    }
+   ],
+   "given": [
+    "SCARCITY"
+   ],
+   "needs": [
+    "SCARCITY"
+   ],
+   "builds": [
+    "SCARCITY"
+   ],
+   "nodes": [
+    "OPPORTUNITY_COST",
+    "ECONOMIC_AGENTS",
+    "OPP_COST_IMPORTANCE"
+   ],
+   "dropped": [],
+   "edges": [
+    [
+     "OPPORTUNITY_COST",
+     "OPP_COST_IMPORTANCE"
+    ],
+    [
+     "ECONOMIC_AGENTS",
+     "OPP_COST_IMPORTANCE"
+    ],
+    [
+     "SCARCITY",
+     "OPPORTUNITY_COST"
+    ],
+    [
+     "SCARCITY",
+     "choice"
+    ],
+    [
+     "choice",
+     "tradeoff"
+    ],
+    [
+     "tradeoff",
+     "nextbest"
+    ],
+    [
+     "altuses",
+     "nextbest"
+    ],
+    [
+     "nextbest",
+     "OPPORTUNITY_COST"
+    ]
+   ]
+  }
+ ]
+}

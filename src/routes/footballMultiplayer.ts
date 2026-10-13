@@ -12,9 +12,24 @@ const IDLE_MS = 24 * 60 * 60 * 1000;
 const CODE = /^[A-Z2-9]{6}$/;
 const TEAM = /^t[1-9][0-9]?$/;
 const cleanName = (v: unknown) => (typeof v === 'string' ? v.trim().replace(/[^\w\s.'-]/g, '').slice(0, 24) : '') || 'Manager';
+// The plans handed in for the round being waited for stay private until every seated manager has handed one in (or the round has been left
+// for a day): nobody can read how the other manager is going to play before committing to their own. Plans of rounds already played are open.
+const visiblePlans = (g: GameRow, userId: string) => {
+  const cur = String(g.state.round), seated = Object.keys(g.state.seats);
+  const handed = g.state.plans[cur] || {};
+  const everyone = seated.length > 0 && seated.every((t) => handed[t]);
+  const idle = !!g.state.roundAt && Date.now() - Date.parse(g.state.roundAt) > IDLE_MS;
+  const mine = Object.keys(g.state.seats).find((t) => g.state.seats[t].userId === userId) || null;
+  const out: Record<string, any> = {};
+  Object.keys(g.state.plans).forEach((r) => {
+    if (r !== cur || g.state.finished || everyone || idle) out[r] = g.state.plans[r];
+    else out[r] = mine && g.state.plans[r][mine] ? { [mine]: g.state.plans[r][mine] } : {};
+  });
+  return out;
+};
 const view = (g: GameRow, userId: string) => ({
   code: g.code, kind: g.kind, seed: g.seed, runSeed: g.runSeed, version: g.version, updatedAt: g.updatedAt,
-  state: Object.assign({}, g.state, { plans: g.state.plans }),
+  state: Object.assign({}, g.state, { plans: visiblePlans(g, userId) }),
   you: Object.keys(g.state.seats).find((t) => g.state.seats[t].userId === userId) || null,
   host: g.hostId === userId,
 });
@@ -105,10 +120,10 @@ router.post('/football-mp/submit', actionEndpointLimiter, async (req: Request, r
   }
 });
 
-// POST /football-mp/played { code, round, scores: [{id,hg,ag}], force }
+// POST /football-mp/played { code, round, scores: [{id,hg,ag}] }
 // Said by the browser that played the round. Only once every seated manager has a plan in (or the host chooses to go on without the others).
 router.post('/football-mp/played', actionEndpointLimiter, async (req: Request, res: Response) => {
-  const { code, round, scores, force } = req.body || {};
+  const { code, round, scores } = req.body || {};
   const c = String(code || '').toUpperCase().trim();
   if (!CODE.test(c) || !Number.isInteger(round) || !Array.isArray(scores) || scores.length > 16) return res.status(400).json({ error: 'invalid result' });
   const clean = scores.map((s: any) => ({ id: String(s && s.id || ''), hg: Number(s && s.hg), ag: Number(s && s.ag) })).filter((s: any) => TEAM.test(s.id) && Number.isFinite(s.hg) && Number.isFinite(s.ag));
@@ -123,7 +138,7 @@ router.post('/football-mp/played', actionEndpointLimiter, async (req: Request, r
       const everyone = seated.every((t) => planned.includes(t));
       // a manager who has gone quiet for a day does not hold everyone else up: their club plays on as it is
       const idle = Date.now() - Date.parse(g.state.roundAt || g.updatedAt) > IDLE_MS;
-      if (!everyone && !idle && !(force && g.hostId === userId)) return res.status(409).json({ error: 'Not everybody has handed their plan in yet.' });
+      if (!everyone && !idle) return res.status(409).json({ error: 'Not everybody has handed their plan in yet.' });
       const state: GameState = JSON.parse(JSON.stringify(g.state));
       state.played.push({ round, at: new Date().toISOString(), by: mine, scores: clean, forced: !everyone });
       state.round = round + 1;

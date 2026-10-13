@@ -1,0 +1,143 @@
+{
+ "id": "gen",
+ "subject": "Economics",
+ "title": "GNI, growth comparisons and PPP",
+ "terms": {
+  "GNI": {
+   "label": "Gross National Income"
+  },
+  "GROWTH_COMPARISON": {
+   "label": "Comparing growth rates"
+  },
+  "PPP": {
+   "label": "Purchasing power parities"
+  },
+  "PPP_USE": {
+   "label": "Use of PPP-adjusted figures"
+  },
+  "GDP_DEF": {
+   "label": "GDP"
+  },
+  "GDP_GROWTH_RATE": {
+   "label": "Real GDP growth rate"
+  }
+ },
+ "stages": [
+  {
+   "name": "GNI, growth comparisons and PPP",
+   "title": "GNI, growth comparisons and PPP",
+   "sub": "Compare income and growth between countries fairly, using PPP-adjusted figures.",
+   "steps": [
+    {
+     "type": "ask",
+     "q": "UK-owned factories in Poland send profits home. GDP counts only output made inside the UK. Should those profits count towards UK residents' income?",
+     "right": "Yes, it is income UK residents earn",
+     "wrong": "No, it happened outside the UK",
+     "hint": "Think about who actually receives the money, not where the factory stands.",
+     "pre": "A measure that adds income earned abroad by UK residents (and takes away income foreign owners earn here) is",
+     "term": "GNI"
+    },
+    {
+     "type": "ask",
+     "q": "Country A's GDP grew 2% this year, country B's 5%. Do these percentages alone show which economy is expanding faster?",
+     "right": "Yes, B is growing faster, at 5% against 2%",
+     "wrong": "No, their differing sizes make that impossible",
+     "hint": "A percentage rate already adjusts for the size of each economy, so it can be lined up against another rate.",
+     "pre": "Setting countries' growth rates like this side by side, or against their own past rates, is",
+     "term": "GROWTH_COMPARISON"
+    },
+    {
+     "type": "ask",
+     "q": "A haircut costs £15 in the UK and £3 in India. Does converting India's income at the exchange rate show what it can buy?",
+     "right": "No, it understates what their income buys",
+     "wrong": "Yes, the exchange rate already accounts for that",
+     "hint": "£3 buys a full haircut in India but nowhere near one in the UK, even though the exchange rate treats them as unequal amounts.",
+     "pre": "Adjusting figures using the actual cost of living in each country instead of the exchange rate uses",
+     "term": "PPP"
+    },
+    {
+     "type": "order",
+     "terms": [
+      "GNI",
+      "GROWTH_COMPARISON",
+      "PPP"
+     ],
+     "prompt": "Drag and drop the 3 key terms in the order they build on each other."
+    },
+    {
+     "type": "ask",
+     "q": "To compare what UK and Indian earnings can actually buy, should you use raw exchange-rate figures, or figures adjusted for local living costs?",
+     "right": "The figures adjusted for local living costs",
+     "wrong": "The raw exchange-rate figures",
+     "hint": "Which figures reflect what people can genuinely buy at home, rather than just a currency conversion?",
+     "pre": "Comparing living standards and growth across countries using figures adjusted this way is the",
+     "term": "PPP_USE"
+    },
+    {
+     "type": "derive"
+    }
+   ],
+   "given": [
+    "GDP_DEF",
+    "GDP_GROWTH_RATE"
+   ],
+   "needs": [
+    "GDP_DEF",
+    "GDP_GROWTH_RATE"
+   ],
+   "builds": [
+    "GDP_DEF",
+    "GDP_GROWTH_RATE"
+   ],
+   "nodes": [
+    "GNI",
+    "GROWTH_COMPARISON",
+    "PPP",
+    "PPP_USE"
+   ],
+   "dropped": [],
+   "edges": [
+    [
+     "GNI",
+     "GROWTH_COMPARISON"
+    ],
+    [
+     "GROWTH_COMPARISON",
+     "PPP"
+    ],
+    [
+     "PPP",
+     "PPP_USE"
+    ],
+    [
+     "GROWTH_COMPARISON",
+     "PPP_USE"
+    ],
+    [
+     "GDP_DEF",
+     "GNI"
+    ],
+    [
+     "GDP_GROWTH_RATE",
+     "GROWTH_COMPARISON"
+    ],
+    [
+     "GNI",
+     "GROWTH_COMPARISON"
+    ],
+    [
+     "GROWTH_COMPARISON",
+     "PPP"
+    ],
+    [
+     "PPP",
+     "PPP_USE"
+    ],
+    [
+     "GROWTH_COMPARISON",
+     "PPP_USE"
+    ]
+   ]
+  }
+ ]
+}

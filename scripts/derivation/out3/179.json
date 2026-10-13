@@ -1,0 +1,105 @@
+{
+ "id": "gen",
+ "subject": "Economics",
+ "title": "Trade restrictions: revenue",
+ "terms": {
+  "PROT_REASONS_REVENUE": {
+   "label": "Trade restrictions for revenue"
+  },
+  "tariff_price": {
+   "label": "Tariff as a price"
+  },
+  "import_flow": {
+   "label": "Steady import flow"
+  },
+  "gov_spending": {
+   "label": "Government spending needs"
+  },
+  "TAX_INDIRECT": {
+   "label": "Indirect taxation"
+  }
+ },
+ "stages": [
+  {
+   "name": "Trade restrictions: revenue",
+   "title": "Trade restrictions: revenue",
+   "sub": "See why governments sometimes restrict trade simply to collect money.",
+   "steps": [
+    {
+     "type": "ask",
+     "q": "A government adds a charge on every packet of imported cigarettes entering the country, on top of the selling price. What kind of charge does this look like?",
+     "right": "A tax added onto a good",
+     "wrong": "A subsidy paid to sellers",
+     "hint": "Think about what an indirect tax on a good looks like, just applied at the border instead of in the shop.",
+     "pre": "So a charge placed on an imported good works like",
+     "term": "tariff_price"
+    },
+    {
+     "type": "ask",
+     "q": "People keep buying the imported cigarettes anyway, month after month, despite the extra charge. What happens to the amount coming into the country over time?",
+     "right": "It keeps coming in fairly steadily",
+     "wrong": "It quickly drops to zero",
+     "hint": "If demand for the good barely changes, do imports dry up or carry on?",
+     "pre": "So imports of the good continue as a",
+     "term": "import_flow"
+    },
+    {
+     "type": "ask",
+     "q": "Hospitals, schools and roads all need to be paid for, year after year. Does the government's need for money ever disappear?",
+     "right": "No, it needs a constant flow of funds",
+     "wrong": "Yes, once budgets are set the need ends",
+     "hint": "Think about whether public services stop needing funding once one year's bills are paid.",
+     "pre": "So governments always face ongoing",
+     "term": "gov_spending"
+    },
+    {
+     "type": "ask",
+     "q": "Every packet that keeps entering still has that extra charge collected on it by customs, feeding into the funds needed for public spending. What does this steady stream of charges become for the government?",
+     "right": "A regular source of income",
+     "wrong": "A cost it has to cover",
+     "hint": "Who is receiving the money collected on each packet, and does it stop?",
+     "pre": "So one reason governments restrict trade is simply to raise",
+     "term": "PROT_REASONS_REVENUE"
+    },
+    {
+     "type": "derive"
+    }
+   ],
+   "given": [
+    "TAX_INDIRECT"
+   ],
+   "needs": [
+    "TAX_INDIRECT"
+   ],
+   "builds": [
+    "TAX_INDIRECT"
+   ],
+   "nodes": [
+    "PROT_REASONS_REVENUE"
+   ],
+   "dropped": [],
+   "edges": [
+    [
+     "TAX_INDIRECT",
+     "PROT_REASONS_REVENUE"
+    ],
+    [
+     "TAX_INDIRECT",
+     "tariff_price"
+    ],
+    [
+     "tariff_price",
+     "import_flow"
+    ],
+    [
+     "gov_spending",
+     "PROT_REASONS_REVENUE"
+    ],
+    [
+     "import_flow",
+     "PROT_REASONS_REVENUE"
+    ]
+   ]
+  }
+ ]
+}

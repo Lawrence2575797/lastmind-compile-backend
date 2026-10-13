@@ -1,0 +1,95 @@
+{
+ "id": "gen",
+ "subject": "Economics",
+ "title": "Financial markets",
+ "terms": {
+  "FIN_MARKET_DEF": {
+   "label": "Financial market"
+  },
+  "ROLE_SAVING": {
+   "label": "Facilitating saving"
+  },
+  "ROLE_LENDING": {
+   "label": "Lending to borrowers"
+  },
+  "INTEREST_MECHANISM": {
+   "label": "Interest as price mechanism"
+  }
+ },
+ "stages": [
+  {
+   "name": "Financial markets",
+   "title": "Financial markets",
+   "sub": "How financial markets bring savers and borrowers together, and how interest links the two sides.",
+   "steps": [
+    {
+     "type": "ask",
+     "q": "A bank branch takes deposits from people with spare cash and offers loans to people who want to borrow. Is the bank dealing directly in goods like a shop, or in money and financial claims?",
+     "right": "Money and financial claims",
+     "wrong": "Physical goods like a shop",
+     "hint": "Think about what actually changes hands over the counter: tins of beans, or deposits and loans?",
+     "pre": "A place or system where savers, borrowers, buyers and sellers of financial assets meet is a",
+     "term": "FIN_MARKET_DEF"
+    },
+    {
+     "type": "ask",
+     "q": "You put £500 into a savings account instead of keeping it under your mattress. Has the bank given you a way to store and grow money you are not spending right now?",
+     "right": "Yes, a way to hold and grow spare money",
+     "wrong": "No, the bank only moves money about for spenders",
+     "hint": "What did opening the account let you do with money you were not using today?",
+     "pre": "So one thing financial markets do is",
+     "term": "ROLE_SAVING"
+    },
+    {
+     "type": "ask",
+     "q": "A small bakery wants £10,000 to buy a new oven but does not have the cash. Can a bank take money that others have deposited and pass it to the bakery as a loan?",
+     "right": "Yes, deposited money can be lent out to the bakery",
+     "wrong": "No, deposits must stay untouched until savers withdraw them",
+     "hint": "Where does a bank get the funds it hands out as loans?",
+     "pre": "So financial markets also channel funds into",
+     "term": "ROLE_LENDING"
+    },
+    {
+     "type": "ask",
+     "q": "If savings accounts paid 0% interest, would many people still bother locking their money away instead of spending it?",
+     "right": "Fewer people would bother saving",
+     "wrong": "Just as many people would still save",
+     "hint": "What reward do savers currently get for giving up spending now?",
+     "pre": "So savers need a reward to hold back cash: that reward is interest paid on savings.",
+     "term": "INTEREST_MECHANISM"
+    },
+    {
+     "type": "derive"
+    }
+   ],
+   "given": [],
+   "needs": [],
+   "builds": [],
+   "nodes": [
+    "FIN_MARKET_DEF",
+    "ROLE_SAVING",
+    "ROLE_LENDING",
+    "INTEREST_MECHANISM"
+   ],
+   "dropped": [],
+   "edges": [
+    [
+     "FIN_MARKET_DEF",
+     "ROLE_SAVING"
+    ],
+    [
+     "FIN_MARKET_DEF",
+     "ROLE_LENDING"
+    ],
+    [
+     "ROLE_SAVING",
+     "INTEREST_MECHANISM"
+    ],
+    [
+     "ROLE_LENDING",
+     "INTEREST_MECHANISM"
+    ]
+   ]
+  }
+ ]
+}

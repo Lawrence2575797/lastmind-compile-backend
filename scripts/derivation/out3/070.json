@@ -1,0 +1,120 @@
+{
+ "id": "gen",
+ "subject": "Economics",
+ "title": "Boom and the current account",
+ "terms": {
+  "spend_rise": {
+   "label": "Rising incomes and spending"
+  },
+  "import_pull": {
+   "label": "Import pull from spending"
+  },
+  "BOOM_TRADEBALANCE": {
+   "label": "Boom worsens trade balance"
+  },
+  "COST_CURRENT_ACCOUNT_DEFICIT": {
+   "label": "Current account deficit risk"
+  },
+  "BOOM_GROWTH": {
+   "label": "Rapid GDP growth"
+  },
+  "FACTOR_NX": {
+   "label": "Rise in net exports"
+  }
+ },
+ "stages": [
+  {
+   "name": "Boom and the current account",
+   "title": "Boom and the current account",
+   "sub": "Why a fast-growing economy can end up buying more from abroad than it sells.",
+   "steps": [
+    {
+     "type": "ask",
+     "q": "The economy is in a boom, with real GDP growing fast. What happens to households' incomes?",
+     "right": "Incomes rise strongly",
+     "wrong": "Incomes stay flat",
+     "hint": "A boom means firms are producing and paying out more than usual.",
+     "pre": "So a boom brings",
+     "term": "spend_rise"
+    },
+    {
+     "type": "ask",
+     "q": "With more income, people buy more of everything, including cars and phones made abroad. What happens to spending on imported goods?",
+     "right": "It rises",
+     "wrong": "It stays the same",
+     "hint": "Do people only spend their extra income on home-made goods, or on foreign ones too?",
+     "pre": "So higher spending creates",
+     "term": "import_pull"
+    },
+    {
+     "type": "ask",
+     "q": "Imports are rising while exports are not growing as fast. What happens to the gap between what the country sells abroad (X) and buys from abroad (M)?",
+     "right": "It gets worse, exports minus imports falls",
+     "wrong": "It gets better, exports minus imports rises",
+     "hint": "Recall net exports is X minus M. If M is rising faster than X, what happens to that figure?",
+     "pre": "So a key feature of a boom is",
+     "term": "BOOM_TRADEBALANCE"
+    },
+    {
+     "type": "ask",
+     "q": "The value of imports now exceeds the value of exports. What does this mean is happening to money flowing out of the country compared with money flowing in from trade?",
+     "right": "More money is flowing out than in",
+     "wrong": "More money is flowing in than out",
+     "hint": "If people buy more from abroad than foreigners buy from them, which way does the trade money flow lean?",
+     "pre": "This risk of the trade balance turning negative is the",
+     "term": "COST_CURRENT_ACCOUNT_DEFICIT"
+    },
+    {
+     "type": "derive"
+    }
+   ],
+   "given": [
+    "BOOM_GROWTH",
+    "FACTOR_NX"
+   ],
+   "needs": [
+    "BOOM_GROWTH",
+    "FACTOR_NX"
+   ],
+   "builds": [
+    "BOOM_GROWTH",
+    "FACTOR_NX"
+   ],
+   "nodes": [
+    "BOOM_TRADEBALANCE",
+    "COST_CURRENT_ACCOUNT_DEFICIT"
+   ],
+   "dropped": [],
+   "edges": [
+    [
+     "BOOM_TRADEBALANCE",
+     "COST_CURRENT_ACCOUNT_DEFICIT"
+    ],
+    [
+     "BOOM_GROWTH",
+     "BOOM_TRADEBALANCE"
+    ],
+    [
+     "FACTOR_NX",
+     "BOOM_TRADEBALANCE"
+    ],
+    [
+     "BOOM_GROWTH",
+     "spend_rise"
+    ],
+    [
+     "spend_rise",
+     "import_pull"
+    ],
+    [
+     "import_pull",
+     "BOOM_TRADEBALANCE"
+    ],
+    [
+     "FACTOR_NX",
+     "BOOM_TRADEBALANCE"
+    ]
+   ]
+  }
+ ]
+}

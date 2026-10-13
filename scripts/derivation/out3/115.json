@@ -1,0 +1,128 @@
+{
+ "id": "gen",
+ "subject": "Economics",
+ "title": "Sales maximisation: sustainability risk",
+ "terms": {
+  "buffer": {
+   "label": "Profit buffer"
+  },
+  "shock": {
+   "label": "Financial shock"
+  },
+  "reserves": {
+   "label": "Foreign currency reserves"
+  },
+  "sales_max_disadv_sustainability": {
+   "label": "Vulnerable to shocks"
+  },
+  "normal_profit_concept": {
+   "label": "Normal profit"
+  },
+  "sales_max_condition": {
+   "label": "Sales maximisation rule"
+  }
+ },
+ "stages": [
+  {
+   "name": "Sales maximisation: sustainability risk",
+   "title": "Sales maximisation: sustainability risk",
+   "sub": "See why a firm producing at AC=AR has nothing spare to survive a shock.",
+   "steps": [
+    {
+     "type": "ask",
+     "q": "A firm producing where AC=AR earns only normal profit, just enough to keep resources in their current use. Is there any surplus profit left over above that minimum?",
+     "right": "No, there is nothing left over",
+     "wrong": "Yes, there is some left over",
+     "hint": "Normal profit is the minimum needed to stay in the market. What is left once that minimum is covered?",
+     "pre": "So a sales maximiser has no spare",
+     "term": "buffer"
+    },
+    {
+     "type": "ask",
+     "q": "A firm with surplus profit above the minimum can save some of it inside the business for a difficult year. Can a firm with no surplus at all build up this kind of saved-up cash?",
+     "right": "No, it has nothing to set aside",
+     "wrong": "Yes, it can still save some",
+     "hint": "If every pound of revenue is already needed just to cover costs, is there anything left to store away?",
+     "pre": "So it cannot build up",
+     "term": "reserves"
+    },
+    {
+     "type": "ask",
+     "q": "Costs suddenly rise, or sales unexpectedly fall for a while. With no saved-up cash to draw on, what happens to the firm financially?",
+     "right": "It struggles to cover its costs",
+     "wrong": "It easily absorbs the change",
+     "hint": "With nothing extra held back, what happens the moment costs or revenue move against the firm?",
+     "pre": "An unexpected event that hits costs or revenue like this is a",
+     "term": "shock"
+    },
+    {
+     "type": "order",
+     "terms": [
+      "buffer",
+      "reserves",
+      "shock"
+     ],
+     "prompt": "Drag and drop the 3 key terms in the order they build on each other."
+    },
+    {
+     "type": "ask",
+     "q": "So compared to a firm holding back some surplus profit, how exposed is a sales maximiser when this kind of event hits?",
+     "right": "More exposed, it has no cushion to fall back on",
+     "wrong": "Equally exposed, the profit rule makes no difference",
+     "hint": "One firm has spare profit banked, the other does not. Which copes worse when things go wrong?",
+     "pre": "This is the disadvantage that sales maximisers are",
+     "term": "sales_max_disadv_sustainability"
+    },
+    {
+     "type": "derive"
+    }
+   ],
+   "given": [
+    "normal_profit_concept",
+    "sales_max_condition"
+   ],
+   "needs": [
+    "normal_profit_concept",
+    "sales_max_condition"
+   ],
+   "builds": [
+    "normal_profit_concept",
+    "sales_max_condition"
+   ],
+   "nodes": [
+    "sales_max_disadv_sustainability"
+   ],
+   "dropped": [],
+   "edges": [
+    [
+     "normal_profit_concept",
+     "sales_max_disadv_sustainability"
+    ],
+    [
+     "sales_max_condition",
+     "sales_max_disadv_sustainability"
+    ],
+    [
+     "normal_profit_concept",
+     "buffer"
+    ],
+    [
+     "sales_max_condition",
+     "buffer"
+    ],
+    [
+     "buffer",
+     "reserves"
+    ],
+    [
+     "reserves",
+     "shock"
+    ],
+    [
+     "shock",
+     "sales_max_disadv_sustainability"
+    ]
+   ]
+  }
+ ]
+}

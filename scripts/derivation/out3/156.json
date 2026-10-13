@@ -1,0 +1,202 @@
+{
+ "id": "gen",
+ "subject": "Economics",
+ "title": "Government intervention: efficiency and choice",
+ "terms": {
+  "alloc_eff": {
+   "label": "Allocative efficiency"
+  },
+  "prod_eff": {
+   "label": "Productive efficiency"
+  },
+  "dyn_eff": {
+   "label": "Dynamic efficiency"
+  },
+  "x_eff": {
+   "label": "X-efficiency"
+  },
+  "IMPACT_EFFICIENCY": {
+   "label": "Impact on efficiency"
+  },
+  "IMPACT_CHOICE": {
+   "label": "Impact on consumer choice"
+  },
+  "PROFIT_REG_DIS1": {
+   "label": "Profit regulation: disadvantage"
+  },
+  "DEREG_ADV": {
+   "label": "Deregulation: advantage"
+  },
+  "PRIVATISATION_ADV1": {
+   "label": "Efficiency incentive"
+  },
+  "NATIONALISATION_DIS1": {
+   "label": "Dis: weaker efficiency incentive"
+  },
+  "SMALL_BIZ_ADV": {
+   "label": "Advantage: promoting small business increases the number of competitors and contestability"
+  },
+  "MERGER_POLICY_ADV1": {
+   "label": "Advantage: merger control prevents excessive market power and protects consumers"
+  }
+ },
+ "stages": [
+  {
+   "name": "Government intervention: efficiency and choice",
+   "title": "Government intervention: efficiency and choice",
+   "sub": "You can judge any intervention by what it does to efficiency and to how much choice consumers get.",
+   "steps": [
+    {
+     "type": "ask",
+     "q": "A price cap forces a firm to charge a price close to what it costs to make the last unit, so output matches what consumers actually value. Whose interests does this line up: the firm's costs and profit, or what consumers value?",
+     "right": "What consumers value",
+     "wrong": "The firm's costs and profit",
+     "hint": "Think about who benefits when price is pushed down towards cost.",
+     "pre": "When resources are used to produce exactly what consumers value most, that is",
+     "term": "alloc_eff"
+    },
+    {
+     "type": "ask",
+     "q": "State-owned rail firm has no rival and its costs keep creeping up because nobody is pushing it to cut waste. Is it producing at the lowest possible cost?",
+     "right": "No, costs are higher than they need to be",
+     "wrong": "Yes, costs are as low as possible",
+     "hint": "Without pressure to cut waste, does the firm produce as cheaply as it could?",
+     "pre": "Producing at the lowest possible average cost is",
+     "term": "prod_eff"
+    },
+    {
+     "type": "ask",
+     "q": "A newly privatised firm now faces rivals and fears losing customers if its products fall behind. Is it more or less likely to invest in new technology over time?",
+     "right": "More likely to invest and innovate",
+     "wrong": "Less likely, since profit is guaranteed anyway",
+     "hint": "Competition and the threat of losing customers push firms to do what over time?",
+     "pre": "Improving products and processes over time is",
+     "term": "dyn_eff"
+    },
+    {
+     "type": "ask",
+     "q": "A regulated monopoly gets its costs automatically covered by the regulator, whatever it spends. Does its management have any reason to cut internal waste and slack?",
+     "right": "No, there is little reason to cut waste",
+     "wrong": "Yes, it still has strong reason to cut waste",
+     "hint": "If costs are covered regardless, what happens to the incentive to trim slack inside the firm?",
+     "pre": "Producing without any internal slack or waste, whatever the market structure, is",
+     "term": "x_eff"
+    },
+    {
+     "type": "order",
+     "terms": [
+      "alloc_eff",
+      "prod_eff",
+      "dyn_eff",
+      "x_eff"
+     ],
+     "prompt": "Drag and drop the 4 key terms in the order they build on each other."
+    },
+    {
+     "type": "ask",
+     "q": "A regulator's cost-plus rule dulls the drive to cut waste, deregulation lets new rivals force costs down, privatisation adds a profit motive that spurs new investment, and nationalisation removes profit pressure altogether. Do all these interventions push efficiency the same way, or does it depend on which type of efficiency and which policy you look at?",
+     "right": "It depends on the policy and the type of efficiency",
+     "wrong": "They all raise every type of efficiency together",
+     "hint": "Some of these examples helped one kind of efficiency but harmed another kind. Can one single verdict cover all of them?",
+     "pre": "Taken together, this is the",
+     "term": "IMPACT_EFFICIENCY"
+    },
+    {
+     "type": "ask",
+     "q": "Lowering the barriers that kept new firms out lets several new brands enter the market. What happens to the range of products on offer to buyers?",
+     "right": "It grows, since there are more firms and products",
+     "wrong": "It stays the same, since demand hasn't changed",
+     "hint": "More independent firms competing for the same customers usually means more of what for buyers?",
+     "pre": "So opening up a market to new entrants changes",
+     "term": "IMPACT_CHOICE"
+    },
+    {
+     "type": "derive"
+    }
+   ],
+   "given": [
+    "PROFIT_REG_DIS1",
+    "DEREG_ADV",
+    "PRIVATISATION_ADV1",
+    "NATIONALISATION_DIS1"
+   ],
+   "needs": [
+    "PROFIT_REG_DIS1",
+    "DEREG_ADV",
+    "PRIVATISATION_ADV1",
+    "NATIONALISATION_DIS1",
+    "SMALL_BIZ_ADV",
+    "MERGER_POLICY_ADV1"
+   ],
+   "builds": [
+    "PROFIT_REG_DIS1",
+    "DEREG_ADV",
+    "PRIVATISATION_ADV1",
+    "NATIONALISATION_DIS1"
+   ],
+   "nodes": [
+    "IMPACT_EFFICIENCY",
+    "IMPACT_CHOICE"
+   ],
+   "dropped": [],
+   "edges": [
+    [
+     "PROFIT_REG_DIS1",
+     "IMPACT_EFFICIENCY"
+    ],
+    [
+     "DEREG_ADV",
+     "IMPACT_EFFICIENCY"
+    ],
+    [
+     "PRIVATISATION_ADV1",
+     "IMPACT_EFFICIENCY"
+    ],
+    [
+     "NATIONALISATION_DIS1",
+     "IMPACT_EFFICIENCY"
+    ],
+    [
+     "DEREG_ADV",
+     "IMPACT_CHOICE"
+    ],
+    [
+     "PROFIT_REG_DIS1",
+     "x_eff"
+    ],
+    [
+     "DEREG_ADV",
+     "prod_eff"
+    ],
+    [
+     "PRIVATISATION_ADV1",
+     "dyn_eff"
+    ],
+    [
+     "NATIONALISATION_DIS1",
+     "alloc_eff"
+    ],
+    [
+     "alloc_eff",
+     "IMPACT_EFFICIENCY"
+    ],
+    [
+     "prod_eff",
+     "IMPACT_EFFICIENCY"
+    ],
+    [
+     "dyn_eff",
+     "IMPACT_EFFICIENCY"
+    ],
+    [
+     "x_eff",
+     "IMPACT_EFFICIENCY"
+    ],
+    [
+     "DEREG_ADV",
+     "IMPACT_CHOICE"
+    ]
+   ]
+  }
+ ]
+}

@@ -1,0 +1,186 @@
+{
+ "id": "gen",
+ "subject": "Economics",
+ "title": "Impact of a subsidy",
+ "terms": {
+  "subsidy_per_unit": {
+   "label": "Subsidy per unit"
+  },
+  "new_price_qty": {
+   "label": "New price and quantity"
+  },
+  "subsidy_impact_consumers": {
+   "label": "Impact of a subsidy on consumers"
+  },
+  "subsidy_impact_government": {
+   "label": "Impact of a subsidy on government"
+  },
+  "subsidy_shift_diagram": {
+   "label": "Diagram: effect of a subsidy on supply and equilibrium"
+  },
+  "cs_change": {
+   "label": "Consumer surplus shifts"
+  }
+ },
+ "stages": [
+  {
+   "name": "Impact of a subsidy",
+   "title": "Impact of a subsidy",
+   "sub": "After this the student can explain what a subsidy does to consumers and to the government's budget.",
+   "steps": [
+    {
+     "type": "ask",
+     "q": "A government pays producers £2 for every loaf of bread they sell. On the supply and demand diagram, the supply curve shifts down by exactly this amount. What does that £2 represent?",
+     "right": "The amount paid per unit sold",
+     "wrong": "The total amount spent by the government",
+     "hint": "Think about how much is paid for just one loaf, not for all loaves together.",
+     "pre": "That £2 gap between old and new supply is the",
+     "term": "subsidy_per_unit",
+     "diagram": {
+      "x": "Quantity",
+      "y": "Price",
+      "curves": [
+       {
+        "label": "D",
+        "pts": [
+         [
+          0.08,
+          0.85
+         ],
+         [
+          0.4,
+          0.55
+         ],
+         [
+          0.9,
+          0.15
+         ]
+        ]
+       },
+       {
+        "label": "S1",
+        "pts": [
+         [
+          0.1,
+          0.15
+         ],
+         [
+          0.5,
+          0.5
+         ],
+         [
+          0.9,
+          0.85
+         ]
+        ]
+       },
+       {
+        "label": "S2",
+        "pts": [
+         [
+          0.1,
+          0.02
+         ],
+         [
+          0.5,
+          0.35
+         ],
+         [
+          0.9,
+          0.7
+         ]
+        ]
+       }
+      ],
+      "points": []
+     }
+    },
+    {
+     "type": "ask",
+     "q": "After the subsidy shifts supply to the right, where do the new supply and demand curves cross compared to before?",
+     "right": "At a lower price and a higher quantity",
+     "wrong": "At a higher price and a lower quantity",
+     "hint": "Supply has moved to the right. What does a rightward shift usually do to the equilibrium price and quantity?",
+     "pre": "So the new equilibrium settles at",
+     "term": "new_price_qty"
+    },
+    {
+     "type": "ask",
+     "q": "Bread buyers now pay the new, lower equilibrium price instead of the old one, and more bread is being bought. Using what you know about how price and quantity changes affect the area under demand and above price, does the area representing buyer benefit grow or shrink?",
+     "right": "It grows",
+     "wrong": "It shrinks",
+     "hint": "Lower price and higher quantity both point the same way for that area.",
+     "pre": "So the subsidy increases",
+     "term": "subsidy_impact_consumers"
+    },
+    {
+     "type": "ask",
+     "q": "The government pays £2 for every one of the new, higher quantity of loaves sold. To find its total spending, what must it do?",
+     "right": "Multiply the £2 by the new total quantity sold",
+     "wrong": "Multiply the £2 by the old quantity sold before the subsidy",
+     "hint": "The subsidy is paid on every unit actually sold now, not on the amount sold before the change.",
+     "pre": "That total spending is the",
+     "term": "subsidy_impact_government"
+    },
+    {
+     "type": "derive"
+    }
+   ],
+   "given": [
+    "subsidy_shift_diagram",
+    "cs_change"
+   ],
+   "needs": [
+    "subsidy_shift_diagram",
+    "cs_change"
+   ],
+   "builds": [
+    "subsidy_shift_diagram",
+    "cs_change"
+   ],
+   "nodes": [
+    "subsidy_impact_consumers",
+    "subsidy_impact_government"
+   ],
+   "dropped": [],
+   "edges": [
+    [
+     "subsidy_shift_diagram",
+     "subsidy_impact_consumers"
+    ],
+    [
+     "subsidy_shift_diagram",
+     "subsidy_impact_government"
+    ],
+    [
+     "cs_change",
+     "subsidy_impact_consumers"
+    ],
+    [
+     "subsidy_shift_diagram",
+     "subsidy_per_unit"
+    ],
+    [
+     "subsidy_shift_diagram",
+     "new_price_qty"
+    ],
+    [
+     "subsidy_per_unit",
+     "subsidy_impact_government"
+    ],
+    [
+     "new_price_qty",
+     "subsidy_impact_consumers"
+    ],
+    [
+     "cs_change",
+     "subsidy_impact_consumers"
+    ],
+    [
+     "new_price_qty",
+     "subsidy_impact_government"
+    ]
+   ]
+  }
+ ]
+}

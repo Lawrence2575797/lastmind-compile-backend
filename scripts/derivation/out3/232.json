@@ -1,0 +1,133 @@
+{
+ "id": "gen",
+ "subject": "Economics",
+ "title": "Crowding out weakness",
+ "terms": {
+  "loanable": {
+   "label": "Loanable funds market"
+  },
+  "fixed_resources": {
+   "label": "Fixed resources in economy"
+  },
+  "resource_crowd": {
+   "label": "Resource crowding out"
+  },
+  "DSP_DIS_CROWDING_OUT": {
+   "label": "Crowding out weakness"
+  },
+  "FISC_GOV_SPEND": {
+   "label": "Fiscal policy instrument: government spending"
+  },
+  "BUDGET_DEFICIT_SURPLUS": {
+   "label": "Distinction between government budget (fiscal) deficit and surplus"
+  },
+  "CROWDING_OUT_FINANCIAL": {
+   "label": "Financial crowding out"
+  }
+ },
+ "stages": [
+  {
+   "name": "Crowding out weakness",
+   "title": "Crowding out weakness",
+   "sub": "Why a government spending boost can end up displacing private economic activity rather than adding to it.",
+   "steps": [
+    {
+     "type": "ask",
+     "q": "A government running a large deficit needs to borrow a lot of money. If it competes with firms for the same pool of savings, what is likely to happen to the price of borrowing?",
+     "right": "It rises for everyone",
+     "wrong": "It falls for everyone",
+     "hint": "Think of borrowing as competing bids for a limited pool of savings.",
+     "pre": "So government borrowing pushes up rates in the market for",
+     "term": "loanable"
+    },
+    {
+     "type": "ask",
+     "q": "At any point in time, an economy has a certain number of workers, machines and materials available to use. If government spending rises without any of these increasing, is there automatically more of them to go round?",
+     "right": "No, the total available stays the same",
+     "wrong": "Yes, more spending creates more workers and machines",
+     "hint": "Spending is just money changing hands; does it create new workers or machines on its own?",
+     "pre": "So at any moment the economy works with",
+     "term": "fixed_resources"
+    },
+    {
+     "type": "ask",
+     "q": "You already know that when government borrowing raises interest rates, private investment falls. Now suppose the government hires builders and buys equipment for a new hospital, using workers and machinery from that same fixed pool. Can firms simultaneously hire those same workers and machines for their own projects?",
+     "right": "No, they must compete for the same limited workers and machines",
+     "wrong": "Yes, there is always spare capacity for both",
+     "hint": "Think about builders and materials being used on the hospital site instead of a private factory.",
+     "pre": "When government spending directly takes real resources firms would have used, that is",
+     "term": "resource_crowd"
+    },
+    {
+     "type": "ask",
+     "q": "A government raises spending to boost the economy, but the resulting higher interest rates and direct use of workers and materials reduce private investment and output by a similar amount. Does total output rise by as much as the government hoped?",
+     "right": "No, the private fall offsets much of the gain",
+     "wrong": "Yes, the full amount still gets added",
+     "hint": "If private spending falls roughly as much as government spending rises, what happens to the net effect?",
+     "pre": "This limit on fiscal expansion, through both channels, is the weakness known as",
+     "term": "DSP_DIS_CROWDING_OUT"
+    },
+    {
+     "type": "derive"
+    }
+   ],
+   "given": [
+    "FISC_GOV_SPEND",
+    "BUDGET_DEFICIT_SURPLUS",
+    "CROWDING_OUT_FINANCIAL"
+   ],
+   "needs": [
+    "FISC_GOV_SPEND",
+    "BUDGET_DEFICIT_SURPLUS",
+    "CROWDING_OUT_FINANCIAL"
+   ],
+   "builds": [
+    "FISC_GOV_SPEND",
+    "BUDGET_DEFICIT_SURPLUS",
+    "CROWDING_OUT_FINANCIAL"
+   ],
+   "nodes": [
+    "DSP_DIS_CROWDING_OUT"
+   ],
+   "dropped": [],
+   "edges": [
+    [
+     "FISC_GOV_SPEND",
+     "DSP_DIS_CROWDING_OUT"
+    ],
+    [
+     "BUDGET_DEFICIT_SURPLUS",
+     "DSP_DIS_CROWDING_OUT"
+    ],
+    [
+     "CROWDING_OUT_FINANCIAL",
+     "DSP_DIS_CROWDING_OUT"
+    ],
+    [
+     "BUDGET_DEFICIT_SURPLUS",
+     "loanable"
+    ],
+    [
+     "CROWDING_OUT_FINANCIAL",
+     "loanable"
+    ],
+    [
+     "FISC_GOV_SPEND",
+     "fixed_resources"
+    ],
+    [
+     "fixed_resources",
+     "resource_crowd"
+    ],
+    [
+     "loanable",
+     "DSP_DIS_CROWDING_OUT"
+    ],
+    [
+     "resource_crowd",
+     "DSP_DIS_CROWDING_OUT"
+    ]
+   ]
+  }
+ ]
+}

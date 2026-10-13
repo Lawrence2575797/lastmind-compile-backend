@@ -1,0 +1,152 @@
+{
+ "id": "gen",
+ "subject": "Economics",
+ "title": "Labour market: population issues",
+ "terms": {
+  "factor_population": {
+   "label": "Population structure"
+  },
+  "life_expectancy": {
+   "label": "Rising life expectancy"
+  },
+  "workforce_shrink": {
+   "label": "Shrinking workforce"
+  },
+  "issue_ageing_workforce": {
+   "label": "Ageing workforce"
+  },
+  "migrant_workers": {
+   "label": "Migrant workers joining"
+  },
+  "skill_mix": {
+   "label": "Skill composition change"
+  },
+  "issue_migration_labour_supply": {
+   "label": "Migration & labour supply"
+  }
+ },
+ "stages": [
+  {
+   "name": "Labour market: population issues",
+   "title": "Labour market: population issues",
+   "sub": "Explain how an ageing population and migration each change the labour supply available to firms.",
+   "steps": [
+    {
+     "type": "ask",
+     "q": "A country's working-age population is one part of what determines how many workers are available. If people are living longer and having fewer babies, what happens to the average age of the population over time?",
+     "right": "It rises",
+     "wrong": "It falls",
+     "hint": "Fewer young people being born, and older people living longer - which way does the average age move?",
+     "pre": "So the population is affected by",
+     "term": "life_expectancy"
+    },
+    {
+     "type": "ask",
+     "q": "As the average age rises, more people pass retirement age each year while fewer young workers enter to replace them. What happens to the total number of people available to work?",
+     "right": "It falls",
+     "wrong": "It stays the same",
+     "hint": "More leaving through retirement, fewer arriving from school and university - what happens to the total?",
+     "pre": "So the pool of available workers faces a",
+     "term": "workforce_shrink"
+    },
+    {
+     "type": "ask",
+     "q": "A country sees its working-age population shrink year after year as the average age climbs. What long-term labour market problem is this?",
+     "right": "A smaller labour supply from an older population",
+     "wrong": "A smaller labour supply from falling wages",
+     "hint": "Is the cause here about age structure, or about pay?",
+     "pre": "This ongoing problem is the current issue of an",
+     "term": "issue_ageing_workforce"
+    },
+    {
+     "type": "ask",
+     "q": "A country opens its borders and working-age adults from abroad move in to take up jobs. What happens to the number of people available to work?",
+     "right": "It rises",
+     "wrong": "It stays the same",
+     "hint": "These are extra working-age adults added to the population - what happens to the total available to work?",
+     "pre": "So the population gains",
+     "term": "migrant_workers"
+    },
+    {
+     "type": "order",
+     "terms": [
+      "life_expectancy",
+      "workforce_shrink",
+      "issue_ageing_workforce",
+      "migrant_workers"
+     ],
+     "prompt": "Drag and drop the 4 key terms in the order they build on each other."
+    },
+    {
+     "type": "ask",
+     "q": "Suppose the migrants arriving mostly have skills in construction and care work, quite different from the existing workforce's skills. Does the new workforce now have the same mix of skills as before, or a different one?",
+     "right": "A different mix of skills",
+     "wrong": "The same mix of skills",
+     "hint": "If the newcomers' jobs and training differ from existing workers, has the overall skill make-up stayed the same?",
+     "pre": "So migration changes not just the size but also the",
+     "term": "skill_mix"
+    },
+    {
+     "type": "ask",
+     "q": "A country relies on migration to both grow its workforce and reshape the skills available in it. What current issue does this describe?",
+     "right": "Migration changing the size and skills of labour supply",
+     "wrong": "An ageing population changing the size of labour supply",
+     "hint": "Is the cause here people moving in from abroad, or people getting older?",
+     "pre": "This is the current issue of",
+     "term": "issue_migration_labour_supply"
+    },
+    {
+     "type": "derive"
+    }
+   ],
+   "given": [
+    "factor_population"
+   ],
+   "needs": [
+    "factor_population"
+   ],
+   "builds": [
+    "factor_population"
+   ],
+   "nodes": [
+    "issue_ageing_workforce",
+    "issue_migration_labour_supply"
+   ],
+   "dropped": [],
+   "edges": [
+    [
+     "factor_population",
+     "issue_ageing_workforce"
+    ],
+    [
+     "factor_population",
+     "issue_migration_labour_supply"
+    ],
+    [
+     "factor_population",
+     "life_expectancy"
+    ],
+    [
+     "life_expectancy",
+     "workforce_shrink"
+    ],
+    [
+     "workforce_shrink",
+     "issue_ageing_workforce"
+    ],
+    [
+     "factor_population",
+     "migrant_workers"
+    ],
+    [
+     "migrant_workers",
+     "skill_mix"
+    ],
+    [
+     "skill_mix",
+     "issue_migration_labour_supply"
+    ]
+   ]
+  }
+ ]
+}

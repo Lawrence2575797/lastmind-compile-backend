@@ -1,0 +1,167 @@
+{
+ "id": "gen",
+ "subject": "Economics",
+ "title": "Forward vertical integration: pros and cons",
+ "terms": {
+  "forward_adv_control_market": {
+   "label": "Control of market access"
+  },
+  "forward_dis_expertise": {
+   "label": "Lack of expertise"
+  },
+  "forward_adv_margin": {
+   "label": "Captures retailer's margin"
+  },
+  "forward_adv_branding": {
+   "label": "Control of branding"
+  },
+  "forward_dis_cost": {
+   "label": "High acquisition cost/risk"
+  },
+  "shop_owned": {
+   "label": "Manufacturer owns the shop"
+  },
+  "forward_vertical_def": {
+   "label": "Forward vertical integration"
+  }
+ },
+ "stages": [
+  {
+   "name": "Forward vertical integration: pros and cons",
+   "title": "Forward vertical integration: pros and cons",
+   "sub": "The student can explain the main advantages and disadvantages of a manufacturer buying a retailer.",
+   "steps": [
+    {
+     "type": "ask",
+     "q": "A tea manufacturer used to sell its tea to an independent retailer, who then sold it to customers in its own shops. Now the manufacturer buys that retailer outright. Whose shops are they now?",
+     "right": "The manufacturer's own shops",
+     "wrong": "Still the independent retailer's shops",
+     "hint": "Buying a business means taking ownership of it.",
+     "pre": "So after the takeover,",
+     "term": "shop_owned"
+    },
+    {
+     "type": "ask",
+     "q": "If a rival's tea only reaches shelves because a shop owner agrees to stock it, and the manufacturer now owns the shop, who decides whether the manufacturer's own tea gets shelf space?",
+     "right": "The manufacturer itself",
+     "wrong": "Still the independent shop owners",
+     "hint": "The manufacturer now owns the shops that reach customers.",
+     "pre": "Owning the outlet gives the manufacturer",
+     "term": "forward_adv_control_market"
+    },
+    {
+     "type": "ask",
+     "q": "The manufacturer has spent 20 years making tea, but has never run a shop: staffing tills, managing store layouts, handling retail returns. On day one of running its new shops, is it likely to run them as smoothly as an experienced retailer would?",
+     "right": "No, it will probably struggle at first",
+     "wrong": "Yes, running a shop is much the same as making tea",
+     "hint": "Making a product and selling it face-to-face to customers are different skills.",
+     "pre": "This is the disadvantage of",
+     "term": "forward_dis_expertise"
+    },
+    {
+     "type": "ask",
+     "q": "Before the takeover, the manufacturer sold tea to the retailer for £2 a box, and the retailer sold it on to customers for £3 a box, keeping the £1 difference. Now that the manufacturer owns the shop, who keeps that £1 when a box is sold?",
+     "right": "The manufacturer, since it now owns the shop",
+     "wrong": "No one, the £1 disappears once they merge",
+     "hint": "The retailer's old profit on each box has to go somewhere once the manufacturer owns the shop too.",
+     "pre": "So the manufacturer now also",
+     "term": "forward_adv_margin"
+    },
+    {
+     "type": "order",
+     "terms": [
+      "shop_owned",
+      "forward_adv_control_market",
+      "forward_dis_expertise",
+      "forward_adv_margin"
+     ],
+     "prompt": "Drag and drop the 4 key terms in the order they build on each other."
+    },
+    {
+     "type": "ask",
+     "q": "Now that it owns the shops, the manufacturer can choose the shop layout, staff training and the way tea is displayed and presented to customers. Before the takeover, could it decide any of that?",
+     "right": "No, the independent retailer decided it",
+     "wrong": "Yes, it always could",
+     "hint": "Before the takeover, the shop belonged to someone else.",
+     "pre": "So it gains",
+     "term": "forward_adv_branding"
+    },
+    {
+     "type": "ask",
+     "q": "Buying an entire chain of shops, then merging its staff, systems and stock into the manufacturer's business, costs a lot of money and can go wrong. Is this a small, easily reversed step for the manufacturer?",
+     "right": "No, it is expensive and risky",
+     "wrong": "Yes, it is a cheap and simple step",
+     "hint": "Think about the price of buying an entire chain of shops, plus the risk of the merger failing.",
+     "pre": "This is the disadvantage of",
+     "term": "forward_dis_cost"
+    },
+    {
+     "type": "derive"
+    }
+   ],
+   "given": [
+    "forward_vertical_def"
+   ],
+   "needs": [
+    "forward_vertical_def"
+   ],
+   "builds": [
+    "forward_vertical_def"
+   ],
+   "nodes": [
+    "forward_adv_control_market",
+    "forward_dis_expertise",
+    "forward_adv_margin",
+    "forward_adv_branding",
+    "forward_dis_cost"
+   ],
+   "dropped": [],
+   "edges": [
+    [
+     "forward_vertical_def",
+     "forward_adv_control_market"
+    ],
+    [
+     "forward_vertical_def",
+     "forward_dis_expertise"
+    ],
+    [
+     "forward_vertical_def",
+     "forward_adv_margin"
+    ],
+    [
+     "forward_vertical_def",
+     "forward_adv_branding"
+    ],
+    [
+     "forward_vertical_def",
+     "forward_dis_cost"
+    ],
+    [
+     "forward_vertical_def",
+     "shop_owned"
+    ],
+    [
+     "shop_owned",
+     "forward_adv_control_market"
+    ],
+    [
+     "shop_owned",
+     "forward_dis_expertise"
+    ],
+    [
+     "shop_owned",
+     "forward_adv_margin"
+    ],
+    [
+     "shop_owned",
+     "forward_adv_branding"
+    ],
+    [
+     "shop_owned",
+     "forward_dis_cost"
+    ]
+   ]
+  }
+ ]
+}

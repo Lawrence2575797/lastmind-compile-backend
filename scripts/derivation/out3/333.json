@@ -1,0 +1,163 @@
+{
+ "id": "gen",
+ "subject": "Economics",
+ "title": "Public sector wage setting",
+ "terms": {
+  "reason_wages_public_spending": {
+   "label": "Reason: control wage bill"
+  },
+  "public_sector_wage_def": {
+   "label": "Public sector wage setting"
+  },
+  "public_sector_adv_consistency": {
+   "label": "Advantage: pay consistency"
+  },
+  "public_sector_adv_budget": {
+   "label": "Advantage: budget control"
+  },
+  "public_sector_adv_monopsony": {
+   "label": "Advantage: avoids exploitation"
+  },
+  "labour_equilibrium_diagram": {
+   "label": "Labour market equilibrium"
+  },
+  "reasons_intervene_wages": {
+   "label": "Reasons for government intervention in wage setting (equity, tackling low pay/poverty, monopsony power, controlling public spending)"
+  },
+  "monopsony_power": {
+   "label": "Monopsony power in labour markets (single/dominant buyer of labour able to set wages below competitive level)"
+  }
+ },
+ "stages": [
+  {
+   "name": "Public sector wage setting",
+   "title": "Public sector wage setting",
+   "sub": "Why government sets public sector pay directly, and what that achieves.",
+   "steps": [
+    {
+     "type": "ask",
+     "q": "A government is worried that if nurses' and teachers' pay is left to bargaining in thousands of separate workplaces, its total spending on wages could spiral upwards each year. What is it actually trying to protect by stepping in?",
+     "right": "Control over how much it spends on wages overall",
+     "wrong": "The right of workers to bargain freely",
+     "hint": "Think about what a finance minister watches closely: total spending, not individual bargaining rights.",
+     "pre": "So one reason governments intervene in wage setting is",
+     "term": "reason_wages_public_spending"
+    },
+    {
+     "type": "ask",
+     "q": "Instead of letting supply and demand in each hospital or school set pay, the government uses a national pay review body to decide nurses' and teachers' wages. Whose decision is this, the market's or the government's?",
+     "right": "The government's, not the market's",
+     "wrong": "Still the market's, just delayed",
+     "hint": "Who is actually setting the number: buyers and sellers of labour, or a review body appointed by government?",
+     "pre": "When wages are fixed this way rather than by market forces, this is",
+     "term": "public_sector_wage_def"
+    },
+    {
+     "type": "ask",
+     "q": "A teacher in London and a teacher doing the same job in Cornwall are paid on the same national pay scale. If pay were instead set locally by each school's own labour market, could that happen?",
+     "right": "No, pay could easily differ between regions",
+     "wrong": "Yes, it would happen anyway",
+     "hint": "Local labour markets differ in demand and supply. Would that naturally produce identical pay everywhere?",
+     "pre": "So one advantage of national pay setting is",
+     "term": "public_sector_adv_consistency"
+    },
+    {
+     "type": "ask",
+     "q": "If every one of the UK's hundreds of thousands of public sector workers bargained their own pay each year, would the government know in advance what its total wage spending would be?",
+     "right": "No, it would be hard to predict or limit",
+     "wrong": "Yes, it would still be easy to predict",
+     "hint": "Compare one fixed national pay scale against thousands of separate unpredictable negotiations.",
+     "pre": "So another advantage is that it",
+     "term": "public_sector_adv_budget"
+    },
+    {
+     "type": "order",
+     "terms": [
+      "reason_wages_public_spending",
+      "public_sector_wage_def",
+      "public_sector_adv_consistency",
+      "public_sector_adv_budget"
+     ],
+     "prompt": "Drag and drop the 4 key terms in the order they build on each other."
+    },
+    {
+     "type": "ask",
+     "q": "In many areas, the government is the only realistic employer of nurses or teachers, giving it power to hold wages below what a competitive market would pay. Does setting pay through a national review body, rather than letting the government dictate it as sole buyer, help or worsen this problem?",
+     "right": "It helps, by preventing wages being pushed down",
+     "wrong": "It worsens it, by fixing wages even lower",
+     "hint": "A review body outside the employer's direct control is meant to check that power, not add to it.",
+     "pre": "So a third advantage is that it",
+     "term": "public_sector_adv_monopsony"
+    },
+    {
+     "type": "derive"
+    }
+   ],
+   "given": [
+    "labour_equilibrium_diagram",
+    "reasons_intervene_wages",
+    "monopsony_power"
+   ],
+   "needs": [
+    "labour_equilibrium_diagram",
+    "reasons_intervene_wages",
+    "monopsony_power"
+   ],
+   "builds": [
+    "labour_equilibrium_diagram",
+    "reasons_intervene_wages",
+    "monopsony_power"
+   ],
+   "nodes": [
+    "reason_wages_public_spending",
+    "public_sector_wage_def",
+    "public_sector_adv_consistency",
+    "public_sector_adv_budget",
+    "public_sector_adv_monopsony"
+   ],
+   "dropped": [],
+   "edges": [
+    [
+     "public_sector_wage_def",
+     "public_sector_adv_consistency"
+    ],
+    [
+     "public_sector_wage_def",
+     "public_sector_adv_budget"
+    ],
+    [
+     "public_sector_wage_def",
+     "public_sector_adv_monopsony"
+    ],
+    [
+     "reason_wages_public_spending",
+     "public_sector_wage_def"
+    ],
+    [
+     "labour_equilibrium_diagram",
+     "public_sector_wage_def"
+    ],
+    [
+     "reasons_intervene_wages",
+     "public_sector_adv_budget"
+    ],
+    [
+     "monopsony_power",
+     "public_sector_adv_monopsony"
+    ],
+    [
+     "labour_equilibrium_diagram",
+     "reason_wages_public_spending"
+    ],
+    [
+     "reasons_intervene_wages",
+     "reason_wages_public_spending"
+    ],
+    [
+     "monopsony_power",
+     "public_sector_adv_monopsony"
+    ]
+   ]
+  }
+ ]
+}

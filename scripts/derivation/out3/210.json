@@ -1,0 +1,150 @@
+{
+ "id": "gen",
+ "subject": "Economics",
+ "title": "Capitalism and inequality",
+ "terms": {
+  "PROFIT_MOTIVE_MECH": {
+   "label": "Profit motive mechanism"
+  },
+  "RETURN_CAPITAL_VS_LABOUR": {
+   "label": "Return on capital vs labour (r>g)"
+  },
+  "CAPITALISM_WEALTH_CONCENTRATION": {
+   "label": "Wealth concentration mechanism"
+  },
+  "CAPITALISM_INNOVATION_COUNTER": {
+   "label": "Innovation counter-argument"
+  },
+  "CAPITALISM_DEF": {
+   "label": "Capitalism"
+  },
+  "ASSET_OWNERSHIP_CAUSE": {
+   "label": "Unequal ownership of assets (property, shares) generating unearned income and compounding wealth inequality"
+  },
+  "INHERITANCE_CAUSE": {
+   "label": "Inheritance and intergenerational transfer of wealth as a cause of wealth inequality"
+  },
+  "GROWTH_INEQUALITY_IMPACT": {
+   "label": "Growth & inequality impact"
+  }
+ },
+ "stages": [
+  {
+   "name": "Capitalism and inequality",
+   "title": "Capitalism and inequality",
+   "sub": "How the drive for profit under capitalism tends to concentrate wealth, and why growth can still raise living standards.",
+   "steps": [
+    {
+     "type": "ask",
+     "q": "A factory owner in a private-ownership, free-market system keeps whatever money is left after paying wages and costs. What will they try to do with their capital?",
+     "right": "Use it to earn as much profit as possible",
+     "wrong": "Use it to pay workers as much as possible",
+     "hint": "Under private ownership, whose gain is the owner chasing?",
+     "pre": "Owners of capital are driven by the",
+     "term": "PROFIT_MOTIVE_MECH"
+    },
+    {
+     "type": "ask",
+     "q": "An owner reinvests their profits into more machines and shares each year, while a worker's pay rises roughly in line with the economy. Over many years, which pot is likely to grow faster: the owner's capital, or the worker's wages?",
+     "right": "The owner's capital grows faster",
+     "wrong": "The worker's wages grow faster",
+     "hint": "One pot is compounding profits on profits; the other is just tracking overall pay growth.",
+     "pre": "This tendency, for the return on capital to outpace the growth of wages over time, is called",
+     "term": "RETURN_CAPITAL_VS_LABOUR"
+    },
+    {
+     "type": "ask",
+     "q": "If capital keeps growing faster than wages, and people also inherit assets or already own unequal amounts of property and shares, what happens to the gap between owners and workers over time?",
+     "right": "It keeps widening",
+     "wrong": "It stays roughly the same",
+     "hint": "Faster-growing capital plus unequal starting assets, repeated year after year: does the gap shrink, stay put, or grow?",
+     "pre": "This compounding process, where capital accumulates faster than labour income, is the mechanism of",
+     "term": "CAPITALISM_WEALTH_CONCENTRATION"
+    },
+    {
+     "type": "ask",
+     "q": "The same profit motive that concentrates wealth also pushes firms to invent cheaper, better products to beat rivals and earn more. Even if the rich-poor gap widens, could ordinary people's living standards still rise in absolute terms because of this competition?",
+     "right": "Yes, absolute living standards can still rise",
+     "wrong": "No, if the gap widens nobody else can gain",
+     "hint": "Think of a worker today with a smartphone and cheap flights, versus a worker a century ago: relative gap aside, has their standard of living moved?",
+     "pre": "So the same system also creates an",
+     "term": "CAPITALISM_INNOVATION_COUNTER"
+    },
+    {
+     "type": "derive"
+    }
+   ],
+   "given": [
+    "CAPITALISM_DEF",
+    "ASSET_OWNERSHIP_CAUSE",
+    "INHERITANCE_CAUSE",
+    "GROWTH_INEQUALITY_IMPACT"
+   ],
+   "needs": [
+    "CAPITALISM_DEF",
+    "ASSET_OWNERSHIP_CAUSE",
+    "INHERITANCE_CAUSE",
+    "GROWTH_INEQUALITY_IMPACT"
+   ],
+   "builds": [
+    "CAPITALISM_DEF",
+    "ASSET_OWNERSHIP_CAUSE",
+    "INHERITANCE_CAUSE",
+    "GROWTH_INEQUALITY_IMPACT"
+   ],
+   "nodes": [
+    "PROFIT_MOTIVE_MECH",
+    "RETURN_CAPITAL_VS_LABOUR",
+    "CAPITALISM_WEALTH_CONCENTRATION",
+    "CAPITALISM_INNOVATION_COUNTER"
+   ],
+   "dropped": [],
+   "edges": [
+    [
+     "PROFIT_MOTIVE_MECH",
+     "RETURN_CAPITAL_VS_LABOUR"
+    ],
+    [
+     "RETURN_CAPITAL_VS_LABOUR",
+     "CAPITALISM_WEALTH_CONCENTRATION"
+    ],
+    [
+     "CAPITALISM_DEF",
+     "PROFIT_MOTIVE_MECH"
+    ],
+    [
+     "ASSET_OWNERSHIP_CAUSE",
+     "RETURN_CAPITAL_VS_LABOUR"
+    ],
+    [
+     "INHERITANCE_CAUSE",
+     "CAPITALISM_WEALTH_CONCENTRATION"
+    ],
+    [
+     "CAPITALISM_DEF",
+     "CAPITALISM_INNOVATION_COUNTER"
+    ],
+    [
+     "GROWTH_INEQUALITY_IMPACT",
+     "CAPITALISM_INNOVATION_COUNTER"
+    ],
+    [
+     "CAPITALISM_DEF",
+     "PROFIT_MOTIVE_MECH"
+    ],
+    [
+     "ASSET_OWNERSHIP_CAUSE",
+     "CAPITALISM_WEALTH_CONCENTRATION"
+    ],
+    [
+     "CAPITALISM_WEALTH_CONCENTRATION",
+     "CAPITALISM_INNOVATION_COUNTER"
+    ],
+    [
+     "GROWTH_INEQUALITY_IMPACT",
+     "CAPITALISM_INNOVATION_COUNTER"
+    ]
+   ]
+  }
+ ]
+}

@@ -1,0 +1,152 @@
+{
+ "id": "gen",
+ "subject": "Economics",
+ "title": "Limitations of CPI",
+ "terms": {
+  "CPI_INDEX_CALC": {
+   "label": "Calculating CPI"
+  },
+  "CPI_LIMITATIONS": {
+   "label": "Limitations of CPI"
+  },
+  "CPI_LIMIT_BASKET_LAG": {
+   "label": "Outdated basket"
+  },
+  "CPI_LIMIT_SUBGROUPS": {
+   "label": "National average problem"
+  },
+  "CPI_LIMIT_HOUSING": {
+   "label": "Housing costs excluded"
+  },
+  "CPI_LIMIT_QUALITY": {
+   "label": "Quality change problem"
+  },
+  "CPI_WEIGHTING": {
+   "label": "Weighting"
+  }
+ },
+ "stages": [
+  {
+   "name": "Limitations of CPI",
+   "title": "Limitations of CPI",
+   "sub": "Work out how CPI is calculated, then see why the measure still misleads.",
+   "steps": [
+    {
+     "type": "ask",
+     "q": "Last year the index was 100. This year, with weighted prices included, it reads 104. What has happened to the general price level?",
+     "right": "It has risen by 4%",
+     "wrong": "It has risen by 104%",
+     "hint": "The index started at 100, so any rise above 100 is the percentage change itself.",
+     "pre": "Reading the change from one index number to the next is",
+     "term": "CPI_INDEX_CALC"
+    },
+    {
+     "type": "ask",
+     "q": "One weighted item's sharp price rise pushes the index up. Does the index tell you why prices rose, or just that they did?",
+     "right": "Just that they did, not why",
+     "wrong": "It explains exactly why they rose",
+     "hint": "The index is a single number worked out from weighted prices. Does a single number carry a reason with it?",
+     "pre": "So a rising index can hide real problems in how it measures inflation. These are the",
+     "term": "CPI_LIMITATIONS"
+    },
+    {
+     "type": "ask",
+     "q": "A new smartphone appears, but the CPI basket was fixed last January. Will this year's basket capture spending on it straight away?",
+     "right": "No, not until the basket is next updated",
+     "wrong": "Yes, the basket adjusts automatically",
+     "hint": "The basket is only revised once a year, not the moment new products appear.",
+     "pre": "So between updates the basket can miss new spending patterns. This is the limitation of",
+     "term": "CPI_LIMIT_BASKET_LAG"
+    },
+    {
+     "type": "ask",
+     "q": "A student and a pensioner with high heating bills are both told inflation is 4%. Does that fit either one's real costs?",
+     "right": "No, their real costs differ from the average",
+     "wrong": "Yes, it applies equally to both",
+     "hint": "CPI blends everyone's spending into one national figure. Do a student and a pensioner spend the same way?",
+     "pre": "So one national figure can hide very different experiences. This is the limitation of",
+     "term": "CPI_LIMIT_SUBGROUPS"
+    },
+    {
+     "type": "order",
+     "terms": [
+      "CPI_INDEX_CALC",
+      "CPI_LIMITATIONS",
+      "CPI_LIMIT_BASKET_LAG",
+      "CPI_LIMIT_SUBGROUPS"
+     ],
+     "prompt": "Drag and drop the 4 key terms in the order they build on each other."
+    },
+    {
+     "type": "ask",
+     "q": "A homeowner's mortgage interest payments jump sharply this year. Does CPI's basket pick that cost rise up?",
+     "right": "No, mortgage interest is not included",
+     "wrong": "Yes, it is included like other costs",
+     "hint": "CPI covers goods and services people buy, but think about what kind of cost a mortgage payment is.",
+     "pre": "So a major cost for homeowners is left out. This is the limitation of",
+     "term": "CPI_LIMIT_HOUSING"
+    },
+    {
+     "type": "ask",
+     "q": "A laptop costs the same as last year but has a much faster processor. Can CPI easily separate price change from a better product?",
+     "right": "No, it's hard to separate the two",
+     "wrong": "Yes, the extra quality is easy to price out",
+     "hint": "The price on the shelf hasn't moved, but what you get for it has changed.",
+     "pre": "So adjusting for improvements like this is the limitation of",
+     "term": "CPI_LIMIT_QUALITY"
+    },
+    {
+     "type": "derive"
+    }
+   ],
+   "given": [
+    "CPI_WEIGHTING"
+   ],
+   "needs": [
+    "CPI_WEIGHTING"
+   ],
+   "builds": [
+    "CPI_WEIGHTING"
+   ],
+   "nodes": [
+    "CPI_INDEX_CALC",
+    "CPI_LIMITATIONS",
+    "CPI_LIMIT_BASKET_LAG",
+    "CPI_LIMIT_SUBGROUPS",
+    "CPI_LIMIT_HOUSING",
+    "CPI_LIMIT_QUALITY"
+   ],
+   "dropped": [],
+   "edges": [
+    [
+     "CPI_INDEX_CALC",
+     "CPI_LIMITATIONS"
+    ],
+    [
+     "CPI_LIMITATIONS",
+     "CPI_LIMIT_BASKET_LAG"
+    ],
+    [
+     "CPI_LIMITATIONS",
+     "CPI_LIMIT_SUBGROUPS"
+    ],
+    [
+     "CPI_LIMITATIONS",
+     "CPI_LIMIT_HOUSING"
+    ],
+    [
+     "CPI_LIMITATIONS",
+     "CPI_LIMIT_QUALITY"
+    ],
+    [
+     "CPI_WEIGHTING",
+     "CPI_INDEX_CALC"
+    ],
+    [
+     "CPI_WEIGHTING",
+     "CPI_INDEX_CALC"
+    ]
+   ]
+  }
+ ]
+}

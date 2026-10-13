@@ -1,0 +1,271 @@
+{
+ "id": "gen",
+ "subject": "Economics",
+ "title": "Short-run cost curves",
+ "terms": {
+  "MC": {
+   "label": "Marginal cost"
+  },
+  "DMP": {
+   "label": "Diminishing marginal productivity"
+  },
+  "MC_SHAPE": {
+   "label": "Shape of the MC curve"
+  },
+  "AVC_ATC_SHAPE": {
+   "label": "U-shaped AVC/ATC curves"
+  },
+  "COST_REL": {
+   "label": "Relationships between cost curves"
+  },
+  "TC": {
+   "label": "Total cost"
+  },
+  "AVC": {
+   "label": "Average variable cost (AVC = TVC/Q)"
+  },
+  "ATC": {
+   "label": "Average (total) cost (ATC = TC/Q = AFC + AVC)"
+  },
+  "AFC": {
+   "label": "Average fixed cost"
+  }
+ },
+ "stages": [
+  {
+   "name": "Short-run cost curves",
+   "title": "Short-run cost curves",
+   "sub": "Why the MC, AVC and ATC curves are U-shaped, and how they relate to each other.",
+   "steps": [
+    {
+     "type": "ask",
+     "q": "A bakery's total cost rises from £100 to £114 when it bakes one more loaf. What did that one extra loaf cost to make?",
+     "right": "£14",
+     "wrong": "£100",
+     "hint": "Look only at the change in total cost caused by that one extra loaf.",
+     "pre": "The cost of producing one more unit is the",
+     "term": "MC"
+    },
+    {
+     "type": "ask",
+     "q": "A bakery has one oven. It hires workers one by one, but the oven stays fixed. After a point, does each new worker added add as much extra output as the last one did?",
+     "right": "No, each extra worker adds less output than the one before",
+     "wrong": "Yes, each extra worker adds the same extra output",
+     "hint": "The oven is fixed, so workers start queuing for oven space as more are added.",
+     "pre": "Beyond some point, extra output per extra worker falls. This is the assumption of",
+     "term": "DMP"
+    },
+    {
+     "type": "ask",
+     "q": "If each extra worker adds less extra output than the last, what happens to the cost of producing each extra loaf as more workers are hired?",
+     "right": "It rises",
+     "wrong": "It falls",
+     "hint": "Fewer extra loaves for the same extra wage means each extra loaf costs more.",
+     "pre": "So beyond that point marginal cost rises, giving marginal cost its",
+     "term": "MC_SHAPE",
+     "diagram": {
+      "x": "Quantity",
+      "y": "Cost",
+      "curves": [
+       {
+        "label": "MC",
+        "pts": [
+         [
+          0.05,
+          0.55
+         ],
+         [
+          0.3,
+          0.2
+         ],
+         [
+          0.5,
+          0.15
+         ],
+         [
+          0.75,
+          0.4
+         ],
+         [
+          0.95,
+          0.85
+         ]
+        ]
+       }
+      ]
+     }
+    },
+    {
+     "type": "order",
+     "terms": [
+      "MC",
+      "DMP",
+      "MC_SHAPE"
+     ],
+     "prompt": "Drag and drop the 3 key terms in the order they build on each other."
+    },
+    {
+     "type": "ask",
+     "q": "While marginal cost is still below average variable cost, does adding one more (cheaper than average) unit pull the average up or down?",
+     "right": "It pulls the average down",
+     "wrong": "It pulls the average up",
+     "hint": "Adding something cheaper than the current average changes the average which way?",
+     "pre": "MC below average pulls the average down, MC above average pulls it up, so AVC and ATC are the",
+     "term": "AVC_ATC_SHAPE",
+     "diagram": {
+      "x": "Quantity",
+      "y": "Cost",
+      "curves": [
+       {
+        "label": "AVC",
+        "pts": [
+         [
+          0.05,
+          0.7
+         ],
+         [
+          0.3,
+          0.35
+         ],
+         [
+          0.5,
+          0.28
+         ],
+         [
+          0.75,
+          0.4
+         ],
+         [
+          0.95,
+          0.7
+         ]
+        ]
+       },
+       {
+        "label": "ATC",
+        "pts": [
+         [
+          0.05,
+          0.85
+         ],
+         [
+          0.3,
+          0.5
+         ],
+         [
+          0.55,
+          0.38
+         ],
+         [
+          0.8,
+          0.5
+         ],
+         [
+          0.95,
+          0.78
+         ]
+        ]
+       }
+      ]
+     }
+    },
+    {
+     "type": "ask",
+     "q": "Average fixed cost is total fixed cost spread over output. As output keeps rising while fixed cost stays the same, does average fixed cost ever turn back upwards?",
+     "right": "No, it just keeps falling",
+     "wrong": "Yes, it eventually rises again",
+     "hint": "The same fixed amount divided by an ever bigger quantity: does that ratio ever increase?",
+     "pre": "Since AFC never turns up while MC crosses AVC and ATC at their lowest points, these are the",
+     "term": "COST_REL"
+    },
+    {
+     "type": "derive"
+    }
+   ],
+   "given": [
+    "TC",
+    "AVC",
+    "ATC",
+    "AFC"
+   ],
+   "needs": [
+    "TC",
+    "AVC",
+    "ATC",
+    "AFC"
+   ],
+   "builds": [
+    "TC",
+    "AVC",
+    "ATC",
+    "AFC"
+   ],
+   "nodes": [
+    "MC",
+    "COST_REL",
+    "DMP",
+    "MC_SHAPE",
+    "AVC_ATC_SHAPE"
+   ],
+   "dropped": [],
+   "edges": [
+    [
+     "MC",
+     "COST_REL"
+    ],
+    [
+     "DMP",
+     "MC_SHAPE"
+    ],
+    [
+     "MC",
+     "MC_SHAPE"
+    ],
+    [
+     "MC_SHAPE",
+     "AVC_ATC_SHAPE"
+    ],
+    [
+     "TC",
+     "MC"
+    ],
+    [
+     "AVC",
+     "COST_REL"
+    ],
+    [
+     "ATC",
+     "COST_REL"
+    ],
+    [
+     "AFC",
+     "COST_REL"
+    ],
+    [
+     "AVC",
+     "AVC_ATC_SHAPE"
+    ],
+    [
+     "ATC",
+     "AVC_ATC_SHAPE"
+    ],
+    [
+     "MC",
+     "COST_REL"
+    ],
+    [
+     "DMP",
+     "MC_SHAPE"
+    ],
+    [
+     "MC",
+     "MC_SHAPE"
+    ],
+    [
+     "MC_SHAPE",
+     "AVC_ATC_SHAPE"
+    ]
+   ]
+  }
+ ]
+}

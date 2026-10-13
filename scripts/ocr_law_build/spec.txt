@@ -1,0 +1,1323 @@
+   Qualification              Oxford Cambridge and RSA
+   Accredited
+
+A LEVEL
+Specification
+
+LAW
+
+H415
+
+For first assessment in 2019
+
+Version 1.2 (February 2021)   ocr.org.uk/law
+Disclaimer                 Specifications are updated over time. Whilst every effort is made to check all
+                           documents, there may be contradictions between published resources and the
+Registered office:         specification, therefore please use the information on the latest specification at
+The Triangle Building      all times. Where changes are made to specifications these will be indicated within
+Shaftesbury Road           the document, there will be a new version number indicated, and a summary
+Cambridge                  of the changes. If you do notice a discrepancy between the specification and a
+CB2 8EA                    resource please contact us at: resources.feedback@ocr.org.uk
+OCR is an exempt charity.
+                           We will inform centres about changes to specifications. We will also publish
+                           changes on our website. The latest version of our specifications will always be
+                           those on our website (ocr.org.uk) and these may differ from printed versions.
+
+                           © 2021 OCR. All rights reserved.
+
+                           Copyright
+                           OCR retains the copyright on all its publications, including the specifications.
+                           However, registered centres for OCR are permitted to copy material from this
+                           specification booklet for their own internal use.
+
+                           Oxford Cambridge and RSA is a Company Limited by Guarantee. Registered in
+                           England. Registered company number 3484466.
+Contents
+
+1 Why choose an OCR A Level in Law?2
+
+            1a. Why choose an OCR qualification?                        2
+
+            1b. Why choose an OCR A Level in Law?                       3
+
+            1c. What are the key features of this specification?        3
+
+            1d. What is new in OCR A Level in Law?                      4
+
+            1e. How do I find out more information?                     4
+
+2 The specification overview 5
+
+            2a. OCR's A Level in Law (H415)                             5
+
+            2b. Content of A Level in Law (H415)                        6
+
+            2c. Content of H415/01 - The legal system and criminal law  7
+
+            2c. Content of H415/02 - Law making and the law of tort     9
+
+            2c. Content of H415/03 - Further law                        11
+
+            2c. Legal Skills                                            14
+
+            2d. Prior knowledge, learning and progression               14
+
+3 Assessment of A Level in Law (H415)15
+
+            3a. Forms of assessment                                     15
+
+            3b. Assessment objectives (AO)                              18
+
+            3c. Assessment availability                                 19
+
+            3d. Retaking the qualification                              19
+
+            3e. Assessment of extended response                         19
+
+            3f. Synoptic assessment                                     19
+
+            3g. Calculating qualification results                       19
+
+4 Admin: what you need to know20
+
+            4a. Pre-assessment                                          20
+
+            4b. Special consideration                                   21
+
+            4c. External assessment arrangements                        21
+
+            4d. Results and certificates                                22
+
+            4e. Post-results services                                   22
+
+            4f. Malpractice                                             22
+
+5 Appendices23
+
+            5a. Overlap with other qualifications                       23
+
+            5b. Accessibility                                           23
+
+            5c. Levels of Assessment                                    24
+
+                Summary of updates                                      25
+
+© OCR 2021
+
+A Level in Law                                                              1
+1 Why choose an OCR A Level in Law?
+
+1a. Why choose an OCR qualification?
+
+Choose OCR and you've got the reassurance that              We provide a range of support services designed to
+
+1 you're working with one of the UK's leading exam          help you at every stage, from preparation through to
+         boards. Our new A Level in Law has been developed  the delivery of our specifications. This includes:
+
+in consultation with teachers, employers and Higher
+
+Education to provide learners with a qualification          · A wide range of high-quality creative resources
+
+that's relevant to them and meets their needs.              including:
+
+                                                            · Delivery Guides
+
+We're part of the Cambridge Assessment Group,               · Transition Guides
+
+Europe's largest assessment agency and a                    · Topic Exploration Packs
+
+department of the University of Cambridge.                  · Lesson Elements
+
+Cambridge Assessment plays a leading role in                · ...and much more.
+
+developing and delivering assessments throughout
+
+the world, operating in over 150 countries.                 · Access to Subject Advisors to support you
+
+                                                            through the transition and throughout the
+
+We work with a range of education providers,                lifetimes of the specifications.
+
+including schools, colleges, workplaces and other
+
+institutions in both the public and private sectors.        · CPD/Training for teachers to introduce the
+
+Over 13,000 centres choose our A Levels, GCSEs and          qualifications and prepare you for first
+
+vocational qualifications including Cambridge               teaching.
+
+Nationals and Cambridge Technicals.
+
+                                                            · Active Results - our free results analysis service
+
+Our Specifications                                          to help you review the performance of
+
+                                                            individual learners or whole schools.
+
+We believe in developing specifications that help you
+
+bring the subject to life and inspire your learners to      Our Resource Partner textbook will develop
+
+achieve more.                                               knowledge and skills with its comprehensive coverage
+
+                                                            of the assessment structure and all the law topics
+
+We've created teacher-friendly specifications based         your students need to know.
+
+on extensive research and engagement with the
+
+teaching community. They're designed to be                  All A level qualifications offered by OCR are
+
+straightforward and accessible so that you can tailor accredited by Ofqual, the Regulator for qualifications
+
+the delivery of the course to suit your needs. We aim offered in England. The accreditation number for
+
+to encourage learners to become responsible for their OCR's A Level in Law is QN603/0706/7.
+
+own learning, confident in discussing ideas,
+
+innovative and engaged.
+
+                                                                                                           © OCR 2021
+
+2                                                                                                          A Level in Law
+1b. Why choose an OCR A Level in Law?
+
+This engaging course has been developed following      business. Learners will develop their knowledge of
+
+the input of teachers and higher education             1 the law in England, and an awareness of law in a
+stakeholders. The content has been designed to
+                                                       European and global context. The course will enable
+
+inspire, nurture and develop learners. It will foster  learners to know and understand the changing nature
+
+their interest and enjoyment in law. The qualification of law and the interaction between law, morals,
+
+is designed to develop knowledge and skills for the    justice, society and technology.
+
+further study of law, and related subjects, such as
+
+Aims and learning outcomes
+
+OCR's A Level in Law will encourage learners to:
+
+· develop their knowledge and understanding of ·                          develop the ability to construct conclusions and
+       the English legal system and areas of both                         communicate legal arguments by reference to
+       private and public law within the law of                           appropriate legal authorities
+       England and Wales
+                                                                       ·  develop the ability to communicate persuasive
+                                                                          legal arguments by reference to appropriate
+· develop an understanding of legal method and                            legal authorities
+       reasoning as used by lawyers and the judiciary
+                                                                          be able to demonstrate critical awareness of
+· develop and apply the techniques of legal            ·                  the influence and operation of the law in
+                                                                          society.
+method and reasoning to analyse and offer
+
+answers to problems, based on legal principles,
+
+legislation and case law
+
+1c. What are the key features of this specification?
+
+The key features of OCR's A Level in Law for you and   · specialist support and quality resources
+your learners are:                                     · an opportunity to specialise in human rights
+
+· a straightforward specification with a                      law or the law of contract
+       straightforward assessment model                · co-teachability between AS and A Level
+                                                       · breadth, with a range of legal subjects.
+
+© OCR 2021
+
+A Level in Law                                                                                             3
+1d. What is new in OCR A Level in Law?
+
+         This section is intended for teachers currently    the A Level in Law (H415) for first teaching from
+                                                            September 2017:
+1 delivering OCR A Level in Law. It highlights the
+         differences between the A Level in Law (H534) and
+
+   What stays the same?                                     What's changing?
+
+   · Assessment is at the end of the course                 · The assessment consists of three exams,
+   · Assessment focuses on knowledge and                            two hours each
+
+           understanding; applying legal rules and          · Assessment styles are consistent across all
+           principles and analysis and evaluation                   three components
+   · Content and structure are familiar although
+           updated                                          · Shorter questions
+   · Learners will study the English legal system           · Learners will study three substantive areas
+           and substantive law
+   · Engaging introduction to law.                                  of law - criminal law, law of tort and law
+                                                                    of contract or the new option in human
+                                                                    rights law.
+
+1e. How do I find out more information?
+
+If you are already using OCR specifications you can         Find out more?
+contact us at: www.ocr.org.uk                               Ask a Subject Advisor:
+                                                            Email: Law@ocr.org.uk
+If you are not already a registered OCR centre then         Phone: 01223 553998
+you can find out more information on the benefits of        Twitter: @OCR_Law
+becoming one at: www.ocr.org.uk
+
+If you are not yet an approved centre and would like
+to become one go to: www.ocr.org.uk
+
+                                                            E-bulletins: www.ocr.org.uk/updates
+
+                                                            Community: www.ocr.org.uk/community
+
+                                                                                                 © OCR 2021
+
+4                                                                                                A Level in Law
+2 The specification overview
+
+2a. OCR's A Level in Law (H415)
+
+Learners take components 01, 02 and 03 to be awarded the OCR A Level in Law.
+
+  Content Overview   Assessment Overview
+
+The legal system     The legal system                                                        2
+                       and criminal                                           33%
+25 marks out of 100      Law (01)                                             of total
+
+Criminal law            100 marks                                             A level
+
+75 marks out of 100    2 hour paper
+
+Law making           Law making and the                                       33%
+                        law of tort (02)                                      of total
+25 marks out of 100                                                           A level
+                          100 marks
+The law of tort
+                         2 hour paper
+75 marks out of 100
+
+The Nature of Law        Further law (03)                                     33%
+                       (including option of                                   of total
+25 marks out of 100  human rights law or law                                  A level
+
+Human rights law or         of contract)
+The law of contract
+                             100 marks
+75 marks out of 100
+                           2 hour paper
+
+All components include synoptic assessment.
+
+Twelve month rule:
+
+While learners are encouraged to be aware of the changing nature of law, they are not required to be familiar
+with innovations coming into effect in the twelve months immediately preceding the examination.
+
+© OCR 2021
+
+A Level in Law                                                                                                 5
+2b. Content of A Level in Law (H415)
+
+The OCR A Level in Law content focuses on the                 construct and communicate legal arguments by
+
+English legal system and areas of both private and            reference to appropriate legal authorities. The A Level
+
+public law within the law of England and Wales.               in Law will develop learners' knowledge of law
+
+Learners will be required to show knowledge and               through advanced study of an additional legal subject
+
+understanding of the nature of law and the English            - human rights law or the law of contract. They will
+
+2 legal system. This will provide learners with the           develop their critical awareness of the law through
+         foundation for the study of both private and public  the study of the nature of law.
+
+law. This specification will develop learners'
+
+understanding of legal method and reasoning through The English legal system and the nature of law is split
+
+the study of statutory interpretation and judicial            into three sections:
+
+precedent.
+
+                                                              · Component 01 Section A: the legal system
+
+Learners will be introduced to the concept of legal           · Component 02 Section A: law making
+
+liability through the study of criminal law and the law · Component 03: Section A: the nature of law
+
+of tort. This will enable them to develop and apply
+
+the techniques of legal method and reasoning to               Each section A is worth 8 % of the overall marks
+
+analyse and offer answers to legal problems, based            - the English legal system and the nature of law
+
+on legal rules and principles and develop the ability to accounts for 25% of the overall qualification.
+
+The A Level specification content is set out in two parts:
+
+Topic:                 Content:
+Topics to be explored  Subject content that learners need to know for the assessment of this qualification.
+
+The legal system and criminal law (Component 01)
+
+This component introduces learners to the legal               This component is split into two sections, Section A:
+system. It also introduces learners to the concept            the legal system and Section B: criminal law.
+of liability through an introduction to criminal law.
+
+Law making and the law of tort (Component 02)
+
+This component introduces learners to the law                 This component is split into two sections, Section A:
+making. It also introduces learners to the concept of         law making and Section B: the law of tort.
+liability through an introduction to the law of tort.
+
+Further Law (Component 03)                                    either human rights law or the law of contract. This
+                                                              component is split into two sections, Section A: the
+This component will enable learners to extend                 nature of law and Section B: human rights law or the
+their study of law. They will explore and consider            law of contract.
+in more detail the nature of law and develop their
+legal knowledge through the study of one option,                                                                                         © OCR 2021
+                                                                                                                                       A Level in Law
+6
+2c. Content of H415/01 - The legal system and criminal law
+
+Section A: The legal system
+
+This section focuses on the civil and criminal courts,  processes and people involved in the law and the
+
+the legal professions and access to justice. Learners   changing nature of the legal system.
+
+will develop knowledge and understanding of the
+
+                                                                    2
+
+Topic:                  Content:
+
+Civil courts and other  · County Court and High Court: jurisdictions, pre-trial procedures, the three
+forms of dispute                tracks
+resolution
+                        · Appeals and appellate courts
+                        · Tribunals and Alternative Dispute Resolution
+                        · Online courts and Online Dispute Resolution
+                        · Evaluation of the civil courts and other forms of dispute resolution
+
+Criminal courts and lay · Criminal process: Jurisdiction of the Magistrates' Court and the Crown
+
+people                  Court, including classification of offences and pre-trial procedures
+
+                        · Appeals and appellate courts
+
+                        · Sentencing and court powers: aims, factors and types of sentences
+
+                        · Lay magistrates and juries: qualifications, selection, appointment and
+
+                        their role in criminal cases
+
+                        · Evaluation of the different types of sentences and of using lay people in
+
+                        criminal cases
+
+Legal personnel         · Barristers, solicitors and legal executives: qualifications, training, work and
+                                the regulation of legal professions
+
+                        · Changes and trends in legal services, including the impact of technology
+                                and globalisation
+
+                        · The judiciary: qualifications, selection and appointment, training, role,
+                                retirement and removal
+
+                        · The separation of powers and the independence of the judiciary
+                        · Evaluation of the legal professions and the judiciary
+
+Access to justice       · Government funding for civil and criminal cases
+                        · Private funding, conditional fees, other advice agencies
+                        · Evaluation of access to justice
+
+© OCR 2021
+
+A Level in Law                                                                                             7
+Section B: Criminal law
+
+This section focuses on the rules and general         understanding of criminal law and the skills to apply
+elements of criminal law and provides an              their legal knowledge to scenario-based situations
+introduction to criminal liability through the study  and gain a critical awareness of the present state of
+of offences against the person and offences against   criminal law.
+property. Learners will develop their knowledge and
+
+2                        Content:
+
+          Topic:
+
+   Rules and theory      ·                 An outline of the rules of criminal law
+                                           An overview of the theory of criminal law
+                         ·
+                                           Actus reus: conduct and consequence crimes; voluntary acts and
+   General elements of   ·                 omissions; involuntariness; causation
+                                           Mens rea: fault; intention and subjective recklessness; negligence
+   criminal liability                      and strict liability; transferred malice; coincidence of actus reus and
+                                           mens rea
+                         ·
+                                           Murder: actus reus and mens rea
+   Fatal offences against the ·            Voluntary manslaughter: defences of loss of control and diminished
+                                           responsibility under Coroners and Justice Act 2009
+   person                ·                 Involuntary manslaughter: unlawful act manslaughter and gross
+                                           negligence manslaughter
+                         ·
+                                           Common assault: assault and battery under s39 Criminal Justice
+   Non-fatal offences against ·            Act 1988
+   the person                              Assault occasioning actual bodily harm, wounding and grievous
+                                           bodily harm under s47, s20, s18 Offences Against the Person Act 1861
+                                        ·
+                                           Theft under s1 Theft Act 1968
+   Offences against property ·             Robbery under s8 Theft Act 1968
+                                        ·  Burglary under s9(1)(a) and s9(1)(b) Theft Act 1968
+                                        ·
+                                           Insanity, automatism, intoxication
+   Mental capacity defences ·
+                                           Self-defence, duress by threats, duress of circumstances and necessity
+   General defences      ·                 Consent
+
+                         ·                 Attempts: the actus reus and mens rea; impossibility
+
+   Preliminary offences  ·                 Critical evaluation of offences against the person, offences against
+                                           property and defences including ideas for reform
+   Evaluation            ·
+
+                                                      © OCR 2021
+
+8                                                     A Level in Law
+2c. Content of H415/02 - Law making and the law of tort
+
+Section A: Law making
+
+This section focuses on law making in England and   concepts. They will develop an understanding of legal
+Wales as well as the European Union. Learners will  method and reasoning as used by lawyers and the
+study law making methods and their underpinning     judiciary.
+
+                                                                                      2
+
+Topic:          Content:
+
+Parliamentary ·        Influences on Parliament: political, public opinion, media, pressure groups and
+law making             lobbyists
+                       Legislative process - Green and White Papers, different types of Bill, legislative stages
+                    ·  in the House of Commons and the House of Lords and the role of the Crown
+                       Advantages and disadvantages of influences on law making
+                ·      Advantages and disadvantages of the legislative process
+                ·
+                       Types of delegated legislation: Orders in Council, Statutory Instruments and By-laws
+Delegated       ·      Controls on delegated legislation by Parliament and the courts, and their
+                       effectiveness
+legislation     ·      Reasons for the use of delegated legislation
+                       Advantages and disadvantages of delegated legislation
+                ·
+                ·      Rules of statutory interpretation: the literal rule, the golden rule and the mischief
+                       rule
+Statutory       ·      The purposive approach
+                       Aids to interpretation: rules of language, intrinsic and extrinsic aids
+interpretation         Impact of European Union Law and the Human Rights Act 1998 on statutory
+                       interpretation
+                ·      Advantages and disadvantages of the different approaches and aids to statutory
+                       interpretation
+                ·
+                       The Doctrine of Precedent including stare decisis, ratio decidendi and obiter dicta
+                ·      The hierarchy of the courts including the Supreme Court
+                       Binding, persuasive and original precedent; overruling; reversing; distinguishing
+                ·      Advantages and disadvantages of precedent
+
+Judicial        ·      Law reform including the Law Commission
+                       Advantages and disadvantages of law reform bodies
+precedent       ·
+                       Institutions of the European Union
+                ·      Sources of European Union law
+                       Impact of European Union law on the law of England and Wales
+                ·
+
+Law reform ·
+                    ·
+
+European        ·
+
+Union law       ·
+
+                ·
+
+© OCR 2021
+
+A Level in Law                                                                                                    9
+Section B: The law of tort
+
+This section focuses on the rules of tort, liability      of tort and the skills to apply their legal knowledge
+in negligence, occupiers' liability and remedies.         to scenario-based situations and gain a critical
+It provides an introduction to civil liability. Learners  awareness of the present state of the law of tort.
+will develop knowledge and understanding of the law
+
+2 Topic:                 Content:
+
+Rules and theory         · An outline of the rules of the law of tort
+                         · An overview of the theory of the law of tort
+
+Liability in negligence  · Liability in negligence for injury to people and damage to property
+                         · The duty of care: Donoghue v Stevenson (1932) and the neighbour
+
+                                 principle, and Caparo test
+                         · Breach of duty: the objective standard of care and the reasonable man;
+
+                                 risk factors
+                         · Damage: factual causation and the `but for' test; legal causation
+
+Occupiers' liability     · Liability in respect of lawful visitors (Occupiers' Liability Act 1957)
+                         · Liability in respect of trespassers (Occupiers' Liability Act 1984)
+
+Torts connected to land · Public and private nuisance
+                                   · Rylands v Fletcher
+
+Vicarious liability      · Nature and purpose of vicarious liability
+                         · Liability for employees, including testing employment status and torts in
+
+                                 or not in the course of employment
+                         · Liability for the crimes of employees and liability for independent
+
+                                 contractors
+
+Defences                 · Contributory negligence
+                         · Volenti non fit injuria
+                         · Defences specific to claims connected to nuisance and Rylands v Fletcher
+
+Remedies                 · Compensatory damages
+                         · Mitigation of loss
+                         · Injunctions
+
+Evaluation               · Critical evaluation of liability in negligence, occupiers' liability, torts
+                                 connected to land and vicarious liability, including ideas for reform
+
+                                                                                                    © OCR 2021
+
+10                                                                       A Level in Law
+2c. Content of H415/03 - Further law
+
+Section A: The nature of law
+
+This compulsory section focuses on the nature of law.  Learners will be expected to bring together the
+
+Learners will explore the nature of law in a wider     different areas of knowledge and understanding of
+
+context and develop their understanding of how the law the English legal system and the nature of law, legal
+
+2 interacts with morality, justice, society and technology.
+
+They will consider the changing nature of law.
+                                                       rules and principles, concepts and issues from across
+                                                       the full course of study.
+
+Topic:               Content:
+Introduction to the
+nature of law        · Law and rules: the difference between enforceable legal rules and principles
+                             and other rules and norms of behaviour
+Law and morality
+Law and justice      · The connections between law, morality and justice
+Law and society      · The differences between civil and criminal law
+Law and technology   · An overview of the development of English Law: custom, common law,
+
+                             equity, statute law
+                     · An overview of common law and civil law legal systems
+                     · The rule of law: definition and importance
+
+                     · The distinction between law and morals
+                     · The diversity of moral views in a pluralist society
+                     · The relationship between law and morals and its importance
+                     · The legal enforcement of moral values
+
+                     · The meaning of justice
+                     · Theories of justice
+                     · The extent to which the law achieves justice
+
+                     · The role law plays in society
+                     · The law as a social control mechanism
+                     · The way in which the law creates and deals with consensus and conflict
+                     · The realist approach to law making
+
+                     · The intersection of law and technology
+                     · Key issues, including privacy and data protection and cyber-crime
+                     · Cross-border issues and future challenges
+
+© OCR 2021
+
+A Level in Law                                                                                                11
+Section B Option 1: Human rights law
+
+Learners will be required to choose either this option enforcement through the courts. Learners
+
+on human rights law or the option on law of contract. will develop knowledge and understanding of
+
+This option focuses on human rights, including        human rights law, the skills to apply their legal
+
+their nature, protection and constitutional position  knowledge to scenario-based situations and
+
+under UK law. Specific rights are explored in detail  gain a critical awareness of the present state of
+
+2 as are the restrictions upon them and the process of human rights law.
+
+Topic:              Content:
+
+Rules and theory    ·     An outline of the rules of human rights law
+                          An overview of the theory of human rights law
+                    ·
+                          An overview of the development of human rights in the UK, including
+Protection of the   ·     Magna Carta 1215 and the Bill of Rights 1688
+                          The history of the European Court of Human Rights
+individual's human        The impact of the Human Rights Act 1998
+                          The entrenched nature of the Human Rights Act 1998 in the devolution
+rights and freedoms in ·  settlements of Scotland, Wales and Northern Ireland
+
+the UK              ·     Article 5: the right to liberty and security
+                          Article 6: the right to a fair trial
+                    ·     Article 8: the right to respect for family and private life
+                          Article 10: the right to freedom of expression
+Key provisions of the ·   Article 11: freedom of assembly
+
+European Convention ·     Restrictions permitted by the European Convention on Human Rights
+                          Public order offences
+on Human Rights     ·     Police powers
+                          Interception of communications
+                    ·     Duty of confidentiality
+                          Obscenity
+                    ·     Torts of defamation and trespass
+                          Harassment
+Restrictions on human ·
+                          Role of domestic courts
+rights law          ·     The process of judicial review
+                          The role of the European Court of Human Rights
+                    ·
+                          Critical evaluation of human rights protection in the UK, the European
+                    ·     Convention on Human Rights and the Human Rights Act 1998, including
+                          ideas for reform
+                    ·
+
+                    ·
+
+                    ·
+
+                    ·
+
+Enforcement of human ·
+
+rights law          ·
+
+                    ·
+
+Evaluation          ·
+
+                                                                                                  © OCR 2021
+
+12                                                                                               A Level in Law
+Section B Option 2: The law of contract
+
+Learners will be required to choose either this option  and understanding of the law of contract, the skills
+on the law of contract or the option on human rights    to apply their legal knowledge to scenario-based
+law. This option focuses on the central elements        situations and gain a critical awareness of the present
+of contract law from the formation of contracts to      state of the law of contract.
+their enforcement. Learners will develop knowledge
+
+Topic: Content: 2
+
+Rules and theory   · An outline of the rules of the law of contract
+Formation          · An overview of the theory of the law of contract
+
+Terms              · Offer and acceptance, including the rules of communication and
+Vitiating factors          revocation
+Discharge
+Remedies           · Intention to create legal relations: domestic and commercial,
+Evaluation                 presumptions and rebuttals
+
+                   · Consideration: adequacy, sufficiency, past consideration, pre-existing
+                           duties
+
+                   · Privity: the rights of third parties under the Contract (Rights of Third
+                           Parties) Act 1999 and common law exceptions
+
+                   · Express and implied terms, including the Consumer Rights Act 2015
+                   · Types of term: conditions, warranties, innominate terms
+                   · Exclusion and limitation clauses, including the Unfair Contract Terms
+
+                           Act 1977 and the Consumer Rights Act 2015
+
+                   · Misrepresentation, including omission in consumer contexts
+                   · Economic duress
+
+                   · Performance
+                   · Frustration
+                   · Breach of contract: actual and anticipatory breach
+
+                   · Damages: compensatory damages; causation and remoteness of
+                           damage; mitigation of loss
+
+                   · Equitable remedies
+                   · Consumer remedies under the Consumer Rights Act 2015
+
+                   · Critical evaluation of formation and contract terms, including ideas
+                           for reform
+
+© OCR 2021
+
+A Level in Law                                                                                 13
+2c. Legal Skills
+
+This qualification:                                            those legal principles to a hypothetical
+
+2 · develops competence in using legal skills                  scenario. Evaluation must require learners
+                 during the study of the nature of law, legal  to formulate a reasoned argument to support
+                 issues and the English legal system, and the  a particular proposition by reference to
+                 private and public areas of substantive law.  the relevant legal rules and principles that
+                                                               support that argument.
+
+· requires learners to demonstrate their ability
+    to analyse a factual scenario by identifying the · requires learners to construct clear, concise
+                                                               and logical legal arguments which are
+    key facts from which legal issues arise.
+                                                               substantiated by legal authority, using
+
+· requires learners, when formulating a legal                  appropriate legal terminology. In addition,
+
+    argument, to be able to analyse legislation by             learners must be required to construct a
+
+    applying the rules and principles of statutory             persuasive argument including instances
+
+    interpretation; and analyse case law by                    where they have recognised that there are
+
+    applying the doctrine of precedent.                        no clear legal precedents or conflicting
+
+· requires learners, in respect of each private                precedents to solve a problem.
+
+    and public area of substantive law they are                · requires learners to analyse and critically
+
+    required to study, to analyse, apply and                   evaluate legal issues by identifying different
+
+    evaluate the legal rules and principles of that            perspectives, being able to support their
+
+    area of law. Analysis and application must                 identification of the strongest viewpoint and
+
+    include the ability to identify and breakdown              demonstrating the ability to counter
+
+    into constituent parts the relevant legal rules            alternative viewpoints.
+
+    and principles for each area of law and apply
+
+2d. Prior knowledge, learning and progression
+
+· No prior learning or knowledge of the subject · This qualification provides a suitable
+
+    is required.                                               opportunity for the study of law or related
+
+· Throughout the course of study, learners are                 courses in higher education. Equally, it is
+        encouraged to develop a critical awareness of          suitable for learners intending to pursue
+        how legal institutions operate in society and          business careers or further study in business,
+        the changing nature of law in society.                 social sciences or as part of a course of general
+                                                               education.
+
+                                                                                                        © OCR 2021
+
+14                                                                                                   A Level in Law
+3 Assessment of A Level in Law (H415)
+
+3a. Forms of assessment
+
+OCR's A Level in Law is a linear qualification with
+100% external assessment. The qualification consists
+of three components. All components will test all
+three assessment objectives (AO1, AO2 and AO3).
+
+The legal system and criminal law (H415/01)           Section A: the legal system
+100 marks                                             A choice of medium tariff questions
+
+Law making and the law of tort (H415/02)              3 Section B: criminal law
+100 marks
+                                                      Legal scenario and extended response questions
+Further law (H415/03)                                 Section A: law making
+100 marks                                             A choice of medium tariff questions
+                                                      Section B: the law of tort
+                                                      Legal scenario and extended response questions
+                                                      In this component the nature of law is compulsory
+                                                      and learners must choose between either human
+                                                      rights law or the law of contract.
+                                                      Section A: the nature of law
+                                                      A choice of extended response questions
+                                                      Section B: human rights law or the law of contract
+                                                      Legal scenario and extended response questions
+
+© OCR 2021
+
+A Level in Law                                        15
+Components 01 and 02
+
+Components 01 and 02 have exactly the same structure. The structure will follow this pattern:
+
+    Questions  AO1  AO2 1a/1b                         AO3 1a  AO3 1b                           Total
+
+    1-2        10   0                                 0       0                                 10
+                                                                                                15
+    3-4        0    0                                 0       15                                25
+                                                                                                25
+    5 or 8     10   15                                0       0                                 25
+                                                                                               100
+3 6 or 9 10 15 0 0
+    7 or 10    10   0                                 15      0
+
+    Total      40   30                                15      15
+
+Section A                                             Section B
+
+Learners will answer two questions.                   All Section B questions are worth 25 marks.
+
+Questions 1-2 will require learners to demonstrate    Learners will answer Part 1 or Part 2, each composing
+their knowledge and understanding of the English      of two scenario questions and one essay question.
+legal system. Learners will answer one question from
+two. Questions 1-2 are worth 10 marks.                Questions 5, 6, 8 and 9 will require learners to
+                                                      demonstrate knowledge and understanding of legal
+Questions 3-4 will require learners to analyse and    rules and principles and to apply legal rules and
+evaluate legal concepts. Learners will answer one     principles to given scenarios in order to present a
+question from two. Questions 3-4 do not require a     legal argument using appropriate legal terminology.
+conclusion and are worth 15 marks.                    Learners will use their legal reasoning developed
+                                                      through the study of statutory interpretation and
+                                                      judicial precedent. The scenarios may or may not
+                                                      be related - this will be made clear on the
+                                                      assessment material.
+
+                                                      Questions 7 and 10 will require learners to
+                                                      demonstrate knowledge and understanding of legal
+                                                      rules and principles and analyse and evaluate
+                                                      legal rules and principles. Learners will be required
+                                                      to consider the law in relation to the relevant legal
+                                                      theory. This question is separate from the scenarios
+                                                      and is considered an extended response question. It
+                                                      should be treated as an essay requiring a conclusion.
+
+                                                                                               © OCR 2021
+
+16                                                                                             A Level in Law
+Component 03
+
+Component 03 has the following structure:
+
+Questions       AO1  AO2 1a/1b                          AO3 1a  AO3 1b  Total
+
+1 or 2          10                         0            0       15      25
+
+3, 6, 9 or 12   10                         15           0       0       25
+
+4, 7, 10 or 13  10                         15           0       0       25
+
+3 5, 8, 11 or 1410                         0            15      0       25
+
+Total           40                         30           15      15      100
+
+Section A                                               Section B
+
+Learners will answer one question from two.             All Section B questions are worth 25 marks.
+
+Questions 1-2 will require learners to demonstrate      Learners will answer Option 1 or Option 2, and from
+knowledge and understanding of the English legal        these options either Part 1 or Part 2, each composing
+system and legal rules and principles, and analyse and  of two scenario questions and an essay question.
+evaluate legal concepts and issues. Learners will be
+required to draw together their knowledge and           Questions 3, 4, 6, 7, 9, 10, 12 and 13 will require
+understanding from across their full course of study.   learners to demonstrate knowledge and
+This question is considered an extended response        understanding of legal rules and principles and to
+question. It should be treated as an essay requiring    apply legal rules and principles to given scenarios in
+a conclusion.                                           order to present a legal argument using appropriate
+                                                        legal terminology. Learners will use their legal
+Section A questions are worth 25 marks.                 reasoning developed through the study of statutory
+                                                        interpretation and judicial precedent. The scenarios
+                                                        may or may not be related. This will be made clear on
+                                                        the assessment material.
+
+                                                        Questions 5, 8, 11 and 14 will require learners to
+                                                        demonstrate knowledge and understanding of legal
+                                                        rules and principles and analyse and evaluate legal
+                                                        rules and principles. Learners will be required to
+                                                        consider the law in relation to the relevant legal
+                                                        theory. This question is separate from the scenarios
+                                                        and is considered an extended response question. It
+                                                        should be treated as an essay requiring a conclusion.
+
+© OCR 2021
+
+A Level in Law                                                                 17
+Command words
+
+Explain or describe is to demonstrate knowledge and             Discuss is to analyse and evaluate legal rules,
+understanding of the English legal system and legal             principles, concepts and issues. Learners are not
+rules and principles (AO1).                                     expected to give a conclusion (AO3).
+
+         Advise is to demonstrate knowledge and                 Discuss the extent to which is to demonstrate
+         understanding of legal rules and principles (AO1),     knowledge and understanding of the English legal
+         and, in combination, apply legal rules and principles  system and legal rules and principles (AO1), and, in
+         to given scenarios in order to present a legal         combination, analyse and evaluate legal rules,
+         argument using appropriate legal terminology           principles, concepts and issues. Learners are expected
+                                                                to give a conclusion (AO3).
+3 (AO2).
+
+      3b. Assessment objectives (AO)
+
+There are three Assessment Objectives in OCR A Level            Learners are expected to demonstrate their ability to:
+in Law. These are detailed in the table below.
+
+                                                                Assessment Objective
+
+    AO1 Demonstrate knowledge and understanding of the English legal system
+                     and legal rules and principles.
+
+    AO2 Apply legal rules and principles to given scenarios in order to present a legal
+                     argument using appropriate legal terminology.
+
+    AO3        Analyse and evaluate legal rules, principles, concepts and issues.
+
+AO weightings in A Level in Law
+
+The relationship between the assessment objectives and the components are shown in the table below:
+
+                                                                % of overall A level in Law (H415)
+
+               Component
+
+                                                                AO1                   AO2  AO3
+
+The legal system and criminal law (H415/01)                     13                    10   10
+Law making and the law of tort (H415/02)
+Further law (H415/03)                                           13                    10   10
+
+                               Total                            13                    10   10
+
+                                                                40                    30   30
+
+                                                                                           © OCR 2021
+
+18                                                                                         A Level in Law
+3c. Assessment availability                             examination series at the end of the course.
+
+There will be one examination series available each     This specification will be certificated from the June
+year in May/June to all learners.                       2019 examination series onwards.
+
+All examined components must be taken in the same
+
+3d. Retaking the qualification
+
+Learners can retake the qualification as many times as
+
+3 they wish. They retake all components of the
+
+qualification.
+
+3e. Assessment of extended response
+
+The assessment materials for this qualification         The quality of extended response will be assessed in
+provide learners with the opportunity to demonstrate    the evaluation essay questions for each area of law
+their ability to construct and develop a sustained and  and in the nature of law essay questions which are
+coherent line of reasoning and marks for extended       marked with an asterisk in the assessment material.
+responses are integrated into the marking criteria.
+
+3f. Synoptic assessment
+
+· Synoptic assessment is the learners'                  answering scenario questions on criminal law
+
+understanding of the connections between                and the law of tort, applying legal rules and
+
+different elements of the subject. It involves          principles to given scenarios in order to
+
+the explicit drawing together of knowledge,             present a legal argument using appropriate
+
+skills and understanding within different parts         legal terminology.
+
+of the A level course.                                  · At A level learners will answer questions on
+
+· The emphasis of synoptic assessment is to             the nature of law in Component 03. This will
+
+encourage the understanding of law as a                 focus on how the law interacts with morality,
+
+discipline.                                             justice, society and technology. In answering
+
+· Learners will use their understanding of legal        the questions leaners will be required to use
+        method and reasoning developed through the      their knowledge and understanding gained
+        study of the English legal system, whilst       from the entire course of study for A Level Law.
+
+3g. Calculating qualification results
+
+A learner's overall qualification grade for A Level     compared to the qualification level grade boundaries
+in Law will be calculated by adding together their      for the relevant exam series to determine the
+marks from the three components taken to give           learner's overall qualification grade.
+their total weighted mark. This mark will then be
+
+© OCR 2021
+
+A Level in Law                                                                                                 19
+4 Admin: what you need to know
+
+The information in this section is designed to give an            More information about the processes and deadlines
+overview of the processes involved in administering               involved at each stage of the assessment cycle can be
+this qualification so that you can speak to your exams            found in the Administration area of the OCR website.
+officer. All of the following processes require you to
+submit something to OCR by a specific deadline.                   OCR's Admin overview is available on the OCR website
+                                                                  at http://www.ocr.org.uk/administration.
+
+4a. Pre-assessment
+
+Estimated entries
+
+         Estimated entries are your best projection of the        should be submitted to OCR by the specified
+         number of learners who will be entered for a             deadline. They are free and do not commit your
+         qualification in a particular series. Estimated entries  centre in any way.
+
+4
+         Final entries
+
+Final entries provide OCR with detailed data for each             Final entries must be submitted to OCR by the
+learner, showing each assessment to be taken. It is               published deadlines or late entry fees will apply.
+essential that you use the correct entry code,
+considering the relevant entry rules.                             All learners taking an A Level in Law must be entered
+                                                                  for H415.
+
+    Entry Title    Component          Component title              Assessment type
+    code               code
+                         01   The legal system and criminal law   External Assessment
+    H415  Law                  Law making and the law of tort     External Assessment
+                         02                                       External Assessment
+                                           Further law
+                         03
+
+                                                                  © OCR 2021
+
+20                                                                A Level in Law
+4b. Special consideration                               Detailed information about eligibility for special
+                                                        consideration can be found in the JCQ publication A
+Special consideration is a post-assessment              guide to the special consideration process.
+adjustment to marks or grades to reflect temporary
+injury, illness or other indisposition at the time the
+assessment was taken.
+
+4c. External assessment arrangements
+
+Regulations governing examination arrangements are
+contained in the JCQ Instructions for conducting
+examinations.
+
+Head of centre annual declaration                                                         4
+
+The Head of Centre is required to provide a             Any failure by a centre to provide the Head of Centre
+declaration to the JCQ as part of the annual NCN        Annual Declaration will result in your centre status
+update, conducted in the autumn term, to confirm        being suspended and could lead to the withdrawal of
+that the centre is meeting all of the requirements      our approval for you to operate as a centre.
+detailed in the specification.
+
+Private candidates
+
+Private candidates may enter for OCR assessments.       Private candidates need to contact OCR approved
+                                                        centres to establish whether they are prepared to
+A private candidate is someone who pursues a course     host them as a private candidate. The centre may
+of study independently but takes an examination or      charge for this facility and OCR recommends that the
+assessment at an approved examination centre. A         arrangement is made early in the course.
+private candidate may be a part-time student,
+someone taking a distance learning course, or           Further guidance for private candidates may be found
+someone being tutored privately. They must be based     on the OCR website: http://www.ocr.org.uk.
+in the UK.
+
+© OCR 2021
+
+A Level in Law                                                                                               21
+      4d. Results and certificates                               Unclassified (U). Only subjects in which grades A* to E
+                                                                 are attained will be recorded on certificates.
+         Grade Scale
+         A level qualifications are graded on the scale: A*, A,  The following supporting information will be
+         B, C, D, E, where A* is the highest. Learners who fail  available:
+         to reach the minimum standard for E will be
+                                                                 · raw mark grade boundaries for each
+         Results                                                        component
+         Results are released to centres and learners for
+         information and to allow any queries to be resolved     · weighted mark grade boundaries for the
+         before certificates are issued.                                qualification.
+
+4 Centres will have access to the following results'             Until certificates are issued, results are deemed to be
+         information for each learner:                           provisional and may be subject to amendment.
+
+         · the grade for the qualification                       A learner's final results will be recorded on an OCR
+         · the raw mark for each component                       certificate. The qualification title will be shown on the
+         · the total weighted mark for the qualification.        certificate as `OCR Level 3 Advanced GCE in Law'.
+
+      4e. Post-results services                                  · Missing and incomplete results
+                                                                        This service should be used if an individual
+         A number of post-results services are available:               subject result for a learner is missing, or the
+         · Enquiries about results                                      learner has been omitted entirely from the
+                                                                        results supplied.
+                 If you are not happy with the outcome of a
+                 learner's results, centres may submit an        · Access to scripts
+                 enquiry about results.                                 Centres can request access to marked scripts.
+
+4f. Malpractice                                                  Detailed information on malpractice can be found
+                                                                 in the JCQ publication Suspected Malpractice in
+Any breach of the regulations for the conduct of                 Examinations and Assessments: Policies and
+examinations and non-exam assessment work may                    Procedures.
+constitute malpractice (which includes
+maladministration) and must be reported to OCR as
+soon as it is detected.
+
+                                                                 © OCR 2021
+
+22                                                               A Level in Law
+5 Appendices
+
+5a. Overlap with other qualifications
+
+There is no significant overlap between the content    between the content of this specification and those
+of this specification and that for other Advanced GCE  for other AS Levels and A Levels in Business and AS
+specifications. There is a small degree of overlap     Levels and A Levels in Politics.
+
+5b. Accessibility
+
+Reasonable adjustments and access arrangements         The A level qualification and subject criteria have
+
+allow learners with special educational needs,         been reviewed in order to identify any feature that
+
+disabilities or temporary injuries to access the       could disadvantage learners who share a protected
+
+assessment and show what they know and can do,         characteristic as defined by the Equality Act 2010.
+
+without changing the demands of the assessment.        All reasonable steps have been taken to minimise
+
+Applications for these should be made before the       any such disadvantage.
+
+examination series. Detailed information about
+
+eligibility for access arrangements can be found in
+
+the JCQ Access Arrangements and Reasonable
+
+Adjustments. 5
+
+© OCR 2021
+
+A Level in Law                                                                                              23
+5c. Levels of Assessment
+
+                   AO1                           AO2                           AO3                          AO3 extended
+
+                                                                                                            response
+
+Excellent          Excellent knowledge and       Excellent application of      Excellent analysis and       There is a well-developed
+                   understanding of the          legal rules to a given        evaluation of a wide range   line of reasoning which is
+                   English legal system, rules   scenario. Excellent           of legal rules, principles,  clear and logically
+                   and principles. The           presentation of a legal       concepts and issues. The     structured. The
+                   response is accurate, fully   argument which is             response is wide ranging     information presented is
+                   developed and detailed.       accurate, fully developed     and has a well sustained     relevant and
+                   There will be excellent       and detailed. Fully           focus on the question. The   substantiated.
+                   citation of fully relevant    appropriate legal             key points are fully
+                   statutes and case law,        terminology is used.          discussed and fully
+                   where appropriate to the                                    developed to reach a valid
+                   question.                                                   conclusion, where
+                                                                               appropriate to the
+                                                                               question.
+
+             Good  Good knowledge and            Good application of legal     Good analysis and            There is a line of reasoning
+                   understanding of the          rules to a given scenario.    evaluation of a range of     presented with some
+5                  English legal system, rules   Good presentation of a        legal rules, principles,     structure. The information
+                   and principles. The           legal argument which is       concepts and issues. The     presented is in the
+                   response is detailed, but     detailed but not fully        response has a mainly        most-part relevant and
+                   not fully developed in        developed in places.          consistent focus on the      supported by some
+                   places. There will be good    Appropriate legal             question. Most of the key    evidence.
+                   citation of mostly relevant   terminology is used.          points are well discussed
+                   statutes and case law,                                      and well developed to
+                   where appropriate to the                                    reach a valid conclusion,
+                   question.                                                   where appropriate to the
+                                                                               question.
+
+Basic              Basic knowledge and           Basic application of legal    Basic analysis and           The information has some
+                   understanding of the          rules to a given scenario.    evaluation of legal rules,   relevance and is presented
+                   English legal system, rules   Basic presentation of a       principles, concepts and     with basic structure. The
+                   and principles. The           legal argument which may      issues. The response is      information is supported
+                   response may lack detail in   lack detail in places and is  partially focused on the     by limited evidence.
+                   places and is partially       partially developed. Some     question. Some of the key
+                   developed. There will be      appropriate legal             points are discussed and
+                   some reference to statutes    terminology is used.          partially developed to
+                   and case law, where                                         reach a basic conclusion,
+                   appropriate to the                                          where appropriate to the
+                   question.                                                   question.
+
+Limited            Limited knowledge and         Limited application of legal  Limited analysis of legal    The information is limited
+                   understanding of the          rules to a given scenario.    rules, principles, concepts  and communicated in an
+                   English legal system, rules   Limited presentation of a     and/or issues.               unstructured way. The
+                   and principles. The           legal argument which has      The response has limited     information is supported
+                   response will have minimal    minimal detail and is         focus on the question.       by limited evidence and
+                   detail. Citation of statutes  unstructured and/or           Discussion of any key        the relationship to the
+                   and case law is limited,      unclear. Minimal legal        points is minimal.           evidence may not be clear.
+                   where appropriate to the      terminology is used.
+                   question.
+
+                                                                                                                          © OCR 2021
+
+24                                                                                                                    A Level in Law
+Summary of updates
+
+Date            Version  Section      Title of section  Change
+May 2018        1.1      Front cover  Disclaimer        Addition of Disclaimer
+February 2021   1.2
+                                                        Update to specification covers
+                                                        to meet digital accessibility
+                                                        standards
+
+© OCR 2021
+
+A Level in Law                                                                          25
+    © OCR 2021
+
+26  A Level in Law
+© OCR 2021
+
+A Level in Law  27
+    © OCR 2021
+
+28  A Level in Law
+YOUR
+CHECKLIST
+
+Our aim is to provide you with all   o on A Level Law Bookmark OCR website for all the latest resources, information and news
+the information and support you
+need to deliver our specifications.  o become available - register for A Level Law Be among the first to hear about support materials and resourcesas they
+
+                                     o Find out about our professional development
+                                     o and qualifications View our range of skills guides for use across subjects
+
+                                     o Discover our new online past paper service
+                                     o Learn more about Active Results
+                                     o Visit our Online Support Centre
+Download high-quality, exciting and
+innovative A Level Law resources from
+ocr.org.uk/law
+
+Resources and support for our A Level Law qualification,
+developed through collaboration between our Law Subject
+Advisors, teachers and other subject experts, are available
+from our website. You can also contact our Law
+Subject Advisors who can give you specialist advice,
+guidance and support.
+
+Contact the team at:
+01223 553998
+law@ocr.org.uk
+@OCRexams
+
+To stay up to date with all the relevant news about our
+qualifications, register for email updates at ocr.org.uk/updates
+
+Visit our Online Support Centre at support.ocr.org.uk
+
+follow us on
+
+facebook.com/  linkedin.com/  @OCRexams  youtube.com/
+   ocrexams    company/ocr                  ocrexams
+
+OCR is part of the Cambridge Assessment Group, a department of the University of Cambridge.
+For staff training purposes and as part of our quality assurance programme your call may be recorded or monitored. ©OCR 2021 Oxford Cambridge and RSA Examinations
+is a Company Limited by Guarantee. Registered in England. Registered office The Triangle Building, Shaftesbury Road, Cambridge CB2 8EA. Registered company number 3484466.
+OCR is an exempt charity.
+OCR operates academic and vocational qualifications regulated by Ofqual, Qualifications Wales and CCEA as listed in their qualifications registers including A Levels, GCSEs,
+Cambridge Technicals and Cambridge Nationals.
+Cambridge Assessment is committed to making our documents accessible in accordance with the WCAG 2.1 Standard. We're always looking to improve the accessibility of our
+documents. If you find any problems or you think we're not meeting accessibility requirements, please contact us.
+
+ocr.org.uk/law
+

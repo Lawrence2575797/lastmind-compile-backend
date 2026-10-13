@@ -1,0 +1,860 @@
+{
+  "nodes": [
+    {
+      "id": "WS_UNCERTAINTY",
+      "label": "Uncertainty in measurements: range and mean as estimates",
+      "subtopic": "1.1",
+      "theme": "Topic 0",
+      "difficulty": 0.35,
+      "objective": "Represent the distribution of results and use the range about a mean as a measure of uncertainty.",
+      "essentialPoints": [
+        "Every measurement has some uncertainty",
+        "The mean of repeat readings is a best estimate of the true value",
+        "The range of repeat readings about the mean can be used as a measure of uncertainty"
+      ],
+      "specRefs": [
+        "4.3.1.4"
+      ],
+      "kind": "concept",
+      "practicalIds": []
+    },
+    {
+      "id": "MS_STANDARD_FORM",
+      "label": "Standard and decimal form for numbers",
+      "subtopic": "1.1",
+      "theme": "Topic 0",
+      "difficulty": 0.2,
+      "objective": "Recognise and use expressions in decimal and standard form.",
+      "essentialPoints": [
+        "Numbers can be expressed in decimal form",
+        "Numbers can be expressed in standard form (a x 10^n)",
+        "Standard form is used for very large or very small numbers such as the Avogadro constant"
+      ],
+      "specRefs": [
+        "4.3.2.1"
+      ],
+      "kind": "concept",
+      "practicalIds": []
+    },
+    {
+      "id": "MS_SIG_FIGS",
+      "label": "Using an appropriate number of significant figures",
+      "subtopic": "1.1",
+      "theme": "Topic 0",
+      "difficulty": 0.2,
+      "objective": "Round and report calculated answers to an appropriate number of significant figures.",
+      "essentialPoints": [
+        "A calculated answer should not be given to more significant figures than the least precise data used",
+        "Rounding rules for significant figures"
+      ],
+      "specRefs": [
+        "4.3.2.1"
+      ],
+      "kind": "concept",
+      "practicalIds": []
+    },
+    {
+      "id": "MS_REARRANGE",
+      "label": "Changing the subject of an equation",
+      "subtopic": "1.1",
+      "theme": "Topic 0",
+      "difficulty": 0.3,
+      "objective": "Rearrange algebraic equations to make a required quantity the subject.",
+      "essentialPoints": [
+        "An equation can be rearranged to solve for any variable within it",
+        "Substituting values requires correct units"
+      ],
+      "specRefs": [
+        "4.3.2.1"
+      ],
+      "kind": "concept",
+      "practicalIds": []
+    },
+    {
+      "id": "MS_RATIO",
+      "label": "Using ratios, fractions and percentages",
+      "subtopic": "1.1",
+      "theme": "Topic 0",
+      "difficulty": 0.2,
+      "objective": "Apply ratio, fraction and percentage calculations to chemical quantities.",
+      "essentialPoints": [
+        "Ratios express relative proportions of quantities",
+        "Percentages express a part as a proportion of 100"
+      ],
+      "specRefs": [
+        "4.3.2.2"
+      ],
+      "kind": "concept",
+      "practicalIds": []
+    },
+    {
+      "id": "AT1_MEASURE",
+      "label": "Using apparatus to measure mass, time, temperature and volume accurately",
+      "subtopic": "1.1",
+      "theme": "Topic 0",
+      "difficulty": 0.2,
+      "objective": "Use appropriate apparatus to make and record accurate measurements of mass, time, temperature and volume of liquids and gases.",
+      "essentialPoints": [
+        "Select apparatus appropriate to the precision required",
+        "Read scales correctly (e.g. avoiding parallax error)"
+      ],
+      "specRefs": [
+        "8.1 AT1"
+      ],
+      "kind": "procedure",
+      "practicalIds": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8
+      ]
+    },
+    {
+      "id": "CONSERVATION_MASS",
+      "label": "Law of conservation of mass",
+      "subtopic": "3.1",
+      "theme": "Topic 3",
+      "difficulty": 0.25,
+      "objective": "State that no atoms are lost or made during a chemical reaction, so mass of products equals mass of reactants.",
+      "essentialPoints": [
+        "No atoms are created or destroyed in a chemical reaction",
+        "Total mass of reactants equals total mass of products in a closed system"
+      ],
+      "specRefs": [
+        "4.3.1.1"
+      ],
+      "kind": "concept",
+      "practicalIds": []
+    },
+    {
+      "id": "BALANCING_EQUATIONS",
+      "label": "Balanced symbol equations and use of multipliers",
+      "subtopic": "3.1",
+      "theme": "Topic 3",
+      "difficulty": 0.35,
+      "objective": "Balance symbol equations using multipliers before formulae and subscripts within formulae so atom numbers match on both sides.",
+      "essentialPoints": [
+        "A balanced equation has equal numbers of each type of atom on both sides",
+        "Multipliers in normal script go before a formula and apply to the whole formula",
+        "Subscripts within a formula show fixed atom ratios within that substance"
+      ],
+      "specRefs": [
+        "4.3.1.1"
+      ],
+      "kind": "concept",
+      "practicalIds": []
+    },
+    {
+      "id": "RELATIVE_FORMULA_MASS",
+      "label": "Relative formula mass (Mr)",
+      "subtopic": "3.1",
+      "theme": "Topic 3",
+      "difficulty": 0.3,
+      "objective": "Calculate the relative formula mass of a compound as the sum of relative atomic masses of its atoms.",
+      "essentialPoints": [
+        "Mr is the sum of relative atomic masses of all atoms shown in the formula",
+        "Uses relative atomic masses (Ar) from the periodic table"
+      ],
+      "specRefs": [
+        "4.3.1.2"
+      ],
+      "kind": "concept",
+      "practicalIds": []
+    },
+    {
+      "id": "CONSERVATION_MR_EQUATIONS",
+      "label": "Sum of Mr of reactants equals sum of Mr of products in a balanced equation",
+      "subtopic": "3.1",
+      "theme": "Topic 3",
+      "difficulty": 0.35,
+      "objective": "Show that in a balanced equation the sum of relative formula masses of reactants (in the quantities shown) equals that of the products.",
+      "essentialPoints": [
+        "This follows from conservation of mass applied to a balanced equation",
+        "The quantities shown by the balancing numbers must be included in the sum"
+      ],
+      "specRefs": [
+        "4.3.1.2"
+      ],
+      "kind": "concept",
+      "practicalIds": []
+    },
+    {
+      "id": "PERCENTAGE_MASS_COMPOUND",
+      "label": "Percentage mass of an element in a compound",
+      "subtopic": "3.1",
+      "theme": "Topic 3",
+      "difficulty": 0.35,
+      "objective": "Calculate the percentage by mass of an element in a compound given relative formula mass and relative atomic masses.",
+      "essentialPoints": [
+        "% mass = (total mass of element in formula / Mr of compound) x 100"
+      ],
+      "specRefs": [
+        "4.3.1.2"
+      ],
+      "kind": "application",
+      "practicalIds": []
+    },
+    {
+      "id": "PARTICLE_MODEL_GAS_MASS",
+      "label": "Mass changes in non-enclosed systems involving gases",
+      "subtopic": "3.1",
+      "theme": "Topic 3",
+      "difficulty": 0.4,
+      "objective": "Explain apparent changes in mass in open reactions where a reactant or product is a gas, using the particle model and a balanced equation.",
+      "essentialPoints": [
+        "Mass appears to increase when a gas reactant (e.g. oxygen) is taken in from the surroundings and becomes part of a solid product",
+        "Mass appears to decrease when a gas product (e.g. CO2 from thermal decomposition) escapes into the atmosphere",
+        "Total mass is conserved when the escaped/absorbed gas is accounted for"
+      ],
+      "specRefs": [
+        "4.3.1.3"
+      ],
+      "kind": "concept",
+      "practicalIds": []
+    },
+    {
+      "id": "MOLE_DEFINITION",
+      "label": "The mole and molar mass (HT)",
+      "subtopic": "3.2",
+      "theme": "Topic 3",
+      "difficulty": 0.45,
+      "objective": "State that chemical amounts are measured in moles, and that the mass of one mole of a substance in grams is numerically equal to its relative formula mass.",
+      "essentialPoints": [
+        "The mole (mol) is the unit for amount of substance",
+        "The mass of one mole of a substance in grams equals its Mr numerically",
+        "One mole of a substance contains the same number of particles as one mole of any other substance"
+      ],
+      "specRefs": [
+        "4.3.2.1"
+      ],
+      "kind": "concept",
+      "practicalIds": []
+    },
+    {
+      "id": "AVOGADRO_CONSTANT",
+      "label": "The Avogadro constant (HT)",
+      "subtopic": "3.2",
+      "theme": "Topic 3",
+      "difficulty": 0.4,
+      "objective": "State that the number of particles in one mole of a substance is the Avogadro constant, 6.02 x 10^23 per mole, and apply this to atoms, molecules and ions.",
+      "essentialPoints": [
+        "The Avogadro constant is 6.02 x 10^23 particles per mole",
+        "This applies to atoms, molecules, ions, electrons, formulae or equations equally",
+        "E.g. one mole of C atoms contains the same number of particles as one mole of CO2 molecules"
+      ],
+      "specRefs": [
+        "4.3.2.1"
+      ],
+      "kind": "concept",
+      "practicalIds": []
+    },
+    {
+      "id": "MOLES_MASS_CALC",
+      "label": "Calculating moles from mass and mass from moles (HT)",
+      "subtopic": "3.2",
+      "theme": "Topic 3",
+      "difficulty": 0.45,
+      "objective": "Use the relative formula mass of a substance to calculate the number of moles in a given mass, and vice versa.",
+      "essentialPoints": [
+        "moles = mass / Mr",
+        "mass = moles x Mr"
+      ],
+      "specRefs": [
+        "4.3.2.1"
+      ],
+      "kind": "application",
+      "practicalIds": []
+    },
+    {
+      "id": "MOLES_IN_EQUATIONS",
+      "label": "Interpreting balanced equations in terms of moles (HT)",
+      "subtopic": "3.2",
+      "theme": "Topic 3",
+      "difficulty": 0.4,
+      "objective": "Interpret the balancing numbers of a symbol equation as relative numbers of moles of each substance reacting/produced.",
+      "essentialPoints": [
+        "The balancing number in front of a formula gives the number of moles of that substance in the reaction",
+        "E.g. Mg + 2HCl -> MgCl2 + H2 means 1 mol Mg reacts with 2 mol HCl to give 1 mol MgCl2 and 1 mol H2"
+      ],
+      "specRefs": [
+        "4.3.2.2"
+      ],
+      "kind": "concept",
+      "practicalIds": []
+    },
+    {
+      "id": "MASS_CALC_FROM_EQUATIONS",
+      "label": "Calculating reacting masses from balanced equations (HT)",
+      "subtopic": "3.2",
+      "theme": "Topic 3",
+      "difficulty": 0.55,
+      "objective": "Calculate masses of reactants and products from a balanced symbol equation and a given mass of one substance.",
+      "essentialPoints": [
+        "Convert given mass to moles using Mr",
+        "Use the mole ratio from the balanced equation to find moles of the other substance",
+        "Convert moles back to mass using Mr of that substance"
+      ],
+      "specRefs": [
+        "4.3.2.2"
+      ],
+      "kind": "application",
+      "practicalIds": []
+    },
+    {
+      "id": "BALANCING_FROM_MASSES",
+      "label": "Deriving balancing numbers from reacting masses (HT)",
+      "subtopic": "3.2",
+      "theme": "Topic 3",
+      "difficulty": 0.55,
+      "objective": "Balance an equation given the masses of reactants and products by converting masses to moles and moles to a simple whole-number ratio.",
+      "essentialPoints": [
+        "Convert each given mass to moles using Mr",
+        "Divide each mole value by the smallest to obtain a simple ratio",
+        "Use this ratio as the balancing numbers in the equation"
+      ],
+      "specRefs": [
+        "4.3.2.3"
+      ],
+      "kind": "application",
+      "practicalIds": []
+    },
+    {
+      "id": "LIMITING_REACTANT",
+      "label": "Limiting reactants (HT)",
+      "subtopic": "3.2",
+      "theme": "Topic 3",
+      "difficulty": 0.5,
+      "objective": "Explain the effect of a limiting reactant on the amount of product obtainable, in terms of moles or masses.",
+      "essentialPoints": [
+        "An excess of one reactant is often used to ensure the other reacts completely",
+        "The reactant completely used up is the limiting reactant",
+        "The limiting reactant determines the maximum amount of product that can form"
+      ],
+      "specRefs": [
+        "4.3.2.4"
+      ],
+      "kind": "concept",
+      "practicalIds": []
+    },
+    {
+      "id": "CONCENTRATION_GDM3",
+      "label": "Concentration of solutions in g/dm3",
+      "subtopic": "3.2",
+      "theme": "Topic 3",
+      "difficulty": 0.35,
+      "objective": "Define concentration as mass of solute per given volume of solution (e.g. g/dm3) and calculate mass of solute from concentration and volume.",
+      "essentialPoints": [
+        "Concentration measures mass of solute per unit volume of solution, e.g. g/dm3",
+        "mass of solute = concentration x volume of solution"
+      ],
+      "specRefs": [
+        "4.3.2.5"
+      ],
+      "kind": "concept",
+      "practicalIds": []
+    },
+    {
+      "id": "CONCENTRATION_MASS_VOLUME_RELATION",
+      "label": "Relating mass of solute, volume of solution and concentration (HT)",
+      "subtopic": "3.2",
+      "theme": "Topic 3",
+      "difficulty": 0.4,
+      "objective": "Explain how the mass of solute and the volume of solution together determine the concentration of a solution.",
+      "essentialPoints": [
+        "Increasing mass of solute in a fixed volume increases concentration",
+        "Increasing volume for a fixed mass of solute decreases concentration"
+      ],
+      "specRefs": [
+        "4.3.2.5"
+      ],
+      "kind": "concept",
+      "practicalIds": []
+    },
+    {
+      "id": "PERCENTAGE_YIELD_REASONS",
+      "label": "Reasons actual yield is less than theoretical yield",
+      "subtopic": "3.3",
+      "theme": "Topic 3",
+      "difficulty": 0.35,
+      "objective": "Explain why the yield of a reaction is often less than the maximum theoretical amount even though mass is conserved.",
+      "essentialPoints": [
+        "The reaction may be reversible and not go to completion",
+        "Product may be lost during separation from the reaction mixture",
+        "Some reactants may undergo unexpected/side reactions"
+      ],
+      "specRefs": [
+        "4.3.3.1"
+      ],
+      "kind": "concept",
+      "practicalIds": []
+    },
+    {
+      "id": "PERCENTAGE_YIELD_CALC",
+      "label": "Calculating percentage yield",
+      "subtopic": "3.3",
+      "theme": "Topic 3",
+      "difficulty": 0.35,
+      "objective": "Calculate the percentage yield of a product from the actual mass obtained and the maximum theoretical mass.",
+      "essentialPoints": [
+        "% yield = (mass of product actually made / maximum theoretical mass) x 100"
+      ],
+      "specRefs": [
+        "4.3.3.1"
+      ],
+      "kind": "application",
+      "practicalIds": []
+    },
+    {
+      "id": "THEORETICAL_YIELD_CALC",
+      "label": "Calculating theoretical yield from a given mass of reactant (HT)",
+      "subtopic": "3.3",
+      "theme": "Topic 3",
+      "difficulty": 0.55,
+      "objective": "Calculate the theoretical mass of a product from a given mass of reactant using the balanced equation.",
+      "essentialPoints": [
+        "Uses the same mole-ratio method as reacting mass calculations",
+        "Gives the maximum possible mass of product assuming complete conversion"
+      ],
+      "specRefs": [
+        "4.3.3.1"
+      ],
+      "kind": "application",
+      "practicalIds": []
+    },
+    {
+      "id": "ATOM_ECONOMY_DEF",
+      "label": "Atom economy definition and importance",
+      "subtopic": "3.3",
+      "theme": "Topic 3",
+      "difficulty": 0.35,
+      "objective": "State that atom economy measures the proportion of starting materials that end up as useful (desired) products, and why high atom economy matters.",
+      "essentialPoints": [
+        "Atom economy is a measure of the mass of starting materials that end up as useful products",
+        "High atom economy reduces waste and is important for sustainable development and economic reasons"
+      ],
+      "specRefs": [
+        "4.3.3.2"
+      ],
+      "kind": "concept",
+      "practicalIds": []
+    },
+    {
+      "id": "ATOM_ECONOMY_CALC",
+      "label": "Calculating percentage atom economy",
+      "subtopic": "3.3",
+      "theme": "Topic 3",
+      "difficulty": 0.45,
+      "objective": "Calculate the percentage atom economy of a reaction using the balanced equation.",
+      "essentialPoints": [
+        "% atom economy = (Mr of desired product / sum of Mr of all reactants) x 100",
+        "Calculated from the balanced symbol equation for the reaction"
+      ],
+      "specRefs": [
+        "4.3.3.2"
+      ],
+      "kind": "application",
+      "practicalIds": []
+    },
+    {
+      "id": "CHOOSING_REACTION_PATHWAY",
+      "label": "Evaluating which reaction pathway to use (HT)",
+      "subtopic": "3.3",
+      "theme": "Topic 3",
+      "difficulty": 0.6,
+      "objective": "Explain why a particular reaction pathway is chosen to produce a specified product, using data such as atom economy, yield, rate, equilibrium position and usefulness of by-products.",
+      "essentialPoints": [
+        "A high atom economy and high percentage yield reduce waste and cost, favouring a pathway",
+        "A fast rate and a favourable equilibrium position (high product proportion) make a pathway more viable",
+        "Useful by-products can improve the overall economics/sustainability of a pathway even if atom economy for one product is lower"
+      ],
+      "specRefs": [
+        "4.3.3.2"
+      ],
+      "kind": "evaluation",
+      "practicalIds": []
+    },
+    {
+      "id": "TITRATION_PROCEDURE",
+      "label": "Titration technique for reacting volumes of acid and alkali",
+      "subtopic": "3.4",
+      "theme": "Topic 3",
+      "difficulty": 0.5,
+      "objective": "Carry out a titration using a burette, pipette and indicator to determine the volume of acid that exactly reacts with a given volume of alkali (or vice versa).",
+      "essentialPoints": [
+        "A pipette is used to measure a fixed volume of one solution into a conical flask",
+        "A burette is used to add the other solution gradually while swirling, using an indicator to detect the end point",
+        "The titre is the volume added from the burette at the end point, and readings should be repeated for concordant results"
+      ],
+      "specRefs": [
+        "8.2.2"
+      ],
+      "kind": "procedure",
+      "practicalIds": [
+        2
+      ]
+    },
+    {
+      "id": "CONCENTRATION_MOLDM3",
+      "label": "Concentration of solutions in mol/dm3 (HT, chemistry only)",
+      "subtopic": "3.4",
+      "theme": "Topic 3",
+      "difficulty": 0.4,
+      "objective": "Define concentration measured in mol/dm3 and convert between moles, mass, volume and concentration.",
+      "essentialPoints": [
+        "Concentration in mol/dm3 = moles of solute / volume of solution in dm3",
+        "Mass of solute can be found from moles (using Mr) once amount in mol is known"
+      ],
+      "specRefs": [
+        "4.3.4"
+      ],
+      "kind": "concept",
+      "practicalIds": []
+    },
+    {
+      "id": "CONCENTRATION_MOLDM3_RELATION",
+      "label": "Explaining how concentration in mol/dm3 relates to mass of solute and volume (HT)",
+      "subtopic": "3.4",
+      "theme": "Topic 3",
+      "difficulty": 0.45,
+      "objective": "Explain how the concentration of a solution in mol/dm3 depends on both the mass (via moles) of solute and the volume of solution.",
+      "essentialPoints": [
+        "Concentration increases if more moles of solute are dissolved in the same volume",
+        "Concentration decreases if the same amount of solute is dissolved in a larger volume",
+        "Relates mass, Mr and volume together via moles per dm3"
+      ],
+      "specRefs": [
+        "4.3.4"
+      ],
+      "kind": "concept",
+      "practicalIds": []
+    },
+    {
+      "id": "TITRATION_CONCENTRATION_CALC",
+      "label": "Calculating unknown concentration from titration results (HT)",
+      "subtopic": "3.4",
+      "theme": "Topic 3",
+      "difficulty": 0.6,
+      "objective": "Determine the concentration of one solution in mol/dm3 and g/dm3 from titration reacting volumes and the known concentration of the other solution.",
+      "essentialPoints": [
+        "Use the known concentration and volume to find moles of the known solution reacted",
+        "Use the balanced equation's mole ratio to find moles of the unknown solution",
+        "Divide by its volume to find concentration in mol/dm3, then convert to g/dm3 using Mr"
+      ],
+      "specRefs": [
+        "4.3.4",
+        "8.2.2"
+      ],
+      "kind": "application",
+      "practicalIds": [
+        2
+      ]
+    },
+    {
+      "id": "MOLAR_VOLUME_GAS",
+      "label": "Molar volume of a gas at RTP (HT, chemistry only)",
+      "subtopic": "3.5",
+      "theme": "Topic 3",
+      "difficulty": 0.35,
+      "objective": "State that equal amounts in moles of gases occupy the same volume under the same conditions, and that one mole of any gas at RTP occupies 24 dm3.",
+      "essentialPoints": [
+        "Equal numbers of moles of any gas occupy the same volume at the same temperature and pressure",
+        "One mole of any gas at room temperature and pressure (20°C, 1 atm) has a volume of 24 dm3"
+      ],
+      "specRefs": [
+        "4.3.5"
+      ],
+      "kind": "concept",
+      "practicalIds": []
+    },
+    {
+      "id": "GAS_VOLUME_FROM_MASS",
+      "label": "Calculating the volume of a gas from its mass and Mr (HT)",
+      "subtopic": "3.5",
+      "theme": "Topic 3",
+      "difficulty": 0.5,
+      "objective": "Calculate the volume of a gas at room temperature and pressure from its mass and relative formula mass using the molar volume.",
+      "essentialPoints": [
+        "Convert mass to moles using Mr",
+        "Multiply moles by 24 dm3 to obtain volume at RTP"
+      ],
+      "specRefs": [
+        "4.3.5"
+      ],
+      "kind": "application",
+      "practicalIds": []
+    },
+    {
+      "id": "GAS_VOLUME_FROM_EQUATION",
+      "label": "Calculating gas volumes from a balanced equation (HT)",
+      "subtopic": "3.5",
+      "theme": "Topic 3",
+      "difficulty": 0.55,
+      "objective": "Calculate volumes of gaseous reactants or products from a balanced equation and a given volume of a gaseous reactant or product.",
+      "essentialPoints": [
+        "Use the mole ratio from the balanced equation directly with gas volumes (since equal moles of gas occupy equal volumes at fixed conditions)",
+        "Given volume of one gas can be scaled by the ratio to find the volume of another gas"
+      ],
+      "specRefs": [
+        "4.3.5"
+      ],
+      "kind": "application",
+      "practicalIds": []
+    }
+  ],
+  "edges": [
+    {
+      "from": "CONSERVATION_MASS",
+      "to": "BALANCING_EQUATIONS",
+      "difficulty": 0.3
+    },
+    {
+      "from": "BALANCING_EQUATIONS",
+      "to": "RELATIVE_FORMULA_MASS",
+      "difficulty": 0.2
+    },
+    {
+      "from": "CONSERVATION_MASS",
+      "to": "CONSERVATION_MR_EQUATIONS",
+      "difficulty": 0.3
+    },
+    {
+      "from": "RELATIVE_FORMULA_MASS",
+      "to": "CONSERVATION_MR_EQUATIONS",
+      "difficulty": 0.3
+    },
+    {
+      "from": "RELATIVE_FORMULA_MASS",
+      "to": "PERCENTAGE_MASS_COMPOUND",
+      "difficulty": 0.3
+    },
+    {
+      "from": "MS_RATIO",
+      "to": "PERCENTAGE_MASS_COMPOUND",
+      "difficulty": 0.2
+    },
+    {
+      "from": "CONSERVATION_MASS",
+      "to": "PARTICLE_MODEL_GAS_MASS",
+      "difficulty": 0.35
+    },
+    {
+      "from": "BALANCING_EQUATIONS",
+      "to": "PARTICLE_MODEL_GAS_MASS",
+      "difficulty": 0.35
+    },
+    {
+      "from": "RELATIVE_FORMULA_MASS",
+      "to": "MOLE_DEFINITION",
+      "difficulty": 0.35
+    },
+    {
+      "from": "MS_STANDARD_FORM",
+      "to": "AVOGADRO_CONSTANT",
+      "difficulty": 0.2
+    },
+    {
+      "from": "MOLE_DEFINITION",
+      "to": "AVOGADRO_CONSTANT",
+      "difficulty": 0.3
+    },
+    {
+      "from": "MOLE_DEFINITION",
+      "to": "MOLES_MASS_CALC",
+      "difficulty": 0.35
+    },
+    {
+      "from": "MS_REARRANGE",
+      "to": "MOLES_MASS_CALC",
+      "difficulty": 0.25
+    },
+    {
+      "from": "MS_SIG_FIGS",
+      "to": "MOLES_MASS_CALC",
+      "difficulty": 0.15
+    },
+    {
+      "from": "BALANCING_EQUATIONS",
+      "to": "MOLES_IN_EQUATIONS",
+      "difficulty": 0.35
+    },
+    {
+      "from": "AVOGADRO_CONSTANT",
+      "to": "MOLES_IN_EQUATIONS",
+      "difficulty": 0.3
+    },
+    {
+      "from": "MOLES_MASS_CALC",
+      "to": "MASS_CALC_FROM_EQUATIONS",
+      "difficulty": 0.4
+    },
+    {
+      "from": "MOLES_IN_EQUATIONS",
+      "to": "MASS_CALC_FROM_EQUATIONS",
+      "difficulty": 0.4
+    },
+    {
+      "from": "MS_RATIO",
+      "to": "MASS_CALC_FROM_EQUATIONS",
+      "difficulty": 0.25
+    },
+    {
+      "from": "MASS_CALC_FROM_EQUATIONS",
+      "to": "BALANCING_FROM_MASSES",
+      "difficulty": 0.45
+    },
+    {
+      "from": "MS_REARRANGE",
+      "to": "BALANCING_FROM_MASSES",
+      "difficulty": 0.3
+    },
+    {
+      "from": "MASS_CALC_FROM_EQUATIONS",
+      "to": "LIMITING_REACTANT",
+      "difficulty": 0.4
+    },
+    {
+      "from": "MOLES_MASS_CALC",
+      "to": "CONCENTRATION_GDM3",
+      "difficulty": 0.3
+    },
+    {
+      "from": "CONCENTRATION_GDM3",
+      "to": "CONCENTRATION_MASS_VOLUME_RELATION",
+      "difficulty": 0.3
+    },
+    {
+      "from": "MS_REARRANGE",
+      "to": "CONCENTRATION_MASS_VOLUME_RELATION",
+      "difficulty": 0.25
+    },
+    {
+      "from": "CONSERVATION_MASS",
+      "to": "PERCENTAGE_YIELD_REASONS",
+      "difficulty": 0.3
+    },
+    {
+      "from": "PERCENTAGE_YIELD_REASONS",
+      "to": "PERCENTAGE_YIELD_CALC",
+      "difficulty": 0.3
+    },
+    {
+      "from": "MS_RATIO",
+      "to": "PERCENTAGE_YIELD_CALC",
+      "difficulty": 0.2
+    },
+    {
+      "from": "MASS_CALC_FROM_EQUATIONS",
+      "to": "THEORETICAL_YIELD_CALC",
+      "difficulty": 0.4
+    },
+    {
+      "from": "PERCENTAGE_YIELD_CALC",
+      "to": "THEORETICAL_YIELD_CALC",
+      "difficulty": 0.35
+    },
+    {
+      "from": "RELATIVE_FORMULA_MASS",
+      "to": "ATOM_ECONOMY_DEF",
+      "difficulty": 0.3
+    },
+    {
+      "from": "ATOM_ECONOMY_DEF",
+      "to": "ATOM_ECONOMY_CALC",
+      "difficulty": 0.35
+    },
+    {
+      "from": "CONSERVATION_MR_EQUATIONS",
+      "to": "ATOM_ECONOMY_CALC",
+      "difficulty": 0.35
+    },
+    {
+      "from": "MS_RATIO",
+      "to": "ATOM_ECONOMY_CALC",
+      "difficulty": 0.2
+    },
+    {
+      "from": "ATOM_ECONOMY_CALC",
+      "to": "CHOOSING_REACTION_PATHWAY",
+      "difficulty": 0.5
+    },
+    {
+      "from": "PERCENTAGE_YIELD_CALC",
+      "to": "CHOOSING_REACTION_PATHWAY",
+      "difficulty": 0.45
+    },
+    {
+      "from": "AT1_MEASURE",
+      "to": "TITRATION_PROCEDURE",
+      "difficulty": 0.35
+    },
+    {
+      "from": "WS_UNCERTAINTY",
+      "to": "TITRATION_PROCEDURE",
+      "difficulty": 0.3
+    },
+    {
+      "from": "MOLES_MASS_CALC",
+      "to": "CONCENTRATION_MOLDM3",
+      "difficulty": 0.35
+    },
+    {
+      "from": "MS_REARRANGE",
+      "to": "CONCENTRATION_MOLDM3",
+      "difficulty": 0.25
+    },
+    {
+      "from": "CONCENTRATION_MOLDM3",
+      "to": "CONCENTRATION_MOLDM3_RELATION",
+      "difficulty": 0.35
+    },
+    {
+      "from": "CONCENTRATION_MASS_VOLUME_RELATION",
+      "to": "CONCENTRATION_MOLDM3_RELATION",
+      "difficulty": 0.3
+    },
+    {
+      "from": "TITRATION_PROCEDURE",
+      "to": "TITRATION_CONCENTRATION_CALC",
+      "difficulty": 0.5
+    },
+    {
+      "from": "CONCENTRATION_MOLDM3",
+      "to": "TITRATION_CONCENTRATION_CALC",
+      "difficulty": 0.5
+    },
+    {
+      "from": "MOLES_IN_EQUATIONS",
+      "to": "TITRATION_CONCENTRATION_CALC",
+      "difficulty": 0.45
+    },
+    {
+      "from": "AVOGADRO_CONSTANT",
+      "to": "MOLAR_VOLUME_GAS",
+      "difficulty": 0.35
+    },
+    {
+      "from": "MOLAR_VOLUME_GAS",
+      "to": "GAS_VOLUME_FROM_MASS",
+      "difficulty": 0.4
+    },
+    {
+      "from": "MOLES_MASS_CALC",
+      "to": "GAS_VOLUME_FROM_MASS",
+      "difficulty": 0.35
+    },
+    {
+      "from": "MOLAR_VOLUME_GAS",
+      "to": "GAS_VOLUME_FROM_EQUATION",
+      "difficulty": 0.45
+    },
+    {
+      "from": "MOLES_IN_EQUATIONS",
+      "to": "GAS_VOLUME_FROM_EQUATION",
+      "difficulty": 0.4
+    }
+  ]
+}

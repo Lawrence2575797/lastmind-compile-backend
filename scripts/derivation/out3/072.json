@@ -1,0 +1,105 @@
+{
+ "id": "gen",
+ "subject": "Economics",
+ "title": "Specialisation, trade and growth",
+ "terms": {
+  "opp_cost_ratio": {
+   "label": "Opportunity cost ratio"
+  },
+  "comp_advantage": {
+   "label": "Comparative advantage"
+  },
+  "resource_efficiency": {
+   "label": "Resource use efficiency"
+  },
+  "TRADE_SPEC_GROWTH": {
+   "label": "Trade, specialisation and growth"
+  },
+  "TRADE_SPECIALISATION": {
+   "label": "Specialising in production of goods/services to trade"
+  }
+ },
+ "stages": [
+  {
+   "name": "Specialisation, trade and growth",
+   "title": "Specialisation, trade and growth",
+   "sub": "How countries specialising and trading according to comparative advantage raises output and growth.",
+   "steps": [
+    {
+     "type": "ask",
+     "q": "Country A can make either 10 tonnes of wheat or 5 tonnes of cloth with its resources. To make one more tonne of cloth, how much wheat must it give up?",
+     "right": "2 tonnes of wheat",
+     "wrong": "5 tonnes of wheat",
+     "hint": "Divide the wheat it could have made by the cloth it could have made instead.",
+     "pre": "The wheat given up per tonne of cloth is its",
+     "term": "opp_cost_ratio"
+    },
+    {
+     "type": "ask",
+     "q": "Country A gives up 2 tonnes of wheat per tonne of cloth. Country B only gives up 1 tonne of wheat per tonne of cloth. Which country gives up less to make cloth?",
+     "right": "Country B",
+     "wrong": "Country A",
+     "hint": "Compare the two ratios you just worked out: which one is smaller?",
+     "pre": "Country B can make cloth at a lower opportunity cost, so it has the",
+     "term": "comp_advantage"
+    },
+    {
+     "type": "ask",
+     "q": "If Country A focuses on wheat and Country B focuses on cloth, using their resources for the good each gives up least to produce, does total world output of both goods rise or fall compared with both countries trying to make both goods themselves?",
+     "right": "It rises",
+     "wrong": "It falls",
+     "hint": "Each country is now using its land, labour and capital on the task it is relatively best at.",
+     "pre": "Producing where opportunity cost is lowest raises",
+     "term": "resource_efficiency"
+    },
+    {
+     "type": "ask",
+     "q": "The two countries now trade wheat for cloth instead of each trying to produce both. Compared with before, is more total output now available for both countries to consume?",
+     "right": "Yes, more is available to both",
+     "wrong": "No, the total stays the same",
+     "hint": "You just established that specialising by comparative advantage increases total output. What happens once that extra output is traded and shared?",
+     "pre": "Specialising by comparative advantage and trading the surplus raises efficiency and expands what both economies can produce and consume, which is",
+     "term": "TRADE_SPEC_GROWTH"
+    },
+    {
+     "type": "derive"
+    }
+   ],
+   "given": [
+    "TRADE_SPECIALISATION"
+   ],
+   "needs": [
+    "TRADE_SPECIALISATION"
+   ],
+   "builds": [
+    "TRADE_SPECIALISATION"
+   ],
+   "nodes": [
+    "TRADE_SPEC_GROWTH"
+   ],
+   "dropped": [],
+   "edges": [
+    [
+     "TRADE_SPECIALISATION",
+     "TRADE_SPEC_GROWTH"
+    ],
+    [
+     "TRADE_SPECIALISATION",
+     "opp_cost_ratio"
+    ],
+    [
+     "opp_cost_ratio",
+     "comp_advantage"
+    ],
+    [
+     "comp_advantage",
+     "resource_efficiency"
+    ],
+    [
+     "resource_efficiency",
+     "TRADE_SPEC_GROWTH"
+    ]
+   ]
+  }
+ ]
+}

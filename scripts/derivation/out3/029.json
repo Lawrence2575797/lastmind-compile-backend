@@ -1,0 +1,145 @@
+{
+ "id": "gen",
+ "subject": "Economics",
+ "title": "Limitations of GDP",
+ "terms": {
+  "GDP_LIVING_STANDARDS_LIMITS": {
+   "label": "Limits of GDP for living standards"
+  },
+  "GDP_LIMIT_NONMARKET": {
+   "label": "Excludes non-marketed activity"
+  },
+  "GDP_LIMIT_DISTRIBUTION": {
+   "label": "Ignores income distribution"
+  },
+  "GDP_LIMIT_EXTERNALITIES": {
+   "label": "Ignores externalities"
+  },
+  "GDP_LIMIT_QUALITY": {
+   "label": "Ignores quality of life"
+  },
+  "GDP_GROWTH_RATE": {
+   "label": "Real GDP growth rate"
+  },
+  "PPP_USE": {
+   "label": "Use of PPP-adjusted figures"
+  }
+ },
+ "stages": [
+  {
+   "name": "Limitations of GDP",
+   "title": "Limitations of GDP",
+   "sub": "After this the student can explain why a rising GDP figure does not always mean people are better off.",
+   "steps": [
+    {
+     "type": "ask",
+     "q": "Real GDP grows 5% and a newspaper says people must be better off. Does a bigger GDP always prove that?",
+     "right": "No, the figure can miss important things",
+     "wrong": "Yes, a bigger total always means better lives",
+     "hint": "GDP just totals up the market value of output. Could that total go up while something important about people's lives stays hidden?",
+     "pre": "So GDP has real",
+     "term": "GDP_LIVING_STANDARDS_LIMITS"
+    },
+    {
+     "type": "ask",
+     "q": "A parent looks after their children at home for free, and a neighbour grows vegetables to eat. Do these show up in GDP?",
+     "right": "No, unpaid and untraded work is left out",
+     "wrong": "Yes, GDP counts all useful work done",
+     "hint": "GDP is built from market transactions. Is any money changing hands for childcare done at home?",
+     "pre": "So GDP excludes",
+     "term": "GDP_LIMIT_NONMARKET"
+    },
+    {
+     "type": "ask",
+     "q": "Two countries have equal GDP per head, but only one shares income evenly. Does the GDP figure tell you which?",
+     "right": "No, the average hides how it is shared out",
+     "wrong": "Yes, an equal average means equal living standards",
+     "hint": "GDP per head is just a total divided by population. Does dividing by population tell you who actually holds the money?",
+     "pre": "So GDP ignores",
+     "term": "GDP_LIMIT_DISTRIBUTION"
+    },
+    {
+     "type": "ask",
+     "q": "A factory's output raises GDP, but its smoke pollutes the local river and air. Does the GDP figure subtract anything for that pollution?",
+     "right": "No, the damage is not subtracted",
+     "wrong": "Yes, GDP falls to reflect the pollution",
+     "hint": "GDP adds up the value of what is produced and sold. Is the cost of harm done to the environment part of that sale price?",
+     "pre": "So GDP ignores",
+     "term": "GDP_LIMIT_EXTERNALITIES"
+    },
+    {
+     "type": "order",
+     "terms": [
+      "GDP_LIVING_STANDARDS_LIMITS",
+      "GDP_LIMIT_NONMARKET",
+      "GDP_LIMIT_DISTRIBUTION",
+      "GDP_LIMIT_EXTERNALITIES"
+     ],
+     "prompt": "Drag and drop the 4 key terms in the order they build on each other."
+    },
+    {
+     "type": "ask",
+     "q": "One country spends its GDP on hospitals and leisure, another on weapons and long hours. Does the total tell them apart?",
+     "right": "No, the total looks the same either way",
+     "wrong": "Yes, a higher-wellbeing mix shows a higher GDP",
+     "hint": "GDP just adds up the value of output, whatever that output actually is. Does it say what the output was for?",
+     "pre": "So GDP does not capture",
+     "term": "GDP_LIMIT_QUALITY"
+    },
+    {
+     "type": "derive"
+    }
+   ],
+   "given": [
+    "GDP_GROWTH_RATE",
+    "PPP_USE"
+   ],
+   "needs": [
+    "GDP_GROWTH_RATE",
+    "PPP_USE"
+   ],
+   "builds": [
+    "GDP_GROWTH_RATE",
+    "PPP_USE"
+   ],
+   "nodes": [
+    "GDP_LIVING_STANDARDS_LIMITS",
+    "GDP_LIMIT_NONMARKET",
+    "GDP_LIMIT_DISTRIBUTION",
+    "GDP_LIMIT_EXTERNALITIES",
+    "GDP_LIMIT_QUALITY"
+   ],
+   "dropped": [],
+   "edges": [
+    [
+     "GDP_LIVING_STANDARDS_LIMITS",
+     "GDP_LIMIT_NONMARKET"
+    ],
+    [
+     "GDP_LIVING_STANDARDS_LIMITS",
+     "GDP_LIMIT_DISTRIBUTION"
+    ],
+    [
+     "GDP_LIVING_STANDARDS_LIMITS",
+     "GDP_LIMIT_EXTERNALITIES"
+    ],
+    [
+     "GDP_LIVING_STANDARDS_LIMITS",
+     "GDP_LIMIT_QUALITY"
+    ],
+    [
+     "GDP_GROWTH_RATE",
+     "GDP_LIVING_STANDARDS_LIMITS"
+    ],
+    [
+     "PPP_USE",
+     "GDP_LIVING_STANDARDS_LIMITS"
+    ],
+    [
+     "GDP_GROWTH_RATE",
+     "GDP_LIVING_STANDARDS_LIMITS"
+    ]
+   ]
+  }
+ ]
+}

@@ -1,0 +1,174 @@
+{
+ "id": "gen",
+ "subject": "Economics",
+ "title": "Economic growth: output gaps",
+ "terms": {
+  "ACTUAL_OUTPUT": {
+   "label": "Actual output"
+  },
+  "POTENTIAL_OUTPUT": {
+   "label": "Potential output"
+  },
+  "LRAS_CURVE": {
+   "label": "Constructing a long-run aggregate supply (LRAS) curve at potential output"
+  },
+  "POS_OUTPUT_GAP": {
+   "label": "Positive output gap"
+  },
+  "NEG_OUTPUT_GAP": {
+   "label": "Negative output gap"
+  },
+  "gap": {
+   "label": "Income gap widens"
+  }
+ },
+ "stages": [
+  {
+   "name": "Economic growth: output gaps",
+   "title": "Economic growth: output gaps",
+   "sub": "How to compare what an economy is actually producing with what it could sustainably produce.",
+   "steps": [
+    {
+     "type": "ask",
+     "q": "A country's factories, shops and offices produce goods and services this year. What do we call the total amount they actually turned out?",
+     "right": "The real output actually produced this year",
+     "wrong": "The most they could ever produce with all resources used",
+     "hint": "Think about what was really made this year, not the maximum possible.",
+     "pre": "That total, the real GDP actually produced, is",
+     "term": "ACTUAL_OUTPUT"
+    },
+    {
+     "type": "ask",
+     "q": "Now imagine every worker is in normal employment and every machine is running at its usual, sustainable rate, not overworked. What would you call the output produced then?",
+     "right": "The maximum sustainable output with resources normally employed",
+     "wrong": "Whatever was produced this particular year",
+     "hint": "This is not about this year's actual figure, it's about a sustainable maximum.",
+     "pre": "That sustainable maximum is called",
+     "term": "POTENTIAL_OUTPUT"
+    },
+    {
+     "type": "ask",
+     "q": "If you drew a supply curve showing this sustainable maximum, and it doesn't change just because prices change, what shape would it be?",
+     "right": "A vertical line at that fixed maximum output",
+     "wrong": "An upward sloping line that shifts with prices",
+     "hint": "Potential output depends on resources, not on the price level, so does it move along with price?",
+     "pre": "Drawn on a diagram, that vertical line at potential output is the",
+     "term": "LRAS_CURVE",
+     "diagram": {
+      "x": "Real output",
+      "y": "Price level",
+      "curves": [
+       {
+        "label": "LRAS",
+        "pts": [
+         [
+          0.5,
+          0.05
+         ],
+         [
+          0.5,
+          0.5
+         ],
+         [
+          0.5,
+          0.95
+         ]
+        ]
+       }
+      ]
+     }
+    },
+    {
+     "type": "ask",
+     "q": "If you compare this year's actual output with the sustainable maximum, could the two numbers ever be different from each other?",
+     "right": "Yes, actual output can sit above or below the maximum",
+     "wrong": "No, actual output always equals the maximum",
+     "hint": "Overtime can push actual output above the sustainable rate, and a recession can push it below. So can the two differ?",
+     "pre": "The difference between them is called an",
+     "term": "gap"
+    },
+    {
+     "type": "order",
+     "terms": [
+      "ACTUAL_OUTPUT",
+      "POTENTIAL_OUTPUT",
+      "LRAS_CURVE",
+      "gap"
+     ],
+     "prompt": "Drag and drop the 4 key terms in the order they build on each other."
+    },
+    {
+     "type": "ask",
+     "q": "Suppose factories are running overtime, workers do extra shifts, and actual output this year comes out above the sustainable maximum level. Which way round is actual output compared with potential output?",
+     "right": "Actual output is above potential output",
+     "wrong": "Actual output is below potential output",
+     "hint": "Overtime and extra shifts push production beyond the normal sustainable rate.",
+     "pre": "When actual output is above potential output, that is a",
+     "term": "POS_OUTPUT_GAP"
+    },
+    {
+     "type": "ask",
+     "q": "Now suppose a recession hits: many workers are idle and machines sit unused, so actual output falls below the sustainable maximum. Which way round is actual output compared with potential output this time?",
+     "right": "Actual output is below potential output",
+     "wrong": "Actual output is above potential output",
+     "hint": "If workers and machines sit idle, is actual output above or below the sustainable maximum?",
+     "pre": "When actual output is below potential output, that is a",
+     "term": "NEG_OUTPUT_GAP"
+    },
+    {
+     "type": "derive"
+    }
+   ],
+   "given": [],
+   "needs": [],
+   "builds": [],
+   "nodes": [
+    "ACTUAL_OUTPUT",
+    "POTENTIAL_OUTPUT",
+    "LRAS_CURVE",
+    "POS_OUTPUT_GAP",
+    "NEG_OUTPUT_GAP"
+   ],
+   "dropped": [
+    [
+     "ACTUAL_OUTPUT",
+     "POS_OUTPUT_GAP"
+    ],
+    [
+     "POTENTIAL_OUTPUT",
+     "POS_OUTPUT_GAP"
+    ],
+    [
+     "ACTUAL_OUTPUT",
+     "NEG_OUTPUT_GAP"
+    ],
+    [
+     "POTENTIAL_OUTPUT",
+     "NEG_OUTPUT_GAP"
+    ]
+   ],
+   "edges": [
+    [
+     "POTENTIAL_OUTPUT",
+     "LRAS_CURVE"
+    ],
+    [
+     "ACTUAL_OUTPUT",
+     "gap"
+    ],
+    [
+     "POTENTIAL_OUTPUT",
+     "gap"
+    ],
+    [
+     "gap",
+     "POS_OUTPUT_GAP"
+    ],
+    [
+     "gap",
+     "NEG_OUTPUT_GAP"
+    ]
+   ]
+  }
+ ]
+}

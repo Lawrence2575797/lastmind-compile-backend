@@ -1,0 +1,193 @@
+{
+ "id": "gen",
+ "subject": "Economics",
+ "title": "State provision of public goods",
+ "terms": {
+  "STATEPROV_DEF": {
+   "label": "State provision of public goods"
+  },
+  "STATEPROV_ADV1": {
+   "label": "Overcomes free-rider problem"
+  },
+  "STATEPROV_ADV2": {
+   "label": "Ensures equitable access"
+  },
+  "STATEPROV_DIS1": {
+   "label": "Lacks info on optimal quantity"
+  },
+  "STATEPROV_DIS2": {
+   "label": "Risk of inefficiency"
+  },
+  "REASONS_INTERVENE": {
+   "label": "Reasons for intervention"
+  },
+  "PUBGOOD_NONEX": {
+   "label": "Non-excludability"
+  },
+  "PUBGOOD_NONRIV": {
+   "label": "Non-rivalry"
+  },
+  "INFOGAP_MKT": {
+   "label": "Information gaps/asymmetric information as market failure"
+  }
+ },
+ "stages": [
+  {
+   "name": "State provision of public goods",
+   "title": "State provision of public goods",
+   "sub": "What happens when the government, rather than the market, provides a public good.",
+   "steps": [
+    {
+     "type": "ask",
+     "q": "Every passing ship benefits from a lighthouse whether it paid or not. Could a private firm easily charge each ship?",
+     "right": "No, it could not charge people individually",
+     "wrong": "Yes, it could charge each ship separately",
+     "hint": "Think about whether anyone can be stopped from using the light, or whether one ship's use uses it up.",
+     "pre": "So instead the good gets built and paid for directly by the government. This is",
+     "term": "STATEPROV_DEF"
+    },
+    {
+     "type": "ask",
+     "q": "Once the government builds the lighthouse from taxes, can any ship still use its light without paying extra?",
+     "right": "Yes, but everyone has already paid through tax",
+     "wrong": "No, ships must still pay per use",
+     "hint": "Nobody can dodge the tax that funds it the way they could dodge a private charge.",
+     "pre": "So funding it through taxation stops people getting the benefit for nothing, solving the",
+     "term": "STATEPROV_ADV1"
+    },
+    {
+     "type": "ask",
+     "q": "If a private firm ran the lighthouse and could charge, would poorer ship owners who couldn't afford it still get protection?",
+     "right": "No, they would be left without it",
+     "wrong": "Yes, price would not affect who gets it",
+     "hint": "A market price always excludes whoever cannot pay it. Does state funding do that?",
+     "pre": "Because it is paid for by everyone's taxes, government provision instead",
+     "term": "STATEPROV_ADV2"
+    },
+    {
+     "type": "ask",
+     "q": "A private firm reads demand from the prices people will pay. When the government provides a public good free, does it get that signal?",
+     "right": "No, it has no price signal to guide it",
+     "wrong": "Yes, it can see exactly what people want",
+     "hint": "Without asymmetric-information-style feedback from prices, how does the state know if it is building two lighthouses or twenty?",
+     "pre": "So a real risk is that the",
+     "term": "STATEPROV_DIS1"
+    },
+    {
+     "type": "order",
+     "terms": [
+      "STATEPROV_DEF",
+      "STATEPROV_ADV1",
+      "STATEPROV_ADV2",
+      "STATEPROV_DIS1"
+     ],
+     "prompt": "Drag and drop the 4 key terms in the order they build on each other."
+    },
+    {
+     "type": "ask",
+     "q": "A wasteful private firm can go bankrupt, but a tax-funded department keeps its budget. Is the pressure to cut costs the same?",
+     "right": "No, there is less pressure to keep costs down",
+     "wrong": "Yes, the pressure is exactly the same",
+     "hint": "What normally forces a firm to be efficient, and is that thing present here?",
+     "pre": "Without a profit motive pushing costs down, there is a",
+     "term": "STATEPROV_DIS2"
+    },
+    {
+     "type": "derive"
+    }
+   ],
+   "given": [
+    "REASONS_INTERVENE",
+    "PUBGOOD_NONEX",
+    "PUBGOOD_NONRIV",
+    "INFOGAP_MKT"
+   ],
+   "needs": [
+    "REASONS_INTERVENE",
+    "PUBGOOD_NONEX",
+    "PUBGOOD_NONRIV",
+    "INFOGAP_MKT"
+   ],
+   "builds": [
+    "REASONS_INTERVENE",
+    "PUBGOOD_NONEX",
+    "PUBGOOD_NONRIV",
+    "INFOGAP_MKT"
+   ],
+   "nodes": [
+    "STATEPROV_DEF",
+    "STATEPROV_ADV1",
+    "STATEPROV_ADV2",
+    "STATEPROV_DIS1",
+    "STATEPROV_DIS2"
+   ],
+   "dropped": [],
+   "edges": [
+    [
+     "STATEPROV_DEF",
+     "STATEPROV_ADV1"
+    ],
+    [
+     "STATEPROV_DEF",
+     "STATEPROV_ADV2"
+    ],
+    [
+     "STATEPROV_DEF",
+     "STATEPROV_DIS1"
+    ],
+    [
+     "STATEPROV_DEF",
+     "STATEPROV_DIS2"
+    ],
+    [
+     "REASONS_INTERVENE",
+     "STATEPROV_DEF"
+    ],
+    [
+     "PUBGOOD_NONEX",
+     "STATEPROV_DEF"
+    ],
+    [
+     "PUBGOOD_NONRIV",
+     "STATEPROV_DEF"
+    ],
+    [
+     "INFOGAP_MKT",
+     "STATEPROV_DIS1"
+    ],
+    [
+     "PUBGOOD_NONEX",
+     "STATEPROV_DEF"
+    ],
+    [
+     "PUBGOOD_NONRIV",
+     "STATEPROV_DEF"
+    ],
+    [
+     "REASONS_INTERVENE",
+     "STATEPROV_DEF"
+    ],
+    [
+     "STATEPROV_DEF",
+     "STATEPROV_ADV1"
+    ],
+    [
+     "STATEPROV_DEF",
+     "STATEPROV_ADV2"
+    ],
+    [
+     "STATEPROV_DEF",
+     "STATEPROV_DIS1"
+    ],
+    [
+     "STATEPROV_DEF",
+     "STATEPROV_DIS2"
+    ],
+    [
+     "INFOGAP_MKT",
+     "STATEPROV_DIS1"
+    ]
+   ]
+  }
+ ]
+}

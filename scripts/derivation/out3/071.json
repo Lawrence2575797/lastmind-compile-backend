@@ -1,0 +1,205 @@
+{
+ "id": "gen",
+ "subject": "Economics",
+ "title": "Recession",
+ "terms": {
+  "quarter": {
+   "label": "Quarter of negative growth"
+  },
+  "RECESSION_DEF": {
+   "label": "Recession"
+  },
+  "RECESSION_UNEMPLOYMENT": {
+   "label": "Rising unemployment"
+  },
+  "RECESSION_INFLATION": {
+   "label": "Falling inflation"
+  },
+  "RECESSION_CONFIDENCE": {
+   "label": "Falling confidence"
+  },
+  "RECESSION_OUTPUTGAP": {
+   "label": "Negative output gap present"
+  },
+  "RECESSION_INVESTMENT": {
+   "label": "Falling investment"
+  },
+  "TRADE_CYCLE": {
+   "label": "Trade (business) cycle"
+  },
+  "ACTUAL_GROWTH": {
+   "label": "Actual growth"
+  },
+  "NEG_OUTPUT_GAP": {
+   "label": "Negative output gap"
+  }
+ },
+ "stages": [
+  {
+   "name": "Recession",
+   "title": "Recession",
+   "sub": "What a recession is, and the pattern of characteristics that come with it.",
+   "steps": [
+    {
+     "type": "ask",
+     "q": "A country's real output falls from one quarter to the next. What has happened to actual growth that quarter?",
+     "right": "It has turned negative",
+     "wrong": "It has slowed but stayed positive",
+     "hint": "Output itself has fallen, not just the pace of increase.",
+     "pre": "Real output falling means actual growth is negative in that",
+     "term": "quarter"
+    },
+    {
+     "type": "ask",
+     "q": "Output falls for one single quarter, then starts rising again the next. Along the trade cycle, is this enough to call it a downturn that has taken hold?",
+     "right": "No, one quarter alone is not enough",
+     "wrong": "Yes, one quarter is enough on its own",
+     "hint": "Think about how long the fall needs to persist to be more than a blip.",
+     "pre": "It needs to carry on for at least two quarters in a row. That is a",
+     "term": "RECESSION_DEF"
+    },
+    {
+     "type": "ask",
+     "q": "Firms in recession are selling less and cutting back production. What is likely to happen to the number of workers they need?",
+     "right": "They lay off workers, so it rises",
+     "wrong": "They keep all workers on unchanged",
+     "hint": "Less output usually needs less labour.",
+     "pre": "So a recession brings",
+     "term": "RECESSION_UNEMPLOYMENT"
+    },
+    {
+     "type": "ask",
+     "q": "With less spending in the shops and workers earning less, do firms find it easy or hard to keep raising their prices?",
+     "right": "Hard, so price rises slow down",
+     "wrong": "Easy, so price rises speed up",
+     "hint": "Weak demand makes it harder for firms to push prices up.",
+     "pre": "So a recession brings",
+     "term": "RECESSION_INFLATION"
+    },
+    {
+     "type": "order",
+     "terms": [
+      "quarter",
+      "RECESSION_DEF",
+      "RECESSION_UNEMPLOYMENT",
+      "RECESSION_INFLATION"
+     ],
+     "prompt": "Drag and drop the 4 key terms in the order they build on each other."
+    },
+    {
+     "type": "ask",
+     "q": "People hear the news is full of job losses and closing shops. Are they more or less likely to feel optimistic about spending and investing?",
+     "right": "Less likely, they become cautious",
+     "wrong": "More likely, they feel reassured",
+     "hint": "Bad economic news usually changes how safe people feel about spending.",
+     "pre": "So a recession brings",
+     "term": "RECESSION_CONFIDENCE"
+    },
+    {
+     "type": "ask",
+     "q": "Factories are running well below what they are capable of producing during the recession. Is actual output above or below potential output?",
+     "right": "Below potential output",
+     "wrong": "Above potential output",
+     "hint": "Spare capacity means output has fallen short of what could be produced.",
+     "pre": "That gap, actual output below potential, is the",
+     "term": "RECESSION_OUTPUTGAP"
+    },
+    {
+     "type": "ask",
+     "q": "Firms facing falling sales and low confidence are deciding whether to buy new machinery or open new sites. What do they tend to do, and what happens to weaker firms that cannot cope?",
+     "right": "They cut spending on new projects, and some firms fail",
+     "wrong": "They carry on expanding as before, and few firms fail",
+     "hint": "Low confidence and falling demand make firms hold back on spending and struggle to survive.",
+     "pre": "So a recession also brings",
+     "term": "RECESSION_INVESTMENT"
+    },
+    {
+     "type": "order",
+     "terms": [
+      "RECESSION_CONFIDENCE",
+      "RECESSION_OUTPUTGAP",
+      "RECESSION_INVESTMENT"
+     ],
+     "prompt": "Drag and drop the 3 key terms in the order they build on each other."
+    },
+    {
+     "type": "derive"
+    }
+   ],
+   "given": [
+    "TRADE_CYCLE",
+    "ACTUAL_GROWTH",
+    "NEG_OUTPUT_GAP"
+   ],
+   "needs": [
+    "TRADE_CYCLE",
+    "ACTUAL_GROWTH",
+    "NEG_OUTPUT_GAP"
+   ],
+   "builds": [
+    "TRADE_CYCLE",
+    "ACTUAL_GROWTH",
+    "NEG_OUTPUT_GAP"
+   ],
+   "nodes": [
+    "RECESSION_DEF",
+    "RECESSION_UNEMPLOYMENT",
+    "RECESSION_INFLATION",
+    "RECESSION_CONFIDENCE",
+    "RECESSION_OUTPUTGAP",
+    "RECESSION_INVESTMENT"
+   ],
+   "dropped": [],
+   "edges": [
+    [
+     "RECESSION_DEF",
+     "RECESSION_UNEMPLOYMENT"
+    ],
+    [
+     "RECESSION_DEF",
+     "RECESSION_INFLATION"
+    ],
+    [
+     "RECESSION_DEF",
+     "RECESSION_CONFIDENCE"
+    ],
+    [
+     "RECESSION_DEF",
+     "RECESSION_OUTPUTGAP"
+    ],
+    [
+     "RECESSION_DEF",
+     "RECESSION_INVESTMENT"
+    ],
+    [
+     "TRADE_CYCLE",
+     "RECESSION_DEF"
+    ],
+    [
+     "ACTUAL_GROWTH",
+     "RECESSION_DEF"
+    ],
+    [
+     "NEG_OUTPUT_GAP",
+     "RECESSION_OUTPUTGAP"
+    ],
+    [
+     "ACTUAL_GROWTH",
+     "quarter"
+    ],
+    [
+     "quarter",
+     "RECESSION_DEF"
+    ],
+    [
+     "TRADE_CYCLE",
+     "RECESSION_DEF"
+    ],
+    [
+     "NEG_OUTPUT_GAP",
+     "RECESSION_OUTPUTGAP"
+    ]
+   ]
+  }
+ ]
+}

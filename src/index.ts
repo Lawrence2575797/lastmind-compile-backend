@@ -37,6 +37,7 @@ import specLessonPracticeRouter from './routes/specLessonPractice';
 import mathHelpRouter from './routes/mathHelp';
 import personalNotesRouter from './routes/personalNotes';
 import notesSyncRouter from './routes/notesSync';
+import footballMultiplayerRouter from './routes/footballMultiplayer';
 import notesAssistantRouter from './routes/notesAssistant';
 import footballInstructionsRouter from './routes/footballInstructions';
 import notesMapRouter from './routes/notesMap';
@@ -80,6 +81,7 @@ app.use(helmet({ contentSecurityPolicy: false }));
 // has been read, the global one below skips it.
 app.use('/sync/folders', express.json({ limit: '3mb' }));
 app.use('/create/projects', express.json({ limit: '6mb' }));
+app.use('/football-mp', express.json({ limit: '1mb' }));   // a manager's plan for a round
 app.use('/notes-sync', express.json({ limit: '9mb' }));   // a Notes page's pictures, as base64
 app.use('/problem-set', express.json({ limit: '26mb' }));   // pictures and PDFs of a problem set, as base64
 app.use('/playtest/session', express.json({ limit: '1mb' }));
@@ -118,6 +120,7 @@ app.use('/', specLessonPracticeRouter);
 app.use('/', mathHelpRouter);
 app.use('/', personalNotesRouter);
 app.use('/', notesSyncRouter);
+app.use('/', footballMultiplayerRouter);
 app.use('/', notesAssistantRouter);
 app.use('/', footballInstructionsRouter);
 app.use('/', notesMapRouter);

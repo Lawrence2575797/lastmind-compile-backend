@@ -1,4 +1,5 @@
 import { Router, Request, Response } from 'express';
+import { requireAuth } from '../services/authMiddleware';
 import { callClaudeJSON, MODELS } from '../services/claudeClient';
 import { assertLocksAvailable, InsufficientLocksError } from '../services/lockService';
 
@@ -9,6 +10,7 @@ import { assertLocksAvailable, InsufficientLocksError } from '../services/lockSe
 // Sign-in and the rate limit are applied to every /football route by footballInstructions.ts (mounted first).
 
 const router = Router();
+router.use('/football', requireAuth);   // also set by footballInstructions.ts (which adds the rate limit); stated here so this file is safe on its own
 const clip = (s: unknown, n: number) => (typeof s === 'string' ? s.trim().slice(0, n) : '');
 const LESSONS = ['pass', 'dribble', 'tackle', 'shoot', 'fitness', 'keeper'];
 

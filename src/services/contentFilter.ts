@@ -75,6 +75,8 @@ const USER_TEXT_PATHS: Array<{ test: RegExp; keys: string[]; all?: boolean }> = 
   { test: /^\/playtest\/assess$/, keys: ['opening', 'closing', 'question'] },
   { test: /^\/playtest\/compile-speech$/, keys: ['notes'] },
   { test: /^\/chancellor\//, keys: [], all: true },
+  { test: /^\/playtest\/(portrait|evidence-image)$/, keys: ['description', 'prompt', 'caption'] },
+  { test: /^\/football\/(picture|compile-instruction|compile-condition|teach-assess)$/, keys: ['look', 'text', 'explanation'] },
 ];
 
 function walk(node: unknown, fn: (s: string, key: string, path: string[]) => string, key = '', path: string[] = [], depth = 0): unknown {

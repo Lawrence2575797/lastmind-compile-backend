@@ -1,11 +1,12 @@
 import { Router, Request, Response } from 'express';
 import { requireAuth } from '../services/authMiddleware';
+import { syncEndpointLimiter } from '../services/rateLimiters';
 import { listNoteNodes, pushNoteNodes, listNoteImageIds, saveNoteImage, getNoteImage } from '../services/notesSyncService';
 
 // The Notes page's own storage, per account - see notesSyncService.ts. Never calls Claude: it only reads and writes
 // the student's own pages, so there is no costly-endpoint limiter, just the global one.
 const router = Router();
-router.use('/notes-sync', requireAuth);
+router.use('/notes-sync', requireAuth, syncEndpointLimiter);
 
 const ID = /^[A-Za-z0-9_-]{1,64}$/;
 

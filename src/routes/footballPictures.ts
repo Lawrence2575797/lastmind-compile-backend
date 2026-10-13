@@ -1,4 +1,5 @@
 import { Router, Request, Response } from 'express';
+import { requireAuth } from '../services/authMiddleware';
 import { falImages, downloadAsDataUrl } from '../services/createImages';
 import { assertLocksAvailable, chargeLocksForUsage, InsufficientLocksError } from '../services/lockService';
 import { USD_PER_LOCK } from '../constants/modelPricing';
@@ -9,6 +10,7 @@ import { USD_PER_LOCK } from '../constants/modelPricing';
 // Sign-in and the rate limit come from footballInstructions.ts, which guards every /football route.
 
 const router = Router();
+router.use('/football', requireAuth);   // also set by footballInstructions.ts (which adds the rate limit); stated here so this file is safe on its own
 const clip = (s: unknown, n: number) => (typeof s === 'string' ? s.trim().replace(/[^\w\s,.'()-]/g, '').slice(0, n) : '');
 const ONE_OF = (v: unknown, list: string[], fallback: string) => (typeof v === 'string' && list.includes(v) ? v : fallback);
 

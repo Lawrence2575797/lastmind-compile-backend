@@ -87,7 +87,7 @@ app.use('/playtest/duel/create', express.json({ limit: '1mb' }));
 app.use(express.json({ limit: '200kb' }));
 app.use(cors({ origin: FRONTEND_ORIGIN, methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'] }));
 app.use(globalRateLimiter);
-app.use(['/create', '/playtest', '/chancellor'], screenRequestBody);   // vulgar-language block and PII redaction on everything students type into Create, the Law playtest and the Chancellor sim
+app.use(['/create', '/playtest', '/chancellor', '/football'], screenRequestBody);   // vulgar-language block and PII redaction on everything students type into Create, the Law playtest and the Chancellor sim
 
 app.use('/', compileRouter);
 app.use('/', reviewRouter);

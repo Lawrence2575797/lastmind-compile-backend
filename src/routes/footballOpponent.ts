@@ -1,4 +1,5 @@
 import { Router, Request, Response } from 'express';
+import { requireAuth } from '../services/authMiddleware';
 import { callClaudeJSON, MODELS } from '../services/claudeClient';
 import { assertLocksAvailable, InsufficientLocksError } from '../services/lockService';
 import { FOOTBALL_OPPONENT_PROMPT } from '../constants/footballOpponentPrompt';
@@ -9,6 +10,7 @@ import { validateRules, GROUPS, Opp } from '../services/footballRules';
 // What comes back is checked by validateRules, so the opposition can do nothing the user could not.
 
 const router = Router();
+router.use('/football', requireAuth);   // also set by footballInstructions.ts (which adds the rate limit); stated here so this file is safe on its own
 // Sign-in and the rate limit are applied to every /football route by footballInstructions.ts (mounted first), so they are not repeated here.
 
 const clip = (s: unknown, n: number) => (typeof s === 'string' ? s.trim().slice(0, n) : '');

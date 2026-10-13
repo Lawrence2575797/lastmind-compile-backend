@@ -30,7 +30,7 @@ router.get('/tutoring-slots/week', requireAuth, syncEndpointLimiter, async (req:
 
 // GET /tutoring-slots/week/admin?weekStart=ISO -> WeekSlot[] (full detail,
 // incl. who booked what) - founder only.
-router.get('/tutoring-slots/week/admin', requireAuth, requireAdmin, async (req: Request, res: Response) => {
+router.get('/tutoring-slots/week/admin', requireAuth, requireAdmin, syncEndpointLimiter, async (req: Request, res: Response) => {
   const weekStart = parseWeekStart(req.query.weekStart);
   if (!weekStart) return res.status(400).json({ error: 'weekStart is required' });
   try {

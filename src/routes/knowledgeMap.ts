@@ -1767,7 +1767,7 @@ router.post('/day1-checks/:id/peek', requireAuth, syncEndpointLimiter, async (re
 // "prompted" (shown the link's own teaching content first) while every
 // later spaced review is unprompted cold recall (see getIntegrationStepData).
 
-router.get('/knowledge-map-v2/node-review/:nodeId/qualifying-links', requireAuth, async (req: Request, res: Response) => {
+router.get('/knowledge-map-v2/node-review/:nodeId/qualifying-links', requireAuth, syncEndpointLimiter, async (req: Request, res: Response) => {
   try {
     const links = await getQualifyingReviewLinks(req.userId as string, req.params.nodeId);
     res.json({ links: links.map((l) => ({ toNodeId: l.toNode.id, toLabel: l.toNode.label })) });
@@ -2110,7 +2110,7 @@ async function regenerateLessonForEncodedNode(nodeId: string, userId: string): P
   return !!content;
 }
 
-router.post('/knowledge-map-v2/node/:nodeId/notes/compile', requireAuth, async (req: Request, res: Response) => {
+router.post('/knowledge-map-v2/node/:nodeId/notes/compile', requireAuth, costlyEndpointLimiter, async (req: Request, res: Response) => {
   try {
     let notes = await getNodeNoteForUser(req.params.nodeId, req.userId as string);
     if (!notes && await regenerateLessonForEncodedNode(req.params.nodeId, req.userId as string)) notes = await getNodeNoteForUser(req.params.nodeId, req.userId as string);
@@ -2122,7 +2122,7 @@ router.post('/knowledge-map-v2/node/:nodeId/notes/compile', requireAuth, async (
   }
 });
 
-router.get('/knowledge-map-v2/node/:nodeId/notes', requireAuth, async (req: Request, res: Response) => {
+router.get('/knowledge-map-v2/node/:nodeId/notes', requireAuth, syncEndpointLimiter, async (req: Request, res: Response) => {
   try {
     let notes = await getNodeNoteForUser(req.params.nodeId, req.userId as string);
     if (!notes && await regenerateLessonForEncodedNode(req.params.nodeId, req.userId as string)) notes = await getNodeNoteForUser(req.params.nodeId, req.userId as string);
@@ -2139,7 +2139,7 @@ router.get('/knowledge-map-v2/node/:nodeId/notes', requireAuth, async (req: Requ
 // comment). Not gated behind requirePaidTier's sibling routes' generation
 // cost (there is none), but the note being edited is still only ever
 // shown on the Premium Notes page in the first place.
-router.put('/knowledge-map-v2/node/:nodeId/notes', requireAuth, async (req: Request, res: Response) => {
+router.put('/knowledge-map-v2/node/:nodeId/notes', requireAuth, syncEndpointLimiter, async (req: Request, res: Response) => {
   const { paragraphs } = (req.body ?? {}) as { paragraphs?: string[] };
   if (!Array.isArray(paragraphs) || !paragraphs.every((p) => typeof p === 'string')) {
     return res.status(400).json({ error: 'paragraphs (string[]) is required' });
@@ -2153,7 +2153,7 @@ router.put('/knowledge-map-v2/node/:nodeId/notes', requireAuth, async (req: Requ
   }
 });
 
-router.post('/knowledge-map-v2/edge/:fromNodeId/:toNodeId/notes/compile', requireAuth, async (req: Request, res: Response) => {
+router.post('/knowledge-map-v2/edge/:fromNodeId/:toNodeId/notes/compile', requireAuth, costlyEndpointLimiter, async (req: Request, res: Response) => {
   try {
     const notes = await getEdgeNoteForUser(req.userId as string, req.params.fromNodeId, req.params.toNodeId);
     if (!notes) return res.status(404).json({ error: 'connection not found' });
@@ -2164,7 +2164,7 @@ router.post('/knowledge-map-v2/edge/:fromNodeId/:toNodeId/notes/compile', requir
   }
 });
 
-router.get('/knowledge-map-v2/edge/:fromNodeId/:toNodeId/notes', requireAuth, async (req: Request, res: Response) => {
+router.get('/knowledge-map-v2/edge/:fromNodeId/:toNodeId/notes', requireAuth, syncEndpointLimiter, async (req: Request, res: Response) => {
   try {
     const notes = await getEdgeNoteForUser(req.userId as string, req.params.fromNodeId, req.params.toNodeId);
     if (!notes) return res.status(404).json({ error: 'no notes available for this connection yet' });
@@ -2175,7 +2175,7 @@ router.get('/knowledge-map-v2/edge/:fromNodeId/:toNodeId/notes', requireAuth, as
   }
 });
 
-router.put('/knowledge-map-v2/edge/:fromNodeId/:toNodeId/notes', requireAuth, async (req: Request, res: Response) => {
+router.put('/knowledge-map-v2/edge/:fromNodeId/:toNodeId/notes', requireAuth, syncEndpointLimiter, async (req: Request, res: Response) => {
   const { paragraphs } = (req.body ?? {}) as { paragraphs?: string[] };
   if (!Array.isArray(paragraphs) || !paragraphs.every((p) => typeof p === 'string')) {
     return res.status(400).json({ error: 'paragraphs (string[]) is required' });
@@ -2233,7 +2233,7 @@ router.post('/knowledge-map-v2/edge/:fromNodeId/:toNodeId/worked-example-step/ch
   }
 });
 
-router.get('/knowledge-map-v2/notes-index', requireAuth, async (req: Request, res: Response) => {
+router.get('/knowledge-map-v2/notes-index', requireAuth, syncEndpointLimiter, async (req: Request, res: Response) => {
   try {
     const index = await getNotesIndexForUser(req.userId as string);
     res.json(index);
@@ -2246,7 +2246,7 @@ router.get('/knowledge-map-v2/notes-index', requireAuth, async (req: Request, re
 // A student's own hand-written note for a node - see
 // knowledgeMapNotesService.ts's PersonalNoteContent. No costlyEndpointLimiter:
 // this never calls Claude, it's just reading/writing the student's own text.
-router.get('/knowledge-map-v2/node/:nodeId/personal-notes', requireAuth, async (req: Request, res: Response) => {
+router.get('/knowledge-map-v2/node/:nodeId/personal-notes', requireAuth, syncEndpointLimiter, async (req: Request, res: Response) => {
   try {
     const note = await getPersonalNote(req.userId as string, req.params.nodeId);
     if (!note) return res.status(404).json({ error: 'no personal note saved for this concept yet' });
@@ -2257,7 +2257,7 @@ router.get('/knowledge-map-v2/node/:nodeId/personal-notes', requireAuth, async (
   }
 });
 
-router.put('/knowledge-map-v2/node/:nodeId/personal-notes', requireAuth, async (req: Request, res: Response) => {
+router.put('/knowledge-map-v2/node/:nodeId/personal-notes', requireAuth, syncEndpointLimiter, async (req: Request, res: Response) => {
   try {
     const { mode, heading, body, diagram, sections, contrastText, exampleText, quickNotes } = req.body || {};
     if (mode !== 'freeText' && mode !== 'template') return res.status(400).json({ error: 'invalid note mode' });

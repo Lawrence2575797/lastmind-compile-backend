@@ -1,5 +1,6 @@
 import { Router, Request, Response } from 'express';
 import { requireAuth } from '../services/authMiddleware';
+import { syncEndpointLimiter } from '../services/rateLimiters';
 import { listGeneralNotes, createGeneralNote, getGeneralNote, saveGeneralNote, deleteGeneralNote } from '../services/personalGeneralNotesService';
 
 // A student's own free-standing notes - see personalGeneralNotesService.ts.
@@ -8,6 +9,7 @@ import { listGeneralNotes, createGeneralNote, getGeneralNote, saveGeneralNote, d
 // costlyEndpointLimiter: this never calls Claude, it's just reading/writing
 // the student's own text.
 const router = Router();
+router.use('/personal-notes', requireAuth, syncEndpointLimiter);
 
 router.get('/personal-notes', requireAuth, async (req: Request, res: Response) => {
   try {

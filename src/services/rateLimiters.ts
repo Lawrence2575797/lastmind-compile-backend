@@ -1,4 +1,5 @@
 import { rateLimit } from 'express-rate-limit';
+import { SupabaseRateLimitStore } from './supabaseRateLimitStore';
 
 // First line of defense — applied globally, keyed by IP, before any auth
 // check even runs. Loose on purpose: this exists to stop a script from
@@ -29,6 +30,7 @@ export const costlyEndpointLimiter = rateLimit({
   legacyHeaders: false,
   keyGenerator: (req) => req.userId || req.ip || 'unknown',
   message: { error: 'Too many requests to this endpoint. Please slow down.' },
+  store: new SupabaseRateLimitStore('compile:costly'),
 });
 
 // Folder/page sync isn't Claude-cost-incurring (just a Supabase read/write),
@@ -76,4 +78,5 @@ export const publicFormLimiter = rateLimit({
   standardHeaders: true,
   legacyHeaders: false,
   message: { error: 'Too many submissions from this connection. Please try again later.' },
+  store: new SupabaseRateLimitStore('compile:public-form'),
 });

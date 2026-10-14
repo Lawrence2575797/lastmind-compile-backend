@@ -26,30 +26,44 @@ async function hasUnlimitedLocks(userId: string): Promise<boolean> {
   }
 }
 
-async function sumLedger(userId: string, table: string, column: string, since: string): Promise<number> {
-  let total = 0;
-  for (let offset = 0; ; offset += 1000) {
-    const { data, error } = await supabaseAdmin.from(table).select(column).eq('user_id', userId)
-      .gte('created_at', since).order('id').range(offset, offset + 999);
-    if (error) throw error;
-    const rows = (data || []) as unknown as Record<string, number>[];
-    total += rows.reduce((sum, row) => sum + Number(row[column]), 0);
-    if (rows.length < 1000) return total;
-  }
-}
-
 // The existing transaction ledger is authoritative. Concurrent usage cannot
 // overwrite another debit. A purchase receipt credits once by its primary key,
 // avoiding the non-atomic receipt-then-balance-update failure in the draft.
+//
+// The monthly allotment refreshes every month, but extra Locks that were bought
+// are kept until they are used. Each month's use is taken from that month's
+// allotment first; only what goes beyond the allotment is taken from the extra
+// Locks, so what is left over carries into the next month.
+async function ledgerRows(userId: string, table: string, column: string): Promise<{ at: string; value: number }[]> {
+  const out: { at: string; value: number }[] = [];
+  for (let offset = 0; ; offset += 1000) {
+    const { data, error } = await supabaseAdmin.from(table).select(`${column},created_at`).eq('user_id', userId)
+      .order('created_at').range(offset, offset + 999);
+    if (error) throw error;
+    const rows = (data || []) as unknown as Record<string, any>[];
+    rows.forEach((r) => out.push({ at: String(r.created_at), value: Number(r[column]) }));
+    if (rows.length < 1000) return out;
+  }
+}
 export async function getOrCreateLockBalance(userId: string): Promise<LockBalance> {
   if (await hasUnlimitedLocks(userId)) return { balance: 999_999 };
   const subscription = await getOrCreateSubscription(userId);
-  const since = monthlyPeriod().period_start + 'T00:00:00.000Z';
+  const allotment = getMonthlyAllotment(subscription.tier);
+  const thisMonth = monthlyPeriod().period_start;   // YYYY-MM-DD of the first of this month
   const [changes, purchases] = await Promise.all([
-    sumLedger(userId, 'lock_transactions', 'amount', since),
-    sumLedger(userId, 'extra_locks_purchases', 'locks_granted', since),
+    ledgerRows(userId, 'lock_transactions', 'amount'),
+    ledgerRows(userId, 'extra_locks_purchases', 'locks_granted'),
   ]);
-  return { balance: getMonthlyAllotment(subscription.tier) + changes + purchases };
+  const monthOf = (iso: string) => iso.slice(0, 7);
+  const cur = thisMonth.slice(0, 7);
+  const net: Record<string, number> = {};
+  changes.forEach((c) => { const k = monthOf(c.at); net[k] = (net[k] || 0) + c.value; });
+  // what past months took out of the extra Locks: their use beyond that month's allotment
+  let extraUsed = 0;
+  Object.keys(net).forEach((k) => { if (k < cur) extraUsed += Math.max(0, -net[k] - allotment); });
+  const extraBought = purchases.reduce((sum, p) => sum + p.value, 0);
+  const extraLeft = Math.max(0, extraBought - extraUsed);
+  return { balance: allotment + (net[cur] || 0) + extraLeft };
 }
 
 async function recordChange(userId: string, amount: number, reason: string, model?: string): Promise<LockBalance> {

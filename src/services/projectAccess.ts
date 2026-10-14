@@ -9,7 +9,7 @@ export const PROJECTS: Project[] = ['football', 'law'];
 
 const ALL_PROJECT_IDS = new Set(['1554f85d-95a0-49de-b48a-aa9c8363f7cd']);
 const ALL_PROJECT_EMAILS = new Set(
-  ['jamesmwood@btinternet.com', 'austinjwood095@gmail.com', 'ollysj9@icloud.com']
+  ['jamesmwood@btinternet.com', 'austinjwood095@gmail.com', 'ollyjs9@icloud.com']
     .concat((process.env.PROJECT_ACCESS_EMAILS || '').split(','))
     .map((e) => e.trim().toLowerCase())
     .filter(Boolean)

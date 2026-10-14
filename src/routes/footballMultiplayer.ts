@@ -8,7 +8,10 @@ import { createGame, getGame, saveState, GameRow, GameState } from '../services/
 const router = Router();
 router.use('/football-mp', requireAuth);
 
-const IDLE_MS = 24 * 60 * 60 * 1000;
+const IDLE_MS = 24 * 60 * 60 * 1000;   // the default time a round waits for plans
+// how long managers get to lock in a plan, chosen when the game is set up (minutes)
+const DEADLINE_MINUTES = [30, 60, 180, 360, 720, 1440, 2880, 4320, 10080];
+const deadlineOf = (g: GameRow) => g.state.deadlineMs || IDLE_MS;
 const CODE = /^[A-Z2-9]{6}$/;
 const TEAM = /^t[1-9][0-9]?$/;
 const cleanName = (v: unknown) => (typeof v === 'string' ? v.trim().replace(/[^\w\s.'-]/g, '').slice(0, 24) : '') || 'Manager';
@@ -18,7 +21,7 @@ const visiblePlans = (g: GameRow, userId: string) => {
   const cur = String(g.state.round), seated = Object.keys(g.state.seats);
   const handed = g.state.plans[cur] || {};
   const everyone = seated.length > 0 && seated.every((t) => handed[t]);
-  const idle = !!g.state.roundAt && Date.now() - Date.parse(g.state.roundAt) > IDLE_MS;
+  const idle = !!g.state.roundAt && Date.now() - Date.parse(g.state.roundAt) > deadlineOf(g);
   const mine = Object.keys(g.state.seats).find((t) => g.state.seats[t].userId === userId) || null;
   const out: Record<string, any> = {};
   Object.keys(g.state.plans).forEach((r) => {
@@ -37,12 +40,13 @@ const seatOf = (g: GameRow, userId: string) => Object.keys(g.state.seats).find((
 
 // POST /football-mp/create { kind, seed, teams: [clubId], teamId, name }
 router.post('/football-mp/create', actionEndpointLimiter, async (req: Request, res: Response) => {
-  const { kind, seed, teams, teamId, name } = req.body || {};
+  const { kind, seed, teams, teamId, name, deadlineMinutes } = req.body || {};
   if ((kind !== 'league' && kind !== 'match') || !Number.isInteger(seed) || !Array.isArray(teams) || teams.length < 2 || teams.length > 16 || !teams.every((t: any) => typeof t === 'string' && TEAM.test(t)) || !TEAM.test(String(teamId)) || !teams.includes(teamId)) {
     return res.status(400).json({ error: 'invalid game' });
   }
   try {
-    const g = await createGame(req.userId as string, kind, seed, teams, teamId, cleanName(name));
+    const dm = DEADLINE_MINUTES.includes(Number(deadlineMinutes)) ? Number(deadlineMinutes) : 1440;
+    const g = await createGame(req.userId as string, kind, seed, teams, teamId, cleanName(name), dm * 60 * 1000);
     res.json(view(g, req.userId as string));
   } catch (err) {
     console.error('Football game create failed:', err);
@@ -137,7 +141,7 @@ router.post('/football-mp/played', actionEndpointLimiter, async (req: Request, r
       const seated = Object.keys(g.state.seats), planned = Object.keys(g.state.plans[String(round)] || {});
       const everyone = seated.every((t) => planned.includes(t));
       // a manager who has gone quiet for a day does not hold everyone else up: their club plays on as it is
-      const idle = Date.now() - Date.parse(g.state.roundAt || g.updatedAt) > IDLE_MS;
+      const idle = Date.now() - Date.parse(g.state.roundAt || g.updatedAt) > deadlineOf(g);
       if (!everyone && !idle) return res.status(409).json({ error: 'Not everybody has handed their plan in yet.' });
       const state: GameState = JSON.parse(JSON.stringify(g.state));
       state.played.push({ round, at: new Date().toISOString(), by: mine, scores: clean, forced: !everyone });

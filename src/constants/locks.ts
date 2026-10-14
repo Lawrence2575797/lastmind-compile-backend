@@ -6,7 +6,7 @@
 export type SubscriptionTier = 'free' | 'premium' | 'light' | 'max';
 
 export const MONTHLY_LOCK_ALLOTMENTS: Record<SubscriptionTier, number> = {
-  free: 0,
+  free: 1_000,   // every free account has 1,000 Locks a month; more can be bought
   premium: 50_000,
   // Legacy rows retain full access while Stripe migrations settle.
   light: 50_000,

@@ -65,8 +65,7 @@ function validateAmount(amount: number) {
 }
 export async function spendLocks(userId: string, amount: number, reason: string): Promise<LockBalance> {
   validateAmount(amount);
-  const subscription = await getOrCreateSubscription(userId);
-  if (subscription.tier === 'free') return { balance: 0 };
+  await getOrCreateSubscription(userId);
   if ((await getOrCreateLockBalance(userId)).balance < amount) throw new InsufficientLocksError();
   return recordChange(userId, -amount, reason);
 }
@@ -74,14 +73,12 @@ export async function spendLocks(userId: string, amount: number, reason: string)
 // returns real token counts. This is the pre-flight gate for those calls:
 // require a positive balance without inventing or deducting a flat fee.
 export async function assertLocksAvailable(userId: string): Promise<void> {
-  const subscription = await getOrCreateSubscription(userId);
-  if (subscription.tier === 'free') return;
+  await getOrCreateSubscription(userId);
   if ((await getOrCreateLockBalance(userId)).balance <= 0) throw new InsufficientLocksError();
 }
 export async function chargeLocksForUsage(userId: string, amount: number, reason: string, model?: string): Promise<LockBalance> {
   validateAmount(amount);
-  const subscription = await getOrCreateSubscription(userId);
-  if (subscription.tier === 'free') return { balance: 0 };
+  await getOrCreateSubscription(userId);
   return recordChange(userId, -amount, reason, model);
 }
 export async function creditLocks(userId: string, amount: number, reason: string): Promise<LockBalance> {

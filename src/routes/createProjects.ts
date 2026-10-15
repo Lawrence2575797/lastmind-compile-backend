@@ -1,5 +1,7 @@
 import { Router, Request, Response } from 'express';
+import { Request as Req, Response as Res, NextFunction } from 'express';
 import { requireAuth, requirePaidTier, isAdminEmail } from '../services/authMiddleware';
+import { hasProjectAccess } from '../services/projectAccess';
 import { syncEndpointLimiter, actionEndpointLimiter } from '../services/rateLimiters';
 import { supabaseAdmin } from '../services/supabaseAdmin';
 
@@ -7,7 +9,18 @@ import { supabaseAdmin } from '../services/supabaseAdmin';
 // Case Graph (with portraits) and the last playtest result. A finished case can be marked as a reference example that
 // every creator can open (only an admin can set that flag).
 const router = Router();
-router.use('/create/projects', requireAuth, requirePaidTier);
+// Saved projects are open to anyone on LastMind+ and to anyone who has bought a project (football or law), since a bought project's
+// progress is kept here too.
+async function requirePaidOrProject(req: Req, res: Res, next: NextFunction) {
+  try {
+    const uid = req.userId as string;
+    if (uid && ((await hasProjectAccess(uid, 'football', req.userEmail)) || (await hasProjectAccess(uid, 'law', req.userEmail)))) return next();
+  } catch (err) {
+    console.error('Project access check failed:', err);
+  }
+  return requirePaidTier(req, res, next);
+}
+router.use('/create/projects', requireAuth, requirePaidOrProject);
 
 const MAX_BYTES = 5_000_000;
 

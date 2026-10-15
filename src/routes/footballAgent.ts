@@ -11,8 +11,8 @@ const router = Router();
 router.use('/football', requireAuth);
 const clip = (s: unknown, n: number) => (typeof s === 'string' ? s.trim().slice(0, n) : '');
 
-const KINDS = ['heatmap', 'passnetwork', 'buildup', 'trend', 'table'];
-const STATS = ['goals', 'conceded', 'shots', 'shotsAgainst', 'xg', 'xgAgainst', 'possession', 'passPct', 'longPct', 'buildUps', 'buildUpsToFinal', 'tacklesWon', 'avgPass'];
+const KINDS = ['heatmap', 'passnetwork', 'buildup', 'trend', 'table', 'recoveries', 'turnovers'];
+const STATS = ['goals', 'conceded', 'shots', 'shotsAgainst', 'xg', 'xgAgainst', 'possession', 'passPct', 'longPct', 'buildUps', 'buildUpsToFinal', 'tacklesWon', 'avgPass', 'lineHeight', 'width', 'compactness', 'regainSeconds', 'recoveries', 'highRecoveries', 'possessions', 'possessionPasses', 'lostOwnThird', 'distanceKm', 'sprints'];
 
 const PROMPT = `You are the LastMind AI Agent, a warm, knowledgeable guide beside a football management game. The person talking to you is a student learning how to analyse football evidence (match statistics, comparisons, sample size, cause and effect, and the methods used to do it) by managing a club. You are friendly and human, like a good teacher who is also a football person.
 
@@ -27,6 +27,8 @@ You can put pictures from their recorded data under your reply. Only ask for one
 - {"kind":"buildup","match":"all" or a match id,"n":1 to 8}  (examples of build-up play from their own third)
 - {"kind":"trend","stat":one of ${STATS.join(', ')}}  (that number in every match, side by side)
 - {"kind":"table"}  (every match in a table)
+- {"kind":"recoveries","match":"all" or a match id}  (where they won the ball back)
+- {"kind":"turnovers","match":"all" or a match id}  (where they lost it)
 Match ids are given in the data summary. If they ask to see something and you have a picture for it, show it and say in your reply what to look at.
 
 Rules

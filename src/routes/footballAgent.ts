@@ -11,8 +11,9 @@ const router = Router();
 router.use('/football', requireAuth);
 const clip = (s: unknown, n: number) => (typeof s === 'string' ? s.trim().slice(0, n) : '');
 
-const KINDS = ['heatmap', 'passnetwork', 'buildup', 'trend', 'table', 'recoveries', 'turnovers'];
-const STATS = ['goals', 'conceded', 'shots', 'shotsAgainst', 'xg', 'xgAgainst', 'possession', 'passPct', 'longPct', 'buildUps', 'buildUpsToFinal', 'tacklesWon', 'avgPass', 'lineHeight', 'width', 'compactness', 'regainSeconds', 'recoveries', 'highRecoveries', 'possessions', 'possessionPasses', 'lostOwnThird', 'distanceKm', 'sprints'];
+const KINDS = ['heatmap', 'passnetwork', 'buildup', 'trend', 'table', 'recoveries', 'turnovers', 'shotmap', 'clip'];
+const WHATS = ['goal', 'conceded', 'chance', 'chanceAgainst', 'buildup', 'press', 'counter', 'counterAgainst', 'turnover', 'setpiece', 'setpieceAgainst'];
+const STATS = ['goals', 'conceded', 'shots', 'shotsAgainst', 'xg', 'xgAgainst', 'possession', 'passPct', 'longPct', 'buildUps', 'buildUpsToFinal', 'tacklesWon', 'avgPass', 'lineHeight', 'width', 'compactness', 'regainSeconds', 'recoveries', 'highRecoveries', 'possessions', 'possessionPasses', 'lostOwnThird', 'distanceKm', 'sprints', 'shotDistance', 'shotDefender', 'shotAssisted', 'bigChances', 'oppLineHeight', 'oppDistanceKm'];
 
 const PROMPT = `You are the LastMind AI Agent, a warm, knowledgeable guide beside a football management game. The person talking to you is a student learning how to analyse football evidence (match statistics, comparisons, sample size, cause and effect, and the methods used to do it) by managing a club. You are friendly and human, like a good teacher who is also a football person.
 
@@ -27,9 +28,14 @@ You can put pictures from their recorded data under your reply. Only ask for one
 - {"kind":"buildup","match":"all" or a match id,"n":1 to 8}  (examples of build-up play from their own third)
 - {"kind":"trend","stat":one of ${STATS.join(', ')}}  (that number in every match, side by side)
 - {"kind":"table"}  (every match in a table)
+- {"kind":"shotmap","team":"user" or "opp","match":"all" or a match id}  (every shot, sized by its chance, goals as stars)
+- {"kind":"clip","match":a match id or "all","what":one of ${WHATS.join(', ')},"n":0 for the first such moment, 1 for the next}  (replays that moment as a short video from the recorded positions; only ask for one the data summary says was kept)
 - {"kind":"recoveries","match":"all" or a match id}  (where they won the ball back)
 - {"kind":"turnovers","match":"all" or a match id}  (where they lost it)
 Match ids are given in the data summary. If they ask to see something and you have a picture for it, show it and say in your reply what to look at.
+
+How you talk about their football
+Football is emotional and so is learning from it, so do not read numbers out like a report. Say what it felt like and what it means: the frustration of a ball lost again and again in your own third, the lift of winning it back high up the pitch, the nerves of a lead that was never safe, the pride in a move that came off. Name the person or the moment when you can. Be honest as well as kind: say plainly when something is going badly, but always say what is worth being proud of and what to look at next. Never be gushing or fake; one true, warm sentence beats three exaggerated ones. If a replay or picture will let them feel it for themselves, show it.
 
 Rules
 - Use only the facts in the data summary. Never invent numbers, matches, players or events. If something is not recorded, say so plainly.
@@ -51,6 +57,7 @@ function cleanShow(v: unknown) {
     if (typeof x.match === 'string' || typeof x.match === 'number') out.match = clip(String(x.match), 40);
     if (x.team === 'opp' || x.team === 'user') out.team = x.team;
     if (STATS.includes(x.stat)) out.stat = x.stat;
+    if (WHATS.includes(x.what)) out.what = x.what;
     if (Number.isFinite(Number(x.n))) out.n = Math.max(1, Math.min(8, Math.round(Number(x.n))));
     return out;
   }).filter(Boolean);

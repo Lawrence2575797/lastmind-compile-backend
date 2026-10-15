@@ -9,7 +9,7 @@ export interface Seat { userId: string; name: string; joinedAt: string }
 export interface GameState {
   kind: GameKind;
   hostTeam: string;
-  teams: string[];                              // the clubs that exist in this game (a one-off match has two seats, a league has eight clubs)
+  teams: string[];                              // the clubs that exist (a league has two divisions of eight; a one-off exposes one division)
   seats: Record<string, Seat>;                  // club id -> the manager sitting there
   round: number;                                // the round waiting to be played
   deadlineMs?: number;                          // how long managers have to lock a plan in before the round is played anyway (set when the game is made)

@@ -13,7 +13,8 @@ const IDLE_MS = 24 * 60 * 60 * 1000;   // the default time a round waits for pla
 const DEADLINE_MINUTES = [30, 60, 180, 360, 720, 1440, 2880, 4320, 10080];
 const deadlineOf = (g: GameRow) => g.state.deadlineMs || IDLE_MS;
 const CODE = /^[A-Z2-9]{6}$/;
-const TEAM = /^t[1-9][0-9]?$/;
+// t1-t8 are Premier Division clubs; l1-l8 are Championship clubs.
+const TEAM = /^(?:t|l)[1-8]$/;
 const cleanName = (v: unknown) => (typeof v === 'string' ? v.trim().replace(/[^\w\s.'-]/g, '').slice(0, 24) : '') || 'Manager';
 // The plans handed in for the round being waited for stay private until every seated manager has handed one in (or the round has been left
 // for a day): nobody can read how the other manager is going to play before committing to their own. Plans of rounds already played are open.

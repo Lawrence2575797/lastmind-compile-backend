@@ -38,13 +38,35 @@ export async function listUserFolders(userId: string): Promise<SyncedFolder[]> {
 // costs nothing to handle defensively rather than leave a live folder
 // stuck looking deleted.
 export async function upsertUserFolder(userId: string, folderId: string, data: unknown, updatedAt: string): Promise<void> {
+  await keepVersion(userId, folderId, data);
   const { error } = await supabaseAdmin
     .from('user_folders')
     .upsert({ user_id: userId, folder_id: folderId, data, updated_at: updatedAt, deleted_at: null });
   if (error) throw error;
 }
 
+// Version history: before a folder's blob is replaced (by an edit, or by a stale device syncing over it) or tombstoned, the blob being
+// replaced is kept in user_folder_versions - at most one per 10 minutes per folder, newest 40 kept - so a page that vanishes can be
+// brought back. Best-effort: if the table is missing or the write fails, syncing carries on exactly as before.
+const VERSION_GAP_MS = 10 * 60 * 1000;
+const VERSIONS_KEPT = 40;
+async function keepVersion(userId: string, folderId: string, incoming: unknown | null): Promise<void> {
+  try {
+    const { data: cur } = await supabaseAdmin.from('user_folders').select('data, updated_at').eq('user_id', userId).eq('folder_id', folderId).maybeSingle();
+    if (!cur || !cur.data) return;
+    if (incoming !== null && JSON.stringify(incoming) === JSON.stringify(cur.data)) return;
+    const { data: last } = await supabaseAdmin.from('user_folder_versions').select('saved_at').eq('user_id', userId).eq('folder_id', folderId).order('saved_at', { ascending: false }).limit(1);
+    if (incoming !== null && last && last[0] && Date.now() - new Date(last[0].saved_at).getTime() < VERSION_GAP_MS) return;
+    await supabaseAdmin.from('user_folder_versions').insert({ user_id: userId, folder_id: folderId, data: cur.data, folder_updated_at: cur.updated_at });
+    const { data: old } = await supabaseAdmin.from('user_folder_versions').select('id').eq('user_id', userId).eq('folder_id', folderId).order('saved_at', { ascending: false }).range(VERSIONS_KEPT, VERSIONS_KEPT + 200);
+    if (old && old.length) await supabaseAdmin.from('user_folder_versions').delete().in('id', old.map((r: { id: number }) => r.id));
+  } catch (err) {
+    console.error('Folder version keep failed (sync continues):', err);
+  }
+}
+
 export async function deleteUserFolder(userId: string, folderId: string): Promise<void> {
+  await keepVersion(userId, folderId, null);
   const now = new Date().toISOString();
   const { error } = await supabaseAdmin
     .from('user_folders')

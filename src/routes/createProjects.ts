@@ -28,17 +28,30 @@ const MAX_BYTES = 5_000_000;
 // page can fall back to keeping the project in the browser instead of failing.
 const tableMissing = (err: any) => !!err && (err.code === '42P01' || err.code === 'PGRST205' || /does not exist|schema cache/i.test(String(err.message || '')));
 
+// The football season is saved here too. Each save says how far on it is (season and matches played), and a save that is further back than
+// what is already stored is refused, so an old browser or a fresh start can never quietly overwrite a season in progress. Replacing a season on
+// purpose (a new game) says so, and the season it replaces is kept as a backup first: the newest three are kept.
+const progressOf = (data: any): number => { const n = Number(data && data.football && data.football.progress); return Number.isFinite(n) ? n : 0; };
+async function backupFootball(userId: string, existing: { title?: string; data: any }) {
+  try {
+    if (progressOf(existing.data) < 1001) return;   // nothing played yet: nothing worth keeping
+    await supabaseAdmin.from('create_projects').insert({ user_id: userId, title: 'Backup: ' + String(existing.title || 'Be the manager').slice(0, 140), kind: 'football-backup', data: existing.data, updated_at: new Date().toISOString() });
+    const { data: old } = await supabaseAdmin.from('create_projects').select('id').eq('user_id', userId).eq('kind', 'football-backup').order('updated_at', { ascending: false }).range(3, 50);
+    if (old && old.length) await supabaseAdmin.from('create_projects').delete().in('id', old.map((r: { id: string }) => r.id));
+  } catch (err) { console.error('Football backup failed (save continues):', err); }
+}
+
 // GET /create/projects -> { projects, references } | { unavailable: true }
 router.get('/create/projects', syncEndpointLimiter, async (req: Request, res: Response) => {
   const userId = req.userId as string;
-  const cols = 'id, title, kind, is_reference, updated_at, data->trial->role, data->trial->minutes';
+  const cols = 'id, title, kind, is_reference, updated_at, data->trial->role, data->trial->minutes, data->football->progress';
   const [mine, refs] = await Promise.all([
     supabaseAdmin.from('create_projects').select(cols).eq('user_id', userId).order('updated_at', { ascending: false }).limit(100),
     supabaseAdmin.from('create_projects').select(cols).eq('is_reference', true).order('updated_at', { ascending: false }).limit(50),
   ]);
   if (tableMissing(mine.error) || tableMissing(refs.error)) return res.json({ unavailable: true });
   if (mine.error || refs.error) { console.error('Create projects list failed:', mine.error || refs.error); return res.status(500).json({ error: 'could not load your projects' }); }
-  const shape = (r: any) => ({ id: r.id, title: r.title, kind: r.kind, isReference: r.is_reference, updatedAt: r.updated_at, role: r.role, minutes: r.minutes });
+  const shape = (r: any) => ({ id: r.id, title: r.title, kind: r.kind, isReference: r.is_reference, updatedAt: r.updated_at, role: r.role, minutes: r.minutes, progress: r.progress == null ? undefined : Number(r.progress) });
   res.json({ projects: (mine.data || []).map(shape), references: (refs.data || []).filter((r: any) => !(mine.data || []).some((m: any) => m.id === r.id)).map(shape) });
 });
 
@@ -64,8 +77,15 @@ router.post('/create/projects', actionEndpointLimiter, async (req: Request, res:
     row.is_reference = !!b.asReference;
   }
   if (typeof b.id === 'string' && b.id) {
-    const { data: existing } = await supabaseAdmin.from('create_projects').select('id, user_id').eq('id', b.id).maybeSingle();
+    const { data: existing } = await supabaseAdmin.from('create_projects').select('id, user_id, kind, title, data').eq('id', b.id).maybeSingle();
     if (existing && existing.user_id === userId) {
+      if (existing.kind === 'football-manager' && row.kind === 'football-manager') {
+        const before = progressOf(existing.data), after = progressOf(b.data);
+        if (after < before) {
+          if (!b.replace) return res.status(409).json({ error: 'a further-on season is already saved', code: 'PROGRESS_REGRESSION', stored: before, sent: after });
+          await backupFootball(userId, existing);
+        }
+      }
       const { error } = await supabaseAdmin.from('create_projects').update(row).eq('id', b.id);
       if (tableMissing(error)) return res.json({ unavailable: true });
       if (error) { console.error('Create project update failed:', error); return res.status(500).json({ error: 'could not save' }); }
@@ -80,6 +100,8 @@ router.post('/create/projects', actionEndpointLimiter, async (req: Request, res:
 
 // DELETE /create/projects/:id
 router.delete('/create/projects/:id', actionEndpointLimiter, async (req: Request, res: Response) => {
+  const { data: gone } = await supabaseAdmin.from('create_projects').select('user_id, kind, title, data').eq('id', req.params.id).maybeSingle();
+  if (gone && gone.user_id === req.userId && gone.kind === 'football-manager') await backupFootball(req.userId as string, gone);
   const { error } = await supabaseAdmin.from('create_projects').delete().eq('id', req.params.id).eq('user_id', req.userId as string);
   if (tableMissing(error)) return res.json({ unavailable: true });
   if (error) { console.error('Create project delete failed:', error); return res.status(500).json({ error: 'could not delete' }); }

@@ -125,7 +125,10 @@ app.use('/', mathHelpRouter);
 app.use('/', personalNotesRouter);
 app.use('/', notesSyncRouter);
 // The paid projects are gated before their routes run: the football manager's AI routes and its multiplayer, and the criminal-trial builder.
-app.use(['/football', '/football-mp'], requireSignedIn, requireProject('football'));
+// The LastMind AI Agent is open to anyone signed in (the free demo included): it is metered against their Locks, and refuses with the usual
+// allowance message once those are used. Everything else in the football game needs the subscription.
+const footballSubscription = requireProject('football');
+app.use(['/football', '/football-mp'], requireSignedIn, (req, res, next) => (req.baseUrl === '/football' && req.path === '/agent' ? next() : footballSubscription(req, res, next)));
 app.use(['/create/criminal-trial', '/create/jobs'], requireSignedIn, requireProject('law'));
 app.use('/', projectAccessRouter);
 app.use('/', footballMultiplayerRouter);

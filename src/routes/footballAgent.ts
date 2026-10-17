@@ -11,7 +11,7 @@ const router = Router();
 router.use('/football', requireAuth);
 const clip = (s: unknown, n: number) => (typeof s === 'string' ? s.trim().slice(0, n) : '');
 
-const KINDS = ['heatmap', 'passnetwork', 'buildup', 'trend', 'table', 'recoveries', 'turnovers', 'shotmap', 'clip'];
+const KINDS = ['heatmap', 'passnetwork', 'buildup', 'trend', 'table', 'recoveries', 'turnovers', 'shotmap', 'clip', 'cashflow', 'profit'];
 const WHATS = ['goal', 'conceded', 'chance', 'chanceAgainst', 'buildup', 'press', 'counter', 'counterAgainst', 'turnover', 'setpiece', 'setpieceAgainst'];
 const STATS = ['goals', 'conceded', 'shots', 'shotsAgainst', 'xg', 'xgAgainst', 'possession', 'passPct', 'longPct', 'buildUps', 'buildUpsToFinal', 'tacklesWon', 'avgPass', 'lineHeight', 'width', 'compactness', 'regainSeconds', 'recoveries', 'highRecoveries', 'possessions', 'possessionPasses', 'lostOwnThird', 'distanceKm', 'sprints', 'shotDistance', 'shotDefender', 'shotAssisted', 'bigChances', 'oppLineHeight', 'oppDistanceKm'];
 
@@ -30,9 +30,14 @@ You can put pictures from their recorded data under your reply. Only ask for one
 - {"kind":"table"}  (every match in a table)
 - {"kind":"shotmap","team":"user" or "opp","match":"all" or a match id}  (every shot, sized by its chance, goals as stars)
 - {"kind":"clip","match":a match id or "all","what":one of ${WHATS.join(', ')},"n":0 for the first such moment, 1 for the next}  (replays that moment as a short video from the recorded positions; only ask for one the data summary says was kept)
+- {"kind":"cashflow"}  (the club's cash flow forecast table, as in the books)
+- {"kind":"profit"}  (the income statement with the profit calculations)
 - {"kind":"recoveries","match":"all" or a match id}  (where they won the ball back)
 - {"kind":"turnovers","match":"all" or a match id}  (where they lost it)
 Match ids are given in the data summary. If they ask to see something and you have a picture for it, show it and say in your reply what to look at.
+
+The club as a business
+The game also has the club's business side: Ashford Rovers is a public limited company, the board are the shareholders, and the manager sets ticket prices for four stands, watches attendance and revenue, reads the books (cash flow forecast, income statement, revenue and costs, signings), takes sources of finance (overdraft, bank loans, new shares, sale of players) and signs sponsors and advertisers. It is built around the Edexcel GCSE Business course. The student learns it by doing, so never volunteer definitions or lectures about it. Only when they ask, explain the idea warmly and plainly (for example price elasticity of demand, market segmentation, cash flow versus profit, gross and operating and net profit, fixed and variable costs, break-even, margin of safety, sources of finance and their trade-offs, shareholders and dilution, depreciation), always tied to their own numbers in the data summary. When they are working something out about the business, guide them with questions about their own figures in the same way as for the football.
 
 How you talk about their football
 Football is emotional and so is learning from it, so do not read numbers out like a report. Say what it felt like and what it means: the frustration of a ball lost again and again in your own third, the lift of winning it back high up the pitch, the nerves of a lead that was never safe, the pride in a move that came off. Name the person or the moment when you can. Be honest as well as kind: say plainly when something is going badly, but always say what is worth being proud of and what to look at next. Never be gushing or fake; one true, warm sentence beats three exaggerated ones. If a replay or picture will let them feel it for themselves, show it.
@@ -69,7 +74,7 @@ function cleanShow(v: unknown) {
 router.post('/football/agent', async (req: Request, res: Response) => {
   const raw = Array.isArray(req.body?.messages) ? req.body.messages : [];
   const messages = raw.slice(-10).map((m: any) => ({ role: m?.role === 'agent' ? 'Agent' : 'Student', text: clip(m?.text, 700) })).filter((m: { text: string }) => m.text);
-  const context = clip(req.body?.context, 7500);
+  const context = clip(req.body?.context, 10000);
   if (!messages.length || messages[messages.length - 1].role !== 'Student') return res.status(400).json({ error: 'Say something first.' });
   try {
     await assertLocksAvailable(req.userId as string);

@@ -5,6 +5,11 @@ import { supabaseAdmin } from './supabaseAdmin';
 // billing backend when a project subscription is paid, and read here with the service role: the browser's claim about what it has paid for is never
 // trusted. A few accounts have every project without paying (the owner's own accounts).
 export type Project = 'football' | 'law';
+
+// FOOTBALL_FREE: the football manager is free for a limited time, to bring people in. The paywall and the Stripe price are untouched; this only
+// makes the access check say yes for football. Set the environment variable FOOTBALL_FREE=false (or change the default below to false) to put the
+// paywall back. The Locks limits are separate and stay on whatever this is set to. The law projects are never affected.
+export const FOOTBALL_FREE = process.env.FOOTBALL_FREE ? !/^(false|0|no|off)$/i.test(process.env.FOOTBALL_FREE) : true;
 export const PROJECTS: Project[] = ['football', 'law'];
 
 const ALL_PROJECT_IDS = new Set(['1554f85d-95a0-49de-b48a-aa9c8363f7cd']);
@@ -30,7 +35,8 @@ async function emailOf(userId: string, known?: string | null): Promise<string> {
   }
 }
 
-export async function hasProjectAccess(userId: string, project: Project, email?: string | null): Promise<boolean> {
+// Whether the person really has the project (paid for it, or is one of the owner's accounts), whatever the free offer says.
+export async function hasPaidProjectAccess(userId: string, project: Project, email?: string | null): Promise<boolean> {
   if (ALL_PROJECT_IDS.has(userId)) return true;
   const e = await emailOf(userId, email);
   if (e && ALL_PROJECT_EMAILS.has(e)) return true;
@@ -40,6 +46,12 @@ export async function hasProjectAccess(userId: string, project: Project, email?:
   if (!data) return false;
   if (!['active', 'trialing'].includes(String(data.status))) return false;
   return !data.current_period_end || Date.parse(data.current_period_end) > Date.now();
+}
+
+// Whether the person may use the project right now: the paid check, or anyone signed in while the football offer is on.
+export async function hasProjectAccess(userId: string, project: Project, email?: string | null): Promise<boolean> {
+  if (FOOTBALL_FREE && project === 'football') return true;
+  return hasPaidProjectAccess(userId, project, email);
 }
 
 // Must run after requireAuth (it needs req.userId).

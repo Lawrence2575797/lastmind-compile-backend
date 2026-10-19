@@ -1,7 +1,7 @@
 import { Router, Request, Response } from 'express';
 import { Request as Req, Response as Res, NextFunction } from 'express';
-import { requireAuth, requirePaidTier, isAdminEmail } from '../services/authMiddleware';
-import { hasProjectAccess } from '../services/projectAccess';
+import { requireAuth, requirePaidTier, isAdminEmail, isUserPaid } from '../services/authMiddleware';
+import { hasPaidProjectAccess, FOOTBALL_FREE } from '../services/projectAccess';
 import { syncEndpointLimiter, actionEndpointLimiter } from '../services/rateLimiters';
 import { supabaseAdmin } from '../services/supabaseAdmin';
 
@@ -14,12 +14,17 @@ const router = Router();
 async function requirePaidOrProject(req: Req, res: Res, next: NextFunction) {
   try {
     const uid = req.userId as string;
-    if (uid && ((await hasProjectAccess(uid, 'football', req.userEmail)) || (await hasProjectAccess(uid, 'law', req.userEmail)))) return next();
+    if (uid && ((await hasPaidProjectAccess(uid, 'football', req.userEmail)) || (await hasPaidProjectAccess(uid, 'law', req.userEmail)))) return next();
+    // While the football manager is free, anyone signed in can save their football games here, and nothing else: the other kinds of project still
+    // need LastMind+ or a purchase.
+    if (FOOTBALL_FREE && uid && !(await isUserPaid(uid))) { (req as any).footballOnly = true; return next(); }
   } catch (err) {
     console.error('Project access check failed:', err);
   }
   return requirePaidTier(req, res, next);
 }
+const isFootballKind = (k: unknown) => typeof k === 'string' && k.startsWith('football');
+const needsSubscription = (res: Res) => res.status(402).json({ error: 'This project needs a subscription.', code: 'PROJECT_SUBSCRIPTION_REQUIRED' });
 router.use('/create/projects', requireAuth, requirePaidOrProject);
 
 const MAX_BYTES = 5_000_000;
@@ -52,7 +57,8 @@ router.get('/create/projects', syncEndpointLimiter, async (req: Request, res: Re
   if (tableMissing(mine.error) || tableMissing(refs.error)) return res.json({ unavailable: true });
   if (mine.error || refs.error) { console.error('Create projects list failed:', mine.error || refs.error); return res.status(500).json({ error: 'could not load your projects' }); }
   const shape = (r: any) => ({ id: r.id, title: r.title, kind: r.kind, isReference: r.is_reference, updatedAt: r.updated_at, role: r.role, minutes: r.minutes, progress: r.progress == null ? undefined : Number(r.progress) });
-  res.json({ projects: (mine.data || []).map(shape), references: (refs.data || []).filter((r: any) => !(mine.data || []).some((m: any) => m.id === r.id)).map(shape) });
+  const refList = (req as any).footballOnly ? [] : (refs.data || []);
+  res.json({ projects: (mine.data || []).map(shape), references: refList.filter((r: any) => !(mine.data || []).some((m: any) => m.id === r.id)).map(shape) });
 });
 
 // GET /create/projects/:id -> { id, title, data, isReference }
@@ -61,6 +67,7 @@ router.get('/create/projects/:id', syncEndpointLimiter, async (req: Request, res
   if (tableMissing(error)) return res.json({ unavailable: true });
   if (error) { console.error('Create project fetch failed:', error); return res.status(500).json({ error: 'could not load that project' }); }
   if (!data || (data.user_id !== req.userId && !data.is_reference)) return res.status(404).json({ error: 'project not found' });
+  if ((req as any).footballOnly && !isFootballKind(data.kind)) return needsSubscription(res);
   res.json({ id: data.id, title: data.title, kind: data.kind, data: data.data, isReference: data.is_reference, mine: data.user_id === req.userId });
 });
 
@@ -71,6 +78,7 @@ router.post('/create/projects', actionEndpointLimiter, async (req: Request, res:
   if (!title || !b.data || typeof b.data !== 'object') return res.status(400).json({ error: 'title and data are required' });
   if (JSON.stringify(b.data).length > MAX_BYTES) return res.status(413).json({ error: 'project is too large' });
   const userId = req.userId as string;
+  if ((req as any).footballOnly && !isFootballKind(b.kind)) return needsSubscription(res);
   const row: Record<string, unknown> = { user_id: userId, title, kind: typeof b.kind === 'string' ? b.kind.slice(0, 40) : 'criminal-trial', data: b.data, updated_at: new Date().toISOString() };
   if (b.asReference !== undefined) {
     if (b.asReference && !isAdminEmail(req.userEmail ?? undefined)) return res.status(403).json({ error: 'only an admin can publish a reference example' });

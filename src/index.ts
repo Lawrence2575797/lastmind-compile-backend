@@ -128,7 +128,7 @@ app.use('/', notesSyncRouter);
 // The LastMind AI Agent is open to anyone signed in (the free demo included): it is metered against their Locks, and refuses with the usual
 // allowance message once those are used. Everything else in the football game needs the subscription.
 const footballSubscription = requireProject('football');   // says yes to everyone signed in while FOOTBALL_FREE is on (services/projectAccess.ts)
-app.use(['/football', '/football-mp'], requireSignedIn, (req, res, next) => (req.baseUrl === '/football' && req.path === '/agent' ? next() : footballSubscription(req, res, next)));
+app.use(['/football', '/football-mp'], requireSignedIn, (req, res, next) => (req.baseUrl === '/football' && (req.path === '/agent' || req.path === '/review-charge') ? next() : footballSubscription(req, res, next)));
 app.use(['/create/criminal-trial', '/create/jobs'], requireSignedIn, requireProject('law'));
 app.use('/', projectAccessRouter);
 app.use('/', footballMultiplayerRouter);

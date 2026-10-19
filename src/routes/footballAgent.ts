@@ -1,7 +1,7 @@
 import { Router, Request, Response } from 'express';
 import { requireAuth } from '../services/authMiddleware';
 import { callClaudeJSON, MODELS } from '../services/claudeClient';
-import { assertLocksAvailable, InsufficientLocksError } from '../services/lockService';
+import { assertLocksAvailable, chargeLocksForUsage, InsufficientLocksError } from '../services/lockService';
 
 // The football manager's LastMind AI Agent: a guide beside the game that takes the manager through analysing their own matches, so they
 // learn to read evidence for themselves. It sees only what the game sends (a compact summary of the last match and the page the manager is
@@ -93,6 +93,21 @@ router.post('/football/agent', async (req: Request, res: Response) => {
     if (err instanceof InsufficientLocksError) return res.status(402).json({ error: 'Lock limit reached', code: 'LOCK_LIMIT_REACHED', detail: "You're out of Locks for now." });
     console.error('Football agent failed:', err);
     res.status(500).json({ error: 'The agent is unavailable just now.' });
+  }
+});
+
+// The match review in the Analysis page is worked out in the browser, but it is a LastMind analysis like any other and costs Locks: a fixed amount for each
+// match reviewed (about what one agent message costs), charged once when the review is opened. The game remembers which matches have been paid for.
+const REVIEW_LOCKS = 60;
+router.post('/football/review-charge', async (req: Request, res: Response) => {
+  try {
+    await assertLocksAvailable(req.userId as string);
+    await chargeLocksForUsage(req.userId as string, REVIEW_LOCKS, 'football-review');
+    res.json({ ok: true, locks: REVIEW_LOCKS });
+  } catch (err) {
+    if (err instanceof InsufficientLocksError) return res.status(402).json({ error: 'Lock limit reached', code: 'LOCK_LIMIT_REACHED', detail: "You're out of Locks for now." });
+    console.error('Football review charge failed:', err);
+    res.status(500).json({ error: 'could not open the analysis just now' });
   }
 });
 

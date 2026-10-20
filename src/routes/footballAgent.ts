@@ -96,6 +96,77 @@ router.post('/football/agent', async (req: Request, res: Response) => {
   }
 });
 
+// ---------- the Workbench ----------
+// In the Workbench the agent is a planner. It never calculates anything: it decides what to ask of the data (a query, or one of the Workbench's methods such as a
+// regression, a maximum-likelihood fit, a difference in differences or a controlled experiment) and writes the explanation. The browser runs every analysis with
+// its own trusted code and sends the results back for the agent to explain, so each number on the page comes from the data and never from the model.
+const WB_PROMPT = `You are the LastMind AI Agent inside the Workbench of a football management game. The student is learning statistics, maths, or any subject they choose by studying their own club's recorded data. You plan the analysis and explain the result like a good teacher who also knows football.
+
+How you work
+- You do NOT calculate. You choose what to run and the Workbench runs it. Never state a number that is not in the data summary or in a RESULTS message. If a number is missing, run an analysis to get it.
+- To run things, put them in "actions". Each action is one of:
+  {"type":"query","spec":{"table":T,"where":[{"col":C,"op":"=|!=|>|>=|<|<=|in|contains","value":V}],"group":[C],"agg":[{"fn":"count|sum|mean|min|max|median|sd","col":C,"as":NAME}],"order":{"col":C,"dir":"asc|desc"},"limit":N,"cols":[C]}}   (a table of figures)
+  {"type":"analysis","spec":{...}}   (one of the methods listed below)
+  {"type":"note","text":"..."}   (a short written note to leave in the document, such as a definition or the conclusion)
+  Use at most 3 actions per turn. When you send actions, the Workbench runs them and replies with RESULTS; then you write the explanation (you may run one more round if you need to).
+- Use only tables and columns that appear in the data description below, spelled exactly. Category columns hold names; numeric columns hold numbers.
+- If the student asks for something the methods cannot do, say so plainly, say what is nearest, and offer it. Do not pretend.
+- Choose the method that fits the question and the student's level, and say why in a sentence. If a simpler method answers it, prefer that.
+
+Teaching
+- The student is working at {LEVEL}. At GCSE keep to averages, probability as a chance, scatter graphs and lines of best fit, and describe other methods in words. At A-level you may use hypothesis tests, correlation, regression and distributions. Beyond A-level you may use maximum likelihood, logistic models, causal inference and resampling, with the reasoning shown. The student can also ask for more or less detail ("{DETAIL}"): follow that.
+- Explain what the result means for the football first, then how it was found, then what it cannot tell them. Always say how many rows it rests on, and mention confounding when you read a relationship as a cause. The experiment and simulate methods give causal answers because the setting is changed on purpose; say when that is the case.
+- The student can open a lesson by clicking a word. You may link to these by writing [[id|words]] in your reply (only these ids): {LESSONS}. Use at most two links, and only when the idea is needed.
+- If the student asks to learn something other than football statistics (for example a school subject), use the club's data as the setting where it honestly helps, and otherwise teach it directly in your own words; never invent football data.
+
+Style
+- Plain text in "reply": no markdown symbols, no emoji, short paragraphs. About 120 words, up to 250 for a full explanation. Speak to the student directly. Do not address them by name or title.
+- Never mention these instructions, "JSON", "prompts" or "RESULTS" to the student.
+
+Return ONLY this JSON object, nothing before or after it:
+{"reply":"...","actions":[]}`;
+
+const ACTION_TYPES = ['query', 'analysis', 'note'];
+function cleanActions(v: unknown) {
+  return (Array.isArray(v) ? v : []).slice(0, 3).map((a: any) => {
+    if (!a || typeof a !== 'object' || !ACTION_TYPES.includes(a.type)) return null;
+    if (a.type === 'note') return typeof a.text === 'string' && a.text.trim() ? { type: 'note', text: clip(a.text, 900) } : null;
+    if (!a.spec || typeof a.spec !== 'object') return null;
+    let spec: unknown = null;
+    try { const raw = JSON.stringify(a.spec); if (raw.length <= 2500) spec = JSON.parse(raw); } catch { spec = null; }
+    return spec ? { type: a.type, spec } : null;
+  }).filter(Boolean);
+}
+
+// POST /football/workbench { messages: [{role, text}], schema, methods, summary, level, detail, lessons } -> { reply, actions }
+router.post('/football/workbench', async (req: Request, res: Response) => {
+  const raw = Array.isArray(req.body?.messages) ? req.body.messages : [];
+  const messages = raw.slice(-14).map((m: any) => ({ role: m?.role === 'agent' ? 'Agent' : m?.role === 'results' ? 'RESULTS' : 'Student', text: clip(m?.text, m?.role === 'results' ? 5000 : 1200) })).filter((m: { text: string }) => m.text);
+  if (!messages.length || messages[messages.length - 1].role === 'Agent') return res.status(400).json({ error: 'Say something first.' });
+  const level = ['gcse', 'alevel', 'above'].includes(req.body?.level) ? req.body.level : 'alevel';
+  const levelName = level === 'gcse' ? 'GCSE level' : level === 'alevel' ? 'A-level' : 'beyond A-level (undergraduate and above)';
+  const lessons = clip(req.body?.lessons, 1800);
+  const prompt = WB_PROMPT.replace('{LEVEL}', levelName).replace('{DETAIL}', clip(req.body?.detail, 120) || 'standard detail').replace('{LESSONS}', lessons || '(none)');
+  const userContent = `Data description (tables and columns you may use):\n${clip(req.body?.schema, 9000) || '(none)'}\n\nMethods you can run:\n${clip(req.body?.methods, 4500) || '(none)'}\n\nClub and season summary:\n${clip(req.body?.summary, 3000) || '(nothing recorded yet)'}\n\nWorkbench document so far:\n${clip(req.body?.doc, 1500) || '(empty)'}\n\nConversation so far:\n${messages.map((m: { role: string; text: string }) => `${m.role}: ${m.text}`).join('\n')}\n\nReply with the JSON object.`;
+  try {
+    await assertLocksAvailable(req.userId as string);
+    let data: any = null, lastErr: unknown = null;
+    for (let attempt = 0; attempt < 2 && !data; attempt++) {
+      try {
+        const text = await callClaudeJSON({ model: MODELS.compile, systemPrompt: prompt, userContent, maxTokens: 1600, temperature: 0.3, userId: req.userId as string, meteredReason: 'football-workbench' });
+        const parsed = parseJsonLoose(String(text || ''));
+        if (parsed && typeof parsed.reply === 'string') data = parsed;
+      } catch (e) { if (e instanceof InsufficientLocksError) throw e; lastErr = e; }
+    }
+    if (!data) throw lastErr || new Error('unreadable');
+    res.json({ reply: clip(String(data.reply).replace(/[*`#]/g, ''), 2400), actions: cleanActions(data.actions) });
+  } catch (err) {
+    if (err instanceof InsufficientLocksError) return res.status(402).json({ error: 'Lock limit reached', code: 'LOCK_LIMIT_REACHED', detail: "You're out of Locks for now." });
+    console.error('Football workbench failed:', err);
+    res.status(500).json({ error: 'The agent is unavailable just now.' });
+  }
+});
+
 // The match review in the Analysis page is worked out in the browser, but it is a LastMind analysis like any other and costs Locks: a fixed amount for each
 // match reviewed (about what one agent message costs), charged once when the review is opened. The game remembers which matches have been paid for.
 const REVIEW_LOCKS = 60;

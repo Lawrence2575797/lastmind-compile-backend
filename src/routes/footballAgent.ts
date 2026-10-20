@@ -167,6 +167,129 @@ router.post('/football/workbench', async (req: Request, res: Response) => {
   }
 });
 
+// ---------- league settings ("skins") ----------
+// A student can ask for the league's clubs and rivalries to be taken from a period or topic they are studying. The names cannot be free text and cannot be
+// jokes: each club has to stand for something real from the topic (its "basis"), each rivalry has to be tied to dated events, and a second pass checks every
+// claim and removes or marks what it cannot stand behind. The result is labelled as generated, to be checked against the student's own materials.
+const SKIN_SLOTS = [
+  'the proud, once-great club that refuses to die; the one the student manages (an underdog with a big history)',
+  'the clever, evidence-driven club that counts everything',
+  'the ruthless main rival of club 0, whose rivalry opens the season',
+  'the small club that once beat the giants, on difficult ground',
+  'the richest club with the emptiest trophy cabinet',
+  'the oldest club, a fallen aristocrat once the greatest in the league',
+  'the ambitious newcomers, built to win quickly',
+  'the club that always finishes second, and believes it is cursed',
+];
+const SKIN_PROMPT = `You design a "league setting" for a football management game used to study school and university subjects. The league has eight clubs. Your job is to give the eight clubs real, accurate historical identities from the TOPIC the student names, so that the football carries real content for the subject.
+
+Hard rules
+- Every club name must stand for something REAL from the topic: a real place, group, institution, faction or person of the period. Never use jokes, puns, invented mascots or silly names. A name is the real thing plus a football-club word if it needs one (for example "Winchester Domesday" or "Caen Normans"). Keep names to 2 or 3 words.
+- Each club has a "basis": one sentence saying exactly what real thing the name refers to.
+- Each club has 2 or 3 "real" entries: a real dated event or fact, with a year (a whole number), a short title, and 1 to 3 sentences of plain, accurate text a student could use. Only state things you are sure of. If you are not sure of a date or detail, leave it out or phrase it carefully ("according to later writers").
+- Each club also has "club": 2 sentences of INVENTED football folklore (founded when, what it is known for). This is clearly fiction and must not be mixed with the real history.
+- The derbies (4 or 5) must each be tied to REAL events of the topic, with a timeline of 2 to 5 dated events. The first derby must be between club 0 and club 2 (a is 0, b is 2) and is the most important fixture in the league: give it record numbers (invented football meetings: a wins, d draws, b wins, total = a+d+b), aView, bView and today (invented football flavour, one sentence each).
+- Choose clubs whose real character loosely suits their role in the league (the roles are given below), but accuracy to the topic matters more than the role.
+- If the topic involves genocide, slavery, mass atrocity or other subjects where treating the clubs as football teams would be disrespectful, do not use victims or perpetrators as clubs: either choose neutral places, institutions and events of the period, or refuse.
+- If the topic is not something you can ground in real history or real events, refuse.
+- "study": 5 or 6 exam-style questions on the topic, at the student's level.
+
+Club roles (club numbers start at 0): ${SKIN_SLOTS.map((r, i) => `club ${i}: ${r}`).join('; ')}.
+
+Return ONLY a JSON object, either {"refuse":"a short, kind reason"} or:
+{"title":"the topic with dates","topic":"e.g. GCSE History: Norman England","blurb":"one sentence","paper":"a newspaper name that fits the period","region":"the league's setting, a phrase","clubs":[{"name":"","nickname":"","ground":"","colours":"","founded":1888,"tagline":"","short":"one sentence","basis":"","club":"","real":[{"year":1066,"title":"","text":""}],"board":"one invented sentence about what the club's board want"}],"derbies":[{"key":"short-word","name":"The ... Derby","a":0,"b":2,"heat":1,"record":{"a":0,"d":0,"b":0,"total":0},"line":"","timeline":[{"year":0,"title":"","text":""}],"aView":"","bView":"","today":""}],"study":["..."]}
+There must be exactly 8 clubs. In "derbies", a and b are club numbers from 0 to 7 (0 is the first club). Derbies after the first need only key, name, a, b, heat (0.3 to 0.6), line and timeline. Plain text only: no markdown, no emoji.`;
+
+const SKIN_CHECK_PROMPT = `You are a careful history teacher fact-checking a "league setting" for a school football game. You are given the student's TOPIC and a draft JSON. Find what is wrong and list fixes; do not rewrite the whole draft.
+Check: every club name stands for something real from the topic and its "basis" is accurate; every "real" entry (clubs[i].real[j]) and every derby timeline entry (derbies[k].timeline[m]) is accurate in dates, people, places and what happened. If you are not sure of a fact, delete it or soften it ("according to later writers"). Never add a new claim you are not sure of. Ignore the invented football folklore ("club", "record", "aView", "bView", "today", "board").
+Return ONLY this JSON: {"fixes":[{"path":["clubs",3,"real",1,"text"],"action":"replace","value":"corrected text"},{"path":["derbies",1,"timeline",0],"action":"delete"}],"notes":["one short sentence for each fix"]}
+Allowed paths: clubs[i].name, clubs[i].basis, clubs[i].real[j].year|title|text (or the whole entry for delete), derbies[k].name, derbies[k].line, derbies[k].timeline[m].year|title|text (or the whole entry for delete). Return {"fixes":[],"notes":[]} if everything is accurate. At most 12 fixes.`;
+
+// Applies the fact-checker's fixes to the draft, touching only the fields it is allowed to.
+function applyFixes(draft: any, fixes: unknown): void {
+  const ok = (p: any[]) => {
+    const k = p.map(String).join('.');
+    return /^clubs\.[0-7]\.(name|basis)$/.test(k) || /^clubs\.[0-7]\.real\.[0-2](\.(year|title|text))?$/.test(k) || /^derbies\.[0-4]\.(name|line)$/.test(k) || /^derbies\.[0-4]\.timeline\.[0-4](\.(year|title|text))?$/.test(k);
+  };
+  for (const f of (Array.isArray(fixes) ? fixes : []).slice(0, 12)) {
+    const path = Array.isArray(f?.path) ? f.path : null;
+    if (!path || path.length < 3 || !ok(path)) continue;
+    let node: any = draft;
+    for (let i = 0; i < path.length - 1 && node; i++) node = node[path[i]];
+    const last = path[path.length - 1];
+    if (!node) continue;
+    if (f.action === 'delete') { if (Array.isArray(node) && typeof last === 'number') node.splice(last, 1); }
+    else if (f.action === 'replace' && f.value != null && typeof node === 'object') { const v = last === 'year' ? Number(f.value) : cleanStr(f.value, 520); if (v !== '' && !(typeof v === 'number' && !Number.isFinite(v))) node[last] = v; }
+  }
+}
+
+function cleanStr(v: unknown, n: number): string { return typeof v === 'string' ? v.replace(/<[^>]*>/g, '').replace(/[*`#_]/g, '').replace(/\s+/g, ' ').trim().slice(0, n) : ''; }
+function cleanFacts(v: unknown, max: number, minCount: number): { year: number; title: string; text: string }[] | null {
+  const out = (Array.isArray(v) ? v : []).slice(0, max).map((r: any) => {
+    const year = Math.round(Number(r?.year)), title = cleanStr(r?.title, 80), text = cleanStr(r?.text, 520);
+    return Number.isFinite(year) && year > -5000 && year < 2100 && title && text ? { year, title, text } : null;
+  }).filter(Boolean) as { year: number; title: string; text: string }[];
+  return out.length >= minCount ? out : null;
+}
+// Checks the shape of a generated setting and rebuilds it from only the fields that are allowed; returns null if it cannot be used.
+function cleanSkin(raw: any, topic: string, level: string): any {
+  if (!raw || typeof raw !== 'object' || !Array.isArray(raw.clubs) || raw.clubs.length !== 8) return null;
+  const names = new Set<string>();
+  const clubs: any[] = [];
+  for (const c of raw.clubs) {
+    const name = cleanStr(c?.name, 40);
+    if (!name || name.length < 4 || names.has(name.toLowerCase())) return null;
+    names.add(name.toLowerCase());
+    const real = cleanFacts(c?.real, 3, 1), basis = cleanStr(c?.basis, 240);
+    if (!real || !basis) return null;
+    clubs.push({ name, nickname: cleanStr(c?.nickname, 30) || 'The ' + name.split(' ')[0], ground: cleanStr(c?.ground, 40) || name.split(' ')[0] + ' Park', colours: cleanStr(c?.colours, 40) || 'Blue and white', founded: Math.max(1860, Math.min(2015, Math.round(Number(c?.founded)) || 1900)),
+      tagline: cleanStr(c?.tagline, 120) || 'A club with a long history', short: cleanStr(c?.short, 260), basis, club: cleanStr(c?.club, 460), real, board: cleanStr(c?.board, 240) || 'The board want a season to be proud of.' });
+  }
+  const derbies: any[] = [];
+  for (const d of (Array.isArray(raw.derbies) ? raw.derbies : []).slice(0, 5)) {
+    const a = Math.round(Number(d?.a)), b = Math.round(Number(d?.b)), timeline = cleanFacts(d?.timeline, 5, 2);
+    if (!(a >= 0 && a <= 7 && b >= 0 && b <= 7 && a !== b) || !timeline || !cleanStr(d?.name, 60)) continue;
+    const out: any = { key: 'd' + derbies.length, name: cleanStr(d?.name, 60), a, b, heat: Math.max(0.3, Math.min(1, Number(d?.heat) || 0.45)), line: cleanStr(d?.line, 200), timeline };
+    if (derbies.length === 0) {
+      if (!((a === 0 && b === 2) || (a === 2 && b === 0))) return null;
+      const rc = d?.record || {}, ra = Math.max(5, Math.min(90, Math.round(Number(rc.a)) || 40)), rd = Math.max(5, Math.min(60, Math.round(Number(rc.d)) || 28)), rb = Math.max(5, Math.min(90, Math.round(Number(rc.b)) || 45));
+      Object.assign(out, { key: 'flagship', flagship: true, heat: 1, a: 0, b: 2, record: { a: ra, d: rd, b: rb, total: ra + rd + rb }, aView: cleanStr(d?.aView, 240), bView: cleanStr(d?.bView, 240), today: cleanStr(d?.today, 240) });
+    }
+    derbies.push(out);
+  }
+  if (!derbies.length || !derbies[0].flagship) return null;
+  const study = (Array.isArray(raw.study) ? raw.study : []).slice(0, 6).map((q: unknown) => cleanStr(q, 220)).filter(Boolean);
+  return { id: 'ai-' + Date.now().toString(36), source: 'ai', title: cleanStr(raw.title, 90) || topic, topic: cleanStr(raw.topic, 90) || topic, level, blurb: cleanStr(raw.blurb, 200), paper: cleanStr(raw.paper, 40) || 'The Chronicle', region: cleanStr(raw.region, 60) || 'the league', clubs, derbies, study };
+}
+
+// POST /football/league-skin { topic, level } -> { skin, notes } | 422 { refuse }
+router.post('/football/league-skin', async (req: Request, res: Response) => {
+  const topic = clip(req.body?.topic, 120);
+  const level = ['gcse', 'alevel', 'above'].includes(req.body?.level) ? req.body.level : 'gcse';
+  const levelName = level === 'gcse' ? 'GCSE' : level === 'alevel' ? 'A-level' : 'university level';
+  if (topic.length < 4) return res.status(400).json({ error: 'Say what you are studying, for example "Elizabethan England".' });
+  try {
+    await assertLocksAvailable(req.userId as string);
+    const draftText = await callClaudeJSON({ model: MODELS.compile, systemPrompt: SKIN_PROMPT, userContent: `TOPIC: ${topic}\nSTUDENT LEVEL: ${levelName}\n\nReturn the JSON object.`, maxTokens: 6000, temperature: 0.4, userId: req.userId as string, meteredReason: 'football-league-skin' });
+    const draft = parseJsonLoose(String(draftText || ''));
+    if (draft && typeof draft.refuse === 'string') return res.status(422).json({ error: clip(draft.refuse, 240) || 'That topic cannot be turned into a league setting.', code: 'REFUSED' });
+    let notes: string[] = [];
+    try {
+      const checkedText = await callClaudeJSON({ model: MODELS.compile, systemPrompt: SKIN_CHECK_PROMPT, userContent: `TOPIC: ${topic}\nSTUDENT LEVEL: ${levelName}\n\nDRAFT:\n${JSON.stringify(draft).slice(0, 24000)}\n\nReturn the JSON object.`, maxTokens: 1500, temperature: 0.1, userId: req.userId as string, meteredReason: 'football-league-skin-check' });
+      const checked = parseJsonLoose(String(checkedText || ''));
+      applyFixes(draft, checked?.fixes);
+      notes = (Array.isArray(checked?.notes) ? checked.notes : []).slice(0, 8).map((n: unknown) => cleanStr(n, 220)).filter(Boolean);
+    } catch (e) { if (e instanceof InsufficientLocksError) throw e; notes = ['The fact-check could not be completed, so check every date against your own materials.']; }
+    const skin = cleanSkin(draft, topic, level);
+    if (!skin) return res.status(502).json({ error: 'That did not come out as a usable league. Try describing the topic a little differently.' });
+    res.json({ skin, notes });
+  } catch (err) {
+    if (err instanceof InsufficientLocksError) return res.status(402).json({ error: 'Lock limit reached', code: 'LOCK_LIMIT_REACHED', detail: "You're out of Locks for now." });
+    console.error('Football league skin failed:', err);
+    res.status(500).json({ error: 'Could not build the league just now. Try again in a moment.' });
+  }
+});
+
 // The match review in the Analysis page is worked out in the browser, but it is a LastMind analysis like any other and costs Locks: a fixed amount for each
 // match reviewed (about what one agent message costs), charged once when the review is opened. The game remembers which matches have been paid for.
 const REVIEW_LOCKS = 60;

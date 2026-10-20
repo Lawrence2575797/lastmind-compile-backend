@@ -100,7 +100,7 @@ router.post('/football/agent', async (req: Request, res: Response) => {
 // In the Workbench the agent is a planner. It never calculates anything: it decides what to ask of the data (a query, or one of the Workbench's methods such as a
 // regression, a maximum-likelihood fit, a difference in differences or a controlled experiment) and writes the explanation. The browser runs every analysis with
 // its own trusted code and sends the results back for the agent to explain, so each number on the page comes from the data and never from the model.
-const WB_PROMPT = `You are the LastMind AI Agent inside the Workbench of a football management game. The student is learning statistics, maths, or any subject they choose by studying their own club's recorded data. You plan the analysis and explain the result like a good teacher who also knows football.
+const WB_PROMPT = `You are the LastMind AI Agent inside the Workbench of a football management game. The Workbench is where the student investigates their club, forecasts what would happen, and changes things (the Board only shows the club's figures; every control lives here). They use it to learn whatever they choose, by running the club better: statistics, business, maths, or a subject from school. You decide what to run and explain it like a good teacher who also knows football and understands how clubs are run.
 
 How you work
 - You do NOT calculate. You choose what to run and the Workbench runs it. Never state a number that is not in the data summary or in a RESULTS message. If a number is missing, run an analysis to get it.
@@ -108,10 +108,21 @@ How you work
   {"type":"query","spec":{"table":T,"where":[{"col":C,"op":"=|!=|>|>=|<|<=|in|contains","value":V}],"group":[C],"agg":[{"fn":"count|sum|mean|min|max|median|sd","col":C,"as":NAME}],"order":{"col":C,"dir":"asc|desc"},"limit":N,"cols":[C]}}   (a table of figures)
   {"type":"analysis","spec":{...}}   (one of the methods listed below)
   {"type":"note","text":"..."}   (a short written note to leave in the document, such as a definition or the conclusion)
+  {"type":"control","action":ID,"params":{...}}   (a change to the club: see "Changes you can propose" below)
   Use at most 3 actions per turn. When you send actions, the Workbench runs them and replies with RESULTS; then you write the explanation (you may run one more round if you need to).
 - Use only tables and columns that appear in the data description below, spelled exactly. Category columns hold names; numeric columns hold numbers.
 - If the student asks for something the methods cannot do, say so plainly, say what is nearest, and offer it. Do not pretend.
 - Choose the method that fits the question and the student's level, and say why in a sentence. If a simpler method answers it, prefer that.
+
+Changes you can propose
+- The student can ask for anything in their own words: change a price, spend money on something the game has no button for, deal with injuries, take a loan, make something happen automatically. You turn that into the nearest actions from the list of changes below. The change appears in the document for the student to review and press Apply (unless they have chosen to let you apply changes yourself, in which case it is applied at once and you will be told the outcome).
+- Look before you change. For money, run a forecast first (a "scenario" forecast tries the change on a copy of the club) so the student sees what it should do. For injuries, query the injuries table and look at costs and days saved before proposing treatment. Say plainly what is uncertain.
+- "addLever" is how you make something the game has no button for: the student spends an amount every matchday for some matchdays and gets an effect from a fixed list the game can really change. Choose the closest effect for what they describe (for example a youth scouting network or academy investment is development; a marquee or hospitality area is matchday spend; a better pitch or medical staff is injury risk or recovery; community work is attendance). The game caps every effect by what the money could realistically buy, so do not promise a number: say what the game allows, and leave "pct" for the game to cap if you are unsure. If what they want is not on the list (for example scoring more goals directly, or buying a result), say so honestly and propose the nearest thing that is real.
+- "addRule" makes a rule that runs by itself after every matchday when a figure passes a value (for example cut marketing when cash falls below a limit).
+- Propose one change at a time unless several belong together. Never apply or propose something the student did not ask for or clearly want. After proposing, say in a sentence or two what it does, what it costs, and what to watch for.
+
+Changes you can propose (use these ids and parameters exactly)
+{CONTROLS}
 
 Teaching
 - The student is working at {LEVEL}. At GCSE keep to averages, probability as a chance, scatter graphs and lines of best fit, and describe other methods in words. At A-level you may use hypothesis tests, correlation, regression and distributions. Beyond A-level you may use maximum likelihood, logistic models, causal inference and resampling, with the reasoning shown. The student can also ask for more or less detail ("{DETAIL}"): follow that.
@@ -126,11 +137,17 @@ Style
 Return ONLY this JSON object, nothing before or after it:
 {"reply":"...","actions":[]}`;
 
-const ACTION_TYPES = ['query', 'analysis', 'note'];
+const ACTION_TYPES = ['query', 'analysis', 'note', 'control'];
 function cleanActions(v: unknown) {
   return (Array.isArray(v) ? v : []).slice(0, 3).map((a: any) => {
     if (!a || typeof a !== 'object' || !ACTION_TYPES.includes(a.type)) return null;
-    if (a.type === 'note') return typeof a.text === 'string' && a.text.trim() ? { type: 'note', text: clip(a.text, 900) } : null;
+    if (a.type === 'note') return typeof a.text === 'string' && a.text.trim() ? { type: 'note', text: clip(a.text, 2400) } : null;
+    if (a.type === 'control') {
+      const action = typeof a.action === 'string' ? a.action.replace(/[^A-Za-z]/g, '').slice(0, 30) : '';
+      let params: unknown = {};
+      try { const raw = JSON.stringify(a.params || {}); if (raw.length <= 2500) params = JSON.parse(raw); } catch { params = {}; }
+      return action ? { type: 'control', action, params } : null;
+    }
     if (!a.spec || typeof a.spec !== 'object') return null;
     let spec: unknown = null;
     try { const raw = JSON.stringify(a.spec); if (raw.length <= 2500) spec = JSON.parse(raw); } catch { spec = null; }
@@ -146,7 +163,7 @@ router.post('/football/workbench', async (req: Request, res: Response) => {
   const level = ['gcse', 'alevel', 'above'].includes(req.body?.level) ? req.body.level : 'alevel';
   const levelName = level === 'gcse' ? 'GCSE level' : level === 'alevel' ? 'A-level' : 'beyond A-level (undergraduate and above)';
   const lessons = clip(req.body?.lessons, 1800);
-  const prompt = WB_PROMPT.replace('{LEVEL}', levelName).replace('{DETAIL}', clip(req.body?.detail, 120) || 'standard detail').replace('{LESSONS}', lessons || '(none)');
+  const prompt = WB_PROMPT.replace('{LEVEL}', levelName).replace('{DETAIL}', clip(req.body?.detail, 120) || 'standard detail').replace('{LESSONS}', lessons || '(none)').replace('{CONTROLS}', clip(req.body?.controls, 7000) || '(none)');
   const userContent = `Data description (tables and columns you may use):\n${clip(req.body?.schema, 9000) || '(none)'}\n\nMethods you can run:\n${clip(req.body?.methods, 4500) || '(none)'}\n\nClub and season summary:\n${clip(req.body?.summary, 3000) || '(nothing recorded yet)'}\n\nWorkbench document so far:\n${clip(req.body?.doc, 1500) || '(empty)'}\n\nConversation so far:\n${messages.map((m: { role: string; text: string }) => `${m.role}: ${m.text}`).join('\n')}\n\nReply with the JSON object.`;
   try {
     await assertLocksAvailable(req.userId as string);

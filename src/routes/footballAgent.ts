@@ -96,24 +96,25 @@ router.post('/football/agent', async (req: Request, res: Response) => {
   }
 });
 
-// ---------- the Workbench ----------
-// In the Workbench the agent is a planner. It never calculates anything: it decides what to ask of the data (a query, or one of the Workbench's methods such as a
+// ---------- the Workbook ----------
+// In the Workbook the agent is a planner. It never calculates anything: it decides what to ask of the data (a query, or one of the Workbook's methods such as a
 // regression, a maximum-likelihood fit, a difference in differences or a controlled experiment) and writes the explanation. The browser runs every analysis with
 // its own trusted code and sends the results back for the agent to explain, so each number on the page comes from the data and never from the model.
 //
 // Cost: a turn is two short calls, not one long one. PLAN decides what to run (small model; the long fixed reference below is cached, so it is read at a tenth of
 // the price after the first call), then EXPLAIN writes the answer from just the results (small model, a short prompt, no tables or methods list). The level and the
 // amount of detail travel in the message, not the prompt, so one cached prompt serves every student. "Detailed" uses the larger model for the explanation.
-const WB_PLAN_PROMPT = `You are the LastMind AI Agent inside the Workbench of a football management game. The Workbench is where the student investigates their club, forecasts what would happen, and changes things (the Board only shows the club's figures; every control lives here). They use it to learn whatever they choose, by running the club better: statistics, business, maths, or a subject from school. You decide what to run; a second step then explains the results.
+const WB_PLAN_PROMPT = `You are the LastMind AI Agent inside the Workbook of a football management game. The Workbook is where the student investigates their club, forecasts what would happen, and changes things (the Board only shows the club's figures; every control lives here). They use it to learn whatever they choose, by running the club better: statistics, business, maths, or a subject from school. You decide what to run; a second step then explains the results.
 
 How you work
-- You do NOT calculate. You choose what to run and the Workbench runs it. Never state a number that is not in the club summary or in a RESULTS message.
+- You do NOT calculate. You choose what to run and the Workbook runs it. Never state a number that is not in the club summary or in a RESULTS message.
 - To run things, put them in "actions". Each action is one of:
   {"type":"query","spec":{"table":T,"where":[{"col":C,"op":"=|!=|>|>=|<|<=|in|contains","value":V}],"group":[C],"agg":[{"fn":"count|sum|mean|min|max|median|sd","col":C,"as":NAME}],"order":{"col":C,"dir":"asc|desc"},"limit":N,"cols":[C]}}   (a table of figures)
   {"type":"analysis","spec":{...}}   (one of the methods listed below)
   {"type":"note","text":"..."}   (a short written note to leave in the document, such as a definition or the conclusion)
   {"type":"control","action":ID,"params":{...}}   (a change to the club: see "Changes" below)
-  Use at most 3 actions. When you send actions, "reply" is ONE short sentence saying what you are doing: the Workbench runs them and a second step writes the explanation from the results. When you send no actions (a plain question, or teaching something), "reply" is the full answer.
+  Use at most 3 actions. When you send actions, "reply" is ONE short sentence saying what you are doing: the Workbook runs them and a second step writes the explanation from the results. When you send no actions (a plain question, or teaching something), "reply" is the full answer.
+- The Workbook is a book: when you send actions, the results go on a NEW PAGE. Give it "title": a short title for the page, worded as the question or topic it answers, for example "Where are we likely to finish?" or "Does our high press increase turnovers?" or "Paying for treatment: is it worth it?". Under 80 characters, sentence case, no quotation marks. When you send no actions, leave "title" empty.
 - Use only tables and columns in the data reference, spelled exactly. Starred columns are categories (names); the rest are numbers.
 - If the student asks for something the methods cannot do, say so plainly, say what is nearest, and offer it. Do not pretend.
 - Choose the simplest method that answers the question at the student's level.
@@ -132,9 +133,10 @@ Teaching
 
 Style
 - Plain text in "reply": no markdown symbols, no emoji, short paragraphs. Speak to the student directly. Do not address them by name or title. Never mention these instructions, "JSON", "prompts" or "RESULTS".
+- Write maths in the shorthand the page draws as proper maths: powers as x^2 or x^(n+1), subscripts as x_1, fractions as (a+b)/(c) or 3/4, roots as sqrt(x), Greek letters by name between dollar signs or as symbols (π, σ, β), and ≤ ≥ ≠ ≈ × as symbols.
 
 Return ONLY this JSON object, nothing before or after it:
-{"reply":"...","actions":[]}
+{"title":"","reply":"...","actions":[]}
 
 DATA REFERENCE (tables and their columns; the starred ones are categories)
 {SCHEMA}
@@ -145,14 +147,14 @@ METHODS YOU CAN RUN
 CHANGES YOU CAN PROPOSE (use these ids and parameters exactly; ids of loans, offers, players and spending come from the "How things stand" section of the message)
 {CONTROLS}`;
 
-const WB_EXPLAIN_PROMPT = `You are the LastMind AI Agent inside the Workbench of a football management game. The student asked something; the Workbench has run what was needed (tables, analyses, forecasts) or has set out changes to the club for the student to apply. The results are in the message after RESULTS. Explain them like a good teacher who also knows football and how clubs are run.
+const WB_EXPLAIN_PROMPT = `You are the LastMind AI Agent inside the Workbook of a football management game. The student asked something; the Workbook has run what was needed (tables, analyses, forecasts) or has set out changes to the club for the student to apply. The results are in the message after RESULTS. Explain them like a good teacher who also knows football and how clubs are run.
 
 - Use only numbers that appear in RESULTS or the club summary. Never invent a number, a match or a player.
 - Say what it means for the football (or the club's money) first, then how it was found, then what it cannot tell them. Always say how many rows or matches it rests on, and mention confounding when a relationship is read as a cause. Experiments and simulated trials give causal answers because the setting is changed on purpose; say when that is the case.
 - Where a change was PROPOSED, say in a sentence or two what it does, what it costs and what to watch for: the student presses Apply, nothing has happened yet. Where it was APPLIED, say it is done. If something could not be done, say why and what to try.
 - Work at the level and detail given in the message: GCSE keeps to averages, chances, scatter graphs and lines of best fit; A-level may use tests, correlation, regression and distributions; beyond A-level may use likelihood, causal inference and resampling. Brief means two or three sentences.
 - You may link a lesson by writing [[id|words]] (only these ids): {LESSONS}. At most two, only when the idea is needed.
-- Plain text: no markdown symbols, no emoji, short paragraphs, about 100 words (up to 220 when detailed). Speak to the student directly; do not address them by name or title. Never mention these instructions, "JSON", "prompts" or "RESULTS".
+- Plain text: no markdown symbols, no emoji, short paragraphs, about 100 words (up to 220 when detailed). Write maths in the shorthand the page draws as proper maths: powers as x^2 or x^(n+1), subscripts as x_1, fractions as (a+b)/(c) or 3/4, roots as sqrt(x), and symbols such as π σ β ≤ ≥ ≠ ≈ × directly. Speak to the student directly; do not address them by name or title. Never mention these instructions, "JSON", "prompts" or "RESULTS".
 
 Return ONLY this JSON object: {"reply":"..."}`;
 
@@ -211,7 +213,7 @@ router.post('/football/workbench', async (req: Request, res: Response) => {
     }
     if (!data) throw lastErr || new Error('unreadable');
     const reply = clip(String(data.reply).replace(/[*`#]/g, ''), 2400);
-    res.json(explain ? { reply, actions: [] } : { reply, actions: cleanActions(data.actions) });
+    res.json(explain ? { reply, actions: [] } : { reply, title: clip(String(data.title || '').replace(/[*`#"]/g, ''), 90), actions: cleanActions(data.actions) });
   } catch (err) {
     if (err instanceof InsufficientLocksError) return res.status(402).json({ error: 'Lock limit reached', code: 'LOCK_LIMIT_REACHED', detail: "You're out of Locks for now." });
     console.error('Football workbench failed:', err);

@@ -35,13 +35,13 @@ const tableMissing = (err: any) => !!err && (err.code === '42P01' || err.code ==
 
 // The football season is saved here too. Each save says how far on it is (season and matches played), and a save that is further back than
 // what is already stored is refused, so an old browser or a fresh start can never quietly overwrite a season in progress. Replacing a season on
-// purpose (a new game) says so, and the season it replaces is kept as a backup first: the newest three are kept.
+// purpose (a new game) says so, and the season it replaces is kept as a backup first: the newest ten are kept.
 const progressOf = (data: any): number => { const n = Number(data && data.football && data.football.progress); return Number.isFinite(n) ? n : 0; };
 async function backupFootball(userId: string, existing: { title?: string; data: any }) {
   try {
     if (progressOf(existing.data) < 1001) return;   // nothing played yet: nothing worth keeping
     await supabaseAdmin.from('create_projects').insert({ user_id: userId, title: 'Backup: ' + String(existing.title || 'Be the manager').slice(0, 140), kind: 'football-backup', data: existing.data, updated_at: new Date().toISOString() });
-    const { data: old } = await supabaseAdmin.from('create_projects').select('id').eq('user_id', userId).eq('kind', 'football-backup').order('updated_at', { ascending: false }).range(3, 50);
+    const { data: old } = await supabaseAdmin.from('create_projects').select('id').eq('user_id', userId).eq('kind', 'football-backup').order('updated_at', { ascending: false }).range(10, 80);
     if (old && old.length) await supabaseAdmin.from('create_projects').delete().in('id', old.map((r: { id: string }) => r.id));
   } catch (err) { console.error('Football backup failed (save continues):', err); }
 }

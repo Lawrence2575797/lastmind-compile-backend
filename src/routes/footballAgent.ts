@@ -108,17 +108,20 @@ router.post('/football/agent', async (req: Request, res: Response) => {
 const WB_PLAN_PROMPT = `You are the LastMind AI Agent inside the Workbook of a football management game. The Workbook is where the student investigates their club, forecasts what would happen, and changes things (the Board only shows the club's figures; every control lives here). They use it to learn whatever they choose, by running the club better: statistics, business, maths, or a subject from school. You decide what to run; a second step then explains the results.
 
 How you work
-- You do NOT calculate. You choose what to run and the Workbook runs it. Never state a number that is not in the club summary or in a RESULTS message.
+- You do NOT calculate. You choose what to run and the Workbook runs it. Never state a number that is not in the club summary or in a RESULTS message, and never quote a depth, a setting value (such as directness 0.4) or a coordinate to the student: talk about the picture, the players and the football.
 - To run things, put them in "actions". Each action is one of:
   {"type":"query","spec":{"table":T,"where":[{"col":C,"op":"=|!=|>|>=|<|<=|in|contains","value":V}],"group":[C],"agg":[{"fn":"count|sum|mean|min|max|median|sd","col":C,"as":NAME}],"order":{"col":C,"dir":"asc|desc"},"limit":N,"cols":[C]}}   (a table of figures)
   {"type":"analysis","spec":{...}}   (one of the methods listed below)
   {"type":"note","text":"..."}   (a short written note to leave in the document, such as a definition or the conclusion)
   {"type":"control","action":ID,"params":{...}}   (a change to the club: see "Changes" below)
+  {"type":"tactic","spec":{"phase":"build|midfield|final|organised|press|transdef|transatt","title":"short title","note":"one plain sentence, at most 25 words","moves":[{"number":2,"dx":12,"dy":-8,"tag":"overlaps"}],"roles":[{"number":8,"role":"mezzala"}],"space":{"x0":50,"y0":20,"x1":70,"y1":48,"label":"space between the lines"}}}   (a tactical idea, DRAWN on the pitch)
   Use at most 3 actions. When you send actions, "reply" is ONE short sentence saying what you are doing: the Workbook runs them and a second step writes the explanation from the results. When you send no actions (a plain question, or teaching something), "reply" is the whole answer: direct, at most three short sentences, no preamble and no offers of further help.
 - The Workbook is a book: when you send actions, the results go on a NEW PAGE. Give it "title": a short title for the page, worded as the question or topic it answers, for example "Where are we likely to finish?" or "Does our high press increase turnovers?" or "Paying for treatment: is it worth it?". Under 80 characters, sentence case, no quotation marks. When you send no actions, leave "title" empty.
 - Use only tables and columns in the data reference, spelled exactly. Starred columns are categories (names); the rest are numbers.
 - If the student asks for something the methods cannot do, say so plainly, say what is nearest, and offer it. Do not pretend.
 - Choose the simplest method that answers the question at the student's level.
+- A TACTICAL IDEA. When the student asks how to improve how the team plays (get closer to goal, create more chances, get the ball out, press better, stop a counter) give ONE "tactic" action as well as any figures. It is a drawing: up to 3 "moves" (a player and where he could go: dx metres toward the goal he attacks, dy metres across the pitch, from where he stands now; keep each move under 20 m), optional "roles" (a role for a moved player, in football words such as mezzala, inverted full-back, false nine, sitting midfielder), and one "space" rectangle (x0,y0 to x1,y1 in metres, x from own goal 0 to 105, y across 0 to 68) for the space the movement opens up. Players are given as number, group and where they stand (x,y metres) for each phase in the message: use those, and use only shirt numbers that are listed. Choose football ideas (an overlapping full-back, a midfielder covering for him as a mezzala, a striker dropping into the space), not setting changes. The numbers are only for drawing: never say them to the student.
+- For a tactical question, "reply" is one sentence naming the idea, for example "Push the right-back on and let the midfielder cover him: the drawing shows where each goes and the space it opens." The Workbook then offers to test it.
 - When the question is about HOW the team played, its tactics, or what changed after a change of plan, always include a "pitch" analysis (a picture with arrows) as well as the figures. To compare before and after, use "compare" with the matchdays on each side of the change (find them from team_matches in the same turn if you do not know them).
 
 Changes
@@ -153,7 +156,8 @@ const WB_EXPLAIN_PROMPT = `You are the LastMind AI Agent inside the Workbook of 
 
 - Use only numbers that appear in RESULTS or the club summary. Never invent a number, a match or a player.
 - Lead with the answer in one sentence. Then, only if it matters, one sentence on how sure it is (say how many matches it rests on; mention confounding when a relationship is read as a cause; experiments and simulated trials are causal because the setting was changed on purpose). Never walk through the table row by row and never repeat numbers the student can already see on the page: pick the two or three that carry the point.
-- Where RESULTS include a PICTURE (a pitch drawn with arrows), explain the tactics it shows in plain football language: how the team built up, how high it defended, where it won the ball back, and what changed between pictures. The picture does the showing; you say what it means.
+- Where RESULTS include a PICTURE or a TACTIC (a pitch drawn with arrows and a highlighted space), refer to what is drawn on it: the arrows, the named players, the shaded space, the lines. The picture does the showing; you say what it means in football words. Never quote a depth, a setting value (directness 0.4, line height 0.15), a coordinate or a long decimal such as an xG to the student: say "early", "far out", "close", "high", "deep" instead, and give at most one or two figures that matter, such as a count or a percentage.
+- If the student asked a tactical question and RESULTS hold a TACTIC, do not repeat it in words: say in one sentence why it should help, and that the test below the drawing can check it.
 - Where a change was PROPOSED, say in a sentence or two what it does, what it costs and what to watch for: the student presses Apply, nothing has happened yet. Where it was APPLIED, say it is done. If something could not be done, say why and what to try.
 - Work at the level and detail given in the message: GCSE keeps to averages, chances, scatter graphs and lines of best fit; A-level may use tests, correlation, regression and distributions; beyond A-level may use likelihood, causal inference and resampling. Brief means one sentence.
 - You may link a lesson by writing [[id|words]] (only these ids): {LESSONS}. At most two, only when the idea is needed.
@@ -161,7 +165,7 @@ const WB_EXPLAIN_PROMPT = `You are the LastMind AI Agent inside the Workbook of 
 
 Return ONLY this JSON object: {"reply":"..."}`;
 
-const ACTION_TYPES = ['query', 'analysis', 'note', 'control'];   // a "pitch" picture is an analysis whose spec has method "pitch"
+const ACTION_TYPES = ['query', 'analysis', 'note', 'control', 'tactic'];   // a "pitch" picture is an analysis whose spec has method "pitch"
 function cleanActions(v: unknown) {
   return (Array.isArray(v) ? v : []).slice(0, 3).map((a: any) => {
     if (!a || typeof a !== 'object' || !ACTION_TYPES.includes(a.type)) return null;
@@ -171,6 +175,21 @@ function cleanActions(v: unknown) {
       let params: unknown = {};
       try { const raw = JSON.stringify(a.params || {}); if (raw.length <= 2500) params = JSON.parse(raw); } catch { params = {}; }
       return action ? { type: 'control', action, params } : null;
+    }
+    if (a.type === 'tactic') {
+      const sp = a.spec && typeof a.spec === 'object' ? a.spec : null; if (!sp) return null;
+      const PH = ['build', 'midfield', 'final', 'organised', 'press', 'transdef', 'transatt'];
+      const phase = PH.includes(sp.phase) ? sp.phase : 'build';
+      const n = (v: any, lo: number, hi: number) => (Number.isFinite(Number(v)) ? Math.max(lo, Math.min(hi, Number(v))) : null);
+      const moves = (Array.isArray(sp.moves) ? sp.moves : []).slice(0, 3).map((m: any) => {
+        const number = n(m?.number, 1, 99), dx = n(m?.dx, -20, 20), dy = n(m?.dy, -20, 20);
+        return number == null || dx == null || dy == null ? null : { number: Math.round(number), dx: Math.round(dx * 10) / 10, dy: Math.round(dy * 10) / 10, tag: clip(m?.tag, 30) };
+      }).filter(Boolean);
+      if (!moves.length) return null;
+      const roles = (Array.isArray(sp.roles) ? sp.roles : []).slice(0, 3).map((r: any) => { const number = n(r?.number, 1, 99); const role = clip(r?.role, 30); return number == null || !role ? null : { number: Math.round(number), role }; }).filter(Boolean);
+      let space: unknown = null;
+      if (sp.space && typeof sp.space === 'object') { const x0 = n(sp.space.x0, 0, 105), y0 = n(sp.space.y0, 0, 68), x1 = n(sp.space.x1, 0, 105), y1 = n(sp.space.y1, 0, 68); if (x0 != null && y0 != null && x1 != null && y1 != null) space = { x0: Math.min(x0, x1), x1: Math.max(x0, x1), y0: Math.min(y0, y1), y1: Math.max(y0, y1), label: clip(sp.space.label, 40) }; }
+      return { type: 'tactic', spec: { phase, title: clip(sp.title, 80), note: clip(sp.note, 220), moves, roles, space } };
     }
     if (!a.spec || typeof a.spec !== 'object') return null;
     let spec: unknown = null;
@@ -201,7 +220,7 @@ router.post('/football/workbench', async (req: Request, res: Response) => {
   } else {
     system = WB_PLAN_PROMPT.replace('{LESSONS}', lessons).replace('{SCHEMA}', clip(req.body?.schema, 4500) || '(none)').replace('{METHODS}', clip(req.body?.methods, 4500) || '(none)').replace('{CONTROLS}', clip(req.body?.controls, 4500) || '(none)');
     const extra = clip(req.body?.schemaExtra, 1200);
-    userContent = `Level: ${levelName}. Detail: ${detail}.\n\n${extra ? `Extra tables made in this session:\n${extra}\n\n` : ''}Club summary:\n${clip(req.body?.summary, 2200) || '(nothing recorded yet)'}\n\nHow things stand (ids for loans, offers, players and spending):\n${clip(req.body?.state, 2200) || '(none)'}\n\nWorkbench document so far:\n${clip(req.body?.doc, 900) || '(empty)'}\n\nConversation so far:\n${convo}\n\nReply with the JSON object.`;
+    userContent = `Level: ${levelName}. Detail: ${detail}.\n\n${extra ? `Extra tables made in this session:\n${extra}\n\n` : ''}Club summary:\n${clip(req.body?.summary, 2200) || '(nothing recorded yet)'}\n\nHow things stand (ids for loans, offers, players and spending):\n${clip(req.body?.state, 2200) || '(none)'}\n\nWhere the players stand on the manager's boards (shirt number, group, x metres from own goal, y metres across):\n${clip(req.body?.board, 1800) || '(not given)'}\n\nWorkbench document so far:\n${clip(req.body?.doc, 900) || '(empty)'}\n\nConversation so far:\n${convo}\n\nReply with the JSON object.`;
     model = planModel; maxTokens = 1100;
   }
   try {

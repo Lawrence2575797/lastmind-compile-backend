@@ -35,11 +35,22 @@ async function emailOf(userId: string, known?: string | null): Promise<string> {
   }
 }
 
+// An address on the owner list only counts once Supabase has confirmed it, so nobody can sign up with an owner's address before the owner does and be given every project.
+const confirmedCache = new Map<string, { ok: boolean; at: number }>();
+async function emailIsConfirmed(userId: string): Promise<boolean> {
+  const hit = confirmedCache.get(userId);
+  if (hit && Date.now() - hit.at < 5 * 60_000) return hit.ok;
+  let ok = false;
+  try { const { data } = await supabaseAdmin.auth.admin.getUserById(userId); ok = !!data?.user?.email_confirmed_at; } catch { ok = false; }
+  confirmedCache.set(userId, { ok, at: Date.now() });
+  return ok;
+}
+
 // Whether the person really has the project (paid for it, or is one of the owner's accounts), whatever the free offer says.
 export async function hasPaidProjectAccess(userId: string, project: Project, email?: string | null): Promise<boolean> {
   if (ALL_PROJECT_IDS.has(userId)) return true;
   const e = await emailOf(userId, email);
-  if (e && ALL_PROJECT_EMAILS.has(e)) return true;
+  if (e && ALL_PROJECT_EMAILS.has(e) && (await emailIsConfirmed(userId))) return true;
   const { data, error } = await supabaseAdmin.from('project_access').select('status,current_period_end')
     .eq('user_id', userId).eq('project', project).maybeSingle();
   if (error) throw error;

@@ -11,6 +11,7 @@ declare global {
       userId?: string;
       userEmail?: string | null;
       userCreatedAt?: string | null;
+      userEmailConfirmed?: boolean;
     }
   }
 }
@@ -38,6 +39,7 @@ export async function requireAuth(req: Request, res: Response, next: NextFunctio
   req.userId = user.id;
   req.userEmail = user.email;
   req.userCreatedAt = user.createdAt;
+  req.userEmailConfirmed = user.emailConfirmed;
   // Everything this request goes on to do (AI calls included) runs inside the
   // student's own context - see requestContext.ts.
   runWithUser(user.id, () => next());
@@ -60,13 +62,13 @@ export const ADMIN_EMAILS = new Set(
     .filter(Boolean)
 );
 
-export function isAdminEmail(email: string | null | undefined): boolean {
-  return !!email && ADMIN_EMAILS.has(email.toLowerCase());
+export function isAdminEmail(email: string | null | undefined, confirmed: boolean = true): boolean {
+  return !!email && confirmed && ADMIN_EMAILS.has(email.toLowerCase());
 }
 
 export function requireAdmin(req: Request, res: Response, next: NextFunction) {
   const email = (req.userEmail || '').toLowerCase();
-  if (!email || !ADMIN_EMAILS.has(email)) {
+  if (!email || !req.userEmailConfirmed || !ADMIN_EMAILS.has(email)) {   // an address nobody has confirmed is never an admin
     return res.status(403).json({ error: 'not authorized' });
   }
   next();

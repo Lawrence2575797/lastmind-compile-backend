@@ -19,6 +19,7 @@ export interface VerifiedUser {
   id: string;
   email: string | null;
   createdAt: string | null;
+  emailConfirmed: boolean;   // Supabase has confirmed the address: the owner allowlists only count a confirmed one
 }
 
 // Verifies a Supabase access token cryptographically against Supabase
@@ -35,5 +36,5 @@ export interface VerifiedUser {
 export async function verifyUser(accessToken: string): Promise<VerifiedUser | null> {
   const { data, error } = await supabaseAdmin.auth.getUser(accessToken);
   if (error || !data?.user) return null;
-  return { id: data.user.id, email: data.user.email || null, createdAt: data.user.created_at || null };
+  return { id: data.user.id, email: data.user.email || null, createdAt: data.user.created_at || null, emailConfirmed: !!(data.user as any).email_confirmed_at };
 }

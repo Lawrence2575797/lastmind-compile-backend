@@ -81,7 +81,7 @@ router.post('/create/projects', actionEndpointLimiter, async (req: Request, res:
   if ((req as any).footballOnly && !isFootballKind(b.kind)) return needsSubscription(res);
   const row: Record<string, unknown> = { user_id: userId, title, kind: typeof b.kind === 'string' ? b.kind.slice(0, 40) : 'criminal-trial', data: b.data, updated_at: new Date().toISOString() };
   if (b.asReference !== undefined) {
-    if (b.asReference && !isAdminEmail(req.userEmail ?? undefined)) return res.status(403).json({ error: 'only an admin can publish a reference example' });
+    if (b.asReference && !isAdminEmail(req.userEmail ?? undefined, req.userEmailConfirmed)) return res.status(403).json({ error: 'only an admin can publish a reference example' });
     row.is_reference = !!b.asReference;
   }
   if (typeof b.id === 'string' && b.id) {

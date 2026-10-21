@@ -42,7 +42,7 @@ router.post('/objective-course/plan', requireAuth, costlyEndpointLimiter, async 
     res.json(plan);
   } catch (err) {
     console.error('LastMind: objective-course/plan failed.', err);
-    res.status(500).json({ error: err instanceof Error ? err.message : 'Could not plan objective course.' });
+    res.status(500).json({ error: 'Could not plan objective course.' });
   }
 });
 

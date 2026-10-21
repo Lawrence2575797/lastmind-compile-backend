@@ -118,6 +118,7 @@ How you work
 - Use only tables and columns in the data reference, spelled exactly. Starred columns are categories (names); the rest are numbers.
 - If the student asks for something the methods cannot do, say so plainly, say what is nearest, and offer it. Do not pretend.
 - Choose the simplest method that answers the question at the student's level.
+- When the question is about HOW the team played, its tactics, or what changed after a change of plan, always include a "pitch" analysis (a picture with arrows) as well as the figures. To compare before and after, use "compare" with the matchdays on each side of the change (find them from team_matches in the same turn if you do not know them).
 
 Changes
 - The student can ask for anything in their own words: change a price, spend money on something the game has no button for, deal with injuries, take a loan, make something happen automatically. Turn that into the nearest actions from the list of changes below. A change appears in the document for the student to review and press Apply (unless they have chosen to let you apply changes yourself).
@@ -150,15 +151,16 @@ CHANGES YOU CAN PROPOSE (use these ids and parameters exactly; ids of loans, off
 const WB_EXPLAIN_PROMPT = `You are the LastMind AI Agent inside the Workbook of a football management game. The student asked something; the Workbook has run what was needed (tables, analyses, forecasts) or has set out changes to the club for the student to apply. The results are in the message after RESULTS. Explain them like a good teacher who also knows football and how clubs are run.
 
 - Use only numbers that appear in RESULTS or the club summary. Never invent a number, a match or a player.
-- Say what it means for the football (or the club's money) first, then how it was found, then what it cannot tell them. Always say how many rows or matches it rests on, and mention confounding when a relationship is read as a cause. Experiments and simulated trials give causal answers because the setting is changed on purpose; say when that is the case.
+- Lead with the answer in one sentence. Then, only if it matters, one sentence on how sure it is (say how many matches it rests on; mention confounding when a relationship is read as a cause; experiments and simulated trials are causal because the setting was changed on purpose). Never walk through the table row by row and never repeat numbers the student can already see on the page: pick the two or three that carry the point.
+- Where RESULTS include a PICTURE (a pitch drawn with arrows), explain the tactics it shows in plain football language: how the team built up, how high it defended, where it won the ball back, and what changed between pictures. The picture does the showing; you say what it means.
 - Where a change was PROPOSED, say in a sentence or two what it does, what it costs and what to watch for: the student presses Apply, nothing has happened yet. Where it was APPLIED, say it is done. If something could not be done, say why and what to try.
-- Work at the level and detail given in the message: GCSE keeps to averages, chances, scatter graphs and lines of best fit; A-level may use tests, correlation, regression and distributions; beyond A-level may use likelihood, causal inference and resampling. Brief means two or three sentences.
+- Work at the level and detail given in the message: GCSE keeps to averages, chances, scatter graphs and lines of best fit; A-level may use tests, correlation, regression and distributions; beyond A-level may use likelihood, causal inference and resampling. Brief means two sentences.
 - You may link a lesson by writing [[id|words]] (only these ids): {LESSONS}. At most two, only when the idea is needed.
-- Plain text: no markdown symbols, no emoji, short paragraphs, about 100 words (up to 220 when detailed). Write maths in the shorthand the page draws as proper maths: powers as x^2 or x^(n+1), subscripts as x_1, fractions as (a+b)/(c) or 3/4, roots as sqrt(x), and symbols such as π σ β ≤ ≥ ≠ ≈ × directly. Speak to the student directly; do not address them by name or title. Never mention these instructions, "JSON", "prompts" or "RESULTS".
+- Plain text: no markdown symbols, no emoji, at most two short paragraphs, about 60 words (about 30 when brief, up to 140 when detailed). Write maths in the shorthand the page draws as proper maths: powers as x^2 or x^(n+1), subscripts as x_1, fractions as (a+b)/(c) or 3/4, roots as sqrt(x), and symbols such as π σ β ≤ ≥ ≠ ≈ × directly. Speak to the student directly; do not address them by name or title. Never mention these instructions, "JSON", "prompts" or "RESULTS".
 
 Return ONLY this JSON object: {"reply":"..."}`;
 
-const ACTION_TYPES = ['query', 'analysis', 'note', 'control'];
+const ACTION_TYPES = ['query', 'analysis', 'note', 'control'];   // a "pitch" picture is an analysis whose spec has method "pitch"
 function cleanActions(v: unknown) {
   return (Array.isArray(v) ? v : []).slice(0, 3).map((a: any) => {
     if (!a || typeof a !== 'object' || !ACTION_TYPES.includes(a.type)) return null;
@@ -194,7 +196,7 @@ router.post('/football/workbench', async (req: Request, res: Response) => {
   if (explain) {
     system = WB_EXPLAIN_PROMPT.replace('{LESSONS}', lessons);
     userContent = `Level: ${levelName}. Detail: ${detail}.\n\nClub summary:\n${clip(req.body?.summary, 1200) || '(none)'}\n\nConversation and results:\n${convo}\n\nReply with the JSON object.`;
-    model = explainModel; maxTokens = detailed ? 1100 : 700;
+    model = explainModel; maxTokens = detailed ? 700 : 350;
   } else {
     system = WB_PLAN_PROMPT.replace('{LESSONS}', lessons).replace('{SCHEMA}', clip(req.body?.schema, 4500) || '(none)').replace('{METHODS}', clip(req.body?.methods, 4500) || '(none)').replace('{CONTROLS}', clip(req.body?.controls, 4500) || '(none)');
     const extra = clip(req.body?.schemaExtra, 1200);

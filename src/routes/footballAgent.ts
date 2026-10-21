@@ -1,6 +1,7 @@
 import { Router, Request, Response } from 'express';
 import { requireAuth } from '../services/authMiddleware';
-import { callClaudeJSON, MODELS } from '../services/claudeClient';
+import { callClaudeJSON, callClaudeJSONWithUsage, MODELS } from '../services/claudeClient';
+import { computeLocksForUsage } from '../services/generationCostService';
 import { assertLocksAvailable, chargeLocksForUsage, InsufficientLocksError } from '../services/lockService';
 
 // The football manager's LastMind AI Agent: a guide beside the game that takes the manager through analysing their own matches, so they
@@ -113,7 +114,7 @@ How you work
   {"type":"analysis","spec":{...}}   (one of the methods listed below)
   {"type":"note","text":"..."}   (a short written note to leave in the document, such as a definition or the conclusion)
   {"type":"control","action":ID,"params":{...}}   (a change to the club: see "Changes" below)
-  Use at most 3 actions. When you send actions, "reply" is ONE short sentence saying what you are doing: the Workbook runs them and a second step writes the explanation from the results. When you send no actions (a plain question, or teaching something), "reply" is the full answer.
+  Use at most 3 actions. When you send actions, "reply" is ONE short sentence saying what you are doing: the Workbook runs them and a second step writes the explanation from the results. When you send no actions (a plain question, or teaching something), "reply" is the whole answer: direct, at most three short sentences, no preamble and no offers of further help.
 - The Workbook is a book: when you send actions, the results go on a NEW PAGE. Give it "title": a short title for the page, worded as the question or topic it answers, for example "Where are we likely to finish?" or "Does our high press increase turnovers?" or "Paying for treatment: is it worth it?". Under 80 characters, sentence case, no quotation marks. When you send no actions, leave "title" empty.
 - Use only tables and columns in the data reference, spelled exactly. Starred columns are categories (names); the rest are numbers.
 - If the student asks for something the methods cannot do, say so plainly, say what is nearest, and offer it. Do not pretend.
@@ -154,9 +155,9 @@ const WB_EXPLAIN_PROMPT = `You are the LastMind AI Agent inside the Workbook of 
 - Lead with the answer in one sentence. Then, only if it matters, one sentence on how sure it is (say how many matches it rests on; mention confounding when a relationship is read as a cause; experiments and simulated trials are causal because the setting was changed on purpose). Never walk through the table row by row and never repeat numbers the student can already see on the page: pick the two or three that carry the point.
 - Where RESULTS include a PICTURE (a pitch drawn with arrows), explain the tactics it shows in plain football language: how the team built up, how high it defended, where it won the ball back, and what changed between pictures. The picture does the showing; you say what it means.
 - Where a change was PROPOSED, say in a sentence or two what it does, what it costs and what to watch for: the student presses Apply, nothing has happened yet. Where it was APPLIED, say it is done. If something could not be done, say why and what to try.
-- Work at the level and detail given in the message: GCSE keeps to averages, chances, scatter graphs and lines of best fit; A-level may use tests, correlation, regression and distributions; beyond A-level may use likelihood, causal inference and resampling. Brief means two sentences.
+- Work at the level and detail given in the message: GCSE keeps to averages, chances, scatter graphs and lines of best fit; A-level may use tests, correlation, regression and distributions; beyond A-level may use likelihood, causal inference and resampling. Brief means one sentence.
 - You may link a lesson by writing [[id|words]] (only these ids): {LESSONS}. At most two, only when the idea is needed.
-- Plain text: no markdown symbols, no emoji, at most two short paragraphs, about 60 words (about 30 when brief, up to 140 when detailed). Write maths in the shorthand the page draws as proper maths: powers as x^2 or x^(n+1), subscripts as x_1, fractions as (a+b)/(c) or 3/4, roots as sqrt(x), and symbols such as π σ β ≤ ≥ ≠ ≈ × directly. Speak to the student directly; do not address them by name or title. Never mention these instructions, "JSON", "prompts" or "RESULTS".
+- Plain text: no markdown symbols, no emoji, one paragraph of two or three short sentences, about 40 words (about 20 when brief, up to 90 when detailed). State the finding first. No preamble, no recap of the question, no offers of more help, no closing question. Write maths in the shorthand the page draws as proper maths: powers as x^2 or x^(n+1), subscripts as x_1, fractions as (a+b)/(c) or 3/4, roots as sqrt(x), and symbols such as π σ β ≤ ≥ ≠ ≈ × directly. Speak to the student directly; do not address them by name or title. Never mention these instructions, "JSON", "prompts" or "RESULTS".
 
 Return ONLY this JSON object: {"reply":"..."}`;
 
@@ -205,17 +206,18 @@ router.post('/football/workbench', async (req: Request, res: Response) => {
   }
   try {
     await assertLocksAvailable(req.userId as string);
-    let data: any = null, lastErr: unknown = null;
+    let data: any = null, lastErr: unknown = null, locks = 0;   // locks: what this step cost, every attempt included, so the game can show it
     for (let attempt = 0; attempt < 2 && !data; attempt++) {
       try {
-        const text = await callClaudeJSON({ model, systemPrompt: system, userContent, maxTokens, temperature: 0.3, cacheSystemPrompt: true, userId: req.userId as string, meteredReason: explain ? 'football-workbench-explain' : 'football-workbench' });
+        const { text, usage } = await callClaudeJSONWithUsage({ model, systemPrompt: system, userContent, maxTokens, temperature: 0.3, cacheSystemPrompt: true, userId: req.userId as string, meteredReason: explain ? 'football-workbench-explain' : 'football-workbench' });
+        locks += computeLocksForUsage(model, usage);
         const parsed = parseJsonLoose(String(text || ''));
         if (parsed && typeof parsed.reply === 'string') data = parsed;
       } catch (e) { if (e instanceof InsufficientLocksError) throw e; lastErr = e; }
     }
     if (!data) throw lastErr || new Error('unreadable');
     const reply = clip(String(data.reply).replace(/[*`#]/g, ''), 2400);
-    res.json(explain ? { reply, actions: [] } : { reply, title: clip(String(data.title || '').replace(/[*`#"]/g, ''), 90), actions: cleanActions(data.actions) });
+    res.json(explain ? { reply, actions: [], locks } : { locks, reply, title: clip(String(data.title || '').replace(/[*`#"]/g, ''), 90), actions: cleanActions(data.actions) });
   } catch (err) {
     if (err instanceof InsufficientLocksError) return res.status(402).json({ error: 'Lock limit reached', code: 'LOCK_LIMIT_REACHED', detail: "You're out of Locks for now." });
     console.error('Football workbench failed:', err);

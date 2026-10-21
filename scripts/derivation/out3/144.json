@@ -1,0 +1,233 @@
+{
+ "id": "gen",
+ "subject": "Economics",
+ "title": "Government intervention: monopoly and mergers",
+ "terms": {
+  "single_seller": {
+   "label": "Single dominant seller"
+  },
+  "MARKET_POWER": {
+   "label": "Market power"
+  },
+  "REASONS_CONTROL_MON": {
+   "label": "Reasons to control monopoly"
+  },
+  "horizontal": {
+   "label": "Horizontal merger"
+  },
+  "vertical": {
+   "label": "Vertical merger"
+  },
+  "conglomerate": {
+   "label": "Conglomerate merger"
+  },
+  "MERGER_DEF": {
+   "label": "Merger"
+  },
+  "REASONS_CONTROL_MERGERS": {
+   "label": "Reasons to control mergers"
+  },
+  "cma": {
+   "label": "Competition and Markets Authority"
+  },
+  "MERGER_POLICY": {
+   "label": "Merger control policy"
+  }
+ },
+ "stages": [
+  {
+   "name": "Government intervention: monopoly and mergers",
+   "title": "Government intervention: monopoly and mergers",
+   "sub": "Why and how governments step in to limit monopoly power and control mergers.",
+   "steps": [
+    {
+     "type": "ask",
+     "q": "One firm supplies 90% of the bottled water in a country, with no close rivals. Can it raise its price without losing most of its customers?",
+     "right": "Yes, because buyers have nowhere else to go",
+     "wrong": "No, buyers would all switch to rivals",
+     "hint": "Think about how many alternatives buyers actually have.",
+     "pre": "Being able to set price above the competitive level like this shows the firm has",
+     "term": "single_seller"
+    },
+    {
+     "type": "ask",
+     "q": "This dominant firm sets a higher price and produces less than a competitive market would. What has it gained control over?",
+     "right": "The price and output in the market",
+     "wrong": "Only the wages it pays its workers",
+     "hint": "What exactly can this firm decide that a small competitive firm cannot?",
+     "pre": "Being able to influence price and output like this is",
+     "term": "MARKET_POWER"
+    },
+    {
+     "type": "ask",
+     "q": "Because of this power, the firm charges more and produces less than the socially ideal amount, while making large profits from consumers who have no choice. Would a government want to leave this alone?",
+     "right": "No, it would want to intervene",
+     "wrong": "Yes, it would leave the market as it is",
+     "hint": "Think about consumers paying more and getting less than what is efficient.",
+     "pre": "Correcting this inefficiency and exploitation is one of the",
+     "term": "REASONS_CONTROL_MON"
+    },
+    {
+     "type": "ask",
+     "q": "Two rival supermarket chains that sell the same products in the same towns decide to combine into one firm. What kind of combination is this, given they operated at the same stage of selling to the same customers?",
+     "right": "A combination of direct competitors",
+     "wrong": "A combination of a supplier and its customer",
+     "hint": "Were the two firms rivals selling the same thing, or one firm's supplier?",
+     "pre": "Two firms joining together like this is called a",
+     "term": "MERGER_DEF"
+    },
+    {
+     "type": "order",
+     "terms": [
+      "single_seller",
+      "MARKET_POWER",
+      "REASONS_CONTROL_MON",
+      "MERGER_DEF"
+     ],
+     "prompt": "Drag and drop the 4 key terms in the order they build on each other."
+    },
+    {
+     "type": "ask",
+     "q": "A supermarket chain merges with its main rival, who sells the very same products in the same towns at the same stage of the supply chain. What type of merger is this, compared with buying an unrelated firm?",
+     "right": "A merger between direct competitors",
+     "wrong": "A merger with an unrelated business",
+     "hint": "Are the two firms rivals selling the same thing, or completely unrelated businesses?",
+     "pre": "A merger between two firms at the same stage selling similar products is a",
+     "term": "horizontal"
+    },
+    {
+     "type": "ask",
+     "q": "Instead, that same supermarket buys up its milk supplier, a firm further back in its own supply chain. Is this a merger with a rival, or with a firm at a different stage of the same chain?",
+     "right": "A firm at a different stage of the same supply chain",
+     "wrong": "A direct rival selling the same product",
+     "hint": "The supplier does not compete with the supermarket for the same customers.",
+     "pre": "A merger with a firm at a different stage of the same supply chain is a",
+     "term": "vertical"
+    },
+    {
+     "type": "ask",
+     "q": "Now the supermarket instead buys an unrelated clothing retailer, in a completely different market. Does this firm compete with the supermarket, or supply it?",
+     "right": "Neither, it is in an unrelated market",
+     "wrong": "It competes directly with the supermarket",
+     "hint": "Clothing retail and grocery are separate markets with no supply link.",
+     "pre": "A merger between firms in unrelated markets is a",
+     "term": "conglomerate"
+    },
+    {
+     "type": "ask",
+     "q": "After the two rival supermarkets merge, how many major sellers are left competing for those customers in that area?",
+     "right": "Fewer than before",
+     "wrong": "The same number as before",
+     "hint": "Two separate rivals have just become one firm.",
+     "pre": "With fewer rivals left to compete, and more scope for the new firm to set price and output, this is exactly",
+     "term": "REASONS_CONTROL_MERGERS"
+    },
+    {
+     "type": "order",
+     "terms": [
+      "horizontal",
+      "vertical",
+      "conglomerate",
+      "REASONS_CONTROL_MERGERS"
+     ],
+     "prompt": "Drag and drop the 4 key terms in the order they build on each other."
+    },
+    {
+     "type": "ask",
+     "q": "A government wants to check proposed mergers before they go ahead and reduce competition. Would it need a body that investigates deals before they are finalised?",
+     "right": "Yes, an independent investigating body",
+     "wrong": "No, the firms can decide this themselves",
+     "hint": "Someone has to assess the risk to competition before the deal completes.",
+     "pre": "In the UK this investigating role is carried out by the",
+     "term": "cma"
+    },
+    {
+     "type": "ask",
+     "q": "After investigating, this body can approve a merger, approve it with conditions attached, or stop it going ahead entirely, using set thresholds. What do the thresholds, the investigation and the possible outcomes make up together?",
+     "right": "A set framework guiding every decision",
+     "wrong": "A one-off decision for each merger",
+     "hint": "Think about the overall set of rules and decisions used to manage mergers, not one single decision.",
+     "pre": "This whole framework of investigation and decisions is",
+     "term": "MERGER_POLICY"
+    },
+    {
+     "type": "derive"
+    }
+   ],
+   "given": [],
+   "needs": [],
+   "builds": [],
+   "nodes": [
+    "MARKET_POWER",
+    "REASONS_CONTROL_MON",
+    "MERGER_DEF",
+    "REASONS_CONTROL_MERGERS",
+    "MERGER_POLICY"
+   ],
+   "dropped": [
+    [
+     "MERGER_DEF",
+     "REASONS_CONTROL_MERGERS"
+    ]
+   ],
+   "edges": [
+    [
+     "MARKET_POWER",
+     "REASONS_CONTROL_MON"
+    ],
+    [
+     "MARKET_POWER",
+     "MERGER_DEF"
+    ],
+    [
+     "REASONS_CONTROL_MERGERS",
+     "MERGER_POLICY"
+    ],
+    [
+     "single_seller",
+     "MARKET_POWER"
+    ],
+    [
+     "MARKET_POWER",
+     "REASONS_CONTROL_MON"
+    ],
+    [
+     "MARKET_POWER",
+     "MERGER_DEF"
+    ],
+    [
+     "MERGER_DEF",
+     "horizontal"
+    ],
+    [
+     "MERGER_DEF",
+     "vertical"
+    ],
+    [
+     "MERGER_DEF",
+     "conglomerate"
+    ],
+    [
+     "horizontal",
+     "REASONS_CONTROL_MERGERS"
+    ],
+    [
+     "vertical",
+     "REASONS_CONTROL_MERGERS"
+    ],
+    [
+     "conglomerate",
+     "REASONS_CONTROL_MERGERS"
+    ],
+    [
+     "REASONS_CONTROL_MERGERS",
+     "cma"
+    ],
+    [
+     "cma",
+     "MERGER_POLICY"
+    ]
+   ]
+  }
+ ]
+}

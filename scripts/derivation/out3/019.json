@@ -1,0 +1,189 @@
+{
+ "id": "gen",
+ "subject": "Economics",
+ "title": "Free market failure and the mixed economy",
+ "terms": {
+  "DIS_FM_MARKET_FAILURE": {
+   "label": "Free market failure"
+  },
+  "ADV_MIXED_BALANCE": {
+   "label": "Mixed economy balance"
+  },
+  "ADV_MIXED_SAFETY_NET": {
+   "label": "Welfare safety net"
+  },
+  "DIS_MIXED_GOVFAIL": {
+   "label": "Government failure"
+  },
+  "DIS_MIXED_TAX_BURDEN": {
+   "label": "Tax burden on incentives"
+  },
+  "FREE_MARKET_ECONOMY": {
+   "label": "Free market economy"
+  },
+  "externalities_def": {
+   "label": "Externalities"
+  },
+  "public_goods_underprovision": {
+   "label": "Under-provision of public goods"
+  },
+  "MIXED_ECONOMY": {
+   "label": "Mixed economy"
+  },
+  "ADV_FM_EFFICIENCY": {
+   "label": "Advantage of free market: price incentives drive efficiency/innovation"
+  },
+  "DIS_FM_INEQUALITY": {
+   "label": "Disadvantage of free market: income/wealth inequality"
+  }
+ },
+ "stages": [
+  {
+   "name": "Free market failure and the mixed economy",
+   "title": "Free market failure and the mixed economy",
+   "sub": "Why pure free markets fail in some areas, and the advantages and disadvantages of the state stepping in to correct this.",
+   "steps": [
+    {
+     "type": "ask",
+     "q": "A firm would build a lighthouse only by charging ships, but they can't be stopped from using the light. Will any firm build it?",
+     "right": "No, firms will not provide it",
+     "wrong": "Yes, firms will still provide it",
+     "hint": "Think about whether the firm can actually collect payment from every ship that benefits.",
+     "pre": "Left alone, the free market fails to provide this because of",
+     "term": "DIS_FM_MARKET_FAILURE"
+    },
+    {
+     "type": "ask",
+     "q": "A government funds the lighthouse itself, while shops still freely trade bread and clothes as normal. Does the market still allocate most goods?",
+     "right": "Yes, the market still allocates most goods",
+     "wrong": "No, the state now allocates most goods",
+     "hint": "Only the missing pieces are covered by the state; everything else still trades normally.",
+     "pre": "So a mixed economy gets the",
+     "term": "ADV_MIXED_BALANCE"
+    },
+    {
+     "type": "ask",
+     "q": "A jobless worker would have no income until new work. If the state pays benefit meanwhile, is the worst outcome limited?",
+     "right": "Yes, it has limited the worst outcome",
+     "wrong": "No, it has not changed the outcome",
+     "hint": "The benefit does not match their old wage, but it stops the very worst outcome.",
+     "pre": "Welfare payments like this give a",
+     "term": "ADV_MIXED_SAFETY_NET"
+    },
+    {
+     "type": "ask",
+     "q": "A pollution regulator is slow and poorly informed; its rules cost firms more than the pollution prevented. Has it beaten the market?",
+     "right": "No, the fix can make things worse",
+     "wrong": "Yes, the fix always helps",
+     "hint": "The market failure was real, but does that guarantee the government's fix works well?",
+     "pre": "When intervention itself creates inefficiency, this is",
+     "term": "DIS_MIXED_GOVFAIL"
+    },
+    {
+     "type": "order",
+     "terms": [
+      "DIS_FM_MARKET_FAILURE",
+      "ADV_MIXED_BALANCE",
+      "ADV_MIXED_SAFETY_NET",
+      "DIS_MIXED_GOVFAIL"
+     ],
+     "prompt": "Drag and drop the 4 key terms in the order they build on each other."
+    },
+    {
+     "type": "ask",
+     "q": "Higher income tax means £100 of overtime pay now leaves a worker with £70. Are they as keen to work it?",
+     "right": "No, they are less keen to work more",
+     "wrong": "Yes, they are just as keen as before",
+     "hint": "Compare what the worker actually takes home before and after the tax rise.",
+     "pre": "Funding state activity this way creates a",
+     "term": "DIS_MIXED_TAX_BURDEN"
+    },
+    {
+     "type": "derive"
+    }
+   ],
+   "given": [
+    "FREE_MARKET_ECONOMY",
+    "externalities_def",
+    "public_goods_underprovision",
+    "MIXED_ECONOMY"
+   ],
+   "needs": [
+    "FREE_MARKET_ECONOMY",
+    "externalities_def",
+    "public_goods_underprovision",
+    "MIXED_ECONOMY",
+    "ADV_FM_EFFICIENCY",
+    "DIS_FM_INEQUALITY"
+   ],
+   "builds": [
+    "FREE_MARKET_ECONOMY",
+    "externalities_def",
+    "public_goods_underprovision",
+    "MIXED_ECONOMY"
+   ],
+   "nodes": [
+    "DIS_FM_MARKET_FAILURE",
+    "ADV_MIXED_BALANCE",
+    "ADV_MIXED_SAFETY_NET",
+    "DIS_MIXED_GOVFAIL",
+    "DIS_MIXED_TAX_BURDEN"
+   ],
+   "dropped": [],
+   "edges": [
+    [
+     "DIS_FM_MARKET_FAILURE",
+     "ADV_MIXED_BALANCE"
+    ],
+    [
+     "FREE_MARKET_ECONOMY",
+     "DIS_FM_MARKET_FAILURE"
+    ],
+    [
+     "externalities_def",
+     "DIS_FM_MARKET_FAILURE"
+    ],
+    [
+     "public_goods_underprovision",
+     "DIS_FM_MARKET_FAILURE"
+    ],
+    [
+     "MIXED_ECONOMY",
+     "ADV_MIXED_BALANCE"
+    ],
+    [
+     "MIXED_ECONOMY",
+     "ADV_MIXED_SAFETY_NET"
+    ],
+    [
+     "MIXED_ECONOMY",
+     "DIS_MIXED_GOVFAIL"
+    ],
+    [
+     "MIXED_ECONOMY",
+     "DIS_MIXED_TAX_BURDEN"
+    ],
+    [
+     "externalities_def",
+     "DIS_FM_MARKET_FAILURE"
+    ],
+    [
+     "public_goods_underprovision",
+     "DIS_FM_MARKET_FAILURE"
+    ],
+    [
+     "MIXED_ECONOMY",
+     "ADV_MIXED_SAFETY_NET"
+    ],
+    [
+     "MIXED_ECONOMY",
+     "DIS_MIXED_GOVFAIL"
+    ],
+    [
+     "MIXED_ECONOMY",
+     "DIS_MIXED_TAX_BURDEN"
+    ]
+   ]
+  }
+ ]
+}

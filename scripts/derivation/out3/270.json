@@ -1,0 +1,331 @@
+{
+ "id": "gen",
+ "subject": "Economics",
+ "title": "Inflation: causes and effects",
+ "terms": {
+  "AD_AS_MODEL": {
+   "label": "AD/AS framework"
+  },
+  "DEMAND_PULL": {
+   "label": "Demand-pull inflation"
+  },
+  "COST_PUSH": {
+   "label": "Cost-push inflation"
+  },
+  "INFLATION_EFFECT_CONSUMERS": {
+   "label": "Effects on consumers"
+  },
+  "INFLATION_EFFECT_FIRMS": {
+   "label": "Effects on firms"
+  },
+  "INFLATION_EFFECT_COMPETITIVENESS": {
+   "label": "Effects on competitiveness"
+  },
+  "INFLATION_DEF": {
+   "label": "Definition of inflation (sustained rise in general price level)"
+  },
+  "ECON_MODEL": {
+   "label": "Economic models"
+  }
+ },
+ "stages": [
+  {
+   "name": "Inflation: causes and effects",
+   "title": "Inflation: causes and effects",
+   "sub": "Explain what pushes prices up economy-wide, and trace the effects on consumers, firms and trade.",
+   "steps": [
+    {
+     "type": "ask",
+     "q": "Economists draw total spending in the economy against total output, to see what drives the general price level. What kind of tool is this: a picture of one shop's price, or a picture of the whole economy?",
+     "right": "A picture of the whole economy",
+     "wrong": "A picture of one shop's price",
+     "hint": "Inflation is a rise in the general price level, across everything, not just one good.",
+     "pre": "A simplified picture of total spending and total output in the whole economy is the",
+     "term": "AD_AS_MODEL",
+     "diagram": {
+      "x": "Output",
+      "y": "Price level",
+      "curves": [
+       {
+        "label": "AD",
+        "pts": [
+         [
+          0.08,
+          0.85
+         ],
+         [
+          0.4,
+          0.55
+         ],
+         [
+          0.85,
+          0.2
+         ]
+        ]
+       },
+       {
+        "label": "AS",
+        "pts": [
+         [
+          0.15,
+          0.1
+         ],
+         [
+          0.45,
+          0.5
+         ],
+         [
+          0.7,
+          0.85
+         ]
+        ]
+       }
+      ]
+     }
+    },
+    {
+     "type": "ask",
+     "q": "Consumers get a wave of confidence and spend much more, but factories cannot suddenly produce much more. If total spending races ahead of what the economy can supply, what happens to the general price level?",
+     "right": "It rises",
+     "wrong": "It stays the same",
+     "hint": "More money chasing a roughly fixed amount of output has to show up somewhere.",
+     "pre": "Prices rising because total spending grows faster than total output is",
+     "term": "DEMAND_PULL",
+     "diagram": {
+      "x": "Output",
+      "y": "Price level",
+      "curves": [
+       {
+        "label": "AD1",
+        "pts": [
+         [
+          0.08,
+          0.7
+         ],
+         [
+          0.4,
+          0.45
+         ],
+         [
+          0.85,
+          0.15
+         ]
+        ]
+       },
+       {
+        "label": "AD2",
+        "pts": [
+         [
+          0.2,
+          0.85
+         ],
+         [
+          0.5,
+          0.58
+         ],
+         [
+          0.9,
+          0.25
+         ]
+        ]
+       },
+       {
+        "label": "AS",
+        "pts": [
+         [
+          0.15,
+          0.1
+         ],
+         [
+          0.45,
+          0.5
+         ],
+         [
+          0.7,
+          0.85
+         ]
+        ]
+       }
+      ]
+     }
+    },
+    {
+     "type": "ask",
+     "q": "Oil and wages both become far more expensive, so it costs firms much more to produce the same output at every price. If firms need higher prices just to cover these higher costs, what happens to the general price level?",
+     "right": "It rises",
+     "wrong": "It stays the same",
+     "hint": "Firms will only supply the same amount if they can charge more to cover their higher costs.",
+     "pre": "Prices rising because production costs push firms to charge more at every level of output is",
+     "term": "COST_PUSH",
+     "diagram": {
+      "x": "Output",
+      "y": "Price level",
+      "curves": [
+       {
+        "label": "AS1",
+        "pts": [
+         [
+          0.15,
+          0.1
+         ],
+         [
+          0.45,
+          0.5
+         ],
+         [
+          0.7,
+          0.85
+         ]
+        ]
+       },
+       {
+        "label": "AS2",
+        "pts": [
+         [
+          0.05,
+          0.15
+         ],
+         [
+          0.35,
+          0.6
+         ],
+         [
+          0.6,
+          0.9
+         ]
+        ]
+       },
+       {
+        "label": "AD",
+        "pts": [
+         [
+          0.08,
+          0.85
+         ],
+         [
+          0.4,
+          0.55
+         ],
+         [
+          0.85,
+          0.2
+         ]
+        ]
+       }
+      ]
+     }
+    },
+    {
+     "type": "order",
+     "terms": [
+      "AD_AS_MODEL",
+      "DEMAND_PULL",
+      "COST_PUSH"
+     ],
+     "prompt": "Drag and drop the 3 key terms in the order they build on each other."
+    },
+    {
+     "type": "ask",
+     "q": "Your wage stays at £2,000 a month but, because of demand-pull or cost-push pressure, prices across the shops rise by 10%. Can you buy as much as before with that same £2,000?",
+     "right": "No, less than before",
+     "wrong": "Yes, exactly the same as before",
+     "hint": "The number on your payslip has not changed, but what that money buys has.",
+     "pre": "Wages not keeping up with rising prices erodes real income, an effect of inflation on",
+     "term": "INFLATION_EFFECT_CONSUMERS"
+    },
+    {
+     "type": "ask",
+     "q": "A supermarket now has to reprint every price label, and it cannot tell if next month's costs will jump again when planning a new store. Is running the business now easier or harder than when prices were stable?",
+     "right": "Harder, with extra costs and uncertainty",
+     "wrong": "Easier, since prices just rise anyway",
+     "hint": "Think about the cost of changing every price tag, and the difficulty of planning ahead.",
+     "pre": "Relabelling costs and uncertainty over future costs are effects of inflation on",
+     "term": "INFLATION_EFFECT_FIRMS"
+    },
+    {
+     "type": "ask",
+     "q": "Rising costs push a UK firm's prices up faster than a French rival's prices, while both sell the same product abroad. Which one will foreign buyers now prefer?",
+     "right": "The French rival, now relatively cheaper",
+     "wrong": "The UK firm, since it costs more to make",
+     "hint": "Foreign buyers compare prices between countries, not just look at cost of production.",
+     "pre": "Domestic costs rising faster than rivals abroad hits",
+     "term": "INFLATION_EFFECT_COMPETITIVENESS"
+    },
+    {
+     "type": "derive"
+    }
+   ],
+   "given": [
+    "INFLATION_DEF",
+    "ECON_MODEL"
+   ],
+   "needs": [
+    "INFLATION_DEF",
+    "ECON_MODEL"
+   ],
+   "builds": [
+    "INFLATION_DEF",
+    "ECON_MODEL"
+   ],
+   "nodes": [
+    "AD_AS_MODEL",
+    "DEMAND_PULL",
+    "COST_PUSH",
+    "INFLATION_EFFECT_CONSUMERS",
+    "INFLATION_EFFECT_FIRMS",
+    "INFLATION_EFFECT_COMPETITIVENESS"
+   ],
+   "dropped": [],
+   "edges": [
+    [
+     "AD_AS_MODEL",
+     "DEMAND_PULL"
+    ],
+    [
+     "AD_AS_MODEL",
+     "COST_PUSH"
+    ],
+    [
+     "DEMAND_PULL",
+     "INFLATION_EFFECT_CONSUMERS"
+    ],
+    [
+     "COST_PUSH",
+     "INFLATION_EFFECT_CONSUMERS"
+    ],
+    [
+     "INFLATION_EFFECT_CONSUMERS",
+     "INFLATION_EFFECT_FIRMS"
+    ],
+    [
+     "COST_PUSH",
+     "INFLATION_EFFECT_FIRMS"
+    ],
+    [
+     "COST_PUSH",
+     "INFLATION_EFFECT_COMPETITIVENESS"
+    ],
+    [
+     "INFLATION_DEF",
+     "DEMAND_PULL"
+    ],
+    [
+     "INFLATION_DEF",
+     "COST_PUSH"
+    ],
+    [
+     "ECON_MODEL",
+     "AD_AS_MODEL"
+    ],
+    [
+     "ECON_MODEL",
+     "AD_AS_MODEL"
+    ],
+    [
+     "INFLATION_DEF",
+     "AD_AS_MODEL"
+    ]
+   ]
+  }
+ ]
+}

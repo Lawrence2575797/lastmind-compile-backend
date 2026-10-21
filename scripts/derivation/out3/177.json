@@ -1,0 +1,305 @@
+{
+ "id": "gen",
+ "subject": "Economics",
+ "title": "Tariffs",
+ "terms": {
+  "domprice": {
+   "label": "Domestic price"
+  },
+  "worldprice": {
+   "label": "World price"
+  },
+  "importedgood": {
+   "label": "Cheap imports"
+  },
+  "PROT_REASONS_JOBS": {
+   "label": "Protecting jobs"
+  },
+  "DEMAND_SUPPLY_DIAG": {
+   "label": "Demand and supply diagram"
+  },
+  "TARIFF_DEF": {
+   "label": "Tariff"
+  },
+  "SPEC_DIS_STRUCTURAL": {
+   "label": "Structural unemployment"
+  }
+ },
+ "stages": [
+  {
+   "name": "Tariffs",
+   "title": "Tariffs",
+   "sub": "Why governments tax imports, and how to show the effect on a diagram.",
+   "steps": [
+    {
+     "type": "ask",
+     "q": "A UK steel firm makes steel for £500 a tonne. A foreign firm sells the same steel for £300 a tonne. Which will UK shoppers and builders buy?",
+     "right": "The foreign steel, because it is cheaper",
+     "wrong": "The UK steel, because it is local",
+     "hint": "If quality is the same, which price would you choose?",
+     "pre": "Buyers switch towards the",
+     "term": "importedgood"
+    },
+    {
+     "type": "ask",
+     "q": "You already know cheap imports can cause structural unemployment in declining UK industries. If the UK steel firm keeps losing customers to the cheaper import, what happens to the jobs there?",
+     "right": "Steel workers are at risk of losing their jobs",
+     "wrong": "Steel workers' jobs are made safer",
+     "hint": "Think about what happens to a firm that keeps losing sales to a cheaper rival.",
+     "pre": "So one reason governments restrict trade is",
+     "term": "PROT_REASONS_JOBS"
+    },
+    {
+     "type": "ask",
+     "q": "In the steel market, as the price rises, do buyers want to buy more or less steel, and do sellers want to sell more or less?",
+     "right": "Buyers want less, sellers want more",
+     "wrong": "Buyers want more, sellers want more",
+     "hint": "Picture a normal downward demand line and upward supply line on the same market.",
+     "pre": "The price at which the two lines cross is the",
+     "term": "domprice",
+     "diagram": {
+      "x": "Quantity",
+      "y": "Price",
+      "curves": [
+       {
+        "label": "D",
+        "pts": [
+         [
+          0.08,
+          0.85
+         ],
+         [
+          0.4,
+          0.55
+         ],
+         [
+          0.9,
+          0.15
+         ]
+        ]
+       },
+       {
+        "label": "S",
+        "pts": [
+         [
+          0.08,
+          0.15
+         ],
+         [
+          0.4,
+          0.5
+         ],
+         [
+          0.9,
+          0.85
+         ]
+        ]
+       }
+      ],
+      "points": [
+       {
+        "label": "E",
+        "x": 0.45,
+        "y": 0.5,
+        "guides": true
+       }
+      ]
+     }
+    },
+    {
+     "type": "ask",
+     "q": "The foreign steel firm can produce more cheaply and offers steel to the UK market at £300, well below the £500 UK price. On the same diagram, where would this new price sit compared with the crossing point?",
+     "right": "Below the point where UK demand and supply cross",
+     "wrong": "Above the point where UK demand and supply cross",
+     "hint": "The whole reason buyers switch to imports is that this price is lower than the home one.",
+     "pre": "That lower price offered by foreign sellers is the",
+     "term": "worldprice",
+     "diagram": {
+      "x": "Quantity",
+      "y": "Price",
+      "curves": [
+       {
+        "label": "D",
+        "pts": [
+         [
+          0.08,
+          0.85
+         ],
+         [
+          0.4,
+          0.55
+         ],
+         [
+          0.9,
+          0.15
+         ]
+        ]
+       },
+       {
+        "label": "S",
+        "pts": [
+         [
+          0.08,
+          0.15
+         ],
+         [
+          0.4,
+          0.5
+         ],
+         [
+          0.9,
+          0.85
+         ]
+        ]
+       }
+      ],
+      "points": [
+       {
+        "label": "Domestic",
+        "x": 0.45,
+        "y": 0.5,
+        "guides": true
+       },
+       {
+        "label": "World",
+        "x": 0.7,
+        "y": 0.25,
+        "guides": true
+       }
+      ]
+     }
+    },
+    {
+     "type": "order",
+     "terms": [
+      "importedgood",
+      "PROT_REASONS_JOBS",
+      "domprice",
+      "worldprice"
+     ],
+     "prompt": "Drag and drop the 4 key terms in the order they build on each other."
+    },
+    {
+     "type": "ask",
+     "q": "You have plotted the UK demand line, the UK supply line and marked both the domestic and world prices on one set of axes. What have you just built, that you could show to someone else to explain the whole market at once?",
+     "right": "A single picture showing the whole market",
+     "wrong": "A list of separate numbers with no picture",
+     "hint": "Think about what you now have: two full lines and price levels marked on the same axes, in one drawing.",
+     "pre": "Putting demand, supply and both prices together like this is how you construct a",
+     "term": "DEMAND_SUPPLY_DIAG",
+     "diagram": {
+      "x": "Quantity",
+      "y": "Price",
+      "curves": [
+       {
+        "label": "D",
+        "pts": [
+         [
+          0.08,
+          0.85
+         ],
+         [
+          0.4,
+          0.55
+         ],
+         [
+          0.9,
+          0.15
+         ]
+        ]
+       },
+       {
+        "label": "S",
+        "pts": [
+         [
+          0.08,
+          0.15
+         ],
+         [
+          0.4,
+          0.5
+         ],
+         [
+          0.9,
+          0.85
+         ]
+        ]
+       }
+      ],
+      "points": [
+       {
+        "label": "Domestic",
+        "x": 0.45,
+        "y": 0.5,
+        "guides": true
+       },
+       {
+        "label": "World",
+        "x": 0.7,
+        "y": 0.25,
+        "guides": true
+       }
+      ]
+     }
+    },
+    {
+     "type": "ask",
+     "q": "To protect steel jobs, the government adds an extra charge on every tonne of foreign steel entering the UK, pushing its price back up towards £500. What has the government just placed on the import?",
+     "right": "A tax on the imported good",
+     "wrong": "A limit on the quantity that can be imported",
+     "hint": "Think about what raises the price of the import at the border: a charge per unit, not a cap on units.",
+     "pre": "That charge on imports is a",
+     "term": "TARIFF_DEF"
+    },
+    {
+     "type": "derive"
+    }
+   ],
+   "given": [
+    "SPEC_DIS_STRUCTURAL"
+   ],
+   "needs": [
+    "SPEC_DIS_STRUCTURAL"
+   ],
+   "builds": [
+    "SPEC_DIS_STRUCTURAL"
+   ],
+   "nodes": [
+    "PROT_REASONS_JOBS",
+    "DEMAND_SUPPLY_DIAG",
+    "TARIFF_DEF"
+   ],
+   "dropped": [],
+   "edges": [
+    [
+     "DEMAND_SUPPLY_DIAG",
+     "TARIFF_DEF"
+    ],
+    [
+     "PROT_REASONS_JOBS",
+     "TARIFF_DEF"
+    ],
+    [
+     "SPEC_DIS_STRUCTURAL",
+     "PROT_REASONS_JOBS"
+    ],
+    [
+     "SPEC_DIS_STRUCTURAL",
+     "importedgood"
+    ],
+    [
+     "importedgood",
+     "PROT_REASONS_JOBS"
+    ],
+    [
+     "domprice",
+     "DEMAND_SUPPLY_DIAG"
+    ],
+    [
+     "worldprice",
+     "DEMAND_SUPPLY_DIAG"
+    ]
+   ]
+  }
+ ]
+}

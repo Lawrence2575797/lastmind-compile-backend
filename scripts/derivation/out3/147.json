@@ -1,0 +1,147 @@
+{
+ "id": "gen",
+ "subject": "Economics",
+ "title": "Performance targets and regulatory capture",
+ "terms": {
+  "PERF_TARGETS_DEF": {
+   "label": "Performance targets"
+  },
+  "PERF_TARGETS_ADV": {
+   "label": "Targets: advantage"
+  },
+  "PERF_TARGETS_DIS1": {
+   "label": "Targets: gaming"
+  },
+  "REG_CAPTURE_DEF": {
+   "label": "Regulatory capture"
+  },
+  "PERF_TARGETS_DIS2": {
+   "label": "Targets: lenient capture"
+  },
+  "REASONS_CONTROL_MON": {
+   "label": "Reasons to control monopoly"
+  }
+ },
+ "stages": [
+  {
+   "name": "Performance targets and regulatory capture",
+   "title": "Performance targets and regulatory capture",
+   "sub": "How regulators try to control monopoly power with targets, and why that can go wrong.",
+   "steps": [
+    {
+     "type": "ask",
+     "q": "A water regulator wants a monopoly to keep leaking pipes fixed. Rather than just trusting the firm, it sets a number such as 'fix 90% of leaks within 48 hours' and checks the firm against it every year. What kind of tool is this?",
+     "right": "A measurable goal the regulator checks the firm against",
+     "wrong": "A price the firm must charge customers",
+     "hint": "Think about what the regulator is measuring and checking, not what customers pay.",
+     "pre": "This kind of measurable goal set by the regulator is a",
+     "term": "PERF_TARGETS_DEF"
+    },
+    {
+     "type": "ask",
+     "q": "Before this target existed, the firm had no set goal for fixing leaks and no one checked. After it, missing the target brings penalties. Does the firm now have a clearer reason to keep service levels up?",
+     "right": "Yes, there's now a clear incentive to maintain service",
+     "wrong": "No, the incentive is the same as before",
+     "hint": "Compare having no checked goal at all with having one that is measured and enforced.",
+     "pre": "So one benefit is that targets give firms a clear, checkable",
+     "term": "PERF_TARGETS_ADV"
+    },
+    {
+     "type": "ask",
+     "q": "The firm realises inspectors only check leaks fixed within exactly 48 hours. It starts rushing cheap, temporary patches to beat the clock, while letting other longer-term pipe repairs slide. Is the firm genuinely improving its network, or just satisfying the number?",
+     "right": "Just satisfying the number itself",
+     "wrong": "Genuinely improving the whole network",
+     "hint": "Look at what happened to the repairs that are not measured by the 48-hour rule.",
+     "pre": "When firms chase the figure rather than real improvement, that is",
+     "term": "PERF_TARGETS_DIS1"
+    },
+    {
+     "type": "ask",
+     "q": "Over several years, senior staff move back and forth between the regulator's office and the water firm's head office, and they socialise closely. When setting new rules, whose interests does the regulator start to weigh most heavily?",
+     "right": "The firm's interests, over the public's",
+     "wrong": "The public's interests, exactly as before",
+     "hint": "Think about who the regulator's staff now have close ties and sympathies with.",
+     "pre": "When a regulator ends up favouring the firm it oversees, that is",
+     "term": "REG_CAPTURE_DEF"
+    },
+    {
+     "type": "order",
+     "terms": [
+      "PERF_TARGETS_DEF",
+      "PERF_TARGETS_ADV",
+      "PERF_TARGETS_DIS1",
+      "REG_CAPTURE_DEF"
+     ],
+     "prompt": "Drag and drop the 4 key terms in the order they build on each other."
+    },
+    {
+     "type": "ask",
+     "q": "Given that closeness, when the water firm asks for an easier leak-repair target next year, is the regulator more likely to push back hard, or to agree to soften it?",
+     "right": "Agree to soften it",
+     "wrong": "Push back hard as before",
+     "hint": "If the regulator now leans towards the firm's interests, what happens to how tough the target is?",
+     "pre": "So capture can mean targets end up set too",
+     "term": "PERF_TARGETS_DIS2"
+    },
+    {
+     "type": "derive"
+    }
+   ],
+   "given": [
+    "REASONS_CONTROL_MON"
+   ],
+   "needs": [
+    "REASONS_CONTROL_MON"
+   ],
+   "builds": [
+    "REASONS_CONTROL_MON"
+   ],
+   "nodes": [
+    "PERF_TARGETS_DEF",
+    "PERF_TARGETS_ADV",
+    "PERF_TARGETS_DIS1",
+    "REG_CAPTURE_DEF",
+    "PERF_TARGETS_DIS2"
+   ],
+   "dropped": [],
+   "edges": [
+    [
+     "PERF_TARGETS_DEF",
+     "PERF_TARGETS_ADV"
+    ],
+    [
+     "PERF_TARGETS_DEF",
+     "PERF_TARGETS_DIS1"
+    ],
+    [
+     "PERF_TARGETS_DEF",
+     "PERF_TARGETS_DIS2"
+    ],
+    [
+     "REG_CAPTURE_DEF",
+     "PERF_TARGETS_DIS2"
+    ],
+    [
+     "REASONS_CONTROL_MON",
+     "PERF_TARGETS_DEF"
+    ],
+    [
+     "PERF_TARGETS_DEF",
+     "PERF_TARGETS_ADV"
+    ],
+    [
+     "PERF_TARGETS_DEF",
+     "PERF_TARGETS_DIS1"
+    ],
+    [
+     "PERF_TARGETS_DEF",
+     "PERF_TARGETS_DIS2"
+    ],
+    [
+     "REG_CAPTURE_DEF",
+     "PERF_TARGETS_DIS2"
+    ]
+   ]
+  }
+ ]
+}

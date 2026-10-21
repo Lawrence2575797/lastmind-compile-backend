@@ -1,0 +1,161 @@
+{
+ "id": "gen",
+ "subject": "Economics",
+ "title": "Effects of inflation",
+ "terms": {
+  "realwage": {
+   "label": "Real wages"
+  },
+  "INFLATION_EFFECT_WORKERS": {
+   "label": "Effect on workers"
+  },
+  "realinterest": {
+   "label": "Real interest rate"
+  },
+  "INFLATION_EFFECT_SAVERS_BORROWERS": {
+   "label": "Effect on savers & borrowers"
+  },
+  "taxthreshold": {
+   "label": "Fixed tax thresholds"
+  },
+  "INFLATION_EFFECT_GOVT": {
+   "label": "Effect on government"
+  },
+  "INFLATION_DEF": {
+   "label": "Inflation"
+  }
+ },
+ "stages": [
+  {
+   "name": "Effects of inflation",
+   "title": "Effects of inflation",
+   "sub": "How a sustained rise in prices reshapes what workers, savers, borrowers and the government actually get.",
+   "steps": [
+    {
+     "type": "ask",
+     "q": "Your pay rises from £20,000 to £20,400 but prices rise 5%. Can you buy more, the same, or less than before?",
+     "right": "Less than before",
+     "wrong": "The same as before",
+     "hint": "Your pay went up 2%, but prices went up 5%. Which grew faster?",
+     "pre": "What your wage actually buys is called your",
+     "term": "realwage"
+    },
+    {
+     "type": "ask",
+     "q": "Prices are rising fast and your buying power is falling. What is happening to you as a worker?",
+     "right": "You are worse off unless wages catch up",
+     "wrong": "You are automatically no worse off",
+     "hint": "You already found your real wage fell. Does a pay rise claim fix that on its own?",
+     "pre": "So inflation squeezes real income and pushes wage bargaining, which is the",
+     "term": "INFLATION_EFFECT_WORKERS"
+    },
+    {
+     "type": "ask",
+     "q": "You save £1,000 at 2% interest but prices rise 5%. In a year, can your savings buy more or less than today?",
+     "right": "Less than today",
+     "wrong": "More than today",
+     "hint": "Your money grew by 2%, but prices grew by 5%. Compare the two.",
+     "pre": "So the interest rate after allowing for price rises is the",
+     "term": "realinterest"
+    },
+    {
+     "type": "ask",
+     "q": "You borrowed £1,000 at a fixed 2% and prices rise 5% a year. Does the real value of your repayment rise or fall?",
+     "right": "Down, it is easier to repay in real terms",
+     "wrong": "Up, it is harder to repay in real terms",
+     "hint": "The saver just lost out from the same gap. If the saver loses, what happens to the person on the other side of that loan?",
+     "pre": "So inflation redistributes between savers and borrowers, called the",
+     "term": "INFLATION_EFFECT_SAVERS_BORROWERS"
+    },
+    {
+     "type": "order",
+     "terms": [
+      "realwage",
+      "INFLATION_EFFECT_WORKERS",
+      "realinterest",
+      "INFLATION_EFFECT_SAVERS_BORROWERS"
+     ],
+     "prompt": "Drag and drop the 4 key terms in the order they build on each other."
+    },
+    {
+     "type": "ask",
+     "q": "Tax bands stay fixed in cash while inflation lifts wages into a higher band. Do people pay a larger or smaller share in tax?",
+     "right": "A larger share",
+     "wrong": "The same share as before",
+     "hint": "Cash wages rose, but the tax band did not move. What happens when a fixed line does not follow rising numbers?",
+     "pre": "This dragging of taxpayers into higher bands is called",
+     "term": "taxthreshold"
+    },
+    {
+     "type": "ask",
+     "q": "Pensions and benefits rise with prices, old debts stay fixed in cash, and tax bands are fixed. Does inflation leave government finances unaffected?",
+     "right": "It reshapes them in several ways at once",
+     "wrong": "It leaves government finances unaffected",
+     "hint": "Tax bands, index-linked spending and old debts are all being hit by the same rising prices. Can that many channels really cancel out to nothing?",
+     "pre": "Taken together, these are the",
+     "term": "INFLATION_EFFECT_GOVT"
+    },
+    {
+     "type": "derive"
+    }
+   ],
+   "given": [
+    "INFLATION_DEF"
+   ],
+   "needs": [
+    "INFLATION_DEF"
+   ],
+   "builds": [
+    "INFLATION_DEF"
+   ],
+   "nodes": [
+    "INFLATION_EFFECT_GOVT",
+    "INFLATION_EFFECT_WORKERS",
+    "INFLATION_EFFECT_SAVERS_BORROWERS"
+   ],
+   "dropped": [],
+   "edges": [
+    [
+     "INFLATION_EFFECT_WORKERS",
+     "INFLATION_EFFECT_SAVERS_BORROWERS"
+    ],
+    [
+     "INFLATION_DEF",
+     "INFLATION_EFFECT_GOVT"
+    ],
+    [
+     "INFLATION_DEF",
+     "INFLATION_EFFECT_WORKERS"
+    ],
+    [
+     "INFLATION_DEF",
+     "INFLATION_EFFECT_SAVERS_BORROWERS"
+    ],
+    [
+     "INFLATION_DEF",
+     "realwage"
+    ],
+    [
+     "realwage",
+     "INFLATION_EFFECT_WORKERS"
+    ],
+    [
+     "INFLATION_EFFECT_WORKERS",
+     "realinterest"
+    ],
+    [
+     "realinterest",
+     "INFLATION_EFFECT_SAVERS_BORROWERS"
+    ],
+    [
+     "INFLATION_DEF",
+     "taxthreshold"
+    ],
+    [
+     "taxthreshold",
+     "INFLATION_EFFECT_GOVT"
+    ]
+   ]
+  }
+ ]
+}

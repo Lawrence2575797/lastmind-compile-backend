@@ -1,0 +1,238 @@
+{
+ "id": "gen",
+ "subject": "Economics",
+ "title": "Government intervention",
+ "terms": {
+  "REASONS_INTERVENE": {
+   "label": "Reasons for intervention"
+  },
+  "TAX_ADVALOREM": {
+   "label": "Ad valorem tax"
+  },
+  "MAXP_DEF": {
+   "label": "Maximum price"
+  },
+  "MAXP_ADV2": {
+   "label": "Maximum price advantage"
+  },
+  "MINP_DEF": {
+   "label": "Minimum price"
+  },
+  "flatvper": {
+   "label": "Fixed amount per unit"
+  },
+  "pctprice": {
+   "label": "Percentage of price"
+  },
+  "exploit": {
+   "label": "Exploitation of buyers"
+  },
+  "MKTFAIL": {
+   "label": "Market failure"
+  },
+  "EXTERN": {
+   "label": "Externalities"
+  },
+  "PUBGOOD_NONEX": {
+   "label": "Non-excludability"
+  },
+  "PUBGOOD_NONRIV": {
+   "label": "Non-rivalry"
+  },
+  "INFOGAP_MKT": {
+   "label": "Information gaps/asymmetric information as market failure"
+  }
+ },
+ "stages": [
+  {
+   "name": "Government intervention",
+   "title": "Government intervention",
+   "sub": "Why governments step into markets, and the main tools they use to do it.",
+   "steps": [
+    {
+     "type": "ask",
+     "q": "A factory pollutes a river, harming people who never bought or sold anything there. Left alone, will the free market fix this?",
+     "right": "No, the market ignores it",
+     "wrong": "Yes, the market will fix it",
+     "hint": "Think about who pays the price for the pollution, and whether that shows up in the factory's costs.",
+     "pre": "Because markets can misallocate resources and create side effects like this, we get",
+     "term": "REASONS_INTERVENE"
+    },
+    {
+     "type": "ask",
+     "q": "A fixed 50p tax is added to every cigarette packet, whether it costs £2 or £10. Does the tax change with the price?",
+     "right": "No, it stays the same",
+     "wrong": "Yes, it rises with the price",
+     "hint": "If the packet doubles in price, does the 50p change?",
+     "pre": "A tax that stays the same however much the good costs is a",
+     "term": "flatvper"
+    },
+    {
+     "type": "ask",
+     "q": "Now the tax is 20% of the price. Is the extra tax on a £10 packet the same as on a £2 packet?",
+     "right": "No, the £10 packet's tax is bigger",
+     "wrong": "Yes, both get the same tax added",
+     "hint": "If both packets rise by 20%, is the extra charge the same number of pence, or does it depend on the starting price?",
+     "pre": "A tax charged as",
+     "term": "pctprice"
+    },
+    {
+     "type": "ask",
+     "q": "Which tax bill grows as the good gets dearer: the fixed 50p per packet, or the tax set at 20% of the price?",
+     "right": "The 20%-of-price tax",
+     "wrong": "The fixed 50p tax",
+     "hint": "Which one scales up automatically when the price is higher?",
+     "pre": "A tax charged as a percentage of the price is an",
+     "term": "TAX_ADVALOREM"
+    },
+    {
+     "type": "order",
+     "terms": [
+      "REASONS_INTERVENE",
+      "flatvper",
+      "pctprice",
+      "TAX_ADVALOREM"
+     ],
+     "prompt": "Drag and drop the 4 key terms in the order they build on each other."
+    },
+    {
+     "type": "ask",
+     "q": "Rents are rising fast because there are few landlords. The government wants to stop them rising. What could it set on price?",
+     "right": "A legal upper limit on price",
+     "wrong": "A legal lower limit on price",
+     "hint": "Rents are too high, so does the government need to stop the price rising further, or stop it falling further?",
+     "pre": "A legal upper limit above which price cannot rise is a",
+     "term": "MAXP_DEF"
+    },
+    {
+     "type": "ask",
+     "q": "Those few landlords, with little competition, had charged far above what flats were worth. Once rent is capped, can they still do that?",
+     "right": "No, they are capped",
+     "wrong": "Yes, they still can",
+     "hint": "If there is a legal ceiling on rent, can landlords still charge whatever they like above it?",
+     "pre": "So a price ceiling stops firms with market power taking advantage of buyers, correcting",
+     "term": "exploit"
+    },
+    {
+     "type": "ask",
+     "q": "Compared with letting a few landlords charge whatever they like, what does capping rent achieve for tenants with little bargaining power?",
+     "right": "It stops them being overcharged",
+     "wrong": "It guarantees them a flat to rent",
+     "hint": "Does the cap change how many flats exist, or just what tenants can be charged for them?",
+     "pre": "This is the",
+     "term": "MAXP_ADV2"
+    },
+    {
+     "type": "ask",
+     "q": "Milk prices are so low that farms are closing. The government wants farmers to get more. What limit must it set on price?",
+     "right": "A legal lower limit on price",
+     "wrong": "A legal upper limit on price",
+     "hint": "Farmers need the price stopped from falling further, not from rising further.",
+     "pre": "A legal lower limit below which price cannot fall is a",
+     "term": "MINP_DEF"
+    },
+    {
+     "type": "derive"
+    }
+   ],
+   "given": [
+    "MKTFAIL",
+    "EXTERN",
+    "PUBGOOD_NONEX",
+    "PUBGOOD_NONRIV"
+   ],
+   "needs": [
+    "MKTFAIL",
+    "EXTERN",
+    "PUBGOOD_NONEX",
+    "PUBGOOD_NONRIV",
+    "INFOGAP_MKT"
+   ],
+   "builds": [
+    "MKTFAIL",
+    "EXTERN",
+    "PUBGOOD_NONEX",
+    "PUBGOOD_NONRIV"
+   ],
+   "nodes": [
+    "REASONS_INTERVENE",
+    "TAX_ADVALOREM",
+    "MAXP_DEF",
+    "MAXP_ADV2",
+    "MINP_DEF"
+   ],
+   "dropped": [
+    [
+     "REASONS_INTERVENE",
+     "TAX_ADVALOREM"
+    ],
+    [
+     "MAXP_DEF",
+     "MAXP_ADV2"
+    ]
+   ],
+   "edges": [
+    [
+     "REASONS_INTERVENE",
+     "MAXP_DEF"
+    ],
+    [
+     "REASONS_INTERVENE",
+     "MINP_DEF"
+    ],
+    [
+     "MKTFAIL",
+     "REASONS_INTERVENE"
+    ],
+    [
+     "EXTERN",
+     "REASONS_INTERVENE"
+    ],
+    [
+     "PUBGOOD_NONEX",
+     "REASONS_INTERVENE"
+    ],
+    [
+     "PUBGOOD_NONRIV",
+     "REASONS_INTERVENE"
+    ],
+    [
+     "MKTFAIL",
+     "REASONS_INTERVENE"
+    ],
+    [
+     "EXTERN",
+     "REASONS_INTERVENE"
+    ],
+    [
+     "PUBGOOD_NONEX",
+     "REASONS_INTERVENE"
+    ],
+    [
+     "PUBGOOD_NONRIV",
+     "REASONS_INTERVENE"
+    ],
+    [
+     "REASONS_INTERVENE",
+     "flatvper"
+    ],
+    [
+     "flatvper",
+     "pctprice"
+    ],
+    [
+     "pctprice",
+     "TAX_ADVALOREM"
+    ],
+    [
+     "MAXP_DEF",
+     "exploit"
+    ],
+    [
+     "exploit",
+     "MAXP_ADV2"
+    ]
+   ]
+  }
+ ]
+}

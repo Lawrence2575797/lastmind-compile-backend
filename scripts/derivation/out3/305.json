@@ -1,0 +1,168 @@
+{
+ "id": "gen",
+ "subject": "Economics",
+ "title": "Maximum prices",
+ "terms": {
+  "MAXP_DIAG": {
+   "label": "Maximum price diagram"
+  },
+  "MAXP_SHORTAGE": {
+   "label": "Shortage from maximum price"
+  },
+  "MAXP_ADV1": {
+   "label": "Improved affordability"
+  },
+  "MAXP_DIS1": {
+   "label": "Non-price rationing"
+  },
+  "MAXP_DIS2": {
+   "label": "Maximum price disadvantage: emergence of black markets"
+  },
+  "MAXP_DIS3": {
+   "label": "Cut in quality"
+  },
+  "DRAW_EQUIL": {
+   "label": "Construct a market equilibrium diagram"
+  },
+  "MAXP_DEF": {
+   "label": "Maximum price: definition"
+  },
+  "price_mechanism_rationing": {
+   "label": "Price mechanism: rationing"
+  }
+ },
+ "stages": [
+  {
+   "name": "Government intervention: maximum prices",
+   "title": "Maximum prices",
+   "sub": "What happens to a market, and to consumers, when the government caps the price below equilibrium.",
+   "steps": [
+    {
+     "type": "ask",
+     "q": "The government caps rent below the price landlords and tenants had settled on in the equilibrium diagram. At that lower price, do more or fewer tenants want to rent than at equilibrium, and do landlords want to offer more or fewer flats?",
+     "right": "More tenants want flats, but landlords offer fewer",
+     "wrong": "Fewer tenants want flats, and landlords offer more",
+     "hint": "A lower price makes buying more attractive but makes selling less attractive.",
+     "pre": "Plotting the capped price below the old equilibrium on the diagram gives the",
+     "term": "MAXP_DIAG"
+    },
+    {
+     "type": "ask",
+     "q": "With more tenants wanting flats than landlords are willing to offer at that capped rent, is there enough housing to go round?",
+     "right": "No, quantity demanded exceeds quantity supplied",
+     "wrong": "Yes, the market still clears exactly",
+     "hint": "Look at the gap between the demand and supply curves at the capped price.",
+     "pre": "That gap between the two quantities is the",
+     "term": "MAXP_SHORTAGE"
+    },
+    {
+     "type": "ask",
+     "q": "Compare the capped rent to the old equilibrium rent. For a tenant who does manage to get a flat, is it now cheaper or more expensive than before?",
+     "right": "Cheaper than before",
+     "wrong": "More expensive than before",
+     "hint": "The cap sits below the old equilibrium price.",
+     "pre": "So for those who get one, the good becomes more affordable, which is the maximum price's",
+     "term": "MAXP_ADV1"
+    },
+    {
+     "type": "ask",
+     "q": "There are not enough flats for everyone who wants one at the capped rent, and price can no longer sort out who gets one. What has to decide who gets a flat instead?",
+     "right": "Some method other than price, such as queuing or landlord choice",
+     "wrong": "The price will still sort it out on its own",
+     "hint": "You know that price normally rations scarce goods between buyers. If price is fixed, what takes over that job?",
+     "pre": "Allocating the scarce flats by queues, waiting lists or landlord choice is",
+     "term": "MAXP_DIS1"
+    },
+    {
+     "type": "order",
+     "terms": [
+      "MAXP_DIAG",
+      "MAXP_SHORTAGE",
+      "MAXP_ADV1",
+      "MAXP_DIS1"
+     ],
+     "prompt": "Drag and drop the 4 key terms in the order they build on each other."
+    },
+    {
+     "type": "ask",
+     "q": "Some tenants missing out on capped flats are desperate enough to pay landlords extra, unofficially, above the legal rent. Does the shortage create a temptation for this kind of illegal deal?",
+     "right": "Yes, some will trade illegally above the cap",
+     "wrong": "No, nobody would break the price cap",
+     "hint": "If people cannot get the good legally, might some pay above the cap secretly instead?",
+     "pre": "This illegal trading above the legal price is a",
+     "term": "MAXP_DIS2"
+    },
+    {
+     "type": "ask",
+     "q": "Landlords are now forced to charge a lower rent than before but still face the same costs. To protect their profit margins, what might they do to the flats they offer?",
+     "right": "Reduce the quality, such as fewer repairs",
+     "wrong": "Improve the quality to attract more tenants",
+     "hint": "Their revenue per flat has fallen, but their costs have not. How can they protect their margin?",
+     "pre": "Cutting maintenance and standards to protect margins is a",
+     "term": "MAXP_DIS3"
+    },
+    {
+     "type": "derive"
+    }
+   ],
+   "given": [
+    "DRAW_EQUIL",
+    "MAXP_DEF",
+    "price_mechanism_rationing"
+   ],
+   "needs": [
+    "DRAW_EQUIL",
+    "MAXP_DEF",
+    "price_mechanism_rationing"
+   ],
+   "builds": [
+    "DRAW_EQUIL",
+    "MAXP_DEF",
+    "price_mechanism_rationing"
+   ],
+   "nodes": [
+    "MAXP_DIAG",
+    "MAXP_SHORTAGE",
+    "MAXP_ADV1",
+    "MAXP_DIS1",
+    "MAXP_DIS2",
+    "MAXP_DIS3"
+   ],
+   "dropped": [],
+   "edges": [
+    [
+     "MAXP_DIAG",
+     "MAXP_SHORTAGE"
+    ],
+    [
+     "MAXP_DIAG",
+     "MAXP_ADV1"
+    ],
+    [
+     "MAXP_SHORTAGE",
+     "MAXP_DIS1"
+    ],
+    [
+     "MAXP_SHORTAGE",
+     "MAXP_DIS2"
+    ],
+    [
+     "MAXP_ADV1",
+     "MAXP_DIS3"
+    ],
+    [
+     "DRAW_EQUIL",
+     "MAXP_DIAG"
+    ],
+    [
+     "MAXP_DEF",
+     "MAXP_DIAG"
+    ],
+    [
+     "price_mechanism_rationing",
+     "MAXP_DIS2"
+    ]
+   ]
+  }
+ ]
+}

@@ -1,0 +1,195 @@
+{
+ "id": "gen",
+ "subject": "Economics",
+ "title": "Fiscal policy and the budget",
+ "terms": {
+  "FISC_TAX": {
+   "label": "Fiscal policy instrument: taxation"
+  },
+  "POLICY_DISTINCTION": {
+   "label": "Distinction between monetary and fiscal policy"
+  },
+  "TAX_DIRECT": {
+   "label": "Direct taxation"
+  },
+  "TAX_INDIRECT": {
+   "label": "Indirect taxation"
+  },
+  "taxpayer": {
+   "label": "Who pays the tax"
+  },
+  "BUDGET_DEFICIT_SURPLUS": {
+   "label": "Budget deficit vs surplus"
+  },
+  "MON_INT_RATE": {
+   "label": "Interest rates (monetary)"
+  },
+  "FISC_GOV_SPEND": {
+   "label": "Fiscal policy instrument: government spending"
+  },
+  "OBJ_BUDGET": {
+   "label": "Balanced budget objective"
+  }
+ },
+ "stages": [
+  {
+   "name": "Fiscal policy and the budget",
+   "title": "Fiscal policy and the budget",
+   "sub": "How the government raises money through tax, how that differs from monetary policy, and what a budget deficit or surplus means.",
+   "steps": [
+    {
+     "type": "ask",
+     "q": "The government wants to slow down spending in the economy. Instead of changing interest rates, it takes a bigger slice of people's wages and firms' profits. What tool is it using?",
+     "right": "Raising the amount it collects from incomes and profits",
+     "wrong": "Raising the cost of borrowing money",
+     "hint": "Interest rates belong to a different policy. What is the government collecting here?",
+     "pre": "Collecting money this way is",
+     "term": "FISC_TAX"
+    },
+    {
+     "type": "ask",
+     "q": "One government body sets interest rates to influence borrowing and spending. A different government body sets tax rates and decides how much to spend on schools and hospitals. Are these the same policy or two separate policies?",
+     "right": "Two separate policies, run by different tools",
+     "wrong": "The same policy, just described differently",
+     "hint": "Interest rates and tax/spending are controlled through different instruments, by different bodies.",
+     "pre": "Recognising interest rates as one tool and tax and spending as another is the",
+     "term": "POLICY_DISTINCTION"
+    },
+    {
+     "type": "ask",
+     "q": "Some taxes are taken straight from a worker's wages or a firm's profits, before the money is even spent. Other taxes are only paid when someone actually buys something in a shop. What decides which of these two groups a tax falls into?",
+     "right": "Whether it is charged on earning money or on spending it",
+     "wrong": "Whether the government or a shop collects the cash",
+     "hint": "Think about the moment the tax is taken: when money is earned, or when it is spent.",
+     "pre": "So taxes split by",
+     "term": "taxpayer"
+    },
+    {
+     "type": "ask",
+     "q": "A worker's pay slip shows money taken straight from their wages, based on their income, before they receive it. Which of the two groups does this belong to?",
+     "right": "The tax charged on earning income or profit",
+     "wrong": "The tax charged on spending in shops",
+     "hint": "Is this taken when the money is earned, or when it is spent?",
+     "pre": "A tax charged directly on income or profit like this is",
+     "term": "TAX_DIRECT"
+    },
+    {
+     "type": "order",
+     "terms": [
+      "FISC_TAX",
+      "POLICY_DISTINCTION",
+      "taxpayer",
+      "TAX_DIRECT"
+     ],
+     "prompt": "Drag and drop the 4 key terms in the order they build on each other."
+    },
+    {
+     "type": "ask",
+     "q": "A shopper buys a bottle of fizzy drink. Part of the price is a tax added on top, collected by the shop and passed to government, whatever the shopper's income happens to be. Which of the two groups does this belong to?",
+     "right": "The tax charged on spending in shops",
+     "wrong": "The tax charged on earning income or profit",
+     "hint": "Is this taken when the money is earned, or when it is spent?",
+     "pre": "A tax charged on spending on goods and services like this is",
+     "term": "TAX_INDIRECT"
+    },
+    {
+     "type": "ask",
+     "q": "This year the government spends £700bn but only collects £650bn in tax. Has it taken in more than it spent, or less?",
+     "right": "Less than it spent",
+     "wrong": "More than it spent",
+     "hint": "Compare the £650bn collected with the £700bn spent.",
+     "pre": "Spending more than is collected in tax is a government budget",
+     "term": "BUDGET_DEFICIT_SURPLUS"
+    },
+    {
+     "type": "derive"
+    }
+   ],
+   "given": [
+    "MON_INT_RATE",
+    "FISC_GOV_SPEND",
+    "OBJ_BUDGET"
+   ],
+   "needs": [
+    "MON_INT_RATE",
+    "FISC_GOV_SPEND",
+    "OBJ_BUDGET"
+   ],
+   "builds": [
+    "MON_INT_RATE",
+    "FISC_GOV_SPEND",
+    "OBJ_BUDGET"
+   ],
+   "nodes": [
+    "FISC_TAX",
+    "POLICY_DISTINCTION",
+    "TAX_DIRECT",
+    "TAX_INDIRECT",
+    "BUDGET_DEFICIT_SURPLUS"
+   ],
+   "dropped": [],
+   "edges": [
+    [
+     "FISC_TAX",
+     "POLICY_DISTINCTION"
+    ],
+    [
+     "FISC_TAX",
+     "TAX_DIRECT"
+    ],
+    [
+     "FISC_TAX",
+     "TAX_INDIRECT"
+    ],
+    [
+     "FISC_TAX",
+     "BUDGET_DEFICIT_SURPLUS"
+    ],
+    [
+     "MON_INT_RATE",
+     "POLICY_DISTINCTION"
+    ],
+    [
+     "FISC_GOV_SPEND",
+     "POLICY_DISTINCTION"
+    ],
+    [
+     "FISC_GOV_SPEND",
+     "BUDGET_DEFICIT_SURPLUS"
+    ],
+    [
+     "OBJ_BUDGET",
+     "BUDGET_DEFICIT_SURPLUS"
+    ],
+    [
+     "MON_INT_RATE",
+     "POLICY_DISTINCTION"
+    ],
+    [
+     "FISC_GOV_SPEND",
+     "BUDGET_DEFICIT_SURPLUS"
+    ],
+    [
+     "FISC_GOV_SPEND",
+     "POLICY_DISTINCTION"
+    ],
+    [
+     "OBJ_BUDGET",
+     "BUDGET_DEFICIT_SURPLUS"
+    ],
+    [
+     "FISC_TAX",
+     "taxpayer"
+    ],
+    [
+     "taxpayer",
+     "TAX_DIRECT"
+    ],
+    [
+     "taxpayer",
+     "TAX_INDIRECT"
+    ]
+   ]
+  }
+ ]
+}

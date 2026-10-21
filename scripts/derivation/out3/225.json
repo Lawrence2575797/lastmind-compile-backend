@@ -1,0 +1,143 @@
+{
+ "id": "gen",
+ "subject": "Economics",
+ "title": "The financial sector",
+ "terms": {
+  "ROLE_EXCHANGE": {
+   "label": "Facilitating exchange"
+  },
+  "FORWARD_MARKET_DEF": {
+   "label": "Forward contract"
+  },
+  "ROLE_FORWARD_CURR": {
+   "label": "Forward currency hedging"
+  },
+  "ROLE_FORWARD_COMM": {
+   "label": "Forward commodity hedging"
+  },
+  "EQUITY_DEF": {
+   "label": "Equity/shares"
+  },
+  "FIN_MARKET_DEF": {
+   "label": "Financial market"
+  }
+ },
+ "stages": [
+  {
+   "name": "The financial sector",
+   "title": "The financial sector",
+   "sub": "What financial markets actually do for buyers, sellers and firms.",
+   "steps": [
+    {
+     "type": "ask",
+     "q": "You buy a coffee with your bank card. A card payment network checks your account and moves the money to the shop. Without that system working behind the scenes, could the sale happen at all?",
+     "right": "No, the goods and money could not change hands",
+     "wrong": "Yes, the shop would just trust you to pay later",
+     "hint": "Think about what actually lets money move from your account to the shop's account.",
+     "pre": "So financial markets provide the payments system that lets goods and services actually be bought and sold. That is their role in",
+     "term": "ROLE_EXCHANGE"
+    },
+    {
+     "type": "ask",
+     "q": "A UK firm agrees today with a bank that in six months it will buy $1 million at a rate fixed right now, no matter what the exchange rate does between now and then. Is the price for that future trade set today, or on the day the dollars are handed over?",
+     "right": "Set today, for a trade that happens later",
+     "wrong": "Set on the day the dollars are handed over",
+     "hint": "The firm and the bank agree the rate before the future date arrives.",
+     "pre": "An agreement now to buy or sell an asset at a set price on a set future date is a",
+     "term": "FORWARD_MARKET_DEF"
+    },
+    {
+     "type": "ask",
+     "q": "That UK firm must pay a US supplier $1 million in six months. If the pound weakens before then, dollars become more expensive in pound terms. By fixing the rate today, does the firm still feel that swing in cost?",
+     "right": "No, its cost in pounds is already fixed",
+     "wrong": "Yes, it still pays whatever the new rate is",
+     "hint": "The whole point of fixing the rate today is to stop a later change in the exchange rate from affecting you.",
+     "pre": "Using a forward contract to protect against exchange rate movements is the role of",
+     "term": "ROLE_FORWARD_CURR"
+    },
+    {
+     "type": "ask",
+     "q": "A bakery agrees today to buy wheat in six months at a price fixed now, instead of waiting to pay whatever the market price is then. If wheat prices spike before delivery, does the bakery pay the higher spot price?",
+     "right": "No, it pays the price agreed earlier",
+     "wrong": "Yes, it pays whatever the market price is by then",
+     "hint": "The contract already fixed the price before the spike happened.",
+     "pre": "Using a forward contract to protect against a commodity's price moving is the role of",
+     "term": "ROLE_FORWARD_COMM"
+    },
+    {
+     "type": "order",
+     "terms": [
+      "ROLE_EXCHANGE",
+      "FORWARD_MARKET_DEF",
+      "ROLE_FORWARD_CURR",
+      "ROLE_FORWARD_COMM"
+     ],
+     "prompt": "Drag and drop the 4 key terms in the order they build on each other."
+    },
+    {
+     "type": "ask",
+     "q": "You buy a small stake in a company by buying part of it on the stock market. If the company grows in value and its profits rise, does your stake entitle you to a share of that, as a part-owner?",
+     "right": "Yes, as a part-owner of the firm",
+     "wrong": "No, you only lent the firm money to be repaid",
+     "hint": "Buying a share is different from lending money: what are you actually buying a piece of?",
+     "pre": "A share that gives you a claim on ownership of a firm is",
+     "term": "EQUITY_DEF"
+    },
+    {
+     "type": "derive"
+    }
+   ],
+   "given": [
+    "FIN_MARKET_DEF"
+   ],
+   "needs": [
+    "FIN_MARKET_DEF"
+   ],
+   "builds": [
+    "FIN_MARKET_DEF"
+   ],
+   "nodes": [
+    "ROLE_EXCHANGE",
+    "FORWARD_MARKET_DEF",
+    "ROLE_FORWARD_CURR",
+    "ROLE_FORWARD_COMM",
+    "EQUITY_DEF"
+   ],
+   "dropped": [],
+   "edges": [
+    [
+     "FORWARD_MARKET_DEF",
+     "ROLE_FORWARD_CURR"
+    ],
+    [
+     "FORWARD_MARKET_DEF",
+     "ROLE_FORWARD_COMM"
+    ],
+    [
+     "FIN_MARKET_DEF",
+     "ROLE_EXCHANGE"
+    ],
+    [
+     "FIN_MARKET_DEF",
+     "FORWARD_MARKET_DEF"
+    ],
+    [
+     "FIN_MARKET_DEF",
+     "EQUITY_DEF"
+    ],
+    [
+     "FIN_MARKET_DEF",
+     "ROLE_EXCHANGE"
+    ],
+    [
+     "FIN_MARKET_DEF",
+     "FORWARD_MARKET_DEF"
+    ],
+    [
+     "FIN_MARKET_DEF",
+     "EQUITY_DEF"
+    ]
+   ]
+  }
+ ]
+}

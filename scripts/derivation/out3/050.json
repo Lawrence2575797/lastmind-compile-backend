@@ -1,0 +1,110 @@
+{
+ "id": "gen",
+ "subject": "Economics",
+ "title": "Protectionism and the trade balance",
+ "terms": {
+  "TARIFF": {
+   "label": "Tariff"
+  },
+  "QUOTA": {
+   "label": "Import quota"
+  },
+  "PROTECTIONISM_DEF": {
+   "label": "Protectionism"
+  },
+  "PROTECTIONISM_TRADE_BALANCE": {
+   "label": "Protectionism and trade balance"
+  },
+  "NX_COMP": {
+   "label": "Net trade (X-M) as a component of AD"
+  }
+ },
+ "stages": [
+  {
+   "name": "Protectionism and the trade balance",
+   "title": "Protectionism and the trade balance",
+   "sub": "How shielding home industries from foreign competition changes a country's net trade position.",
+   "steps": [
+    {
+     "type": "ask",
+     "q": "A government puts an extra charge on every washing machine imported from abroad, making them more expensive in shops. What is this extra charge designed to do to imported goods?",
+     "right": "Make them more expensive than home-made ones",
+     "wrong": "Make them cheaper than home-made ones",
+     "hint": "Think about why the government would add this charge to something coming from abroad.",
+     "pre": "This extra charge on imports is a",
+     "term": "TARIFF"
+    },
+    {
+     "type": "ask",
+     "q": "Instead of a charge, the government simply says only 1,000 foreign cars can be sold this year, no matter how many people want to buy them. What happens to the number of foreign cars sold beyond that limit?",
+     "right": "None more can be sold, whatever the demand",
+     "wrong": "More can still be sold if demand is high enough",
+     "hint": "The government has fixed a maximum number, not a price.",
+     "pre": "This limit on the physical amount of a good that can be imported is an import",
+     "term": "QUOTA"
+    },
+    {
+     "type": "ask",
+     "q": "Tariffs and quotas both make it harder or more expensive for foreign firms to sell into a country. What is a government doing to the market when it uses tools like these?",
+     "right": "Deliberately shielding home firms from foreign competition",
+     "wrong": "Deliberately encouraging more foreign competition",
+     "hint": "Both tools work against foreign sellers and in favour of domestic ones.",
+     "pre": "Using tools like these to shield domestic industry from foreign competition is",
+     "term": "PROTECTIONISM_DEF"
+    },
+    {
+     "type": "ask",
+     "q": "A country puts high tariffs on imported steel and cars. Home consumers now buy far less foreign steel and cars than before, while foreign demand for this country's exports is unaffected. What happens to imports (M) compared with exports (X)?",
+     "right": "Imports fall relative to exports",
+     "wrong": "Imports rise relative to exports",
+     "hint": "The tariffs make foreign goods less attractive to buy, so how much do people bring in from abroad?",
+     "pre": "With imports falling relative to exports, net trade (X-M) as a component of AD is affected through",
+     "term": "PROTECTIONISM_TRADE_BALANCE"
+    },
+    {
+     "type": "derive"
+    }
+   ],
+   "given": [
+    "NX_COMP"
+   ],
+   "needs": [
+    "NX_COMP"
+   ],
+   "builds": [
+    "NX_COMP"
+   ],
+   "nodes": [
+    "PROTECTIONISM_DEF",
+    "PROTECTIONISM_TRADE_BALANCE"
+   ],
+   "dropped": [],
+   "edges": [
+    [
+     "PROTECTIONISM_DEF",
+     "PROTECTIONISM_TRADE_BALANCE"
+    ],
+    [
+     "NX_COMP",
+     "PROTECTIONISM_TRADE_BALANCE"
+    ],
+    [
+     "TARIFF",
+     "PROTECTIONISM_DEF"
+    ],
+    [
+     "QUOTA",
+     "PROTECTIONISM_DEF"
+    ],
+    [
+     "PROTECTIONISM_DEF",
+     "PROTECTIONISM_TRADE_BALANCE"
+    ],
+    [
+     "NX_COMP",
+     "PROTECTIONISM_TRADE_BALANCE"
+    ]
+   ]
+  }
+ ]
+}

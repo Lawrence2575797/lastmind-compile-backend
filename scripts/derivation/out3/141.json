@@ -1,0 +1,109 @@
+{
+ "id": "gen",
+ "subject": "Economics",
+ "title": "Monopoly: costs and benefits to suppliers",
+ "terms": {
+  "big_buyer": {
+   "label": "Dominant buyer power"
+  },
+  "price_squeeze": {
+   "label": "Supplier price squeeze"
+  },
+  "stable_contract": {
+   "label": "Stable long-term contract"
+  },
+  "mono_costs_benefits_suppliers": {
+   "label": "Costs/benefits to suppliers"
+  },
+  "monopoly_eq": {
+   "label": "Monopoly equilibrium"
+  }
+ },
+ "stages": [
+  {
+   "name": "Monopoly and its suppliers",
+   "title": "Monopoly: costs and benefits to suppliers",
+   "sub": "After this, the student can explain how a monopoly's size cuts both ways for the firms that supply it.",
+   "steps": [
+    {
+     "type": "ask",
+     "q": "A single huge supermarket chain buys almost all of a farmer's output. Compared to the farmer selling to many small shops, who holds more power in setting the price paid?",
+     "right": "The supermarket chain",
+     "wrong": "The farmer",
+     "hint": "Think about who has more options if the deal falls through.",
+     "pre": "Because the monopoly buys such a large share of supply, it has",
+     "term": "big_buyer"
+    },
+    {
+     "type": "ask",
+     "q": "Using that power, can the supermarket chain push the price it pays the farmer down below what many small buyers would have paid?",
+     "right": "Yes, it can force the price down",
+     "wrong": "No, the price stays the same",
+     "hint": "If the farmer has few other buyers to sell to, what happens to their bargaining position?",
+     "pre": "So suppliers can face a",
+     "term": "price_squeeze"
+    },
+    {
+     "type": "ask",
+     "q": "The supermarket chain also signs the farmer up to supply a fixed amount every month for the next five years. Does this give the farmer more certainty about future income than selling to lots of small, changing buyers?",
+     "right": "Yes, more certainty",
+     "wrong": "No, less certainty",
+     "hint": "Think about whether the farmer now knows in advance what will be bought and at what volume.",
+     "pre": "So dealing with one large buyer can also bring a",
+     "term": "stable_contract"
+    },
+    {
+     "type": "ask",
+     "q": "Weighing the lower price paid against the guaranteed long contract, does the farmer gain only harm, or does the deal also carry an upside?",
+     "right": "Both harm and an upside",
+     "wrong": "Only harm, no upside",
+     "hint": "You've just seen a lower price paid, and also a long, guaranteed contract. Can both be true together?",
+     "pre": "This mix of a lower price paid but a more secure deal is the monopoly's",
+     "term": "mono_costs_benefits_suppliers"
+    },
+    {
+     "type": "derive"
+    }
+   ],
+   "given": [
+    "monopoly_eq"
+   ],
+   "needs": [
+    "monopoly_eq"
+   ],
+   "builds": [
+    "monopoly_eq"
+   ],
+   "nodes": [
+    "mono_costs_benefits_suppliers"
+   ],
+   "dropped": [],
+   "edges": [
+    [
+     "monopoly_eq",
+     "mono_costs_benefits_suppliers"
+    ],
+    [
+     "monopoly_eq",
+     "big_buyer"
+    ],
+    [
+     "big_buyer",
+     "price_squeeze"
+    ],
+    [
+     "big_buyer",
+     "stable_contract"
+    ],
+    [
+     "price_squeeze",
+     "mono_costs_benefits_suppliers"
+    ],
+    [
+     "stable_contract",
+     "mono_costs_benefits_suppliers"
+    ]
+   ]
+  }
+ ]
+}

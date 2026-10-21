@@ -1,0 +1,168 @@
+{
+ "id": "gen",
+ "subject": "Economics",
+ "title": "Supply-side policy and inequality",
+ "terms": {
+  "SSP_DIS_INEQUALITY": {
+   "label": "Supply-side widens inequality"
+  },
+  "gap": {
+   "label": "Income gap widens"
+  },
+  "equity_target": {
+   "label": "Equity target"
+  },
+  "efficiency_target": {
+   "label": "Efficiency target"
+  },
+  "CONFLICT_INEQUALITY_INCENTIVES": {
+   "label": "Equity-incentives conflict"
+  },
+  "SSP_INCENTIVES": {
+   "label": "Increasing incentives"
+  },
+  "SSP_LABOUR_REFORM": {
+   "label": "Supply-side policy: reforming the labour market (e.g. trade union reform, minimum wage changes)"
+  },
+  "OBJ_INCOME_EQ": {
+   "label": "Income equality objective"
+  }
+ },
+ "stages": [
+  {
+   "name": "Supply-side policy and inequality",
+   "title": "Supply-side policy and inequality",
+   "sub": "Understand why market-based supply-side policies can worsen inequality, creating a conflict with the goal of equity.",
+   "steps": [
+    {
+     "type": "ask",
+     "q": "A government cuts the top rate of income tax and cuts unemployment benefits, to sharpen work incentives. Who gains most from the tax cut, and who loses most from the benefit cut?",
+     "right": "High earners gain, low earners lose",
+     "wrong": "Low earners gain, high earners lose",
+     "hint": "Think about who pays the top tax rate and who relies on benefits.",
+     "pre": "So the gap between rich and poor households can",
+     "term": "gap"
+    },
+    {
+     "type": "ask",
+     "q": "A government also weakens trade unions and lets a minimum wage fall in real terms, to make the labour market more flexible. Does this push wages at the bottom up or down relative to the top?",
+     "right": "Down, widening the gap further",
+     "wrong": "Up, narrowing the gap",
+     "hint": "Unions and minimum wages mainly protect lower-paid workers.",
+     "pre": "Combined with the tax and benefit changes, this tends to widen the gap between rich and poor. This is a",
+     "term": "SSP_DIS_INEQUALITY"
+    },
+    {
+     "type": "ask",
+     "q": "A government wants everyone's income to be closer together, regardless of what it does to work incentives. What kind of goal is that?",
+     "right": "A fairness goal about how income is shared",
+     "wrong": "A goal about how much total output is produced",
+     "hint": "Is this about the size of the pie, or how it is split?",
+     "pre": "Wanting a fairer spread of income is the",
+     "term": "equity_target"
+    },
+    {
+     "type": "ask",
+     "q": "A government instead wants people to work as hard and productively as possible, even if pay ends up very unequal. What kind of goal is that?",
+     "right": "A goal about maximising output and effort",
+     "wrong": "A goal about how fairly income is shared",
+     "hint": "Is this about producing as much as possible, or about sharing it fairly?",
+     "pre": "Wanting the strongest incentives to work and produce is the",
+     "term": "efficiency_target"
+    },
+    {
+     "type": "order",
+     "terms": [
+      "gap",
+      "SSP_DIS_INEQUALITY",
+      "equity_target",
+      "efficiency_target"
+     ],
+     "prompt": "Drag and drop the 4 key terms in the order they build on each other."
+    },
+    {
+     "type": "ask",
+     "q": "The tax cuts and labour market reforms that sharpen incentives are the same policies that widen the income gap. Can a government get strong incentives and greater income equality from these policies at once?",
+     "right": "No, pursuing one tends to worsen the other",
+     "wrong": "Yes, both improve together",
+     "hint": "Look back at what the incentive-boosting policies did to the gap between rich and poor.",
+     "pre": "So there is a",
+     "term": "CONFLICT_INEQUALITY_INCENTIVES"
+    },
+    {
+     "type": "derive"
+    }
+   ],
+   "given": [
+    "SSP_INCENTIVES",
+    "SSP_LABOUR_REFORM",
+    "OBJ_INCOME_EQ"
+   ],
+   "needs": [
+    "SSP_INCENTIVES",
+    "SSP_LABOUR_REFORM",
+    "OBJ_INCOME_EQ"
+   ],
+   "builds": [
+    "SSP_INCENTIVES",
+    "SSP_LABOUR_REFORM",
+    "OBJ_INCOME_EQ"
+   ],
+   "nodes": [
+    "SSP_DIS_INEQUALITY",
+    "CONFLICT_INEQUALITY_INCENTIVES"
+   ],
+   "dropped": [],
+   "edges": [
+    [
+     "SSP_DIS_INEQUALITY",
+     "CONFLICT_INEQUALITY_INCENTIVES"
+    ],
+    [
+     "SSP_INCENTIVES",
+     "SSP_DIS_INEQUALITY"
+    ],
+    [
+     "SSP_LABOUR_REFORM",
+     "SSP_DIS_INEQUALITY"
+    ],
+    [
+     "OBJ_INCOME_EQ",
+     "SSP_DIS_INEQUALITY"
+    ],
+    [
+     "OBJ_INCOME_EQ",
+     "CONFLICT_INEQUALITY_INCENTIVES"
+    ],
+    [
+     "SSP_INCENTIVES",
+     "gap"
+    ],
+    [
+     "SSP_LABOUR_REFORM",
+     "gap"
+    ],
+    [
+     "gap",
+     "SSP_DIS_INEQUALITY"
+    ],
+    [
+     "OBJ_INCOME_EQ",
+     "equity_target"
+    ],
+    [
+     "SSP_DIS_INEQUALITY",
+     "efficiency_target"
+    ],
+    [
+     "equity_target",
+     "CONFLICT_INEQUALITY_INCENTIVES"
+    ],
+    [
+     "efficiency_target",
+     "CONFLICT_INEQUALITY_INCENTIVES"
+    ]
+   ]
+  }
+ ]
+}

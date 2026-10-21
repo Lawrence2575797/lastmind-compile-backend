@@ -1,0 +1,143 @@
+{
+ "id": "gen",
+ "subject": "Economics",
+ "title": "Costs of specialisation and trade",
+ "terms": {
+  "SPEC_DIS_OVERSPEC": {
+   "label": "Over-specialisation risk"
+  },
+  "SPEC_DIS_STRUCTURAL": {
+   "label": "Structural unemployment"
+  },
+  "SPEC_DIS_INFANT": {
+   "label": "Barrier to infant industries"
+  },
+  "RTA_COST_ADJUSTMENT": {
+   "label": "Structural adjustment costs"
+  },
+  "PROT_REASONS_INFANT": {
+   "label": "Protecting infant industries"
+  },
+  "COMP_ADV_LIMIT": {
+   "label": "CA limitations"
+  }
+ },
+ "stages": [
+  {
+   "name": "Costs of specialisation and trade",
+   "title": "Costs of specialisation and trade",
+   "sub": "Why specialising and opening up to trade can leave an economy exposed, workers jobless, and new industries unable to grow.",
+   "steps": [
+    {
+     "type": "ask",
+     "q": "A small country puts almost all its land, workers and factories into growing and exporting coffee. A frost then destroys the coffee harvest. What happens to the country's income?",
+     "right": "It collapses, because coffee was almost the whole economy",
+     "wrong": "It barely changes, because other industries pick up the slack",
+     "hint": "If nearly everything the country produces is one crop, what happens when that one crop fails?",
+     "pre": "Depending so heavily on one good or industry leaves the country exposed to shocks. This is the risk of",
+     "term": "SPEC_DIS_OVERSPEC"
+    },
+    {
+     "type": "ask",
+     "q": "That same country later finds another nation can grow coffee much more cheaply, so it stops exporting coffee. The workers who picked coffee have spent 20 years learning only that skill. Can they walk straight into new jobs elsewhere?",
+     "right": "No, their skills do not match other industries",
+     "wrong": "Yes, their experience transfers easily to any job",
+     "hint": "Think about whether the skills built up in one declining industry are useful in a totally different one.",
+     "pre": "Workers left jobless because their industry declines and their old skills do not fit new industries suffer",
+     "term": "SPEC_DIS_STRUCTURAL"
+    },
+    {
+     "type": "ask",
+     "q": "Two neighbouring countries scrap tariffs between them under a new trade deal. One country's steel plants cannot compete with the other's cheaper steel and start shutting down, leaving steelworkers unemployed. Is retraining and relocating those workers free?",
+     "right": "No, it takes money and time to manage",
+     "wrong": "Yes, workers move into new jobs at no cost",
+     "hint": "Closing plants and retraining a workforce takes resources. Who ends up bearing that expense?",
+     "pre": "The expense of helping industries and workers made uncompetitive by a trade deal adjust are its",
+     "term": "RTA_COST_ADJUSTMENT"
+    },
+    {
+     "type": "ask",
+     "q": "A country has a promising new electric car industry, but it is tiny and cannot yet make cars as cheaply as huge, experienced foreign car makers. If it opens fully to free trade today, will the new industry get the chance to grow large enough to compete?",
+     "right": "No, cheap imports will likely crush it before it grows",
+     "wrong": "Yes, free trade lets it grow just as fast",
+     "hint": "Think about a small, new firm facing giant, experienced foreign rivals with no protection at all.",
+     "pre": "Free trade can stop a new, small industry ever growing big enough to compete. This is trade acting as a",
+     "term": "SPEC_DIS_INFANT"
+    },
+    {
+     "type": "order",
+     "terms": [
+      "SPEC_DIS_OVERSPEC",
+      "SPEC_DIS_STRUCTURAL",
+      "RTA_COST_ADJUSTMENT",
+      "SPEC_DIS_INFANT"
+     ],
+     "prompt": "Drag and drop the 4 key terms in the order they build on each other."
+    },
+    {
+     "type": "ask",
+     "q": "Knowing that new industries can be crushed by established foreign competition before they grow, what could the government of that electric car country do to give the industry a chance?",
+     "right": "Temporarily restrict cheap imports until it can compete",
+     "wrong": "Remove all remaining trade barriers immediately",
+     "hint": "If the problem is being undercut too early, what would shield the industry while it grows?",
+     "pre": "Shielding a young industry until it can compete is a government's reason for",
+     "term": "PROT_REASONS_INFANT"
+    },
+    {
+     "type": "derive"
+    }
+   ],
+   "given": [
+    "COMP_ADV_LIMIT"
+   ],
+   "needs": [
+    "COMP_ADV_LIMIT"
+   ],
+   "builds": [
+    "COMP_ADV_LIMIT"
+   ],
+   "nodes": [
+    "SPEC_DIS_OVERSPEC",
+    "SPEC_DIS_STRUCTURAL",
+    "SPEC_DIS_INFANT",
+    "RTA_COST_ADJUSTMENT",
+    "PROT_REASONS_INFANT"
+   ],
+   "dropped": [],
+   "edges": [
+    [
+     "SPEC_DIS_OVERSPEC",
+     "SPEC_DIS_STRUCTURAL"
+    ],
+    [
+     "SPEC_DIS_STRUCTURAL",
+     "RTA_COST_ADJUSTMENT"
+    ],
+    [
+     "SPEC_DIS_INFANT",
+     "PROT_REASONS_INFANT"
+    ],
+    [
+     "COMP_ADV_LIMIT",
+     "SPEC_DIS_OVERSPEC"
+    ],
+    [
+     "COMP_ADV_LIMIT",
+     "SPEC_DIS_INFANT"
+    ],
+    [
+     "SPEC_DIS_OVERSPEC",
+     "SPEC_DIS_STRUCTURAL"
+    ],
+    [
+     "SPEC_DIS_STRUCTURAL",
+     "RTA_COST_ADJUSTMENT"
+    ],
+    [
+     "SPEC_DIS_INFANT",
+     "PROT_REASONS_INFANT"
+    ]
+   ]
+  }
+ ]
+}

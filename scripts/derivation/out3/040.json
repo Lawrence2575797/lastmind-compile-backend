@@ -1,0 +1,198 @@
+{
+ "id": "gen",
+ "subject": "Economics",
+ "title": "Macroeconomic objectives and the current account",
+ "terms": {
+  "growth_obj": {
+   "label": "Economic growth objective"
+  },
+  "unemp_obj": {
+   "label": "Low unemployment objective"
+  },
+  "inflation_obj": {
+   "label": "Low, stable inflation objective"
+  },
+  "bop_obj": {
+   "label": "Balance of payments equilibrium"
+  },
+  "MACRO_OBJECTIVES": {
+   "label": "Macroeconomic objectives"
+  },
+  "CA_MACRO_TRADEOFFS": {
+   "label": "Current account trade-offs"
+  },
+  "GDP_GROWTH_RATE": {
+   "label": "Real GDP growth rate"
+  },
+  "INFLATION_DEF": {
+   "label": "Inflation"
+  },
+  "UNEMPLOYMENT_DEF": {
+   "label": "Definition of unemployment"
+  },
+  "CA_DEFICIT_SURPLUS": {
+   "label": "Current account deficit/surplus"
+  }
+ },
+ "stages": [
+  {
+   "name": "Macroeconomic objectives and the current account",
+   "title": "Macroeconomic objectives and the current account",
+   "sub": "Understand the four main macro objectives and why fixing the current account can conflict with the others.",
+   "steps": [
+    {
+     "type": "ask",
+     "q": "A government wants real GDP to rise year after year, giving people more goods and services. Which target is this?",
+     "right": "A target for the pace of economic growth",
+     "wrong": "A target for the rate of unemployment",
+     "hint": "Real GDP measures the size of output, not the number of people without jobs.",
+     "pre": "So one aim is a target for the",
+     "term": "growth_obj"
+    },
+    {
+     "type": "ask",
+     "q": "A government wants as many people who are willing and able to work to actually have a job. Which target is this?",
+     "right": "A target for how many people are out of work",
+     "wrong": "A target for how fast prices are rising",
+     "hint": "This is about people without jobs, not about prices.",
+     "pre": "So another aim is a target for",
+     "term": "unemp_obj"
+    },
+    {
+     "type": "ask",
+     "q": "A government wants prices to rise only slowly and predictably, not shoot up or crash. Which target is this?",
+     "right": "A target for the general price level",
+     "wrong": "A target for the size of output",
+     "hint": "This is about prices changing over time, not about how much is produced.",
+     "pre": "So another aim is a target for",
+     "term": "inflation_obj"
+    },
+    {
+     "type": "ask",
+     "q": "A government wants what the country earns from the rest of the world to roughly match what it spends abroad. Which target is this?",
+     "right": "A target for the country's trade with the rest of the world",
+     "wrong": "A target for the number of people in jobs",
+     "hint": "This is about money flowing in and out with other countries, not about jobs.",
+     "pre": "So a fourth aim is",
+     "term": "bop_obj"
+    },
+    {
+     "type": "order",
+     "terms": [
+      "growth_obj",
+      "unemp_obj",
+      "inflation_obj",
+      "bop_obj"
+     ],
+     "prompt": "Drag and drop the 4 key terms in the order they build on each other."
+    },
+    {
+     "type": "ask",
+     "q": "Together, growth, jobs, prices and trade balance are the things every government tries to hit at once. What do we call this full set?",
+     "right": "The main goals a government tries to achieve for the economy",
+     "wrong": "The main taxes a government collects from households",
+     "hint": "Think of these four as one combined list of targets for the whole economy.",
+     "pre": "Together these four are the",
+     "term": "MACRO_OBJECTIVES"
+    },
+    {
+     "type": "ask",
+     "q": "A country running a large deficit decides to raise interest rates to attract foreign money and support its currency. Higher interest rates also make loans dearer for domestic firms and households. What is likely to happen to growth and jobs at home?",
+     "right": "They tend to slow down or fall",
+     "wrong": "They keep improving at the same pace",
+     "hint": "Higher interest rates make borrowing and spending harder for people and firms at home.",
+     "pre": "So fixing the current account can pull against growth and jobs. This shows the",
+     "term": "CA_MACRO_TRADEOFFS"
+    },
+    {
+     "type": "derive"
+    }
+   ],
+   "given": [
+    "GDP_GROWTH_RATE",
+    "INFLATION_DEF",
+    "UNEMPLOYMENT_DEF",
+    "CA_DEFICIT_SURPLUS"
+   ],
+   "needs": [
+    "GDP_GROWTH_RATE",
+    "INFLATION_DEF",
+    "UNEMPLOYMENT_DEF",
+    "CA_DEFICIT_SURPLUS"
+   ],
+   "builds": [
+    "GDP_GROWTH_RATE",
+    "INFLATION_DEF",
+    "UNEMPLOYMENT_DEF",
+    "CA_DEFICIT_SURPLUS"
+   ],
+   "nodes": [
+    "MACRO_OBJECTIVES",
+    "CA_MACRO_TRADEOFFS"
+   ],
+   "dropped": [],
+   "edges": [
+    [
+     "MACRO_OBJECTIVES",
+     "CA_MACRO_TRADEOFFS"
+    ],
+    [
+     "GDP_GROWTH_RATE",
+     "MACRO_OBJECTIVES"
+    ],
+    [
+     "INFLATION_DEF",
+     "MACRO_OBJECTIVES"
+    ],
+    [
+     "UNEMPLOYMENT_DEF",
+     "MACRO_OBJECTIVES"
+    ],
+    [
+     "CA_DEFICIT_SURPLUS",
+     "MACRO_OBJECTIVES"
+    ],
+    [
+     "CA_DEFICIT_SURPLUS",
+     "CA_MACRO_TRADEOFFS"
+    ],
+    [
+     "growth_obj",
+     "MACRO_OBJECTIVES"
+    ],
+    [
+     "unemp_obj",
+     "MACRO_OBJECTIVES"
+    ],
+    [
+     "inflation_obj",
+     "MACRO_OBJECTIVES"
+    ],
+    [
+     "bop_obj",
+     "MACRO_OBJECTIVES"
+    ],
+    [
+     "GDP_GROWTH_RATE",
+     "growth_obj"
+    ],
+    [
+     "UNEMPLOYMENT_DEF",
+     "unemp_obj"
+    ],
+    [
+     "INFLATION_DEF",
+     "inflation_obj"
+    ],
+    [
+     "CA_DEFICIT_SURPLUS",
+     "bop_obj"
+    ],
+    [
+     "CA_DEFICIT_SURPLUS",
+     "CA_MACRO_TRADEOFFS"
+    ]
+   ]
+  }
+ ]
+}

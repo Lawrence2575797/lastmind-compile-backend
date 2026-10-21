@@ -1,0 +1,183 @@
+{
+ "id": "gen",
+ "subject": "Economics",
+ "title": "Role of the state in the macroeconomy",
+ "terms": {
+  "central_bank": {
+   "label": "Central bank"
+  },
+  "MONETARY_POLICY_DEF": {
+   "label": "Monetary policy"
+  },
+  "EXCHANGE_RATE_POLICY_DEF": {
+   "label": "Exchange rate policy"
+  },
+  "SUPPLY_SIDE_POLICY_DEF": {
+   "label": "Supply-side policies"
+  },
+  "DIRECT_CONTROLS_DEF": {
+   "label": "Direct controls"
+  },
+  "REASONS_INCREASE_COMPETITIVENESS": {
+   "label": "Reasons for wanting competitiveness"
+  },
+  "AUTO_STABILISERS": {
+   "label": "Automatic stabilisers"
+  },
+  "INTL_COMPETITIVENESS_DEF": {
+   "label": "International competitiveness"
+  },
+  "FDI_DEF": {
+   "label": "Foreign direct investment"
+  }
+ },
+ "stages": [
+  {
+   "name": "Role of the state in the macroeconomy",
+   "title": "Role of the state in the macroeconomy",
+   "sub": "After this, you can explain monetary, exchange rate, supply-side and direct control policies, and why governments chase competitiveness.",
+   "steps": [
+    {
+     "type": "ask",
+     "q": "Inflation is too high. A committee decides to raise the cost of borrowing money across the whole economy. Which kind of body has the power to do this, rather than a random shop or firm?",
+     "right": "The one body that sets rates for the whole economy",
+     "wrong": "Any large private bank that lends money",
+     "hint": "Who sets the base rate that all other banks follow?",
+     "pre": "That body is the",
+     "term": "central_bank"
+    },
+    {
+     "type": "ask",
+     "q": "The central bank raises interest rates and also controls how much money is created in the economy. What kind of policy is this, aimed at borrowing and the amount of money circulating?",
+     "right": "A policy using interest rates and the money supply",
+     "wrong": "A policy using government tax rates and spending",
+     "hint": "Think about what tool was actually changed: the price of borrowing, not taxes or spending.",
+     "pre": "Using interest rates and money supply to influence the economy is",
+     "term": "MONETARY_POLICY_DEF"
+    },
+    {
+     "type": "ask",
+     "q": "Instead of changing interest rates directly, the authorities buy or sell their own currency on the foreign exchange market to move its value. What are they now trying to manage?",
+     "right": "The value of the currency against others",
+     "wrong": "The amount of money circulating at home",
+     "hint": "Buying and selling currency changes its price against other currencies, not the domestic money supply.",
+     "pre": "Deliberately managing the currency's value like this is",
+     "term": "EXCHANGE_RATE_POLICY_DEF"
+    },
+    {
+     "type": "ask",
+     "q": "A government spends on training schemes and cuts red tape for new firms, hoping the economy can produce more in the long run without extra demand. Is this aimed at how much is spent, or at how much the economy is capable of producing?",
+     "right": "How much the economy is capable of producing",
+     "wrong": "How much people and firms spend",
+     "hint": "Training and cutting red tape change firms' ability to produce, not spending on goods.",
+     "pre": "Policies aimed at raising the economy's productive capacity are",
+     "term": "SUPPLY_SIDE_POLICY_DEF"
+    },
+    {
+     "type": "order",
+     "terms": [
+      "central_bank",
+      "MONETARY_POLICY_DEF",
+      "EXCHANGE_RATE_POLICY_DEF",
+      "SUPPLY_SIDE_POLICY_DEF"
+     ],
+     "prompt": "Drag and drop the 4 key terms in the order they build on each other."
+    },
+    {
+     "type": "ask",
+     "q": "Instead of training schemes, a government simply bans a certain type of pollution, sets a legal minimum wage, or fixes a maximum price by law. Is it changing incentives, or ordering a specific outcome?",
+     "right": "Ordering a specific outcome by law",
+     "wrong": "Changing incentives so firms choose it",
+     "hint": "A ban or a legal limit does not persuade anyone, it forces the outcome directly.",
+     "pre": "Rules like these that force an outcome directly are",
+     "term": "DIRECT_CONTROLS_DEF"
+    },
+    {
+     "type": "ask",
+     "q": "A country's firms already sell more cheaply and to a higher standard than foreign rivals. A weaker currency would make its exports even cheaper abroad too. Why might a government want this: to sell more abroad, or simply to please foreign buyers?",
+     "right": "To sell more abroad and support jobs at home",
+     "wrong": "Simply to keep foreign buyers happy",
+     "hint": "Think about what higher export sales do for a country's own output and jobs.",
+     "pre": "So governments often want stronger competitiveness for",
+     "term": "REASONS_INCREASE_COMPETITIVENESS"
+    },
+    {
+     "type": "derive"
+    }
+   ],
+   "given": [
+    "AUTO_STABILISERS",
+    "INTL_COMPETITIVENESS_DEF",
+    "FDI_DEF"
+   ],
+   "needs": [
+    "AUTO_STABILISERS",
+    "INTL_COMPETITIVENESS_DEF",
+    "FDI_DEF"
+   ],
+   "builds": [
+    "AUTO_STABILISERS",
+    "INTL_COMPETITIVENESS_DEF",
+    "FDI_DEF"
+   ],
+   "nodes": [
+    "MONETARY_POLICY_DEF",
+    "EXCHANGE_RATE_POLICY_DEF",
+    "SUPPLY_SIDE_POLICY_DEF",
+    "DIRECT_CONTROLS_DEF",
+    "REASONS_INCREASE_COMPETITIVENESS"
+   ],
+   "dropped": [],
+   "edges": [
+    [
+     "MONETARY_POLICY_DEF",
+     "EXCHANGE_RATE_POLICY_DEF"
+    ],
+    [
+     "MONETARY_POLICY_DEF",
+     "SUPPLY_SIDE_POLICY_DEF"
+    ],
+    [
+     "SUPPLY_SIDE_POLICY_DEF",
+     "DIRECT_CONTROLS_DEF"
+    ],
+    [
+     "AUTO_STABILISERS",
+     "MONETARY_POLICY_DEF"
+    ],
+    [
+     "INTL_COMPETITIVENESS_DEF",
+     "REASONS_INCREASE_COMPETITIVENESS"
+    ],
+    [
+     "FDI_DEF",
+     "REASONS_INCREASE_COMPETITIVENESS"
+    ],
+    [
+     "central_bank",
+     "MONETARY_POLICY_DEF"
+    ],
+    [
+     "MONETARY_POLICY_DEF",
+     "EXCHANGE_RATE_POLICY_DEF"
+    ],
+    [
+     "MONETARY_POLICY_DEF",
+     "SUPPLY_SIDE_POLICY_DEF"
+    ],
+    [
+     "SUPPLY_SIDE_POLICY_DEF",
+     "DIRECT_CONTROLS_DEF"
+    ],
+    [
+     "INTL_COMPETITIVENESS_DEF",
+     "REASONS_INCREASE_COMPETITIVENESS"
+    ],
+    [
+     "EXCHANGE_RATE_POLICY_DEF",
+     "REASONS_INCREASE_COMPETITIVENESS"
+    ]
+   ]
+  }
+ ]
+}

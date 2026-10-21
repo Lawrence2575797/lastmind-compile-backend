@@ -3,6 +3,12 @@ import Anthropic from '@anthropic-ai/sdk';
 import { chargeForClaudeCall } from './generationCostService';
 import { applyStructuredPIIFilter } from '../safety/piiFilterStructured';
 import { applyContextualPIIFilter } from '../safety/piiFilterContextual';
+import { assertLocksAvailable } from './lockService';
+
+// Every metered Claude call first checks that the account still has Locks, so a route that forgot its own check cannot run for free past the limit.
+async function gateLocks(userId: string | undefined): Promise<void> {
+  if (userId) await assertLocksAvailable(userId);
+}
 
 // Applied here, centrally, rather than left to each route to remember to
 // call - a route that forgot this (as /math-help, /diagnostics and every
@@ -121,6 +127,7 @@ const FALLBACK_MESSAGE = 'There was an issue processing your notes. Please try a
  * does not re-check that; the route handler is responsible for ordering.
  */
 export async function processNotes(safeText: string, userId: string): Promise<string> {
+  await gateLocks(userId);
   try {
     const response = await anthropic.messages.create({
       model: MODELS.compile,
@@ -380,6 +387,7 @@ export async function callClaudeJSON(params: {
   // than silently omitting the reason column.
   meteredReason?: string;
 }): Promise<string> {
+  await gateLocks(params.userId ?? currentUserId());
   const { text, usage } = await sendWithTemperatureRetry(params.model, params.systemPrompt, sanitizeForClaude(params.userContent), params.maxTokens, params.temperature, params.cacheSystemPrompt);
   // Every AI call is charged to a student's Locks: the explicit userId if the
   // call site passed one, otherwise whoever's request this call is serving.
@@ -438,6 +446,7 @@ export async function callClaudeChatCached(params: {
   userId: string;
   meteredReason: string;
 }): Promise<string> {
+  await gateLocks(params.userId);
   let response;
   const send = (withTemperature: boolean) => withTransientRetry(() => anthropic.beta.promptCaching.messages
     .stream(buildCachedChatParams({ ...params, temperature: withTemperature ? params.temperature : undefined }) as any)
@@ -492,6 +501,7 @@ export async function callClaudeJSONWithUsage(params: {
   userId?: string;
   meteredReason?: string;
 }): Promise<{ text: string; usage: ClaudeCallUsage }> {
+  await gateLocks(params.userId ?? currentUserId());
   const { text, usage } = await sendWithTemperatureRetry(params.model, params.systemPrompt, sanitizeForClaude(params.userContent), params.maxTokens, params.temperature, params.cacheSystemPrompt);
   const chargeUserId = params.userId ?? currentUserId();
   if (chargeUserId) await chargeForClaudeCall(chargeUserId, params.model, usage, params.meteredReason || 'unlabeled');
@@ -518,6 +528,7 @@ export async function callClaudeJSONWithFiles(params: {
   userId?: string;
   meteredReason?: string;
 }): Promise<string> {
+  await gateLocks(params.userId ?? currentUserId());
   const content: any[] = [{ type: 'text', text: sanitizeForClaude(params.userText) }];
   for (const f of params.files) {
     content.push({ type: 'text', text: f.label });
@@ -553,6 +564,7 @@ export async function callClaudeJSONWithImages(params: {
   // Same ledger label as callClaudeJSON's own meteredReason.
   meteredReason?: string;
 }): Promise<string> {
+  await gateLocks(params.userId ?? currentUserId());
   const content: Array<Anthropic.Messages.TextBlockParam | Anthropic.Messages.ImageBlockParam> = [{ type: 'text', text: sanitizeForClaude(params.userText) }];
   for (const image of params.images) {
     content.push({ type: 'text', text: image.label });

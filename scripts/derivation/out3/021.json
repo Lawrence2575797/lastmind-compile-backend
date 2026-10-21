@@ -1,0 +1,197 @@
+{
+ "id": "gen",
+ "subject": "Economics",
+ "title": "Market failure",
+ "terms": {
+  "efficient": {
+   "label": "Efficient allocation"
+  },
+  "MKTFAIL": {
+   "label": "Market failure"
+  },
+  "EXTERN": {
+   "label": "Externalities"
+  },
+  "PUBGOOD_NONEX": {
+   "label": "Non-excludability"
+  },
+  "PUBGOOD_NONRIV": {
+   "label": "Non-rivalry"
+  },
+  "INFOGAP_MKT": {
+   "label": "Information gaps/asymmetric information as market failure"
+  },
+  "market_failure_def": {
+   "label": "Market failure"
+  },
+  "externalities_def": {
+   "label": "Externalities"
+  },
+  "non_excludability": {
+   "label": "Non-excludability"
+  },
+  "non_rivalry": {
+   "label": "Non-rivalry"
+  },
+  "information_gaps": {
+   "label": "Information gaps: situations where relevant information is missing or imperfect for one or both parties, as a distinct type of market failure"
+  }
+ },
+ "stages": [
+  {
+   "name": "Market failure",
+   "title": "Market failure",
+   "sub": "What market failure is, and four ways it shows up in real markets.",
+   "steps": [
+    {
+     "type": "ask",
+     "q": "A free market should send resources to the goods people value most, at a price matching cost. Does it always do so?",
+     "right": "No, markets can get the allocation wrong",
+     "wrong": "Yes, prices always sort it out correctly",
+     "hint": "Think about pollution, or a factory dumping waste in a river for free.",
+     "pre": "When the market misallocates resources away from this ideal, that is",
+     "term": "efficient"
+    },
+    {
+     "type": "ask",
+     "q": "A factory pays for workers and materials, but its smoke harms neighbours who are never compensated. Has the market got this right?",
+     "right": "No, this shows the market getting it wrong",
+     "wrong": "Yes, the price system has handled this well",
+     "hint": "The residents are affected but play no part in the factory's price or output decision.",
+     "pre": "So this failure to allocate resources well is called",
+     "term": "MKTFAIL"
+    },
+    {
+     "type": "ask",
+     "q": "The factory's smoke harms people who never bought or sold anything from the factory. Who exactly is being affected?",
+     "right": "Someone outside the deal between buyer and seller",
+     "wrong": "Someone inside the deal between buyer and seller",
+     "hint": "The residents are not the buyer or the seller of the factory's product.",
+     "pre": "An effect on someone outside the original transaction is an",
+     "term": "EXTERN"
+    },
+    {
+     "type": "ask",
+     "q": "A lighthouse warns every ship, whether or not its owner paid. Can the operator stop non-paying ships seeing the light?",
+     "right": "No, they cannot stop anyone seeing it",
+     "wrong": "Yes, they can block non-payers from seeing it",
+     "hint": "Once the light is shining, can it be switched off just for ships that did not pay?",
+     "pre": "So no one can be prevented from benefiting, which is",
+     "term": "PUBGOOD_NONEX"
+    },
+    {
+     "type": "order",
+     "terms": [
+      "efficient",
+      "MKTFAIL",
+      "EXTERN",
+      "PUBGOOD_NONEX"
+     ],
+     "prompt": "Drag and drop the 4 key terms in the order they build on each other."
+    },
+    {
+     "type": "ask",
+     "q": "One more ship sailing past the lighthouse and using its light. Does this leave less light available for the next ship that passes?",
+     "right": "No, the next ship gets just as much light",
+     "wrong": "Yes, the next ship gets a bit less light",
+     "hint": "Does the lighthouse's light run out or get shared out when another ship benefits?",
+     "pre": "So one user does not reduce what is left for others, which is",
+     "term": "PUBGOOD_NONRIV"
+    },
+    {
+     "type": "ask",
+     "q": "A second-hand car seller knows of a hidden engine fault. The buyer can't find out before buying. Do both sides know the same?",
+     "right": "No, the seller knows far more than the buyer",
+     "wrong": "Yes, both sides know just as much as each other",
+     "hint": "Think about who can actually see inside the engine before the sale.",
+     "pre": "This unequal knowledge between buyer and seller is",
+     "term": "INFOGAP_MKT"
+    },
+    {
+     "type": "derive"
+    }
+   ],
+   "given": [
+    "market_failure_def",
+    "externalities_def",
+    "non_excludability",
+    "non_rivalry"
+   ],
+   "needs": [
+    "market_failure_def",
+    "externalities_def",
+    "non_excludability",
+    "non_rivalry",
+    "information_gaps"
+   ],
+   "builds": [
+    "market_failure_def",
+    "externalities_def",
+    "non_excludability",
+    "non_rivalry"
+   ],
+   "nodes": [
+    "MKTFAIL",
+    "EXTERN",
+    "PUBGOOD_NONEX",
+    "PUBGOOD_NONRIV",
+    "INFOGAP_MKT"
+   ],
+   "dropped": [],
+   "edges": [
+    [
+     "MKTFAIL",
+     "EXTERN"
+    ],
+    [
+     "MKTFAIL",
+     "PUBGOOD_NONEX"
+    ],
+    [
+     "MKTFAIL",
+     "PUBGOOD_NONRIV"
+    ],
+    [
+     "MKTFAIL",
+     "INFOGAP_MKT"
+    ],
+    [
+     "market_failure_def",
+     "MKTFAIL"
+    ],
+    [
+     "externalities_def",
+     "EXTERN"
+    ],
+    [
+     "non_excludability",
+     "PUBGOOD_NONEX"
+    ],
+    [
+     "non_rivalry",
+     "PUBGOOD_NONRIV"
+    ],
+    [
+     "efficient",
+     "MKTFAIL"
+    ],
+    [
+     "MKTFAIL",
+     "EXTERN"
+    ],
+    [
+     "MKTFAIL",
+     "PUBGOOD_NONEX"
+    ],
+    [
+     "MKTFAIL",
+     "PUBGOOD_NONRIV"
+    ],
+    [
+     "MKTFAIL",
+     "INFOGAP_MKT"
+    ]
+   ]
+  }
+ ]
+}

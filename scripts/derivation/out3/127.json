@@ -1,0 +1,235 @@
+{
+ "id": "gen",
+ "subject": "Economics",
+ "title": "Revenues, costs and profit",
+ "terms": {
+  "PROFIT_DEF": {
+   "label": "Profit"
+  },
+  "PROFIT_MAX_COND": {
+   "label": "Profit maximisation condition: MC = MR"
+  },
+  "PROFIT_MAX_REASON": {
+   "label": "Marginal reasoning"
+  },
+  "avgcomp": {
+   "label": "AR vs ATC comparison"
+  },
+  "NORMAL_PROFIT": {
+   "label": "Normal profit"
+  },
+  "SUPERNORMAL_PROFIT": {
+   "label": "Supernormal profit"
+  },
+  "LOSSES": {
+   "label": "Losses"
+  },
+  "TR": {
+   "label": "Total revenue"
+  },
+  "TC": {
+   "label": "Total cost"
+  },
+  "MC": {
+   "label": "Marginal cost"
+  },
+  "MR": {
+   "label": "Marginal revenue"
+  },
+  "AR": {
+   "label": "Average revenue"
+  },
+  "ATC": {
+   "label": "Average (total) cost (ATC = TC/Q = AFC + AVC)"
+  },
+  "AVC": {
+   "label": "Average variable cost (AVC = TVC/Q)"
+  }
+ },
+ "stages": [
+  {
+   "name": "Revenues, costs and profit",
+   "title": "Revenues, costs and profit",
+   "sub": "How firms find the output that makes the most money, and whether they end up with a profit or a loss there.",
+   "steps": [
+    {
+     "type": "ask",
+     "q": "A bakery takes £900 in total revenue this week and its total costs are £700. How much is left over for the owner?",
+     "right": "£200",
+     "wrong": "£1,600",
+     "hint": "Take what came in and subtract what was spent.",
+     "pre": "That leftover amount, total revenue minus total cost, is",
+     "term": "PROFIT_DEF"
+    },
+    {
+     "type": "ask",
+     "q": "At its current output, making one more cake would add £5 to the bakery's revenue but only £3 to its costs. Should it make that extra cake?",
+     "right": "Yes, it adds more to revenue than to cost",
+     "wrong": "No, any extra output must be avoided",
+     "hint": "Compare what the extra cake brings in against what it costs to make.",
+     "pre": "Firms keep expanding output while the extra revenue from one more unit exceeds the extra cost, and stop exactly where the two are equal. That output is where",
+     "term": "PROFIT_MAX_COND"
+    },
+    {
+     "type": "ask",
+     "q": "Now imagine the bakery instead makes one more cake that costs £3 extra but only brings in £2 extra revenue. What happens to profit if it makes that cake anyway?",
+     "right": "Profit falls",
+     "wrong": "Profit rises",
+     "hint": "Is the extra cost bigger or smaller than the extra revenue here?",
+     "pre": "So making any unit where extra cost exceeds extra revenue shrinks profit, and stopping right where they are equal is the",
+     "term": "PROFIT_MAX_REASON"
+    },
+    {
+     "type": "ask",
+     "q": "At the profit-maximising output, one firm's average revenue per unit is £8 and its average total cost per unit is also £8. Another firm's average revenue per unit is £12 against an average total cost of £8. Which one is only just covering its costs, with nothing extra left over?",
+     "right": "The firm where AR equals ATC",
+     "wrong": "The firm where AR is above ATC",
+     "hint": "Where revenue per unit and cost per unit are the same, is there anything left over?",
+     "pre": "So checking how AR compares with ATC at that output tells you what kind of outcome the firm gets. That comparison is the",
+     "term": "avgcomp"
+    },
+    {
+     "type": "order",
+     "terms": [
+      "PROFIT_DEF",
+      "PROFIT_MAX_COND",
+      "PROFIT_MAX_REASON",
+      "avgcomp"
+     ],
+     "prompt": "Drag and drop the 4 key terms in the order they build on each other."
+    },
+    {
+     "type": "ask",
+     "q": "At its profit-maximising output, a firm's average revenue per unit is £8 and its average total cost per unit is also £8. Is it earning anything above covering all its costs?",
+     "right": "No, revenue just covers costs",
+     "wrong": "Yes, it earns some profit above its costs",
+     "hint": "If price per unit equals cost per unit, is there anything left over per unit?",
+     "pre": "When AR equals ATC at that output, the firm earns just enough to stay in business. That is",
+     "term": "NORMAL_PROFIT"
+    },
+    {
+     "type": "ask",
+     "q": "At its profit-maximising output, this firm's average revenue per unit is £12 but its average total cost per unit is only £8. Is it earning more than enough to cover its costs?",
+     "right": "Yes, revenue per unit exceeds cost per unit",
+     "wrong": "No, revenue per unit just matches cost per unit",
+     "hint": "Compare the £12 coming in per unit with the £8 going out per unit.",
+     "pre": "When AR is above ATC at that output, the firm earns extra profit on top of covering its costs. That is",
+     "term": "SUPERNORMAL_PROFIT"
+    },
+    {
+     "type": "ask",
+     "q": "At its profit-maximising output, this firm's average revenue per unit is £6 but its average total cost per unit is £9. Is revenue covering costs per unit?",
+     "right": "No, revenue per unit falls short of cost per unit",
+     "wrong": "Yes, revenue per unit just covers cost per unit",
+     "hint": "Compare the £6 coming in per unit with the £9 going out per unit.",
+     "pre": "When AR is below ATC at that output, the firm is making",
+     "term": "LOSSES"
+    },
+    {
+     "type": "derive"
+    }
+   ],
+   "given": [
+    "TR",
+    "TC",
+    "MC",
+    "MR"
+   ],
+   "needs": [
+    "TR",
+    "TC",
+    "MC",
+    "MR",
+    "AR",
+    "ATC",
+    "AVC"
+   ],
+   "builds": [
+    "TR",
+    "TC",
+    "MC",
+    "MR"
+   ],
+   "nodes": [
+    "PROFIT_DEF",
+    "PROFIT_MAX_COND",
+    "PROFIT_MAX_REASON",
+    "NORMAL_PROFIT",
+    "SUPERNORMAL_PROFIT",
+    "LOSSES"
+   ],
+   "dropped": [
+    [
+     "PROFIT_MAX_COND",
+     "NORMAL_PROFIT"
+    ],
+    [
+     "PROFIT_MAX_COND",
+     "SUPERNORMAL_PROFIT"
+    ],
+    [
+     "PROFIT_MAX_COND",
+     "LOSSES"
+    ]
+   ],
+   "edges": [
+    [
+     "PROFIT_DEF",
+     "PROFIT_MAX_COND"
+    ],
+    [
+     "PROFIT_MAX_COND",
+     "PROFIT_MAX_REASON"
+    ],
+    [
+     "TR",
+     "PROFIT_DEF"
+    ],
+    [
+     "TC",
+     "PROFIT_DEF"
+    ],
+    [
+     "MC",
+     "PROFIT_MAX_COND"
+    ],
+    [
+     "MR",
+     "PROFIT_MAX_COND"
+    ],
+    [
+     "TR",
+     "PROFIT_DEF"
+    ],
+    [
+     "TC",
+     "PROFIT_DEF"
+    ],
+    [
+     "MC",
+     "PROFIT_MAX_COND"
+    ],
+    [
+     "MR",
+     "PROFIT_MAX_COND"
+    ],
+    [
+     "PROFIT_MAX_COND",
+     "avgcomp"
+    ],
+    [
+     "avgcomp",
+     "NORMAL_PROFIT"
+    ],
+    [
+     "avgcomp",
+     "SUPERNORMAL_PROFIT"
+    ],
+    [
+     "avgcomp",
+     "LOSSES"
+    ]
+   ]
+  }
+ ]
+}

@@ -1,0 +1,153 @@
+{
+ "id": "gen",
+ "subject": "Economics",
+ "title": "Privatisation",
+ "terms": {
+  "stateowned": {
+   "label": "State-owned firm"
+  },
+  "privatisation": {
+   "label": "Privatisation"
+  },
+  "privatisation_adv": {
+   "label": "Advantages of privatisation"
+  },
+  "privatisation_dis": {
+   "label": "Disadvantages of privatisation"
+  },
+  "property_rights_absence": {
+   "label": "Absence of property rights"
+  },
+  "PRIVATISATION_ADV1": {
+   "label": "Advantage: privatisation exposes firms to competitive/profit incentives, raising efficiency"
+  },
+  "PRIVATISATION_DIS1": {
+   "label": "Disadvantage: may simply replace a public monopoly with an unregulated private monopoly"
+  }
+ },
+ "stages": [
+  {
+   "name": "Privatisation",
+   "title": "Privatisation",
+   "sub": "Understand privatisation as a development strategy and weigh its benefits against its risks.",
+   "steps": [
+    {
+     "type": "ask",
+     "q": "A country's electricity firm is owned and run by the government, with no clear owner able to sell shares or claim profits. Who bears the risk if it runs at a loss?",
+     "right": "The government, using taxpayers' money",
+     "wrong": "A private owner, using their own money",
+     "hint": "Nobody holds individual title to the firm, so who ultimately covers its losses?",
+     "pre": "Without individuals owning it, the firm stays a",
+     "term": "stateowned"
+    },
+    {
+     "type": "ask",
+     "q": "The government now sells this electricity firm to private investors, who take over ownership and control. What has changed hands?",
+     "right": "Ownership, from the state to private owners",
+     "wrong": "Only the day-to-day management staff",
+     "hint": "Think about who now legally owns the firm's assets and profits.",
+     "pre": "Selling state-owned assets to the private sector is",
+     "term": "privatisation"
+    },
+    {
+     "type": "ask",
+     "q": "The new private owners now keep any profit the electricity firm makes, but also lose money if customers switch to a rival supplier. How might this affect how hard they work to cut costs and please customers?",
+     "right": "They try harder, since profit and survival depend on it",
+     "wrong": "They try less hard, since government no longer checks on them",
+     "hint": "Under state ownership there was no personal profit at stake. Now there is.",
+     "pre": "Facing profit incentives like this is an",
+     "term": "privatisation_adv"
+    },
+    {
+     "type": "ask",
+     "q": "Suppose no rival firm is allowed to build competing power lines, so this newly private electricity firm is still the only supplier in the country. Can customers force it to keep prices fair?",
+     "right": "No, it can still charge high prices unchecked",
+     "wrong": "Yes, competition will keep prices fair",
+     "hint": "Selling the firm did not create any rivals for it to compete against.",
+     "pre": "Swapping one unchallenged supplier for another like this is a",
+     "term": "privatisation_dis"
+    },
+    {
+     "type": "order",
+     "terms": [
+      "stateowned",
+      "privatisation",
+      "privatisation_adv",
+      "privatisation_dis"
+     ],
+     "prompt": "Drag and drop the 4 key terms in the order they build on each other."
+    },
+    {
+     "type": "derive"
+    }
+   ],
+   "given": [
+    "property_rights_absence",
+    "PRIVATISATION_ADV1",
+    "PRIVATISATION_DIS1"
+   ],
+   "needs": [
+    "property_rights_absence",
+    "PRIVATISATION_ADV1",
+    "PRIVATISATION_DIS1"
+   ],
+   "builds": [
+    "property_rights_absence",
+    "PRIVATISATION_ADV1",
+    "PRIVATISATION_DIS1"
+   ],
+   "nodes": [
+    "privatisation",
+    "privatisation_adv",
+    "privatisation_dis"
+   ],
+   "dropped": [],
+   "edges": [
+    [
+     "privatisation",
+     "privatisation_adv"
+    ],
+    [
+     "privatisation",
+     "privatisation_dis"
+    ],
+    [
+     "property_rights_absence",
+     "privatisation"
+    ],
+    [
+     "PRIVATISATION_ADV1",
+     "privatisation_adv"
+    ],
+    [
+     "PRIVATISATION_DIS1",
+     "privatisation_dis"
+    ],
+    [
+     "stateowned",
+     "privatisation"
+    ],
+    [
+     "property_rights_absence",
+     "stateowned"
+    ],
+    [
+     "privatisation",
+     "PRIVATISATION_ADV1"
+    ],
+    [
+     "PRIVATISATION_ADV1",
+     "privatisation_adv"
+    ],
+    [
+     "privatisation",
+     "PRIVATISATION_DIS1"
+    ],
+    [
+     "PRIVATISATION_DIS1",
+     "privatisation_dis"
+    ]
+   ]
+  }
+ ]
+}

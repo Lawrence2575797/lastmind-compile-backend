@@ -1,0 +1,217 @@
+{
+ "id": "gen",
+ "subject": "Economics",
+ "title": "Monopolistic competition and efficiency",
+ "terms": {
+  "new_entrants": {
+   "label": "New entrants attracted"
+  },
+  "profit_erosion": {
+   "label": "Supernormal profit eroded"
+  },
+  "mc_lr": {
+   "label": "Monopolistic competition long-run equilibrium"
+  },
+  "eff_by_structure": {
+   "label": "Comparing efficiency/inefficiency across market structures"
+  },
+  "mc_sr": {
+   "label": "Monopolistic competition: short-run profit-maximising equilibrium diagram"
+  },
+  "alloc_eff": {
+   "label": "Allocative efficiency"
+  },
+  "prod_eff": {
+   "label": "Productive efficiency"
+  },
+  "dynamic_eff": {
+   "label": "Dynamic efficiency"
+  },
+  "x_ineff": {
+   "label": "X-inefficiency (output produced above minimum possible cost due to lack of competitive pressure)"
+  },
+  "pc_lr": {
+   "label": "Perfect competition: long-run equilibrium diagram (entry/exit eliminates supernormal profit)"
+  }
+ },
+ "stages": [
+  {
+   "name": "Monopolistic competition and efficiency",
+   "title": "Monopolistic competition and efficiency",
+   "sub": "How entry erodes profit in the long run, and how the resulting structure compares on efficiency.",
+   "steps": [
+    {
+     "type": "ask",
+     "q": "A café in monopolistic competition is making juicy supernormal profit selling artisan coffee. There are no barriers stopping anyone opening a similar café. What happens next?",
+     "right": "Other firms open similar cafés",
+     "wrong": "No other firms bother entering",
+     "hint": "If profit is there for the taking and nothing blocks you, would rivals stay away?",
+     "pre": "Because entry is free, the profit attracts",
+     "term": "new_entrants"
+    },
+    {
+     "type": "ask",
+     "q": "As more similar cafés open nearby, the original café's customers now have more places to choose from. What happens to its demand curve and its profit?",
+     "right": "Demand falls back until profit disappears",
+     "wrong": "Demand stays the same and profit stays high",
+     "hint": "If customers now have close substitutes across the road, does the café keep all its old customers?",
+     "pre": "So entry continues until the supernormal profit is",
+     "term": "profit_erosion"
+    },
+    {
+     "type": "ask",
+     "q": "Entry keeps happening only while there is extra profit to attract firms in. Once each firm's demand curve has fallen so far that price just covers average cost, does entry carry on?",
+     "right": "No, entry stops there",
+     "wrong": "Yes, entry keeps going even then",
+     "hint": "Firms enter chasing profit above normal. Once only normal profit is left, is there still a reason to enter?",
+     "pre": "That resting point, where each firm earns only normal profit, is the",
+     "term": "mc_lr",
+     "diagram": {
+      "x": "Quantity",
+      "y": "Price/Cost",
+      "curves": [
+       {
+        "label": "AC",
+        "pts": [
+         [
+          0.05,
+          0.6
+         ],
+         [
+          0.3,
+          0.35
+         ],
+         [
+          0.5,
+          0.3
+         ],
+         [
+          0.75,
+          0.4
+         ],
+         [
+          0.95,
+          0.6
+         ]
+        ]
+       },
+       {
+        "label": "D",
+        "pts": [
+         [
+          0.1,
+          0.55
+         ],
+         [
+          0.4,
+          0.42
+         ],
+         [
+          0.75,
+          0.28
+         ]
+        ]
+       }
+      ],
+      "points": [
+       {
+        "label": "E",
+        "x": 0.5,
+        "y": 0.3,
+        "guides": true
+       }
+      ]
+     }
+    },
+    {
+     "type": "ask",
+     "q": "In this long-run equilibrium, price equals average cost but is still slightly above marginal cost, and output sits a little short of the point where average cost is lowest. Compared with a firm that achieves both P = MC and output at minimum AC, is this outcome as efficient?",
+     "right": "No, it falls short on both counts",
+     "wrong": "Yes, it matches both exactly",
+     "hint": "Think about what P = MC and minimum AC each require, and whether this firm's price and output actually hit those marks.",
+     "pre": "So when we set this alongside perfect competition, monopoly and oligopoly, we are",
+     "term": "eff_by_structure"
+    },
+    {
+     "type": "derive"
+    }
+   ],
+   "given": [
+    "mc_sr",
+    "alloc_eff",
+    "prod_eff",
+    "dynamic_eff"
+   ],
+   "needs": [
+    "mc_sr",
+    "alloc_eff",
+    "prod_eff",
+    "dynamic_eff",
+    "x_ineff",
+    "pc_lr"
+   ],
+   "builds": [
+    "mc_sr",
+    "alloc_eff",
+    "prod_eff",
+    "dynamic_eff"
+   ],
+   "nodes": [
+    "mc_lr",
+    "eff_by_structure"
+   ],
+   "dropped": [
+    [
+     "mc_lr",
+     "eff_by_structure"
+    ]
+   ],
+   "edges": [
+    [
+     "mc_sr",
+     "mc_lr"
+    ],
+    [
+     "alloc_eff",
+     "eff_by_structure"
+    ],
+    [
+     "prod_eff",
+     "eff_by_structure"
+    ],
+    [
+     "dynamic_eff",
+     "eff_by_structure"
+    ],
+    [
+     "mc_sr",
+     "new_entrants"
+    ],
+    [
+     "new_entrants",
+     "profit_erosion"
+    ],
+    [
+     "profit_erosion",
+     "mc_lr"
+    ],
+    [
+     "mc_lr",
+     "eff_by_structure"
+    ],
+    [
+     "alloc_eff",
+     "eff_by_structure"
+    ],
+    [
+     "prod_eff",
+     "eff_by_structure"
+    ],
+    [
+     "dynamic_eff",
+     "eff_by_structure"
+    ]
+   ]
+  }
+ ]
+}

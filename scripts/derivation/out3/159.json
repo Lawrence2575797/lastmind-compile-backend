@@ -1,0 +1,141 @@
+{
+ "id": "gen",
+ "subject": "Economics",
+ "title": "Trading blocs and trade patterns",
+ "terms": {
+  "econties": {
+   "label": "Economic ties between countries"
+  },
+  "GLOB_CHAR_INTERDEP": {
+   "label": "Greater economic interdependence"
+  },
+  "groupdeals": {
+   "label": "Countries grouping together"
+  },
+  "GLOB_FACT_BLOCS": {
+   "label": "Growth of trading blocs"
+  },
+  "TRADE_PATTERN_BLOCS": {
+   "label": "Trading blocs shift trade flows"
+  },
+  "GLOB_DEF": {
+   "label": "Globalisation"
+  }
+ },
+ "stages": [
+  {
+   "name": "Trading blocs and trade patterns",
+   "title": "Trading blocs and trade patterns",
+   "sub": "How trading blocs form as globalisation deepens, and how they reshape trade flows.",
+   "steps": [
+    {
+     "type": "ask",
+     "q": "A UK car firm now buys parts from Germany, sells cars in China, and borrows money from Japanese banks. Fifty years ago it did almost none of this. Is the UK economy more separate from other countries now, or more bound up with them?",
+     "right": "More bound up with other economies",
+     "wrong": "More separate from other economies",
+     "hint": "Think about how many countries that one firm now depends on.",
+     "pre": "As globalisation deepens, countries become more tied together. This growing dependence between economies is",
+     "term": "econties"
+    },
+    {
+     "type": "ask",
+     "q": "If a factory in Thailand shuts down for a month, car plants in the UK and Germany that need its parts also grind to a halt. What does this show about how connected economies have become?",
+     "right": "A problem in one country now hits others directly",
+     "wrong": "Countries are shielded from problems elsewhere",
+     "hint": "The Thai shutdown did not stay inside Thailand's borders.",
+     "pre": "Events in one economy now spill over into others because of",
+     "term": "GLOB_CHAR_INTERDEP"
+    },
+    {
+     "type": "ask",
+     "q": "Several neighbouring countries agree to scrap tariffs between themselves and set common trade rules for outsiders. Are they acting as separate, unconnected traders, or forming a joint arrangement?",
+     "right": "Forming a joint arrangement together",
+     "wrong": "Staying as separate, unconnected traders",
+     "hint": "They agreed common rules between themselves, not just individually.",
+     "pre": "As interdependence grows, countries increasingly do this by",
+     "term": "groupdeals"
+    },
+    {
+     "type": "ask",
+     "q": "The EU started with 6 members in the 1950s and now has 27, and similar groupings (like ASEAN and Mercosur) have formed elsewhere. What has been happening to the number and size of these joint trading arrangements over time?",
+     "right": "They have grown in number and size",
+     "wrong": "They have stayed roughly the same",
+     "hint": "6 members becoming 27 is an increase, and other groups have also appeared.",
+     "pre": "This expansion is the",
+     "term": "GLOB_FACT_BLOCS"
+    },
+    {
+     "type": "order",
+     "terms": [
+      "econties",
+      "GLOB_CHAR_INTERDEP",
+      "groupdeals",
+      "GLOB_FACT_BLOCS"
+     ],
+     "prompt": "Drag and drop the 4 key terms in the order they build on each other."
+    },
+    {
+     "type": "ask",
+     "q": "Mexico joins a trading bloc with the US and Canada, cutting tariffs between them but keeping tariffs on goods from Brazil. Will Mexico now tend to buy more from its bloc partners and less from Brazil, or will its buying pattern stay the same as before?",
+     "right": "It will buy more from bloc partners and less from Brazil",
+     "wrong": "Its buying pattern will stay the same as before",
+     "hint": "Goods from bloc partners become cheaper relative to goods from Brazil.",
+     "pre": "So the growth of blocs and bilateral deals changes trade flows between member and non-member countries. This is",
+     "term": "TRADE_PATTERN_BLOCS"
+    },
+    {
+     "type": "derive"
+    }
+   ],
+   "given": [
+    "GLOB_DEF"
+   ],
+   "needs": [
+    "GLOB_DEF"
+   ],
+   "builds": [
+    "GLOB_DEF"
+   ],
+   "nodes": [
+    "GLOB_CHAR_INTERDEP",
+    "GLOB_FACT_BLOCS",
+    "TRADE_PATTERN_BLOCS"
+   ],
+   "dropped": [],
+   "edges": [
+    [
+     "GLOB_CHAR_INTERDEP",
+     "GLOB_FACT_BLOCS"
+    ],
+    [
+     "GLOB_FACT_BLOCS",
+     "TRADE_PATTERN_BLOCS"
+    ],
+    [
+     "GLOB_DEF",
+     "GLOB_CHAR_INTERDEP"
+    ],
+    [
+     "GLOB_DEF",
+     "econties"
+    ],
+    [
+     "econties",
+     "GLOB_CHAR_INTERDEP"
+    ],
+    [
+     "GLOB_CHAR_INTERDEP",
+     "groupdeals"
+    ],
+    [
+     "groupdeals",
+     "GLOB_FACT_BLOCS"
+    ],
+    [
+     "GLOB_FACT_BLOCS",
+     "TRADE_PATTERN_BLOCS"
+    ]
+   ]
+  }
+ ]
+}

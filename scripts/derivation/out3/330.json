@@ -1,0 +1,174 @@
+{
+ "id": "gen",
+ "subject": "Economics",
+ "title": "Tax incidence and its drawbacks",
+ "terms": {
+  "burdenshare": {
+   "label": "Burden share"
+  },
+  "TAX_INCIDENCE": {
+   "label": "Tax incidence & elasticity"
+  },
+  "TAX_DIS1": {
+   "label": "Regressive impact on low-income consumers"
+  },
+  "TAX_DIS3": {
+   "label": "Inelastic demand limits effectiveness"
+  },
+  "TAX_DIS4": {
+   "label": "Avoidance, evasion & informal markets"
+  },
+  "TAX_PQ": {
+   "label": "Reading effect on price and quantity from a tax diagram"
+  },
+  "TAX_REGRESSIVE": {
+   "label": "Regressive taxes: definition"
+  },
+  "tax_incidence": {
+   "label": "Tax incidence"
+  }
+ },
+ "stages": [
+  {
+   "name": "Government intervention: tax incidence and its drawbacks",
+   "title": "Tax incidence and its drawbacks",
+   "sub": "After this the student can explain who really bears a tax and why that creates problems for government policy.",
+   "steps": [
+    {
+     "type": "ask",
+     "q": "A £1 tax is put on cigarettes, where demand barely falls when price rises. The seller puts the price up by 90p. Who ends up paying most of that £1?",
+     "right": "Mostly the buyer",
+     "wrong": "Mostly the seller",
+     "hint": "Think about how much of the price rise the buyer actually accepted, since they kept buying anyway.",
+     "pre": "So most of the tax burden falls on the buyer. That split between buyer and seller is the",
+     "term": "burdenshare"
+    },
+    {
+     "type": "ask",
+     "q": "Now compare two goods: one where buyers barely react to a price rise, one where they react a lot. In which case can sellers pass on more of the tax to buyers?",
+     "right": "The good where buyers barely react",
+     "wrong": "The good where buyers react a lot",
+     "hint": "If buyers keep buying despite the price rise, how much of the extra cost can the seller shift onto them?",
+     "pre": "So how the burden splits depends on how responsive demand and supply are to price. This is",
+     "term": "TAX_INCIDENCE"
+    },
+    {
+     "type": "ask",
+     "q": "Cigarette tax is passed on mostly to buyers. A pensioner on a low income and a wealthy banker both smoke the same amount. Does the tax take a bigger slice of income from one of them?",
+     "right": "Yes, a bigger slice from the pensioner's income",
+     "wrong": "No, it takes the same slice from both",
+     "hint": "They pay the same extra pounds, but their incomes are very different sizes.",
+     "pre": "So this kind of tax falls harder on lower earners as a share of income, which is a",
+     "term": "TAX_DIS1"
+    },
+    {
+     "type": "ask",
+     "q": "The government doubles the tax on cigarettes hoping to cut smoking, but because demand barely responds to price, quantity bought hardly falls. Has the policy achieved its goal of reducing consumption?",
+     "right": "No, consumption barely changes",
+     "wrong": "Yes, consumption falls sharply",
+     "hint": "If quantity demanded barely reacts to price at all, what happens when price rises further?",
+     "pre": "So when demand barely responds to price, the tax raises revenue but fails to cut consumption much, showing that",
+     "term": "TAX_DIS3"
+    },
+    {
+     "type": "order",
+     "terms": [
+      "burdenshare",
+      "TAX_INCIDENCE",
+      "TAX_DIS1",
+      "TAX_DIS3"
+     ],
+     "prompt": "Drag and drop the 4 key terms in the order they build on each other."
+    },
+    {
+     "type": "ask",
+     "q": "After a big tax rise on cigarettes, some smokers start buying smuggled or homemade cigarettes instead of taxed ones. Has the tax actually removed this activity from the market, or just pushed it underground?",
+     "right": "Pushed it underground, untaxed",
+     "wrong": "Removed it from the market completely",
+     "hint": "The smokers still want cigarettes; where are they now getting them from?",
+     "pre": "So high taxes can drive buyers and sellers toward untaxed, illegal supply, which is the risk of",
+     "term": "TAX_DIS4"
+    },
+    {
+     "type": "derive"
+    }
+   ],
+   "given": [
+    "TAX_PQ",
+    "TAX_REGRESSIVE",
+    "tax_incidence"
+   ],
+   "needs": [
+    "TAX_PQ",
+    "TAX_REGRESSIVE",
+    "tax_incidence"
+   ],
+   "builds": [
+    "TAX_PQ",
+    "TAX_REGRESSIVE",
+    "tax_incidence"
+   ],
+   "nodes": [
+    "TAX_INCIDENCE",
+    "TAX_DIS1",
+    "TAX_DIS3",
+    "TAX_DIS4"
+   ],
+   "dropped": [],
+   "edges": [
+    [
+     "TAX_INCIDENCE",
+     "TAX_DIS1"
+    ],
+    [
+     "TAX_INCIDENCE",
+     "TAX_DIS3"
+    ],
+    [
+     "TAX_INCIDENCE",
+     "TAX_DIS4"
+    ],
+    [
+     "TAX_PQ",
+     "TAX_INCIDENCE"
+    ],
+    [
+     "TAX_REGRESSIVE",
+     "TAX_DIS1"
+    ],
+    [
+     "tax_incidence",
+     "TAX_INCIDENCE"
+    ],
+    [
+     "TAX_PQ",
+     "burdenshare"
+    ],
+    [
+     "tax_incidence",
+     "burdenshare"
+    ],
+    [
+     "burdenshare",
+     "TAX_INCIDENCE"
+    ],
+    [
+     "TAX_INCIDENCE",
+     "TAX_DIS1"
+    ],
+    [
+     "TAX_INCIDENCE",
+     "TAX_DIS3"
+    ],
+    [
+     "TAX_INCIDENCE",
+     "TAX_DIS4"
+    ],
+    [
+     "TAX_REGRESSIVE",
+     "TAX_DIS1"
+    ]
+   ]
+  }
+ ]
+}

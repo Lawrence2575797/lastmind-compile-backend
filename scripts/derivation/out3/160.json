@@ -1,0 +1,141 @@
+{
+ "id": "gen",
+ "subject": "Economics",
+ "title": "Drivers and impacts of globalisation",
+ "terms": {
+  "GLOB_FACT_TECH": {
+   "label": "Transport & containerisation"
+  },
+  "GLOB_FACT_ICT": {
+   "label": "ICT & internet growth"
+  },
+  "GLOB_FACT_TRADELIB": {
+   "label": "Trade liberalisation"
+  },
+  "GLOB_FACT_MNCGROWTH": {
+   "label": "Growth of multinationals"
+  },
+  "GLOB_IMPACT_COUNTRY_GROWTH": {
+   "label": "Growth & development impact"
+  },
+  "GLOB_CHAR_TRADE": {
+   "label": "Growth in world trade"
+  },
+  "GLOB_CHAR_MNC": {
+   "label": "Growth of multinationals"
+  }
+ },
+ "stages": [
+  {
+   "name": "Drivers and impacts of globalisation",
+   "title": "Drivers and impacts of globalisation",
+   "sub": "Explain what has driven globalisation and how it affects countries' growth and development.",
+   "steps": [
+    {
+     "type": "ask",
+     "q": "In 1970 shipping goods meant loading thousands of loose boxes and sacks by hand, taking weeks in port. Today standard steel boxes are lifted straight from ship to lorry in minutes. What happens to the cost of shipping a sofa from China to the UK?",
+     "right": "It falls sharply",
+     "wrong": "It stays about the same",
+     "hint": "Think about how much time and labour is saved at the docks.",
+     "pre": "Cheaper, faster shipping using standard containers is the",
+     "term": "GLOB_FACT_TECH"
+    },
+    {
+     "type": "ask",
+     "q": "A UK company can now video-call its factory in Vietnam instantly and send designs online in seconds, instead of waiting weeks for a letter or a costly phone line. Does this make it easier or harder to manage production spread across countries?",
+     "right": "Easier",
+     "wrong": "Harder, it adds complexity",
+     "hint": "Compare instant online contact with waiting for a letter to arrive.",
+     "pre": "That instant, cheap communication is the",
+     "term": "GLOB_FACT_ICT"
+    },
+    {
+     "type": "ask",
+     "q": "Twenty years ago, a 20% tax was charged on every foreign car imported into a country. That tax is scrapped. What happens to the price a buyer pays for a foreign car compared with a domestic one?",
+     "right": "The foreign car becomes relatively cheaper",
+     "wrong": "The foreign car stays relatively the same price",
+     "hint": "Removing a tax on imports changes their price relative to home-made goods.",
+     "pre": "Cutting taxes and limits on imports like this is",
+     "term": "GLOB_FACT_TRADELIB"
+    },
+    {
+     "type": "ask",
+     "q": "You already know companies increasingly operate factories, offices and shops across many countries at once. Are more of these companies appearing, and are they getting bigger, over time?",
+     "right": "Yes, more and larger ones",
+     "wrong": "No, they are staying the same size and number",
+     "hint": "Think about how many well-known brands now sell in almost every country.",
+     "pre": "That expansion is the",
+     "term": "GLOB_FACT_MNCGROWTH"
+    },
+    {
+     "type": "order",
+     "terms": [
+      "GLOB_FACT_TECH",
+      "GLOB_FACT_ICT",
+      "GLOB_FACT_TRADELIB",
+      "GLOB_FACT_MNCGROWTH"
+     ],
+     "prompt": "Drag and drop the 4 key terms in the order they build on each other."
+    },
+    {
+     "type": "ask",
+     "q": "Vietnam cuts its import tariffs and multinational companies start building factories there, bringing jobs, wages, new skills and technology. What is likely to happen to Vietnam's income and living standards over time?",
+     "right": "They tend to rise",
+     "wrong": "They stay unaffected",
+     "hint": "New factories, jobs and technology arriving in a country: what does that do to its output and incomes?",
+     "pre": "This growth and development in countries as they open up and attract multinationals is the",
+     "term": "GLOB_IMPACT_COUNTRY_GROWTH"
+    },
+    {
+     "type": "derive"
+    }
+   ],
+   "given": [
+    "GLOB_CHAR_TRADE",
+    "GLOB_CHAR_MNC"
+   ],
+   "needs": [
+    "GLOB_CHAR_TRADE",
+    "GLOB_CHAR_MNC"
+   ],
+   "builds": [
+    "GLOB_CHAR_TRADE",
+    "GLOB_CHAR_MNC"
+   ],
+   "nodes": [
+    "GLOB_FACT_TECH",
+    "GLOB_FACT_ICT",
+    "GLOB_FACT_TRADELIB",
+    "GLOB_FACT_MNCGROWTH",
+    "GLOB_IMPACT_COUNTRY_GROWTH"
+   ],
+   "dropped": [],
+   "edges": [
+    [
+     "GLOB_FACT_TECH",
+     "GLOB_FACT_ICT"
+    ],
+    [
+     "GLOB_FACT_TRADELIB",
+     "GLOB_IMPACT_COUNTRY_GROWTH"
+    ],
+    [
+     "GLOB_FACT_MNCGROWTH",
+     "GLOB_IMPACT_COUNTRY_GROWTH"
+    ],
+    [
+     "GLOB_CHAR_TRADE",
+     "GLOB_FACT_TRADELIB"
+    ],
+    [
+     "GLOB_CHAR_TRADE",
+     "GLOB_FACT_TECH"
+    ],
+    [
+     "GLOB_CHAR_MNC",
+     "GLOB_FACT_MNCGROWTH"
+    ]
+   ]
+  }
+ ]
+}

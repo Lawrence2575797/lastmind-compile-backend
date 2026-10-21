@@ -1,0 +1,124 @@
+{
+ "id": "gen",
+ "subject": "Economics",
+ "title": "Public and private sector organisations",
+ "terms": {
+  "public_sector_def": {
+   "label": "Public sector organisation"
+  },
+  "private_sector_def": {
+   "label": "Private sector organisation"
+  },
+  "ownership": {
+   "label": "Ownership and funding"
+  },
+  "aim": {
+   "label": "Aim: profit vs service"
+  },
+  "public_private_distinction": {
+   "label": "Public vs private sector"
+  }
+ },
+ "stages": [
+  {
+   "name": "Public and private sector organisations",
+   "title": "Public and private sector organisations",
+   "sub": "After this, the student can tell whether an organisation belongs to the public or private sector and why that matters.",
+   "steps": [
+    {
+     "type": "ask",
+     "q": "A hospital is run and paid for by the government, using taxpayers' money, to provide free healthcare. Who owns it?",
+     "right": "The government, on behalf of everyone",
+     "wrong": "A group of shareholders who invested money",
+     "hint": "Think about where the money to run the hospital actually comes from.",
+     "pre": "An organisation owned and funded by the government to provide a service is in the",
+     "term": "public_sector_def"
+    },
+    {
+     "type": "ask",
+     "q": "A local bakery is owned by a family, who put in their own savings and keep any profit it makes. Who owns it?",
+     "right": "The family who set it up",
+     "wrong": "The local council",
+     "hint": "Who put the money in, and who gets to keep what is left over?",
+     "pre": "An organisation owned by individuals aiming to make a profit is in the",
+     "term": "private_sector_def"
+    },
+    {
+     "type": "ask",
+     "q": "The hospital's money comes from taxes collected from everyone, while the bakery's money came from the family's own savings. Are these two organisations funded in the same way?",
+     "right": "No, they come from different sources",
+     "wrong": "Yes, both rely on the same source of money",
+     "hint": "One is funded by the state, the other by private individuals.",
+     "pre": "So who owns and funds an organisation is a question of",
+     "term": "ownership"
+    },
+    {
+     "type": "ask",
+     "q": "The bakery closes early on a quiet Tuesday because it wasn't worth the cost of staying open. Could the hospital shut for the day for the same reason?",
+     "right": "No, it still has to provide the service",
+     "wrong": "Yes, if running it costs more than it earns",
+     "hint": "What is each organisation ultimately trying to achieve: money left over, or a service delivered regardless?",
+     "pre": "So the two also differ in their",
+     "term": "aim"
+    },
+    {
+     "type": "order",
+     "terms": [
+      "public_sector_def",
+      "private_sector_def",
+      "ownership",
+      "aim"
+     ],
+     "prompt": "Drag and drop the 4 key terms in the order they build on each other."
+    },
+    {
+     "type": "ask",
+     "q": "Given that they differ in who owns and funds them, and in whether they aim for profit or for providing a service regardless of cost, are these two types of organisation the same kind of thing?",
+     "right": "No, they are fundamentally different",
+     "wrong": "Yes, they work in much the same way",
+     "hint": "Put ownership and aim together: do they point to one category of organisation, or two separate ones?",
+     "pre": "These differences together form the",
+     "term": "public_private_distinction"
+    },
+    {
+     "type": "derive"
+    }
+   ],
+   "given": [],
+   "needs": [],
+   "builds": [],
+   "nodes": [
+    "public_sector_def",
+    "private_sector_def",
+    "public_private_distinction"
+   ],
+   "dropped": [],
+   "edges": [
+    [
+     "public_sector_def",
+     "public_private_distinction"
+    ],
+    [
+     "private_sector_def",
+     "public_private_distinction"
+    ],
+    [
+     "public_sector_def",
+     "ownership"
+    ],
+    [
+     "private_sector_def",
+     "ownership"
+    ],
+    [
+     "ownership",
+     "aim"
+    ],
+    [
+     "aim",
+     "public_private_distinction"
+    ]
+   ]
+  }
+ ]
+}

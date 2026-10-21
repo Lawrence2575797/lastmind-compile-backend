@@ -1,0 +1,184 @@
+{
+ "id": "gen",
+ "subject": "Economics",
+ "title": "Trade cycle",
+ "terms": {
+  "fluct": {
+   "label": "Fluctuations around trend"
+  },
+  "boomslump": {
+   "label": "Boom and slump"
+  },
+  "phases": {
+   "label": "Recurring phases"
+  },
+  "TRADE_CYCLE": {
+   "label": "Trade (business) cycle"
+  },
+  "ACTUAL_GROWTH": {
+   "label": "Actual growth"
+  },
+  "TREND_GROWTH": {
+   "label": "Trend growth rate"
+  }
+ },
+ "stages": [
+  {
+   "name": "Trade cycle",
+   "title": "Trade cycle",
+   "sub": "Understand how actual growth moves around the trend over time to form the trade cycle.",
+   "steps": [
+    {
+     "type": "ask",
+     "q": "Over 20 years, a country's actual growth rate is sometimes above its long-term trend rate and sometimes below it, never sitting still on the trend. What does this tell you about actual growth compared to the trend?",
+     "right": "It moves up and down around the trend",
+     "wrong": "It always stays exactly on the trend",
+     "hint": "Think about whether real-world growth ever sits perfectly still on the average.",
+     "pre": "So actual growth shows",
+     "term": "fluct"
+    },
+    {
+     "type": "ask",
+     "q": "When actual growth rises well above trend, output and spending surge; when it falls well below trend, they shrink. What do these two extremes look like on the cycle?",
+     "right": "A high point and a low point",
+     "wrong": "A permanent rise and a fall",
+     "hint": "Think of the two extreme points growth can reach, one high and one low.",
+     "pre": "These opposite extremes are a",
+     "term": "boomslump"
+    },
+    {
+     "type": "ask",
+     "q": "After a slump, does the economy simply stay there forever, or does it eventually move through recovery back towards another boom, then downturn again?",
+     "right": "It moves through the same stages again and again",
+     "wrong": "It stays in that one stage permanently",
+     "hint": "Look back over many decades of data: does the same sequence of ups and downs keep happening?",
+     "pre": "So the economy passes through",
+     "term": "phases"
+    },
+    {
+     "type": "order",
+     "terms": [
+      "fluct",
+      "boomslump",
+      "phases"
+     ],
+     "prompt": "Drag and drop the 3 key terms in the order they build on each other."
+    },
+    {
+     "type": "ask",
+     "q": "If you plotted a country's actual growth rate on a graph over many decades, would you expect to see a repeating wave-like pattern of booms and slumps around the trend, or a flat straight line?",
+     "right": "A repeating wave-like pattern",
+     "wrong": "A flat straight line",
+     "hint": "Think about whether growth ever settles down and stops changing.",
+     "pre": "This regular repeating pattern of booms and slumps around the trend over time is the",
+     "term": "TRADE_CYCLE",
+     "diagram": {
+      "x": "Time",
+      "y": "Real output",
+      "curves": [
+       {
+        "label": "Actual",
+        "pts": [
+         [
+          0.05,
+          0.3
+         ],
+         [
+          0.2,
+          0.6
+         ],
+         [
+          0.35,
+          0.35
+         ],
+         [
+          0.5,
+          0.65
+         ],
+         [
+          0.65,
+          0.3
+         ],
+         [
+          0.8,
+          0.6
+         ],
+         [
+          0.95,
+          0.4
+         ]
+        ]
+       },
+       {
+        "label": "Trend",
+        "pts": [
+         [
+          0.05,
+          0.4
+         ],
+         [
+          0.5,
+          0.5
+         ],
+         [
+          0.95,
+          0.6
+         ]
+        ]
+       }
+      ]
+     }
+    },
+    {
+     "type": "derive"
+    }
+   ],
+   "given": [
+    "ACTUAL_GROWTH",
+    "TREND_GROWTH"
+   ],
+   "needs": [
+    "ACTUAL_GROWTH",
+    "TREND_GROWTH"
+   ],
+   "builds": [
+    "ACTUAL_GROWTH",
+    "TREND_GROWTH"
+   ],
+   "nodes": [
+    "TRADE_CYCLE"
+   ],
+   "dropped": [],
+   "edges": [
+    [
+     "ACTUAL_GROWTH",
+     "TRADE_CYCLE"
+    ],
+    [
+     "TREND_GROWTH",
+     "TRADE_CYCLE"
+    ],
+    [
+     "ACTUAL_GROWTH",
+     "fluct"
+    ],
+    [
+     "TREND_GROWTH",
+     "fluct"
+    ],
+    [
+     "fluct",
+     "boomslump"
+    ],
+    [
+     "boomslump",
+     "phases"
+    ],
+    [
+     "phases",
+     "TRADE_CYCLE"
+    ]
+   ]
+  }
+ ]
+}

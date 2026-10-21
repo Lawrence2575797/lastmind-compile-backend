@@ -1,0 +1,98 @@
+{
+ "id": "gen",
+ "subject": "Economics",
+ "title": "Marginal analysis",
+ "terms": {
+  "totalcost": {
+   "label": "Total cost"
+  },
+  "totalbenefit": {
+   "label": "Total benefit"
+  },
+  "onemore": {
+   "label": "One more unit"
+  },
+  "marginal_analysis": {
+   "label": "Marginal analysis"
+  }
+ },
+ "stages": [
+  {
+   "name": "Marginal analysis",
+   "title": "Marginal analysis",
+   "sub": "Judge decisions by weighing up the extra cost and extra benefit of one more unit.",
+   "steps": [
+    {
+     "type": "ask",
+     "q": "A bakery has already spent £200 on flour, ovens and staff today. Does that £200 help decide whether to bake another batch?",
+     "right": "Not much, it is already spent",
+     "wrong": "Yes, it tells you what to do next",
+     "hint": "That money is spent whatever happens next. Does it change tonight's decision?",
+     "pre": "So looking at the whole spend so far is looking at the",
+     "term": "totalcost"
+    },
+    {
+     "type": "ask",
+     "q": "The bakery sold 100 loaves today and pleased customers each time. Does that total satisfaction tell you if loaf 101 is worth baking?",
+     "right": "Not on its own",
+     "wrong": "Yes, that settles it",
+     "hint": "Loaf 101 is a new, separate decision. Does the running total decide it?",
+     "pre": "That running satisfaction from everything sold so far is the",
+     "term": "totalbenefit"
+    },
+    {
+     "type": "ask",
+     "q": "To decide whether to bake loaf 101, what matters: the £200 already spent, or the extra loaf's cost and revenue?",
+     "right": "Just the extra loaf's cost and revenue",
+     "wrong": "The £200 already spent",
+     "hint": "The past spending cannot be changed by this decision. What can still be changed?",
+     "pre": "So the decision comes down to just",
+     "term": "onemore"
+    },
+    {
+     "type": "ask",
+     "q": "Loaf 101 costs 50p to make and sells for £1.20. Should the bakery bake it, even though earlier loaves earned less?",
+     "right": "Yes, bake it, that loaf alone gains money",
+     "wrong": "No, base it on the average profit per loaf so far",
+     "hint": "Compare only the extra cost of this loaf to the extra money it brings in.",
+     "pre": "Comparing just the extra cost and extra benefit of one more unit is",
+     "term": "marginal_analysis"
+    },
+    {
+     "type": "order",
+     "terms": [
+      "totalcost",
+      "totalbenefit",
+      "onemore",
+      "marginal_analysis"
+     ],
+     "prompt": "Drag and drop the 4 key terms in the order they build on each other."
+    },
+    {
+     "type": "derive"
+    }
+   ],
+   "given": [],
+   "needs": [],
+   "builds": [],
+   "nodes": [
+    "marginal_analysis"
+   ],
+   "dropped": [],
+   "edges": [
+    [
+     "totalcost",
+     "onemore"
+    ],
+    [
+     "totalbenefit",
+     "onemore"
+    ],
+    [
+     "onemore",
+     "marginal_analysis"
+    ]
+   ]
+  }
+ ]
+}

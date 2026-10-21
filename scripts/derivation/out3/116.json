@@ -1,0 +1,187 @@
+{
+ "id": "gen",
+ "subject": "Economics",
+ "title": "Revenues",
+ "terms": {
+  "TR": {
+   "label": "Total revenue"
+  },
+  "AR": {
+   "label": "Average revenue"
+  },
+  "MR": {
+   "label": "Marginal revenue"
+  },
+  "TR_AR_MR_REL": {
+   "label": "TR, AR, MR relationship"
+  },
+  "PED_DEF": {
+   "label": "Price elasticity of demand"
+  },
+  "PED_TR_REL": {
+   "label": "PED and total revenue"
+  }
+ },
+ "stages": [
+  {
+   "name": "Revenues",
+   "title": "Revenues",
+   "sub": "How total, average and marginal revenue relate, and how price elasticity links to revenue.",
+   "steps": [
+    {
+     "type": "ask",
+     "q": "A café sells 50 cups of coffee at £3 each. How much money comes in altogether?",
+     "right": "£150",
+     "wrong": "£3",
+     "hint": "Multiply the price by the number sold.",
+     "pre": "The money from all sales, price times quantity, is",
+     "term": "TR"
+    },
+    {
+     "type": "ask",
+     "q": "The café's £150 came from selling 50 cups. How much did each cup earn on average?",
+     "right": "£3",
+     "wrong": "£150",
+     "hint": "Divide the total money by the number of cups.",
+     "pre": "Revenue per unit sold is",
+     "term": "AR"
+    },
+    {
+     "type": "ask",
+     "q": "Selling a 51st cup takes total revenue from £150 to £152.50. How much extra revenue did that one extra cup bring in?",
+     "right": "£2.50",
+     "wrong": "£3",
+     "hint": "Look at the change in total revenue, not the average price.",
+     "pre": "The extra revenue from selling one more unit is",
+     "term": "MR"
+    },
+    {
+     "type": "ask",
+     "q": "If a firm has to cut its price to sell one more unit, will that extra unit add more or less to total revenue than the units sold before it?",
+     "right": "Less",
+     "wrong": "More",
+     "hint": "A lower price on the extra unit means less is added than earlier units earned.",
+     "pre": "Because of this, MR falls faster than AR, and TR keeps rising only while MR stays positive. This describes the",
+     "term": "TR_AR_MR_REL",
+     "diagram": {
+      "x": "Quantity",
+      "y": "Revenue",
+      "curves": [
+       {
+        "label": "AR",
+        "pts": [
+         [
+          0.05,
+          0.85
+         ],
+         [
+          0.4,
+          0.55
+         ],
+         [
+          0.9,
+          0.15
+         ]
+        ]
+       },
+       {
+        "label": "MR",
+        "pts": [
+         [
+          0.05,
+          0.85
+         ],
+         [
+          0.35,
+          0.35
+         ],
+         [
+          0.55,
+          0
+         ]
+        ]
+       }
+      ]
+     }
+    },
+    {
+     "type": "order",
+     "terms": [
+      "TR",
+      "AR",
+      "MR",
+      "TR_AR_MR_REL"
+     ],
+     "prompt": "Drag and drop the 4 key terms in the order they build on each other."
+    },
+    {
+     "type": "ask",
+     "q": "A 10% price rise on train tickets leads to only a 2% fall in tickets bought. Are buyers reacting a lot or a little to the price change, relative to the size of that change?",
+     "right": "A little",
+     "wrong": "A lot",
+     "hint": "Compare the size of the reaction (2%) to the size of the price change (10%).",
+     "pre": "Measuring how much quantity demanded responds to a price change is",
+     "term": "PED_DEF"
+    },
+    {
+     "type": "ask",
+     "q": "Using the train example: price rose but quantity barely fell. Will total revenue (price times quantity) end up higher or lower than before?",
+     "right": "Higher",
+     "wrong": "Lower",
+     "hint": "Price went up a lot, quantity fell only a little, so what happens to price times quantity?",
+     "pre": "So how responsive demand is determines whether a price rise raises or lowers revenue. That is",
+     "term": "PED_TR_REL"
+    },
+    {
+     "type": "derive"
+    }
+   ],
+   "given": [],
+   "needs": [],
+   "builds": [],
+   "nodes": [
+    "TR",
+    "AR",
+    "MR",
+    "TR_AR_MR_REL",
+    "PED_DEF",
+    "PED_TR_REL"
+   ],
+   "dropped": [],
+   "edges": [
+    [
+     "TR",
+     "AR"
+    ],
+    [
+     "TR",
+     "MR"
+    ],
+    [
+     "TR",
+     "TR_AR_MR_REL"
+    ],
+    [
+     "AR",
+     "TR_AR_MR_REL"
+    ],
+    [
+     "MR",
+     "TR_AR_MR_REL"
+    ],
+    [
+     "PED_DEF",
+     "PED_TR_REL"
+    ],
+    [
+     "TR",
+     "PED_TR_REL"
+    ],
+    [
+     "AR",
+     "PED_TR_REL"
+    ]
+   ]
+  }
+ ]
+}

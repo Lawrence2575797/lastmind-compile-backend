@@ -1,0 +1,102 @@
+```json
+{
+  "issues": [
+    {
+      "type": "missing_intermediate_node",
+      "affected_node": "FACTORS_RATE_LIST",
+      "explanation": "This node bundles five distinct factors (concentration, pressure, surface area, temperature, catalyst) as a single recall item, but each factor already has its own dedicated explanation node downstream. Rule 19 and consistency require splitting into a short list respecting the ~4-item ceiling, or better, since each factor is separately examined, each should be its own atomic recall node feeding its matching explanation node instead of one bundled node feeding all five.",
+      "fix": {
+        "new_nodes": [
+          {"id":"FACTOR_CONCENTRATION","label":"Concentration as a factor affecting rate of reaction","subtopic":"6.1","theme":"Topic 6","difficulty":0.2,"objective":"Recall that concentration of reactants in solution affects rate of reaction.","essentialPoints":["Concentration of reactants in solution is a factor that affects rate of reaction"],"specRefs":["4.6.1.2"],"kind":"concept","practicalIds":[]},
+          {"id":"FACTOR_PRESSURE","label":"Pressure as a factor affecting rate of reaction","subtopic":"6.1","theme":"Topic 6","difficulty":0.2,"objective":"Recall that pressure of reacting gases affects rate of reaction.","essentialPoints":["Pressure of reacting gases is a factor that affects rate of reaction"],"specRefs":["4.6.1.2"],"kind":"concept","practicalIds":[]},
+          {"id":"FACTOR_SURFACE_AREA","label":"Surface area as a factor affecting rate of reaction","subtopic":"6.1","theme":"Topic 6","difficulty":0.2,"objective":"Recall that surface area of solid reactants affects rate of reaction.","essentialPoints":["Surface area of solid reactants is a factor that affects rate of reaction"],"specRefs":["4.6.1.2"],"kind":"concept","practicalIds":[]},
+          {"id":"FACTOR_TEMPERATURE","label":"Temperature as a factor affecting rate of reaction","subtopic":"6.1","theme":"Topic 6","difficulty":0.2,"objective":"Recall that temperature affects rate of reaction.","essentialPoints":["Temperature is a factor that affects rate of reaction"],"specRefs":["4.6.1.2"],"kind":"concept","practicalIds":[]},
+          {"id":"FACTOR_CATALYST_PRESENCE","label":"Presence of a catalyst as a factor affecting rate of reaction","subtopic":"6.1","theme":"Topic 6","difficulty":0.2,"objective":"Recall that the presence of a catalyst affects rate of reaction.","essentialPoints":["Presence of a catalyst is a factor that affects rate of reaction"],"specRefs":["4.6.1.2"],"kind":"concept","practicalIds":[]}
+        ],
+        "new_edges": [
+          ["MEAN_RATE_FORMULA","FACTOR_CONCENTRATION"],
+          ["MEAN_RATE_FORMULA","FACTOR_PRESSURE"],
+          ["MEAN_RATE_FORMULA","FACTOR_SURFACE_AREA"],
+          ["MEAN_RATE_FORMULA","FACTOR_TEMPERATURE"],
+          ["MEAN_RATE_FORMULA","FACTOR_CATALYST_PRESENCE"],
+          ["FACTOR_CONCENTRATION","CONC_RATE_EXPLAIN"],
+          ["FACTOR_PRESSURE","PRESSURE_RATE_EXPLAIN"],
+          ["FACTOR_SURFACE_AREA","SURFACE_AREA_VOLUME_RATIO"],
+          ["FACTOR_TEMPERATURE","TEMPERATURE_RATE_EXPLAIN"],
+          ["FACTOR_CATALYST_PRESENCE","CATALYST_DEFINITION"]
+        ],
+        "remove_edges": [
+          ["MEAN_RATE_FORMULA","FACTORS_RATE_LIST"],
+          ["FACTORS_RATE_LIST","CONC_RATE_EXPLAIN"],
+          ["FACTORS_RATE_LIST","PRESSURE_RATE_EXPLAIN"],
+          ["FACTORS_RATE_LIST","SURFACE_AREA_VOLUME_RATIO"],
+          ["FACTORS_RATE_LIST","TEMPERATURE_RATE_EXPLAIN"],
+          ["FACTORS_RATE_LIST","CATALYST_DEFINITION"]
+        ]
+      }
+    },
+    {
+      "type": "missing_intermediate_node",
+      "affected_node": "RP5_CONC_RATE",
+      "explanation": "Rule 17: this node bundles carrying out the practical procedure (gas-volume and turbidity methods, hypothesis-forming) together with the concept it investigates (effect of concentration on rate). It should be split so the procedure node depends on the concept understanding, and calculation/evaluation nodes depend on the procedure specifically.",
+      "fix": {
+        "new_nodes": [],
+        "new_edges": [
+          ["CONC_RATE_EXPLAIN","RP5_CONC_RATE"]
+        ],
+        "remove_edges": []
+      }
+    },
+    {
+      "type": "wrong_edge",
+      "affected_node": "RP5_EVALUATE",
+      "explanation": "The evaluation node critiques specific measurement steps (turbidity judging by eye, gas-volume leaks/timer delay) but is only wired to the umbrella procedure node RP5_CONC_RATE rather than also depending on the rate calculation step it evaluates the reliability of. Since evaluation should be wired to the specific step it critiques, add an edge from RATE_CALC_FROM_RP5 to ensure the evaluation follows understanding of how rate values were derived from the (error-prone) data.","fix": {
+        "new_nodes": [],
+        "new_edges": [["RATE_CALC_FROM_RP5","RP5_EVALUATE"]],
+        "remove_edges": []
+      }
+    },
+    {
+      "type": "ordering_bug",
+      "affected_node": "GLOBAL",
+      "explanation": "Difficulty values across this batch are present but appear reasonably differentiated already except for the several 0.3/0.4/0.5 clusters on parallel factor-explanation nodes (CONC_RATE_EXPLAIN, PRESSURE_RATE_EXPLAIN, SURFACE_AREA_RATE_EXPLAIN all at 0.5) which is a plausible genuine judgement rather than a default; no action required beyond noting temperature (0.6) is correctly harder as it combines two effects - no fix needed.",
+      "fix": {"new_nodes": [], "new_edges": [], "remove_edges": []}
+    }
+  ],
+  "removeNodeIds": ["FACTORS_RATE_LIST"],
+  "upsertNodes": [
+    {"id":"FACTOR_CONCENTRATION","label":"Concentration as a factor affecting rate of reaction","subtopic":"6.1","theme":"Topic 6","difficulty":0.2,"objective":"Recall that concentration of reactants in solution affects rate of reaction.","essentialPoints":["Concentration of reactants in solution is a factor that affects rate of reaction"],"specRefs":["4.6.1.2"],"kind":"concept","practicalIds":[]},
+    {"id":"FACTOR_PRESSURE","label":"Pressure as a factor affecting rate of reaction","subtopic":"6.1","theme":"Topic 6","difficulty":0.2,"objective":"Recall that pressure of reacting gases affects rate of reaction.","essentialPoints":["Pressure of reacting gases is a factor that affects rate of reaction"],"specRefs":["4.6.1.2"],"kind":"concept","practicalIds":[]},
+    {"id":"FACTOR_SURFACE_AREA","label":"Surface area as a factor affecting rate of reaction","subtopic":"6.1","theme":"Topic 6","difficulty":0.2,"objective":"Recall that surface area of solid reactants affects rate of reaction.","essentialPoints":["Surface area of solid reactants is a factor that affects rate of reaction"],"specRefs":["4.6.1.2"],"kind":"concept","practicalIds":[]},
+    {"id":"FACTOR_TEMPERATURE","label":"Temperature as a factor affecting rate of reaction","subtopic":"6.1","theme":"Topic 6","difficulty":0.2,"objective":"Recall that temperature affects rate of reaction.","essentialPoints":["Temperature is a factor that affects rate of reaction"],"specRefs":["4.6.1.2"],"kind":"concept","practicalIds":[]},
+    {"id":"FACTOR_CATALYST_PRESENCE","label":"Presence of a catalyst as a factor affecting rate of reaction","subtopic":"6.1","theme":"Topic 6","difficulty":0.2,"objective":"Recall that the presence of a catalyst affects rate of reaction.","essentialPoints":["Presence of a catalyst is a factor that affects rate of reaction"],"specRefs":["4.6.1.2"],"kind":"concept","practicalIds":[]},
+    {"id":"RP5_CONC_RATE","label":"Required practical 5: investigating the effect of concentration on rate (gas volume and turbidity methods)","subtopic":"6.1","theme":"Topic 6","difficulty":0.5,"objective":"Carry out an investigation into how changing concentration affects the rate of reaction, using a gas-volume method and a colour-change/turbidity method, including forming a hypothesis.","essentialPoints":["Vary concentration of one reactant while keeping other variables (temperature, volume, other reactant amount) constant","Gas-volume method: measure volume of gas produced at set time intervals using a gas syringe or displacement of water","Turbidity/colour method: time how long it takes for a mark to disappear or colour to change","Form a hypothesis linking concentration to rate before testing it"],"specRefs":["Required practical 5"],"kind":"procedure","practicalIds":[5]}
+  ],
+  "removeEdges": [
+    ["MEAN_RATE_FORMULA","FACTORS_RATE_LIST"],
+    ["FACTORS_RATE_LIST","CONC_RATE_EXPLAIN"],
+    ["FACTORS_RATE_LIST","PRESSURE_RATE_EXPLAIN"],
+    ["FACTORS_RATE_LIST","SURFACE_AREA_VOLUME_RATIO"],
+    ["FACTORS_RATE_LIST","TEMPERATURE_RATE_EXPLAIN"],
+    ["FACTORS_RATE_LIST","CATALYST_DEFINITION"]
+  ],
+  "addEdges": [
+    {"from":"MEAN_RATE_FORMULA","to":"FACTOR_CONCENTRATION","difficulty":0.2},
+    {"from":"MEAN_RATE_FORMULA","to":"FACTOR_PRESSURE","difficulty":0.2},
+    {"from":"MEAN_RATE_FORMULA","to":"FACTOR_SURFACE_AREA","difficulty":0.2},
+    {"from":"MEAN_RATE_FORMULA","to":"FACTOR_TEMPERATURE","difficulty":0.2},
+    {"from":"MEAN_RATE_FORMULA","to":"FACTOR_CATALYST_PRESENCE","difficulty":0.2},
+    {"from":"FACTOR_CONCENTRATION","to":"CONC_RATE_EXPLAIN","difficulty":0.3},
+    {"from":"FACTOR_PRESSURE","to":"PRESSURE_RATE_EXPLAIN","difficulty":0.3},
+    {"from":"FACTOR_SURFACE_AREA","to":"SURFACE_AREA_VOLUME_RATIO","difficulty":0.3},
+    {"from":"FACTOR_TEMPERATURE","to":"TEMPERATURE_RATE_EXPLAIN","difficulty":0.3},
+    {"from":"FACTOR_CATALYST_PRESENCE","to":"CATALYST_DEFINITION","difficulty":0.2},
+    {"from":"CONC_RATE_EXPLAIN","to":"RP5_CONC_RATE","difficulty":0.4},
+    {"from":"RATE_CALC_FROM_RP5","to":"RP5_EVALUATE","difficulty":0.5}
+  ],
+  "remainingProblems": [
+    "RATE_MOLES_HT is HT-only but has no explicit HT flag field; verified acceptable since kind/objective conventions in this batch don't include an HT boolean field, consistent with other HT nodes like LE_CHATELIER_HT which rely on label naming only.",
+    "CATALYST_REACTION_PROFILE (a diagram-construction node) could arguably need an edge from a generic 'reaction profile/energy diagram' root node from topic 5 exothermic/endothermic reactions, but no such node was provided in this batch to link to."
+  ]
+}
+```

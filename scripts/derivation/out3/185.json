@@ -1,0 +1,142 @@
+{
+ "id": "gen",
+ "subject": "Economics",
+ "title": "Balance of payments components",
+ "terms": {
+  "BOP_CURRENT_TRADE": {
+   "label": "Trade in goods & services balance"
+  },
+  "BOP_CURRENT_INCOME": {
+   "label": "Primary income"
+  },
+  "BOP_CURRENT_TRANSFERS": {
+   "label": "Secondary income"
+  },
+  "BOP_CAPITAL": {
+   "label": "Capital account"
+  },
+  "BOP_FINANCIAL": {
+   "label": "Financial account"
+  },
+  "BOP_STRUCTURE": {
+   "label": "Balance of payments components"
+  }
+ },
+ "stages": [
+  {
+   "name": "Balance of payments components",
+   "title": "Balance of payments components",
+   "sub": "What actually gets recorded in each part of the balance of payments.",
+   "steps": [
+    {
+     "type": "ask",
+     "q": "A UK car maker sells £5m of cars to France and buys £3m of French cheese. Which part of the current account records this £5m and £3m?",
+     "right": "The record of goods and services bought and sold abroad",
+     "wrong": "The record of interest and dividends paid abroad",
+     "hint": "Cars and cheese are goods being exported and imported, not money earned on investments.",
+     "pre": "Exports minus imports of goods and services is the",
+     "term": "BOP_CURRENT_TRADE"
+    },
+    {
+     "type": "ask",
+     "q": "A UK pension fund owns shares in a German company and receives £2m in dividends this year. Is this payment for a good sold, or for owning an asset abroad?",
+     "right": "For owning an asset abroad",
+     "wrong": "For a good sold abroad",
+     "hint": "No car or cheese changed hands here, only a return on money already invested.",
+     "pre": "Dividends, interest and wages earned from assets held abroad make up",
+     "term": "BOP_CURRENT_INCOME"
+    },
+    {
+     "type": "ask",
+     "q": "The UK government sends £1m of aid to a country hit by a flood, with nothing bought or sold in return. Does this belong with trade flows, or with income earned on investments?",
+     "right": "Neither, it is a one-way gift with no return",
+     "wrong": "With income earned on investments abroad",
+     "hint": "Aid is not payment for goods, and it is not a return on an asset either.",
+     "pre": "One-way flows like aid and remittances, with nothing given back, are",
+     "term": "BOP_CURRENT_TRANSFERS"
+    },
+    {
+     "type": "order",
+     "terms": [
+      "BOP_CURRENT_TRADE",
+      "BOP_CURRENT_INCOME",
+      "BOP_CURRENT_TRANSFERS"
+     ],
+     "prompt": "Drag and drop the 3 key terms in the order they build on each other."
+    },
+    {
+     "type": "ask",
+     "q": "A foreign government writes off £4m of debt owed by a poorer country, and a migrant brings £50,000 of savings with them when they permanently move country. Are these everyday trade or income flows, or one-off transfers of wealth and assets themselves?",
+     "right": "One-off transfers of wealth and assets themselves",
+     "wrong": "Everyday trade or income flows",
+     "hint": "Nothing is being bought or earned each year here, it is a single transfer of an asset or debt.",
+     "pre": "These one-off transfers of capital and non-produced assets sit in the",
+     "term": "BOP_CAPITAL"
+    },
+    {
+     "type": "ask",
+     "q": "A US company buys a UK factory outright, another US investor buys UK government bonds, and the Bank of England adds dollars to its reserves. Are these purchases of goods, or purchases of assets and holdings of foreign currency?",
+     "right": "Purchases of assets and currency holdings",
+     "wrong": "Purchases of goods and services",
+     "hint": "A factory, bonds and reserves are all things owned, not things consumed.",
+     "pre": "FDI, portfolio investment and reserve assets are recorded in the",
+     "term": "BOP_FINANCIAL"
+    },
+    {
+     "type": "order",
+     "terms": [
+      "BOP_CAPITAL",
+      "BOP_FINANCIAL"
+     ],
+     "prompt": "Drag and drop the 2 key terms in the order they build on each other."
+    },
+    {
+     "type": "derive"
+    }
+   ],
+   "given": [
+    "BOP_STRUCTURE"
+   ],
+   "needs": [
+    "BOP_STRUCTURE"
+   ],
+   "builds": [
+    "BOP_STRUCTURE"
+   ],
+   "nodes": [
+    "BOP_CURRENT_TRADE",
+    "BOP_CURRENT_INCOME",
+    "BOP_CURRENT_TRANSFERS",
+    "BOP_CAPITAL",
+    "BOP_FINANCIAL"
+   ],
+   "dropped": [],
+   "edges": [
+    [
+     "BOP_CURRENT_TRADE",
+     "BOP_CURRENT_INCOME"
+    ],
+    [
+     "BOP_CURRENT_INCOME",
+     "BOP_CURRENT_TRANSFERS"
+    ],
+    [
+     "BOP_CURRENT_TRADE",
+     "BOP_CAPITAL"
+    ],
+    [
+     "BOP_CAPITAL",
+     "BOP_FINANCIAL"
+    ],
+    [
+     "BOP_STRUCTURE",
+     "BOP_CURRENT_TRADE"
+    ],
+    [
+     "BOP_STRUCTURE",
+     "BOP_CURRENT_TRADE"
+    ]
+   ]
+  }
+ ]
+}

@@ -1,0 +1,251 @@
+{
+ "id": "gen",
+ "subject": "Economics",
+ "title": "Poverty and inequality",
+ "terms": {
+  "wage_payment": {
+   "label": "Payment for labour"
+  },
+  "profit_payment": {
+   "label": "Payment for capital"
+  },
+  "FACTOR_INCOME_DIFF": {
+   "label": "Differences in factor incomes"
+  },
+  "EDU_SKILLS_CAUSE": {
+   "label": "Education and skills gap"
+  },
+  "DISCRIMINATION_CAUSE": {
+   "label": "Discrimination"
+  },
+  "MARKET_POWER_CAUSE": {
+   "label": "Market power and profits"
+  },
+  "ASSET_OWNERSHIP_CAUSE": {
+   "label": "Unequal asset ownership"
+  },
+  "WEALTH_INCOME_DISTINCTION": {
+   "label": "Wealth vs income inequality"
+  },
+  "WEALTH_DEF": {
+   "label": "Wealth"
+  },
+  "monopoly_eq": {
+   "label": "Monopoly equilibrium"
+  }
+ },
+ "stages": [
+  {
+   "name": "Poverty and inequality",
+   "title": "Poverty and inequality",
+   "sub": "Explain why people end up with unequal incomes and wealth.",
+   "steps": [
+    {
+     "type": "read",
+     "term": "wage_payment",
+     "text": "A cleaner and a surgeon both sell their labour, but for very different hourly rates. What labour earns is called "
+    },
+    {
+     "type": "read",
+     "term": "profit_payment",
+     "text": "A factory owner keeps whatever is left after wages and costs are paid. What capital earns is called "
+    },
+    {
+     "type": "ask",
+     "q": "One nurse earns £30,000 a year and one banker earns £300,000, partly because wages, rent, interest and profit are all set differently across jobs and assets. Would you expect everyone's total income to end up equal?",
+     "right": "No, it would still vary a lot",
+     "wrong": "Yes, it would even out overall",
+     "hint": "Wages, rent, interest and profit are four separate rewards, each set in its own market.",
+     "pre": "So one cause of income inequality is",
+     "term": "FACTOR_INCOME_DIFF"
+    },
+    {
+     "type": "ask",
+     "q": "Two workers apply for the same skilled job. One left school at 16 with no qualifications, the other has a degree and specialist training. Are they equally likely to get the high-paying job?",
+     "right": "No, the qualified one is far more likely",
+     "wrong": "Yes, employers only look at effort",
+     "hint": "Firms pay more for skills that are harder to replace.",
+     "pre": "So income inequality is also caused by",
+     "term": "EDU_SKILLS_CAUSE"
+    },
+    {
+     "type": "order",
+     "terms": [
+      "wage_payment",
+      "profit_payment",
+      "FACTOR_INCOME_DIFF",
+      "EDU_SKILLS_CAUSE"
+     ],
+     "prompt": "Drag and drop the 4 key terms in the order they build on each other."
+    },
+    {
+     "type": "ask",
+     "q": "Two candidates have identical qualifications and experience, but the employer pays one less purely because of their gender or age. Is that difference in pay explained by skill or effort?",
+     "right": "No, it is not explained by skill at all",
+     "wrong": "Yes, it reflects a real skill gap",
+     "hint": "Nothing about their ability to do the job differs.",
+     "pre": "When pay differs for reasons unrelated to productivity, that is",
+     "term": "DISCRIMINATION_CAUSE"
+    },
+    {
+     "type": "ask",
+     "q": "A single firm dominates an industry with no close competitors, so it can set its price well above cost.",
+     "right": "Very high, persistent profit",
+     "wrong": "Only just enough to cover costs",
+     "hint": "Look at where price sits compared to marginal cost when there is no competition.",
+     "pre": "Who receives that extra profit? It flows to the owners of capital, showing how income inequality is worsened by",
+     "term": "MARKET_POWER_CAUSE",
+     "diagram": {
+      "x": "Quantity",
+      "y": "Price/Cost",
+      "curves": [
+       {
+        "label": "D",
+        "pts": [
+         [
+          0.08,
+          0.88
+         ],
+         [
+          0.4,
+          0.58
+         ],
+         [
+          0.9,
+          0.14
+         ]
+        ]
+       },
+       {
+        "label": "MC",
+        "pts": [
+         [
+          0.1,
+          0.2
+         ],
+         [
+          0.5,
+          0.35
+         ],
+         [
+          0.9,
+          0.5
+         ]
+        ]
+       }
+      ],
+      "points": [
+       {
+        "label": "P",
+        "x": 0.4,
+        "y": 0.7,
+        "guides": true
+       }
+      ]
+     }
+    },
+    {
+     "type": "ask",
+     "q": "A shareholder who owns part of that firm receives dividends every year just for holding the shares, on top of any wage they earn elsewhere. Does this income depend on them working more hours?",
+     "right": "No, it comes from what they own",
+     "wrong": "Yes, it rises only if they work harder",
+     "hint": "Compare a wage, which needs hours worked, with a dividend, which needs only ownership.",
+     "pre": "Income like this, from property and shares built up as a stock of wealth, comes from",
+     "term": "ASSET_OWNERSHIP_CAUSE"
+    },
+    {
+     "type": "derive"
+    }
+   ],
+   "given": [
+    "WEALTH_INCOME_DISTINCTION",
+    "WEALTH_DEF",
+    "monopoly_eq"
+   ],
+   "needs": [
+    "WEALTH_INCOME_DISTINCTION",
+    "WEALTH_DEF",
+    "monopoly_eq"
+   ],
+   "builds": [
+    "WEALTH_INCOME_DISTINCTION",
+    "WEALTH_DEF",
+    "monopoly_eq"
+   ],
+   "nodes": [
+    "FACTOR_INCOME_DIFF",
+    "EDU_SKILLS_CAUSE",
+    "DISCRIMINATION_CAUSE",
+    "MARKET_POWER_CAUSE",
+    "ASSET_OWNERSHIP_CAUSE"
+   ],
+   "dropped": [],
+   "edges": [
+    [
+     "FACTOR_INCOME_DIFF",
+     "EDU_SKILLS_CAUSE"
+    ],
+    [
+     "FACTOR_INCOME_DIFF",
+     "DISCRIMINATION_CAUSE"
+    ],
+    [
+     "FACTOR_INCOME_DIFF",
+     "MARKET_POWER_CAUSE"
+    ],
+    [
+     "MARKET_POWER_CAUSE",
+     "ASSET_OWNERSHIP_CAUSE"
+    ],
+    [
+     "WEALTH_INCOME_DISTINCTION",
+     "FACTOR_INCOME_DIFF"
+    ],
+    [
+     "WEALTH_DEF",
+     "ASSET_OWNERSHIP_CAUSE"
+    ],
+    [
+     "monopoly_eq",
+     "MARKET_POWER_CAUSE"
+    ],
+    [
+     "wage_payment",
+     "FACTOR_INCOME_DIFF"
+    ],
+    [
+     "profit_payment",
+     "FACTOR_INCOME_DIFF"
+    ],
+    [
+     "FACTOR_INCOME_DIFF",
+     "EDU_SKILLS_CAUSE"
+    ],
+    [
+     "FACTOR_INCOME_DIFF",
+     "DISCRIMINATION_CAUSE"
+    ],
+    [
+     "FACTOR_INCOME_DIFF",
+     "MARKET_POWER_CAUSE"
+    ],
+    [
+     "monopoly_eq",
+     "MARKET_POWER_CAUSE"
+    ],
+    [
+     "MARKET_POWER_CAUSE",
+     "ASSET_OWNERSHIP_CAUSE"
+    ],
+    [
+     "WEALTH_DEF",
+     "ASSET_OWNERSHIP_CAUSE"
+    ],
+    [
+     "WEALTH_INCOME_DISTINCTION",
+     "ASSET_OWNERSHIP_CAUSE"
+    ]
+   ]
+  }
+ ]
+}

@@ -1,0 +1,222 @@
+{
+ "id": "gen",
+ "subject": "Economics",
+ "title": "Government intervention: price regulation and quality standards",
+ "terms": {
+  "PRICE_REG_ADV": {
+   "label": "Price regulation advantage"
+  },
+  "PRICE_REG_DIS2": {
+   "label": "Quality-cutting disadvantage"
+  },
+  "PRICE_REG_DIS3": {
+   "label": "Regulatory capture disadvantage"
+  },
+  "QUALITY_STD_ADV": {
+   "label": "Quality standards advantage"
+  },
+  "IMPACT_QUALITY": {
+   "label": "Impact on quality"
+  },
+  "LIMIT_REG_CAPTURE": {
+   "label": "Regulatory capture as a limit"
+  },
+  "PRICE_REG_DEF": {
+   "label": "Price regulation: definition (e.g. RPI-X price capping by a regulator)"
+  },
+  "REASONS_CONTROL_MON": {
+   "label": "Reasons for government intervention to control monopoly power (market failure, allocative/productive inefficiency, exploitation of consumers)"
+  },
+  "REG_CAPTURE_DEF": {
+   "label": "Regulatory capture: definition (regulator comes to act in the interest of the regulated firm rather than the public)"
+  },
+  "QUALITY_STD_DEF": {
+   "label": "Quality standards: definition (minimum standards of service set and enforced by regulators)"
+  },
+  "COMP_TENDER_DIS1": {
+   "label": "Disadvantage: firms may cut quality or exploit workers to win contracts at low bid prices"
+  },
+  "PRIVATISATION_DIS2": {
+   "label": "Disadvantage: private firms may prioritise profit over public interest/service quality, especially in essential services"
+  },
+  "PERF_TARGETS_DIS2": {
+   "label": "Disadvantage: regulatory capture may lead to targets being set too leniently"
+  },
+  "consumer_surplus_def": {
+   "label": "Definition of consumer surplus"
+  }
+ },
+ "stages": [
+  {
+   "name": "Government intervention: price regulation and quality standards",
+   "title": "Government intervention: price regulation and quality standards",
+   "sub": "After this, the student can weigh up price regulation and quality standards as tools to control monopoly power, including their limits.",
+   "steps": [
+    {
+     "type": "ask",
+     "q": "A water monopoly has been charging £50 a month. A regulator caps the price at £30. What happens to the amount of consumer surplus customers get from their water bills?",
+     "right": "It rises, since they pay less for the same service",
+     "wrong": "It falls, since the firm earns less profit",
+     "hint": "Consumer surplus is about what customers gain, not what the firm keeps.",
+     "pre": "So capping the price protects consumers. This is the",
+     "term": "PRICE_REG_ADV"
+    },
+    {
+     "type": "ask",
+     "q": "The regulator caps the water firm's price at £30, well below what it used to charge. The firm's profit margin is now much thinner. What might it do to protect that margin?",
+     "right": "Spend less on maintaining pipes and service quality",
+     "wrong": "Spend more on maintaining pipes and service quality",
+     "hint": "If revenue per customer has fallen, where might the firm look to cut costs?",
+     "pre": "So a capped firm may respond by",
+     "term": "PRICE_REG_DIS2"
+    },
+    {
+     "type": "ask",
+     "q": "The regulator who sets the water price cap meets often with the firm's executives, and rarely with customer groups. Over time, whose interests might the cap start to reflect?",
+     "right": "The firm's interests more than customers'",
+     "wrong": "Customers' interests, since that is the regulator's job",
+     "hint": "Think about who the regulator spends most of its time listening to.",
+     "pre": "So the price cap may end up favouring the firm - a risk of",
+     "term": "PRICE_REG_DIS3"
+    },
+    {
+     "type": "ask",
+     "q": "To stop the water firm cutting corners on pipe maintenance, the regulator instead sets a minimum number of leak repairs it must carry out each year. Does this remove the firm's incentive to skimp on quality?",
+     "right": "Yes, it forces a minimum level regardless of profit pressure",
+     "wrong": "No, the firm can still ignore it if profits are tight",
+     "hint": "The rule is enforced by the regulator, not left to the firm's choice.",
+     "pre": "Setting and enforcing a minimum service level like this is a",
+     "term": "QUALITY_STD_ADV"
+    },
+    {
+     "type": "order",
+     "terms": [
+      "PRICE_REG_ADV",
+      "PRICE_REG_DIS2",
+      "PRICE_REG_DIS3",
+      "QUALITY_STD_ADV"
+     ],
+     "prompt": "Drag and drop the 4 key terms in the order they build on each other."
+    },
+    {
+     "type": "ask",
+     "q": "The water firm now faces both a price cap and enforced minimum repair levels. Compared with a price cap on its own, what happens to the firm's ability to let quality slide?",
+     "right": "It is reduced, since quality is separately enforced",
+     "wrong": "It is unchanged, since the price cap already covers this",
+     "hint": "The minimum standard exists specifically to stop the corner-cutting the price cap alone allowed.",
+     "pre": "So combining the two tools changes the",
+     "term": "IMPACT_QUALITY"
+    },
+    {
+     "type": "ask",
+     "q": "Suppose the same regulator who set the price cap also decides what counts as an acceptable minimum repair level, and it keeps setting that bar low after pressure from the firm. Does the quality standard still protect customers?",
+     "right": "No, not if the regulator is favouring the firm",
+     "wrong": "Yes, because a quality standard always protects customers",
+     "hint": "A rule is only as good as the body enforcing it. What if that body is not acting for the public?",
+     "pre": "So even quality standards are undermined by",
+     "term": "LIMIT_REG_CAPTURE"
+    },
+    {
+     "type": "derive"
+    }
+   ],
+   "given": [
+    "PRICE_REG_DEF",
+    "REASONS_CONTROL_MON",
+    "REG_CAPTURE_DEF",
+    "QUALITY_STD_DEF"
+   ],
+   "needs": [
+    "PRICE_REG_DEF",
+    "REASONS_CONTROL_MON",
+    "REG_CAPTURE_DEF",
+    "QUALITY_STD_DEF",
+    "COMP_TENDER_DIS1",
+    "PRIVATISATION_DIS2",
+    "PERF_TARGETS_DIS2",
+    "consumer_surplus_def"
+   ],
+   "builds": [
+    "PRICE_REG_DEF",
+    "REASONS_CONTROL_MON",
+    "REG_CAPTURE_DEF",
+    "QUALITY_STD_DEF"
+   ],
+   "nodes": [
+    "PRICE_REG_ADV",
+    "PRICE_REG_DIS2",
+    "PRICE_REG_DIS3",
+    "QUALITY_STD_ADV",
+    "IMPACT_QUALITY",
+    "LIMIT_REG_CAPTURE"
+   ],
+   "dropped": [],
+   "edges": [
+    [
+     "PRICE_REG_ADV",
+     "PRICE_REG_DIS2"
+    ],
+    [
+     "PRICE_REG_ADV",
+     "PRICE_REG_DIS3"
+    ],
+    [
+     "PRICE_REG_DIS2",
+     "QUALITY_STD_ADV"
+    ],
+    [
+     "QUALITY_STD_ADV",
+     "IMPACT_QUALITY"
+    ],
+    [
+     "PRICE_REG_DIS2",
+     "IMPACT_QUALITY"
+    ],
+    [
+     "PRICE_REG_DIS3",
+     "LIMIT_REG_CAPTURE"
+    ],
+    [
+     "PRICE_REG_DEF",
+     "PRICE_REG_ADV"
+    ],
+    [
+     "REASONS_CONTROL_MON",
+     "PRICE_REG_ADV"
+    ],
+    [
+     "REG_CAPTURE_DEF",
+     "PRICE_REG_DIS3"
+    ],
+    [
+     "QUALITY_STD_DEF",
+     "QUALITY_STD_ADV"
+    ],
+    [
+     "REG_CAPTURE_DEF",
+     "LIMIT_REG_CAPTURE"
+    ],
+    [
+     "PRICE_REG_DEF",
+     "PRICE_REG_ADV"
+    ],
+    [
+     "REASONS_CONTROL_MON",
+     "PRICE_REG_ADV"
+    ],
+    [
+     "REG_CAPTURE_DEF",
+     "PRICE_REG_DIS3"
+    ],
+    [
+     "REG_CAPTURE_DEF",
+     "LIMIT_REG_CAPTURE"
+    ],
+    [
+     "QUALITY_STD_DEF",
+     "QUALITY_STD_ADV"
+    ]
+   ]
+  }
+ ]
+}

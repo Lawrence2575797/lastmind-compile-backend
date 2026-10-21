@@ -1,0 +1,202 @@
+{
+ "id": "gen",
+ "subject": "Economics",
+ "title": "Reducing poverty and inequality",
+ "terms": {
+  "benefits": {
+   "label": "Benefits"
+  },
+  "prog_tax": {
+   "label": "Progressive taxation"
+  },
+  "min_wage": {
+   "label": "Minimum wage"
+  },
+  "POLICY_REDUCE_INEQUALITY": {
+   "label": "Policies to reduce inequality"
+  },
+  "EVAL_REDUCE_INEQUALITY": {
+   "label": "Evaluating inequality policies"
+  },
+  "POLICY_PROBLEM_INFO": {
+   "label": "Problem: inaccurate information"
+  },
+  "FISCAL_POLICY_DEF": {
+   "label": "Fiscal policy"
+  },
+  "REASONS_REDUCE_INEQUALITY": {
+   "label": "Reasons for wanting to reduce poverty and inequality"
+  },
+  "INCENTIVES_WORK": {
+   "label": "Work incentives: substitution vs income effects of tax changes"
+  },
+  "EVAL_REDUCE_DEFICIT": {
+   "label": "Evaluation of measures to reduce fiscal deficits and national debt"
+  },
+  "TAX_PROGRESSIVE": {
+   "label": "Progressive taxes: definition"
+  },
+  "min_wage_def": {
+   "label": "Minimum wage: definition (legal lower limit on wages set above equilibrium)"
+  }
+ },
+ "stages": [
+  {
+   "name": "Reducing poverty and inequality",
+   "title": "Reducing poverty and inequality",
+   "sub": "How governments try to close the gap between rich and poor, and why those measures are hard to judge.",
+   "steps": [
+    {
+     "type": "ask",
+     "q": "A pensioner with no income is given £150 a week by the government, funded from taxes on everyone else. What happens to her income?",
+     "right": "It rises directly",
+     "wrong": "It stays exactly the same",
+     "hint": "Money has moved from taxpayers straight into her pocket. Does her income change?",
+     "pre": "Direct cash transfers to those on low incomes are called",
+     "term": "benefits"
+    },
+    {
+     "type": "ask",
+     "q": "Ali earns £20,000 and pays 20% tax. Bo earns £100,000 and pays 40% tax. As income rises, does the share paid in tax rise too?",
+     "right": "Yes, the rate rises with income",
+     "wrong": "No, the rate stays the same for everyone",
+     "hint": "Compare the two percentages, not the two pound amounts.",
+     "pre": "A tax whose rate rises as income rises is called",
+     "term": "prog_tax"
+    },
+    {
+     "type": "ask",
+     "q": "A cleaner is legally paid £6 an hour. The government makes it illegal to pay below £11 an hour. What happens to her pay, by law?",
+     "right": "It must rise to at least £11",
+     "wrong": "It stays exactly at £6",
+     "hint": "The law sets a floor. Can an employer legally pay below that floor?",
+     "pre": "That legal wage floor is the",
+     "term": "min_wage"
+    },
+    {
+     "type": "order",
+     "terms": [
+      "benefits",
+      "prog_tax",
+      "min_wage"
+     ],
+     "prompt": "Drag and drop the 3 key terms in the order they build on each other."
+    },
+    {
+     "type": "ask",
+     "q": "Benefits, progressive tax and a wage floor are all things a government actively puts in place to shrink the income gap. What are they, together?",
+     "right": "Deliberate policy tools to cut inequality",
+     "wrong": "Side effects of running fiscal policy",
+     "hint": "Are these accidental results, or things chosen on purpose to close the gap?",
+     "pre": "Together these are",
+     "term": "POLICY_REDUCE_INEQUALITY"
+    },
+    {
+     "type": "ask",
+     "q": "Raising the minimum wage helps low earners, but could it also make firms cut jobs or raise prices? Is judging these policies as simple as just listing their benefits?",
+     "right": "No, the downsides must be weighed too",
+     "wrong": "Yes, listing the benefits is enough",
+     "hint": "Think about the earlier point that higher taxes and benefits can change how hard people choose to work.",
+     "pre": "Weighing the benefits against the costs and side effects is the",
+     "term": "EVAL_REDUCE_INEQUALITY"
+    },
+    {
+     "type": "ask",
+     "q": "To set the right minimum wage or target the right households for benefits, the government needs to know exactly how firms and families will react. Does it ever have that perfect knowledge in advance?",
+     "right": "No, its data and forecasts are imperfect",
+     "wrong": "Yes, its data and forecasts are exact",
+     "hint": "Think about how deficit-reduction plans also rely on forecasts that can turn out wrong.",
+     "pre": "So policy is limited by",
+     "term": "POLICY_PROBLEM_INFO"
+    },
+    {
+     "type": "derive"
+    }
+   ],
+   "given": [
+    "FISCAL_POLICY_DEF",
+    "REASONS_REDUCE_INEQUALITY",
+    "INCENTIVES_WORK",
+    "EVAL_REDUCE_DEFICIT"
+   ],
+   "needs": [
+    "FISCAL_POLICY_DEF",
+    "REASONS_REDUCE_INEQUALITY",
+    "INCENTIVES_WORK",
+    "EVAL_REDUCE_DEFICIT",
+    "TAX_PROGRESSIVE",
+    "min_wage_def"
+   ],
+   "builds": [
+    "FISCAL_POLICY_DEF",
+    "REASONS_REDUCE_INEQUALITY",
+    "INCENTIVES_WORK",
+    "EVAL_REDUCE_DEFICIT"
+   ],
+   "nodes": [
+    "POLICY_REDUCE_INEQUALITY",
+    "EVAL_REDUCE_INEQUALITY",
+    "POLICY_PROBLEM_INFO"
+   ],
+   "dropped": [],
+   "edges": [
+    [
+     "POLICY_REDUCE_INEQUALITY",
+     "EVAL_REDUCE_INEQUALITY"
+    ],
+    [
+     "EVAL_REDUCE_INEQUALITY",
+     "POLICY_PROBLEM_INFO"
+    ],
+    [
+     "FISCAL_POLICY_DEF",
+     "POLICY_REDUCE_INEQUALITY"
+    ],
+    [
+     "REASONS_REDUCE_INEQUALITY",
+     "POLICY_REDUCE_INEQUALITY"
+    ],
+    [
+     "REASONS_REDUCE_INEQUALITY",
+     "EVAL_REDUCE_INEQUALITY"
+    ],
+    [
+     "INCENTIVES_WORK",
+     "EVAL_REDUCE_INEQUALITY"
+    ],
+    [
+     "EVAL_REDUCE_DEFICIT",
+     "POLICY_PROBLEM_INFO"
+    ],
+    [
+     "REASONS_REDUCE_INEQUALITY",
+     "benefits"
+    ],
+    [
+     "FISCAL_POLICY_DEF",
+     "benefits"
+    ],
+    [
+     "benefits",
+     "POLICY_REDUCE_INEQUALITY"
+    ],
+    [
+     "prog_tax",
+     "POLICY_REDUCE_INEQUALITY"
+    ],
+    [
+     "min_wage",
+     "POLICY_REDUCE_INEQUALITY"
+    ],
+    [
+     "INCENTIVES_WORK",
+     "EVAL_REDUCE_INEQUALITY"
+    ],
+    [
+     "EVAL_REDUCE_DEFICIT",
+     "POLICY_PROBLEM_INFO"
+    ]
+   ]
+  }
+ ]
+}

@@ -1,0 +1,139 @@
+{
+ "id": "gen",
+ "subject": "Economics",
+ "title": "Minimum and maximum wages",
+ "terms": {
+  "min_wage_adv_poverty": {
+   "label": "Minimum wage: cuts poverty"
+  },
+  "min_wage_disadv_informal": {
+   "label": "Minimum wage: informal work"
+  },
+  "min_wage_adv_incentive": {
+   "label": "Minimum wage: work incentive"
+  },
+  "min_wage_adv_productivity": {
+   "label": "Minimum wage: efficiency wage"
+  },
+  "max_wage_adv_paybill": {
+   "label": "Maximum wage: controls pay bill"
+  },
+  "reasons_intervene_wages": {
+   "label": "Reasons for government intervention in wage setting (equity, tackling low pay/poverty, monopsony power, controlling public spending)"
+  }
+ },
+ "stages": [
+  {
+   "name": "Minimum and maximum wages",
+   "title": "Minimum and maximum wages",
+   "sub": "Weigh up the advantages and a disadvantage of government-set wage floors and ceilings.",
+   "steps": [
+    {
+     "type": "ask",
+     "q": "A cleaner earning £6 an hour is told the law now requires at least £11 an hour for every job. Her wage rises but her hours of work stay the same. What happens to her household's income from work?",
+     "right": "It rises",
+     "wrong": "It stays the same",
+     "hint": "She is still doing the same job, just being paid more per hour.",
+     "pre": "Higher pay for the lowest earners means a wage floor can",
+     "term": "min_wage_adv_poverty"
+    },
+    {
+     "type": "ask",
+     "q": "A small cafe cannot afford to pay every worker the new legal minimum. Rather than close, the owner starts paying two workers cash in hand, off the books, below that minimum. What has the owner done to avoid the wage floor?",
+     "right": "Moved the jobs outside the legal, recorded labour market",
+     "wrong": "Raised prices to cover the higher wage",
+     "hint": "The payments are no longer declared or taxed at all, they simply happen unofficially.",
+     "pre": "Employers dodging the floor this way causes growth in the",
+     "term": "min_wage_disadv_informal"
+    },
+    {
+     "type": "ask",
+     "q": "Before the wage floor, claiming benefits paid almost as much as a low-paid job, so many people saw little point working. After the floor, working pays clearly more than claiming benefits. What is someone in that position now more likely to do?",
+     "right": "Choose to take the job rather than claim benefits",
+     "wrong": "Choose to claim benefits rather than take the job",
+     "hint": "Compare what they now receive from working against what they get from benefits.",
+     "pre": "A bigger gap between pay and benefits raises the",
+     "term": "min_wage_adv_incentive"
+    },
+    {
+     "type": "ask",
+     "q": "A warehouse raises pay above the old low rate. Workers now feel better rewarded and start working harder and staying with the firm longer, so output per worker rises. What has the higher pay done to output per worker?",
+     "right": "Increased it",
+     "wrong": "Left it unchanged",
+     "hint": "Think about motivation and effort, not just the size of the pay packet.",
+     "pre": "Pay that motivates staff to produce more is called an efficiency wage, raising",
+     "term": "min_wage_adv_productivity"
+    },
+    {
+     "type": "order",
+     "terms": [
+      "min_wage_adv_poverty",
+      "min_wage_disadv_informal",
+      "min_wage_adv_incentive",
+      "min_wage_adv_productivity"
+     ],
+     "prompt": "Drag and drop the 4 key terms in the order they build on each other."
+    },
+    {
+     "type": "ask",
+     "q": "A government caps how much any public sector manager can be paid, at £150,000 a year, no matter how senior. What happens to the total amount the government spends on public sector pay compared with having no cap at all?",
+     "right": "It is lower than it would otherwise be",
+     "wrong": "It is unaffected by the cap",
+     "hint": "Without the cap, some salaries could be set much higher, adding to total spending.",
+     "pre": "Capping top pay this way helps",
+     "term": "max_wage_adv_paybill"
+    },
+    {
+     "type": "derive"
+    }
+   ],
+   "given": [
+    "reasons_intervene_wages"
+   ],
+   "needs": [
+    "reasons_intervene_wages"
+   ],
+   "builds": [
+    "reasons_intervene_wages"
+   ],
+   "nodes": [
+    "min_wage_adv_poverty",
+    "min_wage_disadv_informal",
+    "min_wage_adv_incentive",
+    "min_wage_adv_productivity",
+    "max_wage_adv_paybill"
+   ],
+   "dropped": [],
+   "edges": [
+    [
+     "min_wage_adv_poverty",
+     "min_wage_disadv_informal"
+    ],
+    [
+     "reasons_intervene_wages",
+     "min_wage_adv_poverty"
+    ],
+    [
+     "reasons_intervene_wages",
+     "min_wage_adv_incentive"
+    ],
+    [
+     "reasons_intervene_wages",
+     "min_wage_adv_productivity"
+    ],
+    [
+     "reasons_intervene_wages",
+     "max_wage_adv_paybill"
+    ],
+    [
+     "reasons_intervene_wages",
+     "min_wage_adv_poverty"
+    ],
+    [
+     "reasons_intervene_wages",
+     "max_wage_adv_paybill"
+    ]
+   ]
+  }
+ ]
+}

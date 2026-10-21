@@ -1,0 +1,163 @@
+{
+ "id": "gen",
+ "subject": "Economics",
+ "title": "Market failure in the financial sector",
+ "terms": {
+  "MARKET_FAILURE_DEF": {
+   "label": "Market failure"
+  },
+  "EXTERNALITY_DEF": {
+   "label": "Externality"
+  },
+  "ASYM_INFO_FIN": {
+   "label": "Asymmetric information (finance)"
+  },
+  "MORAL_HAZARD_DEF": {
+   "label": "Moral hazard"
+  },
+  "MORAL_HAZARD_FIN": {
+   "label": "Moral hazard in finance"
+  },
+  "ASYM_INFO_DEF": {
+   "label": "Asymmetric information: definition (regulator/government has less information than the firm being regulated)"
+  },
+  "ROLE_LENDING": {
+   "label": "Lending to borrowers"
+  },
+  "market_failure_def": {
+   "label": "Definition of market failure: misallocation of resources where free market fails to achieve allocative efficiency"
+  }
+ },
+ "stages": [
+  {
+   "name": "Market failure in the financial sector",
+   "title": "Market failure in the financial sector",
+   "sub": "How asymmetric information and moral hazard cause resources to be misallocated in financial markets.",
+   "steps": [
+    {
+     "type": "ask",
+     "q": "A free market normally directs resources to where they are most valued. If pollution from a factory harms people who never bought or sold anything there, has the market still sent resources to their best use for society as a whole?",
+     "right": "No, the outcome is not the best use of resources for society",
+     "wrong": "Yes, the market outcome is still the best use of resources",
+     "hint": "Think about who bears the cost of the pollution, and whether that was ever weighed up in the deal between buyer and seller.",
+     "pre": "When the free market does not allocate resources in the way that is best for society, this is",
+     "term": "MARKET_FAILURE_DEF"
+    },
+    {
+     "type": "ask",
+     "q": "A factory's pollution harms nearby residents who were never part of the sale between the factory and its customers. Does the harm to those residents get reflected in the price they were charged?",
+     "right": "No, it falls on people outside the transaction",
+     "wrong": "Yes, it is included in the price paid",
+     "hint": "The residents did not buy or sell anything, yet they are affected. Where does that effect land?",
+     "pre": "A cost or benefit that spills over onto people outside the deal is called an",
+     "term": "EXTERNALITY_DEF"
+    },
+    {
+     "type": "ask",
+     "q": "A bank is deciding whether to lend to a small business. The owner knows exactly how risky the business really is, but the bank can only see the accounts they are given. Does the bank know as much about the true risk as the borrower does?",
+     "right": "No, the bank knows less than the borrower",
+     "wrong": "Yes, the bank can assess the risk just as well",
+     "hint": "Who actually runs the business day to day and knows its real prospects?",
+     "pre": "This gap, where lenders and investors cannot fully judge the true risk of borrowers or products, is",
+     "term": "ASYM_INFO_FIN"
+    },
+    {
+     "type": "ask",
+     "q": "A driver takes out fully comprehensive insurance that covers any damage, no matter the cause. Once insured, are they now more likely to park carelessly than before, since they will not personally pay for a scrape?",
+     "right": "Yes, they may take less care now they are protected",
+     "wrong": "No, they will drive and park exactly as carefully as before",
+     "hint": "If you no longer bear the full consequences of a risky action, does your behaviour around that risk change?",
+     "pre": "Taking on more risk because you are shielded from the consequences is",
+     "term": "MORAL_HAZARD_DEF"
+    },
+    {
+     "type": "order",
+     "terms": [
+      "MARKET_FAILURE_DEF",
+      "EXTERNALITY_DEF",
+      "ASYM_INFO_FIN",
+      "MORAL_HAZARD_DEF"
+     ],
+     "prompt": "Drag and drop the 4 key terms in the order they build on each other."
+    },
+    {
+     "type": "ask",
+     "q": "A large bank believes that if it makes huge, risky loans and they go wrong, the government will step in to save it because it is too important to fail. Does this belief make the bank more or less careful about the risks it takes on?",
+     "right": "Less careful, it takes on excessive risk",
+     "wrong": "More careful, it avoids risky loans",
+     "hint": "If the bank expects to be rescued whatever happens, what happens to its incentive to be cautious?",
+     "pre": "This expectation of rescue encouraging excessive risk-taking by banks is",
+     "term": "MORAL_HAZARD_FIN"
+    },
+    {
+     "type": "derive"
+    }
+   ],
+   "given": [
+    "ASYM_INFO_DEF",
+    "ROLE_LENDING",
+    "market_failure_def"
+   ],
+   "needs": [
+    "ASYM_INFO_DEF",
+    "ROLE_LENDING",
+    "market_failure_def"
+   ],
+   "builds": [
+    "ASYM_INFO_DEF",
+    "ROLE_LENDING",
+    "market_failure_def"
+   ],
+   "nodes": [
+    "MARKET_FAILURE_DEF",
+    "ASYM_INFO_FIN",
+    "EXTERNALITY_DEF",
+    "MORAL_HAZARD_DEF",
+    "MORAL_HAZARD_FIN"
+   ],
+   "dropped": [],
+   "edges": [
+    [
+     "MARKET_FAILURE_DEF",
+     "ASYM_INFO_FIN"
+    ],
+    [
+     "MARKET_FAILURE_DEF",
+     "MORAL_HAZARD_FIN"
+    ],
+    [
+     "MORAL_HAZARD_DEF",
+     "MORAL_HAZARD_FIN"
+    ],
+    [
+     "ASYM_INFO_FIN",
+     "MORAL_HAZARD_FIN"
+    ],
+    [
+     "ASYM_INFO_DEF",
+     "ASYM_INFO_FIN"
+    ],
+    [
+     "ROLE_LENDING",
+     "ASYM_INFO_FIN"
+    ],
+    [
+     "market_failure_def",
+     "MARKET_FAILURE_DEF"
+    ],
+    [
+     "ASYM_INFO_DEF",
+     "ASYM_INFO_FIN"
+    ],
+    [
+     "ROLE_LENDING",
+     "ASYM_INFO_FIN"
+    ],
+    [
+     "ROLE_LENDING",
+     "MORAL_HAZARD_FIN"
+    ]
+   ]
+  }
+ ]
+}

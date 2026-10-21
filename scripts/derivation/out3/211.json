@@ -1,0 +1,134 @@
+{
+ "id": "gen",
+ "subject": "Economics",
+ "title": "Economic growth and development",
+ "terms": {
+  "growth_dev_dist": {
+   "label": "Growth vs development"
+  },
+  "hdi_education": {
+   "label": "HDI education dimension"
+  },
+  "hdi_health": {
+   "label": "HDI health dimension"
+  },
+  "hdi_living": {
+   "label": "HDI living standards dimension"
+  },
+  "hdi_combine": {
+   "label": "Combining the HDI"
+  }
+ },
+ "stages": [
+  {
+   "name": "Economic growth and development",
+   "title": "Economic growth and development",
+   "sub": "How growth differs from development, and how the HDI measures development using three dimensions combined into one score.",
+   "steps": [
+    {
+     "type": "ask",
+     "q": "Country A's national income per person rises by 5% this year, but its schools stay overcrowded, clean water is still scarce, and life expectancy does not change. Has the country definitely become a better place to live?",
+     "right": "Not necessarily, living standards may not have improved",
+     "wrong": "Yes, a rise in income always makes life better",
+     "hint": "Income went up, but think about what else matters to people's actual quality of life.",
+     "pre": "So a rise in output or income is not the same as a wider improvement in people's lives. That gap is the",
+     "term": "growth_dev_dist"
+    },
+    {
+     "type": "ask",
+     "q": "Two countries have the same income per person, but in Country X children stay in school for 12 years on average, while in Country Y they stay for only 6 years. Which country is likely to have a more skilled, better-informed population?",
+     "right": "Country X, with more years in school",
+     "wrong": "Country Y, with fewer years in school",
+     "hint": "More time spent learning tends to build more knowledge and skills.",
+     "pre": "So how long people spend in school is used to measure the",
+     "term": "hdi_education"
+    },
+    {
+     "type": "ask",
+     "q": "In Country M, people live to an average age of 80. In Country N, they live to an average age of 55. Which country's population is likely to be enjoying better healthcare, nutrition and living conditions overall?",
+     "right": "Country M, with the higher average age",
+     "wrong": "Country N, with the lower average age",
+     "hint": "A longer average lifespan usually reflects better healthcare and living conditions.",
+     "pre": "So how long people are expected to live for measures the",
+     "term": "hdi_health"
+    },
+    {
+     "type": "ask",
+     "q": "Country P and Country Q have the same average years of schooling and life expectancy, but the average person in Country P can buy far more goods and services with their income than the average person in Country Q. Which country's population can access more goods and services?",
+     "right": "Country P, whose income buys more",
+     "wrong": "Country Q, whose income buys more",
+     "hint": "Compare what the average income can actually purchase in each country.",
+     "pre": "So income per person, adjusted for what it can buy, measures the",
+     "term": "hdi_living"
+    },
+    {
+     "type": "order",
+     "terms": [
+      "growth_dev_dist",
+      "hdi_education",
+      "hdi_health",
+      "hdi_living"
+     ],
+     "prompt": "Drag and drop the 4 key terms in the order they build on each other."
+    },
+    {
+     "type": "ask",
+     "q": "Country R scores well on schooling, badly on life expectancy, and averagely on income. To judge how developed Country R really is, would you look at just one of these scores, or take account of all three together?",
+     "right": "Take account of all three together",
+     "wrong": "Just use whichever score is highest",
+     "hint": "If development covers education, health and living standards, can one score alone tell the full story?",
+     "pre": "Averaging the three dimension scores into one number gives",
+     "term": "hdi_combine"
+    },
+    {
+     "type": "derive"
+    }
+   ],
+   "given": [],
+   "needs": [],
+   "builds": [],
+   "nodes": [
+    "growth_dev_dist",
+    "hdi_education",
+    "hdi_health",
+    "hdi_living",
+    "hdi_combine"
+   ],
+   "dropped": [],
+   "edges": [
+    [
+     "growth_dev_dist",
+     "hdi_education"
+    ],
+    [
+     "hdi_education",
+     "hdi_combine"
+    ],
+    [
+     "hdi_health",
+     "hdi_combine"
+    ],
+    [
+     "hdi_living",
+     "hdi_combine"
+    ],
+    [
+     "growth_dev_dist",
+     "hdi_education"
+    ],
+    [
+     "hdi_education",
+     "hdi_combine"
+    ],
+    [
+     "hdi_health",
+     "hdi_combine"
+    ],
+    [
+     "hdi_living",
+     "hdi_combine"
+    ]
+   ]
+  }
+ ]
+}

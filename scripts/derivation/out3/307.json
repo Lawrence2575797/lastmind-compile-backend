@@ -1,0 +1,147 @@
+{
+ "id": "gen",
+ "subject": "Economics",
+ "title": "Minimum price: who loses, who gains",
+ "terms": {
+  "burden": {
+   "label": "Burden on income"
+  },
+  "MINP_DIS3": {
+   "label": "Regressive effect on buyers"
+  },
+  "stable": {
+   "label": "Predictable income"
+  },
+  "invest": {
+   "label": "Farm investment"
+  },
+  "MINP_ADV4": {
+   "label": "Stable incomes and supply"
+  },
+  "MINP_ADV1": {
+   "label": "Guarantees producer income"
+  },
+  "TAX_REGRESSIVE": {
+   "label": "Regressive taxes: definition"
+  }
+ },
+ "stages": [
+  {
+   "name": "Minimum price: who loses, who gains",
+   "title": "Minimum price: who loses, who gains",
+   "sub": "A cost to the poorest buyers and a benefit to producers, side by side.",
+   "steps": [
+    {
+     "type": "ask",
+     "term": "burden",
+     "q": "The price of a basic food rises by £10. Who feels it more: someone earning £15,000 or someone earning £150,000?",
+     "right": "The £15,000 earner, as it takes a bigger share",
+     "wrong": "The £150,000 earner, as they buy far more",
+     "hint": "Compare the £10 with each person's income.",
+     "pre": "The share of income taken by a price rise is the"
+    },
+    {
+     "type": "ask",
+     "term": "MINP_DIS3",
+     "q": "A minimum price raises the price of basic food for everyone. Which buyers does that hit hardest?",
+     "right": "Low-income buyers",
+     "wrong": "High-income buyers",
+     "hint": "Who spends more of their income on basic food?",
+     "pre": "So it takes a bigger share from the poor. This is the"
+    },
+    {
+     "type": "ask",
+     "term": "stable",
+     "q": "Farmers know they will always get at least a set price for their crops. What can they now say about next year's income?",
+     "right": "They can be fairly sure of it",
+     "wrong": "They cannot know anything about it",
+     "hint": "A guaranteed floor removes some of the guesswork.",
+     "pre": "Income a farmer can count on is"
+    },
+    {
+     "type": "ask",
+     "term": "invest",
+     "q": "A farmer feels sure of their income. Do they buy better equipment now?",
+     "right": "Yes, they can afford the risk of investing",
+     "wrong": "No, they save every pound they earn",
+     "hint": "Certain income makes a big purchase less risky.",
+     "pre": "Spending on better equipment is"
+    },
+    {
+     "type": "order",
+     "terms": [
+      "burden",
+      "MINP_DIS3",
+      "stable",
+      "invest"
+     ],
+     "prompt": "Drag and drop the 4 key terms in the order they build on each other."
+    },
+    {
+     "type": "ask",
+     "term": "MINP_ADV4",
+     "q": "With better equipment, what happens to the farm's future harvests?",
+     "right": "Future supply grows",
+     "wrong": "Future supply shrinks",
+     "hint": "Better tools help farmers produce more later.",
+     "pre": "So a minimum price can stabilise incomes and grow supply. This is"
+    },
+    {
+     "type": "derive"
+    }
+   ],
+   "given": [
+    "MINP_ADV1",
+    "TAX_REGRESSIVE"
+   ],
+   "needs": [
+    "MINP_ADV1",
+    "TAX_REGRESSIVE"
+   ],
+   "builds": [
+    "MINP_ADV1",
+    "TAX_REGRESSIVE"
+   ],
+   "nodes": [
+    "MINP_DIS3",
+    "MINP_ADV4"
+   ],
+   "dropped": [
+    [
+     "TAX_REGRESSIVE",
+     "MINP_DIS3"
+    ],
+    [
+     "MINP_ADV1",
+     "MINP_ADV4"
+    ]
+   ],
+   "edges": [
+    [
+     "MINP_ADV1",
+     "MINP_DIS3"
+    ],
+    [
+     "TAX_REGRESSIVE",
+     "burden"
+    ],
+    [
+     "burden",
+     "MINP_DIS3"
+    ],
+    [
+     "MINP_ADV1",
+     "stable"
+    ],
+    [
+     "stable",
+     "invest"
+    ],
+    [
+     "invest",
+     "MINP_ADV4"
+    ]
+   ]
+  }
+ ]
+}

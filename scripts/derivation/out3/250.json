@@ -1,0 +1,118 @@
+{
+ "id": "gen",
+ "subject": "Economics",
+ "title": "HDI education limitation",
+ "terms": {
+  "hdi_limit_quality": {
+   "label": "HDI limitation: schooling quality"
+  },
+  "class_size": {
+   "label": "Class size"
+  },
+  "teacher_quality": {
+   "label": "Teacher quality"
+  },
+  "learning_outcome": {
+   "label": "Learning outcome"
+  },
+  "hdi_education": {
+   "label": "HDI education dimension"
+  }
+ },
+ "stages": [
+  {
+   "name": "HDI education limitation",
+   "title": "HDI education limitation",
+   "sub": "Why counting years in school does not tell you how much was actually learned.",
+   "steps": [
+    {
+     "type": "ask",
+     "q": "Country A has 60 pupils crammed into one classroom with one teacher. Country B has 20 pupils per classroom with one teacher. Both countries report the same average years of schooling. Are the pupils in each classroom likely to get the same attention from the teacher?",
+     "right": "No, the crowded classroom gets far less each",
+     "wrong": "Yes, years of schooling means attention is equal",
+     "hint": "Think about how much individual help a teacher can give when there are three times as many pupils.",
+     "pre": "So classrooms can differ hugely in",
+     "term": "class_size"
+    },
+    {
+     "type": "ask",
+     "q": "In one country teachers are poorly trained and often absent. In another, teachers are well trained and always present. Both countries record the same years of schooling. Will pupils in both countries be taught equally well during those years?",
+     "right": "No, the poorly trained teachers will teach worse",
+     "wrong": "Yes, the years recorded mean teaching was equal",
+     "hint": "Years of schooling only counts time in a classroom, not how good the teaching was in that time.",
+     "pre": "So countries can also differ in",
+     "term": "teacher_quality"
+    },
+    {
+     "type": "ask",
+     "q": "Given that classes can be far more crowded and teachers far less well trained in one country than another, are pupils who complete the same number of years of schooling likely to leave with the same reading and maths ability?",
+     "right": "No, their actual learning is likely to be lower",
+     "wrong": "Yes, the same years in school means the same ability",
+     "hint": "Sitting in school for a year is not the same as mastering what was meant to be taught that year.",
+     "pre": "What a pupil actually ends up able to do is their",
+     "term": "learning_outcome"
+    },
+    {
+     "type": "order",
+     "terms": [
+      "class_size",
+      "teacher_quality",
+      "learning_outcome"
+     ],
+     "prompt": "Drag and drop the 3 key terms in the order they build on each other."
+    },
+    {
+     "type": "ask",
+     "q": "HDI's education score is built from mean and expected years of schooling. If two countries have identical years of schooling but very different learning outcomes, does that HDI score tell you which country's pupils actually learned more?",
+     "right": "No, the score cannot show that difference",
+     "wrong": "Yes, equal years means the score reflects equal learning",
+     "hint": "The score only counts time spent in school, not what was gained from that time.",
+     "pre": "So a key limitation is that HDI measures years of schooling but not the",
+     "term": "hdi_limit_quality"
+    },
+    {
+     "type": "derive"
+    }
+   ],
+   "given": [
+    "hdi_education"
+   ],
+   "needs": [
+    "hdi_education"
+   ],
+   "builds": [
+    "hdi_education"
+   ],
+   "nodes": [
+    "hdi_limit_quality"
+   ],
+   "dropped": [],
+   "edges": [
+    [
+     "hdi_education",
+     "hdi_limit_quality"
+    ],
+    [
+     "hdi_education",
+     "class_size"
+    ],
+    [
+     "hdi_education",
+     "teacher_quality"
+    ],
+    [
+     "class_size",
+     "learning_outcome"
+    ],
+    [
+     "teacher_quality",
+     "learning_outcome"
+    ],
+    [
+     "learning_outcome",
+     "hdi_limit_quality"
+    ]
+   ]
+  }
+ ]
+}

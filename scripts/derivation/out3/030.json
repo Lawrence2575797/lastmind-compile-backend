@@ -1,0 +1,135 @@
+{
+ "id": "gen",
+ "subject": "Economics",
+ "title": "Beyond GDP",
+ "terms": {
+  "GDP_LIMIT_COMPOSITION": {
+   "label": "GDP ignores quality change"
+  },
+  "HAPPINESS_INCOME_RELATION": {
+   "label": "Income-happiness paradox"
+  },
+  "ONS_WELLBEING": {
+   "label": "ONS wellbeing programme"
+  },
+  "WELLBEING_DIMENSIONS": {
+   "label": "Wellbeing dimensions"
+  },
+  "WELLBEING_DIM_PERSONAL": {
+   "label": "Personal wellbeing dimensions"
+  },
+  "GDP_LIVING_STANDARDS_LIMITS": {
+   "label": "Limits of GDP for living standards"
+  }
+ },
+ "stages": [
+  {
+   "name": "Beyond GDP",
+   "title": "Beyond GDP",
+   "sub": "Why GDP alone cannot capture living standards, and how wellbeing is measured instead.",
+   "steps": [
+    {
+     "type": "ask",
+     "q": "GDP per head doubles over 30 years, while phones, hospitals and cars also get far better. Does GDP alone show that quality gain?",
+     "right": "No, it only counts the amount spent, not how much better things are",
+     "wrong": "Yes, a higher GDP figure already reflects better quality",
+     "hint": "GDP adds up spending. Does spending the same £500 on an old phone versus a much better new phone show up differently?",
+     "pre": "So comparing GDP over time misses",
+     "term": "GDP_LIMIT_COMPOSITION"
+    },
+    {
+     "type": "ask",
+     "q": "Since the 1950s real incomes in rich countries have risen a lot, yet reported happiness has barely moved. Does higher income guarantee happiness?",
+     "right": "No, happiness does not keep rising with income",
+     "wrong": "Yes, happiness rises in line with income",
+     "hint": "Think about the survey result: income line goes up steadily, happiness line stays flat.",
+     "pre": "This surprising gap between rising income and flat happiness is the",
+     "term": "HAPPINESS_INCOME_RELATION"
+    },
+    {
+     "type": "ask",
+     "q": "Since GDP misses quality and income doesn't clearly raise happiness, would a statistics office want another measure?",
+     "right": "Yes, it would want to measure other aspects of life directly",
+     "wrong": "No, it would just keep publishing GDP figures",
+     "hint": "If money alone doesn't capture wellbeing, what else could be tracked and published?",
+     "pre": "In the UK this ongoing measurement effort is the",
+     "term": "ONS_WELLBEING"
+    },
+    {
+     "type": "ask",
+     "q": "To capture how well people's lives are going, would one money question do, or would surveys need several separate areas?",
+     "right": "You would need several separate areas",
+     "wrong": "One single question would cover it",
+     "hint": "Think about everything that affects how someone's life is going besides their pay.",
+     "pre": "So the programme measures several",
+     "term": "WELLBEING_DIMENSIONS"
+    },
+    {
+     "type": "order",
+     "terms": [
+      "GDP_LIMIT_COMPOSITION",
+      "HAPPINESS_INCOME_RELATION",
+      "ONS_WELLBEING",
+      "WELLBEING_DIMENSIONS"
+     ],
+     "prompt": "Drag and drop the 4 key terms in the order they build on each other."
+    },
+    {
+     "type": "ask",
+     "q": "Some survey areas ask people to rate their life satisfaction, health, family and friendships. Are they about personal life or the wider economy?",
+     "right": "How someone personally feels and connects",
+     "wrong": "The state of the wider economy",
+     "hint": "Life satisfaction, health, relationships - are these about the person, or about GDP and jobs?",
+     "pre": "So these make up the",
+     "term": "WELLBEING_DIM_PERSONAL"
+    },
+    {
+     "type": "derive"
+    }
+   ],
+   "given": [
+    "GDP_LIVING_STANDARDS_LIMITS"
+   ],
+   "needs": [
+    "GDP_LIVING_STANDARDS_LIMITS"
+   ],
+   "builds": [
+    "GDP_LIVING_STANDARDS_LIMITS"
+   ],
+   "nodes": [
+    "GDP_LIMIT_COMPOSITION",
+    "HAPPINESS_INCOME_RELATION",
+    "ONS_WELLBEING",
+    "WELLBEING_DIMENSIONS",
+    "WELLBEING_DIM_PERSONAL"
+   ],
+   "dropped": [],
+   "edges": [
+    [
+     "HAPPINESS_INCOME_RELATION",
+     "ONS_WELLBEING"
+    ],
+    [
+     "ONS_WELLBEING",
+     "WELLBEING_DIM_PERSONAL"
+    ],
+    [
+     "GDP_LIVING_STANDARDS_LIMITS",
+     "GDP_LIMIT_COMPOSITION"
+    ],
+    [
+     "GDP_LIVING_STANDARDS_LIMITS",
+     "HAPPINESS_INCOME_RELATION"
+    ],
+    [
+     "GDP_LIVING_STANDARDS_LIMITS",
+     "WELLBEING_DIMENSIONS"
+    ],
+    [
+     "WELLBEING_DIMENSIONS",
+     "WELLBEING_DIM_PERSONAL"
+    ]
+   ]
+  }
+ ]
+}

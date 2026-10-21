@@ -1,0 +1,208 @@
+{
+ "id": "gen",
+ "subject": "Economics",
+ "title": "Market structures: contestability",
+ "terms": {
+  "lrac": {
+   "label": "Long-run average cost"
+  },
+  "natural_monopoly": {
+   "label": "Natural monopoly"
+  },
+  "hitandrun": {
+   "label": "Hit-and-run entry"
+  },
+  "contestable_char": {
+   "label": "Contestable market characteristics"
+  },
+  "limit_pricing": {
+   "label": "Limit pricing"
+  },
+  "contestable_implications": {
+   "label": "Implications of contestability"
+  },
+  "barriers_entry_exit": {
+   "label": "Barriers to entry and exit"
+  },
+  "reasons_noncollusive": {
+   "label": "Reasons against collusion"
+  },
+  "cost_curves": {
+   "label": "Cost curves: total cost, average cost, marginal cost construction"
+  },
+  "sunk_costs": {
+   "label": "Sunk costs"
+  },
+  "x_ineff": {
+   "label": "X-inefficiency (output produced above minimum possible cost due to lack of competitive pressure)"
+  },
+  "eff_by_structure": {
+   "label": "Comparing efficiency/inefficiency across market structures"
+  }
+ },
+ "stages": [
+  {
+   "name": "Market structures: contestability",
+   "title": "Market structures: contestability",
+   "sub": "How firms behave when entry is easy, and why some markets stay as one firm however low costs go.",
+   "steps": [
+    {
+     "type": "ask",
+     "q": "A water company must lay pipes to every house before selling a single litre. As it sells more litres from the same pipe network, what happens to its average cost per litre?",
+     "right": "It keeps falling",
+     "wrong": "It stays the same",
+     "hint": "The huge fixed cost of the pipes gets spread over more and more litres.",
+     "pre": "So average cost falls as output rises. That falling curve is the",
+     "term": "lrac"
+    },
+    {
+     "type": "ask",
+     "q": "If that average cost keeps falling right up to the point where one firm is supplying the whole market, could a second firm entering and splitting demand in half produce more cheaply per unit?",
+     "right": "No, it would have higher average costs",
+     "wrong": "Yes, it would produce more cheaply",
+     "hint": "If costs are lowest at the highest output, what happens when output is split between two firms instead of one?",
+     "pre": "So the market is only efficiently supplied by one firm. That is a",
+     "term": "natural_monopoly"
+    },
+    {
+     "type": "ask",
+     "q": "A firm can lease a van, deliver in a town for a month, then sell the van and leave with almost all its money back if profits disappear. How risky is entering this market compared to one needing a custom-built factory?",
+     "right": "Much less risky",
+     "wrong": "Just as risky",
+     "hint": "Think about how much money the firm cannot get back if it leaves.",
+     "pre": "Because sunk costs are so low, firms can dash in and out. That quick in-and-out entry is called",
+     "term": "hitandrun"
+    },
+    {
+     "type": "ask",
+     "q": "In that same town, is it easy for a new delivery firm to start up and just as easy to stop and leave if it does not work out?",
+     "right": "Yes, both entry and exit are easy",
+     "wrong": "No, entry is easy but leaving is hard",
+     "hint": "Low sunk costs mean a firm can walk away with its capital largely intact.",
+     "pre": "Low barriers to entry and exit, low sunk costs and hit-and-run entry describe the",
+     "term": "contestable_char"
+    },
+    {
+     "type": "order",
+     "terms": [
+      "lrac",
+      "natural_monopoly",
+      "hitandrun",
+      "contestable_char"
+     ],
+     "prompt": "Drag and drop the 4 key terms in the order they build on each other."
+    },
+    {
+     "type": "ask",
+     "q": "An established delivery firm in that town knows any rival could dash in whenever profits look tempting. If it wants to stop rivals bothering to enter at all, should it keep its price high or push it down towards cost?",
+     "right": "Push it down towards cost",
+     "wrong": "Keep it high to maximise profit now",
+     "hint": "A price that leaves juicy profits is exactly what invites hit-and-run entry.",
+     "pre": "Deliberately pricing low enough to remove the incentive to enter is",
+     "term": "limit_pricing"
+    },
+    {
+     "type": "ask",
+     "q": "Even though only one firm currently serves the contestable delivery market, it prices near cost purely because rivals could dash in. Does the market behave competitively even with just one firm in it?",
+     "right": "Yes, the threat of entry alone forces competitive behaviour",
+     "wrong": "No, only the actual number of firms controls behaviour",
+     "hint": "Think about what is disciplining the firm's pricing: the firms present, or the firms that could appear.",
+     "pre": "So contestability, through the threat of entry and limit pricing, can bring efficiency gains regardless of firm numbers. That is the",
+     "term": "contestable_implications"
+    },
+    {
+     "type": "derive"
+    }
+   ],
+   "given": [
+    "barriers_entry_exit",
+    "reasons_noncollusive",
+    "cost_curves",
+    "sunk_costs"
+   ],
+   "needs": [
+    "barriers_entry_exit",
+    "reasons_noncollusive",
+    "cost_curves",
+    "sunk_costs",
+    "x_ineff",
+    "eff_by_structure"
+   ],
+   "builds": [
+    "barriers_entry_exit",
+    "reasons_noncollusive",
+    "cost_curves",
+    "sunk_costs"
+   ],
+   "nodes": [
+    "limit_pricing",
+    "natural_monopoly",
+    "contestable_char",
+    "contestable_implications"
+   ],
+   "dropped": [],
+   "edges": [
+    [
+     "contestable_char",
+     "contestable_implications"
+    ],
+    [
+     "limit_pricing",
+     "contestable_implications"
+    ],
+    [
+     "barriers_entry_exit",
+     "limit_pricing"
+    ],
+    [
+     "reasons_noncollusive",
+     "limit_pricing"
+    ],
+    [
+     "cost_curves",
+     "natural_monopoly"
+    ],
+    [
+     "barriers_entry_exit",
+     "natural_monopoly"
+    ],
+    [
+     "barriers_entry_exit",
+     "contestable_char"
+    ],
+    [
+     "sunk_costs",
+     "contestable_char"
+    ],
+    [
+     "cost_curves",
+     "lrac"
+    ],
+    [
+     "lrac",
+     "natural_monopoly"
+    ],
+    [
+     "sunk_costs",
+     "hitandrun"
+    ],
+    [
+     "hitandrun",
+     "contestable_char"
+    ],
+    [
+     "barriers_entry_exit",
+     "contestable_char"
+    ],
+    [
+     "contestable_char",
+     "contestable_implications"
+    ],
+    [
+     "limit_pricing",
+     "contestable_implications"
+    ]
+   ]
+  }
+ ]
+}

@@ -1,0 +1,352 @@
+{
+ "id": "gen",
+ "subject": "Economics",
+ "title": "Markets: tax and subsidy effects",
+ "terms": {
+  "cs_ps_change": {
+   "label": "Surplus changes"
+  },
+  "cs_change": {
+   "label": "Consumer surplus shifts"
+  },
+  "tax_shift_diagram": {
+   "label": "Tax shift diagram"
+  },
+  "subsidy_shift_diagram": {
+   "label": "Diagram: effect of a subsidy on supply and equilibrium"
+  },
+  "tax_impact_consumers": {
+   "label": "Tax impact on consumers"
+  },
+  "tax_impact_government": {
+   "label": "Tax impact on government"
+  },
+  "indirect_tax_def": {
+   "label": "Definition of an indirect tax"
+  },
+  "draw_supply_curve": {
+   "label": "Construct/draw a supply curve on a diagram"
+  },
+  "equilibrium_def": {
+   "label": "Equilibrium price and quantity"
+  },
+  "subsidy_def": {
+   "label": "Definition of a subsidy"
+  },
+  "cs_ps_diagram": {
+   "label": "Identifying consumer and producer surplus areas on a supply-demand diagram"
+  },
+  "shift_analysis_diagram": {
+   "label": "Using diagrams to show how demand/supply shifts change equilibrium price and quantity"
+  }
+ },
+ "stages": [
+  {
+   "name": "Markets: tax and subsidy effects",
+   "title": "Markets: tax and subsidy effects",
+   "sub": "After this you can read what a tax or subsidy diagram shows about surplus, consumers and government revenue.",
+   "steps": [
+    {
+     "type": "ask",
+     "q": "At the current equilibrium, some buyers were willing to pay more than the price, and some sellers were willing to sell for less. If supply falls and the price rises, what happens to the extra value buyers were getting?",
+     "right": "It shrinks",
+     "wrong": "It stays exactly the same",
+     "hint": "Buyers now pay more and get less quantity than before, so how does their extra benefit change?",
+     "pre": "So when supply or demand shifts, the areas of benefit to buyers and sellers also",
+     "term": "cs_ps_change"
+    },
+    {
+     "type": "ask",
+     "q": "Supply falls, price rises and quantity bought falls. Do the buyers who remain in the market now gain more, or less, extra value above the price than before?",
+     "right": "Less",
+     "wrong": "More",
+     "hint": "They are paying a higher price for the same good, and fewer units are traded at all.",
+     "pre": "So a shift in supply or demand changes the size of",
+     "term": "cs_change"
+    },
+    {
+     "type": "ask",
+     "q": "A government adds a fixed charge per unit that sellers must pay on top of their costs. At every quantity, will sellers now accept only a higher price than before?",
+     "right": "Yes, the price needed at each quantity rises",
+     "wrong": "No, sellers will accept the same price as before",
+     "hint": "If the seller now has to hand some of every pound to the government, what price do they need to receive to be willing to supply the same amount?",
+     "pre": "So the tax raises the price needed at each quantity, shown as an upward shift called the",
+     "term": "tax_shift_diagram",
+     "diagram": {
+      "x": "Quantity",
+      "y": "Price",
+      "curves": [
+       {
+        "label": "S1",
+        "pts": [
+         [
+          0.1,
+          0.15
+         ],
+         [
+          0.5,
+          0.45
+         ],
+         [
+          0.9,
+          0.8
+         ]
+        ]
+       },
+       {
+        "label": "S2",
+        "pts": [
+         [
+          0.1,
+          0.3
+         ],
+         [
+          0.5,
+          0.6
+         ],
+         [
+          0.9,
+          0.95
+         ]
+        ]
+       },
+       {
+        "label": "D",
+        "pts": [
+         [
+          0.08,
+          0.85
+         ],
+         [
+          0.4,
+          0.55
+         ],
+         [
+          0.9,
+          0.12
+         ]
+        ]
+       }
+      ],
+      "points": [
+       {
+        "label": "E1",
+        "x": 0.5,
+        "y": 0.45,
+        "guides": true
+       },
+       {
+        "label": "E2",
+        "x": 0.38,
+        "y": 0.62,
+        "guides": true
+       }
+      ]
+     }
+    },
+    {
+     "type": "ask",
+     "q": "A government pays sellers a fixed amount for every unit sold. At every quantity, will sellers now accept a lower price than before and still be willing to supply?",
+     "right": "Yes, the price needed at each quantity falls",
+     "wrong": "No, sellers still need the same price as before",
+     "hint": "If the government tops up every sale with extra money, how much do buyers need to pay for sellers to still be willing to supply?",
+     "pre": "So the payment lowers the price needed at each quantity, shown as a downward shift called the",
+     "term": "subsidy_shift_diagram",
+     "diagram": {
+      "x": "Quantity",
+      "y": "Price",
+      "curves": [
+       {
+        "label": "S1",
+        "pts": [
+         [
+          0.1,
+          0.3
+         ],
+         [
+          0.5,
+          0.6
+         ],
+         [
+          0.9,
+          0.95
+         ]
+        ]
+       },
+       {
+        "label": "S2",
+        "pts": [
+         [
+          0.1,
+          0.15
+         ],
+         [
+          0.5,
+          0.45
+         ],
+         [
+          0.9,
+          0.8
+         ]
+        ]
+       },
+       {
+        "label": "D",
+        "pts": [
+         [
+          0.08,
+          0.85
+         ],
+         [
+          0.4,
+          0.55
+         ],
+         [
+          0.9,
+          0.12
+         ]
+        ]
+       }
+      ],
+      "points": [
+       {
+        "label": "E1",
+        "x": 0.5,
+        "y": 0.6,
+        "guides": true
+       },
+       {
+        "label": "E2",
+        "x": 0.62,
+        "y": 0.45,
+        "guides": true
+       }
+      ]
+     }
+    },
+    {
+     "type": "order",
+     "terms": [
+      "cs_ps_change",
+      "cs_change",
+      "tax_shift_diagram",
+      "subsidy_shift_diagram"
+     ],
+     "prompt": "Drag and drop the 4 key terms in the order they build on each other."
+    },
+    {
+     "type": "ask",
+     "q": "After the tax pushes the supply curve up, buyers pay a higher price and buy a smaller quantity. Has the extra value they were getting above the price grown or shrunk?",
+     "right": "Shrunk",
+     "wrong": "Grown",
+     "hint": "Higher price paid, less quantity bought: what happens to their gain from the trade?",
+     "pre": "So consumers end up worse off, since the tax shrinks their",
+     "term": "tax_impact_consumers"
+    },
+    {
+     "type": "ask",
+     "q": "The government collects the tax amount on every unit that is still sold after the price and quantity have adjusted. Does it collect anything on the units that used to sell but no longer do?",
+     "right": "No, only on the units still being sold",
+     "wrong": "Yes, on every unit sold before the tax too",
+     "hint": "Some trades stop happening once the tax raises the price; can the government tax a trade that no longer occurs?",
+     "pre": "So the government gains money equal to the tax multiplied by the new quantity, its",
+     "term": "tax_impact_government"
+    },
+    {
+     "type": "derive"
+    }
+   ],
+   "given": [
+    "indirect_tax_def",
+    "draw_supply_curve",
+    "equilibrium_def",
+    "subsidy_def"
+   ],
+   "needs": [
+    "indirect_tax_def",
+    "draw_supply_curve",
+    "equilibrium_def",
+    "subsidy_def",
+    "cs_ps_diagram",
+    "shift_analysis_diagram"
+   ],
+   "builds": [
+    "indirect_tax_def",
+    "draw_supply_curve",
+    "equilibrium_def",
+    "subsidy_def"
+   ],
+   "nodes": [
+    "cs_ps_change",
+    "cs_change",
+    "tax_shift_diagram",
+    "subsidy_shift_diagram",
+    "tax_impact_consumers",
+    "tax_impact_government"
+   ],
+   "dropped": [],
+   "edges": [
+    [
+     "tax_shift_diagram",
+     "tax_impact_consumers"
+    ],
+    [
+     "tax_shift_diagram",
+     "tax_impact_government"
+    ],
+    [
+     "cs_change",
+     "tax_impact_consumers"
+    ],
+    [
+     "indirect_tax_def",
+     "tax_shift_diagram"
+    ],
+    [
+     "draw_supply_curve",
+     "tax_shift_diagram"
+    ],
+    [
+     "equilibrium_def",
+     "tax_shift_diagram"
+    ],
+    [
+     "subsidy_def",
+     "subsidy_shift_diagram"
+    ],
+    [
+     "draw_supply_curve",
+     "subsidy_shift_diagram"
+    ],
+    [
+     "equilibrium_def",
+     "subsidy_shift_diagram"
+    ],
+    [
+     "equilibrium_def",
+     "cs_ps_change"
+    ],
+    [
+     "cs_ps_change",
+     "cs_change"
+    ],
+    [
+     "indirect_tax_def",
+     "tax_shift_diagram"
+    ],
+    [
+     "draw_supply_curve",
+     "tax_shift_diagram"
+    ],
+    [
+     "subsidy_def",
+     "subsidy_shift_diagram"
+    ],
+    [
+     "draw_supply_curve",
+     "subsidy_shift_diagram"
+    ]
+   ]
+  }
+ ]
+}

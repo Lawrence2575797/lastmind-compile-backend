@@ -1,0 +1,283 @@
+{
+ "id": "gen",
+ "subject": "Economics",
+ "title": "PPF movements and shifts",
+ "terms": {
+  "PPF_POSSIBLE_UNOBTAINABLE": {
+   "label": "Possible & unobtainable points"
+  },
+  "PPF_MOVEMENT_ALONG": {
+   "label": "Movement along a PPF"
+  },
+  "PPF_SHIFT": {
+   "label": "Shift in a PPF"
+  },
+  "PPF_MOVEMENT_SHIFT_CAUSES": {
+   "label": "Movement vs shift causes"
+  },
+  "PPF_CONSTRUCT": {
+   "label": "Constructing a PPF"
+  },
+  "PPF_EFFICIENCY": {
+   "label": "PPF efficiency"
+  },
+  "PPF_GROWTH_DECLINE": {
+   "label": "PPF growth or decline"
+  }
+ },
+ "stages": [
+  {
+   "name": "PPF movements and shifts",
+   "title": "PPF movements and shifts",
+   "sub": "Distinguish points on, inside and beyond a PPF, and tell a movement along it from a shift of it.",
+   "steps": [
+    {
+     "type": "ask",
+     "q": "A country's PPF shows every combination of cars and wheat it can produce using all its resources fully and efficiently. A point drawn far outside the curve would need more resources than the country has. Can the country actually produce at that point right now?",
+     "right": "No, it cannot be produced with current resources",
+     "wrong": "Yes, as long as it wants to badly enough",
+     "hint": "The curve itself marks the maximum possible combinations. What does a point beyond that maximum mean?",
+     "pre": "A point outside the curve is unobtainable, while any point on or inside it is",
+     "term": "PPF_POSSIBLE_UNOBTAINABLE",
+     "diagram": {
+      "x": "Wheat",
+      "y": "Cars",
+      "curves": [
+       {
+        "label": "PPF",
+        "pts": [
+         [
+          0,
+          0.9
+         ],
+         [
+          0.3,
+          0.85
+         ],
+         [
+          0.6,
+          0.68
+         ],
+         [
+          0.85,
+          0.4
+         ],
+         [
+          0.95,
+          0
+         ]
+        ]
+       }
+      ],
+      "points": [
+       {
+        "label": "A",
+        "x": 0.4,
+        "y": 0.6,
+        "guides": true
+       },
+       {
+        "label": "B",
+        "x": 0.7,
+        "y": 0.75,
+        "guides": true
+       }
+      ]
+     }
+    },
+    {
+     "type": "ask",
+     "q": "The country moves from one point on its PPF to another on the same curve, making more cars and less wheat. Has the total amount of resources changed?",
+     "right": "No, it stays the same",
+     "wrong": "Yes, it has increased",
+     "hint": "The curve itself has not moved, only the point on it.",
+     "pre": "Shifting the mix of output while staying on the same curve is a",
+     "term": "PPF_MOVEMENT_ALONG",
+     "diagram": {
+      "x": "Wheat",
+      "y": "Cars",
+      "curves": [
+       {
+        "label": "PPF",
+        "pts": [
+         [
+          0,
+          0.9
+         ],
+         [
+          0.3,
+          0.85
+         ],
+         [
+          0.6,
+          0.68
+         ],
+         [
+          0.85,
+          0.4
+         ],
+         [
+          0.95,
+          0
+         ]
+        ]
+       }
+      ],
+      "points": [
+       {
+        "label": "A",
+        "x": 0.6,
+        "y": 0.68,
+        "guides": true
+       },
+       {
+        "label": "B",
+        "x": 0.85,
+        "y": 0.4,
+        "guides": true
+       }
+      ]
+     }
+    },
+    {
+     "type": "ask",
+     "q": "A new technology lets the same workforce and machines produce far more cars and far more wheat than before, at every combination. Does the old curve still show the country's maximum possible output?",
+     "right": "No, a new higher curve is needed",
+     "wrong": "Yes, the same curve still applies",
+     "hint": "If more of both goods becomes possible everywhere, does the boundary of what is possible stay in the same place?",
+     "pre": "The whole curve moving outwards like this is a",
+     "term": "PPF_SHIFT",
+     "diagram": {
+      "x": "Wheat",
+      "y": "Cars",
+      "curves": [
+       {
+        "label": "Old",
+        "pts": [
+         [
+          0,
+          0.6
+         ],
+         [
+          0.2,
+          0.57
+         ],
+         [
+          0.4,
+          0.48
+         ],
+         [
+          0.55,
+          0.3
+         ],
+         [
+          0.6,
+          0
+         ]
+        ]
+       },
+       {
+        "label": "New",
+        "pts": [
+         [
+          0,
+          0.9
+         ],
+         [
+          0.3,
+          0.85
+         ],
+         [
+          0.6,
+          0.68
+         ],
+         [
+          0.85,
+          0.4
+         ],
+         [
+          0.95,
+          0
+         ]
+        ]
+       }
+      ],
+      "points": []
+     }
+    },
+    {
+     "type": "ask",
+     "q": "One country retrains some wheat workers to build cars instead, staying on its existing curve. Another country finds a new resource, pushing its whole curve outward. Do these two changes share the same cause?",
+     "right": "No, one reallocates resources, the other increases them",
+     "wrong": "Yes, both come from more total resources",
+     "hint": "In the first case did total resources change? In the second?",
+     "pre": "Telling a reallocation of fixed resources apart from a change in total resources is",
+     "term": "PPF_MOVEMENT_SHIFT_CAUSES"
+    },
+    {
+     "type": "derive"
+    }
+   ],
+   "given": [
+    "PPF_CONSTRUCT",
+    "PPF_EFFICIENCY",
+    "PPF_GROWTH_DECLINE"
+   ],
+   "needs": [
+    "PPF_CONSTRUCT",
+    "PPF_EFFICIENCY",
+    "PPF_GROWTH_DECLINE"
+   ],
+   "builds": [
+    "PPF_CONSTRUCT",
+    "PPF_EFFICIENCY",
+    "PPF_GROWTH_DECLINE"
+   ],
+   "nodes": [
+    "PPF_POSSIBLE_UNOBTAINABLE",
+    "PPF_MOVEMENT_ALONG",
+    "PPF_SHIFT",
+    "PPF_MOVEMENT_SHIFT_CAUSES"
+   ],
+   "dropped": [],
+   "edges": [
+    [
+     "PPF_POSSIBLE_UNOBTAINABLE",
+     "PPF_MOVEMENT_ALONG"
+    ],
+    [
+     "PPF_MOVEMENT_ALONG",
+     "PPF_MOVEMENT_SHIFT_CAUSES"
+    ],
+    [
+     "PPF_SHIFT",
+     "PPF_MOVEMENT_SHIFT_CAUSES"
+    ],
+    [
+     "PPF_CONSTRUCT",
+     "PPF_POSSIBLE_UNOBTAINABLE"
+    ],
+    [
+     "PPF_EFFICIENCY",
+     "PPF_MOVEMENT_ALONG"
+    ],
+    [
+     "PPF_GROWTH_DECLINE",
+     "PPF_SHIFT"
+    ],
+    [
+     "PPF_CONSTRUCT",
+     "PPF_POSSIBLE_UNOBTAINABLE"
+    ],
+    [
+     "PPF_EFFICIENCY",
+     "PPF_POSSIBLE_UNOBTAINABLE"
+    ],
+    [
+     "PPF_GROWTH_DECLINE",
+     "PPF_SHIFT"
+    ]
+   ]
+  }
+ ]
+}

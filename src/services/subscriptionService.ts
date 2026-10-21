@@ -1,5 +1,6 @@
 import { supabaseAdmin } from './supabaseAdmin';
 import { SubscriptionTier } from '../constants/locks';
+import { notifyNewAccount } from './newAccountNotice';
 
 export interface UserSubscription {
   user_id: string;
@@ -48,9 +49,10 @@ export async function getOrCreateSubscription(userId: string): Promise<UserSubsc
   const initial = { user_id: userId, tier: legacy?.status === 'active' ? 'premium' : 'free',
     stripe_subscription_id: legacy?.stripe_subscription_id || null,
     stripe_customer_id: legacy?.stripe_customer_id || null, ...monthlyPeriod() };
-  const { error: insertError } = await supabaseAdmin.from('user_subscriptions')
-    .upsert(initial, { onConflict: 'user_id', ignoreDuplicates: true });
+  const { data: inserted, error: insertError } = await supabaseAdmin.from('user_subscriptions')
+    .upsert(initial, { onConflict: 'user_id', ignoreDuplicates: true }).select('user_id');
   if (insertError) throw insertError;
+  if (inserted && inserted.length) void notifyNewAccount(userId);   // this call made the row: it is the account's first visit
   const { data: saved, error: readError } = await supabaseAdmin.from('user_subscriptions').select('*').eq('user_id', userId).single();
   if (readError) throw readError;
   return { ...saved, ...monthlyPeriod() };

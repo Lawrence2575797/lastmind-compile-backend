@@ -1,0 +1,139 @@
+"use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.MODELS = void 0;
+exports.processNotes = processNotes;
+exports.callClaudeJSON = callClaudeJSON;
+exports.callClaudeJSONWithImages = callClaudeJSONWithImages;
+const sdk_1 = __importDefault(require("@anthropic-ai/sdk"));
+const CLAUDE_API_KEY = process.env.CLAUDE_API_KEY;
+if (!CLAUDE_API_KEY) {
+    // Fail loudly at startup rather than silently at request time.
+    console.error('CLAUDE_API_KEY is not set. Create a .env from .env.example and put a ' +
+        'freshly-generated key there (never in code or chat).');
+}
+const anthropic = new sdk_1.default({
+    apiKey: CLAUDE_API_KEY,
+});
+// One model per task, not one model for everything. Centralized here so a
+// future model swap is a one-line change, not a search-and-replace across
+// the codebase.
+exports.MODELS = {
+    // Compile — everyday note restructuring, high volume.
+    compile: process.env.CLAUDE_MODEL || 'claude-sonnet-5',
+    // Dependency chain generation + its fact-check pass — rare (generated
+    // once per concept, then cached and reused across every student who
+    // hits it), but high-leverage: a wrong chain silently corrupts every
+    // diagnosis built on top of it. Worth paying more per call here
+    // specifically because the cost doesn't scale with usage volume.
+    chainGeneration: 'claude-opus-4-8',
+    factCheck: 'claude-opus-4-8',
+    // The diagnostic tree itself — corrections, contrastive cues, the
+    // nuanced pedagogical judgment calls.
+    diagnosticTree: process.env.CLAUDE_MODEL || 'claude-sonnet-5',
+    // Simple, high-volume, low-stakes calls — a single retrieval question,
+    // the careless-slip micro-probe. Runs on every diagnostic event, so
+    // savings here compound across the whole user base.
+    simpleQuestion: 'claude-haiku-4-5-20251001',
+};
+const TUTOR_SYSTEM_PROMPT = "You are an AI tutor. The following text is a student's notes. Improve them into clear, structured revision notes.";
+const FALLBACK_MESSAGE = 'There was an issue processing your notes. Please try again.';
+/**
+ * Sends already-filtered text to Claude and returns its response.
+ * `safeText` must already have passed through both PII filters and the
+ * harmful-content filter before it reaches this function — this module
+ * does not re-check that; the route handler is responsible for ordering.
+ */
+async function processNotes(safeText) {
+    try {
+        const response = await anthropic.messages.create({
+            model: exports.MODELS.compile,
+            max_tokens: 1024,
+            system: TUTOR_SYSTEM_PROMPT,
+            messages: [
+                {
+                    role: 'user',
+                    content: safeText,
+                },
+            ],
+        });
+        const textBlock = response.content.find((block) => block.type === 'text');
+        if (textBlock && textBlock.type === 'text') {
+            return textBlock.text;
+        }
+        return FALLBACK_MESSAGE;
+    }
+    catch (err) {
+        console.error('Claude API request failed:', err);
+        return FALLBACK_MESSAGE;
+    }
+}
+function isTemperatureDeprecatedError(err) {
+    const message = err && typeof err === 'object' && 'message' in err ? String(err.message) : '';
+    return message.includes('temperature') && message.includes('deprecated');
+}
+/**
+ * Generic call for anything expecting a strict JSON response (chain
+ * generation, fact-checking, diagnostic tree steps). Unlike processNotes,
+ * this does NOT swallow errors into a fallback string — a caller building
+ * a dependency chain needs to know a real failure happened, not silently
+ * receive fallback text formatted as if it were valid JSON.
+ *
+ * On a "temperature is deprecated for this model" error, automatically
+ * retries once WITHOUT temperature, rather than trying to predict ahead of
+ * time which models will reject it. Predicting via model-name pattern
+ * matching turned out fragile in practice — it depends on correctly
+ * guessing every current and future naming variant Anthropic might use,
+ * including whatever a deployment's CLAUDE_MODEL env var happens to be
+ * set to, which this code has no visibility into. Reacting to the actual
+ * error Anthropic returns works regardless of the model or naming scheme
+ * involved, now or in the future.
+ */
+async function makeMessageRequest(model, systemPrompt, content, maxTokens, temperature, includeTemperature) {
+    return anthropic.messages.create({
+        model,
+        max_tokens: maxTokens ?? 2048,
+        ...(includeTemperature ? { temperature } : {}),
+        system: systemPrompt,
+        messages: [{ role: 'user', content }],
+    });
+}
+async function sendWithTemperatureRetry(model, systemPrompt, content, maxTokens, temperature) {
+    let response;
+    try {
+        response = await makeMessageRequest(model, systemPrompt, content, maxTokens, temperature, true);
+    }
+    catch (err) {
+        if (!isTemperatureDeprecatedError(err))
+            throw err;
+        console.warn(`Claude call to "${model}" rejected temperature — retrying without it.`);
+        response = await makeMessageRequest(model, systemPrompt, content, maxTokens, temperature, false);
+    }
+    const textBlock = response.content.find((block) => block.type === 'text');
+    if (!textBlock || textBlock.type !== 'text') {
+        throw new Error('Claude response contained no text content');
+    }
+    return textBlock.text;
+}
+async function callClaudeJSON(params) {
+    return sendWithTemperatureRetry(params.model, params.systemPrompt, params.userContent, params.maxTokens, params.temperature);
+}
+/**
+ * Same as callClaudeJSON, but for calls that need to show Claude one or
+ * more images alongside the text (e.g. picking the best diagram candidate).
+ * Kept as a separate function rather than an optional param on
+ * callClaudeJSON so the common text-only path stays simple.
+ */
+async function callClaudeJSONWithImages(params) {
+    const content = [{ type: 'text', text: params.userText }];
+    for (const image of params.images) {
+        content.push({ type: 'text', text: image.label });
+        content.push({
+            type: 'image',
+            source: { type: 'base64', media_type: image.mediaType, data: image.base64Data },
+        });
+    }
+    return sendWithTemperatureRetry(params.model, params.systemPrompt, content, params.maxTokens, params.temperature);
+}

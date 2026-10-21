@@ -1,0 +1,192 @@
+{
+ "id": "gen",
+ "subject": "Economics",
+ "title": "Competitive tendering: pros and cons",
+ "terms": {
+  "bidding": {
+   "label": "Competitive bidding"
+  },
+  "COMP_TENDER_ADV": {
+   "label": "Lower costs from competition"
+  },
+  "lowbid": {
+   "label": "Low winning bid"
+  },
+  "COMP_TENDER_DIS1": {
+   "label": "Disadvantage: firms may cut quality or exploit workers to win contracts at low bid prices"
+  },
+  "fewbidders": {
+   "label": "Few large bidders"
+  },
+  "COMP_TENDER_DIS2": {
+   "label": "Collusion risk"
+  },
+  "COMP_TENDER_ADV2": {
+   "label": "Access to private expertise"
+  },
+  "COMP_TENDER_DEF": {
+   "label": "Competitive tendering for government contracts: definition (firms bid to supply public services)"
+  },
+  "reasons_collusive": {
+   "label": "Reasons for collusive behaviour (reduce uncertainty, increase joint profits, raise barriers)"
+  }
+ },
+ "stages": [
+  {
+   "name": "Competitive tendering: pros and cons",
+   "title": "Competitive tendering: pros and cons",
+   "sub": "After this the student can weigh up the advantages and disadvantages of competitive tendering for public services.",
+   "steps": [
+    {
+     "type": "ask",
+     "q": "Three cleaning firms all want a council contract, so each one submits a price it would charge to do the work. Does the council now have one price to consider, or several to compare?",
+     "right": "Several prices to compare",
+     "wrong": "Only one price to consider",
+     "hint": "How many firms are trying to win the same job?",
+     "pre": "So firms submitting rival offers for the same contract is",
+     "term": "bidding"
+    },
+    {
+     "type": "ask",
+     "q": "Knowing the council will compare their prices against rivals, what does each firm have an incentive to do with the price it submits?",
+     "right": "Push it down to beat rivals",
+     "wrong": "Push it up to cover costs",
+     "hint": "If a higher price loses you the contract, what do you do to your price?",
+     "pre": "So this rivalry over price is an",
+     "term": "COMP_TENDER_ADV"
+    },
+    {
+     "type": "ask",
+     "q": "A firm wins the contract by submitting a price barely covering its costs. Once the contract starts, is there much spare money left to pay staff well or use good materials?",
+     "right": "No, very little spare money",
+     "wrong": "Yes, plenty of spare money",
+     "hint": "If the price was pushed right down to win, what is left over once the job starts?",
+     "pre": "So winning with a",
+     "term": "lowbid"
+    },
+    {
+     "type": "ask",
+     "q": "With almost no spare money in the contract, what might the firm do to still turn a profit?",
+     "right": "Cut staff wages or corners on quality",
+     "wrong": "Raise staff wages and improve quality",
+     "hint": "If money is tight, where can the firm claw back profit?",
+     "pre": "So a risk is that firms may",
+     "term": "COMP_TENDER_DIS1"
+    },
+    {
+     "type": "order",
+     "terms": [
+      "bidding",
+      "COMP_TENDER_ADV",
+      "lowbid",
+      "COMP_TENDER_DIS1"
+     ],
+     "prompt": "Drag and drop the 4 key terms in the order they build on each other."
+    },
+    {
+     "type": "ask",
+     "q": "Only three huge firms are large enough to bid for a motorway contract, unlike the many small cleaning firms bidding for the council job earlier. Is it easier or harder for just these three to talk to each other and agree on prices than it was for many small rivals?",
+     "right": "Easier, there are so few of them",
+     "wrong": "Harder, there are so few of them",
+     "hint": "Think about how many firms would need to coordinate in each case.",
+     "pre": "So a market with only",
+     "term": "fewbidders"
+    },
+    {
+     "type": "ask",
+     "q": "If those three firms secretly agree in advance who will win and at what price, does any real price rivalry still happen between their bids?",
+     "right": "No, the bidding is no longer genuine",
+     "wrong": "Yes, the bidding is still genuine",
+     "hint": "If the outcome is already agreed, what is left of the competition?",
+     "pre": "So a risk with few large bidders is",
+     "term": "COMP_TENDER_DIS2"
+    },
+    {
+     "type": "ask",
+     "q": "A private waste firm has years of experience running efficient collection routes that the council itself has never had to develop. By tendering the contract out, can the council make use of this know-how?",
+     "right": "Yes, it can draw on that know-how",
+     "wrong": "No, it cannot draw on that know-how",
+     "hint": "Think about who actually holds the specialist skills here.",
+     "pre": "So another advantage is government can",
+     "term": "COMP_TENDER_ADV2"
+    },
+    {
+     "type": "derive"
+    }
+   ],
+   "given": [
+    "COMP_TENDER_DEF",
+    "reasons_collusive"
+   ],
+   "needs": [
+    "COMP_TENDER_DEF",
+    "reasons_collusive"
+   ],
+   "builds": [
+    "COMP_TENDER_DEF",
+    "reasons_collusive"
+   ],
+   "nodes": [
+    "COMP_TENDER_ADV",
+    "COMP_TENDER_DIS1",
+    "COMP_TENDER_DIS2",
+    "COMP_TENDER_ADV2"
+   ],
+   "dropped": [],
+   "edges": [
+    [
+     "COMP_TENDER_DEF",
+     "COMP_TENDER_ADV"
+    ],
+    [
+     "COMP_TENDER_DEF",
+     "COMP_TENDER_DIS1"
+    ],
+    [
+     "COMP_TENDER_DEF",
+     "COMP_TENDER_DIS2"
+    ],
+    [
+     "reasons_collusive",
+     "COMP_TENDER_DIS2"
+    ],
+    [
+     "COMP_TENDER_DEF",
+     "COMP_TENDER_ADV2"
+    ],
+    [
+     "COMP_TENDER_DEF",
+     "bidding"
+    ],
+    [
+     "bidding",
+     "COMP_TENDER_ADV"
+    ],
+    [
+     "COMP_TENDER_ADV",
+     "lowbid"
+    ],
+    [
+     "lowbid",
+     "COMP_TENDER_DIS1"
+    ],
+    [
+     "bidding",
+     "fewbidders"
+    ],
+    [
+     "fewbidders",
+     "COMP_TENDER_DIS2"
+    ],
+    [
+     "reasons_collusive",
+     "COMP_TENDER_DIS2"
+    ],
+    [
+     "COMP_TENDER_DEF",
+     "COMP_TENDER_ADV2"
+    ]
+   ]
+  }
+ ]
+}

@@ -1,0 +1,306 @@
+{
+ "id": "gen",
+ "subject": "Economics",
+ "title": "Tax, interest rates and money supply",
+ "terms": {
+  "TAX_OUTPUT_EMPLOYMENT": {
+   "label": "Tax effect on output & employment"
+  },
+  "TAX_PRICE_LEVEL": {
+   "label": "Tax effect on price level"
+  },
+  "TAX_TRADE_BALANCE": {
+   "label": "Tax effect on trade balance"
+  },
+  "INTEREST_RATE_MECHANISM": {
+   "label": "Interest rate transmission"
+  },
+  "MONEY_SUPPLY_MECHANISM": {
+   "label": "Money supply effect"
+  },
+  "disp_income": {
+   "label": "Disposable income"
+  },
+  "spend_channel": {
+   "label": "Spending channel"
+  },
+  "saving_channel": {
+   "label": "Saving/borrowing channel"
+  },
+  "AD_AS_MODEL": {
+   "label": "AD/AS framework (aggregate demand and aggregate supply)"
+  },
+  "DIRECT_INDIRECT_TAX": {
+   "label": "Distinction between direct and indirect taxes"
+  },
+  "TRADE_BALANCE_DEF": {
+   "label": "The trade balance: definition"
+  },
+  "MONETARY_POLICY_DEF": {
+   "label": "Monetary policy: definition and tools (interest rates, money supply)"
+  }
+ },
+ "stages": [
+  {
+   "name": "Tax, interest rates and money supply",
+   "title": "Tax, interest rates and money supply",
+   "sub": "After this stage you can trace how tax changes, interest rate changes and money supply changes work through the economy.",
+   "steps": [
+    {
+     "type": "ask",
+     "q": "The government cuts income tax, a direct tax, so workers keep more of each pay packet. What happens to the amount of money households actually have left to spend?",
+     "right": "It rises",
+     "wrong": "It stays the same",
+     "hint": "Tax is taken out of pay before it reaches your pocket. If less is taken, what is left?",
+     "pre": "So a tax cut raises households'",
+     "term": "disp_income"
+    },
+    {
+     "type": "ask",
+     "q": "With more disposable income, households buy more goods and services, so firms sell more and take on more workers. What happens to real output and jobs?",
+     "right": "Both rise",
+     "wrong": "Both fall",
+     "hint": "More spending power flowing into shops - what does that do to production and hiring?",
+     "pre": "So the tax cut raises",
+     "term": "TAX_OUTPUT_EMPLOYMENT"
+    },
+    {
+     "type": "ask",
+     "q": "Firms are now selling close to full capacity because demand has risen so much. If they cannot easily produce more, what tends to happen to the prices they charge?",
+     "right": "Prices rise",
+     "wrong": "Prices fall",
+     "hint": "Think of the AD/AS diagram: demand shifting right against a steep supply curve near full capacity.",
+     "pre": "So beyond a point, the tax cut also raises",
+     "term": "TAX_PRICE_LEVEL",
+     "diagram": {
+      "x": "Real output",
+      "y": "Price level",
+      "curves": [
+       {
+        "label": "AS",
+        "pts": [
+         [
+          0.1,
+          0.15
+         ],
+         [
+          0.5,
+          0.3
+         ],
+         [
+          0.8,
+          0.6
+         ],
+         [
+          0.92,
+          0.85
+         ]
+        ]
+       },
+       {
+        "label": "AD1",
+        "pts": [
+         [
+          0.1,
+          0.7
+         ],
+         [
+          0.5,
+          0.45
+         ],
+         [
+          0.85,
+          0.15
+         ]
+        ]
+       },
+       {
+        "label": "AD2",
+        "pts": [
+         [
+          0.2,
+          0.85
+         ],
+         [
+          0.55,
+          0.55
+         ],
+         [
+          0.9,
+          0.2
+         ]
+        ]
+       }
+      ]
+     }
+    },
+    {
+     "type": "ask",
+     "q": "Domestic prices are now higher than before. Will exports abroad look cheaper or more expensive to foreign buyers compared with other countries' goods?",
+     "right": "More expensive",
+     "wrong": "Cheaper",
+     "hint": "If your own goods cost more at home, what happens to their price when sold overseas?",
+     "pre": "Pricier exports and relatively cheaper imports tend to worsen the",
+     "term": "TAX_TRADE_BALANCE"
+    },
+    {
+     "type": "order",
+     "terms": [
+      "disp_income",
+      "TAX_OUTPUT_EMPLOYMENT",
+      "TAX_PRICE_LEVEL",
+      "TAX_TRADE_BALANCE"
+     ],
+     "prompt": "Drag and drop the 4 key terms in the order they build on each other."
+    },
+    {
+     "type": "ask",
+     "q": "The central bank cuts interest rates. Mortgages, loans and credit card borrowing all get cheaper. Will households want to spend more or save more of their income now?",
+     "right": "Spend more",
+     "wrong": "Save more",
+     "hint": "If borrowing is cheap and saving pays little, which is more attractive: spending now or holding back money?",
+     "pre": "So cheaper borrowing pulls households and firms into a",
+     "term": "spend_channel"
+    },
+    {
+     "type": "ask",
+     "q": "At the same time, the reward for putting money into a savings account has fallen. Are savers now more or less tempted to take money out and spend it, or to borrow instead?",
+     "right": "More tempted to spend or borrow",
+     "wrong": "More tempted to keep saving",
+     "hint": "If saving barely pays anything, does it still look attractive compared with spending or borrowing?",
+     "pre": "Lower returns on saving also work through a",
+     "term": "saving_channel"
+    },
+    {
+     "type": "ask",
+     "q": "Both of these channels push spending up across the whole economy after a rate cut. Tracing that whole path from the rate cut through to higher demand, output and prices describes what?",
+     "right": "How the rate change spreads through the economy step by step",
+     "wrong": "How much the central bank borrows from itself",
+     "hint": "Think of it as a chain: rate cut, then cheaper credit and less reward for saving, then more spending, then effects on output and prices.",
+     "pre": "That whole chain of effects is the",
+     "term": "INTEREST_RATE_MECHANISM"
+    },
+    {
+     "type": "ask",
+     "q": "Now suppose instead the central bank simply increases the amount of money circulating in the economy, without changing the interest rate directly. Extra money in banks and households' hands still ends up being spent or lent out through the same spending and saving channels. What happens to overall demand in the economy?",
+     "right": "It rises",
+     "wrong": "It stays the same",
+     "hint": "More money available to spend or lend still has to go somewhere - what does that do to total demand?",
+     "pre": "So a rise in the money supply feeds through the same channels to raise demand: that is the",
+     "term": "MONEY_SUPPLY_MECHANISM"
+    },
+    {
+     "type": "derive"
+    }
+   ],
+   "given": [
+    "AD_AS_MODEL",
+    "DIRECT_INDIRECT_TAX",
+    "TRADE_BALANCE_DEF",
+    "MONETARY_POLICY_DEF"
+   ],
+   "needs": [
+    "AD_AS_MODEL",
+    "DIRECT_INDIRECT_TAX",
+    "TRADE_BALANCE_DEF",
+    "MONETARY_POLICY_DEF"
+   ],
+   "builds": [
+    "AD_AS_MODEL",
+    "DIRECT_INDIRECT_TAX",
+    "TRADE_BALANCE_DEF",
+    "MONETARY_POLICY_DEF"
+   ],
+   "nodes": [
+    "TAX_OUTPUT_EMPLOYMENT",
+    "TAX_PRICE_LEVEL",
+    "TAX_TRADE_BALANCE",
+    "INTEREST_RATE_MECHANISM",
+    "MONEY_SUPPLY_MECHANISM"
+   ],
+   "dropped": [],
+   "edges": [
+    [
+     "TAX_OUTPUT_EMPLOYMENT",
+     "TAX_PRICE_LEVEL"
+    ],
+    [
+     "TAX_PRICE_LEVEL",
+     "TAX_TRADE_BALANCE"
+    ],
+    [
+     "AD_AS_MODEL",
+     "TAX_OUTPUT_EMPLOYMENT"
+    ],
+    [
+     "DIRECT_INDIRECT_TAX",
+     "TAX_OUTPUT_EMPLOYMENT"
+    ],
+    [
+     "AD_AS_MODEL",
+     "TAX_PRICE_LEVEL"
+    ],
+    [
+     "DIRECT_INDIRECT_TAX",
+     "TAX_PRICE_LEVEL"
+    ],
+    [
+     "TRADE_BALANCE_DEF",
+     "TAX_TRADE_BALANCE"
+    ],
+    [
+     "DIRECT_INDIRECT_TAX",
+     "TAX_TRADE_BALANCE"
+    ],
+    [
+     "MONETARY_POLICY_DEF",
+     "INTEREST_RATE_MECHANISM"
+    ],
+    [
+     "AD_AS_MODEL",
+     "INTEREST_RATE_MECHANISM"
+    ],
+    [
+     "MONETARY_POLICY_DEF",
+     "MONEY_SUPPLY_MECHANISM"
+    ],
+    [
+     "AD_AS_MODEL",
+     "MONEY_SUPPLY_MECHANISM"
+    ],
+    [
+     "DIRECT_INDIRECT_TAX",
+     "disp_income"
+    ],
+    [
+     "disp_income",
+     "TAX_OUTPUT_EMPLOYMENT"
+    ],
+    [
+     "MONETARY_POLICY_DEF",
+     "spend_channel"
+    ],
+    [
+     "MONETARY_POLICY_DEF",
+     "saving_channel"
+    ],
+    [
+     "spend_channel",
+     "INTEREST_RATE_MECHANISM"
+    ],
+    [
+     "saving_channel",
+     "INTEREST_RATE_MECHANISM"
+    ],
+    [
+     "spend_channel",
+     "MONEY_SUPPLY_MECHANISM"
+    ],
+    [
+     "saving_channel",
+     "MONEY_SUPPLY_MECHANISM"
+    ]
+   ]
+  }
+ ]
+}

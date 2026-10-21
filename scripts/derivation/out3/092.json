@@ -1,0 +1,183 @@
+{
+ "id": "gen",
+ "subject": "Economics",
+ "title": "Limits of supply-side policy and the Phillips curve conflict",
+ "terms": {
+  "SSP_DIS_DEMAND_DEPENDENT": {
+   "label": "Supply-side needs demand"
+  },
+  "CONFLICT_UNEMP_INFLATION": {
+   "label": "Unemployment-inflation conflict"
+  },
+  "spare_capacity": {
+   "label": "Spare capacity"
+  },
+  "ad_boost": {
+   "label": "AD boost needed"
+  },
+  "SSP_AD_AS_DIAGRAM": {
+   "label": "LRAS shift diagram"
+  },
+  "DEMAND_POLICY_AD_DIAGRAM": {
+   "label": "AD/AS demand-side diagrams"
+  },
+  "PHILLIPS_CURVE_SR": {
+   "label": "Short-run Phillips curve"
+  }
+ },
+ "stages": [
+  {
+   "name": "Limits of supply-side policy and the Phillips curve conflict",
+   "title": "Limits of supply-side policy and the Phillips curve conflict",
+   "sub": "After this the student can explain why supply-side policy can fail without demand, and why cutting unemployment can raise inflation.",
+   "steps": [
+    {
+     "type": "ask",
+     "q": "A government funds new training schemes and roads, shifting LRAS rightward. Firms now have more capacity to produce. But if households and firms are not buying any more than before, will firms actually produce up to that new capacity?",
+     "right": "No, they will only produce what is being bought",
+     "wrong": "Yes, firms always produce at full capacity",
+     "hint": "Think about why a factory would increase output: does having the ability to produce more mean people are buying more?",
+     "pre": "So the extra capacity sits unused. That is",
+     "term": "spare_capacity",
+     "diagram": {
+      "x": "Real GDP",
+      "y": "Price level",
+      "curves": [
+       {
+        "label": "AD",
+        "pts": [
+         [
+          0.1,
+          0.75
+         ],
+         [
+          0.45,
+          0.5
+         ],
+         [
+          0.85,
+          0.2
+         ]
+        ]
+       },
+       {
+        "label": "LRAS1",
+        "pts": [
+         [
+          0.4,
+          0.05
+         ],
+         [
+          0.4,
+          0.95
+         ]
+        ]
+       },
+       {
+        "label": "LRAS2",
+        "pts": [
+         [
+          0.65,
+          0.05
+         ],
+         [
+          0.65,
+          0.95
+         ]
+        ]
+       }
+      ]
+     }
+    },
+    {
+     "type": "ask",
+     "q": "Given that the new capacity is going unused, what else would need to happen for output to actually rise to meet it?",
+     "right": "Demand would need to rise as well",
+     "wrong": "Nothing, capacity alone raises output",
+     "hint": "Capacity is the ceiling. What has to increase for actual output to reach that ceiling?",
+     "pre": "So there needs to be",
+     "term": "ad_boost"
+    },
+    {
+     "type": "ask",
+     "q": "A country builds new factories and trains workers, but consumers keep spending the same amount as before. Will national output rise by as much as the supply-side policy intended?",
+     "right": "No, it will fall short without extra demand",
+     "wrong": "Yes, output always rises to match new capacity",
+     "hint": "Think back to the unused capacity: does building it guarantee it gets used?",
+     "pre": "So a weakness of supply-side policy is that it is",
+     "term": "SSP_DIS_DEMAND_DEPENDENT"
+    },
+    {
+     "type": "ask",
+     "q": "A government cuts interest rates and raises spending to push unemployment down, using AD-side policy. Firms respond by hiring more, but they also compete harder for scarcer workers and raw materials. What tends to happen to prices as unemployment falls this way?",
+     "right": "Prices tend to rise faster",
+     "wrong": "Prices stay completely unaffected",
+     "hint": "If workers and resources become scarcer as firms expand, what happens to costs and prices?",
+     "pre": "So lower unemployment tends to come with higher inflation, and vice versa, which creates a policy",
+     "term": "CONFLICT_UNEMP_INFLATION"
+    },
+    {
+     "type": "derive"
+    }
+   ],
+   "given": [
+    "SSP_AD_AS_DIAGRAM",
+    "DEMAND_POLICY_AD_DIAGRAM",
+    "PHILLIPS_CURVE_SR"
+   ],
+   "needs": [
+    "SSP_AD_AS_DIAGRAM",
+    "DEMAND_POLICY_AD_DIAGRAM",
+    "PHILLIPS_CURVE_SR"
+   ],
+   "builds": [
+    "SSP_AD_AS_DIAGRAM",
+    "DEMAND_POLICY_AD_DIAGRAM",
+    "PHILLIPS_CURVE_SR"
+   ],
+   "nodes": [
+    "SSP_DIS_DEMAND_DEPENDENT",
+    "CONFLICT_UNEMP_INFLATION"
+   ],
+   "dropped": [],
+   "edges": [
+    [
+     "SSP_AD_AS_DIAGRAM",
+     "SSP_DIS_DEMAND_DEPENDENT"
+    ],
+    [
+     "DEMAND_POLICY_AD_DIAGRAM",
+     "SSP_DIS_DEMAND_DEPENDENT"
+    ],
+    [
+     "PHILLIPS_CURVE_SR",
+     "CONFLICT_UNEMP_INFLATION"
+    ],
+    [
+     "DEMAND_POLICY_AD_DIAGRAM",
+     "CONFLICT_UNEMP_INFLATION"
+    ],
+    [
+     "SSP_AD_AS_DIAGRAM",
+     "spare_capacity"
+    ],
+    [
+     "spare_capacity",
+     "ad_boost"
+    ],
+    [
+     "ad_boost",
+     "SSP_DIS_DEMAND_DEPENDENT"
+    ],
+    [
+     "PHILLIPS_CURVE_SR",
+     "CONFLICT_UNEMP_INFLATION"
+    ],
+    [
+     "DEMAND_POLICY_AD_DIAGRAM",
+     "CONFLICT_UNEMP_INFLATION"
+    ]
+   ]
+  }
+ ]
+}

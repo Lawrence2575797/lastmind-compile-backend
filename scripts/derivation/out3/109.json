@@ -1,0 +1,202 @@
+{
+ "id": "gen",
+ "subject": "Economics",
+ "title": "Demergers",
+ "terms": {
+  "reason_demerger_diseconomies": {
+   "label": "Escaping diseconomies"
+  },
+  "reason_demerger_core_focus": {
+   "label": "Refocus on core business"
+  },
+  "reason_demerger_regulatory": {
+   "label": "Regulatory demerger"
+  },
+  "reason_demerger_shareholder_value": {
+   "label": "Unlocking shareholder value"
+  },
+  "reason_demerger_agency": {
+   "label": "Reducing agency problems"
+  },
+  "demerger_impact_business": {
+   "label": "Impact of demergers"
+  },
+  "dis_econ_scale": {
+   "label": "Diseconomies of scale"
+  },
+  "demerger_def": {
+   "label": "Demerger"
+  },
+  "competition_policy_basics": {
+   "label": "Competition policy"
+  },
+  "principal_agent_problem": {
+   "label": "Principal-agent problem"
+  },
+  "conglomerate_dis_focus": {
+   "label": "Conglomerate integration disadvantage: loss of strategic focus on the core business"
+  }
+ },
+ "stages": [
+  {
+   "name": "Demergers",
+   "title": "Demergers",
+   "sub": "Understand the main reasons firms split up, and what this does to the businesses involved.",
+   "steps": [
+    {
+     "type": "ask",
+     "q": "A huge conglomerate finds that as it grew, coordinating its many divisions became slow, costly and confusing, pushing average costs up. If it splits into smaller separate firms, what happens to those coordination costs?",
+     "right": "They fall, since each firm is simpler to run",
+     "wrong": "They rise, since there are now more firms to run",
+     "hint": "Think about why the costs went up in the first place: size and complexity of one giant structure.",
+     "pre": "So one reason to split up is",
+     "term": "reason_demerger_diseconomies"
+    },
+    {
+     "type": "ask",
+     "q": "A food company also owns a chain of gyms and a software firm, and its managers admit they barely understand the gym or software markets. If it sells off the gyms and software firm to concentrate on food, what happens to management's attention on food?",
+     "right": "It increases, since resources aren't spread across unrelated markets",
+     "wrong": "It stays the same, since food was always separate anyway",
+     "hint": "Fewer unrelated businesses to worry about means more attention for what's left.",
+     "pre": "So another reason to split up is to",
+     "term": "reason_demerger_core_focus"
+    },
+    {
+     "type": "ask",
+     "q": "A competition authority rules that a merged supermarket group now controls too much of the market and orders it to sell off some stores it acquired. Did the firm choose this split for its own strategic reasons?",
+     "right": "No, it was forced to by an outside authority",
+     "wrong": "Yes, it was the firm's own strategic choice",
+     "hint": "Who made the decision here: the firm's board, or someone outside the firm?",
+     "pre": "So a further reason for demerger is a",
+     "term": "reason_demerger_regulatory"
+    },
+    {
+     "type": "ask",
+     "q": "A conglomerate's share price values the whole group at £8bn, but analysts calculate that its divisions, if sold separately, would be worth £11bn in total. If the group splits into separate listed firms, what is likely to happen to the combined value investors place on them?",
+     "right": "It rises towards the £11bn sum of the parts",
+     "wrong": "It stays at £8bn since nothing about the businesses changed",
+     "hint": "The parts were being hidden inside one undervalued whole. What happens once they're valued separately?",
+     "pre": "So splitting up can be about",
+     "term": "reason_demerger_shareholder_value"
+    },
+    {
+     "type": "order",
+     "terms": [
+      "reason_demerger_diseconomies",
+      "reason_demerger_core_focus",
+      "reason_demerger_regulatory",
+      "reason_demerger_shareholder_value"
+     ],
+     "prompt": "Drag and drop the 4 key terms in the order they build on each other."
+    },
+    {
+     "type": "ask",
+     "q": "In a large conglomerate, divisional managers often chase their own division's growth and bonuses rather than what's best for shareholders overall, and head office struggles to monitor every division closely. If the conglomerate splits into separate firms, each with its own board watching its own managers, does it become easier or harder to keep managers acting in owners' interests?",
+     "right": "Easier, since each firm's managers are watched more closely",
+     "wrong": "Harder, since there are now more boards to coordinate",
+     "hint": "Think about who is watching whom, and how many layers stand between owners and managers now.",
+     "pre": "So demergers can help by",
+     "term": "reason_demerger_agency"
+    },
+    {
+     "type": "ask",
+     "q": "After a conglomerate demerges into three separate firms, each smaller, more focused and more closely monitored, but each losing whatever shared costs or shared customers it used to enjoy across the old group, would you expect every one of these effects to be positive for all the businesses?",
+     "right": "No, there can be gains in some areas and losses in others",
+     "wrong": "Yes, splitting up always benefits every business involved",
+     "hint": "Focus and lower complexity are gains, but did they lose anything they used to share?",
+     "pre": "These mixed effects are the",
+     "term": "demerger_impact_business"
+    },
+    {
+     "type": "derive"
+    }
+   ],
+   "given": [
+    "dis_econ_scale",
+    "demerger_def",
+    "competition_policy_basics",
+    "principal_agent_problem"
+   ],
+   "needs": [
+    "dis_econ_scale",
+    "demerger_def",
+    "competition_policy_basics",
+    "principal_agent_problem",
+    "conglomerate_dis_focus"
+   ],
+   "builds": [
+    "dis_econ_scale",
+    "demerger_def",
+    "competition_policy_basics",
+    "principal_agent_problem"
+   ],
+   "nodes": [
+    "reason_demerger_diseconomies",
+    "reason_demerger_core_focus",
+    "reason_demerger_regulatory",
+    "reason_demerger_shareholder_value",
+    "reason_demerger_agency",
+    "demerger_impact_business"
+   ],
+   "dropped": [],
+   "edges": [
+    [
+     "reason_demerger_diseconomies",
+     "demerger_impact_business"
+    ],
+    [
+     "reason_demerger_core_focus",
+     "demerger_impact_business"
+    ],
+    [
+     "reason_demerger_shareholder_value",
+     "demerger_impact_business"
+    ],
+    [
+     "dis_econ_scale",
+     "reason_demerger_diseconomies"
+    ],
+    [
+     "demerger_def",
+     "reason_demerger_diseconomies"
+    ],
+    [
+     "demerger_def",
+     "reason_demerger_core_focus"
+    ],
+    [
+     "competition_policy_basics",
+     "reason_demerger_regulatory"
+    ],
+    [
+     "demerger_def",
+     "reason_demerger_regulatory"
+    ],
+    [
+     "demerger_def",
+     "reason_demerger_shareholder_value"
+    ],
+    [
+     "principal_agent_problem",
+     "reason_demerger_agency"
+    ],
+    [
+     "demerger_def",
+     "reason_demerger_agency"
+    ],
+    [
+     "dis_econ_scale",
+     "reason_demerger_diseconomies"
+    ],
+    [
+     "competition_policy_basics",
+     "reason_demerger_regulatory"
+    ],
+    [
+     "principal_agent_problem",
+     "reason_demerger_agency"
+    ]
+   ]
+  }
+ ]
+}

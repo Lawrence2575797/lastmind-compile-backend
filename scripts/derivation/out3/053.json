@@ -1,0 +1,218 @@
+{
+ "id": "gen",
+ "subject": "Economics",
+ "title": "Aggregate supply (AS)",
+ "terms": {
+  "spare_capacity": {
+   "label": "Spare capacity"
+  },
+  "sticky_wages": {
+   "label": "Wage-price stickiness"
+  },
+  "flexible_wages": {
+   "label": "Flexible wages/prices"
+  },
+  "keynesian_lras_shape": {
+   "label": "Keynesian LRAS shape"
+  },
+  "classical_lras_shape": {
+   "label": "Classical LRAS shape"
+  },
+  "keynesian_vs_classical_rationale": {
+   "label": "Keynesian vs classical rationale"
+  },
+  "lras_definition": {
+   "label": "Long-run aggregate supply"
+  }
+ },
+ "stages": [
+  {
+   "name": "Aggregate supply (AS)",
+   "title": "Aggregate supply (AS)",
+   "sub": "Explain why economists disagree about the shape of long-run aggregate supply.",
+   "steps": [
+    {
+     "type": "ask",
+     "q": "A factory is running at half its normal output, with idle machines and workers on short hours. If orders rise a bit, can it produce more without raising its prices?",
+     "right": "Yes, easily, using the idle resources",
+     "wrong": "No, it is already at its limit",
+     "hint": "Think about what unused machines and workers let a firm do.",
+     "pre": "Unused machines and workers sitting idle are",
+     "term": "spare_capacity"
+    },
+    {
+     "type": "ask",
+     "q": "Picture the whole economy with spare capacity like this. If total spending rises, would firms with idle workers raise their prices straight away, or use the spare capacity first?",
+     "right": "They use the spare capacity, so wages and prices barely move at first",
+     "wrong": "They raise prices straight away, just as if fully employed",
+     "hint": "Think about why firms with idle workers would raise more output rather than raise prices first.",
+     "pre": "This assumption that wages and prices are slow to move while spare capacity exists is",
+     "term": "sticky_wages"
+    },
+    {
+     "type": "ask",
+     "q": "Now suppose instead every worker and machine in the economy is always assumed to be fully employed. If there were ever a shortage or surplus of workers, what would happen to wages to quickly restore full employment?",
+     "right": "Wages adjust quickly up or down to clear the market",
+     "wrong": "Wages stay fixed until government intervenes",
+     "hint": "If the economy is always assumed to be at full employment, what must be happening to wages behind the scenes?",
+     "pre": "This assumption that wages and prices move freely to keep markets at full employment is",
+     "term": "flexible_wages"
+    },
+    {
+     "type": "order",
+     "terms": [
+      "spare_capacity",
+      "sticky_wages",
+      "flexible_wages"
+     ],
+     "prompt": "Drag and drop the 3 key terms in the order they build on each other."
+    },
+    {
+     "type": "ask",
+     "q": "With sticky wages and spare capacity, as total spending rises from a low level, does output rise a lot for a small rise in prices, at first?",
+     "right": "Yes, output rises with barely any price rise",
+     "wrong": "No, prices rise sharply straight away",
+     "hint": "With idle resources everywhere, what limits how much extra can be produced cheaply?",
+     "pre": "So at low output the long-run supply curve is flat, then it slopes up as capacity tightens, then it turns vertical once every resource is fully used. That is the",
+     "term": "keynesian_lras_shape",
+     "diagram": {
+      "x": "Real output",
+      "y": "Price level",
+      "curves": [
+       {
+        "label": "LRAS",
+        "pts": [
+         [
+          0.05,
+          0.15
+         ],
+         [
+          0.3,
+          0.17
+         ],
+         [
+          0.55,
+          0.3
+         ],
+         [
+          0.75,
+          0.55
+         ],
+         [
+          0.85,
+          0.85
+         ]
+        ]
+       }
+      ]
+     }
+    },
+    {
+     "type": "ask",
+     "q": "With wages and prices always flexible enough to keep the economy fully employed, can extra spending ever raise the actual quantity produced in the long run?",
+     "right": "No, output stays at the same maximum level",
+     "wrong": "Yes, output keeps rising with spending",
+     "hint": "If every resource is already fully employed, what can more spending change if not the amount made?",
+     "pre": "So this view draws long-run supply as a single straight line standing at the economy's maximum output, whatever the price level. That is the",
+     "term": "classical_lras_shape",
+     "diagram": {
+      "x": "Real output",
+      "y": "Price level",
+      "curves": [
+       {
+        "label": "LRAS",
+        "pts": [
+         [
+          0.5,
+          0.1
+         ],
+         [
+          0.5,
+          0.4
+         ],
+         [
+          0.5,
+          0.7
+         ],
+         [
+          0.5,
+          0.9
+         ]
+        ]
+       }
+      ]
+     }
+    },
+    {
+     "type": "ask",
+     "q": "So one view assumes wages and prices are slow to adjust, letting output rise before prices do; the other assumes wages and prices adjust quickly to keep the economy always at full employment. What does this difference in assumptions explain?",
+     "right": "Why the two views draw LRAS with different shapes",
+     "wrong": "Why both views draw LRAS as exactly the same shape",
+     "hint": "Look back at the two curves you drew: flat-then-vertical against a single vertical line. What caused that difference?",
+     "pre": "This underlying disagreement about how markets behave is the",
+     "term": "keynesian_vs_classical_rationale"
+    },
+    {
+     "type": "derive"
+    }
+   ],
+   "given": [
+    "lras_definition"
+   ],
+   "needs": [
+    "lras_definition"
+   ],
+   "builds": [
+    "lras_definition"
+   ],
+   "nodes": [
+    "keynesian_lras_shape",
+    "classical_lras_shape",
+    "keynesian_vs_classical_rationale"
+   ],
+   "dropped": [],
+   "edges": [
+    [
+     "keynesian_lras_shape",
+     "keynesian_vs_classical_rationale"
+    ],
+    [
+     "classical_lras_shape",
+     "keynesian_vs_classical_rationale"
+    ],
+    [
+     "lras_definition",
+     "keynesian_lras_shape"
+    ],
+    [
+     "lras_definition",
+     "classical_lras_shape"
+    ],
+    [
+     "lras_definition",
+     "spare_capacity"
+    ],
+    [
+     "spare_capacity",
+     "keynesian_lras_shape"
+    ],
+    [
+     "sticky_wages",
+     "keynesian_lras_shape"
+    ],
+    [
+     "flexible_wages",
+     "classical_lras_shape"
+    ],
+    [
+     "sticky_wages",
+     "keynesian_vs_classical_rationale"
+    ],
+    [
+     "flexible_wages",
+     "keynesian_vs_classical_rationale"
+    ]
+   ]
+  }
+ ]
+}

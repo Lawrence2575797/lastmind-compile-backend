@@ -1,0 +1,260 @@
+{
+ "id": "gen",
+ "subject": "Economics",
+ "title": "Sales maximisation",
+ "terms": {
+  "normal_profit_concept": {
+   "label": "Normal profit"
+  },
+  "barriers_to_entry_concept": {
+   "label": "Barriers to entry"
+  },
+  "sales_max_reasons": {
+   "label": "Reasons for sales maximisation"
+  },
+  "sales_max_condition": {
+   "label": "Sales maximisation rule"
+  },
+  "sales_max_adv_marketshare": {
+   "label": "Market share advantage"
+  },
+  "sales_max_adv_economies": {
+   "label": "Economies of scale advantage"
+  },
+  "revenue_concepts": {
+   "label": "Revenue concepts: total revenue (TR), average revenue (AR), marginal revenue (MR)"
+  },
+  "cost_curves": {
+   "label": "Cost curves: total cost, average cost, marginal cost construction"
+  },
+  "principal_agent": {
+   "label": "Principal-agent problem"
+  }
+ },
+ "stages": [
+  {
+   "name": "Sales maximisation",
+   "title": "Sales maximisation",
+   "sub": "Why some firms push output beyond the profit-maximising point, and what that trade-off means.",
+   "steps": [
+    {
+     "type": "ask",
+     "q": "A firm's owner could shut down and invest the money elsewhere for a 6% return. If the business only ever earns 4%, why would the owner bother keeping resources in it?",
+     "right": "They would not, they need at least the return available elsewhere",
+     "wrong": "They would keep going since 4% is still a profit",
+     "hint": "Think about what the owner gives up by not investing elsewhere.",
+     "pre": "The smallest return needed to keep resources in this use rather than another is",
+     "term": "normal_profit_concept"
+    },
+    {
+     "type": "ask",
+     "q": "A dominant supermarket cuts its prices so low that a new small chain trying to enter the area would make a loss. What is the supermarket trying to do to that potential rival?",
+     "right": "Stop it from entering the market",
+     "wrong": "Encourage it to enter and compete",
+     "hint": "Why would an existing firm want prices low enough to hurt a newcomer specifically?",
+     "pre": "Actions designed to put off new competitors from joining a market are",
+     "term": "barriers_to_entry_concept"
+    },
+    {
+     "type": "ask",
+     "q": "A firm's managers get bigger bonuses and more prestige the larger the firm's sales become, even if profit stays flat. Alongside keeping rivals out, why might managers choose to chase output rather than the highest possible profit?",
+     "right": "Growing sales serves their own pay and status, and a bigger firm also keeps rivals out",
+     "wrong": "Growing sales always increases the profit owners receive too",
+     "hint": "Whose interests are being served by chasing sales rather than profit: the owners' or the managers'?",
+     "pre": "Deterring rivals, growing market share, and managers' own motives are the",
+     "term": "sales_max_reasons"
+    },
+    {
+     "type": "ask",
+     "q": "A firm keeps expanding output past the profit-maximising level. If it kept going even after average cost rises above average revenue, what would happen to the firm?",
+     "right": "It would start making a loss",
+     "wrong": "It would just earn a bit less profit",
+     "hint": "What happens once the cost of making each unit exceeds the revenue from selling it?",
+     "pre": "So the furthest a firm can push output without making a loss is where AC equals AR, just covering",
+     "term": "sales_max_condition",
+     "diagram": {
+      "x": "Output",
+      "y": "£ per unit",
+      "curves": [
+       {
+        "label": "AC",
+        "pts": [
+         [
+          0.05,
+          0.7
+         ],
+         [
+          0.3,
+          0.35
+         ],
+         [
+          0.6,
+          0.3
+         ],
+         [
+          0.85,
+          0.45
+         ]
+        ]
+       },
+       {
+        "label": "AR",
+        "pts": [
+         [
+          0.05,
+          0.8
+         ],
+         [
+          0.4,
+          0.55
+         ],
+         [
+          0.8,
+          0.35
+         ]
+        ]
+       }
+      ],
+      "points": [
+       {
+        "label": "E",
+        "x": 0.63,
+        "y": 0.32,
+        "guides": true
+       }
+      ]
+     }
+    },
+    {
+     "type": "order",
+     "terms": [
+      "normal_profit_concept",
+      "barriers_to_entry_concept",
+      "sales_max_reasons",
+      "sales_max_condition"
+     ],
+     "prompt": "Drag and drop the 4 key terms in the order they build on each other."
+    },
+    {
+     "type": "ask",
+     "q": "By pushing output all the way out to where AC=AR, a firm sells far more units than a profit-maximising rival would. What happens to its share of total industry sales, and to any rival thinking about entering?",
+     "right": "Its market share grows and rivals are put off entering",
+     "wrong": "Its market share shrinks since it earns less profit",
+     "hint": "More output sold at that scale means what for the firm's slice of the whole market?",
+     "pre": "So one advantage is that it",
+     "term": "sales_max_adv_marketshare"
+    },
+    {
+     "type": "ask",
+     "q": "Producing a much larger quantity than before lets a firm spread its fixed costs over more units and buy materials in bulk. What happens to average cost as a result?",
+     "right": "It falls",
+     "wrong": "It rises",
+     "hint": "Think about spreading the same fixed costs across a much bigger output.",
+     "pre": "So the higher output needed for sales maximisation may let the firm exploit",
+     "term": "sales_max_adv_economies"
+    },
+    {
+     "type": "derive"
+    }
+   ],
+   "given": [
+    "revenue_concepts",
+    "cost_curves",
+    "principal_agent"
+   ],
+   "needs": [
+    "revenue_concepts",
+    "cost_curves",
+    "principal_agent"
+   ],
+   "builds": [
+    "revenue_concepts",
+    "cost_curves",
+    "principal_agent"
+   ],
+   "nodes": [
+    "normal_profit_concept",
+    "barriers_to_entry_concept",
+    "sales_max_reasons",
+    "sales_max_condition",
+    "sales_max_adv_marketshare",
+    "sales_max_adv_economies"
+   ],
+   "dropped": [],
+   "edges": [
+    [
+     "normal_profit_concept",
+     "sales_max_condition"
+    ],
+    [
+     "barriers_to_entry_concept",
+     "sales_max_reasons"
+    ],
+    [
+     "sales_max_reasons",
+     "sales_max_condition"
+    ],
+    [
+     "sales_max_reasons",
+     "sales_max_adv_marketshare"
+    ],
+    [
+     "barriers_to_entry_concept",
+     "sales_max_adv_marketshare"
+    ],
+    [
+     "sales_max_condition",
+     "sales_max_adv_economies"
+    ],
+    [
+     "revenue_concepts",
+     "sales_max_condition"
+    ],
+    [
+     "cost_curves",
+     "sales_max_condition"
+    ],
+    [
+     "principal_agent",
+     "sales_max_reasons"
+    ],
+    [
+     "normal_profit_concept",
+     "sales_max_condition"
+    ],
+    [
+     "barriers_to_entry_concept",
+     "sales_max_reasons"
+    ],
+    [
+     "sales_max_reasons",
+     "sales_max_condition"
+    ],
+    [
+     "sales_max_reasons",
+     "sales_max_adv_marketshare"
+    ],
+    [
+     "barriers_to_entry_concept",
+     "sales_max_adv_marketshare"
+    ],
+    [
+     "sales_max_condition",
+     "sales_max_adv_economies"
+    ],
+    [
+     "revenue_concepts",
+     "sales_max_condition"
+    ],
+    [
+     "cost_curves",
+     "sales_max_condition"
+    ],
+    [
+     "principal_agent",
+     "sales_max_reasons"
+    ]
+   ]
+  }
+ ]
+}

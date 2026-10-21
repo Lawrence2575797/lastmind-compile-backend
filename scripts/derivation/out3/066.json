@@ -1,0 +1,120 @@
+{
+ "id": "gen",
+ "subject": "Economics",
+ "title": "Causes of economic growth",
+ "terms": {
+  "FACTOR_LABOUR_QUALITY": {
+   "label": "Factor causing growth: increase in the quality of labour (education, training, human capital)"
+  },
+  "FACTOR_TECH": {
+   "label": "Factor causing growth: technological progress and innovation raising productivity"
+  },
+  "FACTOR_LAND": {
+   "label": "Factor causing growth: increase in quantity/exploitation of natural resources"
+  },
+  "output_per_worker": {
+   "label": "Output per worker"
+  },
+  "actual_growth": {
+   "label": "Actual economic growth"
+  }
+ },
+ "stages": [
+  {
+   "name": "Causes of economic growth",
+   "title": "Causes of economic growth",
+   "sub": "Identify the different ways an economy can produce more over time.",
+   "steps": [
+    {
+     "type": "ask",
+     "q": "Two bakers make bread. One left school at 16 with no training, the other did a three-year baking apprenticeship. Who bakes more loaves per hour?",
+     "right": "The one with the apprenticeship",
+     "wrong": "They bake the same amount",
+     "hint": "Think about what training adds to a worker's skill.",
+     "pre": "So the amount a worker produces in a given time is their",
+     "term": "output_per_worker"
+    },
+    {
+     "type": "ask",
+     "q": "A country spends more on schools and apprenticeships over ten years. What happens to workers' output per hour across the economy?",
+     "right": "It rises",
+     "wrong": "It stays the same",
+     "hint": "You just saw training raise one baker's output. Does that scale up nationally?",
+     "pre": "So the economy grows because of an",
+     "term": "FACTOR_LABOUR_QUALITY"
+    },
+    {
+     "type": "ask",
+     "q": "A factory swaps hand-tools for a new robotic production line, with the same number of workers. What happens to the goods made per hour?",
+     "right": "It rises",
+     "wrong": "It stays the same",
+     "hint": "The workers have not changed, but their tools have. Does that change what they can make?",
+     "pre": "So the economy grows because of",
+     "term": "FACTOR_TECH"
+    },
+    {
+     "type": "ask",
+     "q": "A country discovers a large new oil field and starts extracting it, using the same workers and machines elsewhere. Can it now produce more in total?",
+     "right": "Yes, more can now be produced",
+     "wrong": "No, total output stays the same",
+     "hint": "Oil is a raw material used in production. Does finding more of it add to what the country can make?",
+     "pre": "So the economy grows because of an increase in",
+     "term": "FACTOR_LAND"
+    },
+    {
+     "type": "order",
+     "terms": [
+      "output_per_worker",
+      "FACTOR_LABOUR_QUALITY",
+      "FACTOR_TECH",
+      "FACTOR_LAND"
+     ],
+     "prompt": "Drag and drop the 4 key terms in the order they build on each other."
+    },
+    {
+     "type": "ask",
+     "q": "Better trained workers, new technology, and more natural resources are all now in use, and total national output rises. What has happened to the total amount the economy produces?",
+     "right": "It has risen over time",
+     "wrong": "It has stayed the same over time",
+     "hint": "All three changes raised the amount produced. What do we call a rise in total output?",
+     "pre": "This rise in real output is",
+     "term": "actual_growth"
+    },
+    {
+     "type": "derive"
+    }
+   ],
+   "given": [],
+   "needs": [],
+   "builds": [],
+   "nodes": [
+    "FACTOR_LABOUR_QUALITY",
+    "FACTOR_TECH",
+    "FACTOR_LAND"
+   ],
+   "dropped": [],
+   "edges": [
+    [
+     "output_per_worker",
+     "FACTOR_LABOUR_QUALITY"
+    ],
+    [
+     "output_per_worker",
+     "FACTOR_TECH"
+    ],
+    [
+     "FACTOR_LABOUR_QUALITY",
+     "actual_growth"
+    ],
+    [
+     "FACTOR_TECH",
+     "actual_growth"
+    ],
+    [
+     "FACTOR_LAND",
+     "actual_growth"
+    ]
+   ]
+  }
+ ]
+}

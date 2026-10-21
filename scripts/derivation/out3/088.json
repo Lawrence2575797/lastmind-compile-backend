@@ -1,0 +1,188 @@
+{
+ "id": "gen",
+ "subject": "Economics",
+ "title": "Supply-side policies",
+ "terms": {
+  "market_forces": {
+   "label": "Market forces"
+  },
+  "govt_action": {
+   "label": "Government action"
+  },
+  "SSP_DISTINCTION": {
+   "label": "Market-based vs interventionist SSP"
+  },
+  "SSP_INCENTIVES": {
+   "label": "Increasing incentives"
+  },
+  "SSP_COMPETITION": {
+   "label": "Promoting competition"
+  },
+  "SSP_LABOUR_REFORM": {
+   "label": "Supply-side policy: reforming the labour market (e.g. trade union reform, minimum wage changes)"
+  },
+  "SSP_SKILLS": {
+   "label": "Supply-side policy: improving skills and quality of the labour force (education/training)"
+  },
+  "TAX_DIRECT": {
+   "label": "Direct taxation"
+  }
+ },
+ "stages": [
+  {
+   "name": "Supply-side policies",
+   "title": "Supply-side policies",
+   "sub": "Distinguish market-based from interventionist supply-side policies and identify examples of each.",
+   "steps": [
+    {
+     "type": "ask",
+     "q": "A government cuts income tax so workers keep more of each extra pound they earn, then leaves them to decide how much to work. Is the government directing what happens next, or leaving the outcome to individual choices?",
+     "right": "Leaving it to individual choices",
+     "wrong": "Directing what happens next",
+     "hint": "Once the tax is cut, who decides how much extra effort to put in?",
+     "pre": "So the change works through",
+     "term": "market_forces"
+    },
+    {
+     "type": "ask",
+     "q": "A government instead passes a law forcing firms to retrain all workers over 50. Is that outcome left to individual choices, or is it imposed directly by the state?",
+     "right": "Imposed directly by the state",
+     "wrong": "Left to individual choices",
+     "hint": "Can firms simply choose not to retrain anyone here?",
+     "pre": "So this works through direct",
+     "term": "govt_action"
+    },
+    {
+     "type": "ask",
+     "q": "Tax cuts rely on people responding to changed incentives, while a retraining law simply orders firms to act. Are these two approaches to boosting an economy's output the same kind of policy, or two different kinds?",
+     "right": "Two different kinds",
+     "wrong": "The same kind, just different examples",
+     "hint": "One removes barriers and lets choices happen, the other tells firms what to do.",
+     "pre": "This is the",
+     "term": "SSP_DISTINCTION"
+    },
+    {
+     "type": "ask",
+     "q": "A government cuts the top rate of income tax and reduces unemployment benefits, hoping people work longer hours and job-seekers take work sooner. Is this changing what people are allowed to do, or changing what it is worth their while to do?",
+     "right": "Changing what it is worth their while to do",
+     "wrong": "Changing what people are allowed to do",
+     "hint": "Nobody is forced to work more; they just keep more money if they do.",
+     "pre": "So this policy works by",
+     "term": "SSP_INCENTIVES"
+    },
+    {
+     "type": "order",
+     "terms": [
+      "market_forces",
+      "govt_action",
+      "SSP_DISTINCTION",
+      "SSP_INCENTIVES"
+     ],
+     "prompt": "Drag and drop the 4 key terms in the order they build on each other."
+    },
+    {
+     "type": "ask",
+     "q": "A government sells off a state-owned railway and removes rules that stopped new airlines entering routes. Does this order firms to behave a certain way, or open the market up so more firms compete for customers?",
+     "right": "Opens the market up to more competing firms",
+     "wrong": "Orders firms to behave a certain way",
+     "hint": "New firms can now enter and challenge existing ones on price and quality.",
+     "pre": "So this policy works by",
+     "term": "SSP_COMPETITION"
+    },
+    {
+     "type": "ask",
+     "q": "A government passes laws limiting trade unions' power to call strikes and changes the rules on the minimum wage. Does this change how easily firms can hire, fire and set pay, or does it change how skilled workers are?",
+     "right": "Changes how easily firms can hire, fire and set pay",
+     "wrong": "Changes how skilled workers are",
+     "hint": "Strikes and pay-setting rules affect the flexibility of employing people, not their training.",
+     "pre": "So this policy works by",
+     "term": "SSP_LABOUR_REFORM"
+    },
+    {
+     "type": "ask",
+     "q": "A government funds more apprenticeships and technical college places so workers can do more advanced, higher-value jobs. Does this change the rules employers must follow, or change what workers are capable of doing?",
+     "right": "Changes what workers are capable of doing",
+     "wrong": "Changes the rules employers must follow",
+     "hint": "Apprenticeships build ability rather than changing hiring laws.",
+     "pre": "So this policy works by",
+     "term": "SSP_SKILLS"
+    },
+    {
+     "type": "order",
+     "terms": [
+      "SSP_COMPETITION",
+      "SSP_LABOUR_REFORM",
+      "SSP_SKILLS"
+     ],
+     "prompt": "Drag and drop the 3 key terms in the order they build on each other."
+    },
+    {
+     "type": "derive"
+    }
+   ],
+   "given": [
+    "TAX_DIRECT"
+   ],
+   "needs": [
+    "TAX_DIRECT"
+   ],
+   "builds": [
+    "TAX_DIRECT"
+   ],
+   "nodes": [
+    "SSP_DISTINCTION",
+    "SSP_INCENTIVES",
+    "SSP_COMPETITION",
+    "SSP_LABOUR_REFORM",
+    "SSP_SKILLS"
+   ],
+   "dropped": [],
+   "edges": [
+    [
+     "SSP_DISTINCTION",
+     "SSP_INCENTIVES"
+    ],
+    [
+     "SSP_DISTINCTION",
+     "SSP_COMPETITION"
+    ],
+    [
+     "SSP_DISTINCTION",
+     "SSP_LABOUR_REFORM"
+    ],
+    [
+     "SSP_DISTINCTION",
+     "SSP_SKILLS"
+    ],
+    [
+     "TAX_DIRECT",
+     "SSP_INCENTIVES"
+    ],
+    [
+     "market_forces",
+     "SSP_DISTINCTION"
+    ],
+    [
+     "govt_action",
+     "SSP_DISTINCTION"
+    ],
+    [
+     "SSP_DISTINCTION",
+     "SSP_INCENTIVES"
+    ],
+    [
+     "SSP_DISTINCTION",
+     "SSP_COMPETITION"
+    ],
+    [
+     "SSP_DISTINCTION",
+     "SSP_LABOUR_REFORM"
+    ],
+    [
+     "SSP_DISTINCTION",
+     "SSP_SKILLS"
+    ]
+   ]
+  }
+ ]
+}

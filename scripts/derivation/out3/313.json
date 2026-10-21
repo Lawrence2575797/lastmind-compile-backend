@@ -1,0 +1,220 @@
+{
+ "id": "gen",
+ "subject": "Economics",
+ "title": "Labour market: demand for labour",
+ "terms": {
+  "factor_product_demand": {
+   "label": "Demand for the product"
+  },
+  "factor_profitability": {
+   "label": "Profitability/economy"
+  },
+  "factor_other_costs": {
+   "label": "Cost of substitute factors"
+  },
+  "ped_labour": {
+   "label": "Elasticity of demand for labour: definition and determinants (e.g. labour cost as proportion of total cost, ease of substitution, PED of product, time period)"
+  },
+  "flex_benefit": {
+   "label": "Flexibility for firms/workers"
+  },
+  "insecurity": {
+   "label": "Income insecurity"
+  },
+  "issue_flexible_work": {
+   "label": "Gig economy & zero-hours contracts"
+  },
+  "derived_demand": {
+   "label": "Derived demand"
+  },
+  "factor_wage_costs": {
+   "label": "Wage cost factor"
+  },
+  "labour_market_failure": {
+   "label": "Labour market failure resulting from occupational and geographical immobility"
+  },
+  "factor_gov_policy": {
+   "label": "Labour supply factor: government policy (e.g. taxation, benefits affecting incentive to work)"
+  }
+ },
+ "stages": [
+  {
+   "name": "Labour market: demand for labour",
+   "title": "Labour market: demand for labour",
+   "sub": "Explain why firms hire labour, what makes that demand elastic or inelastic, and how this plays out in the gig economy.",
+   "steps": [
+    {
+     "type": "ask",
+     "q": "A café sells more coffee because a new office block opens nearby. What happens to the number of baristas the café wants to hire?",
+     "right": "It hires more baristas",
+     "wrong": "It hires the same number",
+     "hint": "Think about why the café needs staff at all: is it for its own sake, or because of something else?",
+     "pre": "So hiring more baristas comes from higher demand for",
+     "term": "factor_product_demand"
+    },
+    {
+     "type": "ask",
+     "q": "A recession hits and the café's sales and profits fall sharply. Is the café still as keen to keep hiring extra staff?",
+     "right": "No, it becomes more cautious about hiring",
+     "wrong": "Yes, hiring stays just as strong",
+     "hint": "If a firm is making less money, can it still afford to take on more workers?",
+     "pre": "So hiring also depends on the firm's",
+     "term": "factor_profitability"
+    },
+    {
+     "type": "ask",
+     "q": "A coffee-roasting machine becomes cheap enough to replace three roasting staff. If the machine is now cheaper than paying those wages, what does the café do?",
+     "right": "Buys the machine and cuts staff",
+     "wrong": "Keeps the same staff and ignores the machine",
+     "hint": "Firms compare the cost of workers against the cost of the alternative that could do the same job.",
+     "pre": "So hiring also depends on the",
+     "term": "factor_other_costs"
+    },
+    {
+     "type": "order",
+     "terms": [
+      "factor_product_demand",
+      "factor_profitability",
+      "factor_other_costs"
+     ],
+     "prompt": "Drag and drop the 3 key terms in the order they were introduced."
+    },
+    {
+     "type": "ask",
+     "q": "At the roastery, staff can easily be swapped for a machine. At a hospital, nurses are very hard to replace with machines. If wages rise 10% at each, where will the fall in staff hired be bigger?",
+     "right": "At the roastery, where substitution is easy",
+     "wrong": "At the hospital, where substitution is hard",
+     "hint": "Where is it easier for the employer to react to the wage rise by switching to something else?",
+     "pre": "So how much hiring responds to a wage change is the",
+     "term": "ped_labour"
+    },
+    {
+     "type": "ask",
+     "q": "A delivery firm hires riders only when it has jobs for them, with no guaranteed hours. What does this give both the firm and the rider, compared with a fixed 9-to-5 job?",
+     "right": "More flexibility over when work happens",
+     "wrong": "More certainty over weekly income",
+     "hint": "Think about what changes when hours are not fixed in advance.",
+     "pre": "This kind of arrangement offers",
+     "term": "flex_benefit"
+    },
+    {
+     "type": "ask",
+     "q": "That same rider has no guaranteed hours and no sick pay. If deliveries dry up one week, what happens to their income?",
+     "right": "It can drop sharply with no safety net",
+     "wrong": "It stays steady because of guaranteed pay",
+     "hint": "Without fixed hours, what protects the rider's earnings in a quiet week?",
+     "pre": "So this flexibility comes with",
+     "term": "insecurity"
+    },
+    {
+     "type": "ask",
+     "q": "Weighing up the flexibility firms and riders gain against the insecurity riders face, what kind of debate does this style of work create?",
+     "right": "A trade-off between flexibility and insecurity",
+     "wrong": "A settled matter with no real downside",
+     "hint": "Does the flexibility come free, or does it come alongside a cost for workers?",
+     "pre": "This is the current issue of",
+     "term": "issue_flexible_work"
+    },
+    {
+     "type": "derive"
+    }
+   ],
+   "given": [
+    "derived_demand",
+    "factor_wage_costs",
+    "labour_market_failure",
+    "factor_gov_policy"
+   ],
+   "needs": [
+    "derived_demand",
+    "factor_wage_costs",
+    "labour_market_failure",
+    "factor_gov_policy"
+   ],
+   "builds": [
+    "derived_demand",
+    "factor_wage_costs",
+    "labour_market_failure",
+    "factor_gov_policy"
+   ],
+   "nodes": [
+    "factor_other_costs",
+    "ped_labour",
+    "factor_product_demand",
+    "factor_profitability",
+    "issue_flexible_work"
+   ],
+   "dropped": [],
+   "edges": [
+    [
+     "factor_other_costs",
+     "ped_labour"
+    ],
+    [
+     "derived_demand",
+     "factor_product_demand"
+    ],
+    [
+     "factor_wage_costs",
+     "factor_other_costs"
+    ],
+    [
+     "derived_demand",
+     "factor_profitability"
+    ],
+    [
+     "derived_demand",
+     "ped_labour"
+    ],
+    [
+     "labour_market_failure",
+     "issue_flexible_work"
+    ],
+    [
+     "derived_demand",
+     "issue_flexible_work"
+    ],
+    [
+     "factor_gov_policy",
+     "issue_flexible_work"
+    ],
+    [
+     "derived_demand",
+     "factor_product_demand"
+    ],
+    [
+     "factor_product_demand",
+     "ped_labour"
+    ],
+    [
+     "factor_profitability",
+     "ped_labour"
+    ],
+    [
+     "factor_wage_costs",
+     "ped_labour"
+    ],
+    [
+     "factor_other_costs",
+     "ped_labour"
+    ],
+    [
+     "ped_labour",
+     "flex_benefit"
+    ],
+    [
+     "ped_labour",
+     "insecurity"
+    ],
+    [
+     "flex_benefit",
+     "issue_flexible_work"
+    ],
+    [
+     "insecurity",
+     "issue_flexible_work"
+    ]
+   ]
+  }
+ ]
+}

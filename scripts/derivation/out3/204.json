@@ -1,0 +1,217 @@
+{
+ "id": "gen",
+ "subject": "Economics",
+ "title": "Gini coefficient",
+ "terms": {
+  "GINI_AREA_RATIO": {
+   "label": "Area ratio (Gini)"
+  },
+  "GINI_COEFFICIENT": {
+   "label": "Gini coefficient"
+  },
+  "GINI_INTERPRETATION": {
+   "label": "Gini interpretation"
+  },
+  "GINI_LORENZ_LIMITATIONS": {
+   "label": "Gini/Lorenz limitations"
+  },
+  "RESOURCE_ENDOWMENT_INTL": {
+   "label": "Resource endowment gap"
+  },
+  "LORENZ_CURVE": {
+   "label": "Lorenz curve"
+  },
+  "LINE_OF_EQUALITY": {
+   "label": "Line of perfect equality"
+  },
+  "LORENZ_INTERPRETATION": {
+   "label": "Interpreting the Lorenz curve"
+  },
+  "LORENZ_SHIFT_COMPARE": {
+   "label": "Comparing Lorenz curves"
+  }
+ },
+ "stages": [
+  {
+   "name": "Gini coefficient",
+   "title": "Gini coefficient",
+   "sub": "How the Lorenz curve is turned into a single number, and what that number can and cannot tell you.",
+   "steps": [
+    {
+     "type": "ask",
+     "q": "On the Lorenz diagram, a country's curve bows far away from the 45-degree line. Picture the sliver of space trapped between the curve and that line, compared with the whole triangle under the line. If inequality were even worse, would that trapped sliver take up a bigger or smaller share of the triangle?",
+     "right": "A bigger share",
+     "wrong": "A smaller share",
+     "hint": "More bowing means the curve strays further from the line, so the gap between them grows.",
+     "pre": "So inequality can be measured by comparing that gap to the whole triangle beneath the line of equality. This comparison is the",
+     "term": "GINI_AREA_RATIO",
+     "diagram": {
+      "x": "Cumulative % of population",
+      "y": "Cumulative % of income",
+      "curves": [
+       {
+        "label": "Equality",
+        "pts": [
+         [
+          0,
+          0
+         ],
+         [
+          0.5,
+          0.5
+         ],
+         [
+          1,
+          1
+         ]
+        ]
+       },
+       {
+        "label": "Lorenz",
+        "pts": [
+         [
+          0,
+          0
+         ],
+         [
+          0.3,
+          0.08
+         ],
+         [
+          0.6,
+          0.28
+         ],
+         [
+          0.85,
+          0.55
+         ],
+         [
+          1,
+          1
+         ]
+        ]
+       }
+      ]
+     }
+    },
+    {
+     "type": "ask",
+     "q": "That area ratio always comes out somewhere between 0 (no gap at all) and 1 (the biggest possible gap). If we just report this one number for a country instead of drawing the whole curve, what have we got?",
+     "right": "A single figure summarising inequality",
+     "wrong": "A full picture of who owns what",
+     "hint": "One number stands in for the whole shape of the curve.",
+     "pre": "That single figure between 0 and 1 is the",
+     "term": "GINI_COEFFICIENT"
+    },
+    {
+     "type": "ask",
+     "q": "Country A has a value of 0.25 and country B has a value of 0.55. Which country has more unequal incomes?",
+     "right": "Country B",
+     "wrong": "Country A",
+     "hint": "A bigger area ratio means the curve bows further from equality.",
+     "pre": "Reading and comparing these values across countries or over time is",
+     "term": "GINI_INTERPRETATION"
+    },
+    {
+     "type": "ask",
+     "q": "Two countries both score 0.4. But one collects income data mainly from formal tax records, missing large informal-sector earnings, and neither figure tells you whether the inequality comes from education gaps, discrimination, or something else. Does the single number capture all of this detail?",
+     "right": "No, it hides these details",
+     "wrong": "Yes, the number reflects all of it",
+     "hint": "A single figure between 0 and 1 cannot also describe data quality or the reasons behind the gap.",
+     "pre": "So relying on this number alone has real",
+     "term": "GINI_LORENZ_LIMITATIONS"
+    },
+    {
+     "type": "order",
+     "terms": [
+      "GINI_AREA_RATIO",
+      "GINI_COEFFICIENT",
+      "GINI_INTERPRETATION",
+      "GINI_LORENZ_LIMITATIONS"
+     ],
+     "prompt": "Drag and drop the 4 key terms in the order they build on each other."
+    },
+    {
+     "type": "ask",
+     "q": "One country sits on vast oil and mineral deposits while its neighbour has almost no valuable land or minerals at all. If both countries otherwise work equally hard, would you expect their measured inequality between each other to be the same?",
+     "right": "No, the oil-rich country likely ends up richer",
+     "wrong": "Yes, hard work alone decides the outcome",
+     "hint": "Think about what one country can sell to the world that the other simply does not have.",
+     "pre": "So gaps in what land and minerals a country happens to have are a cause of inequality between countries, known as differences in",
+     "term": "RESOURCE_ENDOWMENT_INTL"
+    },
+    {
+     "type": "derive"
+    }
+   ],
+   "given": [
+    "LORENZ_CURVE",
+    "LINE_OF_EQUALITY",
+    "LORENZ_INTERPRETATION",
+    "LORENZ_SHIFT_COMPARE"
+   ],
+   "needs": [
+    "LORENZ_CURVE",
+    "LINE_OF_EQUALITY",
+    "LORENZ_INTERPRETATION",
+    "LORENZ_SHIFT_COMPARE"
+   ],
+   "builds": [
+    "LORENZ_CURVE",
+    "LINE_OF_EQUALITY",
+    "LORENZ_INTERPRETATION",
+    "LORENZ_SHIFT_COMPARE"
+   ],
+   "nodes": [
+    "GINI_AREA_RATIO",
+    "GINI_COEFFICIENT",
+    "GINI_INTERPRETATION",
+    "GINI_LORENZ_LIMITATIONS",
+    "RESOURCE_ENDOWMENT_INTL"
+   ],
+   "dropped": [],
+   "edges": [
+    [
+     "GINI_AREA_RATIO",
+     "GINI_COEFFICIENT"
+    ],
+    [
+     "GINI_COEFFICIENT",
+     "GINI_INTERPRETATION"
+    ],
+    [
+     "GINI_INTERPRETATION",
+     "GINI_LORENZ_LIMITATIONS"
+    ],
+    [
+     "GINI_COEFFICIENT",
+     "RESOURCE_ENDOWMENT_INTL"
+    ],
+    [
+     "LORENZ_CURVE",
+     "GINI_AREA_RATIO"
+    ],
+    [
+     "LINE_OF_EQUALITY",
+     "GINI_AREA_RATIO"
+    ],
+    [
+     "LORENZ_INTERPRETATION",
+     "GINI_INTERPRETATION"
+    ],
+    [
+     "LORENZ_SHIFT_COMPARE",
+     "GINI_LORENZ_LIMITATIONS"
+    ],
+    [
+     "LORENZ_CURVE",
+     "GINI_AREA_RATIO"
+    ],
+    [
+     "LINE_OF_EQUALITY",
+     "GINI_AREA_RATIO"
+    ]
+   ]
+  }
+ ]
+}

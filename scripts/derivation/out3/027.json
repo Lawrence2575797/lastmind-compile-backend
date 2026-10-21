@@ -1,0 +1,150 @@
+{
+ "id": "gen",
+ "subject": "Economics",
+ "title": "Measuring GDP",
+ "terms": {
+  "GDP_DEF": {
+   "label": "GDP"
+  },
+  "REAL_NOMINAL": {
+   "label": "Real vs nominal"
+  },
+  "TOTAL_PERCAP": {
+   "label": "Total vs per capita"
+  },
+  "VALUE_VOLUME": {
+   "label": "Value vs volume"
+  },
+  "GDP_GROWTH_RATE": {
+   "label": "Real GDP growth rate"
+  }
+ },
+ "stages": [
+  {
+   "name": "Measuring GDP",
+   "title": "Measuring GDP",
+   "sub": "How economists measure the size of an economy and its growth, without being fooled by prices, population or inflation.",
+   "steps": [
+    {
+     "type": "ask",
+     "q": "Farms, factories and shops sell goods and services this year. What would the total value of everything sold tell you?",
+     "right": "The size of the whole economy's output",
+     "wrong": "Only the profit made by firms",
+     "hint": "Think about adding up every good and service sold in the whole country, not just one firm's profit.",
+     "pre": "That total value of output, income or spending in a country is its",
+     "term": "GDP_DEF"
+    },
+    {
+     "type": "ask",
+     "q": "Prices rise 10% but the country makes exactly as much as last year. Does GDP in today's prices show output has grown?",
+     "right": "No, it just looks bigger from prices",
+     "wrong": "Yes, output has genuinely grown",
+     "hint": "If nothing extra was made but prices went up, has more actually been produced?",
+     "pre": "Stripping out price rises to see the true change is the distinction between",
+     "term": "REAL_NOMINAL"
+    },
+    {
+     "type": "ask",
+     "q": "Country A has a bigger GDP than B, but three times as many people. Does that mean each person is better off?",
+     "right": "Not necessarily, it depends on population",
+     "wrong": "Yes, a bigger GDP always means better off",
+     "hint": "If the same GDP is shared between far more people, what happens to the amount each person gets?",
+     "pre": "Dividing by population to compare living standards fairly is the distinction between",
+     "term": "TOTAL_PERCAP"
+    },
+    {
+     "type": "ask",
+     "q": "A country sells as many cars as last year, each at a higher price. Has the amount made changed?",
+     "right": "No, the amount made is unchanged",
+     "wrong": "Yes, more has been made",
+     "hint": "Count the cars, not the price tag on them. Has the number of cars changed?",
+     "pre": "Separating the money total from the actual quantity produced is the distinction between",
+     "term": "VALUE_VOLUME"
+    },
+    {
+     "type": "order",
+     "terms": [
+      "GDP_DEF",
+      "REAL_NOMINAL",
+      "TOTAL_PERCAP",
+      "VALUE_VOLUME"
+     ],
+     "prompt": "Drag and drop the 4 key terms in the order they build on each other."
+    },
+    {
+     "type": "ask",
+     "q": "To track real expansion year on year, would you compare GDP adjusted for prices, population and quantity, or raw money totals?",
+     "right": "The adjusted, like-for-like comparison",
+     "wrong": "The raw money totals each year",
+     "hint": "Which comparison strips out price rises so you see the true change in output over time?",
+     "pre": "Tracking that percentage change over time is the",
+     "term": "GDP_GROWTH_RATE"
+    },
+    {
+     "type": "derive"
+    }
+   ],
+   "given": [],
+   "needs": [],
+   "builds": [],
+   "nodes": [
+    "GDP_DEF",
+    "REAL_NOMINAL",
+    "TOTAL_PERCAP",
+    "VALUE_VOLUME",
+    "GDP_GROWTH_RATE"
+   ],
+   "dropped": [],
+   "edges": [
+    [
+     "GDP_DEF",
+     "REAL_NOMINAL"
+    ],
+    [
+     "GDP_DEF",
+     "TOTAL_PERCAP"
+    ],
+    [
+     "GDP_DEF",
+     "VALUE_VOLUME"
+    ],
+    [
+     "REAL_NOMINAL",
+     "GDP_GROWTH_RATE"
+    ],
+    [
+     "TOTAL_PERCAP",
+     "GDP_GROWTH_RATE"
+    ],
+    [
+     "VALUE_VOLUME",
+     "GDP_GROWTH_RATE"
+    ],
+    [
+     "GDP_DEF",
+     "REAL_NOMINAL"
+    ],
+    [
+     "GDP_DEF",
+     "TOTAL_PERCAP"
+    ],
+    [
+     "GDP_DEF",
+     "VALUE_VOLUME"
+    ],
+    [
+     "REAL_NOMINAL",
+     "GDP_GROWTH_RATE"
+    ],
+    [
+     "TOTAL_PERCAP",
+     "GDP_GROWTH_RATE"
+    ],
+    [
+     "VALUE_VOLUME",
+     "GDP_GROWTH_RATE"
+    ]
+   ]
+  }
+ ]
+}

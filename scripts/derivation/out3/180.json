@@ -1,0 +1,116 @@
+{
+ "id": "gen",
+ "subject": "Economics",
+ "title": "Trade restrictions for strategic reasons",
+ "terms": {
+  "essential": {
+   "label": "Essential goods"
+  },
+  "importdependence": {
+   "label": "Import dependence"
+  },
+  "natsecurity": {
+   "label": "National security"
+  },
+  "PROT_REASONS_STRATEGIC": {
+   "label": "Strategic protection"
+  },
+  "NATIONALISATION_ADV2": {
+   "label": "Adv: externalities/strategic"
+  }
+ },
+ "stages": [
+  {
+   "name": "Trade restrictions for strategic reasons",
+   "title": "Trade restrictions for strategic reasons",
+   "sub": "Why a government might limit imports to keep some industries at home.",
+   "steps": [
+    {
+     "type": "ask",
+     "term": "essential",
+     "q": "In a war, which goods must a country be able to get whatever happens?",
+     "right": "Food, fuel and weapons",
+     "wrong": "Luxury watches and jewellery",
+     "hint": "Which goods can a country not do without?",
+     "pre": "Goods a country must always be able to get are"
+    },
+    {
+     "type": "ask",
+     "term": "importdependence",
+     "q": "A country buys all its fuel from one foreign supplier. What happens if that supplier cuts it off?",
+     "right": "It has no fuel and cannot quickly replace it",
+     "wrong": "It makes its own fuel at once instead",
+     "hint": "Can it switch supplier overnight?",
+     "pre": "Relying on other countries for what it needs is"
+    },
+    {
+     "type": "ask",
+     "term": "natsecurity",
+     "q": "A government worries that relying on a possible enemy could leave it unable to defend itself. What is it worried about?",
+     "right": "Its safety and ability to defend itself",
+     "wrong": "Its trade surplus and exchange rate",
+     "hint": "The worry is about defence, not money.",
+     "pre": "Being safe and able to defend itself is"
+    },
+    {
+     "type": "ask",
+     "term": "PROT_REASONS_STRATEGIC",
+     "q": "To keep its own steel and arms industries alive, what might the government do to imports of steel?",
+     "right": "Restrict them, to protect home producers",
+     "wrong": "Encourage them, to replace home producers",
+     "hint": "How do you keep a home industry going against cheap imports?",
+     "pre": "So countries limit trade to keep vital industries at home. This is"
+    },
+    {
+     "type": "order",
+     "terms": [
+      "essential",
+      "importdependence",
+      "natsecurity",
+      "PROT_REASONS_STRATEGIC"
+     ],
+     "prompt": "Drag and drop the 4 key terms in the order they build on each other."
+    },
+    {
+     "type": "derive"
+    }
+   ],
+   "given": [
+    "NATIONALISATION_ADV2"
+   ],
+   "needs": [
+    "NATIONALISATION_ADV2"
+   ],
+   "builds": [
+    "NATIONALISATION_ADV2"
+   ],
+   "nodes": [
+    "PROT_REASONS_STRATEGIC"
+   ],
+   "dropped": [
+    [
+     "NATIONALISATION_ADV2",
+     "PROT_REASONS_STRATEGIC"
+    ]
+   ],
+   "edges": [
+    [
+     "NATIONALISATION_ADV2",
+     "essential"
+    ],
+    [
+     "essential",
+     "importdependence"
+    ],
+    [
+     "importdependence",
+     "natsecurity"
+    ],
+    [
+     "natsecurity",
+     "PROT_REASONS_STRATEGIC"
+    ]
+   ]
+  }
+ ]
+}

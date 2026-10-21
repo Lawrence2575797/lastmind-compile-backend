@@ -1,0 +1,155 @@
+{
+ "id": "gen",
+ "subject": "Economics",
+ "title": "Disadvantages of a maximum wage",
+ "terms": {
+  "opportunity_cost_skills": {
+   "label": "Opportunity cost of training"
+  },
+  "max_wage_disadv_incentive": {
+   "label": "Reduced incentive to skill up"
+  },
+  "non_wage_reward": {
+   "label": "Non-wage rewards"
+  },
+  "max_wage_disadv_avoidance": {
+   "label": "Firms avoid the cap"
+  },
+  "max_wage_disadv_enforcement": {
+   "label": "Hard to enforce"
+  },
+  "max_wage_def": {
+   "label": "Maximum wage"
+  },
+  "factor_qualifications": {
+   "label": "Labour supply factor: qualifications/skills/training required (barriers to entry)"
+  }
+ },
+ "stages": [
+  {
+   "name": "Disadvantages of a maximum wage",
+   "title": "Disadvantages of a maximum wage",
+   "sub": "Explain why capping pay at the top can backfire for firms and regulators.",
+   "steps": [
+    {
+     "type": "ask",
+     "q": "Becoming a surgeon means years of extra study and training instead of earning a full wage straight away. If the cap means her final pay can never rise much above a nurse's, was that time spent training worth giving up?",
+     "right": "No, the years given up are wasted for little extra pay",
+     "wrong": "Yes, the years given up are still worth it",
+     "hint": "Think about what she gave up by training rather than working, compared with what she now gets back.",
+     "pre": "So the years and effort given up become a poor",
+     "term": "opportunity_cost_skills"
+    },
+    {
+     "type": "ask",
+     "q": "Knowing that extra training barely raises her pay once capped, is she as keen to take on that training as before?",
+     "right": "No, less keen",
+     "wrong": "Yes, just as keen",
+     "hint": "If the reward for the sacrifice has shrunk, does the sacrifice still feel worth making?",
+     "pre": "So a capped wage can reduce the",
+     "term": "max_wage_disadv_incentive"
+    },
+    {
+     "type": "ask",
+     "q": "A firm's boss is capped at a maximum salary. The law stops the firm paying more in wages, but can it still hand her shares in the company or cover her car and holidays?",
+     "right": "Yes, those are still allowed",
+     "wrong": "No, those are capped too",
+     "hint": "The law caps the wage itself. Does it mention every other form of reward a firm could give?",
+     "pre": "So firms can still reward staff through",
+     "term": "non_wage_reward"
+    },
+    {
+     "type": "ask",
+     "q": "If total reward can keep rising through shares, bonuses and perks even though the wage is capped, has the cap really limited what top earners take home?",
+     "right": "No, firms can get round it",
+     "wrong": "Yes, it still limits total reward",
+     "hint": "The wage is only one part of what someone actually receives from the firm.",
+     "pre": "So firms find ways round the limit, which is",
+     "term": "max_wage_disadv_avoidance"
+    },
+    {
+     "type": "order",
+     "terms": [
+      "opportunity_cost_skills",
+      "max_wage_disadv_incentive",
+      "non_wage_reward",
+      "max_wage_disadv_avoidance"
+     ],
+     "prompt": "Drag and drop the 4 key terms in the order they build on each other."
+    },
+    {
+     "type": "ask",
+     "q": "A regulator has to check the pay, bonuses and perks of every top earner across thousands of firms, and work out the exact right cap for each different industry. Is this a quick, cheap job?",
+     "right": "No, it takes a lot of resources",
+     "wrong": "Yes, it is quick and cheap",
+     "hint": "Think about how many firms and pay packages would need checking, and how the right cap could differ by job.",
+     "pre": "So a maximum wage is",
+     "term": "max_wage_disadv_enforcement"
+    },
+    {
+     "type": "derive"
+    }
+   ],
+   "given": [
+    "max_wage_def",
+    "factor_qualifications"
+   ],
+   "needs": [
+    "max_wage_def",
+    "factor_qualifications"
+   ],
+   "builds": [
+    "max_wage_def",
+    "factor_qualifications"
+   ],
+   "nodes": [
+    "max_wage_disadv_incentive",
+    "max_wage_disadv_avoidance",
+    "max_wage_disadv_enforcement"
+   ],
+   "dropped": [],
+   "edges": [
+    [
+     "max_wage_def",
+     "max_wage_disadv_incentive"
+    ],
+    [
+     "factor_qualifications",
+     "max_wage_disadv_incentive"
+    ],
+    [
+     "max_wage_def",
+     "max_wage_disadv_avoidance"
+    ],
+    [
+     "max_wage_def",
+     "max_wage_disadv_enforcement"
+    ],
+    [
+     "factor_qualifications",
+     "opportunity_cost_skills"
+    ],
+    [
+     "opportunity_cost_skills",
+     "max_wage_disadv_incentive"
+    ],
+    [
+     "max_wage_def",
+     "max_wage_disadv_incentive"
+    ],
+    [
+     "max_wage_def",
+     "non_wage_reward"
+    ],
+    [
+     "non_wage_reward",
+     "max_wage_disadv_avoidance"
+    ],
+    [
+     "max_wage_def",
+     "max_wage_disadv_enforcement"
+    ]
+   ]
+  }
+ ]
+}

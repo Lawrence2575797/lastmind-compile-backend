@@ -1,0 +1,131 @@
+{
+ "id": "gen",
+ "subject": "Economics",
+ "title": "Limits of HDI",
+ "terms": {
+  "hdi_limit_omitted": {
+   "label": "HDI omits key factors"
+  },
+  "hdi_limit_weighting": {
+   "label": "HDI weighting limitation"
+  },
+  "other_indicators": {
+   "label": "Other indicators of development"
+  },
+  "single_number_problem": {
+   "label": "Limits of a single number"
+  },
+  "growth_dev_dist": {
+   "label": "Growth vs development"
+  },
+  "hdi_combine": {
+   "label": "Combining the HDI"
+  },
+  "hdi_limit_inequality": {
+   "label": "HDI hides inequality"
+  }
+ },
+ "stages": [
+  {
+   "name": "Limits of HDI",
+   "title": "Limits of HDI",
+   "sub": "Understand why HDI is an incomplete measure of development and what else can be used instead.",
+   "steps": [
+    {
+     "type": "ask",
+     "q": "Two countries have identical HDI scores. One has clean rivers, free elections and strong human rights; the other has heavy pollution, a one-party state and no free press. Does HDI tell them apart?",
+     "right": "No, HDI looks the same for both",
+     "wrong": "Yes, HDI is lower for the polluted one",
+     "hint": "HDI is built only from income, health and education data. Where would pollution or political freedom show up in that?",
+     "pre": "So HDI says nothing about the environment or political freedoms and rights. That is the",
+     "term": "hdi_limit_omitted"
+    },
+    {
+     "type": "ask",
+     "q": "You already know HDI combines income, health and education by giving each dimension the same weight in the average. Is there any economic reason that all three must matter exactly equally to every country?",
+     "right": "No, that equal split is just a choice someone made",
+     "wrong": "Yes, the three dimensions are naturally equal in importance",
+     "hint": "A poor country recovering from a health crisis and a rich country with weak schools might value each dimension very differently. Does the formula reflect that?",
+     "pre": "So giving income, health and education the same weight is",
+     "term": "hdi_limit_weighting"
+    },
+    {
+     "type": "ask",
+     "q": "You now know HDI leaves out things like pollution and freedom, and even the way it weights income, health and education is a debatable choice. If you fixed the weighting, would HDI then capture everything about a country's development?",
+     "right": "No, it would still miss things like the environment and freedom",
+     "wrong": "Yes, fixing the weights would make it complete",
+     "hint": "Weighting and omission are two separate gaps. Does closing one gap close the other?",
+     "pre": "So relying on any one combined score has",
+     "term": "single_number_problem"
+    },
+    {
+     "type": "ask",
+     "q": "Since no single combined score can cover income, health, education, inequality, the environment and freedom all at once, how many measures would you need to build a fuller picture of development?",
+     "right": "Several different measures, each covering different gaps",
+     "wrong": "Just one better-designed combined score",
+     "hint": "Think about how many separate gaps you have just found. Could one more index close every one of them at once?",
+     "pre": "So economists also look at",
+     "term": "other_indicators"
+    },
+    {
+     "type": "derive"
+    }
+   ],
+   "given": [
+    "growth_dev_dist",
+    "hdi_combine",
+    "hdi_limit_inequality"
+   ],
+   "needs": [
+    "growth_dev_dist",
+    "hdi_combine",
+    "hdi_limit_inequality"
+   ],
+   "builds": [
+    "growth_dev_dist",
+    "hdi_combine",
+    "hdi_limit_inequality"
+   ],
+   "nodes": [
+    "hdi_limit_omitted",
+    "other_indicators",
+    "hdi_limit_weighting"
+   ],
+   "dropped": [],
+   "edges": [
+    [
+     "hdi_limit_omitted",
+     "other_indicators"
+    ],
+    [
+     "growth_dev_dist",
+     "other_indicators"
+    ],
+    [
+     "hdi_combine",
+     "hdi_limit_omitted"
+    ],
+    [
+     "hdi_combine",
+     "hdi_limit_weighting"
+    ],
+    [
+     "hdi_limit_inequality",
+     "other_indicators"
+    ],
+    [
+     "hdi_limit_weighting",
+     "single_number_problem"
+    ],
+    [
+     "hdi_limit_omitted",
+     "single_number_problem"
+    ],
+    [
+     "single_number_problem",
+     "other_indicators"
+    ]
+   ]
+  }
+ ]
+}

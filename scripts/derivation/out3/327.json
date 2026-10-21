@@ -1,0 +1,128 @@
+{
+ "id": "gen",
+ "subject": "Economics",
+ "title": "Current issue: automation substituting capital for labour",
+ "terms": {
+  "cost_falls": {
+   "label": "Falling capital cost"
+  },
+  "sub_decision": {
+   "label": "Substitution decision"
+  },
+  "disp_workers": {
+   "label": "Displaced workers"
+  },
+  "issue_automation": {
+   "label": "Automation substituting capital for labour"
+  },
+  "factor_other_costs": {
+   "label": "Cost of substitute factors"
+  },
+  "occ_immobility": {
+   "label": "Occupational immobility of labour: definition and causes (skills mismatch, lack of transferable skills, discrimination)"
+  }
+ },
+ "stages": [
+  {
+   "name": "Automation and the labour market",
+   "title": "Current issue: automation substituting capital for labour",
+   "sub": "After this the student can explain why cheaper robots reduce jobs and why some displaced workers struggle to find new ones.",
+   "steps": [
+    {
+     "type": "ask",
+     "q": "A warehouse robot used to cost £80,000. New technology brings the price down to £20,000, while wages stay the same. What happens to the cost of using a robot instead of a worker?",
+     "right": "It falls, relative to hiring a worker",
+     "wrong": "It rises, relative to hiring a worker",
+     "hint": "The robot price dropped but wages did not move.",
+     "pre": "So the cost of the substitute factor has",
+     "term": "cost_falls"
+    },
+    {
+     "type": "ask",
+     "q": "A delivery firm now finds robots much cheaper than before, relative to workers. What is it likely to do when planning its next batch of deliveries?",
+     "right": "Replace some workers with robots",
+     "wrong": "Keep hiring the same number of workers",
+     "hint": "Firms tend to use more of whichever input has become relatively cheaper.",
+     "pre": "So the firm makes a",
+     "term": "sub_decision"
+    },
+    {
+     "type": "ask",
+     "q": "After the firm switches to robots, what happens to the drivers whose jobs are removed?",
+     "right": "They lose their jobs and must look elsewhere",
+     "wrong": "They keep their same jobs at the firm",
+     "hint": "If robots now do the deliveries, what happens to the people who used to do them?",
+     "pre": "These workers become",
+     "term": "disp_workers"
+    },
+    {
+     "type": "order",
+     "terms": [
+      "cost_falls",
+      "sub_decision",
+      "disp_workers"
+     ],
+     "prompt": "Drag and drop the 3 key terms in the order they build on each other."
+    },
+    {
+     "type": "ask",
+     "q": "Across the economy, capital keeps getting cheaper relative to labour, firms keep replacing workers with machines, and some displaced drivers have only ever driven vans with no skills that transfer to office jobs. What is this ongoing pattern called?",
+     "right": "Capital substituting for labour in the jobs market",
+     "wrong": "A temporary blip with no lasting effect on jobs",
+     "hint": "Put together the falling machine costs, the firms' choice, the workers left behind, and their lack of transferable skills.",
+     "pre": "This is the current issue of",
+     "term": "issue_automation"
+    },
+    {
+     "type": "derive"
+    }
+   ],
+   "given": [
+    "factor_other_costs",
+    "occ_immobility"
+   ],
+   "needs": [
+    "factor_other_costs",
+    "occ_immobility"
+   ],
+   "builds": [
+    "factor_other_costs",
+    "occ_immobility"
+   ],
+   "nodes": [
+    "issue_automation"
+   ],
+   "dropped": [],
+   "edges": [
+    [
+     "factor_other_costs",
+     "issue_automation"
+    ],
+    [
+     "occ_immobility",
+     "issue_automation"
+    ],
+    [
+     "factor_other_costs",
+     "cost_falls"
+    ],
+    [
+     "cost_falls",
+     "sub_decision"
+    ],
+    [
+     "sub_decision",
+     "disp_workers"
+    ],
+    [
+     "disp_workers",
+     "issue_automation"
+    ],
+    [
+     "occ_immobility",
+     "issue_automation"
+    ]
+   ]
+  }
+ ]
+}

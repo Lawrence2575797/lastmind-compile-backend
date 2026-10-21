@@ -1,0 +1,248 @@
+{
+ "id": "gen",
+ "subject": "Economics",
+ "title": "Business growth: economies of scale",
+ "terms": {
+  "revenue_measure": {
+   "label": "Revenue"
+  },
+  "employees_measure": {
+   "label": "Employee numbers"
+  },
+  "market_share_measure": {
+   "label": "Market share"
+  },
+  "capitalisation_measure": {
+   "label": "Capitalisation"
+  },
+  "size_measures": {
+   "label": "Measures of firm size"
+  },
+  "avg_cost": {
+   "label": "Average cost per unit"
+  },
+  "econ_scale": {
+   "label": "Economies of scale"
+  },
+  "dis_econ_scale": {
+   "label": "Diseconomies of scale"
+  },
+  "min_efficient_scale": {
+   "label": "Minimum efficient scale"
+  },
+  "market_size_small": {
+   "label": "Small market size limits growth"
+  }
+ },
+ "stages": [
+  {
+   "name": "Business growth: economies of scale",
+   "title": "Business growth: economies of scale",
+   "sub": "How growing bigger changes a firm's costs, and why growth eventually runs into limits.",
+   "steps": [
+    {
+     "type": "read",
+     "term": "revenue_measure",
+     "text": "Two bakeries are compared by the total sales they take in a year. That is comparing their "
+    },
+    {
+     "type": "read",
+     "term": "employees_measure",
+     "text": "Or you could compare how many staff each bakery has on the payroll. That is comparing their "
+    },
+    {
+     "type": "read",
+     "term": "market_share_measure",
+     "text": "Or you could compare the percentage of all bread sales in the country that each bakery makes. That is comparing their "
+    },
+    {
+     "type": "read",
+     "term": "capitalisation_measure",
+     "text": "Or, for a company on the stock market, you could multiply its share price by the number of shares it has issued. That gives its "
+    },
+    {
+     "type": "order",
+     "terms": [
+      "revenue_measure",
+      "employees_measure",
+      "market_share_measure",
+      "capitalisation_measure"
+     ],
+     "prompt": "Drag and drop the 4 key terms in the order they were introduced."
+    },
+    {
+     "type": "ask",
+     "q": "Revenue, employees, market share and capitalisation are four different numbers used to compare firms. What do all four together let you judge?",
+     "right": "How large a firm is",
+     "wrong": "How profitable a firm is",
+     "hint": "None of these four numbers is about money left over after costs.",
+     "pre": "Together these are the",
+     "term": "size_measures"
+    },
+    {
+     "type": "ask",
+     "q": "A bakery doubles its output. It can now buy flour in bulk at a lower price per bag, and one manager can supervise twice as many ovens without a pay rise. What happens to the cost of making one loaf?",
+     "right": "It falls",
+     "wrong": "It stays the same",
+     "hint": "The same fixed costs and bulk discounts are now spread over more loaves.",
+     "pre": "So getting bigger can lower the",
+     "term": "avg_cost"
+    },
+    {
+     "type": "ask",
+     "q": "So as the bakery grows and its cost per loaf keeps falling purely because it is producing on a larger scale, what would you call this effect of size on cost?",
+     "right": "A benefit of growing bigger",
+     "wrong": "A problem caused by growing bigger",
+     "hint": "Cost per unit is falling as size increases, which is helping the bakery, not hurting it.",
+     "pre": "This falling cost per unit as output grows is called",
+     "term": "econ_scale"
+    },
+    {
+     "type": "ask",
+     "q": "The bakery keeps growing past this point, but now head office adds extra layers of managers, communication breaks down between sites, and workers feel less noticed. What happens to the cost per loaf now?",
+     "right": "It rises",
+     "wrong": "It keeps falling",
+     "hint": "More layers of management and worse communication add cost without adding output.",
+     "pre": "So beyond some point, growing further causes",
+     "term": "dis_econ_scale"
+    },
+    {
+     "type": "order",
+     "terms": [
+      "size_measures",
+      "avg_cost",
+      "econ_scale",
+      "dis_econ_scale"
+     ],
+     "prompt": "Drag and drop the 4 key terms in the order they build on each other."
+    },
+    {
+     "type": "ask",
+     "q": "Looking at the falling cost per loaf as the bakery grows, is there a size beyond which growing bigger stops bringing the cost per loaf down any further?",
+     "right": "Yes, cost per unit flattens out at some output level",
+     "wrong": "No, cost per unit keeps falling forever the bigger it gets",
+     "hint": "Economies of scale run out eventually rather than continuing without limit.",
+     "pre": "The smallest output at which those cost savings are fully used up is the",
+     "term": "min_efficient_scale",
+     "diagram": {
+      "x": "Output",
+      "y": "Average cost",
+      "curves": [
+       {
+        "label": "AC",
+        "pts": [
+         [
+          0.05,
+          0.85
+         ],
+         [
+          0.2,
+          0.5
+         ],
+         [
+          0.4,
+          0.3
+         ],
+         [
+          0.6,
+          0.22
+         ],
+         [
+          0.9,
+          0.22
+         ]
+        ]
+       }
+      ],
+      "points": [
+       {
+        "label": "MES",
+        "x": 0.6,
+        "y": 0.22,
+        "guides": true
+       }
+      ]
+     }
+    },
+    {
+     "type": "ask",
+     "q": "A bakery reaches the output level where its cost per loaf is as low as it can get, but the whole town only buys 200 loaves a day and it already supplies most of them. Can it grow much further by selling more in this town?",
+     "right": "No, there are barely any more customers left to sell to",
+     "wrong": "Yes, it can keep growing as long as costs stay low",
+     "hint": "Low costs only help if there are still buyers left to sell more loaves to.",
+     "pre": "When the local market has too few buyers left, this is",
+     "term": "market_size_small"
+    },
+    {
+     "type": "derive"
+    }
+   ],
+   "given": [],
+   "needs": [],
+   "builds": [],
+   "nodes": [
+    "size_measures",
+    "econ_scale",
+    "dis_econ_scale",
+    "min_efficient_scale",
+    "market_size_small"
+   ],
+   "dropped": [
+    [
+     "size_measures",
+     "econ_scale"
+    ]
+   ],
+   "edges": [
+    [
+     "econ_scale",
+     "min_efficient_scale"
+    ],
+    [
+     "econ_scale",
+     "dis_econ_scale"
+    ],
+    [
+     "min_efficient_scale",
+     "market_size_small"
+    ],
+    [
+     "revenue_measure",
+     "size_measures"
+    ],
+    [
+     "employees_measure",
+     "size_measures"
+    ],
+    [
+     "market_share_measure",
+     "size_measures"
+    ],
+    [
+     "capitalisation_measure",
+     "size_measures"
+    ],
+    [
+     "size_measures",
+     "avg_cost"
+    ],
+    [
+     "avg_cost",
+     "econ_scale"
+    ],
+    [
+     "econ_scale",
+     "min_efficient_scale"
+    ],
+    [
+     "econ_scale",
+     "dis_econ_scale"
+    ],
+    [
+     "min_efficient_scale",
+     "market_size_small"
+    ]
+   ]
+  }
+ ]
+}

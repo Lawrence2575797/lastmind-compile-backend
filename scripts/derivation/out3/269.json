@@ -1,0 +1,142 @@
+{
+ "id": "gen",
+ "subject": "Economics",
+ "title": "Taxes and subsidies",
+ "terms": {
+  "TAX_SPECIFIC": {
+   "label": "Specific tax"
+  },
+  "SUB_DEF": {
+   "label": "Subsidy"
+  },
+  "SUB_DIS2": {
+   "label": "Subsidy inefficiency"
+  },
+  "SUB_DIS3": {
+   "label": "Hard to withdraw"
+  },
+  "REASONS_INTERVENE": {
+   "label": "Reasons for government intervention in markets"
+  },
+  "indirect_tax_def": {
+   "label": "Indirect tax"
+  },
+  "subsidy_def": {
+   "label": "Subsidy"
+  }
+ },
+ "stages": [
+  {
+   "name": "Taxes and subsidies",
+   "title": "Taxes and subsidies",
+   "sub": "How specific taxes work, and why subsidies can backfire even though they help at first.",
+   "steps": [
+    {
+     "type": "ask",
+     "q": "The government charges 20p on every litre of petrol sold, whether the petrol is cheap or expensive. If a driver buys 10 litres instead of 5, does the tax bill double?",
+     "right": "Yes, it doubles because it is charged per litre",
+     "wrong": "No, it stays the same regardless of quantity",
+     "hint": "The charge is fixed per unit, not a percentage of price. What happens when you buy twice as many units?",
+     "pre": "A fixed amount charged on each unit sold is a",
+     "term": "TAX_SPECIFIC"
+    },
+    {
+     "type": "ask",
+     "q": "The government wants more people to cycle, so it pays bike factories £50 for every bike they produce, on top of what they earn from selling it. What has the government done to the firm's costs of making each bike?",
+     "right": "Lowered them",
+     "wrong": "Raised them",
+     "hint": "The factory now gets extra money for each bike made. Does that make producing bikes cheaper or more expensive for them?",
+     "pre": "Government money paid to a firm to lower its costs is a",
+     "term": "SUB_DEF"
+    },
+    {
+     "type": "ask",
+     "q": "A bike factory keeps getting £50 per bike no matter how high its costs run. Does it have much reason to cut waste or find cheaper ways to produce?",
+     "right": "No, it has little reason to bother",
+     "wrong": "Yes, it still has strong reason to cut costs",
+     "hint": "If the payment covers the gap regardless of how costs behave, what happens to the pressure to control them?",
+     "pre": "Firms can become wasteful and dependent on the payment, which is a subsidy disadvantage called",
+     "term": "SUB_DIS2"
+    },
+    {
+     "type": "ask",
+     "q": "After years of the £50 payment, thousands of jobs at the bike factory depend on it, and workers and voters are used to the lower bike prices it brings. If the government tries to stop paying it, is that an easy, uncontroversial decision?",
+     "right": "No, removing it would cause serious backlash",
+     "wrong": "Yes, it can be removed without much reaction",
+     "hint": "Think about who now relies on that payment continuing, and how they would react to losing it.",
+     "pre": "Once people and firms depend on it, a subsidy disadvantage is that it is",
+     "term": "SUB_DIS3"
+    },
+    {
+     "type": "order",
+     "terms": [
+      "TAX_SPECIFIC",
+      "SUB_DEF",
+      "SUB_DIS2",
+      "SUB_DIS3"
+     ],
+     "prompt": "Drag and drop the 4 key terms in the order they build on each other."
+    },
+    {
+     "type": "derive"
+    }
+   ],
+   "given": [
+    "REASONS_INTERVENE",
+    "indirect_tax_def",
+    "subsidy_def"
+   ],
+   "needs": [
+    "REASONS_INTERVENE",
+    "indirect_tax_def",
+    "subsidy_def"
+   ],
+   "builds": [
+    "REASONS_INTERVENE",
+    "indirect_tax_def",
+    "subsidy_def"
+   ],
+   "nodes": [
+    "TAX_SPECIFIC",
+    "SUB_DEF",
+    "SUB_DIS2",
+    "SUB_DIS3"
+   ],
+   "dropped": [],
+   "edges": [
+    [
+     "SUB_DEF",
+     "SUB_DIS2"
+    ],
+    [
+     "SUB_DEF",
+     "SUB_DIS3"
+    ],
+    [
+     "REASONS_INTERVENE",
+     "TAX_SPECIFIC"
+    ],
+    [
+     "REASONS_INTERVENE",
+     "SUB_DEF"
+    ],
+    [
+     "indirect_tax_def",
+     "TAX_SPECIFIC"
+    ],
+    [
+     "subsidy_def",
+     "SUB_DEF"
+    ],
+    [
+     "indirect_tax_def",
+     "TAX_SPECIFIC"
+    ],
+    [
+     "subsidy_def",
+     "SUB_DEF"
+    ]
+   ]
+  }
+ ]
+}

@@ -97,13 +97,13 @@ router.post('/create/projects', actionEndpointLimiter, async (req: Request, res:
       const { error } = await supabaseAdmin.from('create_projects').update(row).eq('id', b.id);
       if (tableMissing(error)) return res.json({ unavailable: true });
       if (error) { console.error('Create project update failed:', error); return res.status(500).json({ error: 'could not save' }); }
-      return res.json({ id: b.id });
+      return res.json({ id: b.id, updatedAt: row.updated_at });   // the server's own time for this save: devices compare against it, not their own clocks
     }
   }
   const { data, error } = await supabaseAdmin.from('create_projects').insert(row).select('id').single();
   if (tableMissing(error)) return res.json({ unavailable: true });
   if (error) { console.error('Create project insert failed:', error); return res.status(500).json({ error: 'could not save' }); }
-  res.json({ id: data.id });
+  res.json({ id: data.id, updatedAt: row.updated_at });
 });
 
 // DELETE /create/projects/:id

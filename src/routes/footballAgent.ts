@@ -143,8 +143,10 @@ Teaching (this is the main job)
 - SHAPE OF A LESSON. The reply is only the opening: two to four short sentences that put one concrete situation from the student's own league in front of them and ask the question the lesson will answer. No definition, no formula and no new term in it. Everything else goes in lesson.steps, in an order where each step makes the next one obvious: what the student has just learnt takes them to the point where the next step is an easy deduction. Each step brings in ONE new idea, and brings it in through the same league situation first (the club, the match, the figures) before the general idea or the formula. Never state a new idea without its football grounding. A good order is: the situation, what is being counted or measured in it, the rule that describes it, the formula, then the figure for the student's own club.
 - WHY. When a step states something the student could reasonably ask "why" about (a property, the form of a formula, a rule) and the step's one or two sentences cannot justify it, set that step's "why" to the exact question the student would ask, as a standalone question, for example "Explain why the variance of the Poisson distribution is equal to its mean". The page shows an Explain why button that opens it as a new question. Do not squeeze a long justification into a step, and leave "why" empty when the step already justifies itself.
 - NEXT. After a lesson, where it is honest and useful, set lesson.next to {"say":"one sentence about something interesting this idea could do for the student's own club, ending in a question to the student","ask":"the question that would start it"}, for example say "The Poisson distribution could help tell whether Ashford's scoring run is luck or a real improvement. Do you want to look into it?" and ask "Use the Poisson distribution to test whether Ashford's recent scoring is luck or a real improvement". Leave it empty when there is no honest link.
+- ONE SITUATION. Choose one concrete situation from the club summary (a named club, match or figure) and run it through the opening and EVERY step: each step's "say" refers back to it and uses it to show the idea, so the student never meets an idea only as a definition. Use the real figures from the club summary; never state a number that is not in it, and never turn a fraction into a decimal that you did not work out: write fractions as 1/3 in the maths line.
+- DISTRIBUTIONS. For a probability distribution, draw it: a diagram of the form {"dist":[{"kind":"poisson","lambda":1.2,"label":"lambda = 1.2"},{"kind":"binomial","n":10,"p":0.2,"label":"n = 10, p = 0.2"}],"mark":2,"xLabel":"Goals in a match"} (kind is poisson or binomial only; up to 3 distributions; "mark" optionally highlights one value). The browser draws the exact bars, so give only the name and the parameters. Use it to show the shape and the skew: when the mean is small the bars pile up on the left with a long tail to the right (positive skew), and as the mean grows, or as p moves towards one half, the shape becomes symmetric. Give the picture its own step that explains what the student sees: where the peak is, which side the tail is on, and why.
 - NEVER introduce a concept blind. If your explanation needs an earlier idea, do not explain it: write [[need|the idea's name]] where it first appears (for example [[need|demand curves]]), using the idea's usual textbook name. The student clicks it to have that taught first. Choose real prerequisites only, at most 4, and put the same names in lesson.needs in the order they should be learned. If the student asks about something whose prerequisites they may not have, still teach the topic but only up to where those ideas are needed, and flag them.
-- Show the working. For anything derived (a curve, a formula, a test statistic) give lesson.steps: 3 to 7 steps, each one idea. Each step has "say" (one or two plain sentences), optionally "maths" (the line of working, in the maths shorthand) and optionally "diagram". A diagram is {"x":[0,10],"y":[0,10],"xLabel":"Quantity","yLabel":"Price","curves":[{"label":"MC","expr":"1+0.8*x"}],"points":[{"x":5,"y":5,"label":"E"}]}: expr uses only x, numbers, + - * / ^ ( ) and sqrt abs ln exp; at most 5 curves and 5 points, with numbers that really satisfy the working. Use the same curves as in the step before when you build on them. Give the whole lesson a "diagram" if one picture sums it up.
+- Show the working. For anything derived (a curve, a formula, a test statistic) give lesson.steps: 3 to 7 steps, each one idea. Each step has "say" (one or two plain sentences), optionally "maths" (the line of working, in the maths shorthand) and optionally "diagram". A diagram is {"x":[0,10],"y":[0,10],"xLabel":"Quantity","yLabel":"Price","curves":[{"label":"MC","expr":"1+0.8*x"}],"points":[{"x":5,"y":5,"label":"E"}]}: expr uses only x, numbers, + - * / ^ ( ) and sqrt abs ln exp; at most 5 curves and 5 points, with numbers that really satisfy the working. Use the same curves as in the step before when you build on them. Give the whole lesson a "diagram" if one picture sums it up. A lesson has 4 to 7 steps unless the message asks for depth (see Depth).
 - Explain by doing. Where the idea can be seen in the game, use the game: run a "test" action, or draw a "tactic" change, and teach the idea on the student's own numbers (a hypothesis test on the before and after of a change, for example). When you have shown it once, you may set lesson.exercise to a short instruction asking the student to make the next change themselves in the game and run the test. lesson.exercise is ONLY for something done in the game; a calculation or a question to answer goes in lesson.practice instead (the student types the answer in the chat), and when neither helps leave both empty. Never change the club for the student outside a lesson.
 - Questions that lead on from a lesson ("why?", "show me", "I do not get step 3") get a short, direct answer to that point, not a repeat of the lesson.
 - You may link an older lesson by writing [[id|words]] in a full answer (only these ids): {LESSONS}. At most two, only when needed.
@@ -226,8 +228,19 @@ function cleanActions(v: unknown) {
 // A lesson sent with a reply: what the student must know first, the working step by step (with small graphs written as expressions in x, drawn by the browser),
 // and a task for the student to do in the game. Everything is length-limited and the expressions may only use a few characters, so nothing here can run code.
 const EXPR_OK = /^[0-9x+\-*/^().,\s a-z]{1,80}$/i;
+function cleanDist(v: any): any[] {
+  return (Array.isArray(v) ? v : []).slice(0, 3).map((q: any) => {
+    if (!q || typeof q !== 'object') return null;
+    const label = clip(String(q.label || '').replace(/[*`#]/g, ''), 28);
+    if (q.kind === 'poisson' && Number(q.lambda) > 0 && Number(q.lambda) <= 60) return { kind: 'poisson', lambda: Number(q.lambda), label };
+    if (q.kind === 'binomial' && Number.isInteger(Number(q.n)) && Number(q.n) >= 1 && Number(q.n) <= 60 && Number(q.p) > 0 && Number(q.p) < 1) return { kind: 'binomial', n: Number(q.n), p: Number(q.p), label };
+    return null;
+  }).filter(Boolean);
+}
 function cleanDiagram(d: any): any {
   if (!d || typeof d !== 'object') return null;
+  const dist = cleanDist(d.dist);
+  if (dist.length) return { dist, mark: Number.isInteger(Number(d.mark)) && Number(d.mark) >= 0 && Number(d.mark) <= 60 ? Number(d.mark) : null, xLabel: clip(d.xLabel, 40), yLabel: clip(d.yLabel, 30) || 'Probability' };
   const rng = (v: any, dflt: number[]) => (Array.isArray(v) && v.length === 2 && v.every((q: any) => Number.isFinite(Number(q))) && Number(v[0]) < Number(v[1]) ? [Number(v[0]), Number(v[1])] : dflt);
   const curves = (Array.isArray(d.curves) ? d.curves : []).slice(0, 5).map((c: any) => (c && typeof c.expr === 'string' && EXPR_OK.test(c.expr) && /^[0-9x+\-*/^().,\s]*$/i.test(c.expr.replace(/\b(sqrt|abs|ln|exp)\b/gi, '')) ? { label: clip(c.label, 24), expr: c.expr.trim() } : null)).filter(Boolean);
   const points = (Array.isArray(d.points) ? d.points : []).slice(0, 5).map((q: any) => (q && Number.isFinite(Number(q.x)) && Number.isFinite(Number(q.y)) ? { x: Number(q.x), y: Number(q.y), label: clip(q.label, 16) } : null)).filter(Boolean);
@@ -237,7 +250,7 @@ function cleanDiagram(d: any): any {
 function cleanLesson(l: any): any {
   if (!l || typeof l !== 'object') return null;
   const needs = (Array.isArray(l.needs) ? l.needs : []).map((x: any) => clip(String(x || '').replace(/[\[\]|*`#]/g, ''), 60)).filter(Boolean).slice(0, 5);
-  const steps = (Array.isArray(l.steps) ? l.steps : []).slice(0, 8).map((st: any) => {
+  const steps = (Array.isArray(l.steps) ? l.steps : []).slice(0, 10).map((st: any) => {
     if (!st || typeof st !== 'object') return null;
     const say = clip(String(st.say || '').replace(/[*`#]/g, ''), 420); if (!say) return null;
     return { say, maths: clip(String(st.maths || '').replace(/[*`#]/g, ''), 200), diagram: cleanDiagram(st.diagram), why: clip(String(st.why || '').replace(/[*`#\[\]|]/g, ''), 160) };
@@ -256,18 +269,24 @@ router.post('/football/workbench', async (req: Request, res: Response) => {
   const levelName = level === 'gcse' ? 'GCSE level' : level === 'alevel' ? 'A-level' : 'beyond A-level (undergraduate and above)';
   const detail = clip(req.body?.detail, 120) || 'standard detail';
   const detailed = /detailed/i.test(detail);
+  const high = req.body?.depth === 'high';
   const lessons = clip(req.body?.lessons, 1800) || '(none)';
   const convo = messages.map((m: { role: string; text: string }) => `${m.role}: ${m.text}`).join('\n');
   // Someone asking to learn something, or answering a lesson, gets room for the working (and Haiku, which is enough for teaching); only a "detailed" request uses the stronger model.
   const lastStudent = [...messages].reverse().find((m: { role: string }) => m.role === 'Student');
   const teaching = /\b(teach|explain|learn|revise|revision|lesson|derive|derivation|prove|why (does|is|do|are)|what (is|are|does)|how (does|do|is)|show me|walk me|understand|i do not get|i don't get|step)\b/i.test(lastStudent ? lastStudent.text : '') || messages.some((m: { role: string; text: string }) => m.role === 'Agent' && /\[\[need\|/.test(m.text));
-  const planModel = process.env.CLAUDE_WORKBENCH_PLAN_MODEL || (detailed ? MODELS.compile : MODELS.chat);
-  const explainModel = process.env.CLAUDE_WORKBENCH_EXPLAIN_MODEL || (detailed ? MODELS.compile : MODELS.chat);
+  const planModel = process.env.CLAUDE_WORKBENCH_PLAN_MODEL || (detailed || high ? MODELS.compile : MODELS.chat);
+  const explainModel = process.env.CLAUDE_WORKBENCH_EXPLAIN_MODEL || (detailed || high ? MODELS.compile : MODELS.chat);
+  const DEPTH_NOTE = high
+    ? '\nDepth: HIGH. Teach it fully. 7 to 10 steps, each still one idea, with the derivation or the reason for every formula, the common mistakes, and a diagram in every step where a picture helps. Name the real prerequisites. The opening is still short and grounded.'
+    : '\nDepth: STANDARD. 4 to 6 steps covering the key ideas only, each one idea, with a diagram where it clearly helps.';
+  // a request to learn something must come back as a lesson, not a block of text
+  const wantsLesson = !explain && teaching && /\b(teach|explain|learn|what is|what are|walk me|derive|revise)\b/i.test(lastStudent ? lastStudent.text : '') && (lastStudent ? lastStudent.text.length : 0) > 12;
   const leanMode = !explain && teaching && !detailed && !CLUB_QUESTION.test(lastStudent ? lastStudent.text : '');
   let system: string, userContent: string, model: string, maxTokens: number;
   if (leanMode) {
     system = WB_LEAN_PROMPT.replace('{LESSONS}', '(none)');
-    userContent = `Level: ${levelName}. Detail: ${detail}.
+    userContent = `Level: ${levelName}. Detail: ${detail}.${DEPTH_NOTE}
 
 Club summary (only for the football example; the club's own figures are not being asked about):
 ${clip(req.body?.summary, 1200) || '(nothing recorded yet)'}
@@ -276,7 +295,7 @@ Conversation:
 ${convo}
 
 Reply with the JSON object.`;
-    model = planModel; maxTokens = 1800;
+    model = planModel; maxTokens = high ? 3600 : 2600;
   } else if (explain) {
     system = WB_EXPLAIN_PROMPT.replace('{LESSONS}', lessons);
     userContent = `Level: ${levelName}. Detail: ${detail}.\n\nClub summary:\n${clip(req.body?.summary, 1200) || '(none)'}\n\nConversation and results:\n${convo}\n\nReply with the JSON object.`;
@@ -285,19 +304,31 @@ Reply with the JSON object.`;
     system = WB_PLAN_PROMPT.replace('{LESSONS}', lessons).replace('{SCHEMA}', clip(req.body?.schema, 4500) || '(none)').replace('{METHODS}', clip(req.body?.methods, 4500) || '(none)').replace('{CONTROLS}', clip(req.body?.controls, 4500) || '(none)');
     const extra = clip(req.body?.schemaExtra, 1200);
     userContent = `Level: ${levelName}. Detail: ${detail}.\n\n${extra ? `Extra tables made in this session:\n${extra}\n\n` : ''}Club summary:\n${clip(req.body?.summary, 3000) || '(nothing recorded yet)'}\n\nHow things stand (ids for loans, offers, players and spending):\n${clip(req.body?.state, 2200) || '(none)'}\n\nWhere the players stand on the manager's boards (shirt number, group, x metres from own goal, y metres across):\n${clip(req.body?.board, 1800) || '(not given)'}\n\nWorkbench document so far:\n${clip(req.body?.doc, 900) || '(empty)'}\n\nConversation so far:\n${convo}\n\nReply with the JSON object.`;
-    model = planModel; maxTokens = teaching ? 2400 : 1100;
+    userContent += wantsLesson ? DEPTH_NOTE : '';
+    model = planModel; maxTokens = teaching ? (high ? 3600 : 2600) : 1100;
   }
   try {
     await assertLocksAvailable(req.userId as string);
-    let data: any = null, lastErr: unknown = null, locks = 0;   // locks: what this step cost, every attempt included, so the game can show it
+    let data: any = null, weak: any = null, lastErr: unknown = null, locks = 0;   // locks: what this step cost, every attempt included, so the game can show it
     for (let attempt = 0; attempt < 2 && !data; attempt++) {
       try {
         const { text, usage } = await callClaudeJSONWithUsage({ model, systemPrompt: system, userContent, maxTokens, temperature: 0.3, cacheSystemPrompt: true, userId: req.userId as string, meteredReason: explain ? 'football-workbench-explain' : 'football-workbench' });
         locks += computeLocksForUsage(model, usage);
         const parsed = parseJsonLoose(String(text || ''));
-        if (parsed && typeof parsed.reply === 'string') data = parsed;
+        if (parsed && typeof parsed.reply === 'string') {
+          // a lesson is wanted: a short grounded opening and real steps. If it came back as a wall of text, ask once more, saying what was wrong.
+          const les = cleanLesson(parsed.lesson), words = String(parsed.reply).trim().split(/\s+/).length;
+          const sent = Array.isArray(parsed.actions) && parsed.actions.length > 0;
+          if (wantsLesson && !sent && (!les || les.steps.length < 3 || words > 95) && attempt === 0) {
+            weak = parsed;
+            userContent += '\n\nYour last answer was not set out as a lesson. Answer again: "reply" is ONLY a short opening of two to four sentences (under 70 words) that puts one situation from the club summary in front of the student and asks the question, with no definition and no formula; then "lesson" with ' + (high ? '7 to 10' : '4 to 6') + ' steps, each bringing in one idea through that same situation, each following obviously from the one before.';
+            continue;
+          }
+          data = parsed;
+        }
       } catch (e) { if (e instanceof InsufficientLocksError) throw e; lastErr = e; }
     }
+    if (!data && weak) data = weak;
     if (!data) throw lastErr || new Error('unreadable');
     const reply = clip(String(data.reply).replace(/[*`#]/g, ''), 3200);
     const lesson = cleanLesson(data.lesson);

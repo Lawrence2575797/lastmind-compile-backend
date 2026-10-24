@@ -219,7 +219,7 @@ function cleanActions(v: unknown) {
         return number == null || dx == null || dy == null ? null : { number: Math.round(number), dx: Math.round(dx * 10) / 10, dy: Math.round(dy * 10) / 10, tag: clip(m?.tag, 30) };
       }).filter(Boolean);
       const str = (v: any, m: number) => (typeof v === 'string' ? v.replace(/[^A-Za-z0-9_\- ]/g, '').slice(0, m) : '');
-      const cellsOf = (c: any) => (Array.isArray(c) ? c.slice(0, 9).filter((q: any) => Array.isArray(q) && Number.isInteger(q[0]) && Number.isInteger(q[1]) && q[0] >= 0 && q[0] <= 2 && q[1] >= 0 && q[1] <= 4).map((q: any) => [q[0], q[1]]) : []);
+      const cellsOf = (c: any) => (Array.isArray(c) ? c.slice(0, 9).filter((q: any) => Array.isArray(q) && Number.isInteger(q[0]) && Number.isInteger(q[1]) && q[0] >= 0 && q[0] <= 5 && q[1] >= 0 && q[1] <= 4).map((q: any) => [q[0], q[1]]) : []);
       const plan = (Array.isArray(sp.plan) ? sp.plan : []).slice(0, 8).map((c: any) => (c && typeof c === 'object' && ['team', 'player', 'role', 'zone', 'trigger'].includes(c.kind)
         ? { kind: c.kind, phase: str(c.phase, 14), key: str(c.key, 20), value: str(c.value, 20), slot: str(c.slot, 6), role: str(c.role, 30), tag: str(c.tag, 14), who: str(c.who, 14), when: str(c.when, 14), group: str(c.group, 4), do: str(c.do, 14), cells: cellsOf(c.cells) } : null)).filter(Boolean);
       if (!moves.length && !plan.length) return null;

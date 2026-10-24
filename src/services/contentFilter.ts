@@ -1,4 +1,5 @@
 import { NextFunction, Request, Response } from 'express';
+import { containsPII } from '../safety/piiGuard';
 
 // Two protections for anything a student types into LastMind Create, the Law playtest and the Chancellor simulation:
 //  1. Vulgar or abusive language is refused before it reaches the AI (the request comes back as 422 CONTENT_BLOCKED).
@@ -91,9 +92,18 @@ function walk(node: unknown, fn: (s: string, key: string, path: string[]) => str
   return node;
 }
 
+// What the student is told when a message to a football agent holds personal information: it is refused whole (and never cleaned up and sent on), because the
+// chat is saved with the game and the detail should not be kept.
+export const FOOTBALL_PII_REFUSAL = { error: 'Personal information found', code: 'PII_DETECTED', detail: 'I could not send that, because it looks like it contains personal information (a real name, an address, a phone number or an email). Please send it again without the personal details. The game is about made-up clubs and players, so you never need them.' };
+
 export function screenRequestBody(req: Request, res: Response, next: NextFunction) {
   if (!req.body || typeof req.body !== 'object') return next();
   const fullPath = (req.originalUrl || req.url || '').split('?')[0];
+  // the football agents: only what the student typed is checked (not the game's own results), and it is checked as typed, before anything is redacted
+  if (/^\/football\/(agent|workbench)$/.test(fullPath) && Array.isArray(req.body.messages)
+    && req.body.messages.some((m: any) => m && m.role !== 'agent' && m.role !== 'results' && typeof m.text === 'string' && containsPII(m.text))) {
+    return res.status(422).json(FOOTBALL_PII_REFUSAL);
+  }
   const rule = USER_TEXT_PATHS.find((r) => r.test.test(fullPath));
   const redacted = new Set<PiiKind>();
   let blocked = false;

@@ -3,7 +3,6 @@ import { requireAuth } from '../services/authMiddleware';
 import { callClaudeJSON, callClaudeJSONWithUsage, MODELS } from '../services/claudeClient';
 import { computeLocksForUsage } from '../services/generationCostService';
 import { assertLocksAvailable, chargeLocksForUsage, InsufficientLocksError } from '../services/lockService';
-import { containsPII } from '../safety/piiGuard';
 
 // The football manager's LastMind AI Agent: a guide beside the game that takes the manager through analysing their own matches, so they
 // learn to read evidence for themselves. It sees only what the game sends (a compact summary of the last match and the page the manager is
@@ -70,9 +69,6 @@ function cleanShow(v: unknown) {
   }).filter(Boolean);
 }
 
-// What the student is told when their message holds personal information: it is refused whole, never cleaned up and sent on.
-const PII_REFUSAL = { error: 'Personal information found', code: 'PII_DETECTED', detail: 'I could not send that, because it looks like it contains personal information (a real name, an address, a phone number or an email). Please send it again without the personal details. The game is about made-up clubs and players, so you never need them.' };
-
 // POST /football/agent { messages: [{role, text}], context: string } -> { reply, show }
 // Runs on the small fast model (MODELS.chat) and is metered against the person's Locks like every other AI feature: an account with no Locks
 // left is refused with the same 402 the rest of the game handles.
@@ -81,7 +77,6 @@ router.post('/football/agent', async (req: Request, res: Response) => {
   const messages = raw.slice(-10).map((m: any) => ({ role: m?.role === 'agent' ? 'Agent' : 'Student', text: clip(m?.text, 700) })).filter((m: { text: string }) => m.text);
   const context = clip(req.body?.context, 10000);
   if (!messages.length || messages[messages.length - 1].role !== 'Student') return res.status(400).json({ error: 'Say something first.' });
-  if (messages.some((m: { role: string; text: string }) => m.role === 'Student' && containsPII(m.text))) return res.status(422).json(PII_REFUSAL);
   try {
     await assertLocksAvailable(req.userId as string);
     const userContent = `Data summary:\n${context || '(nothing recorded yet)'}\n\nConversation so far:\n${messages.map((m: { role: string; text: string }) => `${m.role}: ${m.text}`).join('\n')}\n\nReply with the JSON object.`;
@@ -276,8 +271,6 @@ router.post('/football/workbench', async (req: Request, res: Response) => {
   const raw = Array.isArray(req.body?.messages) ? req.body.messages : [];
   const messages = raw.slice(explain ? -5 : -10).map((m: any) => ({ role: m?.role === 'agent' ? 'Agent' : m?.role === 'results' ? 'RESULTS' : 'Student', text: clip(m?.text, m?.role === 'results' ? 5000 : 900) })).filter((m: { text: string }) => m.text);
   if (!messages.length || messages[messages.length - 1].role === 'Agent') return res.status(400).json({ error: 'Say something first.' });
-  // personal details are refused before anything reaches the model, with a plain explanation (only the student's own words are checked, not the game's results)
-  if (messages.some((m: { role: string; text: string }) => m.role === 'Student' && containsPII(m.text))) return res.status(422).json(PII_REFUSAL);
   const level = ['gcse', 'alevel', 'above'].includes(req.body?.level) ? req.body.level : 'alevel';
   const levelName = level === 'gcse' ? 'GCSE level' : level === 'alevel' ? 'A-level' : 'beyond A-level (undergraduate and above)';
   const detail = clip(req.body?.detail, 120) || 'standard detail';
@@ -489,6 +482,43 @@ router.post('/football/review-charge', async (req: Request, res: Response) => {
     if (err instanceof InsufficientLocksError) return res.status(402).json({ error: 'Lock limit reached', code: 'LOCK_LIMIT_REACHED', detail: "You're out of Locks for now." });
     console.error('Football review charge failed:', err);
     res.status(500).json({ error: 'could not open the analysis just now' });
+  }
+});
+
+// POST /football/review-write { greeting, team, opp, gf, ga, facts: [{id, text}] } -> { intro: [line], notes: { id: sentence } }
+// The wording of the match review. Everything it says is worked out in the browser first (where the team was exposed, where giving the ball away led to chances,
+// where attacks stalled); this only puts it the way an assistant coach would, so it is the small model, it is given the facts and may add none, and it is metered
+// against the person's Locks by what it uses. A review costs a few Locks; the game keeps the answer so it is asked for once per match.
+const REVIEW_WRITE_PROMPT = `You are the LastMind assistant coach, talking to the manager of a fictional football club after a match, like a sharp, friendly assistant coach in the dressing-room corridor.
+You are given the greeting to start with, the result, and a short list of FACTS found in the match record. Use only those facts: never invent a number, a player, a minute or an event, and never mention statistics, tests or probabilities.
+
+Write JSON: {"intro":[...],"notes":{...}}
+- "intro": 3 to 5 short lines, each a complete, warm, natural sentence on its own line (one piece of information per line, no lists of figures). The first line begins with the greeting you were given, then says the result in plain words. The next lines say where it went wrong tactically, in the order of the facts, in football terms (where the team was opened up, why giving the ball away there is costly, where attacks stalled). The last line says the pitch and replay below show it.
+- "notes": for each fact id, ONE sentence (under 28 words) saying what it means tactically for the manager: where the team is exposed and why it matters. No numbers that are not in the fact.
+Plain text: no markdown, no emoji. Return ONLY the JSON object.`;
+router.post('/football/review-write', async (req: Request, res: Response) => {
+  const facts = (Array.isArray(req.body?.facts) ? req.body.facts : []).slice(0, 4).map((f: any) => ({ id: clip(String(f?.id || '').replace(/[^a-z]/gi, ''), 20), text: clip(f?.text, 320) })).filter((f: { id: string; text: string }) => f.id && f.text);
+  if (!facts.length) return res.status(400).json({ error: 'Nothing to write about.' });
+  const greeting = clip(req.body?.greeting, 40) || 'Evening, Gaffer';
+  const userContent = `Greeting: ${greeting}\nResult: ${clip(req.body?.team, 40)} ${Number(req.body?.gf) || 0}-${Number(req.body?.ga) || 0} ${clip(req.body?.opp, 40)}\n\nFACTS:\n${facts.map((f: { id: string; text: string }) => `- ${f.id}: ${f.text}`).join('\n')}\n\nReturn the JSON object.`;
+  try {
+    await assertLocksAvailable(req.userId as string);
+    let data: any = null, lastErr: unknown = null;
+    for (let attempt = 0; attempt < 2 && !data; attempt++) {
+      try {
+        const text = await callClaudeJSON({ model: MODELS.chat, systemPrompt: REVIEW_WRITE_PROMPT, userContent, maxTokens: 700, temperature: 0.4, userId: req.userId as string, meteredReason: 'football-review-write' });
+        const parsed = parseJsonLoose(String(text || ''));
+        if (parsed && Array.isArray(parsed.intro) && parsed.intro.length) data = parsed;
+      } catch (e) { if (e instanceof InsufficientLocksError) throw e; lastErr = e; }
+    }
+    if (!data) throw lastErr || new Error('unreadable');
+    const notes: Record<string, string> = {};
+    facts.forEach((f: { id: string }) => { const t = data.notes && typeof data.notes[f.id] === 'string' ? clip(String(data.notes[f.id]).replace(/[*_`#]/g, ''), 220) : ''; if (t) notes[f.id] = t; });
+    res.json({ intro: data.intro.slice(0, 6).map((l: any) => clip(String(l).replace(/[*_`#]/g, ''), 240)).filter(Boolean), notes });
+  } catch (err) {
+    if (err instanceof InsufficientLocksError) return res.status(402).json({ error: 'Lock limit reached', code: 'LOCK_LIMIT_REACHED', detail: "You're out of Locks for now." });
+    console.error('Football review wording failed:', err);
+    res.status(500).json({ error: 'could not write the review just now' });
   }
 });
 

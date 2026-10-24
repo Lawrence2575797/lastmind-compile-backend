@@ -3,6 +3,7 @@ import { requireAuth } from '../services/authMiddleware';
 import { callClaudeJSON, callClaudeJSONWithUsage, MODELS } from '../services/claudeClient';
 import { computeLocksForUsage } from '../services/generationCostService';
 import { assertLocksAvailable, chargeLocksForUsage, InsufficientLocksError } from '../services/lockService';
+import { containsPII } from '../safety/piiGuard';
 
 // The football manager's LastMind AI Agent: a guide beside the game that takes the manager through analysing their own matches, so they
 // learn to read evidence for themselves. It sees only what the game sends (a compact summary of the last match and the page the manager is
@@ -69,6 +70,9 @@ function cleanShow(v: unknown) {
   }).filter(Boolean);
 }
 
+// What the student is told when their message holds personal information: it is refused whole, never cleaned up and sent on.
+const PII_REFUSAL = { error: 'Personal information found', code: 'PII_DETECTED', detail: 'I could not send that, because it looks like it contains personal information (a real name, an address, a phone number or an email). Please send it again without the personal details. The game is about made-up clubs and players, so you never need them.' };
+
 // POST /football/agent { messages: [{role, text}], context: string } -> { reply, show }
 // Runs on the small fast model (MODELS.chat) and is metered against the person's Locks like every other AI feature: an account with no Locks
 // left is refused with the same 402 the rest of the game handles.
@@ -77,6 +81,7 @@ router.post('/football/agent', async (req: Request, res: Response) => {
   const messages = raw.slice(-10).map((m: any) => ({ role: m?.role === 'agent' ? 'Agent' : 'Student', text: clip(m?.text, 700) })).filter((m: { text: string }) => m.text);
   const context = clip(req.body?.context, 10000);
   if (!messages.length || messages[messages.length - 1].role !== 'Student') return res.status(400).json({ error: 'Say something first.' });
+  if (messages.some((m: { role: string; text: string }) => m.role === 'Student' && containsPII(m.text))) return res.status(422).json(PII_REFUSAL);
   try {
     await assertLocksAvailable(req.userId as string);
     const userContent = `Data summary:\n${context || '(nothing recorded yet)'}\n\nConversation so far:\n${messages.map((m: { role: string; text: string }) => `${m.role}: ${m.text}`).join('\n')}\n\nReply with the JSON object.`;
@@ -271,6 +276,8 @@ router.post('/football/workbench', async (req: Request, res: Response) => {
   const raw = Array.isArray(req.body?.messages) ? req.body.messages : [];
   const messages = raw.slice(explain ? -5 : -10).map((m: any) => ({ role: m?.role === 'agent' ? 'Agent' : m?.role === 'results' ? 'RESULTS' : 'Student', text: clip(m?.text, m?.role === 'results' ? 5000 : 900) })).filter((m: { text: string }) => m.text);
   if (!messages.length || messages[messages.length - 1].role === 'Agent') return res.status(400).json({ error: 'Say something first.' });
+  // personal details are refused before anything reaches the model, with a plain explanation (only the student's own words are checked, not the game's results)
+  if (messages.some((m: { role: string; text: string }) => m.role === 'Student' && containsPII(m.text))) return res.status(422).json(PII_REFUSAL);
   const level = ['gcse', 'alevel', 'above'].includes(req.body?.level) ? req.body.level : 'alevel';
   const levelName = level === 'gcse' ? 'GCSE level' : level === 'alevel' ? 'A-level' : 'beyond A-level (undergraduate and above)';
   const detail = clip(req.body?.detail, 120) || 'standard detail';

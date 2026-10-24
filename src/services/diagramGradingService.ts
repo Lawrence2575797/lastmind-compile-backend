@@ -48,8 +48,8 @@ const CURVE_SHAPES: Record<string, Point[]> = {
   generic_quantity_line: [{ x: 0, y: 0 }, { x: 0, y: 220 }],
   // U-shaped short-run cost curves - a handful of segments is enough to
   // read as "dips then rises" without needing true curve fitting.
-  marginal_cost: [{ x: 0, y: 70 }, { x: 70, y: 15 }, { x: 140, y: 10 }, { x: 210, y: 35 }, { x: 260, y: 85 }],
-  average_cost: [{ x: 0, y: 100 }, { x: 90, y: 48 }, { x: 170, y: 46 }, { x: 260, y: 95 }],
+  marginal_cost: [{ x: 0, y: 40 }, { x: 25, y: 57 }, { x: 50, y: 69 }, { x: 75, y: 76 }, { x: 100, y: 78 }, { x: 130, y: 75 }, { x: 170, y: 64 }, { x: 200, y: 49 }, { x: 230, y: 30 }, { x: 260, y: 5 }],   // a U: the board's y runs downwards, so low y is high on the screen
+  average_cost: [{ x: 0, y: 15 }, { x: 30, y: 31 }, { x: 60, y: 43 }, { x: 90, y: 53 }, { x: 120, y: 60 }, { x: 150, y: 63 }, { x: 170, y: 64 }, { x: 200, y: 62 }, { x: 230, y: 58 }, { x: 260, y: 50 }],   // a U that MC cuts through at its lowest point (x 170)
   // A perfectly elastic world supply curve for trade diagrams - drawn
   // horizontal like a price line, but a distinct palette item since it
   // means something different (the world price a small country faces).

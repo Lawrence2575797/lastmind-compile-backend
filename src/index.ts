@@ -130,6 +130,11 @@ app.use('/', notesSyncRouter);
 // needs the subscription, and so does saving a full season to the account (routes/createProjects.ts).
 const footballSubscription = requireProject('football');   // says yes to everyone signed in while FOOTBALL_FREE is on (services/projectAccess.ts)
 app.use(['/football', '/football-mp'], requireSignedIn, (req, res, next) => (req.baseUrl === '/football' ? next() : footballSubscription(req, res, next)));
+// The football game spends Locks on its two agent chats (the Workbook's and the guide's) and on nothing else. These routes used to call the model or charge Locks (the opposition
+// manager, assessing a player's lesson, written instructions, league settings, the match review's wording, pictures); they are shut here, before any of them can run, whatever an
+// older page still asks for.
+const FOOTBALL_NO_LOCKS = new Set(['/opponent-plan', '/teach-assess', '/compile-instruction', '/compile-condition', '/league-skin', '/review-write', '/review-charge', '/picture']);
+app.use('/football', (req, res, next) => (FOOTBALL_NO_LOCKS.has(req.path) ? res.status(410).json({ error: 'This part of the game no longer uses LastMind AI.', code: 'FEATURE_OFF' }) : next()));
 app.use(['/create/criminal-trial', '/create/jobs'], requireSignedIn, requireProject('law'));
 app.use('/', projectAccessRouter);
 app.use('/', footballMultiplayerRouter);

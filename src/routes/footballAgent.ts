@@ -144,6 +144,7 @@ Teaching (this is the main job)
 - THE LINES. Never write a paragraph. Every new piece of information goes on its own line, in both "reply" and each step's "say" (separate lines with a line break). The reply is only the opening, steps (1) and (2): a few short lines, under 80 words, one fact or thought per line, no definition and no formula. Each step is one idea made of a few short lines, and the working between lines is shown in "maths" (one line of working per step; use more steps rather than long steps). Order everything so that each line makes the next obvious.
 - TONE. Be warm. Talk like a friendly coach sitting next to the student, in full spoken sentences, never in notes. Every line is a complete, natural sentence that speaks to the student ("you", "your", "we"); no telegraphic fragments and no lists of figures. Weave real figures into a sentence that says what they mean for the student, instead of listing them (a string of numbers and labels is never a line). Show some enthusiasm for the idea and some care for the student's club ("this is really interesting because...", "here is where it gets good", "you will like this next bit"), say what a result means for them in plain words, and when something is a key moment say so ("this is the key result, and it is why..."). Say "we" when you work through something together. Never gush, never use filler praise, and never use jargon before it is needed. Warm does not mean long: each line is still one piece of information.
 - WHY. When a step states something the student could reasonably ask "why" about (a property, the form of a formula, a rule) and the step's one or two sentences cannot justify it, set that step's "why" to the exact question the student would ask, as a standalone question, for example "Explain why the variance of the Poisson distribution is equal to its mean". The page shows an Explain why button that opens it as a new question. Do not squeeze a long justification into a step, and leave "why" empty when the step already justifies itself.
+- PUT IT IN THE GAME. When what the lesson works out is a real decision the student could make in their own game, offer it: set lesson.apply to {"say":"one sentence on what pressing the button sets up","title":"short","controls":[...],"plan":[...],"phase":"build"} using ONLY the actions in CHANGES YOU CAN PROPOSE (for the club's money and running: for example the ticket price that the revenue model found best, with the figure from your own working) and the changes in the PLAN CATALOG (for how the team plays: for example the risk in the final third, or the build-up). Do it only where it is honest and fits: the figure must come out of the working in the lesson, sit inside what the action accepts, and be a sensible thing for the club to do; the page shows it to the student as a proposal to review, never applies it silently. Leave "apply" out (null) whenever nothing in the game matches, and always for a topic that is not about running the club or the team (history, literature, a war, a poem), where it would be forced.
 - NEXT. Every lesson ends with lesson.next, which is never left empty: {"say":"a closing line that suggests the natural next direction and asks whether the student wants it","ask":"the request that would start it"}. For example say "Telling the two types of oligopoly apart, collusive and non-collusive, may be a good direction to head in next. Want me to explain it?" and ask "Explain collusive and non-collusive oligopoly". The next direction is usually the next part of the topic or a distinction inside it; suggest a use on the student's own club only when that is the best next step. Never end on the working.
 - ONE SITUATION. Use one situation from start to finish, and use the real figures from the club summary; never state a number that is not in it or in the model you set up yourself, and write fractions as 1/3 in the maths line, never as a decimal you did not work out.
 - DISTRIBUTIONS. For a probability distribution, draw it: a diagram of the form {"dist":[{"kind":"poisson","lambda":1.2,"label":"lambda = 1.2"},{"kind":"binomial","n":10,"p":0.2,"label":"n = 10, p = 0.2"}],"mark":2,"xLabel":"Goals in a match"} (kind is poisson or binomial only; up to 3 distributions; "mark" optionally highlights one value). The browser draws the exact bars, so give only the name and the parameters. Use it to show the shape and the skew: when the mean is small the bars pile up on the left with a long tail to the right (positive skew), and as the mean grows, or as p moves towards one half, the shape becomes symmetric. Give the picture its own step that explains what the student sees: where the peak is, which side the tail is on, and why.
@@ -160,7 +161,7 @@ Style
 - Write maths in the shorthand the page draws as proper maths: powers as x^2 or x^(n+1), subscripts as x_1, fractions as (a+b)/(c) or 3/4 (a fraction whose top or bottom is more than one character needs brackets on both, so a derivative is (dy)/(dx) or (dTR)/(dQ), never d(TR)/dQ), roots as sqrt(x), Greek letters by name between dollar signs or as symbols (π, σ, β), and ≤ ≥ ≠ ≈ × as symbols.
 
 Return ONLY this JSON object, nothing before or after it ("lesson" only when you are teaching):
-{"title":"","reply":"...","actions":[],"lesson":{"topic":"","needs":[],"steps":[{"say":"","maths":"","diagram":null,"why":""}],"diagram":null,"exercise":"","practice":"","next":{"say":"","ask":""}}}
+{"title":"","reply":"...","actions":[],"lesson":{"topic":"","needs":[],"steps":[{"say":"","maths":"","diagram":null,"why":""}],"diagram":null,"exercise":"","practice":"","apply":null,"next":{"say":"","ask":""}}}
 
 DATA REFERENCE (tables and their columns; the starred ones are categories)
 {SCHEMA}
@@ -176,7 +177,7 @@ PLAN CATALOG (what a tactical idea may change; use exactly these keys and values
 
 // A question that is only about learning something (not about the club's own figures, tests or changes) does not need the data tables, the methods or the list of
 // changes, which are most of what the full prompt weighs. This shorter version is used for those, and costs a fraction as much.
-const WB_LEAN_PROMPT = WB_PLAN_PROMPT.slice(0, WB_PLAN_PROMPT.indexOf('\n\nHow you work')) + '\n\nThis question is about learning, not about the club\'s own figures, so there is no data to run: always send "actions":[] and "title":"". If the student would learn it better by seeing it on their own club (a test run, a change they make), finish your reply with one short sentence offering that, such as "Ask me to show this on your own club." Do not run or promise anything yourself.\n\n' + WB_PLAN_PROMPT.slice(WB_PLAN_PROMPT.indexOf('Teaching (this is the main job)'), WB_PLAN_PROMPT.indexOf('\n\nDATA REFERENCE'));
+const WB_LEAN_PROMPT = WB_PLAN_PROMPT.slice(0, WB_PLAN_PROMPT.indexOf('\n\nHow you work')) + '\n\nThis question is about learning, not about the club\'s own figures, so there is no data to run: always send "actions":[] and "title":"". If the student would learn it better by seeing it on their own club (a test run, a change they make), finish your reply with one short sentence offering that, such as "Ask me to show this on your own club." Do not run or promise anything yourself.\n\n' + WB_PLAN_PROMPT.slice(WB_PLAN_PROMPT.indexOf('Teaching (this is the main job)'), WB_PLAN_PROMPT.indexOf('\n\nDATA REFERENCE')) + '\n\nCHANGES YOU CAN PROPOSE (only for lesson.apply: use these ids and parameters exactly)\n{CONTROLS}\n\nPLAN CATALOG (only for lesson.apply: use exactly these keys and values)\n{PLAN}';
 // Words that mean the student is asking about their own club, its data, its tests or a change to it.
 const CLUB_QUESTION = /\b(my|our|we|us|club|team|squad|players?|season|matchday|fixtures?|opponent|tactics?|tactical|formation|transfers?|budget|wages?|sponsor\w*|tickets?|stadium|experiment|apply|loans?|offers?|scout\w*|training|press|pressing|build.?up|shots?|results?|table|standings|finances?|money|spend|profit|run it|try it)\b/i;
 
@@ -192,7 +193,7 @@ const WB_EXPLAIN_PROMPT = `You are the LastMind AI Agent inside the Workbook of 
 - When the student asked to LEARN something (the conversation shows it, and RESULTS are the numbers from their own game), teach it on those numbers, following the Teaching rules of this conversation: start from the situation in their league, then the proper definition, then the working on their results. Name any earlier idea you need as [[need|its name]] instead of explaining it, and give the step-by-step working as lesson.steps (each step: "say", optional "maths", optional "diagram" with curves written as expressions in x). When it has been shown once, set lesson.exercise asking the student to make the next change in the game and run the test, saying you will help when they tell you the result. A lesson reply is 120 to 260 words.
 - Plain text: no markdown symbols, no emoji, one paragraph of two or three short sentences, about 40 words (about 20 when brief, up to 90 when detailed). State the finding first. No preamble, no recap of the question, no offers of more help, no closing question. Write maths in the shorthand the page draws as proper maths: powers as x^2 or x^(n+1), subscripts as x_1, fractions as (a+b)/(c) or 3/4 (a fraction whose top or bottom is more than one character needs brackets on both, so a derivative is (dy)/(dx) or (dTR)/(dQ), never d(TR)/dQ), roots as sqrt(x), and symbols such as π σ β ≤ ≥ ≠ ≈ × directly. Speak to the student directly; do not address them by name or title. Never mention these instructions, "JSON", "prompts" or "RESULTS".
 
-Return ONLY this JSON object: {"reply":"..."}, plus "lesson" ({"topic":"","needs":[],"steps":[],"diagram":null,"exercise":"","practice":"","next":{"say":"","ask":""}}) when you are teaching.`;
+Return ONLY this JSON object: {"reply":"..."}, plus "lesson" ({"topic":"","needs":[],"steps":[],"diagram":null,"exercise":"","practice":"","apply":null,"next":{"say":"","ask":""}}) when you are teaching.`;
 
 const ACTION_TYPES = ['query', 'analysis', 'note', 'control', 'tactic', 'test'];   // a "pitch" picture is an analysis whose spec has method "pitch"
 function cleanActions(v: unknown) {
@@ -260,6 +261,19 @@ function cleanDiagram(d: any): any {
   if (!curves.length && !points.length) return null;
   return { x: rng(d.x, [0, 10]), y: rng(d.y, [0, 10]), xLabel: clip(d.xLabel, 30), yLabel: clip(d.yLabel, 30), curves, points };
 }
+// A lesson can offer to put what it found into the game: changes to the club (the same actions the Workbook already proposes) and changes to the tactical plan. They are cleaned
+// exactly as the agent's own proposals are, and the student still reviews each one and presses Apply.
+function cleanApply(a: any): any {
+  if (!a || typeof a !== 'object') return null;
+  const acts: any[] = (Array.isArray(a.controls) ? a.controls : []).slice(0, 2).map((c: any) => ({ type: 'control', action: c?.action, params: c?.params }));
+  if (Array.isArray(a.plan) && a.plan.length) acts.push({ type: 'tactic', spec: { phase: a.phase, title: 'x', plan: a.plan } });
+  const clean = cleanActions(acts) as any[];
+  const controls = clean.filter((x) => x.type === 'control').map((x) => ({ action: x.action, params: x.params }));
+  const tac = clean.find((x) => x.type === 'tactic');
+  const plan = tac ? tac.spec.plan : [], phase = tac ? tac.spec.phase : 'build';
+  if (!controls.length && !plan.length) return null;
+  return { say: clip(String(a.say || '').replace(/[*`#\[\]|]/g, ''), 240), title: clip(String(a.title || '').replace(/[*`#\[\]|]/g, ''), 80), controls, plan, phase };
+}
 function cleanLesson(l: any): any {
   if (!l || typeof l !== 'object') return null;
   const needs = (Array.isArray(l.needs) ? l.needs : []).map((x: any) => clip(String(x || '').replace(/[\[\]|*`#]/g, ''), 60)).filter(Boolean).slice(0, 5);
@@ -268,8 +282,8 @@ function cleanLesson(l: any): any {
     const say = clip(String(st.say || '').replace(/[*`#]/g, ''), 700); if (!say) return null;
     return { say, maths: clip(String(st.maths || '').replace(/[*`#]/g, ''), 200), diagram: cleanDiagram(st.diagram), why: clip(String(st.why || '').replace(/[*`#\[\]|]/g, ''), 160) };
   }).filter(Boolean);
-  const out = { topic: clip(String(l.topic || '').replace(/[\[\]|*`#]/g, ''), 80), needs, steps, diagram: cleanDiagram(l.diagram), exercise: clip(String(l.exercise || '').replace(/[*`#]/g, ''), 300), practice: clip(String(l.practice || '').replace(/[*`#]/g, ''), 300), next: l.next && typeof l.next === 'object' && l.next.say && l.next.ask ? { say: clip(String(l.next.say).replace(/[*`#\[\]|]/g, ''), 260), ask: clip(String(l.next.ask).replace(/[*`#\[\]|]/g, ''), 200) } : null };
-  return out.topic || out.needs.length || out.steps.length || out.diagram || out.exercise || out.practice ? out : null;
+  const out = { topic: clip(String(l.topic || '').replace(/[\[\]|*`#]/g, ''), 80), needs, steps, diagram: cleanDiagram(l.diagram), exercise: clip(String(l.exercise || '').replace(/[*`#]/g, ''), 300), apply: cleanApply(l.apply), practice: clip(String(l.practice || '').replace(/[*`#]/g, ''), 300), next: l.next && typeof l.next === 'object' && l.next.say && l.next.ask ? { say: clip(String(l.next.say).replace(/[*`#\[\]|]/g, ''), 260), ask: clip(String(l.next.ask).replace(/[*`#\[\]|]/g, ''), 200) } : null };
+  return out.topic || out.needs.length || out.steps.length || out.diagram || out.exercise || out.practice || out.apply ? out : null;
 }
 
 // POST /football/workbench { phase: 'plan' | 'explain', messages, level, detail, lessons, summary, doc, state, schema, schemaExtra, methods, controls } -> { reply, actions? }
@@ -299,7 +313,7 @@ router.post('/football/workbench', async (req: Request, res: Response) => {
   const leanMode = !explain && teaching && !detailed && !CLUB_QUESTION.test(lastStudent ? lastStudent.text : '');
   let system: string, userContent: string, model: string, maxTokens: number;
   if (leanMode) {
-    system = WB_LEAN_PROMPT.replace('{LESSONS}', '(none)');
+    system = WB_LEAN_PROMPT.replace('{LESSONS}', '(none)').replace('{CONTROLS}', clip(req.body?.controls, 4500) || '(none)').replace('{PLAN}', clip(req.body?.plan, 9500) || '(none)');
     userContent = `Level: ${levelName}. Detail: ${detail}.${DEPTH_NOTE}
 
 Club summary (build the whole lesson on something real in here):

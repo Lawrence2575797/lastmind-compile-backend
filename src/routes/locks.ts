@@ -2,7 +2,8 @@ import { Router, Request, Response } from 'express';
 import { requireAuth } from '../services/authMiddleware';
 import { syncEndpointLimiter, actionEndpointLimiter } from '../services/rateLimiters';
 import { getOrCreateLockBalance, sweepExpiredLockHolds, depositForLessonBooking, InsufficientLocksError } from '../services/lockService';
-import { LESSON_DEPOSIT_LOCK_AMOUNT, getMonthlyAllotment } from '../constants/locks';
+import { LESSON_DEPOSIT_LOCK_AMOUNT, getMonthlyAllotment, FOOTBALL_PLAN_LOCKS } from '../constants/locks';
+import { hasFootballSubscription } from '../services/projectAccess';
 import { supabaseAdmin } from '../services/supabaseAdmin';
 
 import { getOrCreateSubscription } from '../services/subscriptionService';
@@ -28,7 +29,7 @@ router.get('/locks/balance', syncEndpointLimiter, async (req: Request, res: Resp
       getOrCreateLockBalance(req.userId as string),
       getOrCreateSubscription(req.userId as string),
     ]);
-    const allotment = getMonthlyAllotment(subscription.tier);
+    const allotment = Math.max(getMonthlyAllotment(subscription.tier), (await hasFootballSubscription(req.userId as string)) ? FOOTBALL_PLAN_LOCKS : 0);
     res.json({ ...balance, allotment, monthlyAllotment: allotment, tier: subscription.tier,
       periodStart: subscription.period_start, periodEnd: subscription.period_end,
       percentageUsed: Math.round(Math.max(0, allotment - balance.balance) / allotment * 100) });

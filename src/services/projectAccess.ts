@@ -1,15 +1,15 @@
 import { Request, Response, NextFunction } from 'express';
 import { supabaseAdmin } from './supabaseAdmin';
 
-// Paid projects. The football manager and the criminal-trial builder each cost £4.99 a month. Access is a row in `project_access`, written by the
+// Paid projects. The football manager costs £8.99 a month (and brings 30,000 Locks a month, see constants/locks.ts); the criminal-trial builder costs £4.99. Access is a row in `project_access`, written by the
 // billing backend when a project subscription is paid, and read here with the service role: the browser's claim about what it has paid for is never
 // trusted. A few accounts have every project without paying (the owner's own accounts).
 export type Project = 'football' | 'law';
 
-// FOOTBALL_FREE: the football manager is free for a limited time, to bring people in. The paywall and the Stripe price are untouched; this only
-// makes the access check say yes for football. Set the environment variable FOOTBALL_FREE=false (or change the default below to false) to put the
-// paywall back. The Locks limits are separate and stay on whatever this is set to. The law projects are never affected.
-export const FOOTBALL_FREE = process.env.FOOTBALL_FREE ? !/^(false|0|no|off)$/i.test(process.env.FOOTBALL_FREE) : true;
+// FOOTBALL_FREE: when it is on, the football manager is free for everyone signed in. It is off by default now: the full season is paid (£8.99 a month, the Stripe price in
+// STRIPE_FOOTBALL_PRICE_ID), while the demo, with the whole of the game's AI in it, stays open to every signed-in account on its 1,000 free Locks. Set the environment variable
+// FOOTBALL_FREE=true to make the game free again. The Locks limits are separate. The law projects are never affected.
+export const FOOTBALL_FREE = process.env.FOOTBALL_FREE ? !/^(false|0|no|off)$/i.test(process.env.FOOTBALL_FREE) : false;
 export const PROJECTS: Project[] = ['football', 'law'];
 
 const ALL_PROJECT_IDS = new Set(['1554f85d-95a0-49de-b48a-aa9c8363f7cd']);
@@ -43,6 +43,20 @@ async function emailIsConfirmed(userId: string): Promise<boolean> {
   let ok = false;
   try { const { data } = await supabaseAdmin.auth.admin.getUserById(userId); ok = !!data?.user?.email_confirmed_at; } catch { ok = false; }
   confirmedCache.set(userId, { ok, at: Date.now() });
+  return ok;
+}
+
+// Whether the account has an active football subscription (the row the billing backend writes), nothing else: used to size the monthly Locks. Remembered for a minute.
+const footballSubCache = new Map<string, { ok: boolean; at: number }>();
+export async function hasFootballSubscription(userId: string): Promise<boolean> {
+  const hit = footballSubCache.get(userId);
+  if (hit && Date.now() - hit.at < 60_000) return hit.ok;
+  let ok = false;
+  try {
+    const { data } = await supabaseAdmin.from('project_access').select('status,current_period_end').eq('user_id', userId).eq('project', 'football').maybeSingle();
+    ok = !!data && ['active', 'trialing'].includes(String(data.status)) && (!data.current_period_end || Date.parse(data.current_period_end) > Date.now());
+  } catch { ok = false; }
+  footballSubCache.set(userId, { ok, at: Date.now() });
   return ok;
 }
 

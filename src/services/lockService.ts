@@ -1,5 +1,6 @@
 import { supabaseAdmin } from './supabaseAdmin';
-import { getMonthlyAllotment } from '../constants/locks';
+import { getMonthlyAllotment, FOOTBALL_PLAN_LOCKS } from '../constants/locks';
+import { hasFootballSubscription } from './projectAccess';
 import { getOrCreateSubscription, monthlyPeriod } from './subscriptionService';
 
 export interface LockBalance { balance: number; }
@@ -48,7 +49,8 @@ async function ledgerRows(userId: string, table: string, column: string): Promis
 export async function getOrCreateLockBalance(userId: string): Promise<LockBalance> {
   if (await hasUnlimitedLocks(userId)) return { balance: 999_999 };
   const subscription = await getOrCreateSubscription(userId);
-  const allotment = getMonthlyAllotment(subscription.tier);
+  // the football plan brings 30,000 Locks a month, for use anywhere on the site
+  const allotment = Math.max(getMonthlyAllotment(subscription.tier), (await hasFootballSubscription(userId)) ? FOOTBALL_PLAN_LOCKS : 0);
   const thisMonth = monthlyPeriod().period_start;   // YYYY-MM-DD of the first of this month
   const [changes, purchases] = await Promise.all([
     ledgerRows(userId, 'lock_transactions', 'amount'),

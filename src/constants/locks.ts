@@ -13,6 +13,9 @@ export const MONTHLY_LOCK_ALLOTMENTS: Record<SubscriptionTier, number> = {
   max: 50_000,
 };
 
+// The football manager plan (£8.99 a month) gives 30,000 Locks a month, to use anywhere on the site. An account on a bigger tier keeps the bigger allotment.
+export const FOOTBALL_PLAN_LOCKS = 30_000;
+
 export const EXTRA_LOCKS_PER_DOLLAR = 4_500; // $1 = 4,500 locks for Max tier
 
 export function getMonthlyAllotment(tier: SubscriptionTier): number {

@@ -30,8 +30,19 @@ export async function pushNoteNodes(userId: string, nodes: { id: string; data: u
     nodes.forEach((n) => { stamps[n.id] = now; });
   }
   if (deleted.length) {
-    const { error } = await supabaseAdmin.from('user_notes').upsert(deleted.map((id) => ({ user_id: userId, node_id: id, data: null, updated_at: now, deleted_at: now })));
-    if (error) throw error;
+    // A deletion is soft: the row is marked deleted and keeps its contents, so a note removed by mistake (or by a device whose copy had been lost) can still be brought back.
+    const { data: have, error: e1 } = await supabaseAdmin.from('user_notes').select('node_id').eq('user_id', userId).in('node_id', deleted);
+    if (e1) throw e1;
+    const exists = new Set((have || []).map((r) => r.node_id));
+    const keep = deleted.filter((id) => exists.has(id)), fresh = deleted.filter((id) => !exists.has(id));
+    if (keep.length) {
+      const { error } = await supabaseAdmin.from('user_notes').update({ updated_at: now, deleted_at: now }).eq('user_id', userId).in('node_id', keep);
+      if (error) throw error;
+    }
+    if (fresh.length) {
+      const { error } = await supabaseAdmin.from('user_notes').upsert(fresh.map((id) => ({ user_id: userId, node_id: id, data: null, updated_at: now, deleted_at: now })));
+      if (error) throw error;
+    }
     deleted.forEach((id) => { stamps[id] = now; });
   }
   return stamps;

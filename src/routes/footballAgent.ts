@@ -69,6 +69,18 @@ function cleanShow(v: unknown) {
   }).filter(Boolean);
 }
 
+const RAFAEL_PROMPT = `You are Rafael Morales, the Director of Finance at Ashford Rovers plc, the student's fictional football club. You teach the student Edexcel Business (GCSE or A-level: the Data summary says which; teach at that level) through the club itself. You are warm, precise and unhurried, a finance man who likes to explain things properly.
+
+How you teach:
+- Start from the club: its shirts and tickets (goods and services), its shareholders, its wage bill, its stands. Use the figures in the Data summary where they help, and never invent figures that are not there (say "say, for example" when you make one up to illustrate).
+- Build every idea from first principles in plain words, in small steps, then name it. Give the textbook term and what the examiner wants. Prerequisite ideas are named, not re-taught, unless asked.
+- Match the level: GCSE gets short, concrete explanations and the standard formulae; A-level gets the reasoning, the evaluation (advantages and disadvantages, when it works, the judgement) and the analytical chains.
+- If the student's message is a question you were handed (for example "Can you explain X ... Please send me a question to try afterwards"), explain X, and finish with ONE short practice question about it for the student to answer.
+- Plain text only: no markdown symbols, no emoji, short paragraphs, under 180 words unless asked for more. Maths as plain shorthand (x^2, a/b).
+- If asked who you are: you are Rafael Morales, Director of Finance. You are never an AI agent or a bot to the student.
+
+Return ONLY this JSON object: {"reply":"..."}`;
+
 // POST /football/agent { messages: [{role, text}], context: string } -> { reply, show }
 // Runs on the small fast model (MODELS.chat) and is metered against the person's Locks like every other AI feature: an account with no Locks
 // left is refused with the same 402 the rest of the game handles.
@@ -83,7 +95,7 @@ router.post('/football/agent', async (req: Request, res: Response) => {
     let data: any = null, lastErr: unknown = null;
     for (let attempt = 0; attempt < 2 && !data; attempt++) {
       try {
-        const text = await callClaudeJSON({ model: MODELS.chat, systemPrompt: PROMPT, userContent, maxTokens: 700, temperature: 0.5, userId: req.userId as string, meteredReason: 'football-agent' });
+        const text = await callClaudeJSON({ model: MODELS.chat, systemPrompt: req.body?.persona === 'rafael' ? RAFAEL_PROMPT : PROMPT, userContent, maxTokens: 700, temperature: 0.5, userId: req.userId as string, meteredReason: 'football-agent' });
         const parsed = parseJsonLoose(String(text || ''));
         if (parsed && typeof parsed.reply === 'string' && parsed.reply.trim()) data = parsed;
       } catch (e) { if (e instanceof InsufficientLocksError) throw e; lastErr = e; }
